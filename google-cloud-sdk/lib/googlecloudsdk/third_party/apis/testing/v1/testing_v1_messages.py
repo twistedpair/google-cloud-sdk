@@ -193,6 +193,7 @@ class AndroidModel(_messages.Message):
     manufacturer: The manufacturer of this device.
     name: The human-readable marketing name for this device model. Examples:
       "Nexus 5", "Galaxy S5".
+    perVersionInfo: Version-specific information of an Android model.
     screenDensity: Screen density in DPI. This corresponds to
       ro.sf.lcd_density
     screenX: Screen size in the horizontal (X) dimension measured in pixels.
@@ -247,13 +248,14 @@ class AndroidModel(_messages.Message):
   lowFpsVideoRecording = _messages.BooleanField(6)
   manufacturer = _messages.StringField(7)
   name = _messages.StringField(8)
-  screenDensity = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  screenX = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  screenY = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  supportedAbis = _messages.StringField(12, repeated=True)
-  supportedVersionIds = _messages.StringField(13, repeated=True)
-  tags = _messages.StringField(14, repeated=True)
-  thumbnailUrl = _messages.StringField(15)
+  perVersionInfo = _messages.MessageField('PerAndroidVersionInfo', 9, repeated=True)
+  screenDensity = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  screenX = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  screenY = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  supportedAbis = _messages.StringField(13, repeated=True)
+  supportedVersionIds = _messages.StringField(14, repeated=True)
+  tags = _messages.StringField(15, repeated=True)
+  thumbnailUrl = _messages.StringField(16)
 
 
 class AndroidRoboTest(_messages.Message):
@@ -805,6 +807,7 @@ class IosModel(_messages.Message):
       TestExecutionService.
     name: The human-readable name for this device model. Examples: "iPhone
       4s", "iPad Mini 2".
+    perVersionInfo: Version-specific information of an iOS model.
     screenDensity: Screen density in DPI.
     screenX: Screen size in the horizontal (X) dimension measured in pixels.
     screenY: Screen size in the vertical (Y) dimension measured in pixels.
@@ -832,11 +835,12 @@ class IosModel(_messages.Message):
   formFactor = _messages.EnumField('FormFactorValueValuesEnum', 2)
   id = _messages.StringField(3)
   name = _messages.StringField(4)
-  screenDensity = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  screenX = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  screenY = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  supportedVersionIds = _messages.StringField(8, repeated=True)
-  tags = _messages.StringField(9, repeated=True)
+  perVersionInfo = _messages.MessageField('PerIosVersionInfo', 5, repeated=True)
+  screenDensity = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  screenX = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  screenY = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  supportedVersionIds = _messages.StringField(9, repeated=True)
+  tags = _messages.StringField(10, repeated=True)
 
 
 class IosRuntimeConfiguration(_messages.Message):
@@ -975,10 +979,11 @@ class ManualSharding(_messages.Message):
 
   Fields:
     testTargetsForShard: Required. Group of packages, classes, and/or test
-      methods to be run for each shard. When any physical devices are
-      selected, the number of test_targets_for_shard must be >= 1 and <= 50.
-      When no physical devices are selected, the number must be >= 1 and <=
-      500.
+      methods to be run for each manually-created shard. You must specify at
+      least one shard if this field is present. When you select one or more
+      physical devices, the number of repeated test_targets_for_shard must be
+      <= 50. When you select one or more ARM virtual devices, it must be <=
+      100. When you select only x86 virtual devices, it must be <= 500.
   """
 
   testTargetsForShard = _messages.MessageField('TestTargetsForShard', 1, repeated=True)
@@ -1035,6 +1040,108 @@ class Orientation(_messages.Message):
   id = _messages.StringField(1)
   name = _messages.StringField(2)
   tags = _messages.StringField(3, repeated=True)
+
+
+class PerAndroidVersionInfo(_messages.Message):
+  r"""A version-specific information of an Android model.
+
+  Enums:
+    DeviceCapacityValueValuesEnum: A static capacity of an Android version.
+
+  Fields:
+    deviceCapacity: A static capacity of an Android version.
+    versionId: An Android version.
+  """
+
+  class DeviceCapacityValueValuesEnum(_messages.Enum):
+    r"""A static capacity of an Android version.
+
+    Values:
+      DEVICE_CAPACITY_UNSPECIFIED: The value of device capacity is unknown or
+        unset.
+      DEVICE_CAPACITY_HIGH: Devices that are high in capacity (The lab has a
+        large number of these devices). These devices are generally suggested
+        for running a large number of simultaneous tests (e.g. more than 100
+        tests). Please note that high capacity devices do not guarantee short
+        wait times due to several factors: 1. Traffic (how heavily they are
+        used at any given moment) 2. High capacity devices are prioritized for
+        certain usages, which may cause user tests to be slower than selecting
+        other similar device types.
+      DEVICE_CAPACITY_MEDIUM: Devices that are medium in capacity (The lab has
+        a decent number of these devices, though not as many as high capacity
+        devices). These devices are suitable for fewer test runs (e.g. fewer
+        than 100 tests) and only for low shard counts (e.g. less than 10
+        shards).
+      DEVICE_CAPACITY_LOW: Devices that are low in capacity (The lab has a
+        small number of these devices). These devices may be used if users
+        need to test on this specific device model and version. Please note
+        that due to low capacity, the tests may take much longer to finish,
+        especially if a large number of tests are invoked at once. These
+        devices are not suitable for test sharding.
+      DEVICE_CAPACITY_NONE: Devices that are completely missing from the lab.
+        These devices are unavailable either temporarily or permanently and
+        should not be requested. If the device is also marked as deprecated,
+        this state is very likely permanent.
+    """
+    DEVICE_CAPACITY_UNSPECIFIED = 0
+    DEVICE_CAPACITY_HIGH = 1
+    DEVICE_CAPACITY_MEDIUM = 2
+    DEVICE_CAPACITY_LOW = 3
+    DEVICE_CAPACITY_NONE = 4
+
+  deviceCapacity = _messages.EnumField('DeviceCapacityValueValuesEnum', 1)
+  versionId = _messages.StringField(2)
+
+
+class PerIosVersionInfo(_messages.Message):
+  r"""A version-specific information of an iOS model.
+
+  Enums:
+    DeviceCapacityValueValuesEnum: A static capacity of an iOS version.
+
+  Fields:
+    deviceCapacity: A static capacity of an iOS version.
+    versionId: An iOS version.
+  """
+
+  class DeviceCapacityValueValuesEnum(_messages.Enum):
+    r"""A static capacity of an iOS version.
+
+    Values:
+      DEVICE_CAPACITY_UNSPECIFIED: The value of device capacity is unknown or
+        unset.
+      DEVICE_CAPACITY_HIGH: Devices that are high in capacity (The lab has a
+        large number of these devices). These devices are generally suggested
+        for running a large number of simultaneous tests (e.g. more than 100
+        tests). Please note that high capacity devices do not guarantee short
+        wait times due to several factors: 1. Traffic (how heavily they are
+        used at any given moment) 2. High capacity devices are prioritized for
+        certain usages, which may cause user tests to be slower than selecting
+        other similar device types.
+      DEVICE_CAPACITY_MEDIUM: Devices that are medium in capacity (The lab has
+        a decent number of these devices, though not as many as high capacity
+        devices). These devices are suitable for fewer test runs (e.g. fewer
+        than 100 tests) and only for low shard counts (e.g. less than 10
+        shards).
+      DEVICE_CAPACITY_LOW: Devices that are low in capacity (The lab has a
+        small number of these devices). These devices may be used if users
+        need to test on this specific device model and version. Please note
+        that due to low capacity, the tests may take much longer to finish,
+        especially if a large number of tests are invoked at once. These
+        devices are not suitable for test sharding.
+      DEVICE_CAPACITY_NONE: Devices that are completely missing from the lab.
+        These devices are unavailable either temporarily or permanently and
+        should not be requested. If the device is also marked as deprecated,
+        this state is very likely permanent.
+    """
+    DEVICE_CAPACITY_UNSPECIFIED = 0
+    DEVICE_CAPACITY_HIGH = 1
+    DEVICE_CAPACITY_MEDIUM = 2
+    DEVICE_CAPACITY_LOW = 3
+    DEVICE_CAPACITY_NONE = 4
+
+  deviceCapacity = _messages.EnumField('DeviceCapacityValueValuesEnum', 1)
+  versionId = _messages.StringField(2)
 
 
 class ProvidedSoftwareCatalog(_messages.Message):
@@ -1857,16 +1964,20 @@ class TrafficRule(_messages.Message):
 
 class UniformSharding(_messages.Message):
   r"""Uniformly shards test cases given a total number of shards. For
-  Instrumentation test, it will be translated to "-e numShard" "-e shardIndex"
-  AndroidJUnitRunner arguments. Based on the sharding mechanism
-  AndroidJUnitRunner uses, there is no guarantee that test cases will be
-  distributed uniformly across all shards. With uniform sharding enabled,
-  specifying these sharding arguments via environment_variables is invalid.
+  instrumentation tests, it will be translated to "-e numShard" and "-e
+  shardIndex" AndroidJUnitRunner arguments. With uniform sharding enabled,
+  specifying either of these sharding arguments via `environment_variables` is
+  invalid. Based on the sharding mechanism AndroidJUnitRunner uses, there is
+  no guarantee that test cases will be distributed uniformly across all
+  shards.
 
   Fields:
-    numShards: Required. Total number of shards. When any physical devices are
-      selected, the number must be >= 1 and <= 50. When no physical devices
-      are selected, the number must be >= 1 and <= 500.
+    numShards: Required. The total number of shards to create. This must
+      always be a positive number that is no greater than the total number of
+      test cases. When you select one or more physical devices, the number of
+      shards must be <= 50. When you select one or more ARM virtual devices,
+      it must be <= 100. When you select only x86 virtual devices, it must be
+      <= 500.
   """
 
   numShards = _messages.IntegerField(1, variant=_messages.Variant.INT32)

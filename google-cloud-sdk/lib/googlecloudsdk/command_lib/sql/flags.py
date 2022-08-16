@@ -1374,5 +1374,4 @@ def AddDeletionProtection(parser):
   parser.add_argument(
       '--deletion-protection',
       action=arg_parsers.StoreTrueFalseAction,
-      hidden=True,
       help=help_text)

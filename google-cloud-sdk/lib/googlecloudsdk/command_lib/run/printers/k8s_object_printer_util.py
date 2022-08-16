@@ -82,17 +82,25 @@ def BuildHeader(record):
 
 
 def GetCloudSqlInstances(record):
-  instances = record.annotations.get(container_resource.CLOUDSQL_ANNOTATION, '')
+  """Returns the value of the cloudsql-instances.
+
+  Args:
+    record: A dictionary-like object containing the CLOUDSQL_ANNOTATION.
+  """
+  instances = record.get(container_resource.CLOUDSQL_ANNOTATION, '')
   return instances.replace(',', ', ')
 
 
 def GetVpcConnector(record):
+  """Returns the values of the vpc-access-connector and vpc-access-egress.
+
+  Args:
+    record: A dictionary-like object containing the VPC_ACCESS_ANNOTATION and
+    EGRESS_SETTINGS_ANNOTATION keys.
+  """
   return cp.Labeled([
-      ('Name',
-       record.annotations.get(container_resource.VPC_ACCESS_ANNOTATION, '')),
-      ('Egress',
-       record.annotations.get(container_resource.EGRESS_SETTINGS_ANNOTATION,
-                              ''))
+      ('Name', record.get(container_resource.VPC_ACCESS_ANNOTATION, '')),
+      ('Egress', record.get(container_resource.EGRESS_SETTINGS_ANNOTATION, ''))
   ])
 
 

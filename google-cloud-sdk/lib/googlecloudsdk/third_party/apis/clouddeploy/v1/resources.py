@@ -75,6 +75,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DELIVERYPIPELINES_RELEASES_ROLLOUTS_JOBRUNS = (
+      'projects.locations.deliveryPipelines.releases.rollouts.jobRuns',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/'
+              'rollouts/{rolloutsId}/jobRuns/{jobRunsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

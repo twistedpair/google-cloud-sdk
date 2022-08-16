@@ -1245,6 +1245,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.beyondcorp = self._Add('beyondcorp', hidden=True)
     self.securedlandingzone = self._Add(
         'securedlandingzone', hidden=True, command='gcloud scc slz-overwatch')
+    self.securesourcemanager = self._Add('securesourcemanager', hidden=True)
 
   def EndpointValidator(self, value):
     """Checks to see if the endpoint override string is valid."""

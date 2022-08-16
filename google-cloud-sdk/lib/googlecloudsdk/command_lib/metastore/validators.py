@@ -22,7 +22,11 @@ import re
 from googlecloudsdk.calliope import exceptions
 
 STRING_MAX_LENGTH = 1000
-METASTORE_TYPE_DICT = {'dpms': 'DATAPROC_METASTORE', 'dataplex': 'DATAPLEX'}
+METASTORE_TYPE_DICT = {
+    'dpms': 'DATAPROC_METASTORE',
+    'dataplex': 'DATAPLEX',
+    'bigquery': 'BIGQUERY'
+}
 METASTORE_RESOURCE_PATH_DICT = {'dpms': 'services', 'dataplex': 'lakes'}
 
 
@@ -182,19 +186,23 @@ def _GenerateShortOrLongBackendNames(metastore_type_and_name):
     BadArgumentException: When the input backend(s) are invalid
   """
 
-  generated_name = ''
-  long_name_regex = r'^projects\/.*[^\/]\/locations\/.[^\/]*\/(' + _GetMetastoreTypeFromDict(
-      METASTORE_RESOURCE_PATH_DICT) + r')\/.[^\/]*$'
+  if metastore_type_and_name[0].lower() == 'bigquery':
+    long_name_regex = r'^projects\/.*[^\/]'
+  else:
+    long_name_regex = r'^projects\/.*[^\/]\/locations\/.[^\/]*\/(' + _GetMetastoreTypeFromDict(
+        METASTORE_RESOURCE_PATH_DICT) + r')\/.[^\/]*$'
   if '/' in metastore_type_and_name[1]:
     if re.search(long_name_regex, metastore_type_and_name[1]):
-      generated_name = metastore_type_and_name[1]
+      return metastore_type_and_name[1]
     else:
       raise exceptions.BadArgumentException('--backends',
                                             'Invalid backends format')
   else:
-    generated_name = '{0}/' + METASTORE_RESOURCE_PATH_DICT[
-        metastore_type_and_name[0]] + '/' + metastore_type_and_name[1]
-  return generated_name
+    if metastore_type_and_name[0].lower() == 'bigquery':
+      return 'projects/' + metastore_type_and_name[1]
+    else:
+      return '{0}/' + METASTORE_RESOURCE_PATH_DICT[
+          metastore_type_and_name[0]] + '/' + metastore_type_and_name[1]
 
 
 def ValidateBackendsAndReturnMetastoreDict(backends):

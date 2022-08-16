@@ -36,16 +36,33 @@ class ContainerAnalysisMetadata:
     self.build = BuildSummary()
     self.provenance = ProvenanceSummary()
     self.package = PackageSummary()
+    self.attestation = AttestationSummary()
+    self.upgrade = UpgradeSummary()
+    self.compliance = ComplianceSummary()
+    self.dsse_attestation = DsseAttestaionSummary()
 
   def AddOccurrence(self, occ, include_build=True):
-    """Adds occurrences retrieved from containeranalysis API."""
+    """Adds occurrences retrieved from containeranalysis API.
+
+    Generally we have a 1-1 correspondence between type and summary it's added
+    to. The exceptions (due to backwards compatibility issues) are:
+    BUILD: If you pass in --show-provenance, there will be a provenance
+    section (for intoto builds) but no build section. If you pass in
+    --show-all-metadata or --show-build-details, there will be a provenance
+    section (for intoto builds) and a builds section (for every build). That
+    does mean an occurrence may be in both provenance_summary and build_summary.
+    DSSE_ATTESTATION: We always return it in both the DSSE_ATTESTATION section
+    and the provenance section.
+
+    Args:
+      occ: the occurrence retrieved from the API.
+      include_build: whether build-kind occurrences should be added to build.
+    """
     messages = ca_requests.GetMessages()
     if occ.kind == messages.Occurrence.KindValueValuesEnum.VULNERABILITY:
       self.vulnerability.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.IMAGE:
       self.image.AddOccurrence(occ)
-    elif occ.kind == messages.Occurrence.KindValueValuesEnum.BUILD and occ.build and occ.build.provenance and include_build:
-      self.build.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.DEPLOYMENT:
       self.deployment.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.DISCOVERY:
@@ -56,6 +73,20 @@ class ContainerAnalysisMetadata:
       self.provenance.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.PACKAGE:
       self.package.AddOccurrence(occ)
+    elif occ.kind == messages.Occurrence.KindValueValuesEnum.ATTESTATION:
+      self.attestation.AddOccurrence(occ)
+    elif occ.kind == messages.Occurrence.KindValueValuesEnum.UPGRADE:
+      self.upgrade.AddOccurrence(occ)
+    elif occ.kind == messages.Occurrence.KindValueValuesEnum.COMPLIANCE:
+      self.compliance.AddOccurrence(occ)
+    # DSSEAttestation should also have its own section, even if it was already
+    # added to the provenance section, as a user can make a non-provenance dsse.
+    if occ.kind == messages.Occurrence.KindValueValuesEnum.DSSE_ATTESTATION:
+      self.dsse_attestation.AddOccurrence(occ)
+    # BUILD should also have its own section, even if it was already
+    # added to the provenance section.
+    if occ.kind == messages.Occurrence.KindValueValuesEnum.BUILD and include_build:
+      self.build.AddOccurrence(occ)
 
   def ImagesListView(self):
     """Returns a dictionary representing the metadata.
@@ -73,6 +104,14 @@ class ContainerAnalysisMetadata:
       view['BUILD'] = self.build.build_details
     if self.package.packages:
       view['PACKAGE'] = self.package.packages
+    if self.attestation.attestations:
+      view['ATTESTATION'] = self.attestation.attestations
+    if self.upgrade.upgrades:
+      view['UPGRADE'] = self.upgrade.upgrades
+    if self.compliance.compliances:
+      view['COMPLIANCE'] = self.compliance.compliances
+    if self.dsse_attestation.dsse_attestations:
+      view['DSSE_ATTESTATION'] = self.dsse_attestation.dsse_attestations
     view.update(self.vulnerability.ImagesListView())
     return view
 
@@ -97,6 +136,14 @@ class ContainerAnalysisMetadata:
       view['provenance_summary'] = self.provenance
     if self.package.packages:
       view['package_summary'] = self.package
+    if self.attestation.attestations:
+      view['attestation_summary'] = self.attestation
+    if self.upgrade.upgrades:
+      view['upgrade_summary'] = self.upgrade
+    if self.compliance.compliances:
+      view['compliance_summary'] = self.compliance
+    if self.dsse_attestation.dsse_attestations:
+      view['dsse_attestation_summary'] = self.dsse_attestation
     return view
 
 
@@ -215,6 +262,46 @@ class PackageSummary:
 
   def AddOccurrence(self, occ):
     self.packages.append(occ)
+
+
+class AttestationSummary:
+  """AttestationSummary holds image attestation information."""
+
+  def __init__(self):
+    self.attestations = []
+
+  def AddOccurrence(self, occ):
+    self.attestations.append(occ)
+
+
+class UpgradeSummary:
+  """UpgradeSummary holds image upgrade information."""
+
+  def __init__(self):
+    self.upgrades = []
+
+  def AddOccurrence(self, occ):
+    self.upgrades.append(occ)
+
+
+class ComplianceSummary:
+  """ComplianceSummary holds image compliance information."""
+
+  def __init__(self):
+    self.compliances = []
+
+  def AddOccurrence(self, occ):
+    self.compliances.append(occ)
+
+
+class DsseAttestaionSummary:
+  """DsseAttestaionSummary holds image dsse_attestation information."""
+
+  def __init__(self):
+    self.dsse_attestations = []
+
+  def AddOccurrence(self, occ):
+    self.dsse_attestations.append(occ)
 
 
 def GetContainerAnalysisMetadata(docker_version, args):

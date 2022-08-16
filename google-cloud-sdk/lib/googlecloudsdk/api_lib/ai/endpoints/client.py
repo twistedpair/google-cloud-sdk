@@ -99,6 +99,7 @@ class EndpointsClient(object):
              description=None,
              network=None,
              endpoint_id=None,
+             encryption_kms_key_name=None,
              request_response_logging_table=None,
              request_response_logging_rate=None):
     """Creates a new endpoint using v1 API.
@@ -110,6 +111,8 @@ class EndpointsClient(object):
       description: str or None, the description of the new endpoint.
       network: str, the full name of the Google Compute Engine network.
       endpoint_id: str or None, the id of the new endpoint.
+      encryption_kms_key_name: str or None, the Cloud KMS resource identifier of
+      the customer managed encryption key used to protect a resource.
       request_response_logging_table: str or None, the BigQuery table uri for
         request-response logging.
       request_response_logging_rate: float or None, the sampling rate for
@@ -118,11 +121,17 @@ class EndpointsClient(object):
     Returns:
       A long-running operation for Create.
     """
+    encryption_spec = None
+    if encryption_kms_key_name:
+      encryption_spec = self.messages.GoogleCloudAiplatformV1EncryptionSpec(
+          kmsKeyName=encryption_kms_key_name)
+
     endpoint = api_util.GetMessage('Endpoint', constants.GA_VERSION)(
         displayName=display_name,
         description=description,
         labels=labels,
-        network=network)
+        network=network,
+        encryptionSpec=encryption_spec)
     if request_response_logging_table is not None:
       endpoint.predictRequestResponseLoggingConfig = api_util.GetMessage(
           'PredictRequestResponseLoggingConfig', constants.GA_VERSION)(
@@ -145,6 +154,7 @@ class EndpointsClient(object):
                  description=None,
                  network=None,
                  endpoint_id=None,
+                 encryption_kms_key_name=None,
                  request_response_logging_table=None,
                  request_response_logging_rate=None):
     """Creates a new endpoint using v1beta1 API.
@@ -156,6 +166,8 @@ class EndpointsClient(object):
       description: str or None, the description of the new endpoint.
       network: str, the full name of the Google Compute Engine network.
       endpoint_id: str or None, the id of the new endpoint.
+      encryption_kms_key_name: str or None, the Cloud KMS resource identifier of
+      the customer managed encryption key used to protect a resource.
       request_response_logging_table: str or None, the BigQuery table uri for
         request-response logging.
       request_response_logging_rate: float or None, the sampling rate for
@@ -164,11 +176,17 @@ class EndpointsClient(object):
     Returns:
       A long-running operation for Create.
     """
+    encryption_spec = None
+    if encryption_kms_key_name:
+      encryption_spec = self.messages.GoogleCloudAiplatformV1beta1EncryptionSpec(
+          kmsKeyName=encryption_kms_key_name)
+
     endpoint = api_util.GetMessage('Endpoint', constants.BETA_VERSION)(
         displayName=display_name,
         description=description,
         labels=labels,
-        network=network)
+        network=network,
+        encryptionSpec=encryption_spec)
     if request_response_logging_table is not None:
       endpoint.predictRequestResponseLoggingConfig = api_util.GetMessage(
           'PredictRequestResponseLoggingConfig', constants.BETA_VERSION)(
@@ -480,6 +498,7 @@ class EndpointsClient(object):
                   accelerator_dict=None,
                   min_replica_count=None,
                   max_replica_count=None,
+                  autoscaling_metric_specs=None,
                   enable_access_logging=False,
                   disable_container_logging=False,
                   service_account=None,
@@ -499,6 +518,9 @@ class EndpointsClient(object):
         deployed model will be always deployed on.
       max_replica_count: int or None, the maximum number of replicas the
         deployed model may be deployed on.
+      autoscaling_metric_specs: dict or None, the metric specification that
+        defines the target resource utilization for calculating the desired
+        replica count.
       enable_access_logging: bool, whether or not enable access logs.
       disable_container_logging: bool, whether or not disable container logging.
       service_account: str or None, the service account that the deployed model
@@ -531,6 +553,15 @@ class EndpointsClient(object):
       dedicated.minReplicaCount = min_replica_count or 1
       if max_replica_count is not None:
         dedicated.maxReplicaCount = max_replica_count
+
+      if autoscaling_metric_specs is not None:
+        autoscaling_metric_specs_list = []
+        for name, target in sorted(autoscaling_metric_specs.items()):
+          autoscaling_metric_specs_list.append(
+              self.messages.GoogleCloudAiplatformV1AutoscalingMetricSpec(
+                  metricName=constants.OP_AUTOSCALING_METRIC_NAME_MAPPER[name],
+                  target=target))
+        dedicated.autoscalingMetricSpecs = autoscaling_metric_specs_list
 
       deployed_model = self.messages.GoogleCloudAiplatformV1DeployedModel(
           dedicatedResources=dedicated,

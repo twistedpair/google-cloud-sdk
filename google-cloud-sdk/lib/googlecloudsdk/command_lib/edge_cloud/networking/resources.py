@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Utils for Distributed Cloud Edge Network commands."""
 from __future__ import absolute_import
 from __future__ import division
@@ -70,6 +69,32 @@ def SetResourcesPathForRouter(ref, args, request):
       zonesId=ref.zonesId,
       networksId=args.network)
   request.router.network = network.RelativeName()
+  return request
+
+
+def SetResourcesPathForRoute(ref, args, request):
+  """Sets the route.network field with a relative resource path.
+
+  Args:
+    ref: reference to the route object.
+    args: command line arguments.
+    request: API request to be issued
+
+  Returns:
+    modified request
+  """
+
+  # Skips if full path of the network resource is provided.
+  if 'projects/' in args.network:
+    return request
+
+  network = resources.REGISTRY.Create(
+      'edgenetwork.projects.locations.zones.networks',
+      projectsId=ref.projectsId,
+      locationsId=ref.locationsId,
+      zonesId=ref.zonesId,
+      networksId=args.network)
+  request.route.network = network.RelativeName()
   return request
 
 

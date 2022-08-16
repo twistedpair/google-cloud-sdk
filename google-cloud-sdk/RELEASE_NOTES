@@ -5,6 +5,87 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 398.0.0 (2022-08-16)
+
+### AI
+
+* Promoted `--autoscaling-metric-specs` flag of
+  `gcloud ai endpoints deploy-model` to GA.
+* Added `--encryption-kms-key-name` flag to `gcloud ai endpoints create` and
+  `gcloud beta ai endpoints create`.
+
+### Artifact Registry
+
+*   Updated `gcloud artifacts docker images describe` and `gcloud artifacts
+    docker images list` to return occurrences of any Grafeas kind.
+* Added `gcloud artifacts repositories set-cleanup-policy` to set a cleanup policy on a repository.
+* Added `gcloud artifacts repositories list-cleanup-policy` to list cleanup policies on a repository.
+* Added `gcloud artifacts repositories delete-cleanup-policy` to delete cleanup policies on a repository.
+
+### Cloud DNS
+
+*   Added support for the ALIAS record set type to beta. ALIAS record sets can
+    be created/modified using `--type` flag in `gcloud beta dns record-sets`
+    command group.
+
+### Cloud Dataproc
+
+*   Fixed issue where `gcloud dataproc clusters
+    enable-personal-auth-session-session` did not successfully inject
+    credentials.
+
+### Cloud Deploy
+
+* Added support for absolute paths for "`--skaffold-file` flag of `gcloud deploy releases create` commmand".
+
+### Cloud Memorystore
+
+* Promoted `--customer-managed-key` flags of `gcloud redis instances create` to GA.
+
+### Cloud Run
+
+* Promoted `--cpu-boost` flag to beta.
+
+### Cloud SQL
+
+*   Added `--deletion-protection` flag to `gcloud sql instances create` and `gcloud sql instances patch` in alpha, beta and GA to provide Cloud SQL instances with protection against accidental deletion.
+
+### Cloud Spanner
+
+* Updated default timeout for `gcloud spanner databases execute-sql` to 10
+  minutes.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.12.
+
+### Compute Engine
+
+* Deprecated `--load-balancing-scheme`, `--network`, `--subnet`, and
+  `--subnet-region` arguments of `gcloud compute forwarding-rules
+  set-target`.
+* Promoted `--resource-policies` flag for `glcloud compute reservations create`to beta.
+* Promoted `--region` and `--global` flags for `gcloud compute url-maps invalidate-cdn-cache` and `gcloud compute url-maps list-cdn-cache-invalidations` to GA.
+* Added region information to `gcloud compute health-checks list` output.
+* Deprecated `--no-serve-while-stale` argument of `gcloud compute [backend-services|backend-buckets] [create|update]`.
+* Promoted `--architecture` flag of `gcloud compute instances create` and `gcloud compute instanceTemplates create` to GA.
+
+### Eventarc
+
+*   Updated WARNING text for trigger creation from 10 minutes to 2 minutes.
+
+### Network Services
+
+* Promoted `gcloud network-services gateways` to GA.
+ * Promoted `gcloud network-services meshes` to GA.
+ * Promoted `gcloud network-services tcp-routes` to GA.
+ * Promoted `gcloud network-services grpc-routes` to GA.
+ * Promoted `gcloud network-services http-routes` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 397.0.0 (2022-08-09)
 
 ### Breaking Changes

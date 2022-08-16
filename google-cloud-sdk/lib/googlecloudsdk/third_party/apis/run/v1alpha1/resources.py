@@ -41,16 +41,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  NAMESPACES_JOBS = (
-      'namespaces.jobs',
-      '{+name}',
-      {
-          '':
-              'namespaces/{namespacesId}/jobs/{jobsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',

@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 
 import argparse
 
+from googlecloudsdk.command_lib.container.fleet import resources
 from googlecloudsdk.command_lib.container.fleet.features import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.console import console_io
@@ -26,6 +27,9 @@ from googlecloudsdk.core.console import console_io
 
 def select_memberships(args):
   """Returns a list of memberships to which to apply the command, given the arguments.
+
+  This will be deleted and replaced with select_memberships_full when
+  regionalization is ready.
 
   Args:
     args: object containing arguments passed as flags with the command
@@ -51,6 +55,38 @@ def select_memberships(args):
   if not memberships:
     raise exceptions.Error('A membership is required for this command.')
 
+  return memberships
+
+
+def select_memberships_full(args):
+  """Returns a list of memberships to which to apply the command, given the arguments.
+
+  Args:
+    args: object containing arguments passed as flags with the command
+
+  Returns:
+    memberships: A list of membership name strings
+  """
+  memberships = []
+  all_memberships, _ = base.ListMembershipsFull()
+
+  if args.all_memberships:
+    memberships = all_memberships
+  elif args.memberships:
+    memberships = resources.PluralMembershipsResourceNames(args)
+  for membership in memberships:
+    if membership not in all_memberships:
+      raise exceptions.Error('Membership {} not found.'.format(membership))
+  else:
+    membership = resources.PromptForMembership()
+    if membership:
+      memberships.append(membership)
+
+  if not memberships:
+    raise exceptions.Error('A membership is required for this command.')
+
+  if len(resources.GetMembershipProjects(memberships)) > 1:
+    raise base.CrossProjectError(resources.GetMembershipProjects(memberships))
   return memberships
 
 
@@ -117,6 +153,11 @@ def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
         args.monitoring.split(','), messages)
   if args.no_monitoring is not None:
     poco_hub_config.monitoring = build_poco_monitoring_config([], messages)
+  if hasattr(args, 'suspend') and args.suspend is not None:
+    if args.suspend:
+      poco_hub_config.installSpec = messages.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_SUSPENDED
+    else:
+      poco_hub_config.installSpec = messages.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_ENABLED
 
 
 def build_poco_monitoring_config(backends_list, messages):
@@ -153,16 +194,17 @@ class BooleanOptionalAction(argparse.Action):
   whichever comes first.
   """
 
-  def __init__(self,
-               option_strings,
-               dest,
-               default=None,
-               type=None,  # pylint: disable=redefined-builtin
-               choices=None,
-               required=False,
-               help=None,  # pylint: disable=redefined-builtin
-               metavar=None,
-               const=None):
+  def __init__(
+      self,
+      option_strings,
+      dest,
+      default=None,
+      type=None,  # pylint: disable=redefined-builtin
+      choices=None,
+      required=False,
+      help=None,  # pylint: disable=redefined-builtin
+      metavar=None,
+      const=None):
 
     _option_strings = []  # pylint: disable=invalid-name
     for option_string in option_strings:

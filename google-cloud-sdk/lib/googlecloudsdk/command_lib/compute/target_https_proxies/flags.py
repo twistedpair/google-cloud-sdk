@@ -31,17 +31,8 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-class TargetHttpsProxiesCompleter(compute_completers.ListCommandCompleter):
-
-  def __init__(self, **kwargs):
-    super(TargetHttpsProxiesCompleter, self).__init__(
-        collection='compute.targetHttpsProxies',
-        list_command='compute target-https-proxies list --uri',
-        **kwargs)
-
-
-class GlobalTargetHttpsProxiesCompleter(
-    compute_completers.ListCommandCompleter):
+class GlobalTargetHttpsProxiesCompleter(compute_completers.ListCommandCompleter
+                                       ):
 
   def __init__(self, **kwargs):
     super(GlobalTargetHttpsProxiesCompleter, self).__init__(
@@ -50,8 +41,8 @@ class GlobalTargetHttpsProxiesCompleter(
         **kwargs)
 
 
-class RegionTargetHttpsProxiesCompleter(
-    compute_completers.ListCommandCompleter):
+class RegionTargetHttpsProxiesCompleter(compute_completers.ListCommandCompleter
+                                       ):
 
   def __init__(self, **kwargs):
     super(RegionTargetHttpsProxiesCompleter, self).__init__(
@@ -60,10 +51,10 @@ class RegionTargetHttpsProxiesCompleter(
         **kwargs)
 
 
-class TargetHttpsProxiesCompleterAlpha(completers.MultiResourceCompleter):
+class TargetHttpsProxiesCompleter(completers.MultiResourceCompleter):
 
   def __init__(self, **kwargs):
-    super(TargetHttpsProxiesCompleterAlpha, self).__init__(
+    super(TargetHttpsProxiesCompleter, self).__init__(
         completers=[
             GlobalTargetHttpsProxiesCompleter, RegionTargetHttpsProxiesCompleter
         ],
@@ -84,18 +75,13 @@ def AddProxyBind(parser, default):
       """)
 
 
-def TargetHttpsProxyArgument(required=True,
-                             plural=False,
-                             include_l7_internal_load_balancing=False):
+def TargetHttpsProxyArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='target HTTPS proxy',
-      completer=TargetHttpsProxiesCompleterAlpha
-      if include_l7_internal_load_balancing else TargetHttpsProxiesCompleter,
+      completer=TargetHttpsProxiesCompleter,
       plural=plural,
       custom_plural='target HTTPS proxies',
       required=required,
       global_collection='compute.targetHttpsProxies',
-      regional_collection='compute.regionTargetHttpsProxies'
-      if include_l7_internal_load_balancing else None,
-      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
-      if include_l7_internal_load_balancing else None)
+      regional_collection='compute.regionTargetHttpsProxies',
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)

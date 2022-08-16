@@ -142,7 +142,8 @@ def _GetClientInstance(api_name,
                        api_version,
                        no_http=False,
                        http_client=None,
-                       check_response_func=None):
+                       check_response_func=None,
+                       http_timeout_sec=None):
   """Returns an instance of the API client specified in the args.
 
   Args:
@@ -152,6 +153,7 @@ def _GetClientInstance(api_name,
     http_client: bring your own http client to use.
       Incompatible with no_http=True.
     check_response_func: error handling callback to give to apitools.
+    http_timeout_sec: int, seconds of http timeout to set, defaults if None.
 
   Returns:
     base_api.BaseApiClient, An instance of the specified API client.
@@ -166,7 +168,8 @@ def _GetClientInstance(api_name,
     # which is not needed in all cases.
     from googlecloudsdk.core.credentials import transports
     http_client = transports.GetApitoolsTransport(
-        response_encoding=transport.ENCODING)
+        response_encoding=transport.ENCODING,
+        timeout=http_timeout_sec if http_timeout_sec else 'unset')
 
   client_class = _GetClientClass(api_name, api_version)
   client_instance = client_class(

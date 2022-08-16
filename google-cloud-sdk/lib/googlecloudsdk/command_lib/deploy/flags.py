@@ -187,17 +187,25 @@ def AddSkaffoldVersion(parser):
 def AddSkaffoldFileFlag():
   """Add --skaffold-file flag."""
   help_text = textwrap.dedent("""\
-  Path of the skaffold file relative to the source directory.
+  Path of the skaffold file absolute or relative to the source directory.
 
   Examples:
 
-  Use Skaffold file:
-
+  Use Skaffold file with relative path:
+  The current working directory is expected to be some part of the skaffold path (e.g. the current working directory could be /home/user)
 
     $ {command} --source=/home/user/source --skaffold-file=config/skaffold.yaml
 
   The skaffold file absolute file path is expected to be:
   /home/user/source/config/skaffold.yaml
+
+
+  Use Skaffold file with absolute path and with or without source argument:
+
+
+    $ {command} --source=/home/user/source --skaffold-file=/home/user/source/config/skaffold.yaml
+
+    $ {command} --skaffold-file=/home/user/source/config/skaffold.yaml
 
   """)
   return base.Argument('--skaffold-file', help=help_text)

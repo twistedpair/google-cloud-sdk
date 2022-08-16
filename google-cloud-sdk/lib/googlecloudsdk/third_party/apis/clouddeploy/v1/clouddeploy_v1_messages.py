@@ -130,8 +130,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -178,6 +184,35 @@ class BuildArtifact(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class CloudRunLocation(_messages.Message):
+  r"""Information specifying where to deploy a Cloud Run Service.
+
+  Fields:
+    location: Required. The location where the Cloud Run Service should be
+      located. Format is `projects/{project}/locations/{location}`.
+  """
+
+  location = _messages.StringField(1)
+
+
+class CloudRunMetadata(_messages.Message):
+  r"""CloudRunMetadata contains information from a Cloud Run deployment.
+
+  Fields:
+    revision: Output only. The Cloud Run Revision id associated with a
+      `Rollout`.
+    service: Output only. The name of the Cloud Run Service that is associated
+      with a `Rollout`. Format is
+      projects/{project}/locations/{location}/services/{service}.
+    serviceUrls: Output only. The Cloud Run Service urls that are associated
+      with a `Rollout`.
+  """
+
+  revision = _messages.StringField(1)
+  service = _messages.StringField(2)
+  serviceUrls = _messages.StringField(3, repeated=True)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesCreateRequest(_messages.Message):
@@ -503,6 +538,46 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsGetRequest(_m
   name = _messages.StringField(1, required=True)
 
 
+class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsGetRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsGe
+  tRequest object.
+
+  Fields:
+    name: Required. Name of the `JobRun`. Format must be projects/{project_id}
+      /locations/{location_name}/deliveryPipelines/{pipeline_name}/releases/{r
+      elease_name}/rollouts/{rollout_name}/jobRuns/{job_run_name}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsListRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsLi
+  stRequest object.
+
+  Fields:
+    filter: Optional. Filter results to be returned. See
+      https://google.aip.dev/160 for more details.
+    orderBy: Optional. Field to sort by. See
+      https://google.aip.dev/132#ordering for more details.
+    pageSize: Optional. The maximum number of `JobRun` objects to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      `JobRun` objects will be returned. The maximum value is 1000; values
+      above 1000 will be set to 1000.
+    pageToken: Optional. A page token, received from a previous `ListJobRuns`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other provided parameters match the call that provided the page token.
+    parent: Required. The `Rollout` which owns this collection of `JobRun`
+      objects.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsListRequest(_messages.Message):
   r"""A
   ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsListRequest
@@ -529,6 +604,23 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsListRequest(_
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsRetryJobRequest(_messages.Message):
+  r"""A
+  ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsRetryJobRequest
+  object.
+
+  Fields:
+    retryJobRequest: A RetryJobRequest resource to be passed as the request
+      body.
+    rollout: Required. Name of the Rollout. Format is projects/{project}/locat
+      ions/{location}/deliveryPipelines/{deliveryPipeline}/
+      releases/{release}/rollouts/{rollout}.
+  """
+
+  retryJobRequest = _messages.MessageField('RetryJobRequest', 1)
+  rollout = _messages.StringField(2, required=True)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesSetIamPolicyRequest(_messages.Message):
@@ -1066,6 +1158,67 @@ class DeliveryPipelineNotificationEvent(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
+class DeployJob(_messages.Message):
+  r"""A deploy Job."""
+
+
+class DeployJobRun(_messages.Message):
+  r"""DeployJobRun contains information specific to a deploy `JobRun`.
+
+  Enums:
+    FailureCauseValueValuesEnum: Output only. The reason the deploy failed.
+      This will always be unspecified while the deploy is in progress or if it
+      succeeded.
+
+  Fields:
+    build: Output only. The resource name of the Cloud Build `Build` object
+      that is used to deploy. Format is
+      projects/{project}/locations/{location}/builds/{build}.
+    failureCause: Output only. The reason the deploy failed. This will always
+      be unspecified while the deploy is in progress or if it succeeded.
+    failureMessage: Output only. Additional information about the deploy
+      failure, if available.
+  """
+
+  class FailureCauseValueValuesEnum(_messages.Enum):
+    r"""Output only. The reason the deploy failed. This will always be
+    unspecified while the deploy is in progress or if it succeeded.
+
+    Values:
+      FAILURE_CAUSE_UNSPECIFIED: No reason for failure is specified.
+      CLOUD_BUILD_UNAVAILABLE: Cloud Build is not available, either because it
+        is not enabled or because Cloud Deploy has insufficient permissions.
+        See [required permission](/deploy/docs/cloud-deploy-service-
+        account#required_permissions).
+      EXECUTION_FAILED: The deploy operation did not complete successfully;
+        check Cloud Build logs.
+      DEADLINE_EXCEEDED: The deploy build did not complete within the alloted
+        time.
+    """
+    FAILURE_CAUSE_UNSPECIFIED = 0
+    CLOUD_BUILD_UNAVAILABLE = 1
+    EXECUTION_FAILED = 2
+    DEADLINE_EXCEEDED = 3
+
+  build = _messages.StringField(1)
+  failureCause = _messages.EnumField('FailureCauseValueValuesEnum', 2)
+  failureMessage = _messages.StringField(3)
+
+
+class DeploymentJobs(_messages.Message):
+  r"""Deployment job composition.
+
+  Fields:
+    deployJob: Output only. The deploy Job. This is the first job run in the
+      phase.
+    verifyJob: Output only. The verify Job. Runs after a deploy if the deploy
+      succeeds.
+  """
+
+  deployJob = _messages.MessageField('Job', 1)
+  verifyJob = _messages.MessageField('Job', 2)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1110,10 +1263,12 @@ class ExecutionConfig(_messages.Message):
         unused.
       RENDER: Use for rendering.
       DEPLOY: Use for deploying and deployment hooks.
+      VERIFY: Use for deployment verification.
     """
     EXECUTION_ENVIRONMENT_USAGE_UNSPECIFIED = 0
     RENDER = 1
     DEPLOY = 2
+    VERIFY = 3
 
   artifactStorage = _messages.StringField(1)
   defaultPool = _messages.MessageField('DefaultPool', 2)
@@ -1179,6 +1334,102 @@ class GkeCluster(_messages.Message):
   internalIp = _messages.BooleanField(2)
 
 
+class Job(_messages.Message):
+  r"""Job represents an operation for a `Rollout`.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the Job.
+
+  Fields:
+    deployJob: Output only. A deploy Job.
+    id: Output only. The ID of the Job.
+    jobRun: Output only. The name of the `JobRun` responsible for the most
+      recent invocation of this Job.
+    state: Output only. The current state of the Job.
+    verifyJob: Output only. A verify Job.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the Job.
+
+    Values:
+      STATE_UNSPECIFIED: The Job has an unspecified state.
+      PENDING: The Job is waiting for an earlier Phase(s) or Job(s) to
+        complete.
+      DISABLED: The Job is disabled.
+      IN_PROGRESS: The Job is in progress.
+      SUCCEEDED: The Job succeeded.
+      FAILED: The Job failed.
+      ABORTED: The Job was aborted.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    DISABLED = 2
+    IN_PROGRESS = 3
+    SUCCEEDED = 4
+    FAILED = 5
+    ABORTED = 6
+
+  deployJob = _messages.MessageField('DeployJob', 1)
+  id = _messages.StringField(2)
+  jobRun = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  verifyJob = _messages.MessageField('VerifyJob', 5)
+
+
+class JobRun(_messages.Message):
+  r"""A `JobRun` resource in the Google Cloud Deploy API. A `JobRun` contains
+  information of a single `Rollout` job evaluation.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the `JobRun`.
+
+  Fields:
+    createTime: Output only. Time at which the `JobRun` was created.
+    deployJobRun: Output only. Information specific to a deploy `JobRun`.
+    endTime: Output only. Time at which the `JobRun` ended.
+    etag: Output only. This checksum is computed by the server based on the
+      value of other fields, and may be sent on update and delete requests to
+      ensure the client has an up-to-date value before proceeding.
+    jobId: Output only. ID of the `Rollout` job this `JobRun` corresponds to.
+    name: Optional. Name of the `JobRun`. Format is
+      projects/{project}/locations/{location}/
+      deliveryPipelines/{deliveryPipeline}/releases/{releases}/rollouts/
+      {rollouts}/jobRuns/{uuid}.
+    phaseId: Output only. ID of the `Rollout` phase this `JobRun` belongs in.
+    startTime: Output only. Time at which the `JobRun` was started.
+    state: Output only. The current state of the `JobRun`.
+    uid: Output only. Unique identifier of the `JobRun`.
+    verifyJobRun: Output only. Information specific to a verify `JobRun`.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the `JobRun`.
+
+    Values:
+      STATE_UNSPECIFIED: The `JobRun` has an unspecified state.
+      IN_PROGRESS: The `JobRun` is in progress.
+      SUCCEEDED: The `JobRun` has succeeded.
+      FAILED: The `JobRun` has failed.
+    """
+    STATE_UNSPECIFIED = 0
+    IN_PROGRESS = 1
+    SUCCEEDED = 2
+    FAILED = 3
+
+  createTime = _messages.StringField(1)
+  deployJobRun = _messages.MessageField('DeployJobRun', 2)
+  endTime = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  jobId = _messages.StringField(5)
+  name = _messages.StringField(6)
+  phaseId = _messages.StringField(7)
+  startTime = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  uid = _messages.StringField(10)
+  verifyJobRun = _messages.MessageField('VerifyJobRun', 11)
+
+
 class ListDeliveryPipelinesResponse(_messages.Message):
   r"""The response object from `ListDeliveryPipelines`.
 
@@ -1190,6 +1441,21 @@ class ListDeliveryPipelinesResponse(_messages.Message):
   """
 
   deliveryPipelines = _messages.MessageField('DeliveryPipeline', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListJobRunsResponse(_messages.Message):
+  r"""ListJobRunsResponse is the response object returned by `ListJobRuns`.
+
+  Fields:
+    jobRuns: The `JobRun` objects.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached
+  """
+
+  jobRuns = _messages.MessageField('JobRun', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -1345,6 +1611,17 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class Metadata(_messages.Message):
+  r"""Metadata surfaces information associated with a `Rollout` to the user.
+
+  Fields:
+    cloudRun: Output only. The name of the Cloud Run Service that is
+      associated with a `Rollout`.
+  """
+
+  cloudRun = _messages.MessageField('CloudRunMetadata', 1)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -1478,6 +1755,42 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class Phase(_messages.Message):
+  r"""Phase represents a collection of jobs that are logically grouped
+  together for a `Rollout`.
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the Phase.
+
+  Fields:
+    deploymentJobs: Output only. Deployment job composition.
+    id: Output only. The ID of the Phase.
+    state: Output only. Current state of the Phase.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the Phase.
+
+    Values:
+      STATE_UNSPECIFIED: The Phase has an unspecified state.
+      PENDING: The Phase is waiting for an earlier Phase(s) to complete.
+      IN_PROGRESS: The Phase is in progress.
+      SUCCEEDED: The Phase has succeeded.
+      FAILED: The Phase has failed.
+      ABORTED: The Phase was aborted.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    IN_PROGRESS = 2
+    SUCCEEDED = 3
+    FAILED = 4
+    ABORTED = 5
+
+  deploymentJobs = _messages.MessageField('DeploymentJobs', 1)
+  id = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class PipelineCondition(_messages.Message):
@@ -1874,6 +2187,22 @@ class ReleaseRenderEvent(_messages.Message):
   release = _messages.StringField(2)
 
 
+class RetryJobRequest(_messages.Message):
+  r"""RetryJobRequest is the request object used by `RetryJob`.
+
+  Fields:
+    jobId: Required. The job ID for the Job to retry.
+    phaseId: Required. The phase ID the Job to retry belongs to.
+  """
+
+  jobId = _messages.StringField(1)
+  phaseId = _messages.StringField(2)
+
+
+class RetryJobResponse(_messages.Message):
+  r"""The response object from 'RetryJob'."""
+
+
 class Rollout(_messages.Message):
   r"""A `Rollout` resource in the Google Cloud Deploy API. A `Rollout`
   contains information around a specific deployment to a `Target`.
@@ -1881,8 +2210,9 @@ class Rollout(_messages.Message):
   Enums:
     ApprovalStateValueValuesEnum: Output only. Approval state of the
       `Rollout`.
-    DeployFailureCauseValueValuesEnum: Output only. The reason this deploy
-      failed. This will always be unspecified while the deploy in progress.
+    DeployFailureCauseValueValuesEnum: Output only. The reason this rollout
+      failed. This will always be unspecified while the rollout is in
+      progress.
     StateValueValuesEnum: Output only. Current state of the `Rollout`.
 
   Messages:
@@ -1909,8 +2239,8 @@ class Rollout(_messages.Message):
     createTime: Output only. Time at which the `Rollout` was created.
     deployEndTime: Output only. Time at which the `Rollout` finished
       deploying.
-    deployFailureCause: Output only. The reason this deploy failed. This will
-      always be unspecified while the deploy in progress.
+    deployFailureCause: Output only. The reason this rollout failed. This will
+      always be unspecified while the rollout is in progress.
     deployStartTime: Output only. Time at which the `Rollout` started
       deploying.
     deployingBuild: Output only. The resource name of the Cloud Build `Build`
@@ -1922,8 +2252,8 @@ class Rollout(_messages.Message):
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
-    failureReason: Output only. Reason the build failed. Empty if the build
-      succeeded.
+    failureReason: Output only. Additional information about the rollout
+      failure, if available.
     labels: Labels are attributes that can be set and used by both the user
       and by Google Cloud Deploy. Labels must meet the following constraints:
       * Keys and values can contain only lowercase letters, numeric
@@ -1932,9 +2262,12 @@ class Rollout(_messages.Message):
       with a lowercase letter or international character. * Each resource is
       limited to a maximum of 64 labels. Both keys and values are additionally
       constrained to be <= 128 bytes.
+    metadata: Output only. Metadata contains information about the rollout.
     name: Optional. Name of the `Rollout`. Format is projects/{project}/
       locations/{location}/deliveryPipelines/{deliveryPipeline}/
       releases/{release}/rollouts/a-z{0,62}.
+    phases: Output only. The phases that represent the workflows of this
+      `Rollout`.
     state: Output only. Current state of the `Rollout`.
     targetId: Required. The ID of Target to which this `Rollout` is deploying.
     uid: Output only. Unique identifier of the `Rollout`.
@@ -1958,8 +2291,8 @@ class Rollout(_messages.Message):
     REJECTED = 4
 
   class DeployFailureCauseValueValuesEnum(_messages.Enum):
-    r"""Output only. The reason this deploy failed. This will always be
-    unspecified while the deploy in progress.
+    r"""Output only. The reason this rollout failed. This will always be
+    unspecified while the rollout is in progress.
 
     Values:
       FAILURE_CAUSE_UNSPECIFIED: No reason for failure is specified.
@@ -1972,6 +2305,8 @@ class Rollout(_messages.Message):
       DEADLINE_EXCEEDED: Deployment did not complete within the alloted time.
       RELEASE_FAILED: Release is in a failed state.
       RELEASE_ABANDONED: Release is abandoned.
+      VERIFICATION_CONFIG_NOT_FOUND: No skaffold verify configuration was
+        found.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1
@@ -1979,6 +2314,7 @@ class Rollout(_messages.Message):
     DEADLINE_EXCEEDED = 3
     RELEASE_FAILED = 4
     RELEASE_ABANDONED = 5
+    VERIFICATION_CONFIG_NOT_FOUND = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the `Rollout`.
@@ -2076,10 +2412,12 @@ class Rollout(_messages.Message):
   etag = _messages.StringField(11)
   failureReason = _messages.StringField(12)
   labels = _messages.MessageField('LabelsValue', 13)
-  name = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  targetId = _messages.StringField(16)
-  uid = _messages.StringField(17)
+  metadata = _messages.MessageField('Metadata', 14)
+  name = _messages.StringField(15)
+  phases = _messages.MessageField('Phase', 16, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  targetId = _messages.StringField(18)
+  uid = _messages.StringField(19)
 
 
 class RolloutNotificationEvent(_messages.Message):
@@ -2169,6 +2507,7 @@ class Stage(_messages.Message):
   Fields:
     profiles: Skaffold profiles to use when rendering the manifest for this
       stage's `Target`.
+    strategy: Optional. The strategy to use for a `Rollout` to this stage.
     targetId: The target_id to which this stage points. This field refers
       exclusively to the last segment of a target name. For example, this
       field would just be `my-target` (rather than
@@ -2178,7 +2517,18 @@ class Stage(_messages.Message):
   """
 
   profiles = _messages.StringField(1, repeated=True)
-  targetId = _messages.StringField(2)
+  strategy = _messages.MessageField('Strategy', 2)
+  targetId = _messages.StringField(3)
+
+
+class Standard(_messages.Message):
+  r"""Standard represents the standard deployment strategy.
+
+  Fields:
+    verify: Whether to verify a deployment.
+  """
+
+  verify = _messages.BooleanField(1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -2295,6 +2645,17 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class Strategy(_messages.Message):
+  r"""Strategy contains deployment strategy information.
+
+  Fields:
+    standard: Standard deployment strategy executes a single deploy and allows
+      verifying the deployment.
+  """
+
+  standard = _messages.MessageField('Standard', 1)
+
+
 class Target(_messages.Message):
   r"""A `Target` resource in the Google Cloud Deploy API. A `Target` defines a
   location to which a Skaffold configuration can be deployed.
@@ -2344,6 +2705,7 @@ class Target(_messages.Message):
     name: Optional. Name of the `Target`. Format is
       projects/{project}/locations/{location}/targets/a-z{0,62}.
     requireApproval: Optional. Whether or not the `Target` requires approval.
+    run: Information specifying a Cloud Run deployment target.
     targetId: Output only. Resource id of the `Target`.
     uid: Output only. Unique identifier of the `Target`.
     updateTime: Output only. Most recent time at which the `Target` was
@@ -2419,9 +2781,10 @@ class Target(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 8)
   name = _messages.StringField(9)
   requireApproval = _messages.BooleanField(10)
-  targetId = _messages.StringField(11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  run = _messages.MessageField('CloudRunLocation', 11)
+  targetId = _messages.StringField(12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class TargetArtifact(_messages.Message):
@@ -2569,6 +2932,62 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class VerifyJob(_messages.Message):
+  r"""A verify Job."""
+
+
+class VerifyJobRun(_messages.Message):
+  r"""VerifyJobRun contains information specific to a verify `JobRun`.
+
+  Enums:
+    FailureCauseValueValuesEnum: Output only. The reason the verify failed.
+      This will always be unspecified while the verify is in progress or if it
+      succeeded.
+
+  Fields:
+    artifactUri: Output only. URI of a directory containing the verify
+      artifacts. This contains the Skaffold event log.
+    build: Output only. The resource name of the Cloud Build `Build` object
+      that is used to verify. Format is
+      projects/{project}/locations/{location}/builds/{build}.
+    eventLogPath: Output only. File path of the Skaffold event log relative to
+      the artifact URI.
+    failureCause: Output only. The reason the verify failed. This will always
+      be unspecified while the verify is in progress or if it succeeded.
+    failureMessage: Output only. Additional information about the verify
+      failure, if available.
+  """
+
+  class FailureCauseValueValuesEnum(_messages.Enum):
+    r"""Output only. The reason the verify failed. This will always be
+    unspecified while the verify is in progress or if it succeeded.
+
+    Values:
+      FAILURE_CAUSE_UNSPECIFIED: No reason for failure is specified.
+      CLOUD_BUILD_UNAVAILABLE: Cloud Build is not available, either because it
+        is not enabled or because Cloud Deploy has insufficient permissions.
+        See [required permission](/deploy/docs/cloud-deploy-service-
+        account#required_permissions).
+      EXECUTION_FAILED: The verify operation did not complete successfully;
+        check Cloud Build logs.
+      DEADLINE_EXCEEDED: The verify build did not complete within the alloted
+        time.
+      VERIFICATION_CONFIG_NOT_FOUND: No Skaffold verify configuration was
+        found.
+    """
+    FAILURE_CAUSE_UNSPECIFIED = 0
+    CLOUD_BUILD_UNAVAILABLE = 1
+    EXECUTION_FAILED = 2
+    DEADLINE_EXCEEDED = 3
+    VERIFICATION_CONFIG_NOT_FOUND = 4
+
+  artifactUri = _messages.StringField(1)
+  build = _messages.StringField(2)
+  eventLogPath = _messages.StringField(3)
+  failureCause = _messages.EnumField('FailureCauseValueValuesEnum', 4)
+  failureMessage = _messages.StringField(5)
 
 
 encoding.AddCustomJsonFieldMapping(

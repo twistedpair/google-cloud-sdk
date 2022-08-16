@@ -291,6 +291,9 @@ class _BaseInstances(object):
       settings.ipConfiguration.privateNetwork = reducers.PrivateNetworkUrl(
           args.network)
 
+    if args.deletion_protection is not None:
+      settings.deletionProtectionEnabled = args.deletion_protection
+
     # BETA args.
     if _IsBetaOrNewer(release_track):
       if args.IsSpecified('storage_auto_increase_limit'):
@@ -413,6 +416,7 @@ class _BaseInstances(object):
     if _IsBetaOrNewer(release_track):
       settings.userLabels = labels_util.ParseCreateArgs(
           args, sql_messages.Settings.UserLabelsValue)
+
       if args.allocated_ip_range_name:
         if not settings.ipConfiguration:
           settings.ipConfiguration = sql_messages.IpConfiguration()
@@ -420,9 +424,6 @@ class _BaseInstances(object):
 
     # ALPHA args.
     if _IsAlpha(release_track):
-      if args.deletion_protection is not None:
-        settings.deletionProtectionEnabled = args.deletion_protection
-
       if args.time_zone is not None:
         settings.timeZone = args.time_zone
 
@@ -549,17 +550,13 @@ class _BaseInstances(object):
                                         instance.settings.userLabels)
       if labels_update.needs_update:
         settings.userLabels = labels_update.labels
+
       # TODO(b/199412671): merge the logic of assigning ip range to
       # _ConstructBaseSettingsFromArgs
       if args.allocated_ip_range_name:
         if not settings.ipConfiguration:
           settings.ipConfiguration = sql_messages.IpConfiguration()
         settings.ipConfiguration.allocatedIpRange = args.allocated_ip_range_name
-
-    # ALPHA args.
-    if _IsAlpha(release_track):
-      if args.deletion_protection is not None:
-        settings.deletionProtectionEnabled = args.deletion_protection
 
     return settings
 

@@ -126,8 +126,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -156,6 +162,10 @@ class Binding(_messages.Message):
   condition = _messages.MessageField('Expr', 1)
   members = _messages.StringField(2, repeated=True)
   role = _messages.StringField(3)
+
+
+class CancelExecutionRequest(_messages.Message):
+  r"""Request message for cancelling an execution."""
 
 
 class ConfigMapEnvSource(_messages.Message):
@@ -741,8 +751,7 @@ class Expr(_messages.Message):
 
 
 class GRPCAction(_messages.Message):
-  r"""Not supported by Cloud Run GRPCAction describes an action involving a
-  GRPC port.
+  r"""GRPCAction describes an action involving a GRPC port.
 
   Fields:
     port: Port number of the gRPC service. Number must be in the range 1 to
@@ -837,8 +846,7 @@ class GoogleRpcStatus(_messages.Message):
 
 
 class HTTPGetAction(_messages.Message):
-  r"""Not supported by Cloud Run HTTPGetAction describes an action based on
-  HTTP Get requests.
+  r"""HTTPGetAction describes an action based on HTTP Get requests.
 
   Fields:
     host: (Optional) Host name to connect to, defaults to the pod IP. You
@@ -857,8 +865,7 @@ class HTTPGetAction(_messages.Message):
 
 
 class HTTPHeader(_messages.Message):
-  r"""Not supported by Cloud Run HTTPHeader describes a custom header to be
-  used in HTTP probes
+  r"""HTTPHeader describes a custom header to be used in HTTP probes
 
   Fields:
     name: The header field name
@@ -1394,7 +1401,9 @@ class ObjectMeta(_messages.Message):
       client to request the generation of an appropriate name automatically.
       Name is primarily intended for creation idempotence and configuration
       definition. Cannot be updated. More info:
-      https://kubernetes.io/docs/user-guide/identifiers#names +optional
+      https://kubernetes.io/docs/user-guide/identifiers#names If ObjectMeta is
+      part of a namespaces.services.create request, name must contain fewer
+      than 50 characters. +optional
     namespace: Namespace defines the space within each name must be unique,
       within a Cloud Run region. In Cloud Run the namespace must be equal to
       either the project ID or project number.
@@ -2197,6 +2206,21 @@ class RunNamespacesDomainmappingsListRequest(_messages.Message):
   parent = _messages.StringField(6, required=True)
   resourceVersion = _messages.StringField(7)
   watch = _messages.BooleanField(8)
+
+
+class RunNamespacesExecutionsCancelRequest(_messages.Message):
+  r"""A RunNamespacesExecutionsCancelRequest object.
+
+  Fields:
+    cancelExecutionRequest: A CancelExecutionRequest resource to be passed as
+      the request body.
+    name: Required. The name of the execution to cancel. Replace {namespace}
+      with the project ID or number. It takes the form namespaces/{namespace}.
+      For example: namespaces/PROJECT_ID
+  """
+
+  cancelExecutionRequest = _messages.MessageField('CancelExecutionRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class RunNamespacesExecutionsDeleteRequest(_messages.Message):
@@ -3351,7 +3375,7 @@ class SecretVolumeSource(_messages.Message):
   Fields:
     defaultMode: Integer representation of mode bits to use on created files
       by default. Must be a value between 01 and 0777 (octal). If 0 or not
-      set, it will default to 0644. Directories within the path are not
+      set, it will default to 0444. Directories within the path are not
       affected by this setting. Notes * Internally, a umask of 0222 will be
       applied to any non-zero value. * This is an integer representation of
       the mode bits. So, the octal integer value should look exactly as the
@@ -3674,8 +3698,7 @@ class StatusDetails(_messages.Message):
 
 
 class TCPSocketAction(_messages.Message):
-  r"""Not supported by Cloud Run TCPSocketAction describes an action based on
-  opening a socket
+  r"""TCPSocketAction describes an action based on opening a socket
 
   Fields:
     host: (Optional) Optional: Host name to connect to, defaults to the pod

@@ -18,7 +18,21 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
+
+
+# The argument below are deprecated and will be eventually removed.
+def CreateDeprecationAction(name):
+  return actions.DeprecationAction(
+      name,
+      warn=(
+          'The `--no-serve-while-stale` option is deprecated and will be '
+          'removed in an upcoming release; use `--serve-while-stale` instead. '
+          'If you\'re currently using this argument, you should remove it from'
+          ' your workflows.'),
+      removed=False,
+      action='store_true')
 
 
 def AddCdnPolicyArgs(parser, resource_name, update_command=False):
@@ -265,8 +279,8 @@ def AddCdnPolicyArgs(parser, resource_name, update_command=False):
   if update_command:
     serve_while_stale_group.add_argument(
         '--no-serve-while-stale',
-        action='store_true',
-        help='Clears serve while stale value.')
+        help='Clears serve while stale value.',
+        action=CreateDeprecationAction('--no-serve-while-stale'))
   bypass_cache_on_request_headers_help = """\
   Bypass the cache when the specified request headers are matched - e.g.
   Pragma or Authorization headers. Up to 5 headers can be specified.

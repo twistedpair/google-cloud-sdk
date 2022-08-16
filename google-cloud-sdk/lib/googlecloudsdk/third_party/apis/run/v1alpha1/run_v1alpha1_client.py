@@ -15,7 +15,7 @@ class RunV1alpha1(base_api.BaseApiClient):
   MTLS_BASE_URL = 'https://run.mtls.googleapis.com/'
 
   _PACKAGE = 'run'
-  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+  _SCOPES = ['https://www.googleapis.com/auth/userinfo.email']
   _VERSION = 'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
@@ -40,7 +40,6 @@ class RunV1alpha1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.namespaces_domainmappings = self.NamespacesDomainmappingsService(self)
-    self.namespaces_jobs = self.NamespacesJobsService(self)
     self.namespaces = self.NamespacesService(self)
     self.projects_locations_domainmappings = self.ProjectsLocationsDomainmappingsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -188,124 +187,6 @@ class RunV1alpha1(base_api.BaseApiClient):
         request_field='domainMapping',
         request_type_name='RunNamespacesDomainmappingsReplaceDomainMappingRequest',
         response_type_name='DomainMapping',
-        supports_download=False,
-    )
-
-  class NamespacesJobsService(base_api.BaseApiService):
-    """Service class for the namespaces_jobs resource."""
-
-    _NAME = 'namespaces_jobs'
-
-    def __init__(self, client):
-      super(RunV1alpha1.NamespacesJobsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Create a job.
-
-      Args:
-        request: (RunNamespacesJobsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Job) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='apis/run.googleapis.com/v1alpha1/namespaces/{namespacesId}/jobs',
-        http_method='POST',
-        method_id='run.namespaces.jobs.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='apis/run.googleapis.com/v1alpha1/{+parent}/jobs',
-        request_field='job',
-        request_type_name='RunNamespacesJobsCreateRequest',
-        response_type_name='Job',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Delete a job.
-
-      Args:
-        request: (RunNamespacesJobsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='apis/run.googleapis.com/v1alpha1/namespaces/{namespacesId}/jobs/{jobsId}',
-        http_method='DELETE',
-        method_id='run.namespaces.jobs.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['apiVersion', 'kind', 'propagationPolicy'],
-        relative_path='apis/run.googleapis.com/v1alpha1/{+name}',
-        request_field='',
-        request_type_name='RunNamespacesJobsDeleteRequest',
-        response_type_name='Empty',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Get information about a job.
-
-      Args:
-        request: (RunNamespacesJobsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Job) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='apis/run.googleapis.com/v1alpha1/namespaces/{namespacesId}/jobs/{jobsId}',
-        http_method='GET',
-        method_id='run.namespaces.jobs.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='apis/run.googleapis.com/v1alpha1/{+name}',
-        request_field='',
-        request_type_name='RunNamespacesJobsGetRequest',
-        response_type_name='Job',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""List jobs.
-
-      Args:
-        request: (RunNamespacesJobsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListJobsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='apis/run.googleapis.com/v1alpha1/namespaces/{namespacesId}/jobs',
-        http_method='GET',
-        method_id='run.namespaces.jobs.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
-        relative_path='apis/run.googleapis.com/v1alpha1/{+parent}/jobs',
-        request_field='',
-        request_type_name='RunNamespacesJobsListRequest',
-        response_type_name='ListJobsResponse',
         supports_download=False,
     )
 

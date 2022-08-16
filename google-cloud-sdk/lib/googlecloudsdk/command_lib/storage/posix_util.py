@@ -24,6 +24,8 @@ import os
 import stat
 
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.command_lib.storage.tasks import task_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
 
@@ -263,7 +265,7 @@ def get_posix_attributes_from_file(file_path):
                          PosixMode.from_base_ten_int(mode))
 
 
-def set_posix_attributes_on_file(file_path, custom_posix_attributes):
+def _set_posix_attributes_on_file(file_path, custom_posix_attributes):
   """Sets custom POSIX attributes on file.
 
   Call "after are_file_permissions_valid" function before running this.
@@ -317,6 +319,41 @@ def set_posix_attributes_on_file(file_path, custom_posix_attributes):
 
   mode = custom_posix_attributes.mode or existing_posix_attributes.mode
   os.chmod(file_path, mode.base_ten_int)
+
+
+def set_posix_attributes_on_file_if_valid(user_request_args, task_messages,
+                                          source_resource,
+                                          destination_resource):
+  """Sets custom POSIX attributes on file if the final metadata will be valid.
+
+  Args:
+    user_request_args (user_request_args_factory._UserRequestArgs): Determines
+      if user intended to preserve file POSIX data and get system-wide POSIX.
+    task_messages (List[task.Message]): May carry preserved POSIX data to set
+      from cloud object.
+    source_resource (resource_reference.ObjectResource): Copy source.
+    destination_resource (resource_reference.FileObjectResource): Copy
+      destination.
+
+  Raises:
+    PermissionError: See _set_posix_attribute_on_file docstring.
+    ValueError: From SETTING_INVALID_POSIX_ERROR, predetermined from metadata
+      that preserving POSIX will result in corrupt file permissions.
+  """
+  if not (user_request_args and user_request_args.system_posix_data):
+    # Check if user typed "--preserve-posix" flag.
+    return
+  posix_attributes = task_util.get_first_matching_message_payload(
+      task_messages, task.Topic.API_DOWNLOAD_RESULT).posix_attributes
+  destination_path = destination_resource.storage_url.object_name
+
+  if not are_file_permissions_valid(source_resource.storage_url.url_string,
+                                    user_request_args.system_posix_data,
+                                    posix_attributes):
+    os.remove(destination_path)
+    raise SETTING_INVALID_POSIX_ERROR
+
+  _set_posix_attributes_on_file(destination_path, posix_attributes)
 
 
 def _extract_time_from_custom_metadata(url_string, key, metadata_dict):

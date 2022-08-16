@@ -397,7 +397,7 @@ def CreateRecaptchaOptionsConfig(client, args,
   return recaptcha_options_config
 
 
-def CreateRateLimitOptions(client, args, support_exceed_action_rpc_status):
+def CreateRateLimitOptions(client, args, support_fairshare):
   """Returns a SecurityPolicyRuleRateLimitOptions message."""
 
   messages = client.messages
@@ -456,7 +456,7 @@ def CreateRateLimitOptions(client, args, support_exceed_action_rpc_status):
     rate_limit_options.banDurationSec = args.ban_duration_sec
     is_updated = True
 
-  if support_exceed_action_rpc_status and (
+  if support_fairshare and (
       args.IsSpecified('exceed_action_rpc_status_code') or
       args.IsSpecified('exceed_action_rpc_status_message')):
     exceed_action_rpc_status = messages.SecurityPolicyRuleRateLimitOptionsRpcStatus(

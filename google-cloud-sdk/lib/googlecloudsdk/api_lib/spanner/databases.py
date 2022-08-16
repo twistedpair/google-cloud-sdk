@@ -35,7 +35,12 @@ DATABASE_DIALECT_GOOGLESQL = 'GOOGLE_STANDARD_SQL'
 DATABASE_DIALECT_POSTGRESQL = 'POSTGRESQL'
 
 
-def Create(instance_ref, database, ddl, kms_key=None, database_dialect=None):
+def Create(instance_ref,
+           database,
+           ddl,
+           proto_descriptors=None,
+           kms_key=None,
+           database_dialect=None):
   """Create a new database."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
@@ -43,6 +48,8 @@ def Create(instance_ref, database, ddl, kms_key=None, database_dialect=None):
       'createStatement': 'CREATE DATABASE `{}`'.format(database),
       'extraStatements': ddl,
   }
+  if proto_descriptors:
+    req_args['protoDescriptors'] = proto_descriptors
   if database_dialect:
     database_dialect = database_dialect.upper()
     if database_dialect == DATABASE_DIALECT_POSTGRESQL:
@@ -124,13 +131,16 @@ def List(instance_ref):
       batch_size_attribute='pageSize')
 
 
-def UpdateDdl(database_ref, ddl):
+def UpdateDdl(database_ref, ddl, proto_descriptors=None):
   """Update a database via DDL commands."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
+  update_ddl_req = msgs.UpdateDatabaseDdlRequest(statements=ddl)
+  if proto_descriptors:
+    update_ddl_req.protoDescriptors = proto_descriptors
   req = msgs.SpannerProjectsInstancesDatabasesUpdateDdlRequest(
       database=database_ref.RelativeName(),
-      updateDatabaseDdlRequest=msgs.UpdateDatabaseDdlRequest(statements=ddl))
+      updateDatabaseDdlRequest=update_ddl_req)
   return client.projects_instances_databases.UpdateDdl(req)
 
 

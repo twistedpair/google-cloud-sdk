@@ -2483,7 +2483,7 @@
                         "name": {
                           "description": "The resource name of the generic artifact.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/genericArtifacts\/[^\/]+\/[^\/]+\/[^\/]$",
-                          "location": "path",
+                          "location": "query",
                           "required": true,
                           "type": "string"
                         },
@@ -2495,8 +2495,8 @@
                           "type": "string"
                         }
                       },
-                      "parameterOrder": [
-                        "name", "parent"
+                      "parameterOrder": [ 
+                        "parent"
                       ],
                       "supportsMediaUpload": true,
                       "mediaUpload": {

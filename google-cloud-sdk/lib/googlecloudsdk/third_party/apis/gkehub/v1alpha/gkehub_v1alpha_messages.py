@@ -322,8 +322,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -4675,83 +4681,6 @@ class PolicyControllerHubConfig(_messages.Message):
   templateLibraryConfig = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 8)
 
 
-class PolicyControllerHubState(_messages.Message):
-  r"""State of the Policy Controller.
-
-  Messages:
-    DeploymentStatesValue: Map from deployment name to deployment state.
-      Example deployments are gatekeeper-controller-manager, gatekeeper-audit
-      deployment, and gatekeeper-mutation.
-
-  Fields:
-    deploymentStates: Map from deployment name to deployment state. Example
-      deployments are gatekeeper-controller-manager, gatekeeper-audit
-      deployment, and gatekeeper-mutation.
-    version: The version of Gatekeeper Policy Controller deployed.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class DeploymentStatesValue(_messages.Message):
-    r"""Map from deployment name to deployment state. Example deployments are
-    gatekeeper-controller-manager, gatekeeper-audit deployment, and
-    gatekeeper-mutation.
-
-    Messages:
-      AdditionalProperty: An additional property for a DeploymentStatesValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        DeploymentStatesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a DeploymentStatesValue object.
-
-      Enums:
-        ValueValueValuesEnum:
-
-      Fields:
-        key: Name of the additional property.
-        value: A ValueValueValuesEnum attribute.
-      """
-
-      class ValueValueValuesEnum(_messages.Enum):
-        r"""ValueValueValuesEnum enum type.
-
-        Values:
-          DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be
-            determined
-          DEPLOYMENT_STATE_NOT_INSTALLED: Deployment is not installed
-          DEPLOYMENT_STATE_INSTALLED: Deployment is installed
-          DEPLOYMENT_STATE_ERROR: Deployment was attempted to be installed,
-            but has errors
-        """
-        DEPLOYMENT_STATE_UNSPECIFIED = 0
-        DEPLOYMENT_STATE_NOT_INSTALLED = 1
-        DEPLOYMENT_STATE_INSTALLED = 2
-        DEPLOYMENT_STATE_ERROR = 3
-
-      key = _messages.StringField(1)
-      value = _messages.EnumField('ValueValueValuesEnum', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  deploymentStates = _messages.MessageField('DeploymentStatesValue', 1)
-  version = _messages.MessageField('PolicyControllerHubVersion', 2)
-
-
-class PolicyControllerHubVersion(_messages.Message):
-  r"""The build version of Gatekeeper that Policy Controller is using.
-
-  Fields:
-    version: The gatekeeper image tag that is composed of ACM version, git
-      tag, build number.
-  """
-
-  version = _messages.StringField(1)
-
-
 class PolicyControllerMembershipSpec(_messages.Message):
   r"""**Policy Controller**: Configuration for a single cluster. Intended to
   parallel the PolicyController CR.
@@ -4770,7 +4699,12 @@ class PolicyControllerMembershipState(_messages.Message):
   r"""**Policy Controller**: State for a single cluster.
 
   Enums:
-    StateValueValuesEnum: The lifecycle state Policy Controller is in.
+    StateValueValuesEnum: The overall Policy Controller lifecycle state
+      observed by the Hub Feature controller.
+
+  Messages:
+    ComponentStatesValue: Currently these include (also serving as map keys):
+      1. "admission" 2. "audit" 3. "mutation" 4. "constraint template library"
 
   Fields:
     clusterName: The user-defined name for the cluster used by
@@ -4778,16 +4712,15 @@ class PolicyControllerMembershipState(_messages.Message):
       Membership's membership_name, unless the user installed PC on the
       cluster manually prior to enabling the PC hub feature. Unique within a
       Policy Controller installation.
-    membershipSpec: Membership configuration in the cluster. This represents
-      the actual state in the cluster, while the MembershipSpec in the
-      FeatureSpec represents the intended state
-    policyControllerHubState: Policy Controller state observed by the Policy
-      Controller Hub
-    state: The lifecycle state Policy Controller is in.
+    componentStates: Currently these include (also serving as map keys): 1.
+      "admission" 2. "audit" 3. "mutation" 4. "constraint template library"
+    state: The overall Policy Controller lifecycle state observed by the Hub
+      Feature controller.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The lifecycle state Policy Controller is in.
+    r"""The overall Policy Controller lifecycle state observed by the Hub
+    Feature controller.
 
     Values:
       LIFECYCLE_STATE_UNSPECIFIED: The lifecycle state is unspecified.
@@ -4833,10 +4766,35 @@ class PolicyControllerMembershipState(_messages.Message):
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ComponentStatesValue(_messages.Message):
+    r"""Currently these include (also serving as map keys): 1. "admission" 2.
+    "audit" 3. "mutation" 4. "constraint template library"
+
+    Messages:
+      AdditionalProperty: An additional property for a ComponentStatesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ComponentStatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ComponentStatesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PolicyControllerOnClusterState attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PolicyControllerOnClusterState', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   clusterName = _messages.StringField(1)
-  membershipSpec = _messages.MessageField('PolicyControllerMembershipSpec', 2)
-  policyControllerHubState = _messages.MessageField('PolicyControllerHubState', 3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  componentStates = _messages.MessageField('ComponentStatesValue', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class PolicyControllerMonitoringConfig(_messages.Message):
@@ -4866,6 +4824,69 @@ class PolicyControllerMonitoringConfig(_messages.Message):
     CLOUD_MONITORING = 2
 
   backends = _messages.EnumField('BackendsValueListEntryValuesEnum', 1, repeated=True)
+
+
+class PolicyControllerOnClusterState(_messages.Message):
+  r"""OnClusterState represents the state of a sub-component of Policy
+  Controller.
+
+  Enums:
+    StateValueValuesEnum: The lifecycle state of this component.
+
+  Fields:
+    details: Surface potential errors or information logs.
+    state: The lifecycle state of this component.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The lifecycle state of this component.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: The lifecycle state is unspecified.
+      NOT_INSTALLED: The PC does not exist on the given cluster, and no k8s
+        resources of any type that are associated with the PC should exist
+        there. The cluster does not possess a membership with the PCH.
+      INSTALLING: The PCH possesses a Membership, however the PC is not fully
+        installed on the cluster. In this state the hub can be expected to be
+        taking actions to install the PC on the cluster.
+      ACTIVE: The PC is fully installed on the cluster and in an operational
+        mode. In this state PCH will be reconciling state with the PC, and the
+        PC will be performing it's operational tasks per that software.
+        Entering a READY state requires that the hub has confirmed the PC is
+        installed and its pods are operational with the version of the PC the
+        PCH expects.
+      UPDATING: The PC is fully installed, but in the process of changing the
+        configuration (including changing the version of PC either up and
+        down, or modifying the manifests of PC) of the resources running on
+        the cluster. The PCH has a Membership, is aware of the version the
+        cluster should be running in, but has not confirmed for itself that
+        the PC is running with that version.
+      DECOMISSIONING: The PC may have resources on the cluster, but the PCH
+        wishes to remove the Membership. The Membership still exists.
+      CLUSTER_ERROR: The PC is not operational, and the PCH is unable to act
+        to make it operational. Entering a CLUSTER_ERROR state happens
+        automatically when the PCH determines that a PC installed on the
+        cluster is non-operative or that the cluster does not meet
+        requirements set for the PCH to administer the cluster but has
+        nevertheless been given an instruction to do so (such as 'install').
+      HUB_ERROR: In this state, the PC may still be operational, and only the
+        PCH is unable to act. The hub should not issue instructions to change
+        the PC state, or otherwise interfere with the on-cluster resources.
+        Entering a HUB_ERROR state happens automatically when the PCH
+        determines the hub is in an unhealthy state and it wishes to 'take
+        hands off' to avoid corrupting the PC or other data.
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLING = 2
+    ACTIVE = 3
+    UPDATING = 4
+    DECOMISSIONING = 5
+    CLUSTER_ERROR = 6
+    HUB_ERROR = 7
+
+  details = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class PolicyControllerTemplateLibraryConfig(_messages.Message):

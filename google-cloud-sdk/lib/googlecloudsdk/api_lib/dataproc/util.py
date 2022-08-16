@@ -750,7 +750,7 @@ class PersonalAuthUtils(object):
     except Exception as ex:
       raise exceptions.PersonalAuthError(
           'Failure due to invalid openssl output: ' + six.text_type(ex))
-    return stripped_output.encode('utf-8')
+    return (stripped_output + '\n').encode('utf-8')
 
   def _DeriveHkdfKey(self, prk, info, openssl_executable):
     """Derives HMAC-based Key Derivation Function (HKDF) key through expansion on the initial pseudorandom key.

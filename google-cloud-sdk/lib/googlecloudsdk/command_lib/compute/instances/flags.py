@@ -639,8 +639,7 @@ def AddCreateDiskArgs(parser,
                       include_name=True,
                       support_boot=False,
                       support_multi_writer=False,
-                      support_replica_zones=False,
-                      support_disk_architecture=False):
+                      support_replica_zones=False):
   """Adds create-disk argument for instances and instance-templates."""
 
   disk_device_name_help = GetDiskDeviceNameHelp(
@@ -721,6 +720,10 @@ def AddCreateDiskArgs(parser,
       automatically deleted when the instance is deleted. However,
       if the disk is later detached from the instance, this option
       won't apply. The default value for this is ``yes''.
+
+      *architecture*::: Specifies the architecture or processor type that this
+      disk can support. For available processor types on Compute Engine, see
+      https://cloud.google.com/compute/docs/cpu-platforms.
       """.format(
           disk_name=disk_name_extra_help,
           disk_mode=disk_mode_extra_help,
@@ -786,6 +789,7 @@ def AddCreateDiskArgs(parser,
       'auto-delete': arg_parsers.ArgBoolean(),
       'provisioned-iops': int,
       'disk-resource-policy': arg_parsers.ArgList(max_length=1),
+      'architecture': str,
   }
 
   if include_name:
@@ -863,14 +867,6 @@ def AddCreateDiskArgs(parser,
       and the zone of the newly created instance.
       """
     spec['replica-zones'] = arg_parsers.ArgList(max_length=1)
-
-  if support_disk_architecture:
-    spec['architecture'] = str
-    disk_help += """
-      *architecture*:::  Storage resources can be used to create boot disks
-      compatible with different machine architectures. ARCHITECTURE must be
-      one of: ARM64, X86_64.
-      """
 
   parser.add_argument(
       '--create-disk',

@@ -244,20 +244,27 @@ def GetClientClass(api_name, api_version):
 
 def GetClientInstance(api_name,
                       api_version,
-                      no_http=False):
+                      no_http=False,
+                      http_timeout_sec=None):
   """Returns an instance of the API client specified in the args.
 
   Args:
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
     no_http: bool, True to not create an http object for this client.
+    http_timeout_sec: int, seconds for http timeout, default if None.
 
   Returns:
     base_api.BaseApiClient, An instance of the specified API client.
   """
   # pylint:disable=protected-access
-  return apis_internal._GetClientInstance(api_name, api_version, no_http, None,
-                                          CheckResponseForApiEnablement())
+  return apis_internal._GetClientInstance(
+      api_name,
+      api_version,
+      no_http,
+      None,
+      CheckResponseForApiEnablement(),
+      http_timeout_sec=http_timeout_sec)
 
 
 def GetGapicClientClass(api_name,

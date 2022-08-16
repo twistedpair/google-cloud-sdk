@@ -33,6 +33,8 @@ MIN_UPGRADEABLE_COMPOSER_VER = '1.0.0'
 UpgradeValidator = collections.namedtuple('UpgradeValidator',
                                           ['upgrade_valid', 'error'])
 
+MIN_TRIGGERER_AIRFLOW_VERSION = '2.2.0'
+
 
 class InvalidImageVersionError(command_util.Error):
   """Class for errors raised when an invalid image version is encountered."""
@@ -112,6 +114,30 @@ def IsImageVersionStringComposerV1(image_version):
           image_version.startswith('composer-latest'))
 
 
+def _CompareVersions(v1, v2):
+  """Compares versions."""
+  if v1 == v2:
+    return 0
+  elif v1 > v2:
+    return 1
+  else:
+    return -1
+
+
+def CompareLooseVersions(v1, v2):
+  """Compares loose version strings.
+
+  Args:
+    v1: first loose version string
+    v2: second loose version string
+
+  Returns:
+    Value == 1 when v1 is greater; Value == -1 when v2 is greater; otherwise 0.
+  """
+  v1, v2 = _VersionStrToLooseVersion(v1), _VersionStrToLooseVersion(v2)
+  return _CompareVersions(v1, v2)
+
+
 def CompareVersions(v1, v2):
   """Compares semantic version strings.
 
@@ -123,27 +149,44 @@ def CompareVersions(v1, v2):
     Value == 1 when v1 is greater; Value == -1 when v2 is greater; otherwise 0.
   """
   v1, v2 = _VersionStrToSemanticVersion(v1), _VersionStrToSemanticVersion(v2)
-  if v1 == v2:
-    return 0
-  elif v1 > v2:
-    return 1
-  else:
-    return -1
+  return _CompareVersions(v1, v2)
 
 
-def IsVersionInRange(version, range_from, range_to):
+def IsVersionTriggererCompatible(image_version):
+  """Checks if given `version` is compatible with triggerer .
+
+  Args:
+    image_version: image version str that includes airflow version.
+
+  Returns:
+    True if given airflow version is compatible with Triggerer(>=2.2.x),
+    otherwise False
+  """
+
+  if image_version:
+    version_item = _ImageVersionItem(image_version)
+    if version_item and version_item.airflow_ver:
+      airflow_version = version_item.airflow_ver
+      return IsVersionInRange(airflow_version, MIN_TRIGGERER_AIRFLOW_VERSION,
+                              None, True)
+  return False
+
+
+def IsVersionInRange(version, range_from, range_to, loose=False):
   """Checks if given `version` is in range of (`range_from`, `range_to`).
 
   Args:
     version: version to check
     range_from: left boundary of range (inclusive), if None - no boundary
     range_to: right boundary of range (exclusive), if None - no boundary
+    loose: if true use LooseVersion to compare, use SemVer otherwise
 
   Returns:
     True if given version is in range, otherwise False.
   """
-  return ((range_from is None or CompareVersions(range_from, version) <= 0) and
-          (range_to is None or CompareVersions(version, range_to) < 0))
+  compare_fn = CompareLooseVersions if loose else CompareVersions
+  return ((range_from is None or compare_fn(range_from, version) <= 0) and
+          (range_to is None or compare_fn(version, range_to) < 0))
 
 
 def _BuildUpgradeCandidateList(location_ref,
@@ -214,6 +257,11 @@ def _ValidateCandidateImageVersionId(current_image_version_id,
 def _VersionStrToSemanticVersion(version_str):
   """Parses version_str into semantic version."""
   return semver.SemVer(version_str)
+
+
+def _VersionStrToLooseVersion(version_str):
+  """Parses version_str into loose version."""
+  return semver.LooseVersion(version_str)
 
 
 def _IsVersionUpgradeCompatible(cur_version, candidate_version,

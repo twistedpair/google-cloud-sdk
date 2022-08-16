@@ -3335,15 +3335,19 @@ def AddPrivateIpv6GoogleAccessTypeFlag(api_version, parser, hidden=False):
       messages, hidden).choice_arg.AddToParser(parser)
 
 
-def AddStackTypeFlag(parser):
+def AddStackTypeFlag(parser, hidden=False):
   """Adds --stack-type flag to the given parser.
 
   Args:
     parser: A given parser.
+    hidden: If true, suppress help text for added options.
   """
   help_text = "IP stack type of the node VMs. Defaults to 'ipv4'"
   parser.add_argument(
-      '--stack-type', help=help_text, choices=['ipv4', 'ipv4-ipv6'])
+      '--stack-type',
+      hidden=hidden,
+      help=help_text,
+      choices=['ipv4', 'ipv4-ipv6'])
 
 
 def AddIpv6AccessTypeFlag(parser):

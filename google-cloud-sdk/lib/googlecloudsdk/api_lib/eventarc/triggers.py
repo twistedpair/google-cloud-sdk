@@ -29,7 +29,7 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import iso_duration
 from googlecloudsdk.core.util import times
 
-MAX_ACTIVE_DELAY_MINUTES = 10
+MAX_ACTIVE_DELAY_MINUTES = 2
 
 
 class NoFieldsSpecifiedError(exceptions.Error):

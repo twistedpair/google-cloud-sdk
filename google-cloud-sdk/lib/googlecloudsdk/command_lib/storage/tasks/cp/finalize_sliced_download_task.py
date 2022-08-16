@@ -27,7 +27,6 @@ from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
-from googlecloudsdk.command_lib.storage.tasks import task_util
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
@@ -127,16 +126,12 @@ class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
         temporary_object_path,
         final_destination_object_path,
         do_not_decompress_flag=self._do_not_decompress)
-
-    if self._user_request_args and self._user_request_args.system_posix_data:
-      posix_util.set_posix_attributes_on_file(
-          final_destination_object_path,
-          task_util.get_first_matching_message_payload(
-              self.received_messages,
-              task.Topic.API_DOWNLOAD_RESULT).posix_attributes)
-
     tracker_file_util.delete_download_tracker_files(
         self._temporary_destination_resource.storage_url)
+
+    posix_util.set_posix_attributes_on_file_if_valid(
+        self._user_request_args, self.received_messages, self._source_resource,
+        self._final_destination_resource)
 
     if self._print_created_message:
       log.status.Print('Created: {}'.format(final_destination_object_path))

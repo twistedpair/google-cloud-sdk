@@ -119,6 +119,8 @@ You may view the status of your operation with the command
 
 DEFAULT_OPERATION_COLLECTION = 'aiplatform.projects.locations.operations'
 
+DEPLOYMENT_RESOURCE_POOLS_COLLECTION = 'aiplatform.projects.locations.deploymentResourcePools'
+
 ENDPOINTS_COLLECTION = 'aiplatform.projects.locations.endpoints'
 
 INDEX_ENDPOINTS_COLLECTION = 'aiplatform.projects.locations.indexEndpoints'

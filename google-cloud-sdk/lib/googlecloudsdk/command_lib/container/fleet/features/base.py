@@ -24,7 +24,7 @@ from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.command_lib.container.fleet import base as hub_base
 from googlecloudsdk.command_lib.container.fleet.features import info
 from googlecloudsdk.core import exceptions
@@ -81,7 +81,7 @@ class FeatureCommand(hub_base.HubCommand):
       raise self.FeatureNotEnabledError()
 
 
-class EnableCommand(FeatureCommand, base.CreateCommand):
+class EnableCommand(FeatureCommand, calliope_base.CreateCommand):
   """Base class for the command that enables a Feature."""
 
   def Run(self, args):
@@ -133,7 +133,7 @@ class EnableCommand(FeatureCommand, base.CreateCommand):
     return True
 
 
-class DisableCommand(FeatureCommand, base.DeleteCommand):
+class DisableCommand(FeatureCommand, calliope_base.DeleteCommand):
   """Base class for the command that disables a Feature."""
 
   @staticmethod
@@ -158,14 +158,14 @@ class DisableCommand(FeatureCommand, base.DeleteCommand):
         self.hubclient.resourceless_waiter, op, message=message, warnings=False)
 
 
-class DescribeCommand(FeatureCommand, base.DescribeCommand):
+class DescribeCommand(FeatureCommand, calliope_base.DescribeCommand):
   """Base class for the command that describes the status of a Feature."""
 
   def Run(self, args):
     return self.GetFeature()
 
 
-class UpdateCommand(FeatureCommand, base.UpdateCommand):
+class UpdateCommand(FeatureCommand, calliope_base.UpdateCommand):
   """Base class for the command that updates a Feature.
 
   Because Features updates are often bespoke actions, there is no default
@@ -263,6 +263,12 @@ def ListMemberships():
       for m in response.resources
       if not _ClusterMissing(m.endpoint)
   ]
+
+
+def CrossProjectError(projects):
+  return exceptions.Error('Memberships for this command must belong to the '
+                          'same project and cannot mix project number and '
+                          'project ID ({}).'.format(projects))
 
 
 def _ClusterMissing(m):

@@ -128,11 +128,17 @@ class CreateEnvironmentFlags:
     enable_master_authorized_networks: bool or None, whether master authorized
       networks should be enabled
     master_authorized_networks: list(str), master authorized networks
-    airflow_database_retention_days: Optional[int], the number of retention
-      days for airflow database data retention mechanism. Infinite retention
-      will be applied in case `0` or no integer is provided.
+    airflow_database_retention_days: Optional[int], the number of retention days
+      for airflow database data retention mechanism. Infinite retention will be
+      applied in case `0` or no integer is provided.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
       which Composer client library will be used.
+    enable_triggerer: bool or None, enable triggerer in the Environment. Can be
+      specified only in Airflow 2.2.x and greater
+    triggerer_cpu: float or None, CPU allocated to Airflow triggerer. Can be
+      specified only in Airflow 2.2.x and greater
+    triggerer_memory_gb: float or None, memory allocated to Airflow triggerer.
+      Can be specified only in Airflow 2.2.x and greater
   """
 
   # TODO(b/154131605): This a type that is an immutable data object. Can't use
@@ -194,7 +200,10 @@ class CreateEnvironmentFlags:
                enable_master_authorized_networks=None,
                master_authorized_networks=None,
                airflow_database_retention_days=None,
-               release_track=base.ReleaseTrack.GA):
+               release_track=base.ReleaseTrack.GA,
+               enable_triggerer=None,
+               triggerer_cpu=None,
+               triggerer_memory_gb=None):
     self.node_count = node_count
     self.environment_size = environment_size
     self.labels = labels
@@ -242,6 +251,9 @@ class CreateEnvironmentFlags:
     self.min_workers = min_workers
     self.max_workers = max_workers
     self.scheduler_count = scheduler_count
+    self.enable_triggerer = enable_triggerer
+    self.triggerer_cpu = triggerer_cpu
+    self.triggerer_memory_gb = triggerer_memory_gb
     self.maintenance_window_start = maintenance_window_start
     self.maintenance_window_end = maintenance_window_end
     self.maintenance_window_recurrence = maintenance_window_recurrence
@@ -306,7 +318,9 @@ def _CreateConfig(messages, flags, is_composer_v1):
           flags.web_server_memory_gb or flags.scheduler_storage_gb or
           flags.worker_storage_gb or flags.web_server_storage_gb or
           flags.environment_size or flags.min_workers or flags.max_workers or
-          flags.scheduler_count or flags.airflow_database_retention_days):
+          flags.scheduler_count or flags.airflow_database_retention_days or
+          flags.triggerer_cpu or flags.triggerer_memory or
+          flags.enable_triggerer):
     return None
 
   config = messages.EnvironmentConfig()
@@ -417,25 +431,37 @@ def _CreateConfig(messages, flags, is_composer_v1):
       flags.scheduler_memory_gb or flags.worker_memory_gb or
       flags.web_server_memory_gb or flags.scheduler_storage_gb or
       flags.worker_storage_gb or flags.web_server_storage_gb or
-      flags.min_workers or flags.max_workers)
+      flags.min_workers or flags.max_workers or flags.triggerer_memory_gb or
+      flags.triggerer_cpu or flags.enable_triggerer)
   if composer_v2_flag_used or (flags.scheduler_count and not is_composer_v1):
-    config.workloadsConfig = messages.WorkloadsConfig(
-        scheduler=messages.SchedulerResource(
-            cpu=flags.scheduler_cpu,
-            memoryGb=flags.scheduler_memory_gb,
-            storageGb=flags.scheduler_storage_gb,
-            count=flags.scheduler_count),
-        webServer=messages.WebServerResource(
-            cpu=flags.web_server_cpu,
-            memoryGb=flags.web_server_memory_gb,
-            storageGb=flags.web_server_storage_gb),
-        worker=messages.WorkerResource(
-            cpu=flags.worker_cpu,
-            memoryGb=flags.worker_memory_gb,
-            storageGb=flags.worker_storage_gb,
-            minCount=flags.min_workers,
-            maxCount=flags.max_workers))
+    config.workloadsConfig = _CreateWorkloadConfig(messages, flags)
   return config
+
+
+def _CreateWorkloadConfig(messages, flags):
+  """Creates workload config from parameters."""
+  workload_resources = dict(
+      scheduler=messages.SchedulerResource(
+          cpu=flags.scheduler_cpu,
+          memoryGb=flags.scheduler_memory_gb,
+          storageGb=flags.scheduler_storage_gb,
+          count=flags.scheduler_count),
+      webServer=messages.WebServerResource(
+          cpu=flags.web_server_cpu,
+          memoryGb=flags.web_server_memory_gb,
+          storageGb=flags.web_server_storage_gb),
+      worker=messages.WorkerResource(
+          cpu=flags.worker_cpu,
+          memoryGb=flags.worker_memory_gb,
+          storageGb=flags.worker_storage_gb,
+          minCount=flags.min_workers,
+          maxCount=flags.max_workers))
+  if flags.enable_triggerer or flags.triggerer_cpu or flags.triggerer_memory_gb:
+    workload_resources['triggerer'] = messages.TriggererResource(
+        cpu=flags.triggerer_cpu,
+        memoryGb=flags.triggerer_memory_gb,
+        count=1 if flags.enable_triggerer else 0)
+  return messages.WorkloadsConfig(**workload_resources)
 
 
 def Create(environment_ref, flags, is_composer_v1):

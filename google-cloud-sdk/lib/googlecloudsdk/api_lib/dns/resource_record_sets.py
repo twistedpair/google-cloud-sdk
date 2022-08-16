@@ -186,6 +186,11 @@ def CreateRecordSetFromArgs(args,
     record_set.routingPolicy = messages.RRSetRoutingPolicy(
         wrr=messages.RRSetRoutingPolicyWrrPolicy(items=[]))
     for policy_item in args.routing_policy_data:
+      if args.type != 'A':
+        # Forwarding configs only make sense for A record types. For other
+        # types, there's only one type of records, so merge the two.
+        policy_item['rrdatas'] += policy_item['forwarding_configs']
+        policy_item['forwarding_configs'] = []
       if rd_type is rdatatype.TXT or rd_type is rdatatype.SPF:
         policy_item['rrdatas'] = [
             import_util.QuotedText(datum) for datum in policy_item['rrdatas']
@@ -204,7 +209,7 @@ def CreateRecordSetFromArgs(args,
             messages.RRSetRoutingPolicyWrrPolicyWrrPolicyItem(
                 weight=float(policy_item['key']),
                 rrdatas=policy_item['rrdatas'],
-                healthCheckTargets=messages
+                healthCheckedTargets=messages
                 .RRSetRoutingPolicyHealthCheckTargets(
                     internalLoadBalancers=targets)))
       else:
@@ -219,6 +224,11 @@ def CreateRecordSetFromArgs(args,
     if args.enable_geo_fencing:
       record_set.routingPolicy.geo.enableFencing = args.enable_geo_fencing
     for policy_item in args.routing_policy_data:
+      if args.type != 'A':
+        # Forwarding configs only make sense for A record types. For other
+        # types, there's only one type of records, so merge the two.
+        policy_item['rrdatas'] += policy_item['forwarding_configs']
+        policy_item['forwarding_configs'] = []
       if rd_type is rdatatype.TXT or rd_type is rdatatype.SPF:
         policy_item['rrdatas'] = [
             import_util.QuotedText(datum) for datum in policy_item['rrdatas']
@@ -237,7 +247,7 @@ def CreateRecordSetFromArgs(args,
             messages.RRSetRoutingPolicyGeoPolicyGeoPolicyItem(
                 location=policy_item['key'],
                 rrdatas=policy_item['rrdatas'],
-                healthCheckTargets=messages
+                healthCheckedTargets=messages
                 .RRSetRoutingPolicyHealthCheckTargets(
                     internalLoadBalancers=targets)))
       else:
@@ -272,7 +282,7 @@ def CreateRecordSetFromArgs(args,
               messages.RRSetRoutingPolicyGeoPolicyGeoPolicyItem(
                   location=policy_item['key'],
                   rrdatas=policy_item['rrdatas'],
-                  healthCheckTargets=messages
+                  healthCheckedTargets=messages
                   .RRSetRoutingPolicyHealthCheckTargets(
                       internalLoadBalancers=targets)))
         else:

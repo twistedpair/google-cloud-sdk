@@ -75,10 +75,7 @@ def _should_gzip_file_type(gzip_settings, file_path):
     return gzip_settings.type
   elif isinstance(gzip_extensions, list):
     for extension in gzip_extensions:
-      if extension.startswith('.'):
-        dot_separated_extension = extension
-      else:
-        dot_separated_extension = '.' + extension
+      dot_separated_extension = '.' + extension.lstrip(' .')
       if file_path.endswith(dot_separated_extension):
         return gzip_settings.type
   return None

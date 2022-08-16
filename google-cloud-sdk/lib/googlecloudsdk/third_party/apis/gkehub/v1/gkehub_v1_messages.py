@@ -243,8 +243,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -2919,9 +2925,11 @@ class ServiceMeshMembershipSpec(_messages.Message):
 
   Enums:
     ControlPlaneValueValuesEnum: Enables automatic control plane management.
+    ManagementValueValuesEnum: Enables automatic Service Mesh management.
 
   Fields:
     controlPlane: Enables automatic control plane management.
+    management: Enables automatic Service Mesh management.
   """
 
   class ControlPlaneValueValuesEnum(_messages.Enum):
@@ -2940,7 +2948,27 @@ class ServiceMeshMembershipSpec(_messages.Message):
     AUTOMATIC = 1
     MANUAL = 2
 
+  class ManagementValueValuesEnum(_messages.Enum):
+    r"""Enables automatic Service Mesh management.
+
+    Values:
+      MANAGEMENT_UNSPECIFIED: Unspecified
+      MANAGEMENT_AUTOMATIC: Google should manage my Service Mesh for the
+        cluster. This will ensure that a control plane revision is available
+        to the cluster. Google will enroll this revision in a release channel
+        and keep it up to date. Enables a Google-managed data plane that
+        provides L7 service mesh capabilities. Data plane management is
+        enabled at the cluster level. Users can exclude individual workloads
+        or namespaces.
+      MANAGEMENT_MANUAL: User will manually configure their service mesh
+        components.
+    """
+    MANAGEMENT_UNSPECIFIED = 0
+    MANAGEMENT_AUTOMATIC = 1
+    MANAGEMENT_MANUAL = 2
+
   controlPlane = _messages.EnumField('ControlPlaneValueValuesEnum', 1)
+  management = _messages.EnumField('ManagementValueValuesEnum', 2)
 
 
 class ServiceMeshMembershipState(_messages.Message):

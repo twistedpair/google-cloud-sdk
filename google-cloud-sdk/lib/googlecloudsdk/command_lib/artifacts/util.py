@@ -540,6 +540,12 @@ def ListFiles(args):
   page_size = args.page_size
   arg_filters = ""
 
+  if args.filter:
+    arg_filters = args.filter
+    if package or version or tag:
+      raise ar_exceptions.InvalidInputValueError(
+          "Cannot specify --filter with --package, --version or --tag.")
+
   # Parse fully qualified path in package argument
   if package:
     if re.match(r"projects\/.*\/locations\/.*\/repositories\/.*\/packages\/.*",
@@ -600,12 +606,6 @@ def ListFiles(args):
           repositoriesId=repo))
   files = ar_requests.ListFiles(client, messages, repo_path, arg_filters,
                                 page_size)
-
-  for file in files:
-    file.name = resources.REGISTRY.ParseRelativeName(
-        file.name,
-        collection="artifactregistry.projects.locations.repositories.files"
-    ).filesId.replace("%2F", "/").replace("%2B", "+")
 
   return files
 

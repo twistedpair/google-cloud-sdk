@@ -74,7 +74,8 @@ def ReservationArgToMessage(reservation, accelerator, local_ssd, share_setting,
       reservation.get('min-cpu-platform', None))
   a_msg = util.MakeReservationMessage(
       messages, reservation.get('reservation', None),
-      share_settings, specific_allocation, None,
+      share_settings, specific_allocation,
+      reservation.get('resource-policies', None),
       reservation.get('require-specific-reservation', None),
       reservation.get('reservation-zone', None))
 

@@ -675,25 +675,21 @@ class GcsApi(cloud_api.CloudApi):
                       start_byte=0,
                       end_byte=None):
     """See super class."""
-    if request_config.system_posix_data:
-      if cloud_resource.metadata and cloud_resource.metadata.metadata:
-        custom_metadata_dict = encoding_helper.MessageToDict(
-            cloud_resource.metadata.metadata)
-      else:
-        custom_metadata_dict = {}
-
+    if (request_config.system_posix_data and cloud_resource.metadata and
+        cloud_resource.metadata.metadata):
+      custom_metadata_dict = encoding_helper.MessageToDict(
+          cloud_resource.metadata.metadata)
       posix_attributes_to_set = (
           posix_util.get_posix_attributes_from_custom_metadata_dict(
               cloud_resource.storage_url.url_string, custom_metadata_dict))
-      if not posix_util.are_file_permissions_valid(
-          cloud_resource.storage_url.url_string,
-          request_config.system_posix_data, posix_attributes_to_set):
-        raise posix_util.SETTING_INVALID_POSIX_ERROR
     else:
       posix_attributes_to_set = None
 
-    if download_util.return_and_report_if_nothing_to_download(
-        cloud_resource, progress_callback):
+    if (not posix_util.are_file_permissions_valid(
+        cloud_resource.storage_url.url_string, request_config.system_posix_data,
+        posix_attributes_to_set) or
+        download_util.return_and_report_if_nothing_to_download(
+            cloud_resource, progress_callback)):
       return cloud_api.DownloadApiClientReturnValue(
           posix_attributes=posix_attributes_to_set,
           server_reported_encoding=None)
@@ -835,8 +831,14 @@ class GcsApi(cloud_api.CloudApi):
         source_message.generation = generation
       source_messages.append(source_message)
 
-    destination_metadata = gcs_metadata_util.get_apitools_metadata_from_url(
+    base_destination_metadata = gcs_metadata_util.get_apitools_metadata_from_url(
         destination_resource.storage_url)
+    if getattr(source_resources[0], 'metadata', None):
+      final_destination_metadata = gcs_metadata_util.copy_object_metadata(
+          source_resources[0].metadata, base_destination_metadata,
+          request_config)
+    else:
+      final_destination_metadata = base_destination_metadata
     if original_source_resource and isinstance(
         original_source_resource, resource_reference.FileObjectResource):
       original_source_file_path = (
@@ -844,11 +846,11 @@ class GcsApi(cloud_api.CloudApi):
     else:
       original_source_file_path = None
     gcs_metadata_util.update_object_metadata_from_request_config(
-        destination_metadata, request_config, original_source_file_path)
+        final_destination_metadata, request_config, original_source_file_path)
 
     compose_request_payload = self.messages.ComposeRequest(
         sourceObjects=source_messages,
-        destination=destination_metadata)
+        destination=final_destination_metadata)
 
     compose_request = self.messages.StorageObjectsComposeRequest(
         composeRequest=compose_request_payload,

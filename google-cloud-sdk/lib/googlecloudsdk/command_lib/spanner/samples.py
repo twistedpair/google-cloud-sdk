@@ -20,7 +20,11 @@ from __future__ import unicode_literals
 
 import collections
 import os
+from googlecloudsdk.api_lib.spanner import databases
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import execution_utils
+from googlecloudsdk.core import log
+from googlecloudsdk.core.util import files
 
 # TODO(b/230344467): Better default samples dir
 _SAMPLES_DEFAULT_DIR_NAME = '.gcloud-spanner-samples'
@@ -40,6 +44,7 @@ SAMPLES_ETC_PATH = os.path.join(SAMPLES_DIR_PATH, _ETC_RELPATH)
 GCS_BUCKET = 'gs://cloud-spanner-samples'
 
 FINANCE_APP_NAME = 'finance'
+FINANCE_PG_APP_NAME = 'finance-pg'
 
 AppAttrs = collections.namedtuple('AppAttrs', [
     'db_id',  # Name of the sample app DB
@@ -48,7 +53,8 @@ AppAttrs = collections.namedtuple('AppAttrs', [
     'gcs_prefix',  # Prefix for sample app files in GCS_BUCKET
     'schema_file',  # Schema filename (in GCS and locally)
     'backend_bin',  # Backend/server bin filename
-    'workload_bin'  # Workload bin filename
+    'workload_bin',  # Workload bin filename
+    'database_dialect'  # The database dialect used in this sample
 ])
 
 APPS = {
@@ -61,6 +67,18 @@ APPS = {
             gcs_prefix='finance',
             backend_bin='server-1.0-SNAPSHOT-jar-with-dependencies.jar',
             workload_bin='workload-1.0-SNAPSHOT-jar-with-dependencies.jar',
+            database_dialect=databases.DATABASE_DIALECT_GOOGLESQL,
+        ),
+    FINANCE_PG_APP_NAME:
+        AppAttrs(
+            db_id='finance-pg-db',
+            bin_path='finance-pg',
+            etc_path='finance-pg',
+            schema_file='finance-schema-pg.sdl',
+            gcs_prefix='finance',
+            backend_bin='server-1.0-SNAPSHOT-jar-with-dependencies.jar',
+            workload_bin='workload-1.0-SNAPSHOT-jar-with-dependencies.jar',
+            database_dialect=databases.DATABASE_DIALECT_POSTGRESQL,
         )
 }
 
@@ -178,3 +196,40 @@ def get_gcs_bin_prefix(appname):
   """
   check_appname(appname)
   return '/'.join([APPS[appname].gcs_prefix, _GCS_BIN_PREFIX, ''])
+
+
+def get_database_dialect(appname):
+  """Get the database dialect for the given sample app.
+
+  Args:
+    appname: str, Name of the sample app.
+
+  Returns:
+    str, The database dialect.
+
+  Raises:
+    ValueError: if the given sample app doesn't exist.
+  """
+  check_appname(appname)
+  return APPS[appname].database_dialect
+
+
+def run_proc(args, capture_logs_fn=None):
+  """Wrapper for execution_utils.Subprocess that optionally captures logs.
+
+  Args:
+    args: [str], The arguments to execute.  The first argument is the command.
+    capture_logs_fn: str, If set, save logs to the specified filename.
+
+  Returns:
+    subprocess.Popen or execution_utils.SubprocessTimeoutWrapper, The running
+      subprocess.
+  """
+  if capture_logs_fn:
+    logfile = files.FileWriter(capture_logs_fn, append=True, create_path=True)
+    log.status.Print('Writing logs to {}'.format(capture_logs_fn))
+    popen_args = dict(stdout=logfile, stderr=logfile)
+  else:
+    popen_args = {}
+  return execution_utils.Subprocess(args, **popen_args)
+

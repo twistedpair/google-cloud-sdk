@@ -170,6 +170,21 @@ def GetEndpointNetworkArg():
   )
 
 
+def GetEncryptionKmsKeyNameArg():
+  return base.Argument(
+      '--encryption-kms-key-name',
+      required=False,
+      default=None,
+      help="""\
+      The Cloud KMS resource identifier of the customer managed encryption key
+      used to protect a resource. Has the form:
+      projects/my-project/locations/my-region/keyRings/my-kr/cryptoKeys/my-key.
+
+      The key needs to be in the same region as where the compute resource is
+      created.
+      """)
+
+
 def AddPredictInstanceArg(parser, required=True):
   """Add arguments for different types of predict instances."""
   base.Argument(
@@ -753,6 +768,39 @@ def GetIndexDatapointIdsArg(noun, required=False):
       type=arg_parsers.ArgList(),
       help='List of index datapoint ids to be removed from the {noun}.'.format(
           noun=noun))
+
+
+def GetDeploymentResourcePoolResourceSpec(
+    resource_name='deployment_resource_pool',
+    prompt_func=region_util.PromptForDeploymentResourcePoolSupportedRegion):
+  return concepts.ResourceSpec(
+      constants.DEPLOYMENT_RESOURCE_POOLS_COLLECTION,
+      resource_name=resource_name,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=RegionAttributeConfig(prompt_func=prompt_func),
+      disable_auto_completers=False)
+
+
+def AddDeploymentResourcePoolArg(
+    parser,
+    verb,
+    prompt_func=region_util.PromptForDeploymentResourcePoolSupportedRegion):
+  """Add a resource argument for a Vertex AI deployment resource pool.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    prompt_func: function, the function to prompt for region from list of
+    available regions. Default is
+    region_util.PromptForDeploymentResourcePoolSupportedRegion
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'deployment_resource_pool',
+      GetDeploymentResourcePoolResourceSpec(prompt_func=prompt_func),
+      'The deployment resource pool {}.'.format(verb),
+      required=True).AddToParser(parser)
 
 
 def GetEndpointId():

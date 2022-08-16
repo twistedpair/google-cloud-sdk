@@ -44,6 +44,10 @@ class JobPrinter(cp.CustomPrinterBase):
   def TransformSpec(record):
     limits = container_util.GetLimits(record.template)
     breakglass_value = k8s_util.GetBinAuthzBreakglass(record)
+    job_spec_annotations = {
+        field.key: field.value for field in
+        record.spec.template.metadata.annotations.additionalProperties
+    }
     return cp.Labeled([
         ('Image', record.template.UserImage()),
         ('Tasks', record.task_count),
@@ -65,8 +69,9 @@ class JobPrinter(cp.CustomPrinterBase):
         ('Env vars',
          container_util.GetUserEnvironmentVariables(record.template)),
         ('Secrets', container_util.GetSecrets(record.template)),
-        ('VPC connector', k8s_util.GetVpcConnector(record)),
-        ('SQL connections', k8s_util.GetCloudSqlInstances(record)),
+        ('VPC connector', k8s_util.GetVpcConnector(job_spec_annotations)),
+        ('SQL connections',
+         k8s_util.GetCloudSqlInstances(job_spec_annotations)),
     ])
 
   @staticmethod
@@ -117,8 +122,8 @@ class TaskPrinter(cp.CustomPrinterBase):
         ('Service account', record.service_account),
         ('Env vars', container_util.GetUserEnvironmentVariables(record)),
         ('Secrets', container_util.GetSecrets(record)),
-        ('VPC connector', k8s_util.GetVpcConnector(record)),
-        ('SQL connections', k8s_util.GetCloudSqlInstances(record)),
+        ('VPC connector', k8s_util.GetVpcConnector(record.annotations)),
+        ('SQL connections', k8s_util.GetCloudSqlInstances(record.annotations)),
     ])
 
   @staticmethod
@@ -166,8 +171,8 @@ class ExecutionPrinter(cp.CustomPrinterBase):
         ('Env vars',
          container_util.GetUserEnvironmentVariables(record.template)),
         ('Secrets', container_util.GetSecrets(record.template)),
-        ('VPC connector', k8s_util.GetVpcConnector(record)),
-        ('SQL connections', k8s_util.GetCloudSqlInstances(record)),
+        ('VPC connector', k8s_util.GetVpcConnector(record.annotations)),
+        ('SQL connections', k8s_util.GetCloudSqlInstances(record.annotations)),
     ])
 
   @staticmethod

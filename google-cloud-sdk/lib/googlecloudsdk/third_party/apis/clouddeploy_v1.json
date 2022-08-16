@@ -321,6 +321,32 @@
           "items": {
             "type": "string"
           }
+        },
+        "strategy": {
+          "description": "Optional. The strategy to use for a `Rollout` to this stage.",
+          "$ref": "Strategy"
+        }
+      }
+    },
+    "Strategy": {
+      "id": "Strategy",
+      "description": "Strategy contains deployment strategy information.",
+      "type": "object",
+      "properties": {
+        "standard": {
+          "description": "Standard deployment strategy executes a single deploy and allows verifying the deployment.",
+          "$ref": "Standard"
+        }
+      }
+    },
+    "Standard": {
+      "id": "Standard",
+      "description": "Standard represents the standard deployment strategy.",
+      "type": "object",
+      "properties": {
+        "verify": {
+          "description": "Whether to verify a deployment.",
+          "type": "boolean"
         }
       }
     },
@@ -464,6 +490,10 @@
           "description": "Information specifying an Anthos Cluster.",
           "$ref": "AnthosCluster"
         },
+        "run": {
+          "description": "Information specifying a Cloud Run deployment target.",
+          "$ref": "CloudRunLocation"
+        },
         "etag": {
           "description": "Optional. This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
@@ -503,6 +533,17 @@
         }
       }
     },
+    "CloudRunLocation": {
+      "id": "CloudRunLocation",
+      "description": "Information specifying where to deploy a Cloud Run Service.",
+      "type": "object",
+      "properties": {
+        "location": {
+          "description": "Required. The location where the Cloud Run Service should be located. Format is `projects\/{project}\/locations\/{location}`.",
+          "type": "string"
+        }
+      }
+    },
     "ExecutionConfig": {
       "id": "ExecutionConfig",
       "description": "Configuration of the environment to use when calling Skaffold.",
@@ -516,12 +557,14 @@
             "enumDescriptions": [
               "Default value. This value is unused.",
               "Use for rendering.",
-              "Use for deploying and deployment hooks."
+              "Use for deploying and deployment hooks.",
+              "Use for deployment verification."
             ],
             "enum": [
               "EXECUTION_ENVIRONMENT_USAGE_UNSPECIFIED",
               "RENDER",
-              "DEPLOY"
+              "DEPLOY",
+              "VERIFY"
             ]
           }
         },
@@ -986,7 +1029,7 @@
           ]
         },
         "failureReason": {
-          "description": "Output only. Reason the build failed. Empty if the build succeeded.",
+          "description": "Output only. Additional information about the rollout failure, if available.",
           "readOnly": true,
           "type": "string"
         },
@@ -1000,7 +1043,7 @@
           "type": "string"
         },
         "deployFailureCause": {
-          "description": "Output only. The reason this deploy failed. This will always be unspecified while the deploy in progress.",
+          "description": "Output only. The reason this rollout failed. This will always be unspecified while the rollout is in progress.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1009,7 +1052,8 @@
             "The deploy operation did not complete successfully; check Cloud Build logs.",
             "Deployment did not complete within the alloted time.",
             "Release is in a failed state.",
-            "Release is abandoned."
+            "Release is abandoned.",
+            "No skaffold verify configuration was found."
           ],
           "enum": [
             "FAILURE_CAUSE_UNSPECIFIED",
@@ -1017,8 +1061,381 @@
             "EXECUTION_FAILED",
             "DEADLINE_EXCEEDED",
             "RELEASE_FAILED",
-            "RELEASE_ABANDONED"
+            "RELEASE_ABANDONED",
+            "VERIFICATION_CONFIG_NOT_FOUND"
           ]
+        },
+        "phases": {
+          "description": "Output only. The phases that represent the workflows of this `Rollout`.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "Phase"
+          }
+        },
+        "metadata": {
+          "description": "Output only. Metadata contains information about the rollout.",
+          "readOnly": true,
+          "$ref": "Metadata"
+        }
+      }
+    },
+    "Phase": {
+      "id": "Phase",
+      "description": "Phase represents a collection of jobs that are logically grouped together for a `Rollout`.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Output only. The ID of the Phase.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. Current state of the Phase.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The Phase has an unspecified state.",
+            "The Phase is waiting for an earlier Phase(s) to complete.",
+            "The Phase is in progress.",
+            "The Phase has succeeded.",
+            "The Phase has failed.",
+            "The Phase was aborted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PENDING",
+            "IN_PROGRESS",
+            "SUCCEEDED",
+            "FAILED",
+            "ABORTED"
+          ]
+        },
+        "deploymentJobs": {
+          "description": "Output only. Deployment job composition.",
+          "readOnly": true,
+          "$ref": "DeploymentJobs"
+        }
+      }
+    },
+    "DeploymentJobs": {
+      "id": "DeploymentJobs",
+      "description": "Deployment job composition.",
+      "type": "object",
+      "properties": {
+        "deployJob": {
+          "description": "Output only. The deploy Job. This is the first job run in the phase.",
+          "readOnly": true,
+          "$ref": "Job"
+        },
+        "verifyJob": {
+          "description": "Output only. The verify Job. Runs after a deploy if the deploy succeeds.",
+          "readOnly": true,
+          "$ref": "Job"
+        }
+      }
+    },
+    "Job": {
+      "id": "Job",
+      "description": "Job represents an operation for a `Rollout`.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Output only. The ID of the Job.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The current state of the Job.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The Job has an unspecified state.",
+            "The Job is waiting for an earlier Phase(s) or Job(s) to complete.",
+            "The Job is disabled.",
+            "The Job is in progress.",
+            "The Job succeeded.",
+            "The Job failed.",
+            "The Job was aborted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PENDING",
+            "DISABLED",
+            "IN_PROGRESS",
+            "SUCCEEDED",
+            "FAILED",
+            "ABORTED"
+          ]
+        },
+        "jobRun": {
+          "description": "Output only. The name of the `JobRun` responsible for the most recent invocation of this Job.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deployJob": {
+          "description": "Output only. A deploy Job.",
+          "readOnly": true,
+          "$ref": "DeployJob"
+        },
+        "verifyJob": {
+          "description": "Output only. A verify Job.",
+          "readOnly": true,
+          "$ref": "VerifyJob"
+        }
+      }
+    },
+    "DeployJob": {
+      "id": "DeployJob",
+      "description": "A deploy Job.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "VerifyJob": {
+      "id": "VerifyJob",
+      "description": "A verify Job.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "Metadata": {
+      "id": "Metadata",
+      "description": "Metadata surfaces information associated with a `Rollout` to the user.",
+      "type": "object",
+      "properties": {
+        "cloudRun": {
+          "description": "Output only. The name of the Cloud Run Service that is associated with a `Rollout`.",
+          "readOnly": true,
+          "$ref": "CloudRunMetadata"
+        }
+      }
+    },
+    "CloudRunMetadata": {
+      "id": "CloudRunMetadata",
+      "description": "CloudRunMetadata contains information from a Cloud Run deployment.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "Output only. The name of the Cloud Run Service that is associated with a `Rollout`. Format is projects\/{project}\/locations\/{location}\/services\/{service}.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "serviceUrls": {
+          "description": "Output only. The Cloud Run Service urls that are associated with a `Rollout`.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "revision": {
+          "description": "Output only. The Cloud Run Revision id associated with a `Rollout`.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "RetryJobRequest": {
+      "id": "RetryJobRequest",
+      "description": "RetryJobRequest is the request object used by `RetryJob`.",
+      "type": "object",
+      "properties": {
+        "phaseId": {
+          "description": "Required. The phase ID the Job to retry belongs to.",
+          "type": "string"
+        },
+        "jobId": {
+          "description": "Required. The job ID for the Job to retry.",
+          "type": "string"
+        }
+      }
+    },
+    "RetryJobResponse": {
+      "id": "RetryJobResponse",
+      "description": "The response object from 'RetryJob'.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListJobRunsResponse": {
+      "id": "ListJobRunsResponse",
+      "description": "ListJobRunsResponse is the response object returned by `ListJobRuns`.",
+      "type": "object",
+      "properties": {
+        "jobRuns": {
+          "description": "The `JobRun` objects.",
+          "type": "array",
+          "items": {
+            "$ref": "JobRun"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "JobRun": {
+      "id": "JobRun",
+      "description": "A `JobRun` resource in the Google Cloud Deploy API. A `JobRun` contains information of a single `Rollout` job evaluation.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Optional. Name of the `JobRun`. Format is projects\/{project}\/locations\/{location}\/ deliveryPipelines\/{deliveryPipeline}\/releases\/{releases}\/rollouts\/ {rollouts}\/jobRuns\/{uuid}.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. Unique identifier of the `JobRun`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "phaseId": {
+          "description": "Output only. ID of the `Rollout` phase this `JobRun` belongs in.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "jobId": {
+          "description": "Output only. ID of the `Rollout` job this `JobRun` corresponds to.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time at which the `JobRun` was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "startTime": {
+          "description": "Output only. Time at which the `JobRun` was started.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. Time at which the `JobRun` ended.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. The current state of the `JobRun`.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The `JobRun` has an unspecified state.",
+            "The `JobRun` is in progress.",
+            "The `JobRun` has succeeded.",
+            "The `JobRun` has failed."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "IN_PROGRESS",
+            "SUCCEEDED",
+            "FAILED"
+          ]
+        },
+        "deployJobRun": {
+          "description": "Output only. Information specific to a deploy `JobRun`.",
+          "readOnly": true,
+          "$ref": "DeployJobRun"
+        },
+        "verifyJobRun": {
+          "description": "Output only. Information specific to a verify `JobRun`.",
+          "readOnly": true,
+          "$ref": "VerifyJobRun"
+        },
+        "etag": {
+          "description": "Output only. This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "DeployJobRun": {
+      "id": "DeployJobRun",
+      "description": "DeployJobRun contains information specific to a deploy `JobRun`.",
+      "type": "object",
+      "properties": {
+        "build": {
+          "description": "Output only. The resource name of the Cloud Build `Build` object that is used to deploy. Format is projects\/{project}\/locations\/{location}\/builds\/{build}.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "failureCause": {
+          "description": "Output only. The reason the deploy failed. This will always be unspecified while the deploy is in progress or if it succeeded.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "No reason for failure is specified.",
+            "Cloud Build is not available, either because it is not enabled or because Cloud Deploy has insufficient permissions. See [required permission](\/deploy\/docs\/cloud-deploy-service-account#required_permissions).",
+            "The deploy operation did not complete successfully; check Cloud Build logs.",
+            "The deploy build did not complete within the alloted time."
+          ],
+          "enum": [
+            "FAILURE_CAUSE_UNSPECIFIED",
+            "CLOUD_BUILD_UNAVAILABLE",
+            "EXECUTION_FAILED",
+            "DEADLINE_EXCEEDED"
+          ]
+        },
+        "failureMessage": {
+          "description": "Output only. Additional information about the deploy failure, if available.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "VerifyJobRun": {
+      "id": "VerifyJobRun",
+      "description": "VerifyJobRun contains information specific to a verify `JobRun`.",
+      "type": "object",
+      "properties": {
+        "build": {
+          "description": "Output only. The resource name of the Cloud Build `Build` object that is used to verify. Format is projects\/{project}\/locations\/{location}\/builds\/{build}.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "artifactUri": {
+          "description": "Output only. URI of a directory containing the verify artifacts. This contains the Skaffold event log.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "eventLogPath": {
+          "description": "Output only. File path of the Skaffold event log relative to the artifact URI.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "failureCause": {
+          "description": "Output only. The reason the verify failed. This will always be unspecified while the verify is in progress or if it succeeded.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "No reason for failure is specified.",
+            "Cloud Build is not available, either because it is not enabled or because Cloud Deploy has insufficient permissions. See [required permission](\/deploy\/docs\/cloud-deploy-service-account#required_permissions).",
+            "The verify operation did not complete successfully; check Cloud Build logs.",
+            "The verify build did not complete within the alloted time.",
+            "No Skaffold verify configuration was found."
+          ],
+          "enum": [
+            "FAILURE_CAUSE_UNSPECIFIED",
+            "CLOUD_BUILD_UNAVAILABLE",
+            "EXECUTION_FAILED",
+            "DEADLINE_EXCEEDED",
+            "VERIFICATION_CONFIG_NOT_FOUND"
+          ]
+        },
+        "failureMessage": {
+          "description": "Output only. Additional information about the verify failure, if available.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -1192,7 +1609,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
@@ -2308,6 +2725,112 @@
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
                           "description": "Creates a new Rollout in a given project and location."
+                        },
+                        "retryJob": {
+                          "id": "clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.retryJob",
+                          "path": "v1/{+rollout}:retryJob",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}:retryJob",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "rollout": {
+                              "description": "Required. Name of the Rollout. Format is projects\/{project}\/locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/{release}\/rollouts\/{rollout}.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+\/rollouts\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "rollout"
+                          ],
+                          "request": {
+                            "$ref": "RetryJobRequest"
+                          },
+                          "response": {
+                            "$ref": "RetryJobResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Retry the specified Job in a Rollout."
+                        }
+                      }
+                      ,
+                      "resources": {
+                        "jobRuns": {
+                          "methods": {
+                            "list": {
+                              "id": "clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.jobRuns.list",
+                              "path": "v1/{+parent}/jobRuns",
+                              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}/jobRuns",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "parent": {
+                                  "description": "Required. The `Rollout` which owns this collection of `JobRun` objects.",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+\/rollouts\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "pageSize": {
+                                  "description": "Optional. The maximum number of `JobRun` objects to return. The service may return fewer than this value. If unspecified, at most 50 `JobRun` objects will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
+                                  "location": "query",
+                                  "type": "integer",
+                                  "format": "int32"
+                                },
+                                "pageToken": {
+                                  "description": "Optional. A page token, received from a previous `ListJobRuns` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
+                                  "location": "query",
+                                  "type": "string"
+                                },
+                                "filter": {
+                                  "description": "Optional. Filter results to be returned. See https:\/\/google.aip.dev\/160 for more details.",
+                                  "location": "query",
+                                  "type": "string"
+                                },
+                                "orderBy": {
+                                  "description": "Optional. Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
+                                  "location": "query",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "parent"
+                              ],
+                              "response": {
+                                "$ref": "ListJobRunsResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Lists JobRuns in a given project and location."
+                            },
+                            "get": {
+                              "id": "clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.jobRuns.get",
+                              "path": "v1/{+name}",
+                              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}/jobRuns/{jobRunsId}",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "name": {
+                                  "description": "Required. Name of the `JobRun`. Format must be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/releases\/{release_name}\/rollouts\/{rollout_name}\/jobRuns\/{job_run_name}.",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+\/rollouts\/[^\/]+\/jobRuns\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "JobRun"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Get details of a single JobRun."
+                            }
+                          }
                         }
                       }
                     }

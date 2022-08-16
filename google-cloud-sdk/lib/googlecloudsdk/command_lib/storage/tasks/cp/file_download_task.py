@@ -300,18 +300,14 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
         temporary_file_url.object_name,
         destination_url.object_name,
         do_not_decompress_flag=self._do_not_decompress)
-
-    if self._user_request_args and self._user_request_args.system_posix_data:
-      posix_util.set_posix_attributes_on_file(
-          destination_url.object_name,
-          task_util.get_first_matching_message_payload(
-              part_download_task_output.messages,
-              task.Topic.API_DOWNLOAD_RESULT).posix_attributes)
-
     # For sliced download, cleanup is done in the finalized sliced download task
     # We perform cleanup here for all other types in case some corrupt files
     # were left behind.
     tracker_file_util.delete_download_tracker_files(temporary_file_url)
+
+    posix_util.set_posix_attributes_on_file_if_valid(
+        self._user_request_args, part_download_task_output.messages,
+        self._source_resource, self._destination_resource)
 
     if self._print_created_message:
       log.status.Print('Created: {}'.format(destination_url))

@@ -29,15 +29,6 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-class UrlMapsCompleter(compute_completers.ListCommandCompleter):
-
-  def __init__(self, **kwargs):
-    super(UrlMapsCompleter, self).__init__(
-        collection='compute.urlMaps',
-        list_command='compute url-maps list --uri',
-        **kwargs)
-
-
 class GlobalUrlMapsCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
@@ -56,43 +47,34 @@ class RegionalUrlMapsCompleter(compute_completers.ListCommandCompleter):
         **kwargs)
 
 
-class UrlMapsCompleterAlpha(completers.MultiResourceCompleter):
+class UrlMapsCompleter(completers.MultiResourceCompleter):
 
   def __init__(self, **kwargs):
-    super(UrlMapsCompleterAlpha, self).__init__(
+    super(UrlMapsCompleter, self).__init__(
         completers=[GlobalUrlMapsCompleter, RegionalUrlMapsCompleter], **kwargs)
 
 
-def UrlMapArgument(required=True,
-                   plural=False,
-                   include_l7_internal_load_balancing=False):
+def UrlMapArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       name='url_map',
       resource_name='URL map',
-      completer=UrlMapsCompleterAlpha
-      if include_l7_internal_load_balancing else UrlMapsCompleter,
+      completer=UrlMapsCompleter,
       plural=plural,
       required=required,
       global_collection='compute.urlMaps',
-      regional_collection='compute.regionUrlMaps'
-      if include_l7_internal_load_balancing else None,
-      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
-      if include_l7_internal_load_balancing else None)
+      regional_collection='compute.regionUrlMaps',
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
-def UrlMapArgumentForTargetProxy(required=True,
-                                 proxy_type='HTTP',
-                                 include_l7_internal_load_balancing=False):
+def UrlMapArgumentForTargetProxy(required=True, proxy_type='HTTP'):
   return compute_flags.ResourceArgument(
       name='--url-map',
       resource_name='URL map',
-      completer=UrlMapsCompleterAlpha
-      if include_l7_internal_load_balancing else UrlMapsCompleter,
+      completer=UrlMapsCompleter,
       plural=False,
       required=required,
       global_collection='compute.urlMaps',
-      regional_collection='compute.regionUrlMaps'
-      if include_l7_internal_load_balancing else None,
+      regional_collection='compute.regionUrlMaps',
       short_help=(
           'A reference to a URL map resource that defines the mapping of '
           'URLs to backend services.'),

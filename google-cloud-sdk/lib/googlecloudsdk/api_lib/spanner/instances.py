@@ -24,7 +24,6 @@ from apitools.base.py import list_pager
 from google.protobuf import timestamp_pb2
 from googlecloudsdk.api_lib.spanner import response_util
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.calliope import exceptions as c_exceptions
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -41,7 +40,13 @@ KNOWN_ROLES = [
 UNREACHABLE_INSTANCE_TIMEOUT = datetime.timedelta(seconds=20)
 
 
-def Create(instance, config, description, nodes, processing_units=None):
+def Create(instance,
+           config,
+           description,
+           nodes,
+           processing_units=None,
+           instance_type=None,
+           expire_behavior=None):
   """Create a new instance."""
   client = apis.GetClientInstance('spanner', 'v1')
   # Module containing the definitions of messages for the specified API.
@@ -58,6 +63,11 @@ def Create(instance, config, description, nodes, processing_units=None):
     instance_obj.nodeCount = nodes
   elif processing_units:
     instance_obj.processingUnits = processing_units
+  if instance_type is not None:
+    instance_obj.instanceType = instance_type
+  if expire_behavior is not None:
+    instance_obj.freeInstanceMetadata = msgs.FreeInstanceMetadata(
+        expireBehavior=expire_behavior)
   req = msgs.SpannerProjectsInstancesCreateRequest(
       parent=project_ref.RelativeName(),
       createInstanceRequest=msgs.CreateInstanceRequest(
@@ -134,7 +144,12 @@ def List():
       get_field_func=response_util.GetFieldAndLogUnreachable)
 
 
-def Patch(instance, description=None, nodes=None, processing_units=None):
+def Patch(instance,
+          description=None,
+          nodes=None,
+          processing_units=None,
+          instance_type=None,
+          expire_behavior=None):
   """Update an instance."""
   fields = []
   if description is not None:
@@ -151,6 +166,15 @@ def Patch(instance, description=None, nodes=None, processing_units=None):
         displayName=description, processingUnits=processing_units)
   else:
     instance_obj = msgs.Instance(displayName=description, nodeCount=nodes)
+
+  if instance_type is not None:
+    fields.append('instanceType')
+    instance_obj.instanceType = instance_type
+  if expire_behavior is not None:
+    fields.append('freeInstanceMetadata.expireBehavior')
+    instance_obj.freeInstanceMetadata = msgs.FreeInstanceMetadata(
+        expireBehavior=expire_behavior)
+
   ref = resources.REGISTRY.Parse(
       instance,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
@@ -160,3 +184,23 @@ def Patch(instance, description=None, nodes=None, processing_units=None):
       updateInstanceRequest=msgs.UpdateInstanceRequest(
           fieldMask=','.join(fields), instance=instance_obj))
   return client.projects_instances.Patch(req)
+
+
+def GetLocations(instance, verbose_flag):
+  """Get all the replica regions for an instance."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+  instance_res = Get(instance)
+  config_req = msgs.SpannerProjectsInstanceConfigsGetRequest(
+      name=instance_res.config)
+  config_res = client.projects_instanceConfigs.Get(config_req)
+  if verbose_flag:
+    command_output = []
+    for item in config_res.replicas:
+      command_output.append({'location': item.location, 'type': item.type})
+  else:
+    region_set = set()
+    for item in config_res.replicas:
+      region_set.add(item.location)
+    command_output = [{'location': item} for item in region_set]
+  return command_output

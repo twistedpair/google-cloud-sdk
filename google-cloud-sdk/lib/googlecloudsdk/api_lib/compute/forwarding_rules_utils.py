@@ -27,7 +27,7 @@ from googlecloudsdk.command_lib.compute.forwarding_rules import flags
 from googlecloudsdk.core import properties
 
 
-def _ValidateGlobalArgs(args):
+def _ValidateGlobalTargetArgs(args):
   """Validate the global forwarding rules args."""
   if args.target_instance:
     raise exceptions.ArgumentError(
@@ -43,42 +43,15 @@ def _ValidateGlobalArgs(args):
         'You cannot specify [--backend-service] for a global '
         'forwarding rule.')
 
-  if getattr(args, 'load_balancing_scheme', None) == 'INTERNAL':
-    raise exceptions.ArgumentError(
-        'You cannot specify internal [--load-balancing-scheme] for a global '
-        'forwarding rule.')
-
   if getattr(args, 'target_vpn_gateway', None):
     raise exceptions.ArgumentError(
         'You cannot specify [--target-vpn-gateway] for a global '
         'forwarding rule.')
 
-  if getattr(args, 'load_balancing_scheme', None) == 'INTERNAL_SELF_MANAGED':
-    if (not getattr(args, 'target_http_proxy', None) and
-        not getattr(args, 'target_https_proxy', None) and
-        not getattr(args, 'target_grpc_proxy', None) and
-        not getattr(args, 'target_tcp_proxy', None)):
-      target_error_message_with_tcp = (
-          'You must specify either [--target-http-proxy], '
-          '[--target-https-proxy], [--target-grpc-proxy] '
-          'or [--target-tcp-proxy] for an '
-          'INTERNAL_SELF_MANAGED [--load-balancing-scheme].')
-      raise exceptions.ArgumentError(target_error_message_with_tcp)
-
-    if getattr(args, 'subnet', None):
-      raise exceptions.ArgumentError(
-          'You cannot specify [--subnet] for an INTERNAL_SELF_MANAGED '
-          '[--load-balancing-scheme].')
-
-    if not getattr(args, 'address', None):
-      raise exceptions.ArgumentError(
-          'You must specify [--address] for an INTERNAL_SELF_MANAGED '
-          '[--load-balancing-scheme]')
-
 
 def GetGlobalTarget(resources, args):
   """Return the forwarding target for a globally scoped request."""
-  _ValidateGlobalArgs(args)
+  _ValidateGlobalTargetArgs(args)
 
   if args.target_http_proxy:
     return flags.TargetHttpProxyArg().ResolveAsResource(
@@ -95,8 +68,8 @@ def GetGlobalTarget(resources, args):
     return flags.TARGET_TCP_PROXY_ARG.ResolveAsResource(args, resources)
 
 
-def _ValidateRegionalArgs(args):
-  """Validate the regional forwarding rules args.
+def _ValidateRegionalTargetArgs(args):
+  """Validate the regional forwarding rule target args.
 
   Args:
       args: The arguments given to the create/set-target command.
@@ -116,28 +89,15 @@ def _ValidateRegionalArgs(args):
         'You cannot specify [--target-instance-zone] unless you are '
         'specifying [--target-instance].')
 
-  if getattr(args, 'load_balancing_scheme', None) == 'INTERNAL':
-    if getattr(args, 'port_range', None):
-      raise exceptions.ArgumentError(
-          'You cannot specify [--port-range] for a forwarding rule '
-          'whose [--load-balancing-scheme] is internal, '
-          'please use [--ports] flag instead.')
-
-  if getattr(args, 'load_balancing_scheme', None) == 'INTERNAL_SELF_MANAGED':
-    raise exceptions.ArgumentError(
-        'You cannot specify an INTERNAL_SELF_MANAGED [--load-balancing-scheme] '
-        'for a regional forwarding rule.')
-
 
 def GetRegionalTarget(client,
                       resources,
                       args,
                       forwarding_rule_ref,
-                      include_l7_internal_load_balancing=False,
                       include_target_service_attachment=False,
                       include_regional_tcp_proxy=False):
   """Return the forwarding target for a regionally scoped request."""
-  _ValidateRegionalArgs(args)
+  _ValidateRegionalTargetArgs(args)
   region_arg = forwarding_rule_ref.region
   project_arg = forwarding_rule_ref.project
   if args.target_pool:
@@ -164,15 +124,11 @@ def GetRegionalTarget(client,
     target_ref = flags.BACKEND_SERVICE_ARG.ResolveAsResource(args, resources)
     target_region = target_ref.region
   elif args.target_http_proxy:
-    target_ref = flags.TargetHttpProxyArg(
-        include_l7_internal_load_balancing=include_l7_internal_load_balancing
-    ).ResolveAsResource(
+    target_ref = flags.TargetHttpProxyArg().ResolveAsResource(
         args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL)
     target_region = region_arg
   elif args.target_https_proxy:
-    target_ref = flags.TargetHttpsProxyArg(
-        include_l7_internal_load_balancing=include_l7_internal_load_balancing
-    ).ResolveAsResource(
+    target_ref = flags.TargetHttpsProxyArg().ResolveAsResource(
         args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL)
     target_region = region_arg
   elif args.target_ssl_proxy:

@@ -90,6 +90,43 @@ _RESTORE_DB_ENCRYPTION_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
              'selected, kms-key must be set.')
     })
 
+_INSTANCE_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
+    '--instance-type',
+    apis.GetMessagesModule(
+        'spanner',
+        'v1').Instance.InstanceTypeValueValuesEnum,
+    help_str='The type of this instance.',
+    required=False,
+    custom_mappings={
+        'PROVISIONED': (
+            'provisioned',
+            ('Provisioned instances have dedicated resources, standard usage '
+             'limits and support')),
+        'FREE_INSTANCE': (
+            'free-instance',
+            ('Free instances provide no guarantee for dedicated resources, '
+             '[node_count, processing_units] should be 0. They come with '
+             'stricter usage limits and limited support.')),
+    })
+
+_EXPIRE_BEHAVIOR_MAPPER = arg_utils.ChoiceEnumMapper(
+    '--expire-behavior',
+    apis.GetMessagesModule(
+        'spanner',
+        'v1').FreeInstanceMetadata.ExpireBehaviorValueValuesEnum,
+    help_str='The expire behavior of a free instance.',
+    required=False,
+    custom_mappings={
+        'FREE_TO_PROVISIONED': (
+            'free-to-provisioned',
+            ('When the free instance expires, upgrade the instance to a '
+             'provisioned instance')),
+        'REMOVE_AFTER_GRACE_PERIOD': (
+            'remove-after-grace-period',
+            ('When the free instance expires, disable the instance, and delete '
+             'it after the grace period passes if it has not been upgraded.')),
+    })
+
 
 def InstanceAttributeConfig():
   """Get instance resource attribute with default value."""
@@ -373,3 +410,19 @@ def GetAndValidateKmsKeyName(args):
             'combination of --kms-project, --kms-location, --kms-keyring and ' +
             '--kms-key to specify the key ID in pieces.')
     return None  # User didn't specify KMS key
+
+
+def AddInstanceTypeArg(parser):
+  return _INSTANCE_TYPE_MAPPER.choice_arg.AddToParser(parser)
+
+
+def GetInstanceType(args):
+  return _INSTANCE_TYPE_MAPPER.GetEnumForChoice(args.instance_type)
+
+
+def AddExpireBehaviorArg(parser):
+  return _EXPIRE_BEHAVIOR_MAPPER.choice_arg.AddToParser(parser)
+
+
+def GetExpireBehavior(args):
+  return _EXPIRE_BEHAVIOR_MAPPER.GetEnumForChoice(args.expire_behavior)

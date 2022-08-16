@@ -670,11 +670,11 @@
     },
     "UniformSharding": {
       "id": "UniformSharding",
-      "description": "Uniformly shards test cases given a total number of shards. For Instrumentation test, it will be translated to \"-e numShard\" \"-e shardIndex\" AndroidJUnitRunner arguments. Based on the sharding mechanism AndroidJUnitRunner uses, there is no guarantee that test cases will be distributed uniformly across all shards. With uniform sharding enabled, specifying these sharding arguments via environment_variables is invalid.",
+      "description": "Uniformly shards test cases given a total number of shards. For instrumentation tests, it will be translated to \"-e numShard\" and \"-e shardIndex\" AndroidJUnitRunner arguments. With uniform sharding enabled, specifying either of these sharding arguments via `environment_variables` is invalid. Based on the sharding mechanism AndroidJUnitRunner uses, there is no guarantee that test cases will be distributed uniformly across all shards.",
       "type": "object",
       "properties": {
         "numShards": {
-          "description": "Required. Total number of shards. When any physical devices are selected, the number must be >= 1 and <= 50. When no physical devices are selected, the number must be >= 1 and <= 500.",
+          "description": "Required. The total number of shards to create. This must always be a positive number that is no greater than the total number of test cases. When you select one or more physical devices, the number of shards must be <= 50. When you select one or more ARM virtual devices, it must be <= 100. When you select only x86 virtual devices, it must be <= 500.",
           "type": "integer",
           "format": "int32"
         }
@@ -686,7 +686,7 @@
       "type": "object",
       "properties": {
         "testTargetsForShard": {
-          "description": "Required. Group of packages, classes, and\/or test methods to be run for each shard. When any physical devices are selected, the number of test_targets_for_shard must be >= 1 and <= 50. When no physical devices are selected, the number must be >= 1 and <= 500.",
+          "description": "Required. Group of packages, classes, and\/or test methods to be run for each manually-created shard. You must specify at least one shard if this field is present. When you select one or more physical devices, the number of repeated test_targets_for_shard must be <= 50. When you select one or more ARM virtual devices, it must be <= 100. When you select only x86 virtual devices, it must be <= 500.",
           "type": "array",
           "items": {
             "$ref": "TestTargetsForShard"
@@ -1519,6 +1519,13 @@
             "WEARABLE"
           ]
         },
+        "perVersionInfo": {
+          "description": "Version-specific information of an Android model.",
+          "type": "array",
+          "items": {
+            "$ref": "PerAndroidVersionInfo"
+          }
+        },
         "screenX": {
           "description": "Screen size in the horizontal (X) dimension measured in pixels.",
           "type": "integer",
@@ -1562,6 +1569,35 @@
         "thumbnailUrl": {
           "description": "URL of a thumbnail image (photo) of the device.",
           "type": "string"
+        }
+      }
+    },
+    "PerAndroidVersionInfo": {
+      "id": "PerAndroidVersionInfo",
+      "description": "A version-specific information of an Android model.",
+      "type": "object",
+      "properties": {
+        "versionId": {
+          "description": "An Android version.",
+          "type": "string"
+        },
+        "deviceCapacity": {
+          "description": "A static capacity of an Android version.",
+          "type": "string",
+          "enumDescriptions": [
+            "The value of device capacity is unknown or unset.",
+            "Devices that are high in capacity (The lab has a large number of these devices). These devices are generally suggested for running a large number of simultaneous tests (e.g. more than 100 tests). Please note that high capacity devices do not guarantee short wait times due to several factors: 1. Traffic (how heavily they are used at any given moment) 2. High capacity devices are prioritized for certain usages, which may cause user tests to be slower than selecting other similar device types.",
+            "Devices that are medium in capacity (The lab has a decent number of these devices, though not as many as high capacity devices). These devices are suitable for fewer test runs (e.g. fewer than 100 tests) and only for low shard counts (e.g. less than 10 shards).",
+            "Devices that are low in capacity (The lab has a small number of these devices). These devices may be used if users need to test on this specific device model and version. Please note that due to low capacity, the tests may take much longer to finish, especially if a large number of tests are invoked at once. These devices are not suitable for test sharding.",
+            "Devices that are completely missing from the lab. These devices are unavailable either temporarily or permanently and should not be requested. If the device is also marked as deprecated, this state is very likely permanent."
+          ],
+          "enum": [
+            "DEVICE_CAPACITY_UNSPECIFIED",
+            "DEVICE_CAPACITY_HIGH",
+            "DEVICE_CAPACITY_MEDIUM",
+            "DEVICE_CAPACITY_LOW",
+            "DEVICE_CAPACITY_NONE"
+          ]
         }
       }
     },
@@ -1807,6 +1843,42 @@
             "PHONE",
             "TABLET",
             "WEARABLE"
+          ]
+        },
+        "perVersionInfo": {
+          "description": "Version-specific information of an iOS model.",
+          "type": "array",
+          "items": {
+            "$ref": "PerIosVersionInfo"
+          }
+        }
+      }
+    },
+    "PerIosVersionInfo": {
+      "id": "PerIosVersionInfo",
+      "description": "A version-specific information of an iOS model.",
+      "type": "object",
+      "properties": {
+        "versionId": {
+          "description": "An iOS version.",
+          "type": "string"
+        },
+        "deviceCapacity": {
+          "description": "A static capacity of an iOS version.",
+          "type": "string",
+          "enumDescriptions": [
+            "The value of device capacity is unknown or unset.",
+            "Devices that are high in capacity (The lab has a large number of these devices). These devices are generally suggested for running a large number of simultaneous tests (e.g. more than 100 tests). Please note that high capacity devices do not guarantee short wait times due to several factors: 1. Traffic (how heavily they are used at any given moment) 2. High capacity devices are prioritized for certain usages, which may cause user tests to be slower than selecting other similar device types.",
+            "Devices that are medium in capacity (The lab has a decent number of these devices, though not as many as high capacity devices). These devices are suitable for fewer test runs (e.g. fewer than 100 tests) and only for low shard counts (e.g. less than 10 shards).",
+            "Devices that are low in capacity (The lab has a small number of these devices). These devices may be used if users need to test on this specific device model and version. Please note that due to low capacity, the tests may take much longer to finish, especially if a large number of tests are invoked at once. These devices are not suitable for test sharding.",
+            "Devices that are completely missing from the lab. These devices are unavailable either temporarily or permanently and should not be requested. If the device is also marked as deprecated, this state is very likely permanent."
+          ],
+          "enum": [
+            "DEVICE_CAPACITY_UNSPECIFIED",
+            "DEVICE_CAPACITY_HIGH",
+            "DEVICE_CAPACITY_MEDIUM",
+            "DEVICE_CAPACITY_LOW",
+            "DEVICE_CAPACITY_NONE"
           ]
         }
       }

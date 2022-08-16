@@ -69,10 +69,9 @@ def Delete(session_ref):
 
 
 def _GetClientInstance(api_name, api_version, http_timeout_sec=None):
-  client = apis.GetClientInstance(api_name, api_version)
+  client = apis.GetClientInstance(
+      api_name, api_version, http_timeout_sec=http_timeout_sec)
   client.check_response_func = CheckResponse
-  if http_timeout_sec is not None:
-    client.http.timeout = http_timeout_sec
   return client
 
 

@@ -281,6 +281,10 @@ AUTOSCALING_FLAG_GROUP_DESCRIPTION = (
     'or greater (--scheduler-count flag is available for '
     'Composer 1.X as well).')
 
+TRIGGERER_PARAMETERS_FLAG_GROUP_DESCRIPTION = (
+    'Group of arguments for setting triggerer settings in Composer 2.2.X '
+    'or greater')
+
 MASTER_AUTHORIZED_NETWORKS_GROUP_DESCRIPTION = (
     'Group of arguments for setting master authorized networks configuration.')
 
@@ -486,6 +490,15 @@ SCHEDULER_CPU = base.Argument(
     CPU allocated to Airflow scheduler.
     """)
 
+TRIGGERER_CPU = base.Argument(
+    '--triggerer-cpu',
+    type=float,
+    default=None,
+    action=V2ExclusiveStoreAction,
+    help="""\
+    CPU allocated to Airflow triggerer. Supported in the Environments with Airflow 2.2.x and greater.
+    """)
+
 WORKER_CPU = base.Argument(
     '--worker-cpu',
     type=float,
@@ -516,6 +529,20 @@ SCHEDULER_MEMORY = base.Argument(
     help="""\
     Memory allocated to Airflow scheduler, ex. 600MB, 3GB, 2. If units are not provided,
     defaults to GB.
+    """)
+
+TRIGGERER_MEMORY = base.Argument(
+    '--triggerer-memory',
+    type=arg_parsers.BinarySize(
+        lower_bound='128MB',
+        upper_bound='512GB',
+        suggested_binary_size_scales=['MB', 'GB'],
+        default_unit='G'),
+    default=None,
+    action=V2ExclusiveStoreAction,
+    help="""\
+    Memory allocated to Airflow triggerer, ex. 600MB, 3GB, 2. If units are not provided,
+    defaults to GB. Supported in the Environments with Airflow 2.2.x and greater.
     """)
 
 WORKER_MEMORY = base.Argument(
@@ -612,6 +639,14 @@ NUM_SCHEDULERS = base.Argument(
     default=None,
     help="""\
     Number of schedulers, supported in the Environments with Airflow 2.0.1 and later.
+    """)
+
+ENABLE_TRIGGERER = base.Argument(
+    '--enable-triggerer',
+    default=None,
+    action='store_true',
+    help="""\
+    Enable use of triggerer, Supported in the Environments with Airflow 2.2.x and greater.
     """)
 
 ENVIRONMENT_SIZE_GA = arg_utils.ChoiceEnumMapper(

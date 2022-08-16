@@ -142,6 +142,19 @@ class AppDevExperienceFeatureState(_messages.Message):
   networkingInstallSucceeded = _messages.MessageField('Status', 1)
 
 
+class ApplianceCluster(_messages.Message):
+  r"""ApplianceCluster contains information specific to GDC Edge Appliance
+  Clusters.
+
+  Fields:
+    resourceLink: Immutable. Self-link of the GCP resource for the Appliance
+      Cluster. For example: //transferappliance.googleapis.com/projects/my-
+      project/locations/us-west1-a/appliances/my-appliance
+  """
+
+  resourceLink = _messages.StringField(1)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -205,6 +218,40 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class Authority(_messages.Message):
+  r"""Authority encodes how Google will recognize identities from this
+  Membership. See the workload identity documentation for more details:
+  https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
+
+  Fields:
+    identityProvider: Output only. An identity provider that reflects the
+      `issuer` in the workload identity pool.
+    issuer: Optional. A JSON Web Token (JWT) issuer URI. `issuer` must start
+      with `https://` and be a valid URL with length <2000 characters. If set,
+      then Google will allow valid OIDC tokens from this issuer to
+      authenticate within the workload_identity_pool. OIDC discovery will be
+      performed on this URI to validate tokens from the issuer. Clearing
+      `issuer` disables Workload Identity. `issuer` cannot be directly
+      modified; it must be cleared (and Workload Identity disabled) before
+      using a new issuer (and re-enabling Workload Identity).
+    oidcJwks: Optional. OIDC verification keys for this Membership in JWKS
+      format (RFC 7517). When this field is set, OIDC discovery will NOT be
+      performed on `issuer`, and instead OIDC tokens will be validated using
+      this field.
+    workloadIdentityPool: Output only. The name of the workload identity pool
+      in which `issuer` will be recognized. There is a single Workload
+      Identity Pool per Hub that is shared between all Memberships that belong
+      to that Hub. For a Hub hosted in {PROJECT_ID}, the workload pool format
+      is `{PROJECT_ID}.hub.id.goog`, although this is subject to change in
+      newer versions of this API.
+  """
+
+  identityProvider = _messages.StringField(1)
+  issuer = _messages.StringField(2)
+  oidcJwks = _messages.BytesField(3)
+  workloadIdentityPool = _messages.StringField(4)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -225,8 +272,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -267,12 +320,14 @@ class CommonFeatureSpec(_messages.Message):
   Fields:
     anthosobservability: Anthos Observability spec
     appdevexperience: Appdevexperience specific spec.
+    helloworld: Hello World-specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
   """
 
   anthosobservability = _messages.MessageField('AnthosObservabilityFeatureSpec', 1)
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureSpec', 2)
-  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 3)
+  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 3)
+  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 4)
 
 
 class CommonFeatureState(_messages.Message):
@@ -280,11 +335,13 @@ class CommonFeatureState(_messages.Message):
 
   Fields:
     appdevexperience: Appdevexperience specific state.
+    helloworld: Hello World-specific state.
     state: Output only. The "running state" of the Feature in this Hub.
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
-  state = _messages.MessageField('FeatureState', 2)
+  helloworld = _messages.MessageField('HelloWorldFeatureState', 2)
+  state = _messages.MessageField('FeatureState', 3)
 
 
 class ConfigManagementBinauthzConfig(_messages.Message):
@@ -984,6 +1041,31 @@ class ConfigManagementSyncState(_messages.Message):
   syncToken = _messages.StringField(7)
 
 
+class ConnectAgentResource(_messages.Message):
+  r"""ConnectAgentResource represents a Kubernetes resource manifest for
+  Connect Agent deployment.
+
+  Fields:
+    manifest: YAML manifest of the resource.
+    type: Kubernetes type of the resource.
+  """
+
+  manifest = _messages.StringField(1)
+  type = _messages.MessageField('TypeMeta', 2)
+
+
+class EdgeCluster(_messages.Message):
+  r"""EdgeCluster contains information specific to Google Edge Clusters.
+
+  Fields:
+    resourceLink: Immutable. Self-link of the GCP resource for the Edge
+      Cluster. For example: //edgecontainer.googleapis.com/projects/my-
+      project/locations/us-west1-a/clusters/my-cluster
+  """
+
+  resourceLink = _messages.StringField(1)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1270,6 +1352,34 @@ class FeatureState(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
+class GenerateConnectManifestResponse(_messages.Message):
+  r"""GenerateConnectManifestResponse contains manifest information for
+  installing/upgrading a Connect agent.
+
+  Fields:
+    manifest: The ordered list of Kubernetes resources that need to be applied
+      to the cluster for GKE Connect agent installation/upgrade.
+  """
+
+  manifest = _messages.MessageField('ConnectAgentResource', 1, repeated=True)
+
+
+class GkeCluster(_messages.Message):
+  r"""GkeCluster contains information specific to GKE clusters.
+
+  Fields:
+    clusterMissing: Output only. If cluster_missing is set then it denotes
+      that the GKE cluster no longer exists in the GKE Control Plane.
+    resourceLink: Immutable. Self-link of the GCP resource for the GKE
+      cluster. For example: //container.googleapis.com/projects/my-
+      project/locations/us-west1-a/clusters/my-cluster Zonal clusters are also
+      supported.
+  """
+
+  clusterMissing = _messages.BooleanField(1)
+  resourceLink = _messages.StringField(2)
+
+
 class GkehubProjectsLocationsFeaturesCreateRequest(_messages.Message):
   r"""A GkehubProjectsLocationsFeaturesCreateRequest object.
 
@@ -1479,6 +1589,97 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class GkehubProjectsLocationsMembershipsCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsCreateRequest object.
+
+  Fields:
+    membership: A Membership resource to be passed as the request body.
+    membershipId: Required. Client chosen ID for the membership.
+      `membership_id` must be a valid RFC 1123 compliant DNS label: 1. At most
+      63 characters in length 2. It must consist of lower case alphanumeric
+      characters or `-` 3. It must start and end with an alphanumeric
+      character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+    parent: Required. The parent (project and location) where the Memberships
+      will be created. Specified in the format `projects/*/locations/*`.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  membership = _messages.MessageField('Membership', 1)
+  membershipId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsDeleteRequest object.
+
+  Fields:
+    name: Required. The Membership resource name in the format
+      `projects/*/locations/*/memberships/*`.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest
+  object.
+
+  Fields:
+    imagePullSecretContent: Optional. The image pull secret content for the
+      registry, if not public.
+    isUpgrade: Optional. If true, generate the resources for upgrade only.
+      Some resources generated only for installation (e.g. secrets) will be
+      excluded.
+    name: Required. The Membership resource name the Agent will associate
+      with, in the format `projects/*/locations/*/memberships/*`.
+    namespace: Optional. Namespace for GKE Connect agent resources. Defaults
+      to `gke-connect`. The Connect Agent is authorized automatically when run
+      in the default namespace. Otherwise, explicit authorization must be
+      granted with an additional IAM binding.
+    proxy: Optional. URI of a proxy if connectivity from the agent to
+      gkeconnect.googleapis.com requires the use of a proxy. Format must be in
+      the form `http(s)://{proxy_address}`, depending on the HTTP/HTTPS
+      protocol supported by the proxy. This will direct the connect agent's
+      outbound traffic through a HTTP(S) proxy.
+    registry: Optional. The registry to fetch the connect agent image from.
+      Defaults to gcr.io/gkeconnect.
+    version: Optional. The Connect agent version to use. Defaults to the most
+      current version.
+  """
+
+  imagePullSecretContent = _messages.BytesField(1)
+  isUpgrade = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  namespace = _messages.StringField(4)
+  proxy = _messages.BytesField(5)
+  registry = _messages.StringField(6)
+  version = _messages.StringField(7)
+
+
 class GkehubProjectsLocationsMembershipsGetIamPolicyRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsGetIamPolicyRequest object.
 
@@ -1503,6 +1704,74 @@ class GkehubProjectsLocationsMembershipsGetIamPolicyRequest(_messages.Message):
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class GkehubProjectsLocationsMembershipsGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsGetRequest object.
+
+  Fields:
+    name: Required. The Membership resource name in the format
+      `projects/*/locations/*/memberships/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsListRequest object.
+
+  Fields:
+    filter: Optional. Lists Memberships that match the filter expression,
+      following the syntax outlined in https://google.aip.dev/160. Examples: -
+      Name is `bar` in project `foo-proj` and location `global`: name =
+      "projects/foo-proj/locations/global/membership/bar" - Memberships that
+      have a label called `foo`: labels.foo:* - Memberships that have a label
+      called `foo` whose value is `bar`: labels.foo = bar - Memberships in the
+      CREATING state: state = CREATING
+    orderBy: Optional. One or more fields to compare and use to sort the
+      output. See https://google.aip.dev/132#ordering.
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListMemberships`
+      which specifies the position in the list from where to continue listing
+      the resources.
+    parent: Required. The parent (project and location) where the Memberships
+      will be listed. Specified in the format `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class GkehubProjectsLocationsMembershipsPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsPatchRequest object.
+
+  Fields:
+    membership: A Membership resource to be passed as the request body.
+    name: Required. The Membership resource name in the format
+      `projects/*/locations/*/memberships/*`.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Mask of fields to update.
+  """
+
+  membership = _messages.MessageField('Membership', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class GkehubProjectsLocationsMembershipsSetIamPolicyRequest(_messages.Message):
@@ -1637,6 +1906,154 @@ class GoogleRpcStatus(_messages.Message):
   message = _messages.StringField(3)
 
 
+class HelloWorldFeatureSpec(_messages.Message):
+  r"""**Hello World**: The Hub-wide input for the HelloWorld feature.
+
+  Fields:
+    customConfig: Custom config for the HelloWorld controller codelab. This
+      should be a textpb string.
+    featureTest: Message to hold fields to use in feature e2e create/mutate
+      testing.
+  """
+
+  customConfig = _messages.StringField(1)
+  featureTest = _messages.MessageField('HelloWorldFeatureTest', 2)
+
+
+class HelloWorldFeatureState(_messages.Message):
+  r"""**Hello World**: An empty state left as an example Hub-wide Feature
+  state.
+  """
+
+
+
+class HelloWorldFeatureTest(_messages.Message):
+  r"""Represents message used in feature e2e create/mutate testing.
+
+  Enums:
+    ThirdValueValuesEnum:
+
+  Messages:
+    FifthValue: A FifthValue object.
+    NinthValue: Map field.
+
+  Fields:
+    eighth: Repeated field.
+    fifth: A FifthValue attribute.
+    first: Singular scaler field.
+    fourth: Singular Message fields.
+    ninth: Map field.
+    second: Singular scaler field.
+    seventh: A string attribute.
+    sixth: A string attribute.
+    third: A ThirdValueValuesEnum attribute.
+  """
+
+  class ThirdValueValuesEnum(_messages.Enum):
+    r"""ThirdValueValuesEnum enum type.
+
+    Values:
+      BAR_UNSPECIFIED: <no description>
+      FIRST: <no description>
+      SECOND: <no description>
+    """
+    BAR_UNSPECIFIED = 0
+    FIRST = 1
+    SECOND = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FifthValue(_messages.Message):
+    r"""A FifthValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a FifthValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FifthValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NinthValue(_messages.Message):
+    r"""Map field.
+
+    Messages:
+      AdditionalProperty: An additional property for a NinthValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type NinthValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NinthValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A HelloWorldFooBar attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('HelloWorldFooBar', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  eighth = _messages.MessageField('HelloWorldFooBar', 1, repeated=True)
+  fifth = _messages.MessageField('FifthValue', 2)
+  first = _messages.StringField(3)
+  fourth = _messages.StringField(4)
+  ninth = _messages.MessageField('NinthValue', 5)
+  second = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  seventh = _messages.StringField(7)
+  sixth = _messages.IntegerField(8)
+  third = _messages.EnumField('ThirdValueValuesEnum', 9)
+
+
+class HelloWorldFooBar(_messages.Message):
+  r"""Nested Message.
+
+  Fields:
+    first: A string attribute.
+    second: A integer attribute.
+  """
+
+  first = _messages.StringField(1)
+  second = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class HelloWorldMembershipSpec(_messages.Message):
+  r"""**Hello World**: The membership-specific input for HelloWorld feature.
+
+  Fields:
+    customConfig: Custom config for individual memberships. This should be a
+      textpb string.
+    featureTest: Message to hold fields to use in feature e2e create/mutate
+      testing.
+  """
+
+  customConfig = _messages.StringField(1)
+  featureTest = _messages.MessageField('HelloWorldFeatureTest', 2)
+
+
+class HelloWorldMembershipState(_messages.Message):
+  r"""**Hello World**: An empty state left as an example membership-specific
+  Feature state.
+  """
+
+
+
 class IdentityServiceAuthMethod(_messages.Message):
   r"""Configuration of an auth method for a member/cluster. Only one
   authentication method (e.g., OIDC and LDAP) can be set per AuthMethod.
@@ -1733,6 +2150,73 @@ class IdentityServiceOidcConfig(_messages.Message):
   userPrefix = _messages.StringField(13)
 
 
+class KubernetesMetadata(_messages.Message):
+  r"""KubernetesMetadata provides informational metadata for Memberships
+  representing Kubernetes clusters.
+
+  Fields:
+    kubernetesApiServerVersion: Output only. Kubernetes API server version
+      string as reported by `/version`.
+    memoryMb: Output only. The total memory capacity as reported by the sum of
+      all Kubernetes nodes resources, defined in MB.
+    nodeCount: Output only. Node count as reported by Kubernetes nodes
+      resources.
+    nodeProviderId: Output only. Node providerID as reported by the first node
+      in the list of nodes on the Kubernetes endpoint. On Kubernetes platforms
+      that support zero-node clusters (like GKE-on-GCP), the node_count will
+      be zero and the node_provider_id will be empty.
+    updateTime: Output only. The time at which these details were last
+      updated. This update_time is different from the Membership-level
+      update_time since EndpointDetails are updated internally for API
+      consumers.
+    vcpuCount: Output only. vCPU count as reported by Kubernetes nodes
+      resources.
+  """
+
+  kubernetesApiServerVersion = _messages.StringField(1)
+  memoryMb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  nodeProviderId = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+  vcpuCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
+class KubernetesResource(_messages.Message):
+  r"""KubernetesResource contains the YAML manifests and configuration for
+  Membership Kubernetes resources in the cluster. After CreateMembership or
+  UpdateMembership, these resources should be re-applied in the cluster.
+
+  Fields:
+    connectResources: Output only. The Kubernetes resources for installing the
+      GKE Connect agent This field is only populated in the Membership
+      returned from a successful long-running operation from CreateMembership
+      or UpdateMembership. It is not populated during normal GetMembership or
+      ListMemberships requests. To get the resource manifest after the initial
+      registration, the caller should make a UpdateMembership call with an
+      empty field mask.
+    membershipCrManifest: Input only. The YAML representation of the
+      Membership CR. This field is ignored for GKE clusters where Hub can read
+      the CR directly. Callers should provide the CR that is currently present
+      in the cluster during CreateMembership or UpdateMembership, or leave
+      this field empty if none exists. The CR manifest is used to validate the
+      cluster has not been registered with another Membership.
+    membershipResources: Output only. Additional Kubernetes resources that
+      need to be applied to the cluster after Membership creation, and after
+      every update. This field is only populated in the Membership returned
+      from a successful long-running operation from CreateMembership or
+      UpdateMembership. It is not populated during normal GetMembership or
+      ListMemberships requests. To get the resource manifest after the initial
+      registration, the caller should make a UpdateMembership call with an
+      empty field mask.
+    resourceOptions: Optional. Options for Kubernetes resource generation.
+  """
+
+  connectResources = _messages.MessageField('ResourceManifest', 1, repeated=True)
+  membershipCrManifest = _messages.StringField(2)
+  membershipResources = _messages.MessageField('ResourceManifest', 3, repeated=True)
+  resourceOptions = _messages.MessageField('ResourceOptions', 4)
+
+
 class ListFeaturesResponse(_messages.Message):
   r"""Response message for the `GkeHub.ListFeatures` method.
 
@@ -1758,6 +2242,23 @@ class ListLocationsResponse(_messages.Message):
 
   locations = _messages.MessageField('Location', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListMembershipsResponse(_messages.Message):
+  r"""Response message for the `GkeHub.ListMemberships` method.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListMemberships` method. The value of an empty string means that there
+      are no more resources to return.
+    resources: The list of matching Memberships.
+    unreachable: List of locations that could not be reached while fetching
+      this list.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  resources = _messages.MessageField('Membership', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -1887,6 +2388,159 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class Membership(_messages.Message):
+  r"""Membership contains information about a member cluster.
+
+  Enums:
+    InfrastructureTypeValueValuesEnum: Optional. The infrastructure type this
+      Membership is running on.
+
+  Messages:
+    LabelsValue: Optional. GCP labels for this membership.
+
+  Fields:
+    authority: Optional. How to identify workloads from this Membership. See
+      the documentation on Workload Identity for more details:
+      https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
+    createTime: Output only. When the Membership was created.
+    deleteTime: Output only. When the Membership was deleted.
+    description: Output only. Description of this membership, limited to 63
+      characters. Must match the regex: `a-zA-Z0-9*` This field is present for
+      legacy purposes.
+    endpoint: Optional. Endpoint information to reach this member.
+    externalId: Optional. An externally-generated and managed ID for this
+      Membership. This ID may be modified after creation, but this is not
+      recommended. The ID must match the regex: `a-zA-Z0-9*` If this
+      Membership represents a Kubernetes cluster, this value should be set to
+      the UID of the `kube-system` namespace object.
+    infrastructureType: Optional. The infrastructure type this Membership is
+      running on.
+    labels: Optional. GCP labels for this membership.
+    lastConnectionTime: Output only. For clusters using Connect, the timestamp
+      of the most recent connection established with Google Cloud. This time
+      is updated every several minutes, not continuously. For clusters that do
+      not use GKE Connect, or that have never connected successfully, this
+      field will be unset.
+    name: Output only. The full, unique name of this Membership resource in
+      the format `projects/*/locations/*/memberships/{membership_id}`, set
+      during creation. `membership_id` must be a valid RFC 1123 compliant DNS
+      label: 1. At most 63 characters in length 2. It must consist of lower
+      case alphanumeric characters or `-` 3. It must start and end with an
+      alphanumeric character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+    state: Output only. State of the Membership resource.
+    uniqueId: Output only. Google-generated UUID for this resource. This is
+      unique across all Membership resources. If a Membership resource is
+      deleted and another resource with the same name is created, it gets a
+      different unique_id.
+    updateTime: Output only. When the Membership was last updated.
+  """
+
+  class InfrastructureTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The infrastructure type this Membership is running on.
+
+    Values:
+      INFRASTRUCTURE_TYPE_UNSPECIFIED: No type was specified. Some Hub
+        functionality may require a type be specified, and will not support
+        Memberships with this value.
+      ON_PREM: Private infrastructure that is owned or operated by customer.
+        This includes GKE distributions such as GKE-OnPrem and GKE-
+        OnBareMetal.
+      MULTI_CLOUD: Public cloud infrastructure.
+    """
+    INFRASTRUCTURE_TYPE_UNSPECIFIED = 0
+    ON_PREM = 1
+    MULTI_CLOUD = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. GCP labels for this membership.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  authority = _messages.MessageField('Authority', 1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  endpoint = _messages.MessageField('MembershipEndpoint', 5)
+  externalId = _messages.StringField(6)
+  infrastructureType = _messages.EnumField('InfrastructureTypeValueValuesEnum', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  lastConnectionTime = _messages.StringField(9)
+  name = _messages.StringField(10)
+  state = _messages.MessageField('MembershipState', 11)
+  uniqueId = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
+
+
+class MembershipEndpoint(_messages.Message):
+  r"""MembershipEndpoint contains information needed to contact a Kubernetes
+  API, endpoint and any additional Kubernetes metadata.
+
+  Enums:
+    ModeValueValuesEnum: Immutable. The management mode of this membership.
+
+  Fields:
+    applianceCluster: Optional. Specific information for a GDC Edge Appliance
+      cluster.
+    edgeCluster: Optional. Specific information for a Google Edge cluster.
+    gkeCluster: Optional. Specific information for a GKE-on-GCP cluster.
+    googleManaged: Output only. Whether the lifecycle of this membership is
+      managed by a google cluster platform service.
+    kubernetesMetadata: Output only. Useful Kubernetes-specific metadata.
+    kubernetesResource: Optional. The in-cluster Kubernetes Resources that
+      should be applied for a correctly registered cluster, in the steady
+      state. These resources: * Ensure that the cluster is exclusively
+      registered to one and only one Hub Membership. * Propagate Workload Pool
+      Information available in the Membership Authority field. * Ensure proper
+      initial configuration of default Hub Features.
+    mode: Immutable. The management mode of this membership.
+    multiCloudCluster: Optional. Specific information for a GKE Multi-Cloud
+      cluster.
+    onPremCluster: Optional. Specific information for a GKE On-Prem cluster.
+      An onprem user-cluster who has no resourceLink is not allowed to use
+      this field, it should have a nil "type" instead.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Immutable. The management mode of this membership.
+
+    Values:
+      MODE_UNSPECIFIED: The mode is not set.
+      AUTOFLEET: Membership is being managed in autofleet mode.
+    """
+    MODE_UNSPECIFIED = 0
+    AUTOFLEET = 1
+
+  applianceCluster = _messages.MessageField('ApplianceCluster', 1)
+  edgeCluster = _messages.MessageField('EdgeCluster', 2)
+  gkeCluster = _messages.MessageField('GkeCluster', 3)
+  googleManaged = _messages.BooleanField(4)
+  kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 5)
+  kubernetesResource = _messages.MessageField('KubernetesResource', 6)
+  mode = _messages.EnumField('ModeValueValuesEnum', 7)
+  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 8)
+  onPremCluster = _messages.MessageField('OnPremCluster', 9)
+
+
 class MembershipFeatureSpec(_messages.Message):
   r"""MembershipFeatureSpec contains configuration information for a single
   Membership.
@@ -1896,6 +2550,7 @@ class MembershipFeatureSpec(_messages.Message):
     anthosvm: AnthosVM spec.
     cloudbuild: Cloud Build-specific spec
     configmanagement: Config Management-specific spec.
+    helloworld: Hello World-specific spec.
     identityservice: Identity Service-specific spec.
     mesh: Anthos Service Mesh-specific spec
     policycontroller: Policy Controller spec.
@@ -1905,9 +2560,10 @@ class MembershipFeatureSpec(_messages.Message):
   anthosvm = _messages.MessageField('AnthosVMMembershipSpec', 2)
   cloudbuild = _messages.MessageField('MembershipSpec', 3)
   configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 4)
-  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 5)
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 6)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 7)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 5)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 6)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 7)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 8)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -1918,6 +2574,7 @@ class MembershipFeatureState(_messages.Message):
     anthosvm: AnthosVM state.
     appdevexperience: Appdevexperience specific state.
     configmanagement: Config Management-specific state.
+    helloworld: Hello World-specific state.
     identityservice: Identity Service-specific state.
     metering: Metering-specific state.
     policycontroller: Policycontroller-specific state.
@@ -1928,11 +2585,12 @@ class MembershipFeatureState(_messages.Message):
   anthosvm = _messages.MessageField('AnthosVMMembershipState', 1)
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 2)
   configmanagement = _messages.MessageField('ConfigManagementMembershipState', 3)
-  identityservice = _messages.MessageField('IdentityServiceMembershipState', 4)
-  metering = _messages.MessageField('MeteringMembershipState', 5)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 6)
-  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 7)
-  state = _messages.MessageField('FeatureState', 8)
+  helloworld = _messages.MessageField('HelloWorldMembershipState', 4)
+  identityservice = _messages.MessageField('IdentityServiceMembershipState', 5)
+  metering = _messages.MessageField('MeteringMembershipState', 6)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 7)
+  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 8)
+  state = _messages.MessageField('FeatureState', 9)
 
 
 class MembershipSpec(_messages.Message):
@@ -1965,6 +2623,38 @@ class MembershipSpec(_messages.Message):
   version = _messages.StringField(2)
 
 
+class MembershipState(_messages.Message):
+  r"""MembershipState describes the state of a Membership resource.
+
+  Enums:
+    CodeValueValuesEnum: Output only. The current state of the Membership
+      resource.
+
+  Fields:
+    code: Output only. The current state of the Membership resource.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the Membership resource.
+
+    Values:
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The cluster is being registered.
+      READY: The cluster is registered.
+      DELETING: The cluster is being unregistered.
+      UPDATING: The Membership is being updated.
+      SERVICE_UPDATING: The Membership is being updated by the Hub Service.
+    """
+    CODE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    UPDATING = 4
+    SERVICE_UPDATING = 5
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+
+
 class MeteringMembershipState(_messages.Message):
   r"""**Metering**: Per-Membership Feature State.
 
@@ -1985,6 +2675,27 @@ class MigrateSpec(_messages.Message):
 
 class MigrateState(_messages.Message):
   r"""MigrateState contains the state of Migrate subfeature"""
+
+
+class MultiCloudCluster(_messages.Message):
+  r"""MultiCloudCluster contains information specific to GKE Multi-Cloud
+  clusters.
+
+  Fields:
+    clusterMissing: Output only. If cluster_missing is set then it denotes
+      that API(gkemulticloud.googleapis.com) resource for this GKE Multi-Cloud
+      cluster no longer exists.
+    resourceLink: Immutable. Self-link of the GCP resource for the GKE Multi-
+      Cloud cluster. For example: //gkemulticloud.googleapis.com/projects/my-
+      project/locations/us-west1-a/awsClusters/my-cluster
+      //gkemulticloud.googleapis.com/projects/my-project/locations/us-
+      west1-a/azureClusters/my-cluster
+      //gkemulticloud.googleapis.com/projects/my-project/locations/us-
+      west1-a/attachedClusters/my-cluster
+  """
+
+  clusterMissing = _messages.BooleanField(1)
+  resourceLink = _messages.StringField(2)
 
 
 class MultiClusterIngressFeatureSpec(_messages.Message):
@@ -2018,6 +2729,47 @@ class MultiClusterIngressFeatureSpec(_messages.Message):
 
   billing = _messages.EnumField('BillingValueValuesEnum', 1)
   configMembership = _messages.StringField(2)
+
+
+class OnPremCluster(_messages.Message):
+  r"""OnPremCluster contains information specific to GKE On-Prem clusters.
+
+  Enums:
+    ClusterTypeValueValuesEnum: Immutable. The on prem cluster's type.
+
+  Fields:
+    adminCluster: Immutable. Whether the cluster is an admin cluster.
+    clusterMissing: Output only. If cluster_missing is set then it denotes
+      that API(gkeonprem.googleapis.com) resource for this GKE On-Prem cluster
+      no longer exists.
+    clusterType: Immutable. The on prem cluster's type.
+    resourceLink: Immutable. Self-link of the GCP resource for the GKE On-Prem
+      cluster. For example: //gkeonprem.googleapis.com/projects/my-
+      project/locations/us-west1-a/vmwareClusters/my-cluster
+      //gkeonprem.googleapis.com/projects/my-project/locations/us-
+      west1-a/bareMetalClusters/my-cluster
+  """
+
+  class ClusterTypeValueValuesEnum(_messages.Enum):
+    r"""Immutable. The on prem cluster's type.
+
+    Values:
+      CLUSTERTYPE_UNSPECIFIED: The ClusterType is not set.
+      BOOTSTRAP: The ClusterType is bootstrap cluster.
+      HYBRID: The ClusterType is baremetal hybrid cluster.
+      STANDALONE: The ClusterType is baremetal standalone cluster.
+      USER: The ClusterType is user cluster.
+    """
+    CLUSTERTYPE_UNSPECIFIED = 0
+    BOOTSTRAP = 1
+    HYBRID = 2
+    STANDALONE = 3
+    USER = 4
+
+  adminCluster = _messages.BooleanField(1)
+  clusterMissing = _messages.BooleanField(2)
+  clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 3)
+  resourceLink = _messages.StringField(4)
 
 
 class Operation(_messages.Message):
@@ -2292,83 +3044,6 @@ class PolicyControllerHubConfig(_messages.Message):
   templateLibraryConfig = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 8)
 
 
-class PolicyControllerHubState(_messages.Message):
-  r"""State of the Policy Controller.
-
-  Messages:
-    DeploymentStatesValue: Map from deployment name to deployment state.
-      Example deployments are gatekeeper-controller-manager, gatekeeper-audit
-      deployment, and gatekeeper-mutation.
-
-  Fields:
-    deploymentStates: Map from deployment name to deployment state. Example
-      deployments are gatekeeper-controller-manager, gatekeeper-audit
-      deployment, and gatekeeper-mutation.
-    version: The version of Gatekeeper Policy Controller deployed.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class DeploymentStatesValue(_messages.Message):
-    r"""Map from deployment name to deployment state. Example deployments are
-    gatekeeper-controller-manager, gatekeeper-audit deployment, and
-    gatekeeper-mutation.
-
-    Messages:
-      AdditionalProperty: An additional property for a DeploymentStatesValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        DeploymentStatesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a DeploymentStatesValue object.
-
-      Enums:
-        ValueValueValuesEnum:
-
-      Fields:
-        key: Name of the additional property.
-        value: A ValueValueValuesEnum attribute.
-      """
-
-      class ValueValueValuesEnum(_messages.Enum):
-        r"""ValueValueValuesEnum enum type.
-
-        Values:
-          DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be
-            determined
-          DEPLOYMENT_STATE_NOT_INSTALLED: Deployment is not installed
-          DEPLOYMENT_STATE_INSTALLED: Deployment is installed
-          DEPLOYMENT_STATE_ERROR: Deployment was attempted to be installed,
-            but has errors
-        """
-        DEPLOYMENT_STATE_UNSPECIFIED = 0
-        DEPLOYMENT_STATE_NOT_INSTALLED = 1
-        DEPLOYMENT_STATE_INSTALLED = 2
-        DEPLOYMENT_STATE_ERROR = 3
-
-      key = _messages.StringField(1)
-      value = _messages.EnumField('ValueValueValuesEnum', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  deploymentStates = _messages.MessageField('DeploymentStatesValue', 1)
-  version = _messages.MessageField('PolicyControllerHubVersion', 2)
-
-
-class PolicyControllerHubVersion(_messages.Message):
-  r"""The build version of Gatekeeper that Policy Controller is using.
-
-  Fields:
-    version: The gatekeeper image tag that is composed of ACM version, git
-      tag, build number.
-  """
-
-  version = _messages.StringField(1)
-
-
 class PolicyControllerMembershipSpec(_messages.Message):
   r"""**Policy Controller**: Configuration for a single cluster. Intended to
   parallel the PolicyController CR.
@@ -2387,7 +3062,12 @@ class PolicyControllerMembershipState(_messages.Message):
   r"""**Policy Controller**: State for a single cluster.
 
   Enums:
-    StateValueValuesEnum: The lifecycle state Policy Controller is in.
+    StateValueValuesEnum: The overall Policy Controller lifecycle state
+      observed by the Hub Feature controller.
+
+  Messages:
+    ComponentStatesValue: Currently these include (also serving as map keys):
+      1. "admission" 2. "audit" 3. "mutation" 4. "constraint template library"
 
   Fields:
     clusterName: The user-defined name for the cluster used by
@@ -2395,16 +3075,15 @@ class PolicyControllerMembershipState(_messages.Message):
       Membership's membership_name, unless the user installed PC on the
       cluster manually prior to enabling the PC hub feature. Unique within a
       Policy Controller installation.
-    membershipSpec: Membership configuration in the cluster. This represents
-      the actual state in the cluster, while the MembershipSpec in the
-      FeatureSpec represents the intended state
-    policyControllerHubState: Policy Controller state observed by the Policy
-      Controller Hub
-    state: The lifecycle state Policy Controller is in.
+    componentStates: Currently these include (also serving as map keys): 1.
+      "admission" 2. "audit" 3. "mutation" 4. "constraint template library"
+    state: The overall Policy Controller lifecycle state observed by the Hub
+      Feature controller.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The lifecycle state Policy Controller is in.
+    r"""The overall Policy Controller lifecycle state observed by the Hub
+    Feature controller.
 
     Values:
       LIFECYCLE_STATE_UNSPECIFIED: The lifecycle state is unspecified.
@@ -2450,10 +3129,35 @@ class PolicyControllerMembershipState(_messages.Message):
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ComponentStatesValue(_messages.Message):
+    r"""Currently these include (also serving as map keys): 1. "admission" 2.
+    "audit" 3. "mutation" 4. "constraint template library"
+
+    Messages:
+      AdditionalProperty: An additional property for a ComponentStatesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ComponentStatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ComponentStatesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PolicyControllerOnClusterState attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PolicyControllerOnClusterState', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   clusterName = _messages.StringField(1)
-  membershipSpec = _messages.MessageField('PolicyControllerMembershipSpec', 2)
-  policyControllerHubState = _messages.MessageField('PolicyControllerHubState', 3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  componentStates = _messages.MessageField('ComponentStatesValue', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class PolicyControllerMonitoringConfig(_messages.Message):
@@ -2485,6 +3189,69 @@ class PolicyControllerMonitoringConfig(_messages.Message):
   backends = _messages.EnumField('BackendsValueListEntryValuesEnum', 1, repeated=True)
 
 
+class PolicyControllerOnClusterState(_messages.Message):
+  r"""OnClusterState represents the state of a sub-component of Policy
+  Controller.
+
+  Enums:
+    StateValueValuesEnum: The lifecycle state of this component.
+
+  Fields:
+    details: Surface potential errors or information logs.
+    state: The lifecycle state of this component.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The lifecycle state of this component.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: The lifecycle state is unspecified.
+      NOT_INSTALLED: The PC does not exist on the given cluster, and no k8s
+        resources of any type that are associated with the PC should exist
+        there. The cluster does not possess a membership with the PCH.
+      INSTALLING: The PCH possesses a Membership, however the PC is not fully
+        installed on the cluster. In this state the hub can be expected to be
+        taking actions to install the PC on the cluster.
+      ACTIVE: The PC is fully installed on the cluster and in an operational
+        mode. In this state PCH will be reconciling state with the PC, and the
+        PC will be performing it's operational tasks per that software.
+        Entering a READY state requires that the hub has confirmed the PC is
+        installed and its pods are operational with the version of the PC the
+        PCH expects.
+      UPDATING: The PC is fully installed, but in the process of changing the
+        configuration (including changing the version of PC either up and
+        down, or modifying the manifests of PC) of the resources running on
+        the cluster. The PCH has a Membership, is aware of the version the
+        cluster should be running in, but has not confirmed for itself that
+        the PC is running with that version.
+      DECOMISSIONING: The PC may have resources on the cluster, but the PCH
+        wishes to remove the Membership. The Membership still exists.
+      CLUSTER_ERROR: The PC is not operational, and the PCH is unable to act
+        to make it operational. Entering a CLUSTER_ERROR state happens
+        automatically when the PCH determines that a PC installed on the
+        cluster is non-operative or that the cluster does not meet
+        requirements set for the PCH to administer the cluster but has
+        nevertheless been given an instruction to do so (such as 'install').
+      HUB_ERROR: In this state, the PC may still be operational, and only the
+        PCH is unable to act. The hub should not issue instructions to change
+        the PC state, or otherwise interfere with the on-cluster resources.
+        Entering a HUB_ERROR state happens automatically when the PCH
+        determines the hub is in an unhealthy state and it wishes to 'take
+        hands off' to avoid corrupting the PC or other data.
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLING = 2
+    ACTIVE = 3
+    UPDATING = 4
+    DECOMISSIONING = 5
+    CLUSTER_ERROR = 6
+    HUB_ERROR = 7
+
+  details = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
 class PolicyControllerTemplateLibraryConfig(_messages.Message):
   r"""The config specifying which default library templates to install.
 
@@ -2494,6 +3261,44 @@ class PolicyControllerTemplateLibraryConfig(_messages.Message):
   """
 
   included = _messages.BooleanField(1)
+
+
+class ResourceManifest(_messages.Message):
+  r"""ResourceManifest represents a single Kubernetes resource to be applied
+  to the cluster.
+
+  Fields:
+    clusterScoped: Whether the resource provided in the manifest is
+      `cluster_scoped`. If unset, the manifest is assumed to be namespace
+      scoped. This field is used for REST mapping when applying the resource
+      in a cluster.
+    manifest: YAML manifest of the resource.
+  """
+
+  clusterScoped = _messages.BooleanField(1)
+  manifest = _messages.StringField(2)
+
+
+class ResourceOptions(_messages.Message):
+  r"""ResourceOptions represent options for Kubernetes resource generation.
+
+  Fields:
+    connectVersion: Optional. The Connect agent version to use for
+      connect_resources. Defaults to the latest GKE Connect version. The
+      version must be a currently supported version, obsolete versions will be
+      rejected.
+    k8sVersion: Optional. Major version of the Kubernetes cluster. This is
+      only used to determine which version to use for the
+      CustomResourceDefinition resources, `apiextensions/v1beta1`
+      or`apiextensions/v1`.
+    v1beta1Crd: Optional. Use `apiextensions/v1beta1` instead of
+      `apiextensions/v1` for CustomResourceDefinition resources. This option
+      should be set for clusters with Kubernetes apiserver versions <1.16.
+  """
+
+  connectVersion = _messages.StringField(1)
+  k8sVersion = _messages.StringField(2)
+  v1beta1Crd = _messages.BooleanField(3)
 
 
 class ServiceMeshControlPlaneManagement(_messages.Message):
@@ -2543,9 +3348,11 @@ class ServiceMeshMembershipSpec(_messages.Message):
 
   Enums:
     ControlPlaneValueValuesEnum: Enables automatic control plane management.
+    ManagementValueValuesEnum: Enables automatic Service Mesh management.
 
   Fields:
     controlPlane: Enables automatic control plane management.
+    management: Enables automatic Service Mesh management.
   """
 
   class ControlPlaneValueValuesEnum(_messages.Enum):
@@ -2564,7 +3371,27 @@ class ServiceMeshMembershipSpec(_messages.Message):
     AUTOMATIC = 1
     MANUAL = 2
 
+  class ManagementValueValuesEnum(_messages.Enum):
+    r"""Enables automatic Service Mesh management.
+
+    Values:
+      MANAGEMENT_UNSPECIFIED: Unspecified
+      MANAGEMENT_AUTOMATIC: Google should manage my Service Mesh for the
+        cluster. This will ensure that a control plane revision is available
+        to the cluster. Google will enroll this revision in a release channel
+        and keep it up to date. Enables a Google-managed data plane that
+        provides L7 service mesh capabilities. Data plane management is
+        enabled at the cluster level. Users can exclude individual workloads
+        or namespaces.
+      MANAGEMENT_MANUAL: User will manually configure their service mesh
+        components.
+    """
+    MANAGEMENT_UNSPECIFIED = 0
+    MANAGEMENT_AUTOMATIC = 1
+    MANAGEMENT_MANUAL = 2
+
   controlPlane = _messages.EnumField('ControlPlaneValueValuesEnum', 1)
+  management = _messages.EnumField('ManagementValueValuesEnum', 2)
 
 
 class ServiceMeshMembershipState(_messages.Message):
@@ -2735,6 +3562,19 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class TypeMeta(_messages.Message):
+  r"""TypeMeta is the type information needed for content unmarshalling of
+  Kubernetes resources in the manifest.
+
+  Fields:
+    apiVersion: APIVersion of the resource (e.g. v1).
+    kind: Kind of the resource (e.g. Deployment).
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -63,9 +63,17 @@ class ExternalAccessRulesClient(util.VmwareClientBase):
     external_access_rule = self.messages.ExternalAccessRule(
         description=description,
         priority=priority,
-        ipProtocol=ip_protocol,
-        sourcePorts=source_ports,
-        destinationPorts=destination_ports)
+        ipProtocol=ip_protocol)
+
+    if source_ports is None:
+      external_access_rule.sourcePorts = []
+    else:
+      external_access_rule.sourcePorts = source_ports
+
+    if destination_ports is None:
+      external_access_rule.destinationPorts = []
+    else:
+      external_access_rule.destinationPorts = destination_ports
 
     if action is None or action.strip().upper() == 'ALLOW':
       external_access_rule.action = self.messages.ExternalAccessRule.ActionValueValuesEnum.ALLOW

@@ -470,6 +470,33 @@ class RunV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Cancel(self, request, global_params=None):
+      r"""Cancel an execution.
+
+      Args:
+        request: (RunNamespacesExecutionsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Execution) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/executions/{executionsId}:cancel',
+        http_method='POST',
+        method_id='run.namespaces.executions.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='apis/run.googleapis.com/v1/{+name}:cancel',
+        request_field='cancelExecutionRequest',
+        request_type_name='RunNamespacesExecutionsCancelRequest',
+        response_type_name='Execution',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Delete an execution.
 

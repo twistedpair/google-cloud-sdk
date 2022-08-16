@@ -136,11 +136,28 @@ def add_object_metadata_flags(parser, allow_patch=False):
         help='Clears object custom time.')
 
 
-def add_encryption_flags(parser, allow_patch=False, hidden=False):
-  """Adds flags for encryption and decryption keys."""
+def add_encryption_flags(parser,
+                         allow_patch=False,
+                         command_only_reads_data=False,
+                         hidden=False):
+  """Adds flags for encryption and decryption keys.
+
+  Args:
+    parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
+    allow_patch (bool): Adds flags relevant for update operations if true.
+    command_only_reads_data (bool): Should be set to true if a command only
+        reads data from storage providers (e.g. cat, ls) and false for commands
+        that also write data (e.g. cp, rewrite). Hides flags that pertain to
+        write operations for read-only commands.
+    hidden (bool): Hides encryption flags if true.
+  """
   parser.add_argument(
       '--encryption-key',
-      hidden=hidden,
+      # Flag is hidden for read-only commands and not omitted for parity
+      # reasons: gsutil allows supplying decryption keys through the encryption
+      # key boto config option, so keeping encryption flags for read-only
+      # commands eases translation.
+      hidden=hidden or command_only_reads_data,
       help=(
           'The encryption key to use for encrypting target objects. The'
           ' specified encryption key can be a customer-supplied encryption key'
@@ -165,7 +182,7 @@ def add_encryption_flags(parser, allow_patch=False, hidden=False):
     parser.add_argument(
         '--clear-encryption-key',
         action='store_true',
-        hidden=hidden,
+        hidden=hidden or command_only_reads_data,
         help='Clears the encryption key associated with an object. Using this'
              ' flag triggers a rewrite of affected objects, which are then'
              ' encrypted using the default encryption key set on the bucket,'

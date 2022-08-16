@@ -110,8 +110,6 @@ def ParseMembershipsFull(args):
           'Membership {} does not exist in the fleet.'.format(membership))
 
   if len(resources.GetMembershipProjects(memberships)) > 1:
-    raise exceptions.Error(
-        'Memberships for this command must belong to the same project and cannot mix project number and project ID ({}).'
-        .format(resources.GetMembershipProjects(memberships)))
+    raise base.CrossProjectError(resources.GetMembershipProjects(memberships))
 
   return memberships

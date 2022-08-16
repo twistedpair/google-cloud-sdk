@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.core import log
 
 
 class ComposeObjectsTask(task.Task):
@@ -30,7 +31,8 @@ class ComposeObjectsTask(task.Task):
                source_resources,
                destination_resource,
                original_source_resource=None,
-               user_request_args=None):
+               user_request_args=None,
+               print_status_message=False):
     """Initializes task.
 
     Args:
@@ -44,12 +46,15 @@ class ComposeObjectsTask(task.Task):
         apply to final object. For instance, if doing a composite upload, this
         would represent the pre-split local file.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
+      print_status_message (bool): If True, the task prints the status
+        message.
     """
     super(ComposeObjectsTask, self).__init__()
     self._source_resources = source_resources
     self._destination_resource = destination_resource
     self._original_source_resource = original_source_resource
     self._user_request_args = user_request_args
+    self.print_status_message = print_status_message
 
   def execute(self, task_status_queue=None):
     del task_status_queue  # Unused.
@@ -57,7 +62,12 @@ class ComposeObjectsTask(task.Task):
         self._destination_resource.storage_url,
         user_request_args=self._user_request_args)
 
+    if self.print_status_message:
+      log.status.write('Composing {} from {} component object(s).\n'.format(
+          self._destination_resource, len(self._source_resources)))
+
     provider = self._destination_resource.storage_url.scheme
+
     created_resource = api_factory.get_api(provider).compose_objects(
         self._source_resources,
         self._destination_resource,

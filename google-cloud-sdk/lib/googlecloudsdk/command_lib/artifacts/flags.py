@@ -82,6 +82,15 @@ def GetLocationResourceSpec():
       locationsId=LocationAttributeConfig())
 
 
+def GetFileResourceSpec():
+  return concepts.ResourceSpec(
+      'artifactregistry.projects.locations.repositories.files',
+      resource_name='file',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      repositoriesId=RepoAttributeConfig())
+
+
 def GetScopeFlag():
   return base.Argument(
       '--scope',
@@ -168,6 +177,23 @@ def GetLocationFlag():
       required=True)
 
 
+def GetRequiredFileFlag():
+  return concept_parsers.ConceptParser.ForResource(
+      'file',
+      GetFileResourceSpec(),
+      ('The Artifact Registry file name. If not specified, '
+       'the current artifacts/location is used.'),
+      required=True)
+
+
+def GetAllowOverwriteFlag():
+  return base.Argument(
+      '--allow-overwrite',
+      action='store_true',
+      default=False,
+      help='If specified, allows users to overwrite an existing file')
+
+
 def GetRepoArg():
   return concept_parsers.ConceptParser.ForResource(
       'repository',
@@ -238,7 +264,9 @@ def GetShowAllMetadataFlag():
   return base.Argument(
       '--show-all-metadata',
       action='store_true',
-      help='Include all metadata in the output.')
+      help='Include all metadata in the output. Metadata will be grouped by '
+      'Grafeas kind, with an additional section for intoto provenance '
+      'metadata.')
 
 
 def GetShowDeploymentFlag():
@@ -303,7 +331,9 @@ def GetShowProvenanceFlag():
   return base.Argument(
       '--show-provenance',
       action='store_true',
-      help='Include build provenance metadata in the output.')
+      help='Include intoto provenance metadata in the output, in the '
+      'provenance_summary section. To see all build metadata in the output, '
+      'use --show-all-metadata or --show-build-details.')
 
 
 def GetResourceURIArg():

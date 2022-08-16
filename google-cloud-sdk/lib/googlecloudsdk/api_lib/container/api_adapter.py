@@ -913,6 +913,7 @@ class UpdateClusterOptions(object):
       autoprovisioning_node_pool_soak_duration=None,
       enable_private_endpoint=None,
       enable_google_cloud_access=None,
+      stack_type=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1021,6 +1022,7 @@ class UpdateClusterOptions(object):
     self.autoprovisioning_node_pool_soak_duration = autoprovisioning_node_pool_soak_duration
     self.enable_private_endpoint = enable_private_endpoint
     self.enable_google_cloud_access = enable_google_cloud_access
+    self.stack_type = stack_type
 
 
 class SetMasterAuthOptions(object):
@@ -4286,7 +4288,7 @@ class V1Beta1Adapter(V1Adapter):
           enabled=True)
 
     if options.stack_type is not None:
-      cluster.ipAllocationPolicy.stackType = util.GetStackTypeMapper(
+      cluster.ipAllocationPolicy.stackType = util.GetCreateStackTypeMapper(
           self.messages, hidden=False).GetEnumForChoice(options.stack_type)
     if options.ipv6_access_type is not None:
       cluster.ipAllocationPolicy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
@@ -4403,6 +4405,11 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredCostManagementConfig=self.messages.CostManagementConfig(
               enabled=options.enable_cost_allocation))
+
+    if options.stack_type is not None:
+      update = self.messages.ClusterUpdate(
+          desiredStackType=util.GetUpdateStackTypeMapper(
+              self.messages, hidden=True).GetEnumForChoice(options.stack_type))
 
     if not update:
       # if reached here, it's possible:
@@ -4814,7 +4821,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
                 prerequisite='workload-pool', opt='identity-provider'))
 
     if options.stack_type is not None:
-      cluster.ipAllocationPolicy.stackType = util.GetStackTypeMapper(
+      cluster.ipAllocationPolicy.stackType = util.GetCreateStackTypeMapper(
           self.messages, hidden=False).GetEnumForChoice(options.stack_type)
 
     if options.ipv6_access_type is not None:
@@ -4932,6 +4939,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           desiredDatapathProvider=(
               self.messages.ClusterUpdate.DesiredDatapathProviderValueValuesEnum
               .ADVANCED_DATAPATH))
+
+    if options.stack_type is not None:
+      update = self.messages.ClusterUpdate(
+          desiredStackType=util.GetUpdateStackTypeMapper(
+              self.messages, hidden=True).GetEnumForChoice(options.stack_type))
 
     if not update:
       # if reached here, it's possible:

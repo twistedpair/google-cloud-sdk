@@ -571,19 +571,16 @@ def GetResourceRecordSetsRoutingPolicyBackupDataArg(required=False):
       ips = []
       forwarding_configs = []
       for val in value.split(','):
-        if GetResourceRecordSetsTypeArg() == 'A':
-          if len(val.split('@')) == 2:
-            forwarding_configs.append(val)
-          elif len(val.split('@')) == 1 and IsIPv4(val):
-            ips.append(val)
-          elif len(val.split('@')) == 1:
-            forwarding_configs.append(val)
-          else:
-            raise arg_parsers.ArgumentTypeError(
-                'Each policy rdata item should either be an ip address or a forwarding rule name optionally followed by its scope.'
-            )
-        else:
+        if len(val.split('@')) == 2:
+          forwarding_configs.append(val)
+        elif len(val.split('@')) == 1 and IsIPv4(val):
           ips.append(val)
+        elif len(val.split('@')) == 1:
+          forwarding_configs.append(val)
+        else:
+          raise arg_parsers.ArgumentTypeError(
+              'Each policy rdata item should either be an ip address or a forwarding rule name optionally followed by its scope.'
+          )
       backup_data.append({
           'key': key,
           'rrdatas': ips,
@@ -655,25 +652,21 @@ def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
       ips = []
       forwarding_configs = []
       for val in value.split(','):
-        if GetResourceRecordSetsTypeArg() == 'A':
-          if len(val.split('@')) == 2:
-            forwarding_configs.append(val)
-          elif len(val.split('@')) == 1 and IsIPv4(val):
-            ips.append(val)
-          elif len(val.split('@')) == 1:
-            forwarding_configs.append(val)
-          else:
-            raise arg_parsers.ArgumentTypeError(
-                'Each policy rdata item should either be an ip address or a forwarding rule name optionally followed by its scope.'
-            )
-        else:
+        if len(val.split('@')) == 2:
+          forwarding_configs.append(val)
+        elif len(val.split('@')) == 1 and IsIPv4(val):
           ips.append(val)
+        elif len(val.split('@')) == 1:
+          forwarding_configs.append(val)
+        else:
+          raise arg_parsers.ArgumentTypeError(
+              'Each policy rdata item should either be an ip address or a forwarding rule name optionally followed by its scope.'
+          )
       routing_policy_data.append({
           'key': key,
           'rrdatas': ips,
           'forwarding_configs': forwarding_configs
       })
-
     return routing_policy_data
 
   flag_name = '--routing_policy_data' if deprecated_name else '--routing-policy-data'
@@ -730,8 +723,9 @@ def _FormatResourceRecordSet(rrdatas_or_routing_policy):
     for item in rrdatas_or_routing_policy['wrr']['items']:
       if 'healthCheckedTargets' in item:
         items.append('{}: {}'.format(
-            item['weight'], ','.join(item['rrdatas']) +
-            ','.join(item['healthCheckedTargets']['internalLoadBalancers'])))
+            item['weight'], ','.join(item['rrdatas']) + ',' +
+            ','.join('"{}"'.format(_FormatHealthCheckTarget(target)) for target
+                     in item['healthCheckedTargets']['internalLoadBalancers'])))
       else:
         items.append('{}: {}'.format(item['weight'], ','.join(item['rrdatas'])))
     return '; '.join(items)
@@ -740,9 +734,9 @@ def _FormatResourceRecordSet(rrdatas_or_routing_policy):
     for item in rrdatas_or_routing_policy['geo']['items']:
       if 'healthCheckedTargets' in item:
         items.append('{}: {}'.format(
-            item['location'], ','.join(item['rrdatas']) + ','.join(
-                _FormatHealthCheckTarget(target) for target in
-                item['healthCheckedTargets']['internalLoadBalancers'])))
+            item['location'], ','.join(item['rrdatas']) + ',' +
+            ','.join('"{}"'.format(_FormatHealthCheckTarget(target)) for target
+                     in item['healthCheckedTargets']['internalLoadBalancers'])))
       else:
         items.append('{}: {}'.format(item['location'],
                                      ','.join(item['rrdatas'])))
@@ -753,17 +747,16 @@ def _FormatResourceRecordSet(rrdatas_or_routing_policy):
         'items']:
       if 'healthCheckedTargets' in item:
         items.append('{}: {}'.format(
-            item['location'], ','.join(item['rrdatas']) + ','.join(
-                _FormatHealthCheckTarget(target) for target in
-                item['healthCheckedTargets']['internalLoadBalancers'])))
+            item['location'], ','.join(item['rrdatas']) + ',' +
+            ','.join('"{}"'.format(_FormatHealthCheckTarget(target)) for target
+                     in item['healthCheckedTargets']['internalLoadBalancers'])))
       else:
         items.append('{}: {}'.format(item['location'],
                                      ','.join(item['rrdatas'])))
     backup = ';'.join(items)
-    primary = ','.join(
-        _FormatHealthCheckTarget(target)
-        for target in rrdatas_or_routing_policy['primaryBackup']
-        ['primaryTargets']['internalLoadBalancers'])
+    primary = ','.join('"{}"'.format(_FormatHealthCheckTarget(target))
+                       for target in rrdatas_or_routing_policy['primaryBackup']
+                       ['primaryTargets']['internalLoadBalancers'])
     return 'Primary: {} Backup: {}'.format(primary, backup)
   else:
     return ','.join(rrdatas_or_routing_policy)

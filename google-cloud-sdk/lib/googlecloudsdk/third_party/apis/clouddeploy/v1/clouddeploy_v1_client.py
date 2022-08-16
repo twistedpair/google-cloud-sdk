@@ -39,6 +39,7 @@ class ClouddeployV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_deliveryPipelines_releases_rollouts_jobRuns = self.ProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsService(self)
     self.projects_locations_deliveryPipelines_releases_rollouts = self.ProjectsLocationsDeliveryPipelinesReleasesRolloutsService(self)
     self.projects_locations_deliveryPipelines_releases = self.ProjectsLocationsDeliveryPipelinesReleasesService(self)
     self.projects_locations_deliveryPipelines = self.ProjectsLocationsDeliveryPipelinesService(self)
@@ -46,6 +47,70 @@ class ClouddeployV1(base_api.BaseApiClient):
     self.projects_locations_targets = self.ProjectsLocationsTargetsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsService(base_api.BaseApiService):
+    """Service class for the projects_locations_deliveryPipelines_releases_rollouts_jobRuns resource."""
+
+    _NAME = 'projects_locations_deliveryPipelines_releases_rollouts_jobRuns'
+
+    def __init__(self, client):
+      super(ClouddeployV1.ProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get details of a single JobRun.
+
+      Args:
+        request: (ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (JobRun) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}/jobRuns/{jobRunsId}',
+        http_method='GET',
+        method_id='clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.jobRuns.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsGetRequest',
+        response_type_name='JobRun',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists JobRuns in a given project and location.
+
+      Args:
+        request: (ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListJobRunsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}/jobRuns',
+        http_method='GET',
+        method_id='clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.jobRuns.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/jobRuns',
+        request_field='',
+        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsListRequest',
+        response_type_name='ListJobRunsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsDeliveryPipelinesReleasesRolloutsService(base_api.BaseApiService):
     """Service class for the projects_locations_deliveryPipelines_releases_rollouts resource."""
@@ -162,6 +227,33 @@ class ClouddeployV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsListRequest',
         response_type_name='ListRolloutsResponse',
+        supports_download=False,
+    )
+
+    def RetryJob(self, request, global_params=None):
+      r"""Retry the specified Job in a Rollout.
+
+      Args:
+        request: (ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsRetryJobRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RetryJobResponse) The response message.
+      """
+      config = self.GetMethodConfig('RetryJob')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RetryJob.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}:retryJob',
+        http_method='POST',
+        method_id='clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.retryJob',
+        ordered_params=['rollout'],
+        path_params=['rollout'],
+        query_params=[],
+        relative_path='v1/{+rollout}:retryJob',
+        request_field='retryJobRequest',
+        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsRetryJobRequest',
+        response_type_name='RetryJobResponse',
         supports_download=False,
     )
 

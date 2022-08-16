@@ -49,6 +49,8 @@ _NAME_CONSTRAINT_MAPPINGS = {
     'name_excluded_dns': 'excludedDnsNames',
 }
 
+_HIDDEN_KNOWN_EXTENSIONS = frozenset(['name-constraints'])
+
 _EMAIL_SAN_REGEX = re.compile('^[^@]+@[^@]+$')
 # Any number of labels (any character that is not a dot) concatenated by dots
 _DNS_SAN_REGEX = re.compile(r'^([^.]+\.)*[^.]+$')
@@ -458,6 +460,7 @@ def GetKnownExtensionMapping():
       ('ca-options', enum_type.CA_OPTIONS),
       ('policy-ids', enum_type.POLICY_IDS),
       ('aia-ocsp-servers', enum_type.AIA_OCSP_SERVERS),
+      ('name-constraints', enum_type.NAME_CONSTRAINTS),
   ))
 
 
@@ -506,7 +509,9 @@ def AddExtensionConstraintsFlags(parser):
       '--copy-known-extensions',
       help='If this is set, then the given extensions will be copied '
       'from the certificate request into the signed certificate.',
-      type=arg_parsers.ArgList(choices=known_extensions.keys()),
+      type=arg_parsers.ArgList(choices=known_extensions, visible_choices=[
+          ext for ext in known_extensions.keys()
+          if ext not in _HIDDEN_KNOWN_EXTENSIONS]),
       metavar='KNOWN_EXTENSIONS').AddToParser(copy_group)
 
   base.Argument(
@@ -560,7 +565,9 @@ def AddExtensionConstraintsFlagsForUpdate(parser):
       '--copy-known-extensions',
       help='If this is set, then the given extensions will be copied '
       'from the certificate request into the signed certificate.',
-      type=arg_parsers.ArgList(choices=known_extensions.keys()),
+      type=arg_parsers.ArgList(choices=known_extensions, visible_choices=[
+          ext for ext in known_extensions.keys()
+          if ext not in _HIDDEN_KNOWN_EXTENSIONS]),
       metavar='KNOWN_EXTENSIONS').AddToParser(known_group)
   base.Argument(
       '--drop-known-extensions',

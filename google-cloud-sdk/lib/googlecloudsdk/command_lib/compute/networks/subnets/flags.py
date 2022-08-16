@@ -101,14 +101,12 @@ def SubnetworkResolver():
 
 
 def AddUpdateArgs(parser, include_alpha_logging,
-                  include_l7_internal_load_balancing,
                   include_reserved_internal_range, api_version):
   """Add args to the parser for subnet update.
 
   Args:
     parser: The argparse parser.
     include_alpha_logging: Include alpha-specific logging args.
-    include_l7_internal_load_balancing: Include Internal HTTP(S) LB args.
     include_reserved_internal_range: Include reserved internal range args.
     api_version: The api version of the request.
   """
@@ -222,23 +220,22 @@ def AddUpdateArgs(parser, include_alpha_logging,
         """)
     AddLoggingMetadataDeprecated(parser, messages)
 
-  if include_l7_internal_load_balancing:
-    updated_field.add_argument(
-        '--role',
-        choices={'ACTIVE': 'The ACTIVE subnet that is currently used.'},
-        type=lambda x: x.replace('-', '_').upper(),
-        help=('The role is set to ACTIVE to update a BACKUP reserved '
-              'address range to\nbe the new ACTIVE address range. Note '
-              'that the only supported value for\nthis flag is ACTIVE since '
-              'setting an address range to BACKUP is not\nsupported. '
-              '\n\nThis field is only valid when updating a reserved IP '
-              'address range used\nfor the purpose of Internal HTTP(S) Load '
-              'Balancer.'))
-    parser.add_argument(
-        '--drain-timeout',
-        type=arg_parsers.Duration(lower_bound='0s'),
-        default='0s',
-        help="""\
+  updated_field.add_argument(
+      '--role',
+      choices={'ACTIVE': 'The ACTIVE subnet that is currently used.'},
+      type=lambda x: x.replace('-', '_').upper(),
+      help=('The role is set to ACTIVE to update a BACKUP reserved '
+            'address range to\nbe the new ACTIVE address range. Note '
+            'that the only supported value for\nthis flag is ACTIVE since '
+            'setting an address range to BACKUP is not\nsupported. '
+            '\n\nThis field is only valid when updating a reserved IP '
+            'address range used\nfor the purpose of Internal HTTP(S) Load '
+            'Balancer.'))
+  parser.add_argument(
+      '--drain-timeout',
+      type=arg_parsers.Duration(lower_bound='0s'),
+      default='0s',
+      help="""\
         The time period for draining traffic from Internal HTTP(S) Load Balancer
         proxies that are assigned addresses in the current ACTIVE subnetwork.
         For example, ``1h'', ``60m'' and ``3600s'' each specify a duration of

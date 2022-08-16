@@ -96,9 +96,10 @@ def _PipelineSpecTransform(pipeline_spec):
     input_util.ParamSpecTransform(param_spec)
 
   if "finally" in pipeline_spec:
-    for pipeline_task in pipeline_spec.get("finally", []):
-      input_util.ParamDictTransform(pipeline_task.get("params", []))
-    pipeline_spec["finallyTasks"] = pipeline_spec.pop("finally")
+    finally_tasks = pipeline_spec.pop("finally")
+    for task in finally_tasks:
+      _PipelineTaskTransform(task)
+    pipeline_spec["finallyTasks"] = finally_tasks
 
 
 def _PipelineTaskTransform(pipeline_task):

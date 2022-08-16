@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import textwrap
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
@@ -180,16 +181,13 @@ BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
                         ' region of the forwarding rule.'))
 
 
-def NetworkArg(include_l7_internal_load_balancing):
+def NetworkArg():
   """Returns the network parameter."""
 
-  load_balancing_scheme = (
-      '--load-balancing-scheme=INTERNAL or '
-      '--load-balancing-scheme=INTERNAL_SELF_MANAGED or '
-      '--load-balancing-scheme=EXTERNAL_MANAGED (regional)')
-
-  if include_l7_internal_load_balancing:
-    load_balancing_scheme += ' or --load-balancing-scheme=INTERNAL_MANAGED'
+  load_balancing_scheme = ('--load-balancing-scheme=INTERNAL or '
+                           '--load-balancing-scheme=INTERNAL_SELF_MANAGED or '
+                           '--load-balancing-scheme=EXTERNAL_MANAGED (regional)'
+                           ' or --load-balancing-scheme=INTERNAL_MANAGED')
 
   return compute_flags.ResourceArgument(
       name='--network',
@@ -235,7 +233,7 @@ def TargetGrpcProxyArg():
   return target_grpc_proxy_arg
 
 
-def TargetHttpProxyArg(include_l7_internal_load_balancing=False):
+def TargetHttpProxyArg():
   """Return a resource argument for parsing a target http proxy."""
 
   target_http_proxy_arg = compute_flags.ResourceArgument(
@@ -243,17 +241,15 @@ def TargetHttpProxyArg(include_l7_internal_load_balancing=False):
       required=False,
       resource_name='http proxy',
       global_collection='compute.targetHttpProxies',
-      regional_collection='compute.regionTargetHttpProxies'
-      if include_l7_internal_load_balancing else None,
+      regional_collection='compute.regionTargetHttpProxies',
       short_help='Target HTTP proxy that receives the traffic.',
       detailed_help=('Target HTTP proxy that receives the traffic. '
                      'Acceptable values for --ports flag are: 80, 8080.'),
-      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
-      if include_l7_internal_load_balancing else None)
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
   return target_http_proxy_arg
 
 
-def TargetHttpsProxyArg(include_l7_internal_load_balancing=False):
+def TargetHttpsProxyArg():
   """Return a resource argument for parsing a target https proxy."""
 
   target_https_proxy_arg = compute_flags.ResourceArgument(
@@ -261,13 +257,11 @@ def TargetHttpsProxyArg(include_l7_internal_load_balancing=False):
       required=False,
       resource_name='https proxy',
       global_collection='compute.targetHttpsProxies',
-      regional_collection='compute.regionTargetHttpsProxies'
-      if include_l7_internal_load_balancing else None,
+      regional_collection='compute.regionTargetHttpsProxies',
       short_help='Target HTTPS proxy that receives the traffic.',
       detailed_help=('Target HTTPS proxy that receives the traffic. '
                      'Acceptable values for --ports flag are: 443.'),
-      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
-      if include_l7_internal_load_balancing else None)
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
   return target_https_proxy_arg
 
 
@@ -362,13 +356,11 @@ TARGET_VPN_GATEWAY_ARG = compute_flags.ResourceArgument(
                         ' region of the forwarding rule.'))
 
 
-def AddressArgHelp(include_l7_internal_load_balancing):
+def AddressArgHelp():
   """Build the help text for the address argument."""
 
-  lb_schemes = '(EXTERNAL, EXTERNAL_MANAGED, INTERNAL, INTERNAL_SELF_MANAGED'
-  if include_l7_internal_load_balancing:
-    lb_schemes += ', INTERNAL_MANAGED'
-  lb_schemes += ')'
+  lb_schemes = ('(EXTERNAL, EXTERNAL_MANAGED, INTERNAL, INTERNAL_SELF_MANAGED, '
+                'INTERNAL_MANAGED)')
 
   detailed_help = """\
     IP address that the forwarding rule serves. When a client sends traffic
@@ -398,7 +390,7 @@ def AddressArgHelp(include_l7_internal_load_balancing):
   return textwrap.dedent(detailed_help)
 
 
-def AddressArg(include_l7_internal_load_balancing):
+def AddressArg():
   return compute_flags.ResourceArgument(
       name='--address',
       required=False,
@@ -408,16 +400,13 @@ def AddressArg(include_l7_internal_load_balancing):
       global_collection='compute.globalAddresses',
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
       short_help='IP address that the forwarding rule will serve.',
-      detailed_help=AddressArgHelp(
-          include_l7_internal_load_balancing=include_l7_internal_load_balancing)
-  )
+      detailed_help=AddressArgHelp())
 
 
-def AddUpdateArgs(parser,
-                  include_l7_internal_load_balancing=False,
-                  include_psc_google_apis=False,
-                  include_target_service_attachment=False,
-                  include_regional_tcp_proxy=False):
+def AddUpdateTargetArgs(parser,
+                        include_psc_google_apis=False,
+                        include_target_service_attachment=False,
+                        include_regional_tcp_proxy=False):
   """Adds common flags for mutating forwarding rule targets."""
   target = parser.add_mutually_exclusive_group(required=True)
 
@@ -426,14 +415,8 @@ def AddUpdateArgs(parser,
   if include_target_service_attachment:
     TargetServiceAttachmentArg().AddArgument(parser, mutex_group=target)
 
-  TargetHttpProxyArg(
-      include_l7_internal_load_balancing=include_l7_internal_load_balancing
-  ).AddArgument(
-      parser, mutex_group=target)
-  TargetHttpsProxyArg(
-      include_l7_internal_load_balancing=include_l7_internal_load_balancing
-  ).AddArgument(
-      parser, mutex_group=target)
+  TargetHttpProxyArg().AddArgument(parser, mutex_group=target)
+  TargetHttpsProxyArg().AddArgument(parser, mutex_group=target)
   TARGET_INSTANCE_ARG.AddArgument(parser, mutex_group=target)
   TARGET_POOL_ARG.AddArgument(parser, mutex_group=target)
   TARGET_SSL_PROXY_ARG.AddArgument(parser, mutex_group=target)
@@ -446,7 +429,6 @@ def AddUpdateArgs(parser,
     target.add_argument(
         '--target-google-apis-bundle',
         required=False,
-        #      short_help='Target bundle of Google APIs to expose.',
         help=(
             'Target bundle of Google APIs that will receive forwarded traffic '
             'via Private Service Connect. '
@@ -454,27 +436,95 @@ def AddUpdateArgs(parser,
             'vpc-sc, meaning just the APIs that support VPC Service Controls'),
         action='store')
 
-  NetworkArg(
-      include_l7_internal_load_balancing=include_l7_internal_load_balancing
-  ).AddArgument(parser)
+
+def AddCreateArgs(parser,
+                  include_psc_google_apis=False,
+                  include_target_service_attachment=False,
+                  include_regional_tcp_proxy=False):
+  """Adds common flags for creating forwarding rules."""
+  AddUpdateTargetArgs(parser, include_psc_google_apis,
+                      include_target_service_attachment,
+                      include_regional_tcp_proxy)
+
+  NetworkArg().AddArgument(parser)
   SUBNET_ARG.AddArgument(parser)
 
   AddLoadBalancingScheme(
       parser,
-      include_l7_ilb=include_l7_internal_load_balancing,
       include_psc_google_apis=include_psc_google_apis,
       include_target_service_attachment=include_target_service_attachment,
       include_regional_tcp_proxy=include_regional_tcp_proxy)
 
 
+def AddSetTargetArgs(parser,
+                     include_psc_google_apis=False,
+                     include_target_service_attachment=False,
+                     include_regional_tcp_proxy=False):
+  """Adds flags for the set-target command."""
+  AddUpdateTargetArgs(parser, include_psc_google_apis,
+                      include_target_service_attachment,
+                      include_regional_tcp_proxy)
+
+  # The argument below are deprecated and will be eventually removed.
+  def CreateDeprecationAction(name):
+    return actions.DeprecationAction(
+        name,
+        warn=('The {flag_name} option is deprecated and will be removed in '
+              'an upcoming release. If you\'re currently using this argument, '
+              'you should remove it from your workflows.'),
+        removed=False,
+        action='store')
+
+  parser.add_argument(
+      '--network',
+      required=False,
+      help=('Only for --load-balancing-scheme=INTERNAL or '
+            '--load-balancing-scheme=INTERNAL_SELF_MANAGED or '
+            '--load-balancing-scheme=EXTERNAL_MANAGED (regional) or '
+            '--load-balancing-scheme=INTERNAL_MANAGED) Network that this '
+            'forwarding rule applies to. If this field is not specified, '
+            'the default network is used. In the absence of the default '
+            'network, this field must be specified.'),
+      action=CreateDeprecationAction('--network'))
+
+  parser.add_argument(
+      '--subnet',
+      required=False,
+      help=(
+          'Only for --load-balancing-scheme=INTERNAL and '
+          '--load-balancing-scheme=INTERNAL_MANAGED) Subnetwork that this '
+          'forwarding rule applies to. If the network is auto mode, this flag '
+          'is optional. If the network is custom mode, this flag is required.'),
+      action=CreateDeprecationAction('--subnet'))
+
+  parser.add_argument(
+      '--subnet-region',
+      required=False,
+      help=('Region of the subnetwork to operate on. If not specified, the '
+            'region is set to the region of the forwarding rule. Overrides '
+            'the default compute/region property value for this command '
+            'invocation.'),
+      action=CreateDeprecationAction('--subnet-region'))
+
+  AddLoadBalancingScheme(
+      parser,
+      include_psc_google_apis=include_psc_google_apis,
+      include_target_service_attachment=include_target_service_attachment,
+      include_regional_tcp_proxy=include_regional_tcp_proxy,
+      deprecation_action=CreateDeprecationAction('--load-balancing-scheme'))
+
+
 def AddLoadBalancingScheme(parser,
-                           include_l7_ilb=False,
                            include_psc_google_apis=False,
                            include_target_service_attachment=False,
-                           include_regional_tcp_proxy=False):
+                           include_regional_tcp_proxy=False,
+                           deprecation_action=None):
   """Adds the load-balancing-scheme flag."""
   td_proxies = ('--target-http-proxy, --target-https-proxy, '
                 '--target-grpc-proxy, --target-tcp-proxy')
+  ilb_proxies = ('--target-http-proxy, --target-https-proxy')
+  if include_regional_tcp_proxy:
+    ilb_proxies += (', --target-tcp-proxy')
   load_balancing_choices = {
       'EXTERNAL':
           'External load balancing or forwarding, used with one of '
@@ -488,23 +538,11 @@ def AddLoadBalancingScheme(parser,
           'Internal load balancing or forwarding, used with --backend-service.',
       'INTERNAL_SELF_MANAGED':
           """Traffic Director load balancing or forwarding, used with
-          {0}.""".format(td_proxies)
+          {0}.""".format(td_proxies),
+      'INTERNAL_MANAGED':
+          """Internal load balancing, used with {0}.""".format(
+              ilb_proxies)
   }
-
-  if include_regional_tcp_proxy:
-    internal_managed_targets = ['--target-tcp-proxy']
-    if include_l7_ilb:
-      internal_managed_targets.extend(
-          ['--target-http-proxy', '--target-https-proxy'])
-    load_balancing_choices.update({
-        'INTERNAL_MANAGED': 'Internal load balancing, used with '
-                            '{0}.'.format(', '.join(internal_managed_targets))
-    })
-  elif include_l7_ilb:
-    load_balancing_choices.update({
-        'INTERNAL_MANAGED': 'Internal HTTP(S) Load Balancing, used with '
-                            '--target-http-proxy, --target-https-proxy.'
-    })
 
   # There isn't a default load-balancing-scheme for PSC forwarding rules.
   # But the default is EXTERNAL for non-PSC forwarding rules.
@@ -516,7 +554,8 @@ def AddLoadBalancingScheme(parser,
       default=None if include_psc else 'EXTERNAL',
       help="This defines the forwarding rule's load balancing scheme. Note that it defaults to EXTERNAL and is not applicable for Private Service Connect forwarding rules."
       if include_psc else
-      "This defines the forwarding rule's load balancing scheme.")
+      "This defines the forwarding rule's load balancing scheme.",
+      action=deprecation_action)
 
 
 def SourceIpRangesParser(string_value):
@@ -660,12 +699,10 @@ def AddIpVersionGroup(parser):
       """)
 
 
-def AddAddressesAndIPVersions(parser, required,
-                              include_l7_internal_load_balancing):
+def AddAddressesAndIPVersions(parser, required):
   """Adds Addresses and IP versions flag."""
 
-  address_arg = AddressArg(
-      include_l7_internal_load_balancing=include_l7_internal_load_balancing)
+  address_arg = AddressArg()
   group = parser.add_mutually_exclusive_group(required=required)
   AddIpVersionGroup(group)
   address_arg.AddArgument(parser, mutex_group=group)

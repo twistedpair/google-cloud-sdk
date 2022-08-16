@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import flags
@@ -105,3 +106,73 @@ class DeploymentResourcePoolsClient(object):
         req)
 
     return operation
+
+  def DeleteBeta(self, deployment_resource_pool_ref):
+    """Deletes a deployment resource pool using v1beta1 API.
+
+    Args:
+      deployment_resource_pool_ref: str, The deployment resource pool to delete.
+
+    Returns:
+      A GoogleProtobufEmpty response message for delete.
+    """
+
+    req = self.messages.AiplatformProjectsLocationsDeploymentResourcePoolsDeleteRequest(
+        name=deployment_resource_pool_ref.RelativeName())
+
+    operation = self.client.projects_locations_deploymentResourcePools.Delete(
+        req)
+
+    return operation
+
+  def DescribeBeta(self, deployment_resource_pool_ref):
+    """Describes a deployment resource pool using v1beta1 API.
+
+    Args:
+      deployment_resource_pool_ref: str, Deployment resource pool to describe.
+
+    Returns:
+      GoogleCloudAiplatformV1beta1DeploymentResourcePool response message.
+    """
+    req = self.messages.AiplatformProjectsLocationsDeploymentResourcePoolsGetRequest(
+        name=deployment_resource_pool_ref.RelativeName())
+
+    response = self.client.projects_locations_deploymentResourcePools.Get(req)
+
+    return response
+
+  def ListBeta(self, location_ref):
+    """Lists deployment resource pools using v1beta1 API.
+
+    Args:
+      location_ref: Resource, the parsed location to list deployment
+        resource pools.
+
+    Returns:
+      Nested attribute containing list of deployment resource pools.
+    """
+    req = self.messages.AiplatformProjectsLocationsDeploymentResourcePoolsListRequest(
+        parent=location_ref.RelativeName())
+
+    return list_pager.YieldFromList(
+        self.client.projects_locations_deploymentResourcePools,
+        req,
+        field='deploymentResourcePools',
+        batch_size_attribute='pageSize')
+
+  def QueryDeployedModelsBeta(self, deployment_resource_pool_ref):
+    """Queries deployed models sharing a specified deployment resource pool using v1beta1 API.
+
+    Args:
+      deployment_resource_pool_ref: str, Deployment resource pool to query.
+
+    Returns:
+      GoogleCloudAiplatformV1beta1QueryDeployedModelsResponse message.
+    """
+    req = self.messages.AiplatformProjectsLocationsDeploymentResourcePoolsQueryDeployedModelsRequest(
+        deploymentResourcePool=deployment_resource_pool_ref.RelativeName())
+
+    response = self.client.projects_locations_deploymentResourcePools.QueryDeployedModels(
+        req)
+
+    return response

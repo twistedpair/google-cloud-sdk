@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.args import common_args
 
@@ -79,3 +80,54 @@ https://compute.googleapis.com/compute/v1/projects/prj/zones/us-east1-d/instance
 
 def GetResourceNameFlag(verb):
   return base.Argument('resource', help=_RESOURCE_NAME_HELP.format(verb=verb))
+
+
+def AddCommonByoidCreateConfigFlags(parser):
+  """Adds parser arguments that are common to both workload identity federation and workforce pools."""
+  parser.add_argument(
+      '--output-file',
+      help='Location to store the generated credential configuration file.',
+      required=True)
+
+  service_account_impersonation_options = parser.add_group(
+      help='Service account impersonation options.')
+  service_account_impersonation_options.add_argument(
+      '--service-account',
+      help='The email of the service account to impersonate.',
+      required=True)
+  service_account_impersonation_options .add_argument(
+      '--service-account-token-lifetime-seconds',
+      type=arg_parsers.Duration(
+          default_unit='s',
+          lower_bound='600',
+          upper_bound='43200',
+          parsed_unit='s'),
+      help='The desired lifetime duration of the service account access token in seconds. This defaults to one hour when not provided. If a lifetime greater than one hour is required, the service account must be added as an allowed value in an Organization Policy that enforces the `constraints/iam.allowServiceAccountCredentialLifetimeExtension` constraint.'
+    )
+
+  parser.add_argument(
+      '--credential-source-headers',
+      type=arg_parsers.ArgDict(),
+      metavar='key=value',
+      help='Headers to use when querying the credential-source-url.')
+  parser.add_argument(
+      '--credential-source-type',
+      help='The format of the credential source (JSON or text).')
+  parser.add_argument(
+      '--credential-source-field-name',
+      help='The subject token field name (key) in a JSON credential source.')
+
+  executable_args = parser.add_group(
+      help='Arguments for an executable type credential source.')
+  executable_args.add_argument(
+      '--executable-timeout-millis',
+      type=arg_parsers.Duration(
+          default_unit='ms',
+          lower_bound='5s',
+          upper_bound='120s',
+          parsed_unit='ms'),
+      help='The timeout duration in milliseconds for waiting for the executable to finish.'
+    )
+  executable_args.add_argument(
+      '--executable-output-file',
+      help='The absolute path to the file storing the executable response.')

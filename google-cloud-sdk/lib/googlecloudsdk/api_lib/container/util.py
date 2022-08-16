@@ -717,7 +717,7 @@ def _GetStackTypeCustomMappings():
   }
 
 
-def GetStackTypeMapper(messages, hidden=True):
+def GetCreateStackTypeMapper(messages, hidden=True):
   """Returns a mapper from text options to the StackType enum.
 
   Args:
@@ -744,6 +744,38 @@ STACK_TYPE must be one of:
   return arg_utils.ChoiceEnumMapper(
       '--stack-type',
       messages.IPAllocationPolicy.StackTypeValueValuesEnum,
+      _GetStackTypeCustomMappings(),
+      hidden=hidden,
+      help_str=help_text)
+
+
+def GetUpdateStackTypeMapper(messages, hidden=True):
+  """Returns a mapper from text options to the StackType enum.
+
+  Args:
+    messages: The message module.
+    hidden: Whether the flag should be hidden in the choice_arg
+  """
+
+  help_text = """
+Updates the stack type for the cluster nodes and pods.
+
+STACK_TYPE must be one of:
+
+  ipv4
+    Changes clusters to IPv4 single stack clusters.
+
+  ipv4-ipv6
+    Changes clusters to dual stack clusters.
+
+  $ gcloud alpha container clusters update \
+      --stack-type=ipv4
+  $ gcloud alpha container clusters update \
+      --stack-type=ipv4-ipv6
+"""
+  return arg_utils.ChoiceEnumMapper(
+      '--stack-type',
+      messages.ClusterUpdate.DesiredStackTypeValueValuesEnum,
       _GetStackTypeCustomMappings(),
       hidden=hidden,
       help_str=help_text)
