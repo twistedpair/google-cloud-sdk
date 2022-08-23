@@ -1989,14 +1989,50 @@ class IdentityServiceAuthMethod(_messages.Message):
   authentication method (e.g., OIDC and LDAP) can be set per AuthMethod.
 
   Fields:
+    azureadConfig: AzureAD specific Configuration.
+    googleConfig: GoogleConfig specific configuration
     name: Identifier for auth config.
     oidcConfig: OIDC specific configuration.
     proxy: Proxy server address to use for auth method.
   """
 
-  name = _messages.StringField(1)
-  oidcConfig = _messages.MessageField('IdentityServiceOidcConfig', 2)
-  proxy = _messages.StringField(3)
+  azureadConfig = _messages.MessageField('IdentityServiceAzureADConfig', 1)
+  googleConfig = _messages.MessageField('IdentityServiceGoogleConfig', 2)
+  name = _messages.StringField(3)
+  oidcConfig = _messages.MessageField('IdentityServiceOidcConfig', 4)
+  proxy = _messages.StringField(5)
+
+
+class IdentityServiceAzureADConfig(_messages.Message):
+  r"""Configuration for the AzureAD Auth flow.
+
+  Fields:
+    clientId: ID for the registered client application that makes
+      authentication requests to the Azure AD identity provider.
+    clientSecret: Input only. Unencrypted AzureAD client secret will be passed
+      to the GKE Hub CLH.
+    encryptedClientSecret: Output only. Encrypted AzureAD client secret.
+    kubectlRedirectUri: The redirect URL that kubectl uses for authorization.
+    tenant: Kind of Azure AD account to be authenticated. Supported values are
+      or for accounts belonging to a specific tenant.
+  """
+
+  clientId = _messages.StringField(1)
+  clientSecret = _messages.StringField(2)
+  encryptedClientSecret = _messages.BytesField(3)
+  kubectlRedirectUri = _messages.StringField(4)
+  tenant = _messages.StringField(5)
+
+
+class IdentityServiceGoogleConfig(_messages.Message):
+  r"""Configuration for the Google Plugin Auth flow.
+
+  Fields:
+    disable: Disable automatic configuration of Google Plugin on supported
+      platforms.
+  """
+
+  disable = _messages.BooleanField(1)
 
 
 class IdentityServiceMembershipSpec(_messages.Message):
@@ -2954,12 +2990,7 @@ class ServiceMeshMembershipSpec(_messages.Message):
     Values:
       MANAGEMENT_UNSPECIFIED: Unspecified
       MANAGEMENT_AUTOMATIC: Google should manage my Service Mesh for the
-        cluster. This will ensure that a control plane revision is available
-        to the cluster. Google will enroll this revision in a release channel
-        and keep it up to date. Enables a Google-managed data plane that
-        provides L7 service mesh capabilities. Data plane management is
-        enabled at the cluster level. Users can exclude individual workloads
-        or namespaces.
+        cluster.
       MANAGEMENT_MANUAL: User will manually configure their service mesh
         components.
     """

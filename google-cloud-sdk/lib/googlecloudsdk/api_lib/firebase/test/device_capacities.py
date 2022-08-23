@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Common code for 'gcloud firebase test * list-device-capacities' commands."""
 
 from __future__ import absolute_import
@@ -21,13 +22,14 @@ from __future__ import unicode_literals
 import collections
 
 CapacityEntry = collections.namedtuple('CapacityEntry',
-                                       ['model', 'version', 'capacity'])
+                                       ['model', 'name', 'version', 'capacity'])
 
 DEVICE_CAPACITY_TABLE_FORMAT = """
         table[box](
           model:label=MODEL_ID,
+          name:label=MODEL_NAME,
           version:label=OS_VERSION_ID,
-          capacity.color(red=None,yellow=Low,green=High):label='Device Capacity'
+          capacity.color(red=None,yellow=Low,green=High):label=DEVICE_CAPACITY
         )
     """
 
@@ -83,6 +85,7 @@ class DeviceCapacities(object):
         capacity_data.append(
             CapacityEntry(
                 model=model.id,
+                name=model.name,
                 version=version_info.versionId,
                 capacity=self.capacity_messages[version_info.deviceCapacity]))
 

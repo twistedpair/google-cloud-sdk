@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import os
 
+from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
@@ -57,7 +58,9 @@ def _expand_destination_wildcards(destination_string):
   """
   destination_iterator = (
       plurality_checkable_iterator.PluralityCheckableIterator(
-          wildcard_iterator.get_wildcard_iterator(destination_string)))
+          wildcard_iterator.get_wildcard_iterator(
+              destination_string,
+              fields_scope=cloud_api.FieldsScope.SHORT)))
 
   if destination_iterator.is_plural():
     raise ValueError('Destination ({}) must match exactly one URL.'.format(

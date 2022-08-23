@@ -124,3 +124,22 @@ class RolloutClient(object):
         rolloutId=rollout_ref.Name())
 
     return self._service.Create(request)
+
+  def RetryJob(self, name, job, phase):
+    """Calls the retryjob API to retry a job on a rollout.
+
+    Args:
+      name: Name of the Rollout. Format is
+        projects/{project}/locations/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/rollouts/{rollout}.
+      job: The job id on the rollout resource.
+      phase: The phase id on the rollout resource.
+
+    Returns:
+      RetryJobResponse message.
+    """
+    request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsRetryJobRequest(
+        rollout=name,
+        retryJobRequest=self.messages.RetryJobRequest(jobId=job, phaseId=phase)
+    )
+
+    return self._service.RetryJob(request)

@@ -77,12 +77,14 @@ def AddBackup(parser, positional=True):
         help='AlloyDB backup ID')
 
 
-def AddCluster(parser, positional=True):
+def AddCluster(parser, positional=True, required=True):
   """Adds a positional cluster argument to parser.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
     positional: whether or not --cluster is positional.
+    required: whether or not the argument is required. Only relevant if the
+      argument is non-positional.
   """
   if positional:
     parser.add_argument(
@@ -92,7 +94,7 @@ def AddCluster(parser, positional=True):
   else:
     parser.add_argument(
         '--cluster',
-        required=True,
+        required=required,
         type=str,
         help='AlloyDB cluster ID')
 
@@ -404,6 +406,31 @@ def AddEncryptionConfigFlags(parser, verb):
       GetKmsKeyResourceSpec(),
       'Cloud KMS key to be used {}.'.format(verb),
       required=False).AddToParser(parser)
+
+
+def AddRestoreClusterSourceFlags(parser):
+  """Adds RestoreCluster PITR flags.
+
+  Args:
+    parser: argparse.ArgumentParser: Parser object for command line inputs.
+  """
+  group = parser.add_group(mutex=True, help='RestoreCluster source types.')
+  backup_source_group = group.add_group(
+      help='Restore a cluster using a specific backup as the source.')
+  backup_source_group.add_argument(
+      '--backup', required=True, type=str, help='AlloyDB backup ID')
+
+  pitr_source_group = group.add_group(
+      help='Restore a cluster from a source cluster at a given point in time.')
+  pitr_source_group.add_argument(
+      '--source-cluster', required=True, help=('Source cluster name.'))
+  pitr_source_group.add_argument(
+      '--point-in-time',
+      type=arg_parsers.Datetime.Parse,
+      required=True,
+      help=(
+          'Point in time to restore to, in RFC 3339 format. For example, 2012-11-15T16:19:00.094Z.'
+      ))
 
 
 def KmsKeyAttributeConfig():

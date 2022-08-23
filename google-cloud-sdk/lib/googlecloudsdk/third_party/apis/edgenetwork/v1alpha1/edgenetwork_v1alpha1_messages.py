@@ -1595,6 +1595,8 @@ class Router(_messages.Message):
     network: Required. The canonical name of the network to which this router
       belongs. The name is in the form of
       projects/{project}/locations/{location}/zones/{zone}/networks/{network}.
+    routeAdvertisements: Optional. A list of CIDRs in IP/Length format to
+      advertise northbound as static routes from this router.
     state: Output only. Current stage of the resource to the device by config
       push.
     updateTime: Output only. The time when the router was last updated.
@@ -1651,8 +1653,9 @@ class Router(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
   network = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  routeAdvertisements = _messages.StringField(9, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class RouterStatus(_messages.Message):

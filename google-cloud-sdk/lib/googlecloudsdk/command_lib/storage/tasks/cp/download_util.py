@@ -81,6 +81,7 @@ def validate_download_hash_and_delete_corrupt_files(download_path, source_hash,
 def return_and_report_if_nothing_to_download(cloud_resource, progress_callback):
   """Returns valid download range bool and reports progress if not."""
   if cloud_resource.size == 0:
-    progress_callback(0)
+    if progress_callback:
+      progress_callback(0)
     return True
   return False

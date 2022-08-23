@@ -139,6 +139,67 @@ def AddDescribeEnvironmentFlags(parser):
        'letter and the last character cannot be a dash.')).AddToParser(parser)
 
 
+def GetLocationResourceArg(help_text):
+  """Constructs and returns the Location Resource Argument."""
+
+  def GetLocationResourceSpec():
+    """Constructs and returns the Location Resource Argument."""
+    def LocationAttributeConfig():
+      return concepts.ResourceParameterAttributeConfig(
+          name='location',
+          help_text=(
+              'Google Cloud location of this runtime '
+              'https://cloud.google.com/compute/docs/regions-zones/#locations.'
+          ),
+          fallthroughs=[
+              deps.PropertyFallthrough(properties.VALUES.notebooks.location),
+          ],
+      )
+
+    return concepts.ResourceSpec(
+        'notebooks.projects.locations',
+        resource_name='location',
+        projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+        locationsId=LocationAttributeConfig())
+
+  return concept_parsers.ConceptParser.ForResource(
+      '--location', GetLocationResourceSpec(), help_text, required=True)
+
+
+def GetRuntimeResourceArg(help_text):
+  """Constructs and returns the Runtime Resource Argument."""
+
+  def GetRuntimeResourceSpec():
+    """Constructs and returns the Resource specification for Runtime."""
+
+    def RuntimeAttributeConfig():
+      return concepts.ResourceParameterAttributeConfig(
+          name='rumtime', help_text=help_text)
+
+    def LocationAttributeConfig():
+      return concepts.ResourceParameterAttributeConfig(
+          name='location',
+          help_text=(
+              'Google Cloud location of this runtime '
+              'https://cloud.google.com/compute/docs/regions-zones/#locations.'
+          ),
+          fallthroughs=[
+              deps.PropertyFallthrough(properties.VALUES.notebooks.location),
+          ],
+      )
+
+    return concepts.ResourceSpec(
+        'notebooks.projects.locations.runtimes',
+        resource_name='runtime',
+        projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+        locationsId=LocationAttributeConfig(),
+        runtimesId=RuntimeAttributeConfig(),
+        disable_auto_completers=False)
+
+  return concept_parsers.ConceptParser.ForResource(
+      'runtime', GetRuntimeResourceSpec(), help_text, required=True)
+
+
 def GetInstanceResourceArg(help_text):
   """Constructs and returns the Instance Resource Argument."""
 
@@ -228,6 +289,16 @@ def AddSubnetArgument(help_text, parser):
 
   concept_parsers.ConceptParser.ForResource('--subnet', GetSubnetResourceSpec(),
                                             help_text).AddToParser(parser)
+
+
+def AddRuntimeResource(parser, add_async_flag=True):
+  GetRuntimeResourceArg(
+      ('User-defined unique name of this runtime. The runtime name must be '
+       '1 to 63 characters long and contain only lowercase letters, numeric '
+       'characters, and dashes. The first character must be a lowercase letter '
+       'and the last character cannot be a dash.')).AddToParser(parser)
+  if add_async_flag:
+    base.ASYNC_FLAG.AddToParser(parser)
 
 
 def AddInstanceResource(parser, add_async_flag=True):
@@ -478,3 +549,87 @@ def AddUpdateInstanceFlags(parser):
   update_group.add_argument(
       '--machine-type',
       help='The [Compute Engine machine type](/compute/docs/machine-types).')
+
+
+def AddDeleteRuntimeFlags(parser):
+  AddRuntimeResource(parser)
+
+
+def AddDescribeRuntimeFlags(parser):
+  AddRuntimeResource(parser, add_async_flag=False)
+
+
+def AddStartRuntimeFlags(parser):
+  AddRuntimeResource(parser)
+
+
+def AddStopRuntimeFlags(parser):
+  AddRuntimeResource(parser)
+
+
+def AddSwitchRuntimeFlags(parser):
+  """Adds accelerator and machine type flags to the parser for switch."""
+  accelerator_choices = [
+      'NVIDIA_TESLA_A100', 'NVIDIA_TESLA_K80', 'NVIDIA_TESLA_P100',
+      'NVIDIA_TESLA_V100', 'NVIDIA_TESLA_P4', 'NVIDIA_TESLA_T4',
+      'NVIDIA_TESLA_T4_VWS', 'NVIDIA_TESLA_P100_VWS', 'NVIDIA_TESLA_P4_VWS',
+      'TPU_V2', 'TPU_V3'
+  ]
+  AddRuntimeResource(parser)
+  parser.add_argument('--machine-type', help=('machine type'))
+  accelerator_config_group = parser.add_group()
+  accelerator_config_group.add_argument(
+      '--accelerator-type',
+      help='Type of this accelerator.',
+      choices=accelerator_choices,
+      default=None)
+  accelerator_config_group.add_argument(
+      '--accelerator-core-count',
+      help='Count of cores of this accelerator.',
+      type=int)
+
+
+def AddResetRuntimeFlags(parser):
+  AddRuntimeResource(parser)
+
+
+def AddCreateRuntimeFlags(parser):
+  """Construct groups and arguments specific to the runtime creation."""
+
+  AddRuntimeResource(parser)
+  runtime_type_group = parser.add_group(mutex=True, required=True)
+  runtime_type_group.add_argument(
+      '--runtime-type', help=('runtime type'))
+  machine_type_group = runtime_type_group.add_group()
+  machine_type_group.add_argument(
+      '--machine-type', help=('machine type'), required=True)
+  local_disk_group = machine_type_group.add_group()
+  local_disk_group.add_argument(
+      '--interface', help=('runtime interface'))
+  local_disk_group.add_argument('--source', help=('runtime source'))
+  local_disk_group.add_argument('--mode', help=('runtime mode'))
+  local_disk_group.add_argument('--type', help=('runtime type'))
+
+  access_config_group = parser.add_group(required=True)
+  access_config_group.add_argument(
+      '--runtime-access-type', help=('access type'))
+  access_config_group.add_argument('--runtime-owner', help=('runtime owner'))
+
+  software_config_group = parser.add_group()
+  software_config_group.add_argument(
+      '--idle-shutdown-timeout', help=('idle shutdown timeout'))
+  software_config_group.add_argument(
+      '--install-gpu-driver', help=('install gpu driver'))
+  software_config_group.add_argument(
+      '--custom-gpu-driver-path', help=('custom gpu driver path'))
+  software_config_group.add_argument(
+      '--post-startup-script', help=('post startup script'))
+  software_config_group.add_argument(
+      '--post-startup-script-behavior', help=('post startup script behavior'))
+
+
+def AddListRuntimeFlags(parser):
+  GetLocationResourceArg(
+      ('Location of this runtime. '
+       'For example, us-central1-a')).AddToParser(parser)
+

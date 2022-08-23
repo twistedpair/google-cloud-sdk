@@ -57,6 +57,13 @@ def GetLocationResource(location, project=None):
       collection='notebooks.projects.locations')
 
 
+def GetParentForRuntime(args):
+  if args.IsSpecified('runtime'):
+    runtime = args.CONCEPTS.runtime.Parse()
+    return GetLocationResource(runtime.locationsId,
+                               runtime.projectsId).RelativeName()
+
+
 def GetParentForInstance(args):
   if args.IsSpecified('instance'):
     instance = args.CONCEPTS.instance.Parse()

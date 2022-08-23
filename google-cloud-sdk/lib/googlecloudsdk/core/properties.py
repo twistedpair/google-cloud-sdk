@@ -1079,6 +1079,9 @@ class _SectionApiEndpointOverrides(_Section):
     self.anthosevents = self._Add('anthosevents', command='gcloud anthos')
     self.ai = self._Add('ai', command='gcloud ai')
     self.aiplatform = self._Add('aiplatform', command='gcloud ai-platform')
+    self.anthospolicycontrollerstatus_pa = self._Add(
+        'anthospolicycontrollerstatus_pa',
+        command='gcloud container fleet policycontroller')
     self.apigateway = self._Add('apigateway', command='gcloud api-gateway')
     self.apigee = self._Add('apigee', command='gcloud apigee')
     self.appengine = self._Add('appengine', command='gcloud app')
@@ -3125,6 +3128,16 @@ class _SectionStorage(_Section):
         default=os.path.join(files.GetHomeDir(), '.config', 'gcloud',
                              'surface_data', 'storage', 'tracker_files'),
         help_text='Directory path to tracker files for resumable operations.')
+
+    self.use_gcloud_crc32c = self._AddBool(
+        'use_gcloud_crc32c',
+        default=False,
+        help_text=(
+            'If True, data integrity checks use a binary subprocess to '
+            ' calculate CRC32C hashes with the included gcloud-crc32c tool'
+            ' rather than the google-crc32c Python library. This behavior is '
+            ' also triggered when the google-crc32c Python library is'
+            ' unavailable even if this property is False.'))
 
     # TODO(b/109938541): Remove this after implementation seems stable.
     self.use_gsutil = self._AddBool(

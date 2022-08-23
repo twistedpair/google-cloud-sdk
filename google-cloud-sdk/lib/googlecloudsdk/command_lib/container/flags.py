@@ -4661,3 +4661,42 @@ either a node-pool upgrade or node-pool creation.
       default=None,
       hidden=True,
       action='store_true')
+
+
+def AddManagedConfigFlag(parser, hidden=True):
+  """Adds --managed-config={autofleet} flag."""
+  help_text = """
+  Select managed config for the cluster. Defaults to `disabled`.
+
+  $ {command} --managed-config=autofleet
+  """
+  parser.add_argument(
+      '--managed-config',
+      choices={
+          'disabled': 'Disable managed config.',
+          'autofleet': 'Selects fleet conforming config for the cluster.'
+      },
+      help=help_text,
+      hidden=hidden)
+
+
+def AddGatewayFlags(parser, hidden=True):
+  """Adds --gateway-api flag to the parser.
+
+  Flag:
+  --gateway-api={disabled|standard},
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+  help_text = """
+Enable GKE Gateway support for this cluster.
+"""
+  parser.add_argument(
+      '--gateway-api',
+      help=help_text,
+      required=False,
+      choices=['disabled', 'standard'],
+      default=None,
+      hidden=hidden)

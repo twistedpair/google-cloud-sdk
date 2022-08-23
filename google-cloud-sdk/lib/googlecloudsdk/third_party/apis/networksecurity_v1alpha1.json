@@ -607,7 +607,7 @@
     },
     "ServerTlsPolicy": {
       "id": "ServerTlsPolicy",
-      "description": "ServerTlsPolicy is a resource that specifies how a server should authenticate incoming requests. This resource itself does not affect configuration unless it is attached to a target https proxy or endpoint config selector resource.",
+      "description": "ServerTlsPolicy is a resource that specifies how a server should authenticate incoming requests. This resource itself does not affect configuration unless it is attached to a target HTTPS proxy or endpoint config selector resource.",
       "type": "object",
       "properties": {
         "name": {
@@ -717,8 +717,8 @@
           "type": "string",
           "enumDescriptions": [
             "Not allowed.",
-            "Allow connection to the backend even if certificate chain validation of the client certificate failed or no client certificate was presented. The proof of possession of the private key is always checked if client certificate was presented. This mode requires the backend to implement processing of data extracted from a client certificate to authenticate the peer, or to reject connections if the client certificate fingerprint is missing.",
-            "Require a client certificate and allow connection to the backend only if validation of the client certificate passed. If no trust stores are specified it will require any client certificate and force the backend to perform authentication of the peer."
+            "Allow connection even if certificate chain validation of the client certificate failed or no client certificate was presented. The proof of possession of the private key is always checked if client certificate was presented. This mode requires the backend to implement processing of data extracted from a client certificate to authenticate the peer, or to reject connections if the client certificate fingerprint is missing.",
+            "Require a client certificate and allow connection to the backend only if validation of the client certificate passed. If set, requires a reference to non-empty TrustConfig specified in `client_validation_trust_config`."
           ],
           "enum": [
             "CLIENT_VALIDATION_MODE_UNSPECIFIED",
@@ -821,6 +821,179 @@
           "type": "array",
           "items": {
             "$ref": "ValidationCA"
+          }
+        }
+      }
+    },
+    "ListGatewaySecurityPoliciesResponse": {
+      "id": "ListGatewaySecurityPoliciesResponse",
+      "description": "Response returned by the ListGatewaySecurityPolicies method.",
+      "type": "object",
+      "properties": {
+        "gatewaySecurityPolicies": {
+          "description": "List of GatewaySecurityPolicies resources.",
+          "type": "array",
+          "items": {
+            "$ref": "GatewaySecurityPolicy"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then 'next_page_token' is included. To get the next set of results, call this method again using the value of 'next_page_token' as 'page_token'.",
+          "type": "string"
+        }
+      }
+    },
+    "GatewaySecurityPolicy": {
+      "id": "GatewaySecurityPolicy",
+      "description": "The GatewaySecurityPolicy resource contains a collection of GatewaySecurityPolicyRules and associated metadata.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Name of the resource. Name is of the form projects\/{project}\/locations\/{location}\/gatewaySecurityPolicies\/{gateway_security_policy} gateway_security_policy should match the pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The timestamp when the resource was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp when the resource was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "description": {
+          "description": "Required. Free-text description of the resource.",
+          "type": "string"
+        }
+      }
+    },
+    "ListGatewaySecurityPolicyRulesResponse": {
+      "id": "ListGatewaySecurityPolicyRulesResponse",
+      "description": "Response returned by the ListGatewaySecurityPolicyRules method.",
+      "type": "object",
+      "properties": {
+        "gatewaySecurityPolicyRules": {
+          "description": "List of GatewaySecurityPolicyRule resources.",
+          "type": "array",
+          "items": {
+            "$ref": "GatewaySecurityPolicyRule"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then 'next_page_token' is included. To get the next set of results, call this method again using the value of 'next_page_token' as 'page_token'.",
+          "type": "string"
+        }
+      }
+    },
+    "GatewaySecurityPolicyRule": {
+      "id": "GatewaySecurityPolicyRule",
+      "description": "The GatewaySecurityPolicyRule resource is in a nested collection within a GatewaySecurityPolicy and represents a traffic matching condition and associated action to perform.",
+      "type": "object",
+      "properties": {
+        "basicProfile": {
+          "description": "Required. Profile which tells what the primitive action should be.",
+          "type": "string",
+          "enumDescriptions": [
+            "If there is not a mentioned action for the target.",
+            "Allow the matched traffic.",
+            "Deny the matched traffic."
+          ],
+          "enum": [
+            "BASIC_PROFILE_UNSPECIFIED",
+            "ALLOW",
+            "DENY"
+          ]
+        },
+        "name": {
+          "description": "Required. Immutable. Name of the resource. ame is the full resource name so projects\/{project}\/locations\/{location}\/gatewaySecurityPolicies\/{gateway_security_policy}\/rules\/{rule} rule should match the pattern: (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time when the rule was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time when the rule was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "enabled": {
+          "description": "Required. Whether the rule is enforced.",
+          "type": "boolean"
+        },
+        "priority": {
+          "description": "Required. Priority of the rule. Lower number corresponds to higher precedence.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "description": {
+          "description": "Required. Free-text description of the resource.",
+          "type": "string"
+        },
+        "sessionMatcher": {
+          "description": "Optional. CEL expression for matching on session criteria.",
+          "type": "string"
+        },
+        "applicationMatcher": {
+          "description": "Optional. CEL expression for matching on L7\/application level criteria.",
+          "type": "string"
+        }
+      }
+    },
+    "ListUrlListsResponse": {
+      "id": "ListUrlListsResponse",
+      "description": "Response returned by the ListUrlLists method.",
+      "type": "object",
+      "properties": {
+        "urlLists": {
+          "description": "List of UrlList resources.",
+          "type": "array",
+          "items": {
+            "$ref": "UrlList"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+          "type": "string"
+        }
+      }
+    },
+    "UrlList": {
+      "id": "UrlList",
+      "description": "UrlList proto helps users to set reusable, independently manageable lists of hosts, host patterns, URLs, URL patterns.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Name of the resource provided by the user. Name is of the form projects\/{project}\/locations\/{location}\/urlLists\/{url_list} url_list should match the pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time when the security policy was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time when the security policy was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "description": {
+          "description": "Required. Free-text description of the resource.",
+          "type": "string"
+        },
+        "values": {
+          "description": "Required. FQDNs and URLs.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -2343,6 +2516,485 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
+            "gatewaySecurityPolicies": {
+              "methods": {
+                "list": {
+                  "id": "networksecurity.projects.locations.gatewaySecurityPolicies.list",
+                  "path": "v1alpha1/{+parent}/gatewaySecurityPolicies",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gatewaySecurityPolicies",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location from which the GatewaySecurityPolicies should be listed, specified in the format `projects\/{project}\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of GatewaySecurityPolicies to return per call.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The value returned by the last 'ListGatewaySecurityPoliciesResponse' Indicates that this is a continuation of a prior 'ListGatewaySecurityPolicies' call, and that the system should return the next page of data.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListGatewaySecurityPoliciesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists GatewaySecurityPolicies in a given project and location."
+                },
+                "get": {
+                  "id": "networksecurity.projects.locations.gatewaySecurityPolicies.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gatewaySecurityPolicies/{gatewaySecurityPoliciesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the GatewaySecurityPolicy to get. Must be in the format `projects\/{project}\/locations\/{location}\/gatewaySecurityPolicies\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gatewaySecurityPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GatewaySecurityPolicy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single GatewaySecurityPolicy."
+                },
+                "create": {
+                  "id": "networksecurity.projects.locations.gatewaySecurityPolicies.create",
+                  "path": "v1alpha1/{+parent}/gatewaySecurityPolicies",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gatewaySecurityPolicies",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource of the GatewaySecurityPolicy. Must be in the format `projects\/{project}\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "gatewaySecurityPolicyId": {
+                      "description": "Required. Short name of the GatewaySecurityPolicy resource to be created. This value should be 1-63 characters long, containing only letters, numbers, hyphens, and underscores, and should not start with a number. E.g. \"gateway_security_policy1\".",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GatewaySecurityPolicy"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new GatewaySecurityPolicy in a given project and location."
+                },
+                "patch": {
+                  "id": "networksecurity.projects.locations.gatewaySecurityPolicies.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gatewaySecurityPolicies/{gatewaySecurityPoliciesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource. Name is of the form projects\/{project}\/locations\/{location}\/gatewaySecurityPolicies\/{gateway_security_policy} gateway_security_policy should match the pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gatewaySecurityPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the GatewaySecurityPolicy resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GatewaySecurityPolicy"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single GatewaySecurityPolicy."
+                },
+                "delete": {
+                  "id": "networksecurity.projects.locations.gatewaySecurityPolicies.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gatewaySecurityPolicies/{gatewaySecurityPoliciesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the GatewaySecurityPolicy to delete. Must be in the format `projects\/{project}\/locations\/{location}\/gatewaySecurityPolicies\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gatewaySecurityPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "force": {
+                      "description": "If set to true, any rules for this GatewaySecurityPolicy will also be deleted. (Otherwise, the request will only work if the GatewaySecurityPolicy has no rules.)",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single GatewaySecurityPolicy."
+                }
+              }
+              ,
+              "resources": {
+                "rules": {
+                  "methods": {
+                    "list": {
+                      "id": "networksecurity.projects.locations.gatewaySecurityPolicies.rules.list",
+                      "path": "v1alpha1/{+parent}/rules",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gatewaySecurityPolicies/{gatewaySecurityPoliciesId}/rules",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The project, location and GatewaySecurityPolicy from which the GatewaySecurityPolicyRules should be listed, specified in the format `projects\/{project}\/locations\/{location}\/gatewaySecurityPolicies\/{gatewaySecurityPolicy}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gatewaySecurityPolicies\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Maximum number of GatewaySecurityPolicyRules to return per call.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The value returned by the last 'ListGatewaySecurityPolicyRulesResponse' Indicates that this is a continuation of a prior 'ListGatewaySecurityPolicyRules' call, and that the system should return the next page of data.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListGatewaySecurityPolicyRulesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists GatewaySecurityPolicyRules in a given project and location."
+                    },
+                    "get": {
+                      "id": "networksecurity.projects.locations.gatewaySecurityPolicies.rules.get",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gatewaySecurityPolicies/{gatewaySecurityPoliciesId}/rules/{rulesId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the GatewaySecurityPolicyRule to retrieve. Format: projects\/{project}\/location\/{location}\/gatewaySecurityPolicies\/*\/rules\/*",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gatewaySecurityPolicies\/[^\/]+\/rules\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GatewaySecurityPolicyRule"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single GatewaySecurityPolicyRule."
+                    },
+                    "create": {
+                      "id": "networksecurity.projects.locations.gatewaySecurityPolicies.rules.create",
+                      "path": "v1alpha1/{+parent}/rules",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gatewaySecurityPolicies/{gatewaySecurityPoliciesId}/rules",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent where this rule will be created. Format : projects\/{project}\/location\/{location}\/gatewaySecurityPolicies\/*",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gatewaySecurityPolicies\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "gatewaySecurityPolicyRuleId": {
+                          "description": "The ID to use for the rule, which will become the final component of the rule's resource name. This value should be 4-63 characters, and valid characters are \/a-z-\/.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GatewaySecurityPolicyRule"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new GatewaySecurityPolicy in a given project and location."
+                    },
+                    "patch": {
+                      "id": "networksecurity.projects.locations.gatewaySecurityPolicies.rules.patch",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gatewaySecurityPolicies/{gatewaySecurityPoliciesId}/rules/{rulesId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Immutable. Name of the resource. ame is the full resource name so projects\/{project}\/locations\/{location}\/gatewaySecurityPolicies\/{gateway_security_policy}\/rules\/{rule} rule should match the pattern: (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gatewaySecurityPolicies\/[^\/]+\/rules\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Optional. Field mask is used to specify the fields to be overwritten in the GatewaySecurityPolicy resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GatewaySecurityPolicyRule"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the parameters of a single GatewaySecurityPolicyRule."
+                    },
+                    "delete": {
+                      "id": "networksecurity.projects.locations.gatewaySecurityPolicies.rules.delete",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gatewaySecurityPolicies/{gatewaySecurityPoliciesId}/rules/{rulesId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. A name of the GatewaySecurityPolicyRule to delete. Must be in the format `projects\/{project}\/locations\/{location}\/gatewaySecurityPolicies\/{gatewaySecurityPolicy}\/rules\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gatewaySecurityPolicies\/[^\/]+\/rules\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a single GatewaySecurityPolicyRule."
+                    }
+                  }
+                }
+              }
+            },
+            "urlLists": {
+              "methods": {
+                "list": {
+                  "id": "networksecurity.projects.locations.urlLists.list",
+                  "path": "v1alpha1/{+parent}/urlLists",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/urlLists",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location from which the UrlLists should be listed, specified in the format `projects\/{project}\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of UrlLists to return per call.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The value returned by the last `ListUrlListsResponse` Indicates that this is a continuation of a prior `ListUrlLists` call, and that the system should return the next page of data.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListUrlListsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists UrlLists in a given project and location."
+                },
+                "get": {
+                  "id": "networksecurity.projects.locations.urlLists.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/urlLists/{urlListsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the UrlList to get. Must be in the format `projects\/*\/locations\/{location}\/urlLists\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/urlLists\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "UrlList"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single UrlList."
+                },
+                "create": {
+                  "id": "networksecurity.projects.locations.urlLists.create",
+                  "path": "v1alpha1/{+parent}/urlLists",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/urlLists",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource of the UrlList. Must be in the format `projects\/*\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "urlListId": {
+                      "description": "Required. Short name of the UrlList resource to be created. This value should be 1-63 characters long, containing only letters, numbers, hyphens, and underscores, and should not start with a number. E.g. \"url_list\".",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "UrlList"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new UrlList in a given project and location."
+                },
+                "patch": {
+                  "id": "networksecurity.projects.locations.urlLists.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/urlLists/{urlListsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource provided by the user. Name is of the form projects\/{project}\/locations\/{location}\/urlLists\/{url_list} url_list should match the pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/urlLists\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the UrlList resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "UrlList"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single UrlList."
+                },
+                "delete": {
+                  "id": "networksecurity.projects.locations.urlLists.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/urlLists/{urlListsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the UrlList to delete. Must be in the format `projects\/*\/locations\/{location}\/urlLists\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/urlLists\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single UrlList."
                 }
               }
             },

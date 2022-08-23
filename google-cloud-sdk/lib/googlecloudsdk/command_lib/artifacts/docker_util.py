@@ -150,12 +150,13 @@ def ParseDockerImagePath(img_path):
   raise ar_exceptions.InvalidInputValueError(_INVALID_IMAGE_PATH_ERROR)
 
 
-def _ParseDockerImage(img_str, err_msg):
+def _ParseDockerImage(img_str, err_msg, strict=True):
   """Validates and parses an image string into a DockerImage.
 
   Args:
     img_str: str, User input docker formatted string.
     err_msg: str, Error message to return to user.
+    strict: bool, If False, defaults tags to "latest".
 
   Raises:
     ar_exceptions.InvalidInputValueError if user input is invalid.
@@ -180,8 +181,9 @@ def _ParseDockerImage(img_str, err_msg):
     return docker_img, DockerTag(docker_img, img_by_tag_match.group("tag"))
   whole_img_match = re.match(DOCKER_IMG_REGEX, img_str)
   if whole_img_match:
-    return DockerImage(docker_repo,
-                       whole_img_match.group("img").strip("/")), None
+    docker_img = DockerImage(docker_repo,
+                             whole_img_match.group("img").strip("/"))
+    return docker_img, None if strict else DockerTag(docker_img, "latest")
   raise ar_exceptions.InvalidInputValueError(err_msg)
 
 
@@ -586,7 +588,8 @@ def DescribeDockerImage(args):
   Returns:
     A dictionary of information about the given docker image.
   """
-  image, version_or_tag = _ParseDockerImage(args.IMAGE, _INVALID_IMAGE_ERROR)
+  image, version_or_tag = _ParseDockerImage(
+      args.IMAGE, _INVALID_IMAGE_ERROR, strict=False)
   _ValidateDockerRepo(image.docker_repo.GetRepositoryName())
   docker_version = _ValidateAndGetDockerVersion(version_or_tag)
 

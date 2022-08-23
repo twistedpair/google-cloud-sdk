@@ -789,6 +789,32 @@ class GkemulticloudProjectsLocationsAzureClustersWellKnownGetOpenidConfiguration
   azureCluster = _messages.StringField(1, required=True)
 
 
+class GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest(_messages.Message):
+  r"""A
+  GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest
+  object.
+
+  Fields:
+    attachedClusterId: Required. A client provided ID the resource. Must be
+      unique within the parent resource. The provided ID will be part of the
+      AttachedCluster resource name formatted as
+      `projects//locations//attachedClusters/`. Valid characters are `/a-z-/`.
+      Cannot be longer than 63 characters.
+    parent: Required. The parent location where this AttachedCluster resource
+      will be created. Location names are formatted as `projects//locations/`.
+      See [Resource
+      Names](https://cloud.google.com/apis/design/resource_names) for more
+      details on Google Cloud resource names.
+    platformVersion: Required. The platform version for the cluster (e.g.
+      `1.19.0-gke.1000`). You can list all supported versions on a given
+      Google Cloud region by calling GetAttachedServerConfig.
+  """
+
+  attachedClusterId = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
+  platformVersion = _messages.StringField(3)
+
+
 class GkemulticloudProjectsLocationsGetAwsServerConfigRequest(_messages.Message):
   r"""A GkemulticloudProjectsLocationsGetAwsServerConfigRequest object.
 
@@ -894,10 +920,11 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
     createTime: Output only. The time at which this cluster was registered.
     description: Optional. A human readable description of this cluster.
       Cannot be longer than 255 UTF-8 encoded bytes.
+    errors: Output only. A set of errors found in the cluster.
     etag: Allows clients to perform consistent read-modify-writes through
       optimistic concurrency control. Can be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
-    fleet: Optional. Fleet configuration.
+    fleet: Required. Fleet configuration.
     kubernetesVersion: Output only. The Kubernetes version of the cluster.
     loggingConfig: Optional. Logging configuration for this cluster.
     name: The name of this resource. Cluster names are formatted as
@@ -976,17 +1003,28 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
   authority = _messages.MessageField('GoogleCloudGkemulticloudV1Authority', 2)
   createTime = _messages.StringField(3)
   description = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 6)
-  kubernetesVersion = _messages.StringField(7)
-  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 8)
-  name = _messages.StringField(9)
-  platformVersion = _messages.StringField(10)
-  reconciling = _messages.BooleanField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 15)
+  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClusterError', 5, repeated=True)
+  etag = _messages.StringField(6)
+  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 7)
+  kubernetesVersion = _messages.StringField(8)
+  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 9)
+  name = _messages.StringField(10)
+  platformVersion = _messages.StringField(11)
+  reconciling = _messages.BooleanField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 16)
+
+
+class GoogleCloudGkemulticloudV1AttachedClusterError(_messages.Message):
+  r"""AttachedClusterError describes errors found on attached clusters.
+
+  Fields:
+    message: Human-friendly description of the error.
+  """
+
+  message = _messages.StringField(1)
 
 
 class GoogleCloudGkemulticloudV1Authority(_messages.Message):
@@ -2539,6 +2577,18 @@ class GoogleCloudGkemulticloudV1Fleet(_messages.Message):
 
   membership = _messages.StringField(1)
   project = _messages.StringField(2)
+
+
+class GoogleCloudGkemulticloudV1GenerateAttachedClusterInstallManifestResponse(_messages.Message):
+  r"""Response message for
+  `AttachedClusters.GenerateAttachedClusterInstallManifest` method.
+
+  Fields:
+    manifest: A set of Kubernetes resources (in YAML format) to be applied to
+      the cluster to be attached.
+  """
+
+  manifest = _messages.StringField(1)
 
 
 class GoogleCloudGkemulticloudV1GenerateAwsAccessTokenResponse(_messages.Message):

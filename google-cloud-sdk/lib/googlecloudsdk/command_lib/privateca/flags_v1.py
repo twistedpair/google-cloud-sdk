@@ -590,6 +590,8 @@ def AddExtensionConstraintsFlagsForUpdate(parser):
 
 def AddPredefinedValuesFileFlag(parser):
   """Adds a flag for the predefined x509 extensions file for a Certificate Template."""
+  # This string contains URLs which shouldn't be split across lines.
+  # pylint: disable=line-too-long
   base.Argument(
       '--predefined-values-file',
       action='store',
@@ -597,7 +599,12 @@ def AddPredefinedValuesFileFlag(parser):
       help=('A YAML file describing any predefined X.509 values set by this '
             'template. The provided extensions will be copied over to any '
             'certificate requests that use this template, taking precedent '
-            'over any allowed extensions in the certificate request.'
+            'over any allowed extensions in the certificate request. The '
+            'format of this file should be a YAML representation of the '
+            'X509Parameters message, which is defined here: '
+            'https://cloud.google.com/certificate-authority-service/docs/reference/rest/v1/X509Parameters'
+            '. Some examples can be found here: '
+            'https://cloud.google.com/certificate-authority-service/docs/creating-certificate-template'
            )).AddToParser(parser)
 
 

@@ -366,6 +366,77 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GatewaySecurityPolicy(_messages.Message):
+  r"""The GatewaySecurityPolicy resource contains a collection of
+  GatewaySecurityPolicyRules and associated metadata.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Required. Free-text description of the resource.
+    name: Required. Name of the resource. Name is of the form projects/{projec
+      t}/locations/{location}/gatewaySecurityPolicies/{gateway_security_policy
+      } gateway_security_policy should match the
+      pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
+class GatewaySecurityPolicyRule(_messages.Message):
+  r"""The GatewaySecurityPolicyRule resource is in a nested collection within
+  a GatewaySecurityPolicy and represents a traffic matching condition and
+  associated action to perform.
+
+  Enums:
+    BasicProfileValueValuesEnum: Required. Profile which tells what the
+      primitive action should be.
+
+  Fields:
+    applicationMatcher: Optional. CEL expression for matching on
+      L7/application level criteria.
+    basicProfile: Required. Profile which tells what the primitive action
+      should be.
+    createTime: Output only. Time when the rule was created.
+    description: Required. Free-text description of the resource.
+    enabled: Required. Whether the rule is enforced.
+    name: Required. Immutable. Name of the resource. ame is the full resource
+      name so projects/{project}/locations/{location}/gatewaySecurityPolicies/
+      {gateway_security_policy}/rules/{rule} rule should match the pattern:
+      (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    priority: Required. Priority of the rule. Lower number corresponds to
+      higher precedence.
+    sessionMatcher: Optional. CEL expression for matching on session criteria.
+    updateTime: Output only. Time when the rule was updated.
+  """
+
+  class BasicProfileValueValuesEnum(_messages.Enum):
+    r"""Required. Profile which tells what the primitive action should be.
+
+    Values:
+      BASIC_PROFILE_UNSPECIFIED: If there is not a mentioned action for the
+        target.
+      ALLOW: Allow the matched traffic.
+      DENY: Deny the matched traffic.
+    """
+    BASIC_PROFILE_UNSPECIFIED = 0
+    ALLOW = 1
+    DENY = 2
+
+  applicationMatcher = _messages.StringField(1)
+  basicProfile = _messages.EnumField('BasicProfileValueValuesEnum', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  enabled = _messages.BooleanField(5)
+  name = _messages.StringField(6)
+  priority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  sessionMatcher = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
 class GoogleCloudNetworksecurityV1alpha1CertificateProvider(_messages.Message):
   r"""Specification of certificate provider. Defines the mechanism to obtain
   the certificate and private key for peer to peer authentication.
@@ -724,6 +795,36 @@ class ListClientTlsPoliciesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListGatewaySecurityPoliciesResponse(_messages.Message):
+  r"""Response returned by the ListGatewaySecurityPolicies method.
+
+  Fields:
+    gatewaySecurityPolicies: List of GatewaySecurityPolicies resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then 'next_page_token' is included. To get the next set of
+      results, call this method again using the value of 'next_page_token' as
+      'page_token'.
+  """
+
+  gatewaySecurityPolicies = _messages.MessageField('GatewaySecurityPolicy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListGatewaySecurityPolicyRulesResponse(_messages.Message):
+  r"""Response returned by the ListGatewaySecurityPolicyRules method.
+
+  Fields:
+    gatewaySecurityPolicyRules: List of GatewaySecurityPolicyRule resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then 'next_page_token' is included. To get the next set of
+      results, call this method again using the value of 'next_page_token' as
+      'page_token'.
+  """
+
+  gatewaySecurityPolicyRules = _messages.MessageField('GatewaySecurityPolicyRule', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -763,6 +864,21 @@ class ListServerTlsPoliciesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   serverTlsPolicies = _messages.MessageField('ServerTlsPolicy', 2, repeated=True)
+
+
+class ListUrlListsResponse(_messages.Message):
+  r"""Response returned by the ListUrlLists method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    urlLists: List of UrlList resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  urlLists = _messages.MessageField('UrlList', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -875,17 +991,17 @@ class MTLSPolicy(_messages.Message):
 
     Values:
       CLIENT_VALIDATION_MODE_UNSPECIFIED: Not allowed.
-      ALLOW_INVALID_OR_MISSING_CLIENT_CERT: Allow connection to the backend
-        even if certificate chain validation of the client certificate failed
-        or no client certificate was presented. The proof of possession of the
+      ALLOW_INVALID_OR_MISSING_CLIENT_CERT: Allow connection even if
+        certificate chain validation of the client certificate failed or no
+        client certificate was presented. The proof of possession of the
         private key is always checked if client certificate was presented.
         This mode requires the backend to implement processing of data
         extracted from a client certificate to authenticate the peer, or to
         reject connections if the client certificate fingerprint is missing.
       REJECT_INVALID: Require a client certificate and allow connection to the
-        backend only if validation of the client certificate passed. If no
-        trust stores are specified it will require any client certificate and
-        force the backend to perform authentication of the peer.
+        backend only if validation of the client certificate passed. If set,
+        requires a reference to non-empty TrustConfig specified in
+        `client_validation_trust_config`.
     """
     CLIENT_VALIDATION_MODE_UNSPECIFIED = 0
     ALLOW_INVALID_OR_MISSING_CLIENT_CERT = 1
@@ -1667,6 +1783,192 @@ class NetworksecurityProjectsLocationsClientTlsPoliciesTestIamPermissionsRequest
   resource = _messages.StringField(2, required=True)
 
 
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsGatewaySecurityPoliciesCreateRequest
+  object.
+
+  Fields:
+    gatewaySecurityPolicy: A GatewaySecurityPolicy resource to be passed as
+      the request body.
+    gatewaySecurityPolicyId: Required. Short name of the GatewaySecurityPolicy
+      resource to be created. This value should be 1-63 characters long,
+      containing only letters, numbers, hyphens, and underscores, and should
+      not start with a number. E.g. "gateway_security_policy1".
+    parent: Required. The parent resource of the GatewaySecurityPolicy. Must
+      be in the format `projects/{project}/locations/{location}`.
+  """
+
+  gatewaySecurityPolicy = _messages.MessageField('GatewaySecurityPolicy', 1)
+  gatewaySecurityPolicyId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsGatewaySecurityPoliciesDeleteRequest
+  object.
+
+  Fields:
+    force: If set to true, any rules for this GatewaySecurityPolicy will also
+      be deleted. (Otherwise, the request will only work if the
+      GatewaySecurityPolicy has no rules.)
+    name: Required. A name of the GatewaySecurityPolicy to delete. Must be in
+      the format
+      `projects/{project}/locations/{location}/gatewaySecurityPolicies/*`.
+  """
+
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsGatewaySecurityPoliciesGetRequest
+  object.
+
+  Fields:
+    name: Required. A name of the GatewaySecurityPolicy to get. Must be in the
+      format
+      `projects/{project}/locations/{location}/gatewaySecurityPolicies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsGatewaySecurityPoliciesListRequest
+  object.
+
+  Fields:
+    pageSize: Maximum number of GatewaySecurityPolicies to return per call.
+    pageToken: The value returned by the last
+      'ListGatewaySecurityPoliciesResponse' Indicates that this is a
+      continuation of a prior 'ListGatewaySecurityPolicies' call, and that the
+      system should return the next page of data.
+    parent: Required. The project and location from which the
+      GatewaySecurityPolicies should be listed, specified in the format
+      `projects/{project}/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsGatewaySecurityPoliciesPatchRequest
+  object.
+
+  Fields:
+    gatewaySecurityPolicy: A GatewaySecurityPolicy resource to be passed as
+      the request body.
+    name: Required. Name of the resource. Name is of the form projects/{projec
+      t}/locations/{location}/gatewaySecurityPolicies/{gateway_security_policy
+      } gateway_security_policy should match the
+      pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the GatewaySecurityPolicy resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  gatewaySecurityPolicy = _messages.MessageField('GatewaySecurityPolicy', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesCreateRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesCreateRequest
+  object.
+
+  Fields:
+    gatewaySecurityPolicyRule: A GatewaySecurityPolicyRule resource to be
+      passed as the request body.
+    gatewaySecurityPolicyRuleId: The ID to use for the rule, which will become
+      the final component of the rule's resource name. This value should be
+      4-63 characters, and valid characters are /a-z-/.
+    parent: Required. The parent where this rule will be created. Format :
+      projects/{project}/location/{location}/gatewaySecurityPolicies/*
+  """
+
+  gatewaySecurityPolicyRule = _messages.MessageField('GatewaySecurityPolicyRule', 1)
+  gatewaySecurityPolicyRuleId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesDeleteRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. A name of the GatewaySecurityPolicyRule to delete. Must be
+      in the format `projects/{project}/locations/{location}/gatewaySecurityPo
+      licies/{gatewaySecurityPolicy}/rules/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the GatewaySecurityPolicyRule to retrieve.
+      Format:
+      projects/{project}/location/{location}/gatewaySecurityPolicies/*/rules/*
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesListRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesListRequest
+  object.
+
+  Fields:
+    pageSize: Maximum number of GatewaySecurityPolicyRules to return per call.
+    pageToken: The value returned by the last
+      'ListGatewaySecurityPolicyRulesResponse' Indicates that this is a
+      continuation of a prior 'ListGatewaySecurityPolicyRules' call, and that
+      the system should return the next page of data.
+    parent: Required. The project, location and GatewaySecurityPolicy from
+      which the GatewaySecurityPolicyRules should be listed, specified in the
+      format `projects/{project}/locations/{location}/gatewaySecurityPolicies/
+      {gatewaySecurityPolicy}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesPatchRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesPatchRequest
+  object.
+
+  Fields:
+    gatewaySecurityPolicyRule: A GatewaySecurityPolicyRule resource to be
+      passed as the request body.
+    name: Required. Immutable. Name of the resource. ame is the full resource
+      name so projects/{project}/locations/{location}/gatewaySecurityPolicies/
+      {gateway_security_policy}/rules/{rule} rule should match the pattern:
+      (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the GatewaySecurityPolicy resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  gatewaySecurityPolicyRule = _messages.MessageField('GatewaySecurityPolicyRule', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class NetworksecurityProjectsLocationsGetRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsGetRequest object.
 
@@ -1953,6 +2255,84 @@ class NetworksecurityProjectsLocationsServerTlsPoliciesTestIamPermissionsRequest
   resource = _messages.StringField(2, required=True)
 
 
+class NetworksecurityProjectsLocationsUrlListsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUrlListsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the UrlList. Must be in the
+      format `projects/*/locations/{location}`.
+    urlList: A UrlList resource to be passed as the request body.
+    urlListId: Required. Short name of the UrlList resource to be created.
+      This value should be 1-63 characters long, containing only letters,
+      numbers, hyphens, and underscores, and should not start with a number.
+      E.g. "url_list".
+  """
+
+  parent = _messages.StringField(1, required=True)
+  urlList = _messages.MessageField('UrlList', 2)
+  urlListId = _messages.StringField(3)
+
+
+class NetworksecurityProjectsLocationsUrlListsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUrlListsDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the UrlList to delete. Must be in the format
+      `projects/*/locations/{location}/urlLists/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsUrlListsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUrlListsGetRequest object.
+
+  Fields:
+    name: Required. A name of the UrlList to get. Must be in the format
+      `projects/*/locations/{location}/urlLists/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsUrlListsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUrlListsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of UrlLists to return per call.
+    pageToken: The value returned by the last `ListUrlListsResponse` Indicates
+      that this is a continuation of a prior `ListUrlLists` call, and that the
+      system should return the next page of data.
+    parent: Required. The project and location from which the UrlLists should
+      be listed, specified in the format
+      `projects/{project}/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsUrlListsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUrlListsPatchRequest object.
+
+  Fields:
+    name: Required. Name of the resource provided by the user. Name is of the
+      form projects/{project}/locations/{location}/urlLists/{url_list}
+      url_list should match the pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the UrlList resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+    urlList: A UrlList resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  urlList = _messages.MessageField('UrlList', 3)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -2132,7 +2512,7 @@ class Rule(_messages.Message):
 class ServerTlsPolicy(_messages.Message):
   r"""ServerTlsPolicy is a resource that specifies how a server should
   authenticate incoming requests. This resource itself does not affect
-  configuration unless it is attached to a target https proxy or endpoint
+  configuration unless it is attached to a target HTTPS proxy or endpoint
   config selector resource.
 
   Messages:
@@ -2344,6 +2724,27 @@ class TlsCertificateFiles(_messages.Message):
 
   certificatePath = _messages.StringField(1)
   privateKeyPath = _messages.StringField(2)
+
+
+class UrlList(_messages.Message):
+  r"""UrlList proto helps users to set reusable, independently manageable
+  lists of hosts, host patterns, URLs, URL patterns.
+
+  Fields:
+    createTime: Output only. Time when the security policy was created.
+    description: Required. Free-text description of the resource.
+    name: Required. Name of the resource provided by the user. Name is of the
+      form projects/{project}/locations/{location}/urlLists/{url_list}
+      url_list should match the pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    updateTime: Output only. Time when the security policy was updated.
+    values: Required. FQDNs and URLs.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+  values = _messages.StringField(5, repeated=True)
 
 
 class ValidationCA(_messages.Message):

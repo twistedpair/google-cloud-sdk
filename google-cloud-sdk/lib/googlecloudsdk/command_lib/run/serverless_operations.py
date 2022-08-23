@@ -1616,13 +1616,13 @@ class ServerlessOperations(object):
           'Job [{}] could not be found.'.format(job_ref.Name()))
 
   def DeleteExecution(self, execution_ref):
-    """Delete the provided Job.
+    """Delete the provided Execution.
 
     Args:
-      execution_ref: Resource, a reference to the Job to delete
+      execution_ref: Resource, a reference to the Execution to delete
 
     Raises:
-      ExecutionNotFoundError: if provided job is not found.
+      ExecutionNotFoundError: if provided Execution is not found.
     """
     messages = self.messages_module
     request = messages.RunNamespacesExecutionsDeleteRequest(
@@ -1634,6 +1634,25 @@ class ServerlessOperations(object):
       raise serverless_exceptions.ExecutionNotFoundError(
           'Execution [{}] could not be found.'.format(
               execution_ref.Name()))
+
+  def CancelExecution(self, execution_ref):
+    """Cancel the provided Execution.
+
+    Args:
+      execution_ref: Resource, a reference to the Execution to cancel
+
+    Raises:
+      ExecutionNotFoundError: if provided Execution is not found.
+    """
+    messages = self.messages_module
+    request = messages.RunNamespacesExecutionsCancelRequest(
+        name=execution_ref.RelativeName())
+    try:
+      with metrics.RecordDuration(metric_names.CANCEL_EXECUTION):
+        self._client.namespaces_executions.Cancel(request)
+    except api_exceptions.HttpNotFoundError:
+      raise serverless_exceptions.ExecutionNotFoundError(
+          'Execution [{}] could not be found.'.format(execution_ref.Name()))
 
   def _GetIamPolicy(self, service_name):
     """Gets the IAM policy for the service."""

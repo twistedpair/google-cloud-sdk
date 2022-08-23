@@ -19,7 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from collections import OrderedDict
+import collections
 import re
 
 from apitools.base.protorpclite import messages
@@ -280,39 +280,44 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
     # rather than a flag that takes a value and converts it to a boolean. Only
     # do this if not using a custom action.
     action = 'store_true'
-  # Default action is store if one was not provided.
-  action = action or 'store'
 
-  # pylint: disable=g-explicit-bool-comparison, only an explicit False should
-  # override this, None just means to do the default.
-  repeated = (field and field.repeated) and attributes.repeated != False
+  repeated = (field and field.repeated) and attributes.repeated is not False  # repeated as None should default to True, so pylint: disable=g-bool-id-comparison
 
+  append_action = 'append'
   if repeated:
-    if action != 'store':
-      raise ArgumentGenerationError(
-          field.name,
-          'The field is repeated but is using a custom action. You might'
-          ' want to set repeated: False in your arg spec.')
     if t:
+      is_repeatable_message = isinstance(t, RepeatedMessageBindableType)
+      is_arg_list = isinstance(t, arg_parsers.ArgList)
+      if (is_repeatable_message or is_arg_list) and action:
+        raise ArgumentGenerationError(
+            field.name,
+            'Type {0} cannot be used with a custom action. Remove '
+            'action {1} from spec.'.format(type(t).__name__, action))
       # A special ArgDict wrapper type was given, bind it to the message so it
       # can generate the message from the key/value pairs.
-      if isinstance(t, RepeatedMessageBindableType):
+      if is_repeatable_message:
         action = t.Action()
         t = t.GenerateType(field.type)
       # If a simple type was provided, just use a list of that type (even if it
       # is a message). The type function will be responsible for converting to
       # the correct value. If type is an ArgList or ArgDict, don't try to wrap
       # it.
-      elif not isinstance(t, arg_parsers.ArgList):
+      elif not is_arg_list and action != append_action:
         t = arg_parsers.ArgList(element_type=t, choices=choices)
         # Don't register the choices on the argparse arg because it is validated
         # by the ArgList.
         choices = None
   elif isinstance(t, RepeatedMessageBindableType):
     raise ArgumentGenerationError(
-        field.name, 'The given type can only be used on repeated fields.')
+        field.name,
+        'Type {0} can only be used on repeated '
+        'fields.'.format(type(t).__name__))
+  elif action == append_action:
+    raise ArgumentGenerationError(
+        field.name,
+        '{0} custom action can only be used on repeated fields.'.format(action))
 
-  if field and not t and action == 'store' and not attributes.processor:
+  if field and not t and not action and not attributes.processor:
     # The type is unknown and there is no custom action or processor, we don't
     # know what to do with this.
     raise ArgumentGenerationError(
@@ -323,7 +328,7 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
   arg = base.Argument(
       name if attributes.is_positional else '--' + name,
       category=category if not attributes.is_positional else None,
-      action=action,
+      action=action or 'store',
       completer=attributes.completer,
       help=attributes.help_text,
       hidden=attributes.hidden,
@@ -365,9 +370,7 @@ def ConvertValue(field, value, repeated=None, processor=None, choices=None):
   Returns:
     The value to insert into the message.
   """
-  # pylint: disable=g-explicit-bool-comparison, only an explicit False should
-  # override this, None just means to do the default.
-  arg_repeated = field.repeated and repeated != False
+  arg_repeated = field.repeated and repeated is not False  # repeated as None should default to True, so pylint: disable=g-bool-id-comparison
 
   if processor:
     value = processor(value)
@@ -549,7 +552,7 @@ def EnumNameToChoice(name):
   return name.replace('_', '-').lower()
 
 
-_LONG_TYPE = long if six.PY2 else int
+_LONG_TYPE = long if six.PY2 else int  # long is referring to a type, so pylint: disable=undefined-variable
 
 
 TYPES = {
@@ -808,7 +811,7 @@ class ChoiceEnumMapper(object):
     """
     self._choice_to_enum = {}
     self._enum_to_choice = {}
-    self._choices = OrderedDict()
+    self._choices = collections.OrderedDict()
     for enum_string, (choice, help_str) in sorted(
         six.iteritems(self._custom_mappings)):
       self._choice_to_enum[choice] = self._enum(enum_string)

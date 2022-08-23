@@ -204,13 +204,13 @@ class UpdateCommand(FeatureCommand, calliope_base.UpdateCommand):
 
 
 # This will get full membership resource name format which should be used most
-# of the time, this is a supported format in resource args,
-# API function request/response objects, etc.
+# of the time, this is a supported format in resource args, API function
+# request/response objects, etc.
 def ListMembershipsFull():
   """Lists full Membership names in the fleet for the current project.
 
   Returns:
-    A list of Membership full resource names in the fleet in the form
+    A list of full membership resource names in the fleet in the form
     'projects/*/locations/*/memberships/*'.
     A list of locations which were unreachable.
   """
@@ -224,25 +224,12 @@ def ListMembershipsFull():
   ], response.unreachable
 
 
-# This should be used for lists in CLI output, the LOCATION/ID
-# format is more readable than the full resource name
-def ListMembershipsPartial():
-  """Lists partial Membership names in the fleet for the current project.
-
-  Returns:
-    A list of Membership names in the fleet in the form 'LOCATION/ID'.
-    A list of locations which were unreachable.
-  """
-  client = core_apis.GetClientInstance('gkehub', 'v1beta1')
-  response = client.projects_locations_memberships.List(
-      client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsListRequest(
-          parent=hub_base.HubCommand.LocationResourceName(location='-')))
-
-  return [
-      util.MembershipPartialName(m.name)
-      for m in response.resources
-      if not _ClusterMissing(m.endpoint)
-  ], response.unreachable
+# For CLI output (e.g. prompts), the LOCATION/ID format
+# (e.g. us-central1/my-membership) is more readable than
+# the full resource name
+def MembershipPartialNames(memberships):
+  """Converts a list of full membership names to LOCATION/ID format."""
+  return [util.MembershipPartialName(m) for m in memberships]
 
 
 # This should not be used in the future and will be deleted

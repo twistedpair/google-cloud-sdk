@@ -23,12 +23,15 @@ from googlecloudsdk.calliope import arg_parsers
 
 def add_precondition_flags(parser):
   """Add flags indicating a precondition for an operation to happen."""
-  parser.add_argument(
+  preconditions_group = parser.add_group(
+      category='PRECONDITION',
+  )
+  preconditions_group.add_argument(
       '--if-generation-match',
       metavar='GENERATION',
       help='Execute only if the generation matches the generation of the'
       ' requested object.')
-  parser.add_argument(
+  preconditions_group.add_argument(
       '--if-metageneration-match',
       metavar='METAGENERATION',
       help='Execute only if the metageneration matches the metageneration of'

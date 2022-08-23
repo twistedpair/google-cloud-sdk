@@ -51,6 +51,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GLOBAL_HUBS_ROUTETABLES = (
+      'projects.locations.global.hubs.routeTables',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/global/hubs/{hubsId}/'
+              'routeTables/{routeTablesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_GLOBAL_HUBS_ROUTETABLES_ROUTES = (
+      'projects.locations.global.hubs.routeTables.routes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/global/hubs/{hubsId}/'
+              'routeTables/{routeTablesId}/routes/{routesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_GLOBAL_POLICYBASEDROUTES = (
       'projects.locations.global.policyBasedRoutes',
       '{+name}',

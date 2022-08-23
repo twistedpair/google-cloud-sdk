@@ -245,7 +245,7 @@ definitions:
       action:
         oneOf:
         # One of the builtin argparse actions.
-        - enum: [store, store_true]
+        - enum: [store, store_true, append]
         # The module path to a class that implements argparse's Action class.
         - $ref: "#/definitions/python_hook"
         # Mark this flag as being deprecated. All the sub elements here

@@ -140,7 +140,7 @@ def ImportPythonHook(path):
   return Hook(attr, kwargs)
 
 
-STATIC_ACTIONS = {'store', 'store_true'}
+STATIC_ACTIONS = {'store', 'store_true', 'append'}
 
 
 def ParseAction(action, flag_name):
@@ -175,7 +175,7 @@ def ParseAction(action, flag_name):
 BUILTIN_TYPES = {
     'str': str,
     'int': int,
-    'long': long if six.PY2 else int,
+    'long': long if six.PY2 else int,  # long is referring to a type, so pylint: disable=undefined-variable
     'float': float,
     'bool': bool,
 }

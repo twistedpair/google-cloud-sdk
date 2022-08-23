@@ -17,8 +17,8 @@ class AppengineV1beta(base_api.BaseApiClient):
   _PACKAGE = 'appengine'
   _SCOPES = ['https://www.googleapis.com/auth/appengine.admin', 'https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only']
   _VERSION = 'v1beta'
-  _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
-  _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _CLIENT_ID = 'CLIENT_ID'
+  _CLIENT_SECRET = 'CLIENT_SECRET'
   _USER_AGENT = 'google-cloud-sdk'
   _CLIENT_CLASS_NAME = 'AppengineV1beta'
   _URL_VERSION = 'v1beta'

@@ -358,6 +358,8 @@ class Templates:
                                     'java8-template-launcher-base:latest')
   FLEX_TEMPLATE_PYTHON3_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
                                       'python3-template-launcher-base:latest')
+  FLEX_TEMPLATE_GO_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
+                                 'go-template-launcher-base:latest')
   # Mapping of apitools request message fields to their json parameters
   _CUSTOM_JSON_FIELD_MAPPINGS = {
       'dynamicTemplate_gcsPath': 'dynamicTemplate.gcsPath',
@@ -606,6 +608,49 @@ class Templates:
         commands='RUN ' + ' && '.join(commands))
     return dockerfile_contents
 
+  # staticmethod enforced by prior code, this violates the style guide and
+  # would benefit from a refactor in the future.
+  # TODO(b/242564654): Add type annotations for arguments when presubmits allow
+  # them.
+  @staticmethod
+  def BuildGoImageDockerfile(flex_template_base_image,
+                             pipeline_paths,
+                             env):
+    """Builds Dockerfile contents for go flex template image.
+
+    Args:
+      flex_template_base_image: SDK version or base image to use.
+      pipeline_paths: Path to pipeline binary.
+      env: Dictionary of env variables to set in the container image.
+
+    Returns:
+      Dockerfile contents as string.
+    """
+    dockerfile_template = """
+    FROM {base_image}
+
+    {env}
+
+    {copy}
+    """
+    env['FLEX_TEMPLATE_GO_BINARY'] = '/template/{}'.format(
+        env['FLEX_TEMPLATE_GO_BINARY'])
+    paths = ' '.join(pipeline_paths)
+    copy_command = 'COPY {} /template/'.format(paths)
+
+    envs = [
+        'ENV {}={}'.format(var, val) for var, val in sorted(env.items())
+    ]
+    env_list = '\n'.join(envs)
+
+    dockerfile_contents = textwrap.dedent(dockerfile_template).format(
+        base_image=Templates._GetFlexTemplateBaseImage(
+            flex_template_base_image),
+        env=env_list,
+        copy=copy_command)
+
+    return dockerfile_contents
+
   @staticmethod
   def BuildDockerfile(flex_template_base_image, pipeline_paths, env,
                       sdk_language):
@@ -626,6 +671,9 @@ class Templates:
     elif sdk_language == 'PYTHON':
       return Templates.BuildPythonImageDockerfile(flex_template_base_image,
                                                   pipeline_paths, env)
+    elif sdk_language == 'GO':
+      return Templates.BuildGoImageDockerfile(flex_template_base_image,
+                                              pipeline_paths, env)
 
   @staticmethod
   def _ValidateTemplateParameters(parameters):
@@ -671,7 +719,9 @@ class Templates:
     elif sdk_language == 'PYTHON' and 'FLEX_TEMPLATE_PYTHON_PY_FILE' not in env:
       raise ValueError(('FLEX_TEMPLATE_PYTHON_PY_FILE environment variable '
                         'should be provided for all PYTHON jobs.'))
-
+    elif sdk_language == 'GO' and 'FLEX_TEMPLATE_GO_BINARY' not in env:
+      raise ValueError(('FLEX_TEMPLATE_GO_BINARY environment variable '
+                        'should be provided for all GO jobs.'))
     return True
 
   @staticmethod
@@ -722,6 +772,8 @@ class Templates:
       return Templates.FLEX_TEMPLATE_JAVA8_BASE_IMAGE
     elif flex_template_base_image == 'PYTHON3':
       return Templates.FLEX_TEMPLATE_PYTHON3_BASE_IMAGE
+    elif flex_template_base_image == 'GO':
+      return Templates.FLEX_TEMPLATE_GO_BASE_IMAGE
     return flex_template_base_image
 
   @staticmethod
@@ -738,6 +790,8 @@ class Templates:
       return Templates.SDK_INFO(language=Templates.SDK_LANGUAGE.JAVA)
     elif sdk_language == 'PYTHON':
       return Templates.SDK_INFO(language=Templates.SDK_LANGUAGE.PYTHON)
+    elif sdk_language == 'GO':
+      return Templates.SDK_INFO(language=Templates.SDK_LANGUAGE.GO)
 
   @staticmethod
   def _StoreFlexTemplateFile(template_file_gcs_location, container_spec_json):
@@ -851,8 +905,8 @@ class Templates:
 
   @staticmethod
   def BuildAndStoreFlexTemplateImage(image_gcr_path, flex_template_base_image,
-                                     jar_paths, py_paths, env, sdk_language,
-                                     gcs_log_dir):
+                                     jar_paths, py_paths, go_binary_path, env,
+                                     sdk_language, gcs_log_dir):
     """Builds the flex template docker container image and stores it in GCR.
 
     Args:
@@ -860,6 +914,7 @@ class Templates:
       flex_template_base_image: SDK version or base image to use.
       jar_paths: List of jar paths to pipelines and dependencies.
       py_paths: List of python paths to pipelines and dependencies.
+      go_binary_path: Path to compiled Go pipeline binary.
       env: Dictionary of env variables to set in the container image.
       sdk_language: SDK language of the flex template.
       gcs_log_dir: Path to Google Cloud Storage directory to store build logs.
@@ -878,6 +933,9 @@ class Templates:
       paths = jar_paths
       if py_paths:
         paths = py_paths
+      elif go_binary_path:
+        paths = [go_binary_path]
+
       for path in paths:
         absl_path = os.path.abspath(path)
         if os.path.isfile(absl_path):

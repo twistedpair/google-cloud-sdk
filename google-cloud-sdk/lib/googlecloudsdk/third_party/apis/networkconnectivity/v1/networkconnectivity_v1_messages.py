@@ -118,8 +118,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -476,6 +482,7 @@ class Hub(_messages.Message):
       ACTIVATING: The resource's Activate operation is in progress
       DEACTIVATING: The resource's Deactivate operation is in progress
       UPDATING: The resource's Update operation is in progress
+      INACTIVE: The resource is inactive
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -484,6 +491,7 @@ class Hub(_messages.Message):
     ACTIVATING = 4
     DEACTIVATING = 5
     UPDATING = 6
+    INACTIVE = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -639,6 +647,38 @@ class ListPolicyBasedRoutesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   policyBasedRoutes = _messages.MessageField('PolicyBasedRoute', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListRouteTablesResponse(_messages.Message):
+  r"""Response for HubService.ListRouteTables method.
+
+  Fields:
+    nextPageToken: The next pagination token in the List response. It should
+      be used as page_token for the following request. An empty value means no
+      more result.
+    routeTables: The requested route tables.
+    unreachable: Hubs that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  routeTables = _messages.MessageField('RouteTable', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListRoutesResponse(_messages.Message):
+  r"""Response for HubService.ListRoutes method.
+
+  Fields:
+    nextPageToken: The next pagination token in the List response. It should
+      be used as page_token for the following request. An empty value means no
+      more result.
+    routes: The requested routes.
+    unreachable: RouteTables that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  routes = _messages.MessageField('Route', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -911,6 +951,68 @@ class NetworkconnectivityProjectsLocationsGlobalHubsPatchRequest(_messages.Messa
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesGetRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the route table resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesListRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesListRequest
+  object.
+
+  Fields:
+    filter: An expression that filters the results listed in the response.
+    orderBy: Sort the results by a certain order.
+    pageSize: The maximum number of results per page that should be returned.
+    pageToken: The page token.
+    parent: Required. The parent resource's name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesRoutesGetRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesRoutesGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the route resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesRoutesListRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesRoutesListRequest
+  object.
+
+  Fields:
+    filter: An expression that filters the results listed in the response.
+    orderBy: Sort the results by a certain order.
+    pageSize: The maximum number of results per page that should be returned.
+    pageToken: The page token.
+    parent: Required. The parent resource's name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class NetworkconnectivityProjectsLocationsGlobalHubsSetIamPolicyRequest(_messages.Message):
@@ -1360,6 +1462,16 @@ class NetworkconnectivityProjectsLocationsSpokesTestIamPermissionsRequest(_messa
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NextHopVpcNetwork(_messages.Message):
+  r"""A NextHopVpcNetwork object.
+
+  Fields:
+    uri: The URI of the VPC network resource
+  """
+
+  uri = _messages.StringField(1)
+
+
 class OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -1469,7 +1581,7 @@ class PolicyBasedRoute(_messages.Message):
   r"""Policy Based Routes (PBR) are more powerful routes that allows GCP
   customers to route their L4 network traffic based on not just destination
   IP, but also source IP, protocol and more. A PBR always take precedence when
-  it conflicts with other types of routes. Next id: 18
+  it conflicts with other types of routes. Next id: 19
 
   Messages:
     LabelsValue: User-defined labels.
@@ -1480,10 +1592,7 @@ class PolicyBasedRoute(_messages.Message):
       this field when you create the resource.
     filter: Required. The filter to match L4 traffic.
     interconnectAttachment: Optional. The interconnect attachments to which
-      this route applies to. Specifying both `tags` and
-      `interconnect_attachment` is not allowed, and if neither `tags` and
-      `interconnect_attachment` are specified, the PBR will be installed on
-      every network endpoints (e.g. VMs, VPNs, and Interconnects) in the VPC.
+      this route applies to.
     kind: Output only. Type of this resource. Always
       networkconnectivity#policyBasedRoute for Policy Based Route resources.
     labels: User-defined labels.
@@ -1503,13 +1612,9 @@ class PolicyBasedRoute(_messages.Message):
       inclusive.
     selfLink: Output only. Server-defined fully-qualified URL for this
       resource.
-    tags: Optional. A list of VM instance tags to which this policy based
-      route applies to. Only VM instances that have ALL tags specified here
-      will install this PBR. Specifying both `tags` and
-      `interconnect_attachment` is not allowed, and if neither `tags` and
-      `interconnect_attachment` are specified, the PBR will be installed on
-      every network endpoints (e.g. VMs, VPNs, and Interconnects) in the VPC.
     updateTime: Output only. Time when the PolicyBasedRoute was updated.
+    virtualMachine: Optional. VM instances to which this policy based route
+      applies to.
     warnings: Output only. If potential misconfigurations are detected for
       this route, this field will be populated with warning messages.
   """
@@ -1549,9 +1654,212 @@ class PolicyBasedRoute(_messages.Message):
   nextHopIlbIp = _messages.StringField(9)
   priority = _messages.IntegerField(10, variant=_messages.Variant.INT32)
   selfLink = _messages.StringField(11)
-  tags = _messages.StringField(12, repeated=True)
-  updateTime = _messages.StringField(13)
+  updateTime = _messages.StringField(12)
+  virtualMachine = _messages.MessageField('VirtualMachine', 13)
   warnings = _messages.MessageField('Warnings', 14, repeated=True)
+
+
+class Route(_messages.Message):
+  r"""A route defines a path from VM instances within a spoke to a specific
+  destination resource. Only VPC spokes have routes.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current lifecycle state of the
+      route.
+    TypeValueValuesEnum: Output only. The route's type. Its type is determined
+      by the properties of its IP address range.
+
+  Messages:
+    LabelsValue: Optional labels in key:value format. For more information
+      about labels, see [Requirements for
+      labels](https://cloud.google.com/resource-manager/docs/creating-
+      managing-labels#requirements).
+
+  Fields:
+    createTime: Output only. The time the route was created.
+    description: An optional description of the route.
+    ipCidrRange: The destination IP address range.
+    labels: Optional labels in key:value format. For more information about
+      labels, see [Requirements for labels](https://cloud.google.com/resource-
+      manager/docs/creating-managing-labels#requirements).
+    name: Immutable. The name of the route. Route names must be unique. They
+      use the following form: `projects/{project_number}/locations/global/hubs
+      /{hub}/routeTables/{route_table_id}/routes/{route_id}`
+    nextHopVpcNetwork: Immutable. The destination VPC network for packets on
+      this route.
+    spoke: Immutable. The spoke that this route leads to. Example:
+      projects/12345/locations/global/spokes/SPOKE
+    state: Output only. The current lifecycle state of the route.
+    type: Output only. The route's type. Its type is determined by the
+      properties of its IP address range.
+    uid: Output only. The Google-generated UUID for the route. This value is
+      unique across all Network Connectivity Center route resources. If a
+      route is deleted and another with the same name is created, the new
+      route is assigned a different unique_id.
+    updateTime: Output only. The time the route was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current lifecycle state of the route.
+
+    Values:
+      STATE_UNSPECIFIED: No state information available
+      CREATING: The resource's create operation is in progress
+      ACTIVE: The resource is active
+      DELETING: The resource's Delete operation is in progress
+      ACTIVATING: The resource's Activate operation is in progress
+      DEACTIVATING: The resource's Deactivate operation is in progress
+      UPDATING: The resource's Update operation is in progress
+      INACTIVE: The resource is inactive
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+    ACTIVATING = 4
+    DEACTIVATING = 5
+    UPDATING = 6
+    INACTIVE = 7
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The route's type. Its type is determined by the
+    properties of its IP address range.
+
+    Values:
+      ROUTE_TYPE_UNSPECIFIED: No route type information specified
+      VPC_PRIMARY_SUBNET: The route leads to a destination within the primary
+        address range of the VPC network's subnet.
+      VPC_SECONDARY_SUBNET: The route leads to a destination within the
+        secondary address range of the VPC network's subnet.
+    """
+    ROUTE_TYPE_UNSPECIFIED = 0
+    VPC_PRIMARY_SUBNET = 1
+    VPC_SECONDARY_SUBNET = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional labels in key:value format. For more information about
+    labels, see [Requirements for labels](https://cloud.google.com/resource-
+    manager/docs/creating-managing-labels#requirements).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  ipCidrRange = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  nextHopVpcNetwork = _messages.MessageField('NextHopVpcNetwork', 6)
+  spoke = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+
+
+class RouteTable(_messages.Message):
+  r"""A RouteTable object.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current lifecycle state of this
+      route table.
+
+  Messages:
+    LabelsValue: Optional labels in key:value format. For more information
+      about labels, see [Requirements for
+      labels](https://cloud.google.com/resource-manager/docs/creating-
+      managing-labels#requirements).
+
+  Fields:
+    createTime: Output only. The time the route table was created.
+    description: An optional description of the route table.
+    labels: Optional labels in key:value format. For more information about
+      labels, see [Requirements for labels](https://cloud.google.com/resource-
+      manager/docs/creating-managing-labels#requirements).
+    name: Immutable. The name of the route table. Route Table names must be
+      unique. They use the following form: `projects/{project_number}/location
+      s/global/hubs/{hub}/routeTables/{route_table_id}
+    state: Output only. The current lifecycle state of this route table.
+    uid: Output only. The Google-generated UUID for the route table. This
+      value is unique across all route table resources. If a route table is
+      deleted and another with the same name is created, the new route table
+      is assigned a different unique_id.
+    updateTime: Output only. The time the route table was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current lifecycle state of this route table.
+
+    Values:
+      STATE_UNSPECIFIED: No state information available
+      CREATING: The resource's create operation is in progress
+      ACTIVE: The resource is active
+      DELETING: The resource's Delete operation is in progress
+      ACTIVATING: The resource's Activate operation is in progress
+      DEACTIVATING: The resource's Deactivate operation is in progress
+      UPDATING: The resource's Update operation is in progress
+      INACTIVE: The resource is inactive
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+    ACTIVATING = 4
+    DEACTIVATING = 5
+    UPDATING = 6
+    INACTIVE = 7
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional labels in key:value format. For more information about
+    labels, see [Requirements for labels](https://cloud.google.com/resource-
+    manager/docs/creating-managing-labels#requirements).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  uid = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class RouterApplianceInstance(_messages.Message):
@@ -1656,6 +1964,7 @@ class Spoke(_messages.Message):
       ACTIVATING: The resource's Activate operation is in progress
       DEACTIVATING: The resource's Deactivate operation is in progress
       UPDATING: The resource's Update operation is in progress
+      INACTIVE: The resource is inactive
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1664,6 +1973,7 @@ class Spoke(_messages.Message):
     ACTIVATING = 4
     DEACTIVATING = 5
     UPDATING = 6
+    INACTIVE = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1792,6 +2102,18 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+class VirtualMachine(_messages.Message):
+  r"""VM instances to which this policy based route applies to.
+
+  Fields:
+    tags: Optional. A list of VM instance tags to which this policy based
+      route applies to. VM instances that have ANY of tags specified here will
+      install this PBR.
+  """
+
+  tags = _messages.StringField(1, repeated=True)
+
+
 class Warnings(_messages.Message):
   r"""Informational warning message.
 
@@ -1823,7 +2145,9 @@ class Warnings(_messages.Message):
 
     Values:
       WARNING_UNSPECIFIED: Default value.
-      RESOURCE_NOT_ACTIVE: The policy based route is not active.
+      RESOURCE_NOT_ACTIVE: The policy based route is not active and
+        functioning. Common causes are the dependent network was deleted or
+        the resource project was turned off.
       RESOURCE_BEING_MODIFIED: The policy based route is being modified (e.g.
         created/deleted) at this time.
     """

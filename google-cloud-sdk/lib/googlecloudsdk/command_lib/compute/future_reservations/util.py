@@ -41,10 +41,12 @@ def MakeFutureReservationMessageFromArgs(messages, args,
                                       getattr(args, 'duration', None))
   share_settings = MakeShareSettings(messages, args,
                                      getattr(args, 'share_setting', None))
+  planning_status = MakePlanningStatus(messages,
+                                       getattr(args, 'planning_status', None))
   return MakeFutureReservationMessage(messages, future_reservation_ref.Name(),
                                       sku_properties, time_window,
                                       share_settings,
-                                      future_reservation_ref.zone)
+                                      planning_status)
 
 
 def MakeAllocatedInstanceProperties(messages,
@@ -116,14 +118,22 @@ def MakeShareSettings(messages, args, setting_configs):
     return None
 
 
+def MakePlanningStatus(messages, planning_status):
+  """Constructs the planning status enum value."""
+  if planning_status:
+    if planning_status == 'SUBMITTED':
+      return messages.FutureReservation.PlanningStatusValueValuesEnum.SUBMITTED
+  return None
+
+
 def MakeFutureReservationMessage(messages, reservation_name, sku_properties,
-                                 time_window, share_settings, reservation_zone):
+                                 time_window, share_settings, planning_status):
   """Constructs a future reservation message object."""
   future_reservation_message = messages.FutureReservation(
       name=reservation_name,
       specificSkuProperties=sku_properties,
       timeWindow=time_window,
-      zone=reservation_zone)
+      planningStatus=planning_status)
   if share_settings:
     future_reservation_message.shareSettings = share_settings
   return future_reservation_message

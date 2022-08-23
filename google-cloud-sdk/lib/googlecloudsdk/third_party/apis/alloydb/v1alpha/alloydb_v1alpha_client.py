@@ -17,8 +17,8 @@ class AlloydbV1alpha(base_api.BaseApiClient):
   _PACKAGE = 'alloydb'
   _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
   _VERSION = 'v1alpha'
-  _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
-  _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _CLIENT_ID = 'CLIENT_ID'
+  _CLIENT_SECRET = 'CLIENT_SECRET'
   _USER_AGENT = 'google-cloud-sdk'
   _CLIENT_CLASS_NAME = 'AlloydbV1alpha'
   _URL_VERSION = 'v1alpha'
@@ -229,33 +229,6 @@ class AlloydbV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Createsecondary(self, request, global_params=None):
-      r"""Creates a new SECONDARY Instance in a given project and location.
-
-      Args:
-        request: (AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Createsecondary')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Createsecondary.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances:createsecondary',
-        http_method='POST',
-        method_id='alloydb.projects.locations.clusters.instances.createsecondary',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['instanceId', 'requestId', 'validateOnly'],
-        relative_path='v1alpha/{+parent}/instances:createsecondary',
-        request_field='instance',
-        request_type_name='AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Delete(self, request, global_params=None):
       r"""Deletes a single Instance.
 
@@ -329,7 +302,7 @@ class AlloydbV1alpha(base_api.BaseApiClient):
         method_id='alloydb.projects.locations.clusters.instances.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['view'],
         relative_path='v1alpha/{+name}',
         request_field='',
         request_type_name='AlloydbProjectsLocationsClustersInstancesGetRequest',

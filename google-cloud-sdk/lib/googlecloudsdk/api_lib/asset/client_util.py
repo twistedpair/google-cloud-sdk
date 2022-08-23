@@ -810,3 +810,17 @@ class OrgPolicyAnalyzerClient(object):
         batch_size_attribute='pageSize',
         current_token_attribute='pageToken',
         next_token_attribute='nextPageToken')
+
+
+class EffectiveIAMPolicyClient(object):
+  """Client for Effective IAM Policy analysis."""
+
+  def __init__(self, api_version=DEFAULT_API_VERSION):
+    self.message_module = GetMessages(api_version)
+    self.service = GetClient(api_version).effectiveIamPolicies
+
+  def BatchGetEffectiveIAMPolicies(self, args):
+    """Calls BatchGetEffectiveIAMPolicies method."""
+    request = self.message_module.CloudassetEffectiveIamPoliciesBatchGetRequest(
+        names=args.names, scope=args.scope)
+    return self.service.BatchGet(request)

@@ -30,6 +30,26 @@ class InvalidInputError(NetworkManagementError):
   """Exception for invalid input."""
 
 
+def GetClearSingleEndpointAttrErrorMsg(endpoints, endpoint_type):
+  """Creates a message to specify at least one endpoint, separated by commas and or."""
+  error_msg = ["Invalid Connectivity Test. "]
+  if len(endpoints) > 1:
+    error_msg.append("At least one of ")
+
+  for index, endpoint in enumerate(endpoints):
+    error_msg.append("--{endpoint_type}-{endpoint}".format(
+        endpoint_type=endpoint_type, endpoint=endpoint))
+    if index == 0 and len(endpoints) == 2:
+      error_msg.append(" or ")
+    elif index == len(endpoints) - 2:
+      error_msg.append(", or ")
+    elif index < len(endpoints) - 2:
+      error_msg.append(", ")
+
+  error_msg.append(" must be specified.")
+  return "".join(error_msg)
+
+
 def AppendLocationsGlobalToParent(unused_ref, unused_args, request):
   """Add locations/global to parent path, since it isn't automatically populated by apitools."""
   request.parent += "/locations/global"
@@ -80,9 +100,11 @@ def ClearSingleEndpointAttr(patch_request, endpoint_type, endpoint_name):
     return AddFieldToUpdateMask(endpoint_type + "." + endpoint_name,
                                 patch_request)
   else:
+    endpoints = [
+        "instance", "ip-address", "gke-master-cluster", "cloud-sql-instance"
+    ]
     raise InvalidInputError(
-        "Invalid Connectivity Test. At least one of --{endpoint_type}-instance, --{endpoint_type}-ip-address, --{endpoint_type}-gke_master_cluster or --{endpoint_type}-cloud_sql_instance must be specified."
-        .format(endpoint_type=endpoint_type))
+        GetClearSingleEndpointAttrErrorMsg(endpoints, endpoint_type))
 
 
 def ClearEndpointAttrs(unused_ref, args, patch_request):
@@ -131,9 +153,13 @@ def ClearSingleEndpointAttrBeta(patch_request, endpoint_type, endpoint_name):
     return AddFieldToUpdateMask(endpoint_type + "." + endpoint_name,
                                 patch_request)
   else:
+    endpoints = [
+        "instance", "ip-address", "gke-master-cluster", "cloud-sql-instance"
+    ]
+    if endpoint_type == "source":
+      endpoints.append("cloud-function")
     raise InvalidInputError(
-        "Invalid Connectivity Test. At least one of --{endpoint_type}-instance, --{endpoint_type}-ip-address, --{endpoint_type}-gke_master_cluster or --{endpoint_type}-cloud_sql_instance must be specified."
-        .format(endpoint_type=endpoint_type))
+        GetClearSingleEndpointAttrErrorMsg(endpoints, endpoint_type))
 
 
 def ClearEndpointAttrsBeta(unused_ref, args, patch_request):

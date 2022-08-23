@@ -273,40 +273,6 @@ class AlloydbProjectsLocationsClustersInstancesCreateRequest(_messages.Message):
   validateOnly = _messages.BooleanField(5)
 
 
-class AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest(_messages.Message):
-  r"""A AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest
-  object.
-
-  Fields:
-    instance: A Instance resource to be passed as the request body.
-    instanceId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and instance_id from the method_signature
-      of Create RPC
-    parent: Required. The name of the parent resource. For the required
-      format, see the comment on the Instance.name field.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, performs request validation (e.g.
-      permission checks and any other type of validation), but do not actually
-      execute the create request.
-  """
-
-  instance = _messages.MessageField('Instance', 1)
-  instanceId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  validateOnly = _messages.BooleanField(5)
-
-
 class AlloydbProjectsLocationsClustersInstancesDeleteRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersInstancesDeleteRequest object.
 
@@ -380,12 +346,34 @@ class AlloydbProjectsLocationsClustersInstancesGetConnectionInfoRequest(_message
 class AlloydbProjectsLocationsClustersInstancesGetRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersInstancesGetRequest object.
 
+  Enums:
+    ViewValueValuesEnum: The view of the instance to return.
+
   Fields:
     name: Required. The name of the resource. For the required format, see the
       comment on the Instance.name field.
+    view: The view of the instance to return.
   """
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The view of the instance to return.
+
+    Values:
+      INSTANCE_VIEW_UNSPECIFIED: INSTANCE_VIEW_UNSPECIFIED Not specified,
+        equivalent to BASIC.
+      INSTANCE_VIEW_BASIC: BASIC server responses for a primary or read
+        instance include all the relevant instance details, excluding the
+        details of each node in the instance. The default value.
+      INSTANCE_VIEW_FULL: FULL response is equivalent to BASIC for primary
+        instance (for now). For read pool instance, this includes details of
+        each node in the pool.
+    """
+    INSTANCE_VIEW_UNSPECIFIED = 0
+    INSTANCE_VIEW_BASIC = 1
+    INSTANCE_VIEW_FULL = 2
+
   name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class AlloydbProjectsLocationsClustersInstancesListRequest(_messages.Message):
@@ -943,6 +931,8 @@ class Cluster(_messages.Message):
       "projects/{project_number}/global/networks/{network_id}". This is
       required to create a cluster. It can be updated, but it cannot be
       removed.
+    pitrConfig: Optional. Point-in-time recovery configuration for this
+      cluster. By default, PITR is enabled and logs are retained for 14 days.
     reconciling: Output only. Reconciling
       (https://google.aip.dev/128#reconciliation). Set to true if the current
       state of Cluster does not match the user's intended state, and the
@@ -1006,6 +996,9 @@ class Cluster(_messages.Message):
       BOOTSTRAPPING: The cluster is bootstrapping with data from some other
         source. Direct mutations to the cluster (e.g. adding read pool) are
         not allowed.
+      MAINTENANCE: The cluster is under maintenance. AlloyDB regularly
+        performs maintenance and upgrades on customer clusters. Updates on the
+        cluster are not allowed while the cluster is in this state.
     """
     STATE_UNSPECIFIED = 0
     READY = 1
@@ -1015,6 +1008,7 @@ class Cluster(_messages.Message):
     DELETING = 5
     FAILED = 6
     BOOTSTRAPPING = 7
+    MAINTENANCE = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -1082,11 +1076,12 @@ class Cluster(_messages.Message):
   migrationSource = _messages.MessageField('MigrationSource', 14)
   name = _messages.StringField(15)
   network = _messages.StringField(16)
-  reconciling = _messages.BooleanField(17)
-  sslConfig = _messages.MessageField('SslConfig', 18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  uid = _messages.StringField(20)
-  updateTime = _messages.StringField(21)
+  pitrConfig = _messages.MessageField('PitrConfig', 17)
+  reconciling = _messages.BooleanField(18)
+  sslConfig = _messages.MessageField('SslConfig', 19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  uid = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
 
 
 class ConnectionInfo(_messages.Message):
@@ -1722,13 +1717,24 @@ class MigrationSource(_messages.Message):
 
 
 class Node(_messages.Message):
-  r"""Details of a single node in the instance.
+  r"""Details of a single node in the instance. Nodes in an AlloyDB instance
+  are ephemereal, they can change during update, failover, autohealing and
+  resize operations.
 
   Fields:
+    id: The identifier of the VM e.g. "test-read-0601-407e52be-ms3l".
+    ip: The private IP address of the VM e.g. "10.57.0.34".
+    state: Determined by state of the compute VM and postgres-service health.
+      Compute VM state can have values listed in
+      https://cloud.google.com/compute/docs/instances/instance-life-cycle and
+      postgres-service health can have values: HEALTHY and UNHEALTHY.
     zoneId: The Compute Engine zone of the VM e.g. "us-central1-b".
   """
 
-  zoneId = _messages.StringField(1)
+  id = _messages.StringField(1)
+  ip = _messages.StringField(2)
+  state = _messages.StringField(3)
+  zoneId = _messages.StringField(4)
 
 
 class Operation(_messages.Message):
@@ -1866,6 +1872,35 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class PitrConfig(_messages.Message):
+  r"""PitrConfig describes the point-in-time recovery configurations of a
+  cluster. NEXT_ID: 3
+
+  Fields:
+    enabled: Whether PITR is enabled.
+    logRetentionWindow: The number of days the log records will be retained.
+      This is also the PITR recovery window as logs are needed for recovery.
+      If not set, it defaults to 14 days.
+  """
+
+  enabled = _messages.BooleanField(1)
+  logRetentionWindow = _messages.StringField(2)
+
+
+class PitrSource(_messages.Message):
+  r"""Message describing a PitrSource.
+
+  Fields:
+    cluster: Required. The source cluster from which to restore. This cluster
+      must have PITR enabled for this operation to succeed. For the required
+      format, see the comment on the Cluster.name field.
+    pointInTime: Required. The point in time to restore to.
+  """
+
+  cluster = _messages.StringField(1)
+  pointInTime = _messages.StringField(2)
+
+
 class QuantityBasedRetention(_messages.Message):
   r"""A quantity based policy specifies that a certain number of the most
   recent successful backups should be retained.
@@ -1921,6 +1956,8 @@ class RestoreClusterRequest(_messages.Message):
     clusterId: Required. Id of the requesting object If auto-generating Id
       server-side, remove this field and cluster_id from the method_signature
       of Create RPC
+    pitrSource: Point in time recovery source. PITR needs to be enabled in the
+      source cluster for this operation to succeed.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -1940,8 +1977,9 @@ class RestoreClusterRequest(_messages.Message):
   backupSource = _messages.MessageField('BackupSource', 1)
   cluster = _messages.MessageField('Cluster', 2)
   clusterId = _messages.StringField(3)
-  requestId = _messages.StringField(4)
-  validateOnly = _messages.BooleanField(5)
+  pitrSource = _messages.MessageField('PitrSource', 4)
+  requestId = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class SslConfig(_messages.Message):

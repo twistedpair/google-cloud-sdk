@@ -66,6 +66,12 @@ run:
 $ {command} my-cluster --location=us-west1
 """
 
+NOT_RUNNING_MSG = """\
+Cluster {} is not RUNNING. The Kubernetes API may or may not be available. \
+Check the cluster status for more information."""
+
+STILL_PROVISIONING_MSG = 'Is it still PROVISIONING?'
+
 
 def GenerateContext(kind, project_id, location, cluster_id):
   """Generates a kubeconfig context for an Anthos Multi-Cloud cluster.
@@ -106,11 +112,17 @@ def GenerateAuthProviderCmdArgs(kind, cluster_id, location, project):
       kind=kind, cluster_id=cluster_id, location=location, project=project)
 
 
-def GenerateKubeconfig(cluster, context, cmd_path, cmd_args, private_ep=False):
+def GenerateKubeconfig(cluster,
+                       cluster_id,
+                       context,
+                       cmd_path,
+                       cmd_args,
+                       private_ep=False):
   """Generates a kubeconfig entry for an Anthos Multi-cloud cluster.
 
   Args:
     cluster: object, Anthos Multi-cloud cluster.
+    cluster_id: str, the cluster ID.
     context: str, context for the kubeconfig entry.
     cmd_path: str, authentication provider command path.
     cmd_args: str, authentication provider command arguments.
@@ -125,13 +137,15 @@ def GenerateKubeconfig(cluster, context, cmd_path, cmd_args, private_ep=False):
       context, context, context)
 
   # Only default to use Connect Gateway for 1.21+.
-  version = _GetSemver(cluster)
+  version = _GetSemver(cluster, cluster_id)
   if private_ep or version < semver.SemVer('1.21.0'):
     _CheckPreqs(private_endpoint=True)
-    _PrivateVPCKubeconfig(kubeconfig, cluster, context, cmd_path, cmd_args)
+    _PrivateVPCKubeconfig(kubeconfig, cluster, cluster_id, context, cmd_path,
+                          cmd_args)
   else:
     _CheckPreqs()
-    _ConnectGatewayKubeconfig(kubeconfig, cluster, context, cmd_path)
+    _ConnectGatewayKubeconfig(kubeconfig, cluster, cluster_id, context,
+                              cmd_path)
 
   kubeconfig.SetCurrentContext(context)
   kubeconfig.SaveToFile()
@@ -149,22 +163,23 @@ def _CheckPreqs(private_endpoint=False):
                                                    _GetConnectGatewayEndpoint())
 
 
-def _ConnectGatewayKubeconfig(kubeconfig, cluster, context, cmd_path):
+def _ConnectGatewayKubeconfig(kubeconfig, cluster, cluster_id, context,
+                              cmd_path):
   """Generates the Connect Gateway kubeconfig entry.
 
   Args:
     kubeconfig: object, Kubeconfig object.
     cluster: object, Anthos Multi-cloud cluster.
+    cluster_id: str, the cluster ID.
     context: str, context for the kubeconfig entry.
     cmd_path: str, authentication provider command path.
 
   Raises:
       errors.MissingClusterField: cluster is missing required fields.
   """
-  if cluster.fleet is None:
-    raise errors.MissingClusterField('fleet')
-  if cluster.fleet.membership is None:
-    raise errors.MissingClusterField('fleet.membership')
+  if cluster.fleet is None or cluster.fleet.membership is None:
+    raise errors.MissingClusterField(cluster_id, 'Fleet membership',
+                                     STILL_PROVISIONING_MSG)
   server = 'https://{}/v1/{}'.format(_GetConnectGatewayEndpoint(),
                                      cluster.fleet.membership)
   user_kwargs = {'auth_provider': 'gcp', 'auth_provider_cmd_path': cmd_path}
@@ -172,12 +187,14 @@ def _ConnectGatewayKubeconfig(kubeconfig, cluster, context, cmd_path):
   kubeconfig.clusters[context] = gwkubeconfig_util.Cluster(context, server)
 
 
-def _PrivateVPCKubeconfig(kubeconfig, cluster, context, cmd_path, cmd_args):
+def _PrivateVPCKubeconfig(kubeconfig, cluster, cluster_id, context, cmd_path,
+                          cmd_args):
   """Generates the kubeconfig entry to connect using private VPC.
 
   Args:
     kubeconfig: object, Kubeconfig object.
     cluster: object, Anthos Multi-cloud cluster.
+    cluster_id: str, the cluster ID.
     context: str, context for the kubeconfig entry.
     cmd_path: str, authentication provider command path.
     cmd_args: str, authentication provider command arguments.
@@ -191,21 +208,25 @@ def _PrivateVPCKubeconfig(kubeconfig, cluster, context, cmd_path, cmd_args):
     log.warning('Cluster is missing certificate authority data.')
   else:
     cluster_kwargs['ca_data'] = _GetCaData(cluster.clusterCaCertificate)
+  if cluster.endpoint is None:
+    raise errors.MissingClusterField(cluster_id, 'endpoint',
+                                     STILL_PROVISIONING_MSG)
   kubeconfig.clusters[context] = kubeconfig_util.Cluster(
       context, 'https://{}'.format(cluster.endpoint), **cluster_kwargs)
 
 
-def ValidateClusterVersion(cluster):
+def ValidateClusterVersion(cluster, cluster_id):
   """Validates the cluster version.
 
   Args:
     cluster: object, Anthos Multi-cloud cluster.
+    cluster_id: str, the cluster ID.
 
   Raises:
       UnsupportedClusterVersion: cluster version is not supported.
       MissingClusterField: expected cluster field is missing.
   """
-  version = _GetSemver(cluster)
+  version = _GetSemver(cluster, cluster_id)
   if version < semver.SemVer('1.20.0'):
     raise errors.UnsupportedClusterVersion(
         'The command get-credentials is supported in cluster version 1.20 '
@@ -218,9 +239,9 @@ def _GetCaData(pem):
   return base64.b64encode(pem.encode('utf-8')).decode('utf-8')
 
 
-def _GetSemver(cluster):
+def _GetSemver(cluster, cluster_id):
   if cluster.controlPlane is None or cluster.controlPlane.version is None:
-    raise errors.MissingClusterField('version')
+    raise errors.MissingClusterField(cluster_id, 'version')
   version = cluster.controlPlane.version
   # The dev version e.g. 1.21-next does not conform to semantic versioning.
   # Replace the -next suffix before parsing semver for version comparison.
@@ -314,9 +335,8 @@ def CheckClusterHasNodePools(cluster_client, cluster_ref):
   """Checks and gives a warning if the cluster does not have a node pool."""
   try:
     if not cluster_client.HasNodePools(cluster_ref):
-      log.warning(
-          'Cluster does not have a node pool. To use Connect Gateway, '
-          'ensure you have at least one Linux node pool running.')
+      log.warning('Cluster does not have a node pool. To use Connect Gateway, '
+                  'ensure you have at least one Linux node pool running.')
   # pylint: disable=bare-except, this function is just a warning and should not
   # add new failures.
   except:

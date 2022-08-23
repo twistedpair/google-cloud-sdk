@@ -106,19 +106,86 @@ def GetShareWithFlag(custom_name=None):
       help=help_text)
 
 
+def GetPlanningStatusFlag():
+  """Gets the --planning-status flag."""
+  help_text = """\
+  The planning status of the future reservation. The default value is DRAFT.
+  While in DRAFT, any changes to the future reservation's properties will be
+  allowed. If set to SUBMITTED, the future reservation will submit and its
+  procurementStatus will change to PENDING_APPROVAL. Once the future reservation
+  is pending approval, changes to the future reservation's properties will not
+  be allowed.
+  """
+  return base.Argument(
+      '--planning-status',
+      type=lambda x: x.upper(),
+      choices={
+          'DRAFT':
+              'Default planning status value.',
+          'SUBMITTED':
+              'Planning status value to immediately submit the future reservation.'
+      },
+      help=help_text)
+
+
 def AddCreateFlags(
     parser,
     support_location_hint=False,
     support_share_setting=False,
     support_fleet=False,
+    support_planning_status=False,
 ):
   """Adds all flags needed for the create command."""
   GetNamePrefixFlag().AddToParser(parser)
   GetTotalCountFlag().AddToParser(parser)
   reservation_flags.GetDescriptionFlag().AddToParser(parser)
+  if support_planning_status:
+    GetPlanningStatusFlag().AddToParser(parser)
+  AddSpecificSkuFlags(
+      parser,
+      sku_properties_required=True,
+      support_location_hint=support_location_hint,
+      support_fleet=support_fleet)
+  AddTimeWindowFlags(parser, time_window_requird=True)
+  if support_share_setting:
+    share_group = base.ArgumentGroup(
+        'Manage the properties of a shared reservation.', required=False)
+    share_group.AddArgument(GetSharedSettingFlag())
+    share_group.AddArgument(GetShareWithFlag())
+    share_group.AddToParser(parser)
 
+
+def AddUpdateFlags(parser,
+                   support_location_hint=False,
+                   support_fleet=False,
+                   support_planning_status=False):
+  """Adds all flags needed for the update command."""
+  GetTotalCountFlag(required=False).AddToParser(parser)
+  if support_planning_status:
+    GetPlanningStatusFlag().AddToParser(parser)
   group = base.ArgumentGroup(
-      'Manage the specific SKU reservation properties.', required=True)
+      'Manage the specific SKU reservation properties.',
+      required=False)
+  group.AddArgument(reservation_flags.GetMachineType(required=False))
+  group.AddArgument(reservation_flags.GetMinCpuPlatform())
+  group.AddArgument(reservation_flags.GetLocalSsdFlag())
+  group.AddArgument(reservation_flags.GetAcceleratorFlag())
+  if support_location_hint:
+    group.AddArgument(reservation_flags.GetLocationHint())
+  if support_fleet:
+    group.AddArgument(instance_flags.AddMaintenanceInterval())
+  group.AddToParser(parser)
+  AddTimeWindowFlags(parser, time_window_requird=False)
+
+
+def AddSpecificSkuFlags(parser,
+                        sku_properties_required=False,
+                        support_location_hint=False,
+                        support_fleet=False):
+  """Adds all flags in the specificSkuReservationProperties group."""
+  group = base.ArgumentGroup(
+      'Manage the specific SKU reservation properties.',
+      required=sku_properties_required)
   group.AddArgument(reservation_flags.GetMachineType())
   group.AddArgument(reservation_flags.GetMinCpuPlatform())
   group.AddArgument(reservation_flags.GetLocalSsdFlag())
@@ -130,20 +197,15 @@ def AddCreateFlags(
     group.AddArgument(instance_flags.AddMaintenanceInterval())
   group.AddToParser(parser)
 
+
+def AddTimeWindowFlags(parser, time_window_requird=False):
   time_window_group = parser.add_group(
       help='Manage the time specific properties for requesting future capacity',
-      required=True)
+      required=time_window_requird)
   time_window_group.add_argument(
-      '--start-time', required=True, help=GetStartTimeHelpText())
+      '--start-time', required=time_window_requird, help=GetStartTimeHelpText())
   end_time_window_group = time_window_group.add_mutually_exclusive_group(
-      required=True)
+      required=time_window_requird)
   end_time_window_group.add_argument('--end-time', help=GetEndTimeHelpText())
   end_time_window_group.add_argument(
       '--duration', type=int, help=GetDurationHelpText())
-
-  if support_share_setting:
-    share_group = base.ArgumentGroup(
-        'Manage the properties of a shared reservation.', required=False)
-    share_group.AddArgument(GetSharedSettingFlag())
-    share_group.AddArgument(GetShareWithFlag())
-    share_group.AddToParser(parser)

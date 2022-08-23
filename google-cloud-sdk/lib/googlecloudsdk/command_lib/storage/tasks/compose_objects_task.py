@@ -18,8 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+
 from googlecloudsdk.api_lib.storage import api_factory
+from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import request_config_factory
+from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.core import log
 
@@ -58,6 +61,16 @@ class ComposeObjectsTask(task.Task):
 
   def execute(self, task_status_queue=None):
     del task_status_queue  # Unused.
+    provider = self._destination_resource.storage_url.scheme
+    api = api_factory.get_api(provider)
+    if cloud_api.Capability.COMPOSE_OBJECTS not in api.capabilities:
+      raise command_errors.Error(
+          'Compose is not available with requested provider: {}'.format(
+              provider))
+    for source_resource in self._source_resources:
+      if source_resource.storage_url.bucket_name != self._destination_resource.storage_url.bucket_name:
+        raise command_errors.Error(
+            'Inter-bucket composing not supported')
     request_config = request_config_factory.get_request_config(
         self._destination_resource.storage_url,
         user_request_args=self._user_request_args)
@@ -66,13 +79,12 @@ class ComposeObjectsTask(task.Task):
       log.status.write('Composing {} from {} component object(s).\n'.format(
           self._destination_resource, len(self._source_resources)))
 
-    provider = self._destination_resource.storage_url.scheme
-
-    created_resource = api_factory.get_api(provider).compose_objects(
+    created_resource = api.compose_objects(
         self._source_resources,
         self._destination_resource,
         request_config,
         original_source_resource=self._original_source_resource)
+
     return task.Output(
         messages=[
             task.Message(

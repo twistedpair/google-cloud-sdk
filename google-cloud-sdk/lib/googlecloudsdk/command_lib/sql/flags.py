@@ -30,6 +30,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import sys
 from googlecloudsdk.api_lib.compute import utils as compute_utils
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
@@ -112,11 +113,11 @@ def AddInstanceArgument(parser):
       'instance', completer=InstanceCompleter, help='Cloud SQL instance ID.')
 
 
-# Currently, 10230 is the max storage size one can set, and 10 is the minimum.
+# The max storage size specified can be the int's max value, and min is 10.
 def AddInstanceResizeLimit(parser):
   parser.add_argument(
       '--storage-auto-increase-limit',
-      type=arg_parsers.BoundedInt(10, 10230, unlimited=True),
+      type=arg_parsers.BoundedInt(10, sys.maxsize, unlimited=True),
       help='Allows you to set a maximum storage capacity, in GB. Automatic '
       'increases to your capacity will stop once this limit has been reached. '
       'Default capacity is *unlimited*.')

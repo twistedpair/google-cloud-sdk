@@ -749,6 +749,10 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "fleetDefaultMemberConfig": {
+          "description": "Optional. Feature configuration applicable to all memberships of the fleet.",
+          "$ref": "CommonFleetDefaultMemberConfigSpec"
         }
       }
     },
@@ -1727,7 +1731,7 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified",
-            "Google should manage my Service Mesh for the cluster. This will ensure that a control plane revision is available to the cluster. Google will enroll this revision in a release channel and keep it up to date. Enables a Google-managed data plane that provides L7 service mesh capabilities. Data plane management is enabled at the cluster level. Users can exclude individual workloads or namespaces.",
+            "Google should manage my Service Mesh for the cluster.",
             "User will manually configure their service mesh components."
           ],
           "enum": [
@@ -2380,6 +2384,11 @@
         "configApiVersion": {
           "description": "The API version (i.e. Istio CRD version) for configuring service mesh in this cluster. This version is influenced by the `default_channel` field.",
           "type": "string"
+        },
+        "meshConnectivity": {
+          "description": "Output only. Status of cross cluster load balancing between other clusters in the mesh.",
+          "readOnly": true,
+          "$ref": "ServiceMeshMeshConnectivity"
         }
       }
     },
@@ -2553,6 +2562,44 @@
           "items": {
             "$ref": "ServiceMeshStatusDetails"
           }
+        }
+      }
+    },
+    "ServiceMeshMeshConnectivity": {
+      "id": "ServiceMeshMeshConnectivity",
+      "description": "Status of cross cluster load balancing between other clusters in the mesh.",
+      "type": "object",
+      "properties": {
+        "details": {
+          "description": "Explanation of state.",
+          "type": "array",
+          "items": {
+            "$ref": "ServiceMeshStatusDetails"
+          }
+        },
+        "state": {
+          "description": "LifecycleState of multicluster load balancing.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified",
+            "DISABLED means that the component is not enabled.",
+            "FAILED_PRECONDITION means that provisioning cannot proceed because of some characteristic of the member cluster.",
+            "PROVISIONING means that provisioning is in progress.",
+            "ACTIVE means that the component is ready for use.",
+            "STALLED means that provisioning could not be done.",
+            "NEEDS_ATTENTION means that the component is ready, but some user intervention is required. (For example that the user should migrate workloads to a new control plane revision.)",
+            "DEGRADED means that the component is ready, but operating in a degraded state."
+          ],
+          "enum": [
+            "LIFECYCLE_STATE_UNSPECIFIED",
+            "DISABLED",
+            "FAILED_PRECONDITION",
+            "PROVISIONING",
+            "ACTIVE",
+            "STALLED",
+            "NEEDS_ATTENTION",
+            "DEGRADED"
+          ]
         }
       }
     },
@@ -3437,6 +3484,17 @@
       "description": "**FleetObservability**: An empty state left as an example membership-specific Feature state.",
       "type": "object",
       "properties": {
+      }
+    },
+    "CommonFleetDefaultMemberConfigSpec": {
+      "id": "CommonFleetDefaultMemberConfigSpec",
+      "description": "CommonFleetDefaultMemberConfigSpec contains default configuration information for memberships of a fleet",
+      "type": "object",
+      "properties": {
+        "mesh": {
+          "description": "Anthos Service Mesh-specific spec",
+          "$ref": "ServiceMeshMembershipSpec"
+        }
       }
     },
     "GenerateConnectManifestResponse": {

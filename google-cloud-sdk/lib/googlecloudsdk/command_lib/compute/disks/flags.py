@@ -175,14 +175,17 @@ def AddProvisionedIopsFlag(parser, arg_parsers, constants):
               default=constants.DEFAULT_PROVISIONED_IOPS))
 
 
-def AddArchitectureFlag(parser):
-  architecture_choices = sorted(['ARM64', 'X86_64'])
+def AddArchitectureFlag(parser, messages):
+  architecture_enum_type = messages.Disk.ArchitectureValueValuesEnum
+  excluded_enums = [architecture_enum_type.ARCHITECTURE_UNSPECIFIED.name]
+  architecture_choices = sorted(
+      [e for e in architecture_enum_type.names() if e not in excluded_enums])
   return parser.add_argument(
       '--architecture',
       choices=architecture_choices,
       help=(
-          'Storage resources can be used to create boot disks compatible with '
-          'different machine architectures.'))
+          'Specifies the architecture or processor type that this disk can support. For available processor types on Compute Engine, see https://cloud.google.com/compute/docs/cpu-platforms.'
+      ))
 
 
 def AddLocationHintArg(parser):

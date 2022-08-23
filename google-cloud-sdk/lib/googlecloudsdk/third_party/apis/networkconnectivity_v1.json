@@ -329,7 +329,8 @@
             "The resource's Delete operation is in progress",
             "The resource's Activate operation is in progress",
             "The resource's Deactivate operation is in progress",
-            "The resource's Update operation is in progress"
+            "The resource's Update operation is in progress",
+            "The resource is inactive"
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -338,7 +339,8 @@
             "DELETING",
             "ACTIVATING",
             "DEACTIVATING",
-            "UPDATING"
+            "UPDATING",
+            "INACTIVE"
           ]
         },
         "routingVpcs": {
@@ -459,7 +461,8 @@
             "The resource's Delete operation is in progress",
             "The resource's Activate operation is in progress",
             "The resource's Deactivate operation is in progress",
-            "The resource's Update operation is in progress"
+            "The resource's Update operation is in progress",
+            "The resource is inactive"
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -468,7 +471,8 @@
             "DELETING",
             "ACTIVATING",
             "DEACTIVATING",
-            "UPDATING"
+            "UPDATING",
+            "INACTIVE"
           ]
         }
       }
@@ -575,6 +579,220 @@
         }
       }
     },
+    "RouteTable": {
+      "id": "RouteTable",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Immutable. The name of the route table. Route Table names must be unique. They use the following form: `projects\/{project_number}\/locations\/global\/hubs\/{hub}\/routeTables\/{route_table_id}",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time the route table was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time the route table was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Optional labels in key:value format. For more information about labels, see [Requirements for labels](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-labels#requirements).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "An optional description of the route table.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. The Google-generated UUID for the route table. This value is unique across all route table resources. If a route table is deleted and another with the same name is created, the new route table is assigned a different unique_id.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The current lifecycle state of this route table.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "No state information available",
+            "The resource's create operation is in progress",
+            "The resource is active",
+            "The resource's Delete operation is in progress",
+            "The resource's Activate operation is in progress",
+            "The resource's Deactivate operation is in progress",
+            "The resource's Update operation is in progress",
+            "The resource is inactive"
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "DELETING",
+            "ACTIVATING",
+            "DEACTIVATING",
+            "UPDATING",
+            "INACTIVE"
+          ]
+        }
+      }
+    },
+    "Route": {
+      "id": "Route",
+      "description": "A route defines a path from VM instances within a spoke to a specific destination resource. Only VPC spokes have routes.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Immutable. The name of the route. Route names must be unique. They use the following form: `projects\/{project_number}\/locations\/global\/hubs\/{hub}\/routeTables\/{route_table_id}\/routes\/{route_id}`",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time the route was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time the route was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "ipCidrRange": {
+          "description": "The destination IP address range.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Output only. The route's type. Its type is determined by the properties of its IP address range.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "No route type information specified",
+            "The route leads to a destination within the primary address range of the VPC network's subnet.",
+            "The route leads to a destination within the secondary address range of the VPC network's subnet."
+          ],
+          "enum": [
+            "ROUTE_TYPE_UNSPECIFIED",
+            "VPC_PRIMARY_SUBNET",
+            "VPC_SECONDARY_SUBNET"
+          ]
+        },
+        "nextHopVpcNetwork": {
+          "description": "Immutable. The destination VPC network for packets on this route.",
+          "$ref": "NextHopVpcNetwork"
+        },
+        "labels": {
+          "description": "Optional labels in key:value format. For more information about labels, see [Requirements for labels](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-labels#requirements).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "An optional description of the route.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. The Google-generated UUID for the route. This value is unique across all Network Connectivity Center route resources. If a route is deleted and another with the same name is created, the new route is assigned a different unique_id.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The current lifecycle state of the route.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "No state information available",
+            "The resource's create operation is in progress",
+            "The resource is active",
+            "The resource's Delete operation is in progress",
+            "The resource's Activate operation is in progress",
+            "The resource's Deactivate operation is in progress",
+            "The resource's Update operation is in progress",
+            "The resource is inactive"
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "DELETING",
+            "ACTIVATING",
+            "DEACTIVATING",
+            "UPDATING",
+            "INACTIVE"
+          ]
+        },
+        "spoke": {
+          "description": "Immutable. The spoke that this route leads to. Example: projects\/12345\/locations\/global\/spokes\/SPOKE",
+          "type": "string"
+        }
+      }
+    },
+    "NextHopVpcNetwork": {
+      "id": "NextHopVpcNetwork",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "The URI of the VPC network resource",
+          "type": "string"
+        }
+      }
+    },
+    "ListRoutesResponse": {
+      "id": "ListRoutesResponse",
+      "description": "Response for HubService.ListRoutes method.",
+      "type": "object",
+      "properties": {
+        "routes": {
+          "description": "The requested routes.",
+          "type": "array",
+          "items": {
+            "$ref": "Route"
+          }
+        },
+        "nextPageToken": {
+          "description": "The next pagination token in the List response. It should be used as page_token for the following request. An empty value means no more result.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "RouteTables that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListRouteTablesResponse": {
+      "id": "ListRouteTablesResponse",
+      "description": "Response for HubService.ListRouteTables method.",
+      "type": "object",
+      "properties": {
+        "routeTables": {
+          "description": "The requested route tables.",
+          "type": "array",
+          "items": {
+            "$ref": "RouteTable"
+          }
+        },
+        "nextPageToken": {
+          "description": "The next pagination token in the List response. It should be used as page_token for the following request. An empty value means no more result.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Hubs that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ListPolicyBasedRoutesResponse": {
       "id": "ListPolicyBasedRoutesResponse",
       "description": "Response for PolicyBasedRouting.ListPolicyBasedRoutes method.",
@@ -602,9 +820,17 @@
     },
     "PolicyBasedRoute": {
       "id": "PolicyBasedRoute",
-      "description": "Policy Based Routes (PBR) are more powerful routes that allows GCP customers to route their L4 network traffic based on not just destination IP, but also source IP, protocol and more. A PBR always take precedence when it conflicts with other types of routes. Next id: 18",
+      "description": "Policy Based Routes (PBR) are more powerful routes that allows GCP customers to route their L4 network traffic based on not just destination IP, but also source IP, protocol and more. A PBR always take precedence when it conflicts with other types of routes. Next id: 19",
       "type": "object",
       "properties": {
+        "virtualMachine": {
+          "description": "Optional. VM instances to which this policy based route applies to.",
+          "$ref": "VirtualMachine"
+        },
+        "interconnectAttachment": {
+          "description": "Optional. The interconnect attachments to which this route applies to.",
+          "$ref": "InterconnectAttachment"
+        },
         "nextHopIlbIp": {
           "description": "Optional. The IP of a global access enabled L4 ILB that should be the next hop to handle matching packets. For this version, only next_hop_ilb_ip is supported.",
           "type": "string"
@@ -640,17 +866,6 @@
           "description": "Required. Fully-qualified URL of the network that this route applies to. e.g. projects\/my-project\/global\/networks\/my-network.",
           "type": "string"
         },
-        "tags": {
-          "description": "Optional. A list of VM instance tags to which this policy based route applies to. Only VM instances that have ALL tags specified here will install this PBR. Specifying both `tags` and `interconnect_attachment` is not allowed, and if neither `tags` and `interconnect_attachment` are specified, the PBR will be installed on every network endpoints (e.g. VMs, VPNs, and Interconnects) in the VPC.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "interconnectAttachment": {
-          "description": "Optional. The interconnect attachments to which this route applies to. Specifying both `tags` and `interconnect_attachment` is not allowed, and if neither `tags` and `interconnect_attachment` are specified, the PBR will be installed on every network endpoints (e.g. VMs, VPNs, and Interconnects) in the VPC.",
-          "$ref": "InterconnectAttachment"
-        },
         "filter": {
           "description": "Required. The filter to match L4 traffic.",
           "$ref": "Filter"
@@ -677,6 +892,20 @@
           "description": "Output only. Type of this resource. Always networkconnectivity#policyBasedRoute for Policy Based Route resources.",
           "readOnly": true,
           "type": "string"
+        }
+      }
+    },
+    "VirtualMachine": {
+      "id": "VirtualMachine",
+      "description": "VM instances to which this policy based route applies to.",
+      "type": "object",
+      "properties": {
+        "tags": {
+          "description": "Optional. A list of VM instance tags to which this policy based route applies to. VM instances that have ANY of tags specified here will install this PBR.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -733,7 +962,7 @@
           "type": "string",
           "enumDescriptions": [
             "Default value.",
-            "The policy based route is not active.",
+            "The policy based route is not active and functioning. Common causes are the dependent network was deleted or the resource project was turned off.",
             "The policy based route is being modified (e.g. created\/deleted) at this time."
           ],
           "enum": [
@@ -814,7 +1043,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
@@ -1459,6 +1688,162 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "routeTables": {
+                      "methods": {
+                        "get": {
+                          "id": "networkconnectivity.projects.locations.global.hubs.routeTables.get",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/global/hubs/{hubsId}/routeTables/{routeTablesId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The name of the route table resource.",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+\/routeTables\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "RouteTable"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets details about a Network Connectivity Center route table."
+                        },
+                        "list": {
+                          "id": "networkconnectivity.projects.locations.global.hubs.routeTables.list",
+                          "path": "v1/{+parent}/routeTables",
+                          "flatPath": "v1/projects/{projectsId}/locations/global/hubs/{hubsId}/routeTables",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The parent resource's name.",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "The maximum number of results per page that should be returned.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "The page token.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "An expression that filters the results listed in the response.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "orderBy": {
+                              "description": "Sort the results by a certain order.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListRouteTablesResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists route tables in a given project."
+                        }
+                      }
+                      ,
+                      "resources": {
+                        "routes": {
+                          "methods": {
+                            "get": {
+                              "id": "networkconnectivity.projects.locations.global.hubs.routeTables.routes.get",
+                              "path": "v1/{+name}",
+                              "flatPath": "v1/projects/{projectsId}/locations/global/hubs/{hubsId}/routeTables/{routeTablesId}/routes/{routesId}",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "name": {
+                                  "description": "Required. The name of the route resource.",
+                                  "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+\/routeTables\/[^\/]+\/routes\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "Route"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Gets details about the specified route."
+                            },
+                            "list": {
+                              "id": "networkconnectivity.projects.locations.global.hubs.routeTables.routes.list",
+                              "path": "v1/{+parent}/routes",
+                              "flatPath": "v1/projects/{projectsId}/locations/global/hubs/{hubsId}/routeTables/{routeTablesId}/routes",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "parent": {
+                                  "description": "Required. The parent resource's name.",
+                                  "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+\/routeTables\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "pageSize": {
+                                  "description": "The maximum number of results per page that should be returned.",
+                                  "location": "query",
+                                  "type": "integer",
+                                  "format": "int32"
+                                },
+                                "pageToken": {
+                                  "description": "The page token.",
+                                  "location": "query",
+                                  "type": "string"
+                                },
+                                "filter": {
+                                  "description": "An expression that filters the results listed in the response.",
+                                  "location": "query",
+                                  "type": "string"
+                                },
+                                "orderBy": {
+                                  "description": "Sort the results by a certain order.",
+                                  "location": "query",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "parent"
+                              ],
+                              "response": {
+                                "$ref": "ListRoutesResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Lists routes in a given project."
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 },

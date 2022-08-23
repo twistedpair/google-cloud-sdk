@@ -207,6 +207,26 @@ def MakeGroupPlacementPolicy(policy_ref, args, messages, track):
       groupPlacementPolicy=placement_policy)
 
 
+def MakeDiskConsistencyGroupPolicy(policy_ref, args, messages):
+  """Creates a Disk Consistency Group Resource Policy message from args.
+
+  Args:
+    policy_ref: resource reference of the Disk Consistency Group policy.
+    args: Namespace, argparse.Namespace.
+    messages: message classes.
+
+  Returns:
+    A messages.ResourcePolicy object for Disk Consistency Group Resource Policy.
+  """
+  consistency_group_policy = messages.ResourcePolicyDiskConsistencyGroupPolicy()
+
+  return messages.ResourcePolicy(
+      name=policy_ref.Name(),
+      description=args.description,
+      region=policy_ref.region,
+      diskConsistencyGroupPolicy=consistency_group_policy)
+
+
 def _ParseCycleFrequencyArgs(args, messages, supports_hourly=False,
                              supports_weekly=False):
   """Parses args and returns a tuple of DailyCycle and WeeklyCycle messages."""

@@ -108,5 +108,8 @@ DELETE_JOB = _SERVERLESS_PREFIX + 'delete_job'
 # Time to delete an execution
 DELETE_EXECUTION = _SERVERLESS_PREFIX + 'delete_execution'
 
+# Time to cancel an execution
+CANCEL_EXECUTION = _SERVERLESS_PREFIX + 'cancel_execution'
+
 # Time to run a job
 RUN_JOB = _SERVERLESS_PREFIX + 'run_job'

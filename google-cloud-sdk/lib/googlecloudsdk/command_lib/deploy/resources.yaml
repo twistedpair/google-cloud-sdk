@@ -108,3 +108,38 @@ rollout:
     help: |
       The name of the Cloud Deploy rollout.
   disable_auto_completers: false
+
+job_run:
+  name: job run
+  collection: clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.jobRuns
+  request_id_field: jobRunId
+  attributes:
+  - *project
+  - *location
+  - *delivery_pipeline
+  - *release
+  - *rollout
+  - &job_run
+    parameter_name: jobRunsId
+    attribute_name: job-run
+    help: |
+      The name of the Cloud Deploy job run.
+  disable_auto_completers: false
+
+# TODO(b/124305522): Delete this and only use job_run
+job_run_positional:
+  name: job run
+  collection: clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.jobRuns
+  request_id_field: jobRunId
+  attributes:
+  - *project
+  - *location
+  - *delivery_pipeline
+  - *release
+  - *rollout
+  - &job_run_positional
+    parameter_name: jobRunsId
+    attribute_name: job_run
+    help: |
+      The name of the Cloud Deploy job run.
+  disable_auto_completers: false

@@ -496,8 +496,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -2784,6 +2790,48 @@ class MembershipSpec(_messages.Message):
   organizationProjects = _messages.StringField(2, repeated=True)
 
 
+class MeshConnectivity(_messages.Message):
+  r"""Status of cross cluster load balancing between other clusters in the
+  mesh.
+
+  Enums:
+    StateValueValuesEnum: LifecycleState of multicluster load balancing.
+
+  Fields:
+    details: Explanation of state.
+    state: LifecycleState of multicluster load balancing.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""LifecycleState of multicluster load balancing.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: Unspecified
+      DISABLED: DISABLED means that the component is not enabled.
+      FAILED_PRECONDITION: FAILED_PRECONDITION means that provisioning cannot
+        proceed because of some characteristic of the member cluster.
+      PROVISIONING: PROVISIONING means that provisioning is in progress.
+      ACTIVE: ACTIVE means that the component is ready for use.
+      STALLED: STALLED means that provisioning could not be done.
+      NEEDS_ATTENTION: NEEDS_ATTENTION means that the component is ready, but
+        some user intervention is required. (For example that the user should
+        migrate workloads to a new control plane revision.)
+      DEGRADED: DEGRADED means that the component is ready, but operating in a
+        degraded state.
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    DISABLED = 1
+    FAILED_PRECONDITION = 2
+    PROVISIONING = 3
+    ACTIVE = 4
+    STALLED = 5
+    NEEDS_ATTENTION = 6
+    DEGRADED = 7
+
+  details = _messages.MessageField('StatusDetails', 1, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
 class MeteringFeatureSpec(_messages.Message):
   r"""An empty spec for metering feature. This is required since Feature proto
   requires a spec.
@@ -2932,6 +2980,75 @@ class OidcConfig(_messages.Message):
   scopes = _messages.StringField(12)
   userClaim = _messages.StringField(13)
   userPrefix = _messages.StringField(14)
+
+
+class OnClusterState(_messages.Message):
+  r"""OnClusterState represents the state of a sub-component of Policy
+  Controller.
+
+  Enums:
+    StateValueValuesEnum: The lifecycle state of this component.
+
+  Fields:
+    details: Surface potential errors or information logs.
+    state: The lifecycle state of this component.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The lifecycle state of this component.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: The lifecycle state is unspecified.
+      NOT_INSTALLED: Policy Controller (PC) does not exist on the given
+        cluster, and no k8s resources of any type that are associated with the
+        PC should exist there. The cluster does not possess a membership with
+        the Hub Feature controller.
+      INSTALLING: The Hub Feature controller possesses a Membership, however
+        Policy Controller is not fully installed on the cluster. In this state
+        the hub can be expected to be taking actions to install the PC on the
+        cluster.
+      ACTIVE: Policy Controller (PC) is fully installed on the cluster and in
+        an operational mode. In this state the Hub Feature controller will be
+        reconciling state with the PC, and the PC will be performing it's
+        operational tasks per that software. Entering a READY state requires
+        that the hub has confirmed the PC is installed and its pods are
+        operational with the version of the PC the Hub Feature controller
+        expects.
+      UPDATING: Policy Controller (PC) is fully installed, but in the process
+        of changing the configuration (including changing the version of PC
+        either up and down, or modifying the manifests of PC) of the resources
+        running on the cluster. The Hub Feature controller has a Membership,
+        is aware of the version the cluster should be running in, but has not
+        confirmed for itself that the PC is running with that version.
+      DECOMISSIONING: Policy Controller (PC) may have resources on the
+        cluster, but the Hub Feature controller wishes to remove the
+        Membership. The Membership still exists.
+      CLUSTER_ERROR: Policy Controller (PC) is not operational, and the Hub
+        Feature controller is unable to act to make it operational. Entering a
+        CLUSTER_ERROR state happens automatically when the PCH determines that
+        a PC installed on the cluster is non-operative or that the cluster
+        does not meet requirements set for the Hub Feature controller to
+        administer the cluster but has nevertheless been given an instruction
+        to do so (such as 'install').
+      HUB_ERROR: In this state, the PC may still be operational, and only the
+        Hub Feature controller is unable to act. The hub should not issue
+        instructions to change the PC state, or otherwise interfere with the
+        on-cluster resources. Entering a HUB_ERROR state happens automatically
+        when the Hub Feature controller determines the hub is in an unhealthy
+        state and it wishes to 'take hands off' to avoid corrupting the PC or
+        other data.
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLING = 2
+    ACTIVE = 3
+    UPDATING = 4
+    DECOMISSIONING = 5
+    CLUSTER_ERROR = 6
+    HUB_ERROR = 7
+
+  details = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class Operation(_messages.Message):
@@ -3259,8 +3376,13 @@ class PolicyControllerFeatureState(_messages.Message):
   r"""State for PolicyController
 
   Enums:
-    StateValueValuesEnum: The lifecycle state observed by the Hub Feature
-      controller.
+    StateValueValuesEnum: The overall Policy Controller lifecycle state
+      observed by the Hub Feature controller.
+
+  Messages:
+    ComponentStatesValue: On-cluster states of the components we would like to
+      track. Currently these include (also serving as map keys): 1.
+      "admission" 2. "audit" 3. "mutation" 4. "constraint template library"
 
   Fields:
     clusterName: The user-defined name for the cluster used by
@@ -3268,14 +3390,16 @@ class PolicyControllerFeatureState(_messages.Message):
       Membership's membership_name, unless the user installed Policy
       Controller on the cluster manually prior to enabling the Policy
       Controller Hub Feature. Unique within a Policy Controller installation.
-    membershipSpec: Membership configuration in the cluster. This represents
-      the actual state in the cluster, while the MembershipSpec in the
-      FeatureSpec represents the intended state
-    state: The lifecycle state observed by the Hub Feature controller.
+    componentStates: On-cluster states of the components we would like to
+      track. Currently these include (also serving as map keys): 1.
+      "admission" 2. "audit" 3. "mutation" 4. "constraint template library"
+    state: The overall Policy Controller lifecycle state observed by the Hub
+      Feature controller.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The lifecycle state observed by the Hub Feature controller.
+    r"""The overall Policy Controller lifecycle state observed by the Hub
+    Feature controller.
 
     Values:
       LIFECYCLE_STATE_UNSPECIFIED: The lifecycle state is unspecified.
@@ -3327,8 +3451,35 @@ class PolicyControllerFeatureState(_messages.Message):
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ComponentStatesValue(_messages.Message):
+    r"""On-cluster states of the components we would like to track. Currently
+    these include (also serving as map keys): 1. "admission" 2. "audit" 3.
+    "mutation" 4. "constraint template library"
+
+    Messages:
+      AdditionalProperty: An additional property for a ComponentStatesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ComponentStatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ComponentStatesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A OnClusterState attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('OnClusterState', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   clusterName = _messages.StringField(1)
-  membershipSpec = _messages.MessageField('PolicyControllerMembershipSpec', 2)
+  componentStates = _messages.MessageField('ComponentStatesValue', 2)
   state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
@@ -3736,6 +3887,8 @@ class ServiceMeshFeatureState(_messages.Message):
     dataPlaneManagement: Output only. Status of data plane management.
     defaultChannel: Release channel to use for default injection and service
       mesh APIs.
+    meshConnectivity: Output only. Status of cross cluster load balancing
+      between other clusters in the mesh.
   """
 
   class DefaultChannelValueValuesEnum(_messages.Enum):
@@ -3761,6 +3914,7 @@ class ServiceMeshFeatureState(_messages.Message):
   controlPlaneRevisions = _messages.MessageField('ControlPlaneRevision', 4, repeated=True)
   dataPlaneManagement = _messages.MessageField('DataPlaneManagement', 5)
   defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 6)
+  meshConnectivity = _messages.MessageField('MeshConnectivity', 7)
 
 
 class ServiceMeshMembershipSpec(_messages.Message):
@@ -3837,12 +3991,7 @@ class ServiceMeshMembershipSpec(_messages.Message):
     Values:
       MANAGEMENT_UNSPECIFIED: Unspecified
       MANAGEMENT_AUTOMATIC: Google should manage my Service Mesh for the
-        cluster. This will ensure that a control plane revision is available
-        to the cluster. Google will enroll this revision in a release channel
-        and keep it up to date. Enables a Google-managed data plane that
-        provides L7 service mesh capabilities. Data plane management is
-        enabled at the cluster level. Users can exclude individual workloads
-        or namespaces.
+        cluster.
       MANAGEMENT_MANUAL: User will manually configure their service mesh
         components.
     """

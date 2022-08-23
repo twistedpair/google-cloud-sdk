@@ -959,6 +959,13 @@
             "STATE_SUSPENDED",
             "STATE_DELETING"
           ]
+        },
+        "routeAdvertisements": {
+          "description": "Optional. A list of CIDRs in IP\/Length format to advertise northbound as static routes from this router.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

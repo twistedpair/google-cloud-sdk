@@ -244,6 +244,10 @@ MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED = """\
 Provided maintenance interval type '{type}' not supported.
 """
 
+MANGED_CONFIG_TYPE_NOT_SUPPORTED = """\
+Invalid managed config type '{type}' for argument --managed-config. Valid values are: autofleet, disabled'
+"""
+
 MAX_NODES_PER_POOL = 1000
 
 MAX_AUTHORIZED_NETWORKS_CIDRS_PRIVATE = 100
@@ -629,6 +633,8 @@ class CreateClusterOptions(object):
       autoprovisioning_standard_rollout_policy=None,
       autoprovisioning_node_pool_soak_duration=None,
       enable_google_cloud_access=None,
+      managed_config=None,
+      gateway_api=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -800,6 +806,8 @@ class CreateClusterOptions(object):
     self.autoprovisioning_standard_rollout_policy = autoprovisioning_standard_rollout_policy
     self.autoprovisioning_node_pool_soak_duration = autoprovisioning_node_pool_soak_duration
     self.enable_google_cloud_access = enable_google_cloud_access
+    self.managed_config = managed_config
+    self.gateway_api = gateway_api
 
 
 class UpdateClusterOptions(object):
@@ -914,6 +922,7 @@ class UpdateClusterOptions(object):
       enable_private_endpoint=None,
       enable_google_cloud_access=None,
       stack_type=None,
+      gateway_api=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1023,6 +1032,7 @@ class UpdateClusterOptions(object):
     self.enable_private_endpoint = enable_private_endpoint
     self.enable_google_cloud_access = enable_google_cloud_access
     self.stack_type = stack_type
+    self.gateway_api = gateway_api
 
 
 class SetMasterAuthOptions(object):
@@ -1575,6 +1585,14 @@ class APIAdapter(object):
       else:
         cluster.networkConfig.dnsConfig = dns_config
 
+    gateway_config = self.ParseGatewayOptions(options)
+    if gateway_config is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig(
+            gatewayApiConfig=gateway_config)
+      else:
+        cluster.networkConfig.gatewayApiConfig = gateway_config
+
     if options.enable_legacy_authorization is not None:
       cluster.legacyAbac = self.messages.LegacyAbac(
           enabled=bool(options.enable_legacy_authorization))
@@ -1821,6 +1839,18 @@ class APIAdapter(object):
       if cluster.privateClusterConfig is None:
         cluster.privateClusterConfig = self.messages.PrivateClusterConfig()
       cluster.privateClusterConfig.privateEndpointSubnetwork = options.private_endpoint_subnetwork
+
+    if options.managed_config is not None:
+      if options.managed_config.lower() == 'autofleet':
+        cluster.managedConfig = self.messages.ManagedConfig(
+            type=self.messages.ManagedConfig.TypeValueValuesEnum.AUTOFLEET)
+      elif options.managed_config.lower() == 'disabled':
+        cluster.managedConfig = self.messages.ManagedConfig(
+            type=self.messages.ManagedConfig.TypeValueValuesEnum.DISABLED)
+      else:
+        raise util.Error(
+            MANGED_CONFIG_TYPE_NOT_SUPPORTED.format(
+                type=options.managed_config))
 
     return cluster
 
@@ -2205,6 +2235,22 @@ class APIAdapter(object):
     if options.cluster_dns_domain is not None:
       dns_config.clusterDnsDomain = options.cluster_dns_domain
     return dns_config
+
+  def ParseGatewayOptions(self, options):
+    """Parses the options for Gateway."""
+
+    if options.gateway_api is None:
+      return None
+    gateway_config = self.messages.GatewayAPIConfig()
+    channel_enum = self.messages.GatewayAPIConfig.ChannelValueValuesEnum
+    if options.gateway_api.lower() == 'disabled':
+      gateway_config.channel = channel_enum.CHANNEL_DISABLED
+    elif options.gateway_api.lower() == 'standard':
+      gateway_config.channel = channel_enum.CHANNEL_STANDARD
+    else:
+      gateway_config.channel = channel_enum.CHANNEL_DISABLED
+
+    return gateway_config
 
   def CreateCluster(self, cluster_ref, options):
     """Handles CreateCluster options that are specific to a release track.
@@ -2774,6 +2820,11 @@ class APIAdapter(object):
     dns_config = self.ParseClusterDNSOptions(options)
     if dns_config is not None:
       update = self.messages.ClusterUpdate(desiredDnsConfig=dns_config)
+
+    gateway_config = self.ParseGatewayOptions(options)
+    if gateway_config is not None:
+      update = self.messages.ClusterUpdate(
+          desiredGatewayApiConfig=gateway_config)
 
     if options.notification_config is not None:
       update = self.messages.ClusterUpdate(

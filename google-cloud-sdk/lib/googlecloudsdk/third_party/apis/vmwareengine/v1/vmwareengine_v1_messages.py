@@ -98,8 +98,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -271,8 +277,8 @@ class ExternalAccessRule(_messages.Message):
       `["80","443"]`, or `["12345-12349"]`. To match all destination ports,
       specify `["0-65535"]`.
     ipProtocol: The IP protocol to which the external access rule applies.
-      This value can be one of the following three protocol strings: `tcp`,
-      `udp`, or `icmp`.
+      This value can be one of the following three protocol strings (not case-
+      sensitive): `tcp`, `udp`, or `icmp`.
     name: Output only. The resource name of this external access rule.
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
@@ -802,6 +808,14 @@ class NetworkConfig(_messages.Message):
       firewall to allow HTTPS traffic.
     managementCidr: Required. Management CIDR used by VMware management
       appliances.
+    managementIpAddressLayoutVersion: Output only. The IP address layout
+      version of the management IP address range. Possible versions include: *
+      `managementIpAddressLayoutVersion=1`: Indicates the legacy IP address
+      layout used by some existing private clouds. This is no longer supported
+      for new private clouds as it does not support all features. *
+      `managementIpAddressLayoutVersion=2`: Indicates the latest IP address
+      layout used by all newly created private clouds. This version supports
+      all current features.
     network: Optional. Deprecated: Optional. The relative resource name of the
       consumer VPC network this private cloud is attached to. Specify the name
       in the following form: `projects/{project}/global/networks/{network_id}`
@@ -819,9 +833,10 @@ class NetworkConfig(_messages.Message):
 
   externalIpAccess = _messages.BooleanField(1)
   managementCidr = _messages.StringField(2)
-  network = _messages.StringField(3)
-  serviceNetwork = _messages.StringField(4)
-  vmwareEngineNetwork = _messages.StringField(5)
+  managementIpAddressLayoutVersion = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  network = _messages.StringField(4)
+  serviceNetwork = _messages.StringField(5)
+  vmwareEngineNetwork = _messages.StringField(6)
 
 
 class NetworkPeering(_messages.Message):
@@ -900,12 +915,17 @@ class NetworkPeering(_messages.Message):
         services-access).
       NETAPP_CLOUD_VOLUMES: Peering connection used for connecting to NetApp
         Cloud Volumes.
+      THIRD_PARTY_SERVICE: Peering connection used for connecting to third-
+        party services. Most third-party services require manual setup of
+        reverse peering on the VPC network associated with the third-party
+        service.
     """
     PEER_NETWORK_TYPE_UNSPECIFIED = 0
     STANDARD = 1
     VMWARE_ENGINE_NETWORK = 2
     PRIVATE_SERVICES_ACCESS = 3
     NETAPP_CLOUD_VOLUMES = 4
+    THIRD_PARTY_SERVICE = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the VPC network peering. This field has a value

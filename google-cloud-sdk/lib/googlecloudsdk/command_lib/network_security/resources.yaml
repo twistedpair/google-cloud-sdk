@@ -32,6 +32,43 @@ serverTlsPolicy:
     attribute_name: server_tls_policy
     help: Id of the server TLS policy.
 
+urlList:
+  name: url list
+  collection: networksecurity.projects.locations.urlLists
+  request_id_field: urlListId
+  attributes:
+  - *project
+  - *location
+  - &urlList
+    parameter_name: urlListsId
+    attribute_name: url_list
+    help: Id of the url list.
+
+gatewaySecurityPolicy:
+  name: gateway security policy
+  collection: networksecurity.projects.locations.gatewaySecurityPolicies
+  request_id_field: gatewaySecurityPolicyId
+  attributes:
+  - *project
+  - *location
+  - &gatewaySecurityPolicy
+    parameter_name: gatewaySecurityPoliciesId
+    attribute_name: gateway_security_policy
+    help: Id of the gateway security policy.
+
+gatewaySecurityPolicyRule:
+  name: gateway security policy rule
+  collection: networksecurity.projects.locations.gatewaySecurityPolicies.rules
+  request_id_field: ruleId
+  attributes:
+  - *project
+  - *location
+  - *gatewaySecurityPolicy
+  - &gatewaySecurityPolicyRule
+    parameter_name: rulesId
+    attribute_name: gateway_security_policy_rule
+    help: Id of the gateway security policy rule.
+
 clientTlsPolicy:
   name: client TLS policy
   collection: networksecurity.projects.locations.clientTlsPolicies

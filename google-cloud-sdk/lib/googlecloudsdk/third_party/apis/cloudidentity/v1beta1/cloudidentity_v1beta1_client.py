@@ -17,8 +17,8 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
   _PACKAGE = 'cloudidentity'
   _SCOPES = ['https://www.googleapis.com/auth/cloud-identity', 'https://www.googleapis.com/auth/cloud-identity.devices', 'https://www.googleapis.com/auth/cloud-identity.devices.lookup', 'https://www.googleapis.com/auth/cloud-identity.devices.readonly', 'https://www.googleapis.com/auth/cloud-identity.groups', 'https://www.googleapis.com/auth/cloud-identity.groups.readonly', 'https://www.googleapis.com/auth/cloud-identity.userinvitations', 'https://www.googleapis.com/auth/cloud-identity.userinvitations.readonly', 'https://www.googleapis.com/auth/cloud-platform']
   _VERSION = 'v1beta1'
-  _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
-  _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _CLIENT_ID = 'CLIENT_ID'
+  _CLIENT_SECRET = 'CLIENT_SECRET'
   _USER_AGENT = 'google-cloud-sdk'
   _CLIENT_CLASS_NAME = 'CloudidentityV1beta1'
   _URL_VERSION = 'v1beta1'

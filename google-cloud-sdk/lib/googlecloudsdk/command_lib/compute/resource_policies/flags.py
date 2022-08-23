@@ -175,7 +175,7 @@ def AddSnapshotScheduleArgs(parser, messages):
 
 
 def AddGroupPlacementArgs(parser, messages, track):
-  """Adds flags specific to snapshot schedule resource policies."""
+  """Adds flags specific to group placement resource policies."""
   parser.add_argument(
       '--vm-count',
       type=arg_parsers.BoundedInt(lower_bound=1),

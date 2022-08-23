@@ -52,6 +52,50 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GATEWAYS = (
+      'projects.locations.gateways',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/gateways/'
+              '{gatewaysId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_GRPCROUTES = (
+      'projects.locations.grpcRoutes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/grpcRoutes/'
+              '{grpcRoutesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_HTTPROUTES = (
+      'projects.locations.httpRoutes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/httpRoutes/'
+              '{httpRoutesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MESHES = (
+      'projects.locations.meshes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/meshes/'
+              '{meshesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -70,6 +114,28 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/serviceBindings/'
               '{serviceBindingsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_TCPROUTES = (
+      'projects.locations.tcpRoutes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/tcpRoutes/'
+              '{tcpRoutesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_TLSROUTES = (
+      'projects.locations.tlsRoutes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/tlsRoutes/'
+              '{tlsRoutesId}',
       },
       ['name'],
       True

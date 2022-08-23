@@ -295,7 +295,8 @@
             "The cluster is being created.",
             "The cluster is being deleted.",
             "The creation of the cluster failed.",
-            "The cluster is bootstrapping with data from some other source. Direct mutations to the cluster (e.g. adding read pool) are not allowed."
+            "The cluster is bootstrapping with data from some other source. Direct mutations to the cluster (e.g. adding read pool) are not allowed.",
+            "The cluster is under maintenance. AlloyDB regularly performs maintenance and upgrades on customer clusters. Updates on the cluster are not allowed while the cluster is in this state."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -305,7 +306,8 @@
             "CREATING",
             "DELETING",
             "FAILED",
-            "BOOTSTRAPPING"
+            "BOOTSTRAPPING",
+            "MAINTENANCE"
           ]
         },
         "clusterType": {
@@ -378,6 +380,10 @@
           "description": "Output only. The encryption information for the cluster.",
           "readOnly": true,
           "$ref": "EncryptionInfo"
+        },
+        "pitrConfig": {
+          "description": "Optional. Point-in-time recovery configuration for this cluster. By default, PITR is enabled and logs are retained for 14 days.",
+          "$ref": "PitrConfig"
         }
       }
     },
@@ -648,6 +654,22 @@
         }
       }
     },
+    "PitrConfig": {
+      "id": "PitrConfig",
+      "description": "PitrConfig describes the point-in-time recovery configurations of a cluster. NEXT_ID: 3",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether PITR is enabled.",
+          "type": "boolean"
+        },
+        "logRetentionWindow": {
+          "description": "The number of days the log records will be retained. This is also the PITR recovery window as logs are needed for recovery. If not set, it defaults to 14 days.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
     "RestoreClusterRequest": {
       "id": "RestoreClusterRequest",
       "description": "Message for restoring a Cluster from a backup or another cluster at a given point in time.",
@@ -656,6 +678,10 @@
         "backupSource": {
           "description": "Backup source.",
           "$ref": "BackupSource"
+        },
+        "pitrSource": {
+          "description": "Point in time recovery source. PITR needs to be enabled in the source cluster for this operation to succeed.",
+          "$ref": "PitrSource"
         },
         "clusterId": {
           "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and cluster_id from the method_signature of Create RPC",
@@ -672,6 +698,22 @@
         "validateOnly": {
           "description": "Optional. If set, performs request validation (e.g. permission checks and any other type of validation), but do not actually execute the import request.",
           "type": "boolean"
+        }
+      }
+    },
+    "PitrSource": {
+      "id": "PitrSource",
+      "description": "Message describing a PitrSource.",
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "description": "Required. The source cluster from which to restore. This cluster must have PITR enabled for this operation to succeed. For the required format, see the comment on the Cluster.name field.",
+          "type": "string"
+        },
+        "pointInTime": {
+          "description": "Required. The point in time to restore to.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -868,11 +910,23 @@
     },
     "Node": {
       "id": "Node",
-      "description": "Details of a single node in the instance.",
+      "description": "Details of a single node in the instance. Nodes in an AlloyDB instance are ephemereal, they can change during update, failover, autohealing and resize operations.",
       "type": "object",
       "properties": {
         "zoneId": {
           "description": "The Compute Engine zone of the VM e.g. \"us-central1-b\".",
+          "type": "string"
+        },
+        "id": {
+          "description": "The identifier of the VM e.g. \"test-read-0601-407e52be-ms3l\".",
+          "type": "string"
+        },
+        "ip": {
+          "description": "The private IP address of the VM e.g. \"10.57.0.34\".",
+          "type": "string"
+        },
+        "state": {
+          "description": "Determined by state of the compute VM and postgres-service health. Compute VM state can have values listed in https:\/\/cloud.google.com\/compute\/docs\/instances\/instance-life-cycle and postgres-service health can have values: HEALTHY and UNHEALTHY.",
           "type": "string"
         }
       }
@@ -1862,6 +1916,21 @@
                           "location": "path",
                           "required": true,
                           "type": "string"
+                        },
+                        "view": {
+                          "description": "The view of the instance to return.",
+                          "location": "query",
+                          "type": "string",
+                          "enumDescriptions": [
+                            "INSTANCE_VIEW_UNSPECIFIED Not specified, equivalent to BASIC.",
+                            "BASIC server responses for a primary or read instance include all the relevant instance details, excluding the details of each node in the instance. The default value.",
+                            "FULL response is equivalent to BASIC for primary instance (for now). For read pool instance, this includes details of each node in the pool."
+                          ],
+                          "enum": [
+                            "INSTANCE_VIEW_UNSPECIFIED",
+                            "INSTANCE_VIEW_BASIC",
+                            "INSTANCE_VIEW_FULL"
+                          ]
                         }
                       },
                       "parameterOrder": [
@@ -1917,49 +1986,6 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Creates a new Instance in a given project and location."
-                    },
-                    "createsecondary": {
-                      "id": "alloydb.projects.locations.clusters.instances.createsecondary",
-                      "path": "v1alpha/{+parent}/instances:createsecondary",
-                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances:createsecondary",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The name of the parent resource. For the required format, see the comment on the Instance.name field.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "instanceId": {
-                          "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and instance_id from the method_signature of Create RPC",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "requestId": {
-                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "validateOnly": {
-                          "description": "Optional. If set, performs request validation (e.g. permission checks and any other type of validation), but do not actually execute the create request.",
-                          "location": "query",
-                          "type": "boolean"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "Instance"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Creates a new SECONDARY Instance in a given project and location."
                     },
                     "patch": {
                       "id": "alloydb.projects.locations.clusters.instances.patch",

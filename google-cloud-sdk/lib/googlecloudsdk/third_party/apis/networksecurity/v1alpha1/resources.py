@@ -110,6 +110,29 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GATEWAYSECURITYPOLICIES = (
+      'projects.locations.gatewaySecurityPolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'gatewaySecurityPolicies/{gatewaySecurityPoliciesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_GATEWAYSECURITYPOLICIES_RULES = (
+      'projects.locations.gatewaySecurityPolicies.rules',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'gatewaySecurityPolicies/{gatewaySecurityPoliciesId}/rules/'
+              '{rulesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -128,6 +151,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/'
               'serverTlsPolicies/{serverTlsPoliciesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_URLLISTS = (
+      'projects.locations.urlLists',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/urlLists/'
+              '{urlListsId}',
       },
       ['name'],
       True

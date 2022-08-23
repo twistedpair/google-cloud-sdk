@@ -17,8 +17,8 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
   _PACKAGE = 'networkconnectivity'
   _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
   _VERSION = 'v1'
-  _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
-  _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _CLIENT_ID = 'CLIENT_ID'
+  _CLIENT_SECRET = 'CLIENT_SECRET'
   _USER_AGENT = 'google-cloud-sdk'
   _CLIENT_CLASS_NAME = 'NetworkconnectivityV1'
   _URL_VERSION = 'v1'
@@ -39,6 +39,8 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_global_hubs_routeTables_routes = self.ProjectsLocationsGlobalHubsRouteTablesRoutesService(self)
+    self.projects_locations_global_hubs_routeTables = self.ProjectsLocationsGlobalHubsRouteTablesService(self)
     self.projects_locations_global_hubs = self.ProjectsLocationsGlobalHubsService(self)
     self.projects_locations_global_policyBasedRoutes = self.ProjectsLocationsGlobalPolicyBasedRoutesService(self)
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
@@ -46,6 +48,134 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     self.projects_locations_spokes = self.ProjectsLocationsSpokesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsGlobalHubsRouteTablesRoutesService(base_api.BaseApiService):
+    """Service class for the projects_locations_global_hubs_routeTables_routes resource."""
+
+    _NAME = 'projects_locations_global_hubs_routeTables_routes'
+
+    def __init__(self, client):
+      super(NetworkconnectivityV1.ProjectsLocationsGlobalHubsRouteTablesRoutesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details about the specified route.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesRoutesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Route) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/hubs/{hubsId}/routeTables/{routeTablesId}/routes/{routesId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.global.hubs.routeTables.routes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesRoutesGetRequest',
+        response_type_name='Route',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists routes in a given project.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesRoutesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRoutesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/hubs/{hubsId}/routeTables/{routeTablesId}/routes',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.global.hubs.routeTables.routes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/routes',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesRoutesListRequest',
+        response_type_name='ListRoutesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGlobalHubsRouteTablesService(base_api.BaseApiService):
+    """Service class for the projects_locations_global_hubs_routeTables resource."""
+
+    _NAME = 'projects_locations_global_hubs_routeTables'
+
+    def __init__(self, client):
+      super(NetworkconnectivityV1.ProjectsLocationsGlobalHubsRouteTablesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details about a Network Connectivity Center route table.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RouteTable) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/hubs/{hubsId}/routeTables/{routeTablesId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.global.hubs.routeTables.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesGetRequest',
+        response_type_name='RouteTable',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists route tables in a given project.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRouteTablesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/hubs/{hubsId}/routeTables',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.global.hubs.routeTables.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/routeTables',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesListRequest',
+        response_type_name='ListRouteTablesResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsGlobalHubsService(base_api.BaseApiService):
     """Service class for the projects_locations_global_hubs resource."""

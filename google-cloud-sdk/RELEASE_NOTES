@@ -5,6 +5,82 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 399.0.0 (2022-08-23)
+
+### AlloyDB
+
+*   Added `--cluster` flag to `gcloud beta alloydb operations list` to enable
+    listing of operations pertaining to a given cluster.
+*   Updated `gcloud beta alloydb clusters restore` to support PITR (point in time recovery) via new `--source-cluster` and `--point-in-time` flags.
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.98.1 to address bug
+  <https://issuetracker.google.com/issues/240455023>.
+
+### Cloud Asset Inventory
+
+*   Added `gcloud asset get-effective-iam-policy` command, which retrieves batch
+    effective IAM policies for a specified list of resources within specified
+    accessible scope.
+
+### Cloud Dataflow
+
+* Added `GO` to `gcloud flex-template build` command SDK Language options, allowing
+  users to submit Go Flex Template jobs.
+
+### Cloud Functions
+
+*   Move Python 3.10 for Cloud Functions to GA.
+
+### Cloud Org Policy
+
+*  Added `gcloud org-policies {custom constraint}` commands that allow users to
+create, update, list, describe, and delete org policy custom constraints.
+- `gcloud org-policies set-custom-constraint`
+- `gcloud org-policies describe-custom-constraint`
+- `gcloud org-policies delete-custom-constraint`
+- `gcloud org-policies list-custom-constraints`.
+
+### Cloud SQL
+
+*   Set the maximum allowed value for `--storage-auto-increase-limit` in `gcloud beta sql instances create` to the max value of int. This removes the hardcoded limit of 10230.
+
+### Cloud Spanner
+
+*   Promoted `gcloud spanner samples` to beta and GA. Commands in this group
+    support creating sample databases and running open source sample
+    applications.
+*   Added `--instance-type`, `--expire-behavior` flags to
+    `spanner instances create` and `spanner instances update` to add ability to
+    create free instances in GA.
+*   Added instance_type column for `spanner instances list` and
+    free_instance_availability column for `spanner instance-configs list`.
+
+### Compute Engine
+
+* Promoted `--architecture` flag of `gcloud compute disks create` to GA.
+* Promoted `--update-architecture` flags of `gcloud compute disks update` to GA.
+* Promoted `--clear-architecture` flags of `gcloud compute disks update` to GA.
+* Promoted `--architecture` flag of `gcloud compute images create` and `gcloud compute disks update` to GA.
+
+### Network Services
+
+* Promoted `gcloud network-services tls-routes` to GA.
+
+### Notebooks
+
+*   Added `notebooks runtimes` command group which provides access to AI
+    Platform Notebooks' runtimes.
+
+### Transfer
+
+* Added multipart copy feature to agent setup flags.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 398.0.0 (2022-08-16)
 
 ### AI

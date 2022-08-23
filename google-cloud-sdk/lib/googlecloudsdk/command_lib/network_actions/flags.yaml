@@ -16,7 +16,7 @@ wasmPluginVersion:
 
 wasmPlugin:
   mainVersion:
-    arg_name: main_version
+    arg_name: main-version
     api_field: wasmPlugin.mainVersionId
     help_text: |
       The ID of the WasmPluginVersion that should be the currently serving

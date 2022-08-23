@@ -716,43 +716,34 @@ def _FormatHealthCheckTarget(health_check_target):
   return ', '.join(health_check_target[f] for f in fields)
 
 
+def _FormatRrdata(routing_policy_item):
+  rrdata = []
+  if 'rrdatas' in routing_policy_item:
+    rrdata = rrdata + routing_policy_item['rrdatas']
+  if 'healthCheckedTargets' in routing_policy_item:
+    rrdata = rrdata + ['"{}"'.format(_FormatHealthCheckTarget(target))
+                       for target in routing_policy_item['healthCheckedTargets']
+                       ['internalLoadBalancers']]
+  return ','.join(rrdata)
+
+
 def _FormatResourceRecordSet(rrdatas_or_routing_policy):
   """Format rrset based on rrdatas or routing policy type."""
   if 'wrr' in rrdatas_or_routing_policy:
     items = []
     for item in rrdatas_or_routing_policy['wrr']['items']:
-      if 'healthCheckedTargets' in item:
-        items.append('{}: {}'.format(
-            item['weight'], ','.join(item['rrdatas']) + ',' +
-            ','.join('"{}"'.format(_FormatHealthCheckTarget(target)) for target
-                     in item['healthCheckedTargets']['internalLoadBalancers'])))
-      else:
-        items.append('{}: {}'.format(item['weight'], ','.join(item['rrdatas'])))
+      items.append('{}: {}'.format(item['weight'], _FormatRrdata(item)))
     return '; '.join(items)
   elif 'geo' in rrdatas_or_routing_policy:
     items = []
     for item in rrdatas_or_routing_policy['geo']['items']:
-      if 'healthCheckedTargets' in item:
-        items.append('{}: {}'.format(
-            item['location'], ','.join(item['rrdatas']) + ',' +
-            ','.join('"{}"'.format(_FormatHealthCheckTarget(target)) for target
-                     in item['healthCheckedTargets']['internalLoadBalancers'])))
-      else:
-        items.append('{}: {}'.format(item['location'],
-                                     ','.join(item['rrdatas'])))
+      items.append('{}: {}'.format(item['location'], _FormatRrdata(item)))
     return '; '.join(items)
   elif 'primaryBackup' in rrdatas_or_routing_policy:
     items = []
     for item in rrdatas_or_routing_policy['primaryBackup']['backupGeoTargets'][
         'items']:
-      if 'healthCheckedTargets' in item:
-        items.append('{}: {}'.format(
-            item['location'], ','.join(item['rrdatas']) + ',' +
-            ','.join('"{}"'.format(_FormatHealthCheckTarget(target)) for target
-                     in item['healthCheckedTargets']['internalLoadBalancers'])))
-      else:
-        items.append('{}: {}'.format(item['location'],
-                                     ','.join(item['rrdatas'])))
+      items.append('{}: {}'.format(item['location'], _FormatRrdata(item)))
     backup = ';'.join(items)
     primary = ','.join('"{}"'.format(_FormatHealthCheckTarget(target))
                        for target in rrdatas_or_routing_policy['primaryBackup']

@@ -229,6 +229,18 @@ def AddKubernetesFileFlag():
           '--gcs-source-staging-dir flag) after the release is complete.'))
 
 
+def AddCloudRunFileFlag():
+  return base.Argument(
+      '--from-run-manifest',
+      hidden=True,  # TODO(b/240427449): Unhide when Cloud Run support is public
+      help=(
+          'The path to a Cloud Run manifest, which Cloud Deploy will use to '
+          'generate a skaffold.yaml file for you (for example, '
+          'foo/bar/service.yaml). The generated Skaffold file will be available '
+          'in the Google Cloud Storage source staging directory (see '
+          '--gcs-source-staging-dir flag) after the release is complete.'))
+
+
 def AddSkaffoldSources(parser):
   """Add Skaffold sources."""
   skaffold_source_config_group = parser.add_mutually_exclusive_group()
@@ -237,8 +249,9 @@ def AddSkaffoldSources(parser):
   skaffold_source_group = skaffold_source_config_group.add_group(mutex=False)
   AddSkaffoldFileFlag().AddToParser(skaffold_source_group)
   AddSourceFlag().AddToParser(skaffold_source_group)
-  # Add the from-k8s-manifest flag to the mutex group.
+  # Add the from-k8s-manifest and --from-run-manifest flag to the mutex group.
   AddKubernetesFileFlag().AddToParser(skaffold_source_config_group)
+  AddCloudRunFileFlag().AddToParser(skaffold_source_config_group)
 
 
 def AddDescriptionFlag(parser):
@@ -301,3 +314,21 @@ def AddInitialRolloutGroup(parser, hidden=False):
       const=True,
       help='Skips creating a rollout in the first target defined in the delivery pipeline.'
   )
+
+
+def AddJobId(parser, hidden=False):
+  """Adds job-id flag."""
+  parser.add_argument(
+      '--job-id',
+      hidden=hidden,
+      help='Job ID on a rollout resource',
+      required=True)
+
+
+def AddPhaseId(parser, hidden=False):
+  """Adds phase-id flag."""
+  parser.add_argument(
+      '--phase-id',
+      hidden=hidden,
+      help='Phase ID on a rollout resource',
+      required=True)

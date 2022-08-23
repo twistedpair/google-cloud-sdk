@@ -60,13 +60,25 @@ RESOURCE_CHANGED = ('The following snapped releases resources differ from '
                     'before proceeding.\n')
 _DATE_PATTERN = '$DATE'
 _TIME_PATTERN = '$TIME'
-GENERATED_SKAFFOLD_TEMPLATE = """\
+GKE_GENERATED_SKAFFOLD_TEMPLATE = """\
 apiVersion: skaffold/v2beta28
 kind: Config
 deploy:
   kubectl:
     manifests:
       - {}
+  """
+# TODO(b/242346000): Remove deploy stanza below once issue is addressed.
+CLOUD_RUN_GENERATED_SKAFFOLD_TEMPLATE = """\
+apiVersion: skaffold/v3alpha1
+kind: Config
+manifests:
+  rawYaml:
+  - {}
+deploy:
+  cloudrun:
+    projectid: unused
+    region: unused
   """
 GENERATED_SKAFFOLD = 'skaffold.yaml'
 
@@ -156,12 +168,14 @@ def CreateReleaseConfig(source,
                         location,
                         pipeline_uuid,
                         from_k8s_manifest,
+                        from_run_manifest,
                         hide_logs=False):
   """Returns a build config."""
 
-  # If the kubernetes manifest was given, this means a Skaffold file should be
-  # generated, so we should not check at this stage if the Skaffold file exists.
-  if not from_k8s_manifest:
+  # If either a kubernetes manifest or Cloud Run manifest was given, this means
+  # a Skaffold file should be generated, so we should not check at this stage
+  # if the Skaffold file exists.
+  if not (from_k8s_manifest or from_run_manifest):
     _VerifySkaffoldFileExists(source, skaffold_file)
   messages = client_util.GetMessagesModule(client_util.GetClientInstance())
   release_config = messages.Release()
@@ -175,6 +189,7 @@ def CreateReleaseConfig(source,
       location,
       pipeline_uuid,
       from_k8s_manifest,
+      from_run_manifest,
       skaffold_file,
       hide_logs,
   )
@@ -232,6 +247,7 @@ def _SetSource(release_config,
                location,
                pipeline_uuid,
                kubernetes_manifest,
+               cloud_run_manifest,
                skaffold_file,
                hide_logs=False):
   """Set the source for the release config.
@@ -250,6 +266,9 @@ def _SetSource(release_config,
     kubernetes_manifest: path to kubernetes manifest (e.g. /home/user/k8.yaml).
       If provided, a Skaffold file will be generated and uploaded to GCS on
       behalf of the customer.
+    cloud_run_manifest: path to Cloud Run manifest (e.g.
+      /home/user/service.yaml).If provided, a Skaffold file will be generated
+      and uploaded to GCS on behalf of the customer.
     skaffold_file: path of the skaffold file relative to the source directory
       that contains the Skaffold file.
     hide_logs: whether to show logs, defaults to False
@@ -299,6 +318,8 @@ def _SetSource(release_config,
         'another project. Specify a bucket using '
         '--gcs-source-staging-dir.'.format(default_bucket_name))
 
+  skaffold_is_generated = False
+
   if gcs_source_staging_dir.object:
     staged_object = gcs_source_staging_dir.object + '/' + staged_object
   gcs_source_staging = resources.REGISTRY.Create(
@@ -312,10 +333,13 @@ def _SetSource(release_config,
         bucket=staged_source_obj.bucket, object=staged_source_obj.name)
   else:
     # If a Skaffold file should be generated
-    if kubernetes_manifest:
-      _UploadTarballGeneratedSkaffoldAndK8(kubernetes_manifest, gcs_client,
-                                           gcs_source_staging, ignore_file,
-                                           hide_logs, release_config)
+    if kubernetes_manifest or cloud_run_manifest:
+      skaffold_is_generated = True
+      _UploadTarballGeneratedSkaffoldAndManifest(kubernetes_manifest,
+                                                 cloud_run_manifest, gcs_client,
+                                                 gcs_source_staging,
+                                                 ignore_file, hide_logs,
+                                                 release_config)
     elif os.path.isdir(source):
       _CreateAndUploadTarball(gcs_client, gcs_source_staging, source,
                               ignore_file, hide_logs, release_config)
@@ -336,39 +360,50 @@ def _SetSource(release_config,
     release_config.skaffoldVersion = skaffold_version
 
   release_config = _SetSkaffoldConfigPath(release_config, skaffold_file,
-                                          kubernetes_manifest)
+                                          skaffold_is_generated)
 
   return release_config
 
 
-def _UploadTarballGeneratedSkaffoldAndK8(kubernetes_manifest, gcs_client,
-                                         gcs_source_staging, ignore_file,
-                                         hide_logs, release_config):
+def _UploadTarballGeneratedSkaffoldAndManifest(kubernetes_manifest,
+                                               cloud_run_manifest, gcs_client,
+                                               gcs_source_staging, ignore_file,
+                                               hide_logs, release_config):
   """Generates a Skaffold file and uploads the file and k8 manifest to GCS.
 
   Args:
     kubernetes_manifest: path to kubernetes manifest (e.g. /home/user/k8.yaml).
       If provided, a Skaffold file will be generated and uploaded to GCS on
       behalf of the customer.
+    cloud_run_manifest: path to Cloud Run manifest (e.g.
+      /home/user/service.yaml). If provided, a Skaffold file will be generated
+      and uploaded to GCS on behalf of the customer.
     gcs_client: client for Google Cloud Storage API.
     gcs_source_staging: directory in google cloud storage to use for staging
     ignore_file: the ignore file to use
     hide_logs: whether to show logs, defaults to False
     release_config: a Release message
   """
-  # Check that the kubernetes file exists.
-  if not os.path.exists(kubernetes_manifest):
+  manifest = ''
+  template = ''
+  if kubernetes_manifest:
+    manifest = kubernetes_manifest
+    template = GKE_GENERATED_SKAFFOLD_TEMPLATE
+  elif cloud_run_manifest:
+    manifest = cloud_run_manifest
+    template = CLOUD_RUN_GENERATED_SKAFFOLD_TEMPLATE
+  # Check that the manifest file exists.
+  if not os.path.exists(manifest):
     raise c_exceptions.BadFileException(
-        'could not find kubernetes file [{src}]'.format(
-            src=kubernetes_manifest))
+        'could not find manifest file [{src}]'.format(src=manifest))
   # Create the YAML data. Copying to a temp directory to avoid editing
   # the local directory.
-  k8_file_name = os.path.basename(kubernetes_manifest)
-  skaffold_yaml = yaml.load(GENERATED_SKAFFOLD_TEMPLATE.format(k8_file_name))
+  manifest_file_name = os.path.basename(manifest)
+  skaffold_yaml = yaml.load(template.format(manifest_file_name))
   with files.TemporaryDirectory() as temp_dir:
     skaffold_path = os.path.join(temp_dir, GENERATED_SKAFFOLD)
-    # Copy the kubernetes file to the temp directory
-    shutil.copy(kubernetes_manifest, temp_dir)
+    # Copy the manifest file to the temp directory
+    shutil.copy(manifest, temp_dir)
     with files.FileWriter(skaffold_path) as f:
       # Dump the yaml data to the Skaffold file
       yaml.dump(skaffold_yaml, f)
@@ -428,11 +463,11 @@ def _SetImages(messages, release_config, images, build_artifacts):
   return SetBuildArtifacts(images, messages, release_config)
 
 
-def _SetSkaffoldConfigPath(release_config, skaffold_file, kubernetes_manifest):
+def _SetSkaffoldConfigPath(release_config, skaffold_file, is_generated):
   """Set the path for skaffold configuration file relative to source directory."""
   if skaffold_file:
     release_config.skaffoldConfigPath = skaffold_file
-  if kubernetes_manifest:
+  if is_generated:
     release_config.skaffoldConfigPath = GENERATED_SKAFFOLD
 
   return release_config

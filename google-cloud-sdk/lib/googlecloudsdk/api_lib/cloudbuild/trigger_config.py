@@ -202,14 +202,14 @@ def AddRepoEventArgs(flag_config):
 
 
 def AddFilterArg(flag_config):
-  """Adds filter flag arg.
+  """Adds trigger filter flag arg.
 
   Args:
-    flag_config: argparse argument group. Filter flag will be added to this
-      config.
+    flag_config: argparse argument group. Trigger filter flag will be added to
+      this config.
   """
   flag_config.add_argument(
-      '--filter',
+      '--subscription-filter',
       help='CEL filter expression for the trigger. See https://cloud.google.com/build/docs/filter-build-events-using-cel for more details.',
   )
 

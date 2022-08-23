@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 import re
 
-from googlecloudsdk.api_lib.container.fleet import util
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
@@ -75,9 +74,10 @@ def PromptForMembership():
 
   if console_io.CanPrompt():
     all_memberships = base.ListMembershipsFull()
-    partial = [util.MembershipPartialName(m) for m in all_memberships]
     idx = console_io.PromptChoice(
-        partial, message='Please specify a membership:\n', cancel_option=True)
+        base.MembershipPartialNames(all_memberships),
+        message='Please specify a membership:\n',
+        cancel_option=True)
     membership = all_memberships[idx]
     return membership
 
@@ -152,27 +152,67 @@ def AddMembershipResourceArg(parser,
       required=membership_required).AddToParser(parser)
 
 
-def PositionalMembershipResourceName(args):
-  """Gets a membership resource name from a resource argument MEMBERSHIP_NAME.
+def GetExistingMembershipResourceName(args, positional=False):
+  """Gets the resource name of a membership in the fleet using a membership resource argument.
+
+  Assumes the argument is called `--membership`, or `MEMBERSHIP_NAME` if
+  positional. Runs ListMemberships call to verify the membership exists.
 
   Args:
     args: arguments provided to a command, including a membership resource arg
+    positional: whether the argument is positional
+
+  Returns:
+    The membership resource name (e.g. projects/x/locations/y/memberships/z)
+
+  Raises: googlecloudsdk.core.exceptions.Error if unable to find the membership
+  in the fleet
+  """
+  all_memberships, unavailable = base.ListMembershipsFull()
+  if not all_memberships:
+    raise exceptions.Error('No memberships available in the fleet.')
+  if positional:
+    arg_membership = args.membership_name
+  else:
+    arg_membership = args.membership
+  found = []
+  for existing_membership in all_memberships:
+    if arg_membership in existing_membership:
+      found.append(existing_membership)
+  if not found:
+    raise exceptions.Error(
+        'Membership {} not found in the fleet.'.format(arg_membership) +
+        (' Locations {} were unavailable.'.format(unavailable
+                                                 ) if unavailable else ''))
+  elif len(found) > 1:
+    raise exceptions.Error(
+        ('Multiple memberships named {} found in the fleet. Please use '
+         '`--location` or full resource name '
+         '(projects/*/locations/*/memberships/*) to specify.'
+        ).format(arg_membership))
+  elif unavailable:
+    raise exceptions.Error(
+        ('Locations [{}] unreachable. Please specify a location for membership'
+         ' with `--location` or use the full resource name '
+         '(projects/*/locations/*/memberships/*)').format(unavailable))
+  return found[0]
+
+
+def MembershipResourceName(args, positional=False):
+  """Gets a membership resource name from a membership resource argument.
+
+  Assumes the argument is called `--membership`, or `MEMBERSHIP_NAME` if
+  positional.
+
+  Args:
+    args: arguments provided to a command, including a membership resource arg
+    positional: whether the argument is positional
 
   Returns:
     The membership resource name (e.g. projects/x/locations/y/memberships/z)
   """
-  return args.CONCEPTS.membership_name.Parse().RelativeName()
-
-
-def MembershipResourceName(args):
-  """Gets a membership resource name from a --membership resource argument.
-
-  Args:
-    args: arguments provided to a command, including a membership resource arg
-
-  Returns:
-    The membership resource name (e.g. projects/x/locations/y/memberships/z)
-  """
+  if positional:
+    return args.CONCEPTS.membership_name.Parse().RelativeName()
   return args.CONCEPTS.membership.Parse().RelativeName()
 
 
@@ -205,6 +245,37 @@ def UseRegionalMemberships(track=None):
   """
   return (track is calliope_base.ReleaseTrack.ALPHA) and (
       cmd_util.APIEndpoint() == cmd_util.AUTOPUSH_API)
+
+
+def InProdRegionalAllowlist(project, track=None):
+  """Returns whether project is allowlisted for regional memberships in Prod.
+
+  This will be updated as regionalization is released, and eventually deleted
+  when it is fully rolled out.
+
+  Args:
+     project: The parent project ID of the membership
+    track: The release track of the command
+
+  Returns:
+    A bool, whether project is allowlisted for regional memberships in Prod
+  """
+  prod_regional_allowlist = [
+      'gkeconnect-prober',
+      'gkeconnect-e2e',
+      'gkehub-cep-test',
+      'connectgateway-gke-testing',
+      'xuebinz-gke',
+      'kolber-anthos-testing',
+      'anthonytong-hub2',
+      'wenjuntoy2',
+      'hub-regionalisation-test',  # For Cloud Console UI testing.
+      'a4vm-ui-tests-3',  # For Cloud Console UI testing.
+      'm4a-ui-playground-1',  # For Cloud Console UI testing.
+      'pikalov-tb',
+  ]
+  return track is calliope_base.ReleaseTrack.ALPHA and (
+      project in prod_regional_allowlist)
 
 
 def GetMembershipProjects(memberships):

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.command_lib.run import exceptions
+from googlecloudsdk.command_lib.run.integrations.typekits import cloudsql_typekit
 from googlecloudsdk.command_lib.run.integrations.typekits import custom_domain_typekit
 from googlecloudsdk.command_lib.run.integrations.typekits import domain_routing_typekit
 from googlecloudsdk.command_lib.run.integrations.typekits import redis_typekit
@@ -46,6 +47,9 @@ def GetTypeKit(integration_type):
         types_utils.GetIntegration('domain-routing'))
   if integration_type == 'redis':
     return redis_typekit.RedisTypeKit(types_utils.GetIntegration('redis'))
+  if integration_type == 'cloudsql':
+    return cloudsql_typekit.CloudSqlTypeKit(
+        types_utils.GetIntegration('cloudsql'))
   raise exceptions.ArgumentError(
       'Integration of type {} is not supported'.format(integration_type))
 

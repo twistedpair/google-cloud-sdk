@@ -826,6 +826,17 @@ class CommonFeatureState(_messages.Message):
   state = _messages.MessageField('FeatureState', 7)
 
 
+class CommonFleetDefaultMemberConfigSpec(_messages.Message):
+  r"""CommonFleetDefaultMemberConfigSpec contains default configuration
+  information for memberships of a fleet
+
+  Fields:
+    mesh: Anthos Service Mesh-specific spec
+  """
+
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 1)
+
+
 class Condition(_messages.Message):
   r"""A condition to be met.
 
@@ -1837,6 +1848,8 @@ class Feature(_messages.Message):
   Fields:
     createTime: Output only. When the Feature resource was created.
     deleteTime: Output only. When the Feature resource was deleted.
+    fleetDefaultMemberConfig: Optional. Feature configuration applicable to
+      all memberships of the fleet.
     labels: GCP labels for this Feature.
     membershipSpecs: Optional. Membership-specific configuration for this
       Feature. If this Feature does not support any per-Membership
@@ -1959,14 +1972,15 @@ class Feature(_messages.Message):
 
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 4)
-  membershipStates = _messages.MessageField('MembershipStatesValue', 5)
-  name = _messages.StringField(6)
-  resourceState = _messages.MessageField('FeatureResourceState', 7)
-  spec = _messages.MessageField('CommonFeatureSpec', 8)
-  state = _messages.MessageField('CommonFeatureState', 9)
-  updateTime = _messages.StringField(10)
+  fleetDefaultMemberConfig = _messages.MessageField('CommonFleetDefaultMemberConfigSpec', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 5)
+  membershipStates = _messages.MessageField('MembershipStatesValue', 6)
+  name = _messages.StringField(7)
+  resourceState = _messages.MessageField('FeatureResourceState', 8)
+  spec = _messages.MessageField('CommonFeatureSpec', 9)
+  state = _messages.MessageField('CommonFeatureState', 10)
+  updateTime = _messages.StringField(11)
 
 
 class FeatureResourceState(_messages.Message):
@@ -5489,12 +5503,7 @@ class ServiceMeshMembershipSpec(_messages.Message):
     Values:
       MANAGEMENT_UNSPECIFIED: Unspecified
       MANAGEMENT_AUTOMATIC: Google should manage my Service Mesh for the
-        cluster. This will ensure that a control plane revision is available
-        to the cluster. Google will enroll this revision in a release channel
-        and keep it up to date. Enables a Google-managed data plane that
-        provides L7 service mesh capabilities. Data plane management is
-        enabled at the cluster level. Users can exclude individual workloads
-        or namespaces.
+        cluster.
       MANAGEMENT_MANUAL: User will manually configure their service mesh
         components.
     """
@@ -5527,6 +5536,8 @@ class ServiceMeshMembershipState(_messages.Message):
     dataPlaneManagement: Output only. Status of data plane management.
     defaultChannel: Release channel to use for default injection and service
       mesh APIs.
+    meshConnectivity: Output only. Status of cross cluster load balancing
+      between other clusters in the mesh.
   """
 
   class DefaultChannelValueValuesEnum(_messages.Enum):
@@ -5552,6 +5563,49 @@ class ServiceMeshMembershipState(_messages.Message):
   controlPlaneRevisions = _messages.MessageField('ServiceMeshControlPlaneRevision', 4, repeated=True)
   dataPlaneManagement = _messages.MessageField('ServiceMeshDataPlaneManagement', 5)
   defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 6)
+  meshConnectivity = _messages.MessageField('ServiceMeshMeshConnectivity', 7)
+
+
+class ServiceMeshMeshConnectivity(_messages.Message):
+  r"""Status of cross cluster load balancing between other clusters in the
+  mesh.
+
+  Enums:
+    StateValueValuesEnum: LifecycleState of multicluster load balancing.
+
+  Fields:
+    details: Explanation of state.
+    state: LifecycleState of multicluster load balancing.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""LifecycleState of multicluster load balancing.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: Unspecified
+      DISABLED: DISABLED means that the component is not enabled.
+      FAILED_PRECONDITION: FAILED_PRECONDITION means that provisioning cannot
+        proceed because of some characteristic of the member cluster.
+      PROVISIONING: PROVISIONING means that provisioning is in progress.
+      ACTIVE: ACTIVE means that the component is ready for use.
+      STALLED: STALLED means that provisioning could not be done.
+      NEEDS_ATTENTION: NEEDS_ATTENTION means that the component is ready, but
+        some user intervention is required. (For example that the user should
+        migrate workloads to a new control plane revision.)
+      DEGRADED: DEGRADED means that the component is ready, but operating in a
+        degraded state.
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    DISABLED = 1
+    FAILED_PRECONDITION = 2
+    PROVISIONING = 3
+    ACTIVE = 4
+    STALLED = 5
+    NEEDS_ATTENTION = 6
+    DEGRADED = 7
+
+  details = _messages.MessageField('ServiceMeshStatusDetails', 1, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class ServiceMeshSpec(_messages.Message):

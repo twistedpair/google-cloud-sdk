@@ -95,36 +95,36 @@ _INSTANCE_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
     apis.GetMessagesModule(
         'spanner',
         'v1').Instance.InstanceTypeValueValuesEnum,
-    help_str='The type of this instance.',
+    help_str='Specifies the type for this instance.',
     required=False,
     custom_mappings={
         'PROVISIONED': (
             'provisioned',
             ('Provisioned instances have dedicated resources, standard usage '
-             'limits and support')),
+             'limits, and support.')),
         'FREE_INSTANCE': (
             'free-instance',
-            ('Free instances provide no guarantee for dedicated resources, '
-             '[node_count, processing_units] should be 0. They come with '
-             'stricter usage limits and limited support.')),
+            ('Free trial instances provide no guarantees for dedicated '
+             'resources, both node_count and processing_units should be 0. '
+             'They come with stricter usage limits and limited support.')),
     })
 
 _EXPIRE_BEHAVIOR_MAPPER = arg_utils.ChoiceEnumMapper(
     '--expire-behavior',
     apis.GetMessagesModule(
-        'spanner',
-        'v1').FreeInstanceMetadata.ExpireBehaviorValueValuesEnum,
-    help_str='The expire behavior of a free instance.',
+        'spanner', 'v1').FreeInstanceMetadata.ExpireBehaviorValueValuesEnum,
+    help_str='The expire behavior of a free trial instance.',
     required=False,
     custom_mappings={
-        'FREE_TO_PROVISIONED': (
-            'free-to-provisioned',
-            ('When the free instance expires, upgrade the instance to a '
-             'provisioned instance')),
-        'REMOVE_AFTER_GRACE_PERIOD': (
-            'remove-after-grace-period',
-            ('When the free instance expires, disable the instance, and delete '
-             'it after the grace period passes if it has not been upgraded.')),
+        'FREE_TO_PROVISIONED':
+            ('free-to-provisioned',
+             ('When the free trial instance expires, upgrade the instance to a '
+              'provisioned instance.')),
+        'REMOVE_AFTER_GRACE_PERIOD':
+            ('remove-after-grace-period',
+             ('When the free trial instance expires, disable the instance, '
+              'and delete it after the grace period passes if it has not been '
+              'upgraded to a provisioned instance.')),
     })
 
 

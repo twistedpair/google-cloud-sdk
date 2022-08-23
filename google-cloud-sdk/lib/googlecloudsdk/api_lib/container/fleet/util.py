@@ -64,7 +64,6 @@ def MembershipResourceName(project, membership, location='global'):
 
 
 def MembershipPartialName(full_name):
-  resources.REGISTRY.ParseRelativeName(full_name)
   matches = re.search('projects/.*/locations/(.*)/memberships/(.*)', full_name)
   if matches:
     return matches.group(1) + '/' + matches.group(2)

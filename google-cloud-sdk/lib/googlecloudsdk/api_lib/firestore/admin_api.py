@@ -40,6 +40,27 @@ def GetService():
   return GetClient().projects_databases
 
 
+def CreateDatabase(project, location, database_type):
+  """Performs a Firestore Admin v1 Database Creation.
+
+  Args:
+    project: the project id to create, a string.
+    location: the database location to create, a string.
+    database_type: the database type, an Enum.
+
+  Returns:
+    an Operation.
+  """
+  messages = GetMessages()
+  return GetService().Create(
+      messages.FirestoreProjectsDatabasesCreateRequest(
+          parent='projects/{}'.format(project),
+          databaseId=DEFAULT_DATABASE,
+          googleFirestoreAdminV1Database=messages
+          .GoogleFirestoreAdminV1Database(
+              type=database_type, locationId=location)))
+
+
 def GetExportDocumentsRequest(database, output_uri_prefix, collection_ids=None):
   """Returns a request for a Firestore Admin Export.
 
@@ -47,6 +68,7 @@ def GetExportDocumentsRequest(database, output_uri_prefix, collection_ids=None):
     database: the database id to export, a string.
     output_uri_prefix: the output GCS path prefix, a string.
     collection_ids: a string list of collection ids to export.
+
   Returns:
     an ExportDocumentsRequest message.
   """
@@ -71,6 +93,7 @@ def GetImportDocumentsRequest(database, input_uri_prefix, collection_ids=None):
     database: the database id to import, a string.
     input_uri_prefix: the location of the GCS export files, a string.
     collection_ids: a string list of collection ids to import.
+
   Returns:
     an ImportDocumentsRequest message.
   """
@@ -95,11 +118,11 @@ def Export(project, output_uri_prefix, collection_ids=None):
     project: the project id to export, a string.
     output_uri_prefix: the output GCS path prefix, a string.
     collection_ids: a string list of collections to export.
+
   Returns:
     an Operation.
   """
-  dbname = 'projects/{}/databases/{}'.format(
-      project, DEFAULT_DATABASE)
+  dbname = 'projects/{}/databases/{}'.format(project, DEFAULT_DATABASE)
   return GetService().ExportDocuments(
       GetExportDocumentsRequest(dbname, output_uri_prefix, collection_ids))
 
@@ -111,10 +134,10 @@ def Import(project, input_uri_prefix, collection_ids=None):
     project: the project id to import, a string.
     input_uri_prefix: the input uri prefix of the exported files, a string.
     collection_ids: a string list of collections to import.
+
   Returns:
     an Operation.
   """
-  dbname = 'projects/{}/databases/{}'.format(
-      project, DEFAULT_DATABASE)
+  dbname = 'projects/{}/databases/{}'.format(project, DEFAULT_DATABASE)
   return GetService().ImportDocuments(
       GetImportDocumentsRequest(dbname, input_uri_prefix, collection_ids))

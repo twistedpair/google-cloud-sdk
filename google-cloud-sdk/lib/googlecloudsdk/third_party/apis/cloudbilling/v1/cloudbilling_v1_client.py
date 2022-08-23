@@ -17,8 +17,8 @@ class CloudbillingV1(base_api.BaseApiClient):
   _PACKAGE = 'cloudbilling'
   _SCOPES = ['https://www.googleapis.com/auth/cloud-billing', 'https://www.googleapis.com/auth/cloud-billing.readonly', 'https://www.googleapis.com/auth/cloud-platform']
   _VERSION = 'v1'
-  _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
-  _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _CLIENT_ID = 'CLIENT_ID'
+  _CLIENT_SECRET = 'CLIENT_SECRET'
   _USER_AGENT = 'google-cloud-sdk'
   _CLIENT_CLASS_NAME = 'CloudbillingV1'
   _URL_VERSION = 'v1'

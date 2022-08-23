@@ -17,8 +17,8 @@ class GkemulticloudV1(base_api.BaseApiClient):
   _PACKAGE = 'gkemulticloud'
   _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
   _VERSION = 'v1'
-  _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
-  _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
+  _CLIENT_ID = 'CLIENT_ID'
+  _CLIENT_SECRET = 'CLIENT_SECRET'
   _USER_AGENT = 'google-cloud-sdk'
   _CLIENT_CLASS_NAME = 'GkemulticloudV1'
   _URL_VERSION = 'v1'
@@ -1203,6 +1203,33 @@ class GkemulticloudV1(base_api.BaseApiClient):
       super(GkemulticloudV1.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def GenerateAttachedClusterInstallManifest(self, request, global_params=None):
+      r"""Generates the install manifest to be installed on the target cluster.
+
+      Args:
+        request: (GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudGkemulticloudV1GenerateAttachedClusterInstallManifestResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateAttachedClusterInstallManifest')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateAttachedClusterInstallManifest.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/generateAttachedClusterInstallManifest',
+        http_method='GET',
+        method_id='gkemulticloud.projects.locations.generateAttachedClusterInstallManifest',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['attachedClusterId', 'platformVersion'],
+        relative_path='v1/{+parent}/generateAttachedClusterInstallManifest',
+        request_field='',
+        request_type_name='GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest',
+        response_type_name='GoogleCloudGkemulticloudV1GenerateAttachedClusterInstallManifestResponse',
+        supports_download=False,
+    )
 
     def GetAwsServerConfig(self, request, global_params=None):
       r"""Returns information, such as supported AWS regions and Kubernetes versions, on a given Google Cloud location.

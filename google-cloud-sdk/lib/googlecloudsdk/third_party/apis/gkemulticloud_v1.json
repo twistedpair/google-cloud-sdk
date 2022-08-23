@@ -226,7 +226,7 @@
           "type": "string"
         },
         "fleet": {
-          "description": "Optional. Fleet configuration.",
+          "description": "Required. Fleet configuration.",
           "$ref": "GoogleCloudGkemulticloudV1Fleet"
         },
         "state": {
@@ -298,6 +298,14 @@
         "loggingConfig": {
           "description": "Optional. Logging configuration for this cluster.",
           "$ref": "GoogleCloudGkemulticloudV1LoggingConfig"
+        },
+        "errors": {
+          "description": "Output only. A set of errors found in the cluster.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudGkemulticloudV1AttachedClusterError"
+          }
         }
       }
     },
@@ -387,6 +395,17 @@
         }
       }
     },
+    "GoogleCloudGkemulticloudV1AttachedClusterError": {
+      "id": "GoogleCloudGkemulticloudV1AttachedClusterError",
+      "description": "AttachedClusterError describes errors found on attached clusters.",
+      "type": "object",
+      "properties": {
+        "message": {
+          "description": "Human-friendly description of the error.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudGkemulticloudV1ListAttachedClustersResponse": {
       "id": "GoogleCloudGkemulticloudV1ListAttachedClustersResponse",
       "description": "Response message for `AttachedClusters.ListAttachedClusters` method.",
@@ -401,6 +420,17 @@
         },
         "nextPageToken": {
           "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1GenerateAttachedClusterInstallManifestResponse": {
+      "id": "GoogleCloudGkemulticloudV1GenerateAttachedClusterInstallManifestResponse",
+      "description": "Response message for `AttachedClusters.GenerateAttachedClusterInstallManifest` method.",
+      "type": "object",
+      "properties": {
+        "manifest": {
+          "description": "A set of Kubernetes resources (in YAML format) to be applied to the cluster to be attached.",
           "type": "string"
         }
       }
@@ -1993,6 +2023,41 @@
       "resources": {
         "locations": {
           "methods": {
+            "generateAttachedClusterInstallManifest": {
+              "id": "gkemulticloud.projects.locations.generateAttachedClusterInstallManifest",
+              "path": "v1/{+parent}/generateAttachedClusterInstallManifest",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/generateAttachedClusterInstallManifest",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The parent location where this AttachedCluster resource will be created. Location names are formatted as `projects\/\/locations\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "attachedClusterId": {
+                  "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AttachedCluster resource name formatted as `projects\/\/locations\/\/attachedClusters\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 63 characters.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "platformVersion": {
+                  "description": "Required. The platform version for the cluster (e.g. `1.19.0-gke.1000`). You can list all supported versions on a given Google Cloud region by calling GetAttachedServerConfig.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "GoogleCloudGkemulticloudV1GenerateAttachedClusterInstallManifestResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Generates the install manifest to be installed on the target cluster."
+            },
             "getAwsServerConfig": {
               "id": "gkemulticloud.projects.locations.getAwsServerConfig",
               "path": "v1/{+name}",

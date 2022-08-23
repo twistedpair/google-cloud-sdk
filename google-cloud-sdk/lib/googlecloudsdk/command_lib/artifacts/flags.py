@@ -409,3 +409,12 @@ def GetVerboseErrorsFlag():
       default=False,
       hidden=True,
       help=('Log internal errors.'))
+
+
+def GetKeepUnknownJarsFlag():
+  return base.Argument(
+      '--keep-unknown-jars',
+      action='store_true',
+      default=False,
+      hidden=True,
+      help=('Keep Unkonwn Jars as digest only packages for scanning.'))
