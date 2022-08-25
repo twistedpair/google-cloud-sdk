@@ -581,6 +581,17 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'blockchainnodeengine': {
+        'v1alpha1':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.blockchainnodeengine.v1alpha1',
+                    client_classpath='blockchainnodeengine_v1alpha1_client.BlockchainnodeengineV1alpha1',
+                    messages_modulepath='blockchainnodeengine_v1alpha1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'certificatemanager': {
         'v1':
             APIDef(

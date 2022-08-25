@@ -44,6 +44,16 @@ pubsub_topic:
     The Pub/Sub topic which will receive notifications. Its format is
     "projects/[project_id]/topics/[topic]".
 
+# Note:
+# SCC's custom --filter is passing the streaming config filter as part of
+# the request body. However --filter is a global filter flag in gcloud. The
+# --filter flag in gcloud (outside of this command) is used for client side
+# filtering. This has led to a collision in logic as gcloud believes the
+# update is trying to perform client side filtering. In the context of
+# notifications, it is instead updating the streaming config filter.
+#
+# Any future new commands should reconsider not using --filter for this logic and perhaps use a
+# different name to avoid any collisions with gcloud logic.
 filter:
   arg_name: filter
   api_field: notificationConfig.streamingConfig.filter

@@ -39,3 +39,16 @@ def AddOracleObjectIdentifier(parser):
       required=True)
   oracle_object_parser.add_argument(
       '--oracle-table', help="""Oracle table for the object.""", required=True)
+
+
+def AddPostgresqlObjectIdentifier(parser):
+  """Adds a --postgresql-schema & --postgresql-table flags to the given parser."""
+  postgresql_object_parser = parser.add_group()
+  postgresql_object_parser.add_argument(
+      '--postgresql-schema',
+      help="""PostgreSQL schema for the object.""",
+      required=True)
+  postgresql_object_parser.add_argument(
+      '--postgresql-table',
+      help="""PostgreSQL table for the object.""",
+      required=True)

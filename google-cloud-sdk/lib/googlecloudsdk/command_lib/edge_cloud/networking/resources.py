@@ -110,7 +110,7 @@ def SetResourcesPathForAttachment(ref, args, request):
     modified request
   """
 
-  if 'projects/' not in args.router:
+  if args.router and 'projects/' not in args.router:
     router = resources.REGISTRY.Create(
         'edgenetwork.projects.locations.zones.routers',
         projectsId=ref.projectsId,
@@ -127,5 +127,14 @@ def SetResourcesPathForAttachment(ref, args, request):
         zonesId=ref.zonesId,
         interconnectsId=args.interconnect)
     request.interconnectAttachment.interconnect = interconnect.RelativeName()
+
+  if args.network and 'projects/' not in args.network:
+    network = resources.REGISTRY.Create(
+        'edgenetwork.projects.locations.zones.networks',
+        projectsId=ref.projectsId,
+        locationsId=ref.locationsId,
+        zonesId=ref.zonesId,
+        networksId=args.network)
+    request.interconnectAttachment.network = network.RelativeName()
 
   return request

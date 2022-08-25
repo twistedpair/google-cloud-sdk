@@ -75,3 +75,6 @@ def AddBackfillStrategyGroup(parser, required=True):
   backfill_all_excluded_objects.add_argument(
       '--mysql-excluded-objects',
       help="""MySQL data source objects to avoid backfilling.""")
+  backfill_all_excluded_objects.add_argument(
+      '--postgresql-excluded-objects',
+      help="""PostgreSQL data source objects to avoid backfilling.""")

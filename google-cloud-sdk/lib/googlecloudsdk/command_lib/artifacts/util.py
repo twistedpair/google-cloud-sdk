@@ -209,6 +209,12 @@ def AppendUpstreamPoliciesToRequest(repo_ref, repo_args, request):
   """Adds upstream policies to CreateRepositoryRequest."""
   messages = _GetMessagesForResource(repo_ref)
   if repo_args.upstream_policy_file:
+    if isinstance(
+        request,
+        messages.ArtifactregistryProjectsLocationsRepositoriesPatchRequest):
+      if request.updateMask:
+        request.updateMask += ","
+      request.updateMask += "virtual_repository_config"
     content = console_io.ReadFromFileOrStdin(
         repo_args.upstream_policy_file, binary=False)
     policies = json.loads(content)

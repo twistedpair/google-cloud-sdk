@@ -48,6 +48,25 @@ class Interconnect(object):
                     adminEnabled=admin_enabled,
                     customerName=customer_name)))
 
+  def _MakeCreateRequestTupleAlpha(self, description, location,
+                                   interconnect_type, requested_link_count,
+                                   link_type, admin_enabled, noc_contact_email,
+                                   customer_name, remote_location):
+    return (self._client.interconnects, 'Insert',
+            self._messages.ComputeInterconnectsInsertRequest(
+                project=self.ref.project,
+                interconnect=self._messages.Interconnect(
+                    name=self.ref.Name(),
+                    description=description,
+                    interconnectType=interconnect_type,
+                    linkType=link_type,
+                    nocContactEmail=noc_contact_email,
+                    requestedLinkCount=requested_link_count,
+                    location=location,
+                    adminEnabled=admin_enabled,
+                    customerName=customer_name,
+                    remoteLocation=remote_location)))
+
   def _MakePatchRequestTuple(self, description, location, interconnect_type,
                              requested_link_count, link_type, admin_enabled,
                              noc_contact_email, labels, label_fingerprint):
@@ -139,6 +158,30 @@ class Interconnect(object):
                                      requested_link_count, link_type,
                                      admin_enabled, noc_contact_email,
                                      customer_name)
+    ]
+    if not only_generate_request:
+      resources = self._compute_client.MakeRequests(requests)
+      return resources[0]
+    return requests
+
+  def CreateAlpha(self,
+                  description='',
+                  location=None,
+                  interconnect_type=None,
+                  requested_link_count=None,
+                  link_type=None,
+                  admin_enabled=False,
+                  noc_contact_email=None,
+                  customer_name=None,
+                  remote_location=None,
+                  only_generate_request=False):
+    """Create an interconnect."""
+    requests = [
+        self._MakeCreateRequestTupleAlpha(description, location,
+                                          interconnect_type,
+                                          requested_link_count, link_type,
+                                          admin_enabled, noc_contact_email,
+                                          customer_name, remote_location)
     ]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)

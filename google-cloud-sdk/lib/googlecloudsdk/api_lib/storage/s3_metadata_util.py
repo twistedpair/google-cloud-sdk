@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import base64
 import binascii
+import copy
 import re
 
 from googlecloudsdk.api_lib.storage import errors
@@ -52,6 +53,59 @@ _GCS_TO_S3_PREDEFINED_ACL_TRANSLATION_DICT = {
 }
 # Determines whether an etag is a valid MD5.
 MD5_REGEX = re.compile(r'^[a-fA-F0-9]{32}$')
+
+
+def get_acl_policy_with_added_and_removed_grants(acl_dict, request_config):
+  """Returns full ACL policy object with requested changes.
+
+  Args:
+    acl_dict (dict): Contains S3-format ACL policy dict for bucket or object.
+      Usually of the form: "{"Grants": [...], "Owner": {...}}". See:
+      https://boto3.amazonaws.com/v1/documentation/api/latest/reference
+      /services/s3.html#S3.Client.get_bucket_acl
+    request_config (request_config_factory._RequestConfig): Contains desired
+      changes for the ACL policy.
+
+  Returns:
+    dict: Deep copy of acl_dict with added and removed grants and
+      removed "ResponseMetadata" field to allow for reuse in PUT API calls.
+  """
+  # Avoid unexpected destructive side effect of popping to original acl_dict.
+  acl_dict_copy = copy.deepcopy(acl_dict)
+  # Unnecessary extra metadata that we need to remove for PUT calls.
+  acl_dict_copy.pop('ResponseMetadata', None)
+
+  if not request_config.resource_args:
+    # No ACL grants to add or remove.
+    return acl_dict_copy
+
+  acl_grants_to_add = request_config.resource_args.acl_grants_to_add
+  if acl_grants_to_add:
+    for new_grant in acl_grants_to_add:
+      # Avoid unexpected destructive side effect of pop to request_config.
+      new_grant_copy = copy.deepcopy(new_grant)
+      # Input format flattens Grantee fields for UX.
+      permission = new_grant_copy.pop('Permission')
+      acl_dict_copy['Grants'].append({
+          'Permission': permission,
+          'Grantee': new_grant_copy,
+      })
+
+  acl_grants_to_remove = request_config.resource_args.acl_grants_to_remove
+  if acl_grants_to_remove:
+    entity_identifiers_to_remove = set(acl_grants_to_remove)
+    filtered_grants = []
+    for existing_grant in acl_dict_copy.get('Grants', []):
+      existing_grantee = existing_grant.get('Grantee', {})
+      existing_grantee_identifiers = set(
+          (existing_grantee.get('EmailAddress'), existing_grantee.get('ID'),
+           existing_grantee.get('URI')))
+      if not entity_identifiers_to_remove.intersection(
+          existing_grantee_identifiers):
+        filtered_grants.append(existing_grant)
+    acl_dict_copy['Grants'] = filtered_grants
+
+  return acl_dict_copy
 
 
 def copy_object_metadata(source_metadata_dict, destination_metadata_dict):

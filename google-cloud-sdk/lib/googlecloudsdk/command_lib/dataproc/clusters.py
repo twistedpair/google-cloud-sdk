@@ -1081,15 +1081,15 @@ def GetClusterConfig(args,
             preemptibility=_GetInstanceGroupPreemptibility(
                 dataproc, args.secondary_worker_type)))
 
-  # Add input-only auxiliaryGceNodePools
+  # Add input-only auxiliaryNodeGroups
   if _AtLeastOneGceNodePoolSpecified(args, driver_pool_boot_disk_size_gb):
-    cluster_config.auxiliaryGceNodePools = [
-        dataproc.messages.AuxiliaryGceNodePool(
-            gceNodePool=(dataproc.messages.GceNodePool(
+    cluster_config.auxiliaryNodeGroups = [
+        dataproc.messages.AuxiliaryNodeGroup(
+            nodeGroup=(dataproc.messages.NodeGroup(
                 labels=labels_util.ParseCreateArgs(
-                    args, dataproc.messages.GceNodePool.LabelsValue),
+                    args, dataproc.messages.NodeGroup.LabelsValue),
                 roles=[
-                    dataproc.messages.GceNodePool.RolesValueListEntryValuesEnum
+                    dataproc.messages.NodeGroup.RolesValueListEntryValuesEnum
                     .DRIVER
                 ],
                 nodePoolConfig=dataproc.messages.InstanceGroupConfig(
@@ -1104,7 +1104,7 @@ def GetClusterConfig(args,
                         args.driver_pool_local_ssd_interface),
                     minCpuPlatform=args.driver_pool_min_cpu_platform))),
             # FE should generate the driver pool id if none is provided
-            gceNodePoolId=args.driver_pool_id)
+            nodeGroupId=args.driver_pool_id)
     ]
 
   if args.enable_component_gateway:

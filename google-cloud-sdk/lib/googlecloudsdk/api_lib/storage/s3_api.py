@@ -195,16 +195,25 @@ class S3Api(cloud_api.CloudApi):
                    fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
     resource_args = request_config.resource_args
-    if request_config_factory.has_acl_request(request_config):
-      acl_dict = {}
-      if getattr(resource_args, 'acl_file_path', None):
-        acl_dict['AccessControlPolicy'] = (
-            s3_metadata_field_converters.process_acl_file(
-                resource_args.acl_file_path))
+    if request_config_factory.modifies_full_acl_policy(request_config) or (
+        request_config.predefined_acl_string):
+      put_acl_kwargs = {}
+      if request_config_factory.modifies_full_acl_policy(request_config):
+        if getattr(resource_args, 'acl_file_path', None):
+          put_acl_kwargs['AccessControlPolicy'] = (
+              s3_metadata_field_converters.process_acl_file(
+                  resource_args.acl_file_path))
+        else:
+          existing_acl_dict = self.client.get_bucket_acl(
+              Bucket=bucket_resource.storage_url.bucket_name)
+          put_acl_kwargs['AccessControlPolicy'] = (
+              s3_metadata_util.get_acl_policy_with_added_and_removed_grants(
+                  existing_acl_dict, request_config))
+
       if request_config.predefined_acl_string:
-        acl_dict['ACL'] = request_config.predefined_acl_string
+        put_acl_kwargs['ACL'] = request_config.predefined_acl_string
       self._make_patch_request(bucket_resource, self.client.put_bucket_acl,
-                               acl_dict)
+                               put_acl_kwargs)
 
     if resource_args.cors_file_path:
       self._make_patch_request(
@@ -339,6 +348,27 @@ class S3Api(cloud_api.CloudApi):
     """See super class."""
     del progress_callback  # TODO(b/161900052): Implement resumable copies.
 
+    if request_config_factory.modifies_full_acl_policy(request_config):
+      acl_file_path = getattr(request_config.resource_args, 'acl_file_path',
+                              None)
+      if acl_file_path:
+        acl_dict = s3_metadata_field_converters.process_acl_file(acl_file_path)
+      else:
+        existing_acl_dict = self.client.get_object_acl(
+            Bucket=destination_resource.storage_url.bucket_name,
+            Key=destination_resource.storage_url.object_name)
+        acl_dict = s3_metadata_util.get_acl_policy_with_added_and_removed_grants(
+            existing_acl_dict, request_config)
+
+      put_acl_kwargs = {
+          'Bucket': destination_resource.storage_url.bucket_name,
+          'Key': destination_resource.storage_url.object_name,
+          'AccessControlPolicy': acl_dict,
+      }
+      self.client.put_object_acl(**put_acl_kwargs)
+    else:
+      acl_dict = None
+
     source_kwargs = {'Bucket': source_resource.storage_url.bucket_name,
                      'Key': source_resource.storage_url.object_name}
     if source_resource.storage_url.generation:
@@ -347,7 +377,7 @@ class S3Api(cloud_api.CloudApi):
     copy_kwargs = {
         'Bucket': destination_resource.storage_url.bucket_name,
         'Key': destination_resource.storage_url.object_name,
-        'CopySource': source_kwargs
+        'CopySource': source_kwargs,
     }
 
     if should_deep_copy_metadata:
@@ -358,22 +388,6 @@ class S3Api(cloud_api.CloudApi):
               source_resource.metadata,
           ), copy_kwargs)
 
-    acl_file_path = getattr(request_config.resource_args, 'acl_file_path', None)
-    if acl_file_path:
-      put_acl_kwargs = {
-          'Bucket':
-              destination_resource.storage_url.bucket_name,
-          'Key':
-              destination_resource.storage_url.object_name,
-          'AccessControlPolicy':
-              s3_metadata_field_converters.process_acl_file(acl_file_path),
-      }
-      self.client.put_object_acl(**put_acl_kwargs)
-      full_acl_policy = self.client.get_object_acl(
-          Bucket=put_acl_kwargs['Bucket'], Key=put_acl_kwargs['Key'])
-    else:
-      full_acl_policy = None
-
     s3_metadata_util.update_object_metadata_dict_from_request_config(
         copy_kwargs, request_config)
     copy_response = self.client.copy_object(**copy_kwargs)
@@ -381,7 +395,7 @@ class S3Api(cloud_api.CloudApi):
         copy_response,
         copy_kwargs['Bucket'],
         copy_kwargs['Key'],
-        acl_dict=full_acl_policy)
+        acl_dict=acl_dict)
 
   def _download_object(self, cloud_resource, download_stream, digesters,
                        progress_callback, start_byte):

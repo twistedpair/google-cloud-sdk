@@ -44,6 +44,7 @@ def CreateAssuredParent(organization_id, location):
 
 def CreateAssuredWorkload(display_name=None,
                           compliance_regime=None,
+                          partner=None,
                           billing_account=None,
                           next_rotation_time=None,
                           rotation_period=None,
@@ -59,6 +60,7 @@ def CreateAssuredWorkload(display_name=None,
     display_name: str, display name of the Assured Workloads environment.
     compliance_regime: str, the compliance regime, which is one of:
       FEDRAMP_MODERATE, FEDRAMP_HIGH, IL4 or CJIS.
+    partner: str, the partner regime/controls.
     billing_account: str, the billing account of the Assured Workloads
       environment in the form: billingAccounts/{BILLING_ACCOUNT_ID}
     next_rotation_time: str, the next key rotation time for the Assured
@@ -95,6 +97,8 @@ def CreateAssuredWorkload(display_name=None,
   if compliance_regime:
     workload.complianceRegime = workload_message.ComplianceRegimeValueValuesEnum(
         compliance_regime)
+  if partner:
+    workload.partner = workload_message.PartnerValueValuesEnum(partner)
   if provisioned_resources_parent:
     workload.provisionedResourcesParent = provisioned_resources_parent
   if next_rotation_time and rotation_period:

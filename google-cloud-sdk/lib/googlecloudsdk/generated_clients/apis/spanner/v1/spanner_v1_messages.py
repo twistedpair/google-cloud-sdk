@@ -1317,6 +1317,10 @@ class Instance(_messages.Message):
   hosted.
 
   Enums:
+    DefaultStorageTypeValueValuesEnum: The `StorageType` of the current
+      instance. If unspecified, it will default to the first StorageType in
+      the list of allowed_storage_types in the InstanceConfig for this
+      instance.
     InstanceTypeValueValuesEnum: The `InstanceType` of the current instance.
     StateValueValuesEnum: Output only. The current instance state. For
       CreateInstance, the state must be either omitted or set to `CREATING`.
@@ -1347,6 +1351,9 @@ class Instance(_messages.Message):
       the form `projects//instanceConfigs/`. See also InstanceConfig and
       ListInstanceConfigs.
     createTime: Output only. The time at which the instance was created.
+    defaultStorageType: The `StorageType` of the current instance. If
+      unspecified, it will default to the first StorageType in the list of
+      allowed_storage_types in the InstanceConfig for this instance.
     displayName: Required. The descriptive name for this instance as it
       appears in UIs. Must be unique per project and between 4 and 30
       characters in length.
@@ -1394,6 +1401,20 @@ class Instance(_messages.Message):
     updateTime: Output only. The time at which the instance was most recently
       updated.
   """
+
+  class DefaultStorageTypeValueValuesEnum(_messages.Enum):
+    r"""The `StorageType` of the current instance. If unspecified, it will
+    default to the first StorageType in the list of allowed_storage_types in
+    the InstanceConfig for this instance.
+
+    Values:
+      STORAGE_TYPE_UNSPECIFIED: Storage type not specified.
+      SSD: Flash (SSD) storage should be used.
+      HDD: Magnetic drive (HDD) storage should be used.
+    """
+    STORAGE_TYPE_UNSPECIFIED = 0
+    SSD = 1
+    HDD = 2
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The `InstanceType` of the current instance.
@@ -1468,16 +1489,17 @@ class Instance(_messages.Message):
 
   config = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  endpointUris = _messages.StringField(4, repeated=True)
-  freeInstanceMetadata = _messages.MessageField('FreeInstanceMetadata', 5)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  nodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  processingUnits = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  defaultStorageType = _messages.EnumField('DefaultStorageTypeValueValuesEnum', 3)
+  displayName = _messages.StringField(4)
+  endpointUris = _messages.StringField(5, repeated=True)
+  freeInstanceMetadata = _messages.MessageField('FreeInstanceMetadata', 6)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  nodeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  processingUnits = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
 
 
 class InstanceConfig(_messages.Message):
@@ -1485,6 +1507,7 @@ class InstanceConfig(_messages.Message):
   define the geographic placement of nodes and their replication.
 
   Enums:
+    AllowedStorageTypesValueListEntryValuesEnum:
     ConfigTypeValueValuesEnum: Output only. Whether this instance config is a
       Google or User Managed Configuration.
     FreeInstanceAvailabilityValueValuesEnum: Output only. Describes whether
@@ -1512,6 +1535,10 @@ class InstanceConfig(_messages.Message):
       "_" in a future release.
 
   Fields:
+    allowedStorageTypes: Output only. The allowed storage types for this
+      config. The first storage type will be considered the default storage
+      type for any instance that has its default_storage_type field unset or
+      set to STORAGE_TYPE_UNSPECIFIED.
     baseConfig: Base configuration name, e.g. projects//instanceConfigs/nam3,
       based on which this configuration is created. Only set for user managed
       configurations. `base_config` must refer to a configuration of type
@@ -1563,6 +1590,18 @@ class InstanceConfig(_messages.Message):
       and their replication properties.
     state: Output only. The current instance config state.
   """
+
+  class AllowedStorageTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""AllowedStorageTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      STORAGE_TYPE_UNSPECIFIED: Storage type not specified.
+      SSD: Flash (SSD) storage should be used.
+      HDD: Magnetic drive (HDD) storage should be used.
+    """
+    STORAGE_TYPE_UNSPECIFIED = 0
+    SSD = 1
+    HDD = 2
 
   class ConfigTypeValueValuesEnum(_messages.Enum):
     r"""Output only. Whether this instance config is a Google or User Managed
@@ -1652,18 +1691,19 @@ class InstanceConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  baseConfig = _messages.StringField(1)
-  configType = _messages.EnumField('ConfigTypeValueValuesEnum', 2)
-  displayName = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  freeInstanceAvailability = _messages.EnumField('FreeInstanceAvailabilityValueValuesEnum', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  leaderOptions = _messages.StringField(7, repeated=True)
-  name = _messages.StringField(8)
-  optionalReplicas = _messages.MessageField('ReplicaInfo', 9, repeated=True)
-  reconciling = _messages.BooleanField(10)
-  replicas = _messages.MessageField('ReplicaInfo', 11, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
+  allowedStorageTypes = _messages.EnumField('AllowedStorageTypesValueListEntryValuesEnum', 1, repeated=True)
+  baseConfig = _messages.StringField(2)
+  configType = _messages.EnumField('ConfigTypeValueValuesEnum', 3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  freeInstanceAvailability = _messages.EnumField('FreeInstanceAvailabilityValueValuesEnum', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  leaderOptions = _messages.StringField(8, repeated=True)
+  name = _messages.StringField(9)
+  optionalReplicas = _messages.MessageField('ReplicaInfo', 10, repeated=True)
+  reconciling = _messages.BooleanField(11)
+  replicas = _messages.MessageField('ReplicaInfo', 12, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
 
 
 class InstanceOperationProgress(_messages.Message):
@@ -3754,7 +3794,23 @@ class SpannerProjectsInstancesBackupOperationsListRequest(_messages.Message):
       `(error:*)` - Returns operations where: * The operation's metadata type
       is CreateBackupMetadata. * The backup name contains the string "howl". *
       The operation started before 2018-03-28T14:50:00Z. * The operation
-      resulted in an error.
+      resulted in an error. * `(metadata.@type=type.googleapis.com/google.span
+      ner.admin.database.v1.CopyBackupMetadata) AND` \
+      `(metadata.source_backup:test) AND` \ `(metadata.progress.start_time <
+      \"2022-01-18T14:50:00Z\") AND` \ `(error:*)` - Returns operations where:
+      * The operation's metadata type is CopyBackupMetadata. * The source
+      backup name contains the string "test". * The operation started before
+      2022-01-18T14:50:00Z. * The operation resulted in an error. * `((metadat
+      a.@type=type.googleapis.com/google.spanner.admin.database.v1.CreateBacku
+      pMetadata) AND` \ `(metadata.database:test_db)) OR` \ `((metadata.@type=
+      type.googleapis.com/google.spanner.admin.database.v1.CopyBackupMetadata)
+      AND` \ `(metadata.source_backup:test_bkp)) AND` \ `(error:*)` - Returns
+      operations where: * The operation's metadata matches either of criteria:
+      * The operation's metadata type is CreateBackupMetadata AND the source
+      database name of the backup contains the string "test_db" * The
+      operation's metadata type is CopyBackupMetadata AND the source backup
+      name contains the string "test_bkp" * The operation resulted in an
+      error.
     pageSize: Number of operations to be returned in the response. If 0 or
       less, defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token

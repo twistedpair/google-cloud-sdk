@@ -40,12 +40,13 @@ def GetService():
   return GetClient().projects_databases
 
 
-def CreateDatabase(project, location, database_type):
+def CreateDatabase(project, location, database, database_type):
   """Performs a Firestore Admin v1 Database Creation.
 
   Args:
     project: the project id to create, a string.
     location: the database location to create, a string.
+    database: the database id to create, a string.
     database_type: the database type, an Enum.
 
   Returns:
@@ -55,7 +56,7 @@ def CreateDatabase(project, location, database_type):
   return GetService().Create(
       messages.FirestoreProjectsDatabasesCreateRequest(
           parent='projects/{}'.format(project),
-          databaseId=DEFAULT_DATABASE,
+          databaseId=database,
           googleFirestoreAdminV1Database=messages
           .GoogleFirestoreAdminV1Database(
               type=database_type, locationId=location)))

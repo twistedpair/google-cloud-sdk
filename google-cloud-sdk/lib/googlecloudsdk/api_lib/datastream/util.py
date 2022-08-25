@@ -256,6 +256,70 @@ def ParseOracleSchemasListToOracleRdbmsMessage(messages,
   return oracle_rdbms_msg
 
 
+def ParsePostgresqlColumn(messages, postgresql_column_object):
+  """Parses a raw postgresql column json/yaml into the PostgresqlColumn message."""
+  return messages.PostgresqlColumn(
+      column=postgresql_column_object.get('column', ''),
+      dataType=postgresql_column_object.get('data_type', ''),
+      length=postgresql_column_object.get('length', None),
+      precision=postgresql_column_object.get('precision', None),
+      scale=postgresql_column_object.get('scale', None),
+      primaryKey=postgresql_column_object.get('primary_key', False),
+      nullable=postgresql_column_object.get('nullable', False),
+      ordinalPosition=postgresql_column_object.get('ordinal_position', None))
+
+
+def ParsePostgresqlTable(messages, postgresql_table_object):
+  """Parses a raw postgresql table json/yaml into the PostgresqlTable message."""
+  postgresql_columns_msg_list = []
+  for column in postgresql_table_object.get('postgresql_columns', []):
+    postgresql_columns_msg_list.append(ParsePostgresqlColumn(messages, column))
+  table_name = postgresql_table_object.get('table')
+  if not table_name:
+    raise ds_exceptions.ParseError('Cannot parse YAML: missing key "table".')
+  return messages.PostgresqlTable(
+      table=table_name, postgresqlColumns=postgresql_columns_msg_list)
+
+
+def ParsePostgresqlSchema(messages, postgresql_schema_object):
+  """Parses a raw postgresql schema json/yaml into the PostgresqlSchema message."""
+  postgresql_tables_msg_list = []
+  for table in postgresql_schema_object.get('postgresql_tables', []):
+    postgresql_tables_msg_list.append(ParsePostgresqlTable(messages, table))
+  schema_name = postgresql_schema_object.get('schema')
+  if not schema_name:
+    raise ds_exceptions.ParseError('Cannot parse YAML: missing key "schema".')
+  return messages.PostgresqlSchema(
+      schema=schema_name, postgresqlTables=postgresql_tables_msg_list)
+
+
+def ParsePostgresqlRdbmsFile(messages, postgresql_rdbms_file):
+  """Parses a postgresql_rdbms_file into the PostgresqlRdbms message."""
+  data = console_io.ReadFromFileOrStdin(postgresql_rdbms_file, binary=False)
+  try:
+    postgresql_rdbms_head_data = yaml.load(data)
+  except Exception as e:
+    raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
+
+  postgresql_rdbms_data = postgresql_rdbms_head_data.get(
+      'postgresql_rdbms', postgresql_rdbms_head_data)
+  return ParsePostgresqlSchemasListToPostgresqlRdbmsMessage(
+      messages, postgresql_rdbms_data)
+
+
+def ParsePostgresqlSchemasListToPostgresqlRdbmsMessage(messages,
+                                                       postgresql_rdbms_data):
+  """Parses an object of type {postgresql_schemas: [...]} into the PostgresqlRdbms message."""
+  postgresql_schemas_raw = postgresql_rdbms_data.get('postgresql_schemas', [])
+  postgresql_schema_msg_list = []
+  for schema in postgresql_schemas_raw:
+    postgresql_schema_msg_list.append(ParsePostgresqlSchema(messages, schema))
+
+  postgresql_rdbms_msg = messages.PostgresqlRdbms(
+      postgresqlSchemas=postgresql_schema_msg_list)
+  return postgresql_rdbms_msg
+
+
 def UpdateV1alpha1ToV1MaskFields(field_mask):
   """Updates field mask paths according to the v1alpha1 > v1 Datastream API change.
 

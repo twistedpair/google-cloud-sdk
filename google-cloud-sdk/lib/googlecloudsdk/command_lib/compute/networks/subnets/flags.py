@@ -95,6 +95,17 @@ def SubnetworkArgumentForServiceAttachment(required=True):
           'attachment.'))
 
 
+def SubnetworkArgumentForNetworkAttachment(required=True):
+  return compute_flags.ResourceArgument(
+      resource_name='subnetwork',
+      name='--subnets',
+      completer=SubnetworksCompleter,
+      plural=True,
+      required=required,
+      regional_collection='compute.subnetworks',
+      short_help='The subnetworks provided by the consumer for the producers')
+
+
 def SubnetworkResolver():
   return compute_flags.ResourceResolver.FromMap(
       'subnetwork', {compute_scope.ScopeEnum.REGION: 'compute.subnetworks'})

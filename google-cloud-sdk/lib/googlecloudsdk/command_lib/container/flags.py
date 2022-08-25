@@ -2241,15 +2241,26 @@ was auto-generated. Get it with $ gcloud container clusters describe.
 """)
 
 
-def AddLabelsFlag(parser, suppressed=False):
+def AddLabelsFlag(parser, hidden=False, for_node_pool=False):
   """Adds Labels related flags to parser.
 
   Args:
     parser: A given parser.
-    suppressed: Whether or not to suppress help text.
+    hidden: Whether or not to hide help text.
+    for_node_pool: True -> labels on node pool, False -> labels on cluster.
   """
 
-  help_text = """\
+  if for_node_pool:
+    help_text = """\
+Labels to apply to the Google Cloud resources labels of node pools in the
+Kubernetes Engine cluster. These are unrelated to Kubernetes labels.
+
+Examples:
+
+  $ {command} node-pool-1 --cluster=example-cluster --labels=label1=value1,label2=value2
+"""
+  else:
+    help_text = """\
 Labels to apply to the Google Cloud resources in use by the Kubernetes Engine
 cluster. These are unrelated to Kubernetes labels.
 
@@ -2262,7 +2273,7 @@ Examples:
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
       help=help_text,
-      hidden=suppressed)
+      hidden=hidden)
 
 
 def AddUpdateLabelsFlag(parser):
@@ -4713,7 +4724,7 @@ $ {command} --clear-fleet-project
         action='store_true')
 
 
-def AddGatewayFlags(parser, hidden=True):
+def AddGatewayFlags(parser, hidden=False):
   """Adds --gateway-api flag to the parser.
 
   Flag:
@@ -4724,13 +4735,25 @@ def AddGatewayFlags(parser, hidden=True):
     hidden: Indicates that the flags are hidden.
   """
   help_text = """
-Enable GKE Gateway support for this cluster.
+Enables GKE Gateway controller in this cluster. The value of the flag specifies
+which Open Source Gateway API release channel will be used to define Gateway
+resources.
 """
   parser.add_argument(
       '--gateway-api',
       help=help_text,
       required=False,
-      choices=['disabled', 'standard'],
+      choices={
+          'disabled':
+              """\
+              Gateway controller will be disabled in the cluster.
+              """,
+          'standard':
+              """\
+              Gateway controller will be enabled in the cluster.
+              Resource definitions from the `standard` OSS Gateway API release
+              channel will be installed. """
+      },
       default=None,
       hidden=hidden)
 
@@ -4772,7 +4795,7 @@ def AddWindowsOsVersionFlag(parser, hidden=True):
   --windows-os-version={ltsc2019|ltsc2022}
 
   Args:
-    parser: A give parser.
+    parser: A given parser.
     hidden: Indicates that the flags are hidden.
   """
   help_text = """
@@ -4787,3 +4810,92 @@ def AddWindowsOsVersionFlag(parser, hidden=True):
       hidden=hidden,
       choices=['ltsc2019', 'ltsc2022'],
       default=None)
+
+
+def AddEnableMultiNetworkingFlag(parser, hidden=True):
+  """Adds a --enable-multi-networking flag to the given parser."""
+  help_text = """\
+Enables multi-networking on the cluster.
+Multi-networking is disabled by default.
+"""
+  parser.add_argument(
+      '--enable-multi-networking',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=hidden)
+
+
+def AddAdditionalNodeNetworkFlag(parser, hidden=True):
+  """Adds --additional-node-network flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+
+  spec = {
+      'network': str,
+      'subnetwork': str,
+  }
+
+  parser.add_argument(
+      '--additional-node-network',
+      type=arg_parsers.ArgDict(
+          spec=spec,
+          required_keys=['network', 'subnetwork'],
+          max_length=len(spec)),
+      metavar='network=NETWORK_NAME,subnetwork=SUBNETWORK_NAME',
+      hidden=hidden,
+      action='append',
+      help="""\
+      Attach an additional network interface to each node in the pool.
+      This parameter can be specified up to 7 times.
+
+      e.g. --additional-node-network network=dataplane,subnetwork=subnet-dp
+
+      *network*::: (Required) The network to attach the new interface to.
+
+      *subnetwork*::: (Required) The subnetwork to attach the new interface to.
+      """)
+
+
+def AddAdditionalPodNetworkFlag(parser, hidden=False):
+  """Adds --additional-pod-network flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+
+  """
+  spec = {
+      'subnetwork': str,
+      'pod-ipv4-range': str,
+      'max-pods-per-node': int,
+  }
+
+  parser.add_argument(
+      '--additional-pod-network',
+      type=arg_parsers.ArgDict(
+          spec=spec,
+          required_keys=['pod-ipv4-range'],
+          max_length=len(spec)),
+      metavar='subnetwork=SUBNETWORK_NAME,pod-ipv4-range=SECONDARY_RANGE_NAME,[max-pods-per-node=NUM_PODS]',
+      hidden=hidden,
+      action='append',
+      help="""\
+      Specify the details of a secondary range to be used for an additional pod network.
+      Not needed if you use "host" typed NIC from this network.
+      This parameter can be specified up to 35 times.
+
+      e.g. --additional-pod-network subnetwork=subnet-dp,pod-ipv4-range=sec-range-blue,max-pods-per-node=8.
+
+      *subnetwork*::: (Optional) The name of the subnetwork to link the pod network to.
+      If not specified, the pod network defaults to the subnet connected to the default network interface.
+
+      *pod-ipv4-range*::: (Required) The name of the secondary range in the subnetwork.
+      The range must hold at least (2 * MAX_PODS_PER_NODE * MAX_NODES_IN_RANGE) IPs.
+
+      *max-pods-per-node*::: (Optional) Maximum amount of pods per node that can utilize this ipv4-range.
+      Defaults to NodePool (if specified) or Cluster value.
+      """)

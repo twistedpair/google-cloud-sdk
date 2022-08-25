@@ -44,6 +44,7 @@ class StreamsClient:
     self._resource_parser = util.GetResourceParser()
 
   def _GetBackfillAllStrategy(self, release_track, args):
+    """Gets BackfillAllStrategy message based on Stream objects source type."""
     if args.oracle_excluded_objects:
       return self._messages.BackfillAllStrategy(
           oracleExcludedObjects=util.ParseOracleRdbmsFile(
@@ -52,6 +53,10 @@ class StreamsClient:
       return self._messages.BackfillAllStrategy(
           mysqlExcludedObjects=util.ParseMysqlRdbmsFile(
               self._messages, args.mysql_excluded_objects, release_track))
+    elif args.postgresql_excluded_objects:
+      return self._messages.BackfillAllStrategy(
+          postgresqlExcludedObjects=util.ParsePostgresqlRdbmsFile(
+              self._messages, args.postgresql_excluded_objects))
     return self._messages.BackfillAllStrategy()
 
   def _ParseOracleSourceConfig(self, oracle_source_config_file, release_track):
@@ -60,7 +65,7 @@ class StreamsClient:
         oracle_source_config_file, binary=False)
     try:
       oracle_sorce_config_head_data = yaml.load(data)
-    except Exception as e:
+    except yaml.YAMLParseError as e:
       raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
 
     oracle_sorce_config_data_object = oracle_sorce_config_head_data.get(
@@ -87,7 +92,7 @@ class StreamsClient:
         mysql_source_config_file, binary=False)
     try:
       mysql_sorce_config_head_data = yaml.load(data)
-    except Exception as e:
+    except yaml.YAMLParseError as e:
       raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
 
     mysql_sorce_config_data_object = mysql_sorce_config_head_data.get(
@@ -109,13 +114,38 @@ class StreamsClient:
         excludeObjects=exclude_objects_data)
     return mysql_sourec_config_msg
 
+  def _ParsePostgresqlSourceConfig(self, postgresql_source_config_file):
+    """Parses a postgresql_source_config into the PostgresqlSourceConfig message."""
+    data = console_io.ReadFromFileOrStdin(
+        postgresql_source_config_file, binary=False)
+    try:
+      postgresql_source_config_head_data = yaml.load(data)
+    except yaml.YAMLParseError as e:
+      raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
+
+    postgresql_sorce_config_data_object = postgresql_source_config_head_data.get(
+        'postgresql_source_config')
+    postgresql_rdbms_data = postgresql_sorce_config_data_object if postgresql_sorce_config_data_object else postgresql_source_config_head_data
+    include_objects_raw = postgresql_rdbms_data.get('include_objects')
+    include_objects_data = util.ParsePostgresqlSchemasListToPostgresqlRdbmsMessage(
+        self._messages, include_objects_raw)
+
+    exclude_objects_raw = postgresql_rdbms_data.get('exclude_objects')
+    exclude_objects_data = util.ParsePostgresqlSchemasListToPostgresqlRdbmsMessage(
+        self._messages, exclude_objects_raw)
+
+    postgresql_source_config_msg = self._messages.PostgresqlSourceConfig(
+        includeObjects=include_objects_data,
+        excludeObjects=exclude_objects_data)
+    return postgresql_source_config_msg
+
   def _ParseGcsDestinationConfig(self, gcs_destination_config_file):
     """Parses a gcs_destination_config into the GcsDestinationConfig message."""
     data = console_io.ReadFromFileOrStdin(
         gcs_destination_config_file, binary=False)
     try:
       gcs_destination_head_config_data = yaml.load(data)
-    except Exception as e:
+    except yaml.YAMLParseError as e:
       raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
 
     gcs_destination_config_data_object = gcs_destination_head_config_data.get(
@@ -147,7 +177,7 @@ class StreamsClient:
     data = console_io.ReadFromFileOrStdin(config_file, binary=False)
     try:
       head_config_data = yaml.load(data)
-    except Exception as e:
+    except yaml.YAMLParseError as e:
       raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
 
     config_data_object = head_config_data.get('bigquery_destination_config')
@@ -209,6 +239,9 @@ class StreamsClient:
     elif args.mysql_source_config:
       stream_source_config.mysqlSourceConfig = self._ParseMysqlSourceConfig(
           args.mysql_source_config, release_track)
+    elif args.postgresql_source_config:
+      stream_source_config.postgresqlSourceConfig = self._ParsePostgresqlSourceConfig(
+          args.postgresql_source_config)
     stream_obj.sourceConfig = stream_source_config
 
     # TODO(b/207467120): use CONCEPTS.destination only.
@@ -313,6 +346,12 @@ class StreamsClient:
           args.mysql_source_config, release_track)
       update_fields = self._UpdateListWithFieldNamePrefixes(
           update_fields, 'mysql_source_config', 'source_config.')
+
+    elif args.IsSpecified('postgresql_source_config'):
+      stream.sourceConfig.postgresqlSourceConfig = self._ParsePostgresqlSourceConfig(
+          args.postgresql_source_config)
+      update_fields = self._UpdateListWithFieldNamePrefixes(
+          update_fields, 'postgresql_source_config', 'source_config.')
 
     # TODO(b/207467120): use source field only.
     if release_track == base.ReleaseTrack.BETA:

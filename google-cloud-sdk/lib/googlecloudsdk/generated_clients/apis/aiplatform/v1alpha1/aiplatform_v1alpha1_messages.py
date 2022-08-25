@@ -1967,8 +1967,9 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsListRequest(_messages.Me
       function operator with the full resource name `in_context()`. For
       example: `in_context("projects//locations//metadataStores//contexts/")`
       Each of the above supported filter types can be combined together using
-      logical operators (`AND` & `OR`). For example: `display_name = "test"
-      AND metadata.field1.bool_value = true`.
+      logical operators (`AND` & `OR`). Maximum nested expression depth
+      allowed is 5. For example: `display_name = "test" AND
+      metadata.field1.bool_value = true`.
     orderBy: How the list of messages is ordered. Specify the values to order
       by and an ordering operation. The default sorting order is ascending. To
       specify descending order for a field, users append a " desc" suffix; for
@@ -2106,8 +2107,8 @@ class AiplatformProjectsLocationsMetadataStoresContextsListRequest(_messages.Mes
       "projects//locations//metadataStores//contexts/" child_contexts:
       "projects//locations//metadataStores//contexts/" ``` Each of the above
       supported filters can be combined together using logical operators
-      (`AND` & `OR`). For example: `display_name = "test" AND
-      metadata.field1.bool_value = true`.
+      (`AND` & `OR`). Maximum nested expression depth allowed is 5. For
+      example: `display_name = "test" AND metadata.field1.bool_value = true`.
     orderBy: How the list of messages is ordered. Specify the values to order
       by and an ordering operation. The default sorting order is ascending. To
       specify descending order for a field, users append a " desc" suffix; for
@@ -2284,8 +2285,9 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsListRequest(_messages.M
       `in_context()`. For example:
       `in_context("projects//locations//metadataStores//contexts/")` Each of
       the above supported filters can be combined together using logical
-      operators (`AND` & `OR`). For example: `display_name = "test" AND
-      metadata.field1.bool_value = true`.
+      operators (`AND` & `OR`). Maximum nested expression depth allowed is 5.
+      For example: `display_name = "test" AND metadata.field1.bool_value =
+      true`.
     orderBy: How the list of messages is ordered. Specify the values to order
       by and an ordering operation. The default sorting order is ascending. To
       specify descending order for a field, users append a " desc" suffix; for
@@ -6864,6 +6866,7 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
+      NVIDIA_A100_80GB: Nvidia A2 Ultra GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
     """
@@ -6874,8 +6877,9 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
-    TPU_V2 = 7
-    TPU_V3 = 8
+    NVIDIA_A100_80GB = 7
+    TPU_V2 = 8
+    TPU_V3 = 9
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -11221,7 +11225,6 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputs(
       training. The column must have numeric values between 0 and 10000
       inclusively; 0 means the row is ignored for training. If weight column
       field is not set, then all rows are assumed to have equal weight of 1.
-      This column must be available at forecast.
     windowConfig: Config containing strategy for generating sliding windows.
   """
 
@@ -11572,7 +11575,7 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageObjectDetecti
         Cloud, and which cannot be exported. Expected to have a low latency,
         but may have lower prediction quality than other cloud models.
       CLOUD_1: A model best tailored to be used within Google Cloud, and which
-        cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and and
+        cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and
         CLOUD_LOW_LATENCY_1 models above, it is expected to have higher
         prediction quality and lower latency.
       MOBILE_TF_LOW_LATENCY_1: A model that, in addition to being available
@@ -14052,6 +14055,7 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
       backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `//model/`
       * AIP_CHECKPOINT_DIR = `//checkpoints/` * AIP_TENSORBOARD_LOG_DIR =
       `//logs/`
+    bqmlJob: Optional. True if the job is from BigQuery ML.
     enableWebAccess: Optional. Whether you want Vertex AI to enable
       [interactive shell access](https://cloud.google.com/vertex-
       ai/docs/training/monitor-debug-interactive-shell) to training
@@ -14089,13 +14093,14 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
   """
 
   baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformV1GcsDestination', 1)
-  enableWebAccess = _messages.BooleanField(2)
-  network = _messages.StringField(3)
-  reservedIpRanges = _messages.StringField(4, repeated=True)
-  scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 5)
-  serviceAccount = _messages.StringField(6)
-  tensorboard = _messages.StringField(7)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 8, repeated=True)
+  bqmlJob = _messages.BooleanField(2)
+  enableWebAccess = _messages.BooleanField(3)
+  network = _messages.StringField(4)
+  reservedIpRanges = _messages.StringField(5, repeated=True)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 6)
+  serviceAccount = _messages.StringField(7)
+  tensorboard = _messages.StringField(8)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 9, repeated=True)
 
 
 class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
@@ -17140,7 +17145,6 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
       training. The column must have numeric values between 0 and 10000
       inclusively; 0 means the row is ignored for training. If weight column
       field is not set, then all rows are assumed to have equal weight of 1.
-      This column must be available at forecast.
     windowConfig: Config containing strategy for generating sliding windows.
   """
 
@@ -17491,7 +17495,7 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetecti
         Cloud, and which cannot be exported. Expected to have a low latency,
         but may have lower prediction quality than other cloud models.
       CLOUD_1: A model best tailored to be used within Google Cloud, and which
-        cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and and
+        cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and
         CLOUD_LOW_LATENCY_1 models above, it is expected to have higher
         prediction quality and lower latency.
       MOBILE_TF_LOW_LATENCY_1: A model that, in addition to being available
@@ -25878,6 +25882,14 @@ class GoogleCloudAiplatformV1alpha1PipelineTaskExecutorDetailContainerDetail(_me
   lifecycle of a container execution.
 
   Fields:
+    failedMainJobs: Output only. The names of the previously failed CustomJob
+      for the main container executions. The list includes the all attempts in
+      chronological order.
+    failedPreCachingCheckJobs: Output only. The names of the previously failed
+      CustomJob for the pre-caching-check container executions. This job will
+      be available if the PipelineJob.pipeline_spec specifies the
+      `pre_caching_check` hook in the lifecycle events. The list includes the
+      all attempts in chronological order.
     mainJob: Output only. The name of the CustomJob for the main container
       execution.
     preCachingCheckJob: Output only. The name of the CustomJob for the pre-
@@ -25886,8 +25898,10 @@ class GoogleCloudAiplatformV1alpha1PipelineTaskExecutorDetailContainerDetail(_me
       lifecycle events.
   """
 
-  mainJob = _messages.StringField(1)
-  preCachingCheckJob = _messages.StringField(2)
+  failedMainJobs = _messages.StringField(1, repeated=True)
+  failedPreCachingCheckJobs = _messages.StringField(2, repeated=True)
+  mainJob = _messages.StringField(3)
+  preCachingCheckJob = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1alpha1PipelineTaskExecutorDetailCustomJobDetail(_messages.Message):
@@ -30477,6 +30491,7 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
+      NVIDIA_A100_80GB: Nvidia A2 Ultra GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
     """
@@ -30487,8 +30502,9 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
-    TPU_V2 = 7
-    TPU_V3 = 8
+    NVIDIA_A100_80GB = 7
+    TPU_V2 = 8
+    TPU_V3 = 9
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -32306,7 +32322,6 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       training. The column must have numeric values between 0 and 10000
       inclusively; 0 means the row is ignored for training. If weight column
       field is not set, then all rows are assumed to have equal weight of 1.
-      This column must be available at forecast.
     windowConfig: Config containing strategy for generating sliding windows.
   """
 
@@ -32657,7 +32672,7 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDe
         Cloud, and which cannot be exported. Expected to have a low latency,
         but may have lower prediction quality than other cloud models.
       CLOUD_1: A model best tailored to be used within Google Cloud, and which
-        cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and and
+        cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and
         CLOUD_LOW_LATENCY_1 models above, it is expected to have higher
         prediction quality and lower latency.
       MOBILE_TF_LOW_LATENCY_1: A model that, in addition to being available

@@ -2884,8 +2884,9 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsListRequest(_messages.Me
       function operator with the full resource name `in_context()`. For
       example: `in_context("projects//locations//metadataStores//contexts/")`
       Each of the above supported filter types can be combined together using
-      logical operators (`AND` & `OR`). For example: `display_name = "test"
-      AND metadata.field1.bool_value = true`.
+      logical operators (`AND` & `OR`). Maximum nested expression depth
+      allowed is 5. For example: `display_name = "test" AND
+      metadata.field1.bool_value = true`.
     orderBy: How the list of messages is ordered. Specify the values to order
       by and an ordering operation. The default sorting order is ascending. To
       specify descending order for a field, users append a " desc" suffix; for
@@ -2969,8 +2970,9 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsQueryArtifactLineageSubg
       filter on metadata fields use traversal operation as follows:
       `metadata..`. For example: `metadata.field_1.number_value = 10.0` Each
       of the above supported filter types can be combined together using
-      logical operators (`AND` & `OR`). For example: `display_name = "test"
-      AND metadata.field1.bool_value = true`.
+      logical operators (`AND` & `OR`). Maximum nested expression depth
+      allowed is 5. For example: `display_name = "test" AND
+      metadata.field1.bool_value = true`.
     maxHops: Specifies the size of the lineage graph in terms of number of
       hops from the specified artifact. Negative Value: INVALID_ARGUMENT error
       is returned 0: Only input artifact is returned. No value: Transitive
@@ -3092,8 +3094,8 @@ class AiplatformProjectsLocationsMetadataStoresContextsListRequest(_messages.Mes
       "projects//locations//metadataStores//contexts/" child_contexts:
       "projects//locations//metadataStores//contexts/" ``` Each of the above
       supported filters can be combined together using logical operators
-      (`AND` & `OR`). For example: `display_name = "test" AND
-      metadata.field1.bool_value = true`.
+      (`AND` & `OR`). Maximum nested expression depth allowed is 5. For
+      example: `display_name = "test" AND metadata.field1.bool_value = true`.
     orderBy: How the list of messages is ordered. Specify the values to order
       by and an ordering operation. The default sorting order is ascending. To
       specify descending order for a field, users append a " desc" suffix; for
@@ -3318,8 +3320,9 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsListRequest(_messages.M
       `in_context()`. For example:
       `in_context("projects//locations//metadataStores//contexts/")` Each of
       the above supported filters can be combined together using logical
-      operators (`AND` & `OR`). For example: `display_name = "test" AND
-      metadata.field1.bool_value = true`.
+      operators (`AND` & `OR`). Maximum nested expression depth allowed is 5.
+      For example: `display_name = "test" AND metadata.field1.bool_value =
+      true`.
     orderBy: How the list of messages is ordered. Specify the values to order
       by and an ordering operation. The default sorting order is ascending. To
       specify descending order for a field, users append a " desc" suffix; for
@@ -8101,6 +8104,7 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
+      NVIDIA_A100_80GB: Nvidia A2 Ultra GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
     """
@@ -8111,8 +8115,9 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
-    TPU_V2 = 7
-    TPU_V3 = 8
+    NVIDIA_A100_80GB = 7
+    TPU_V2 = 8
+    TPU_V3 = 9
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -12458,7 +12463,6 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputs(
       training. The column must have numeric values between 0 and 10000
       inclusively; 0 means the row is ignored for training. If weight column
       field is not set, then all rows are assumed to have equal weight of 1.
-      This column must be available at forecast.
     windowConfig: Config containing strategy for generating sliding windows.
   """
 
@@ -12809,7 +12813,7 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageObjectDetecti
         Cloud, and which cannot be exported. Expected to have a low latency,
         but may have lower prediction quality than other cloud models.
       CLOUD_1: A model best tailored to be used within Google Cloud, and which
-        cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and and
+        cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and
         CLOUD_LOW_LATENCY_1 models above, it is expected to have higher
         prediction quality and lower latency.
       MOBILE_TF_LOW_LATENCY_1: A model that, in addition to being available
@@ -15289,6 +15293,7 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
       backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `//model/`
       * AIP_CHECKPOINT_DIR = `//checkpoints/` * AIP_TENSORBOARD_LOG_DIR =
       `//logs/`
+    bqmlJob: Optional. True if the job is from BigQuery ML.
     enableWebAccess: Optional. Whether you want Vertex AI to enable
       [interactive shell access](https://cloud.google.com/vertex-
       ai/docs/training/monitor-debug-interactive-shell) to training
@@ -15326,13 +15331,14 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
   """
 
   baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformV1GcsDestination', 1)
-  enableWebAccess = _messages.BooleanField(2)
-  network = _messages.StringField(3)
-  reservedIpRanges = _messages.StringField(4, repeated=True)
-  scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 5)
-  serviceAccount = _messages.StringField(6)
-  tensorboard = _messages.StringField(7)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 8, repeated=True)
+  bqmlJob = _messages.BooleanField(2)
+  enableWebAccess = _messages.BooleanField(3)
+  network = _messages.StringField(4)
+  reservedIpRanges = _messages.StringField(5, repeated=True)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 6)
+  serviceAccount = _messages.StringField(7)
+  tensorboard = _messages.StringField(8)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 9, repeated=True)
 
 
 class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
@@ -18377,7 +18383,6 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
       training. The column must have numeric values between 0 and 10000
       inclusively; 0 means the row is ignored for training. If weight column
       field is not set, then all rows are assumed to have equal weight of 1.
-      This column must be available at forecast.
     windowConfig: Config containing strategy for generating sliding windows.
   """
 
@@ -18728,7 +18733,7 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetecti
         Cloud, and which cannot be exported. Expected to have a low latency,
         but may have lower prediction quality than other cloud models.
       CLOUD_1: A model best tailored to be used within Google Cloud, and which
-        cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and and
+        cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and
         CLOUD_LOW_LATENCY_1 models above, it is expected to have higher
         prediction quality and lower latency.
       MOBILE_TF_LOW_LATENCY_1: A model that, in addition to being available
@@ -24057,13 +24062,22 @@ class GoogleCloudAiplatformV1beta1CopyModelRequest(_messages.Message):
   Fields:
     encryptionSpec: Customer-managed encryption key options. If this is set,
       then the Model copy will be encrypted with the provided encryption key.
-    model: Required. The resource name of the Model to copy. That Model must
-      be in the same Project. Format:
+    modelId: Optional. Copy source_model into a new Model with this ID. The ID
+      will become the final component of the model resource name. This value
+      may be up to 63 characters, and valid characters are `[a-z0-9_-]`. The
+      first character cannot be a number or hyphen.
+    parentModel: Optional. Specify this field to copy source_model into this
+      existing Model as a new version. Format:
+      `projects/{project}/locations/{location}/models/{model}`
+    sourceModel: Required. The resource name of the Model to copy. That Model
+      must be in the same Project. Format:
       `projects/{project}/locations/{location}/models/{model}`
   """
 
   encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 1)
-  model = _messages.StringField(2)
+  modelId = _messages.StringField(2)
+  parentModel = _messages.StringField(3)
+  sourceModel = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1beta1CopyModelResponse(_messages.Message):
@@ -24980,7 +24994,11 @@ class GoogleCloudAiplatformV1beta1DeleteFeatureValuesRequestSelectEntity(_messag
 
 class GoogleCloudAiplatformV1beta1DeleteFeatureValuesRequestSelectTimeRangeAndFeature(_messages.Message):
   r"""Message to select time range and feature. Values of the selected feature
-  generated within an inclusive time range will be deleted.
+  generated within an inclusive time range will be deleted. Using this option
+  permanently deletes the feature values from the specified feature IDs within
+  the specified time range. This might include data from the online storage.
+  If you want to retain any deleted historical data in the online storage, you
+  must re-ingest it.
 
   Fields:
     featureSelector: Required. Selectors choosing which feature values to be
@@ -25348,7 +25366,7 @@ class GoogleCloudAiplatformV1beta1DeployedModelRef(_messages.Message):
 class GoogleCloudAiplatformV1beta1DeploymentResourcePool(_messages.Message):
   r"""A description of resources that can be shared by multiple
   DeployedModels, whose underlying specification consists of a
-  DedicatedResources.
+  DedicatedResources. Next ID: 8.
 
   Fields:
     createTime: Output only. Timestamp when this DeploymentResourcePool was
@@ -25559,7 +25577,7 @@ class GoogleCloudAiplatformV1beta1EntityIdSelector(_messages.Message):
   Fields:
     csvSource: Source of Csv
     entityIdField: Source column that holds entity IDs. If not provided,
-      entity IDs are extracted from the column named `entity_id`.
+      entity IDs are extracted from the column named "entity_id".
   """
 
   csvSource = _messages.MessageField('GoogleCloudAiplatformV1beta1CsvSource', 1)
@@ -27850,7 +27868,7 @@ class GoogleCloudAiplatformV1beta1ImportFeatureValuesRequest(_messages.Message):
       generation timestamps are not in the timestamp range needed for online
       serving.
     entityIdField: Source column that holds entity IDs. If not provided,
-      entity IDs are extracted from the column named `entity_id`.
+      entity IDs are extracted from the column named "entity_id".
     featureSpecs: Required. Specifications defining which Feature values to
       import from the entity. The request fails if no feature_specs are
       provided, and having multiple feature_specs for one Feature is not
@@ -28869,6 +28887,7 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
+      NVIDIA_A100_80GB: Nvidia A2 Ultra GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
     """
@@ -28879,8 +28898,9 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
-    TPU_V2 = 7
-    TPU_V3 = 8
+    NVIDIA_A100_80GB = 7
+    TPU_V2 = 8
+    TPU_V3 = 9
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -29308,6 +29328,10 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
     metadata: Immutable. An additional information about the Model; the schema
       of the metadata can be found in metadata_schema. Unset if the Model does
       not have any additional information.
+    metadataArtifact: Output only. The resource name of the Artifact that was
+      created in MetadataStore when creating the Model. The Artifact resource
+      name pattern is "projects/{project}/locations/{location}/metadataStores/
+      {metadata_store}/artifacts/{artifact}".
     metadataSchemaUri: Immutable. Points to a YAML file stored on Google Cloud
       Storage describing additional information about the Model, that is
       specific to it. Unset if the Model does not have any additional
@@ -29319,6 +29343,9 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
       output will be immutable and probably different, including the URI
       scheme, than the one given on input. The output URI will point to a
       location where the user only has a read access.
+    modelSourceInfo: Output only. Source of a model. It can either be automl
+      training pipeline, custom training pipeline, BigQuery ML, or existing
+      Vertex AI Model.
     name: The resource name of the Model.
     originalModelInfo: Output only. If this Model is a copy of another Model,
       this contains info about the original.
@@ -29449,21 +29476,23 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
   explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 9)
   labels = _messages.MessageField('LabelsValue', 10)
   metadata = _messages.MessageField('extra_types.JsonValue', 11)
-  metadataSchemaUri = _messages.StringField(12)
-  name = _messages.StringField(13)
-  originalModelInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelOriginalModelInfo', 14)
-  predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictSchemata', 15)
-  supportedDeploymentResourcesTypes = _messages.EnumField('SupportedDeploymentResourcesTypesValueListEntryValuesEnum', 16, repeated=True)
-  supportedExportFormats = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelExportFormat', 17, repeated=True)
-  supportedInputStorageFormats = _messages.StringField(18, repeated=True)
-  supportedOutputStorageFormats = _messages.StringField(19, repeated=True)
-  trainingPipeline = _messages.StringField(20)
-  updateTime = _messages.StringField(21)
-  versionAliases = _messages.StringField(22, repeated=True)
-  versionCreateTime = _messages.StringField(23)
-  versionDescription = _messages.StringField(24)
-  versionId = _messages.StringField(25)
-  versionUpdateTime = _messages.StringField(26)
+  metadataArtifact = _messages.StringField(12)
+  metadataSchemaUri = _messages.StringField(13)
+  modelSourceInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelSourceInfo', 14)
+  name = _messages.StringField(15)
+  originalModelInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelOriginalModelInfo', 16)
+  predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictSchemata', 17)
+  supportedDeploymentResourcesTypes = _messages.EnumField('SupportedDeploymentResourcesTypesValueListEntryValuesEnum', 18, repeated=True)
+  supportedExportFormats = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelExportFormat', 19, repeated=True)
+  supportedInputStorageFormats = _messages.StringField(20, repeated=True)
+  supportedOutputStorageFormats = _messages.StringField(21, repeated=True)
+  trainingPipeline = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
+  versionAliases = _messages.StringField(24, repeated=True)
+  versionCreateTime = _messages.StringField(25)
+  versionDescription = _messages.StringField(26)
+  versionId = _messages.StringField(27)
+  versionUpdateTime = _messages.StringField(28)
 
 
 class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
@@ -30472,6 +30501,33 @@ class GoogleCloudAiplatformV1beta1ModelOriginalModelInfo(_messages.Message):
   model = _messages.StringField(1)
 
 
+class GoogleCloudAiplatformV1beta1ModelSourceInfo(_messages.Message):
+  r"""Detail description of the source information of the model.
+
+  Enums:
+    SourceTypeValueValuesEnum: Type of the model source.
+
+  Fields:
+    sourceType: Type of the model source.
+  """
+
+  class SourceTypeValueValuesEnum(_messages.Enum):
+    r"""Type of the model source.
+
+    Values:
+      MODEL_SOURCE_TYPE_UNSPECIFIED: Should not be used.
+      AUTOML: The Model is uploaded by automl training pipeline.
+      CUSTOM: The Model is uploaded by user or custom training pipeline.
+      BQML: The Model is registered and sync'ed from BigQuery ML.
+    """
+    MODEL_SOURCE_TYPE_UNSPECIFIED = 0
+    AUTOML = 1
+    CUSTOM = 2
+    BQML = 3
+
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 1)
+
+
 class GoogleCloudAiplatformV1beta1MutateDeployedIndexOperationMetadata(_messages.Message):
   r"""Runtime operation information for
   IndexEndpointService.MutateDeployedIndex.
@@ -31173,6 +31229,14 @@ class GoogleCloudAiplatformV1beta1PipelineTaskExecutorDetailContainerDetail(_mes
   lifecycle of a container execution.
 
   Fields:
+    failedMainJobs: Output only. The names of the previously failed CustomJob
+      for the main container executions. The list includes the all attempts in
+      chronological order.
+    failedPreCachingCheckJobs: Output only. The names of the previously failed
+      CustomJob for the pre-caching-check container executions. This job will
+      be available if the PipelineJob.pipeline_spec specifies the
+      `pre_caching_check` hook in the lifecycle events. The list includes the
+      all attempts in chronological order.
     mainJob: Output only. The name of the CustomJob for the main container
       execution.
     preCachingCheckJob: Output only. The name of the CustomJob for the pre-
@@ -31181,8 +31245,10 @@ class GoogleCloudAiplatformV1beta1PipelineTaskExecutorDetailContainerDetail(_mes
       lifecycle events.
   """
 
-  mainJob = _messages.StringField(1)
-  preCachingCheckJob = _messages.StringField(2)
+  failedMainJobs = _messages.StringField(1, repeated=True)
+  failedPreCachingCheckJobs = _messages.StringField(2, repeated=True)
+  mainJob = _messages.StringField(3)
+  preCachingCheckJob = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1beta1PipelineTaskExecutorDetailCustomJobDetail(_messages.Message):
@@ -33113,7 +33179,6 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       training. The column must have numeric values between 0 and 10000
       inclusively; 0 means the row is ignored for training. If weight column
       field is not set, then all rows are assumed to have equal weight of 1.
-      This column must be available at forecast.
     windowConfig: Config containing strategy for generating sliding windows.
   """
 
@@ -33464,7 +33529,7 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDe
         Cloud, and which cannot be exported. Expected to have a low latency,
         but may have lower prediction quality than other cloud models.
       CLOUD_1: A model best tailored to be used within Google Cloud, and which
-        cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and and
+        cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and
         CLOUD_LOW_LATENCY_1 models above, it is expected to have higher
         prediction quality and lower latency.
       MOBILE_TF_LOW_LATENCY_1: A model that, in addition to being available

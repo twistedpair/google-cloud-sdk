@@ -209,6 +209,10 @@ apis:
     v1:
       discovery_doc: billingbudgets_v1.json
       default: true
+  blockchainnodeengine:
+    v1alpha1:
+      discovery_doc: blockchainnodeengine_v1alpha1.json
+      default: true
   config:
     v1alpha1:
       discovery_doc: config_v1alpha1.json
@@ -541,6 +545,8 @@ apis:
           path: projects/{projectId}/regions/{region}/clusters/{clusterName}
         projects.regions.clusters.gceNodePools:
           path: projects/{projectId}/regions/{region}/clusters/{clusterName}/gceNodePools/{gceNodePoolsId}
+        projects.regions.clusters.nodeGroups:
+          path: projects/{projectId}/regions/{region}/clusters/{clusterName}/nodeGroups/{nodeGroupsId}
       default: true
   datastore:
     v1beta1:

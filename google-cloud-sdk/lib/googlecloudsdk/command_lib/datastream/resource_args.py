@@ -24,7 +24,7 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 _MYSQL_SOURCE_CONFIG_HELP_TEXT_BETA = """\
-  Path to a YAML (or JSON) file containing the configuration for Mysql Source Config.
+  Path to a YAML (or JSON) file containing the configuration for MySQL Source Config.
 
   The JSON file is formatted as follows, with snake_case field naming:
 
@@ -52,7 +52,7 @@ _MYSQL_SOURCE_CONFIG_HELP_TEXT_BETA = """\
   ```
 """
 _MYSQL_SOURCE_CONFIG_HELP_TEXT = """\
-  Path to a YAML (or JSON) file containing the configuration for Mysql Source Config.
+  Path to a YAML (or JSON) file containing the configuration for MySQL Source Config.
 
   The JSON file is formatted as follows, with snake_case field naming:
 
@@ -132,6 +132,66 @@ _ORACLE_SOURCE_CONFIG_HELP_TEXT = """\
           }
         ]
       }
+    }
+  ```
+"""
+_POSTGRESQL_CREATE_SOURCE_CONFIG_HELP_TEXT = """\
+  Path to a YAML (or JSON) file containing the configuration for PostgreSQL Source Config.
+
+  The JSON file is formatted as follows, with snake_case field naming:
+
+  ```
+    {
+      "include_objects": {},
+      "exclude_objects": {
+        "postgresql_schemas": [
+          {
+            "schema": "SAMPLE",
+            "postgresql_tables": [
+              {
+                "table": "SAMPLE_TABLE",
+                "postgresql_columns": [
+                  {
+                    "column": "COL",
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "replication_slot": "SAMPLE_REPLICATION_SLOT",
+      "publication": "SAMPLE_PUBLICATION"
+    }
+  ```
+"""
+
+_POSTGRESQL_UPDATE_SOURCE_CONFIG_HELP_TEXT = """\
+  Path to a YAML (or JSON) file containing the configuration for PostgreSQL Source Config.
+
+  The JSON file is formatted as follows, with snake_case field naming:
+
+  ```
+    {
+      "include_objects": {},
+      "exclude_objects": {
+        "postgresql_schemas": [
+          {
+            "schema": "SAMPLE",
+            "postgresql_tables": [
+              {
+                "table": "SAMPLE_TABLE",
+                "postgresql_columns": [
+                  {
+                    "column": "COL",
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "publication": "SAMPLE_PUBLICATION"
     }
   ```
 """
@@ -417,6 +477,11 @@ def AddStreamResourceArg(parser, verb, release_track, required=True):
       '--mysql-source-config',
       help=_MYSQL_SOURCE_CONFIG_HELP_TEXT_BETA if release_track
       == base.ReleaseTrack.BETA else _MYSQL_SOURCE_CONFIG_HELP_TEXT)
+  source_config_parser_group.add_argument(
+      '--postgresql-source-config',
+      help=_POSTGRESQL_UPDATE_SOURCE_CONFIG_HELP_TEXT if verb == 'update'
+      else _POSTGRESQL_CREATE_SOURCE_CONFIG_HELP_TEXT
+  )
 
   destination_parser = parser.add_group(required=required)
   destination_config_parser_group = destination_parser.add_group(
@@ -468,7 +533,7 @@ def AddStreamResourceArg(parser, verb, release_track, required=True):
       presentation_specs.ResourcePresentationSpec(
           'stream',
           GetStreamResourceSpec(),
-          'The stream {}.'.format(verb),
+          'The stream to {}.'.format(verb),
           required=True),
       presentation_specs.ResourcePresentationSpec(
           '--%s' % source_field,

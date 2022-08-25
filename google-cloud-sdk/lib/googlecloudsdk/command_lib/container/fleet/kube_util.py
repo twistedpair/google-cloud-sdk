@@ -30,7 +30,7 @@ from googlecloudsdk.api_lib.container import util as c_util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.command_lib.container.fleet import api_util
+from googlecloudsdk.command_lib.container.fleet.memberships import gke_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import http
@@ -214,12 +214,12 @@ class KubeconfigProcessor(object):
     if self.gke_uri or self.gke_cluster:
       cluster_project = None
       if self.gke_uri:
-        cluster_project, location, name = _ParseGKEURI(self.gke_uri)
+        cluster_project, location, name = gke_util.ParseGKEURI(self.gke_uri)
       else:
         cluster_project = properties.VALUES.core.project.GetOrFail()
-        location, name = _ParseGKECluster(self.gke_cluster)
+        location, name = gke_util.ParseGKECluster(self.gke_cluster)
 
-      self.gke_cluster_self_link, self.gke_cluster_uri = api_util.GetGKEURIAndResourceName(
+      self.gke_cluster_self_link, self.gke_cluster_uri = gke_util.ConstructGKEClusterResoureLinkAndURI(
           cluster_project, location, name)
       return _GetGKEKubeconfig(self.api_adapter, cluster_project, location,
                                name, temp_kubeconfig_dir, self.internal_ip,
@@ -1012,55 +1012,6 @@ class NamespaceDeleteOperation(object):
       self.succeeded = True
     else:
       self.error = err
-
-
-def _ParseGKEURI(gke_uri):
-  """The GKE resource URI can be of following types: zonal, regional or generic.
-
-  zonal - */projects/{project_id}/zones/{zone}/clusters/{cluster_name}
-  regional - */projects/{project_id}/regions/{zone}/clusters/{cluster_name}
-  generic - */projects/{project_id}/locations/{zone}/clusters/{cluster_name}
-
-  The expected patterns are matched to extract the cluster location and name.
-  Args:
-   gke_uri: GKE resource URI
-
-  Returns:
-    cluster location and name
-  """
-  zonal_uri_pattern = r'.*\/projects\/(.*)\/zones\/(.*)\/clusters\/(.*)'
-  regional_uri_pattern = r'.*\/projects\/(.*)\/regions\/(.*)\/clusters\/(.*)'
-  location_uri_pattern = r'.*\/projects\/(.*)\/locations\/(.*)\/clusters\/(.*)'
-
-  zone_matcher = re.search(zonal_uri_pattern, gke_uri)
-  if zone_matcher is not None:
-    return zone_matcher.group(1), zone_matcher.group(2), zone_matcher.group(3)
-
-  region_matcher = re.search(regional_uri_pattern, gke_uri)
-  if region_matcher is not None:
-    return region_matcher.group(1), region_matcher.group(
-        2), region_matcher.group(3)
-
-  location_matcher = re.search(location_uri_pattern, gke_uri)
-  if location_matcher is not None:
-    return location_matcher.group(1), location_matcher.group(
-        2), location_matcher.group(3)
-
-  raise exceptions.Error(
-      'argument --gke-uri: {} is invalid. '
-      '--gke-uri must be of format: `https://container.googleapis.com/v1/projects/my-project/locations/us-central1-a/clusters/my-cluster`. '
-      'You can use command: `gcloud container clusters list --uri` to view the '
-      'current GKE clusters in your project.'.format(gke_uri))
-
-
-def _ParseGKECluster(gke_cluster):
-  rgx = r'(.*)\/(.*)'
-  cluster_matcher = re.search(rgx, gke_cluster)
-  if cluster_matcher is not None:
-    return cluster_matcher.group(1), cluster_matcher.group(2)
-  raise exceptions.Error(
-      'argument --gke-cluster: {} is invalid. --gke-cluster must be of format: '
-      '`{{REGION OR ZONE}}/{{CLUSTER_NAME`}}`'.format(gke_cluster))
 
 
 def _GetGKEKubeconfig(api_adapter, project, location_id, cluster_id,

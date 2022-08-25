@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.builds import flags as build_flags
 
 
 def AddBitbucketServerConfigArgs(parser, update=False):
@@ -66,6 +67,7 @@ def AddBitbucketServerConfigArgs(parser, update=False):
       type=arg_parsers.FileContents(),
       help='Path to a local file that contains SSL certificate to use for requests to Bitbucket Server. The certificate should be in PEM format.'
   )
+  build_flags.AddRegionFlag(parser)
   if not update:
     parser.add_argument(
         '--name',

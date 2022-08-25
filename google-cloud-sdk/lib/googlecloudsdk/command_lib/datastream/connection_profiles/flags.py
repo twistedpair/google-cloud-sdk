@@ -23,7 +23,7 @@ from googlecloudsdk.calliope import base
 
 def AddTypeFlag(parser):
   """Adds a --type flag to the given parser."""
-  help_text = """Type can be MYSQL, ORACLE, GOOGLE-CLOUD-STORAGE or BIGQUERY"""
+  help_text = """Type can be MYSQL, ORACLE, POSTGRESQL, GOOGLE-CLOUD-STORAGE or BIGQUERY"""
 
   parser.add_argument('--type', help=help_text, required=True)
 
@@ -39,11 +39,11 @@ def AddMysqlProfileGroup(parser, required=True):
   mysql_profile = parser.add_group()
   mysql_profile.add_argument(
       '--mysql-hostname',
-      help="""IP or hostname of the mysql source database.""",
+      help="""IP or hostname of the MySQL source database.""",
       required=required)
   mysql_profile.add_argument(
       '--mysql-port',
-      help="""Network port of the mysql source database.""",
+      help="""Network port of the MySQL source database.""",
       required=required,
       type=int)
   mysql_profile.add_argument(
@@ -118,6 +118,40 @@ def AddOracleProfileGroup(parser, required=True):
       help='Prompt for the password used to connect to the database.')
 
 
+def AddPostgresqlProfileGroup(parser, required=True):
+  """Adds necessary postgresql profile flags to the given parser."""
+  postgresql_profile = parser.add_group()
+  postgresql_profile.add_argument(
+      '--postgresql-hostname',
+      help="""IP or hostname of the PostgreSQL source database.""",
+      required=required)
+  postgresql_profile.add_argument(
+      '--postgresql-port',
+      help="""Network port of the PostgreSQL source database.""",
+      required=required,
+      type=int)
+  postgresql_profile.add_argument(
+      '--postgresql-username',
+      help="""Username Datastream will use to connect to the database.""",
+      required=required)
+  postgresql_profile.add_argument(
+      '--postgresql-database',
+      help="""Database service for the PostgreSQL connection.""",
+      required=required)
+  password_group = postgresql_profile.add_group(required=required, mutex=True)
+  password_group.add_argument(
+      '--postgresql-password',
+      help="""\
+          Password for the user that Datastream will be using to
+          connect to the database.
+          This field is not returned on request, and the value is encrypted
+          when stored in Datastream.""")
+  password_group.add_argument(
+      '--postgresql-prompt-for-password',
+      action='store_true',
+      help='Prompt for the password used to connect to the database.')
+
+
 def AddGcsProfileGroup(parser, release_track, required=True):
   """Adds necessary GCS profile flags to the given parser."""
   gcs_profile = parser.add_group()
@@ -161,7 +195,11 @@ def AddRdbmsGroup(parser):
   )
   rdbms_parser.add_argument(
       '--oracle-rdbms-file',
-      help="""Path to a YAML (or JSON) file containing the ORACLE RDBMS to enrich with child data objects and metadata. If you pass - as the value of the flag the file content will be read from stdin."""
+      help="""Path to a YAML (or JSON) file containing the Oracle RDBMS to enrich with child data objects and metadata. If you pass - as the value of the flag the file content will be read from stdin."""
+  )
+  rdbms_parser.add_argument(
+      '--postgresql-rdbms-file',
+      help="""Path to a YAML (or JSON) file containing the PostgreSQL RDBMS to enrich with child data objects and metadata. If you pass - as the value of the flag the file content will be read from stdin."""
   )
 
 

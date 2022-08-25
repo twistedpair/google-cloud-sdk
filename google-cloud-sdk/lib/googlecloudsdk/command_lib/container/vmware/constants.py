@@ -38,6 +38,15 @@ table(
 )
 """
 
+VMWARE_ADMIN_CLUSTERS_FORMAT = """
+table(
+    name.segment(5):label=NAME,
+    name.segment(3):label=LOCATION,
+    onPremVersion:label=VERSION,
+    state:label=STATE
+)
+"""
+
 VMWARE_OPERATIONS_FORMAT = """
 table(
     metadata.target.basename():label=NAME,

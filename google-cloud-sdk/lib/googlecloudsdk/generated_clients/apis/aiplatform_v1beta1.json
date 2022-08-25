@@ -842,7 +842,7 @@
     },
     "GoogleCloudAiplatformV1beta1DeploymentResourcePool": {
       "id": "GoogleCloudAiplatformV1beta1DeploymentResourcePool",
-      "description": "A description of resources that can be shared by multiple DeployedModels, whose underlying specification consists of a DedicatedResources.",
+      "description": "A description of resources that can be shared by multiple DeployedModels, whose underlying specification consists of a DedicatedResources. Next ID: 8.",
       "type": "object",
       "properties": {
         "name": {
@@ -910,6 +910,7 @@
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
             "Nvidia Tesla A100 GPU.",
+            "Nvidia A2 Ultra GPU.",
             "TPU v2.",
             "TPU v3."
           ],
@@ -921,6 +922,7 @@
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
             "NVIDIA_TESLA_A100",
+            "NVIDIA_A100_80GB",
             "TPU_V2",
             "TPU_V3"
           ]
@@ -2557,7 +2559,7 @@
           "format": "google-datetime"
         },
         "entityIdField": {
-          "description": "Source column that holds entity IDs. If not provided, entity IDs are extracted from the column named `entity_id`.",
+          "description": "Source column that holds entity IDs. If not provided, entity IDs are extracted from the column named \"entity_id\".",
           "type": "string"
         },
         "featureSpecs": {
@@ -2851,14 +2853,14 @@
           "$ref": "GoogleCloudAiplatformV1beta1CsvSource"
         },
         "entityIdField": {
-          "description": "Source column that holds entity IDs. If not provided, entity IDs are extracted from the column named `entity_id`.",
+          "description": "Source column that holds entity IDs. If not provided, entity IDs are extracted from the column named \"entity_id\".",
           "type": "string"
         }
       }
     },
     "GoogleCloudAiplatformV1beta1DeleteFeatureValuesRequestSelectTimeRangeAndFeature": {
       "id": "GoogleCloudAiplatformV1beta1DeleteFeatureValuesRequestSelectTimeRangeAndFeature",
-      "description": "Message to select time range and feature. Values of the selected feature generated within an inclusive time range will be deleted.",
+      "description": "Message to select time range and feature. Values of the selected feature generated within an inclusive time range will be deleted. Using this option permanently deletes the feature values from the specified feature IDs within the specified time range. This might include data from the online storage. If you want to retain any deleted historical data in the online storage, you must re-ingest it.",
       "type": "object",
       "properties": {
         "timeRange": {
@@ -6833,6 +6835,16 @@
         "encryptionSpec": {
           "description": "Customer-managed encryption key spec for a Model. If set, this Model and all sub-resources of this Model will be secured by this key.",
           "$ref": "GoogleCloudAiplatformV1beta1EncryptionSpec"
+        },
+        "modelSourceInfo": {
+          "description": "Output only. Source of a model. It can either be automl training pipeline, custom training pipeline, BigQuery ML, or existing Vertex AI Model.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1beta1ModelSourceInfo"
+        },
+        "metadataArtifact": {
+          "description": "Output only. The resource name of the Artifact that was created in MetadataStore when creating the Model. The Artifact resource name pattern is \"projects\/{project}\/locations\/{location}\/metadataStores\/{metadata_store}\/artifacts\/{artifact}\".",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -6875,6 +6887,29 @@
           "description": "Output only. The resource name of the Model this Model is a copy of, including the revision. Format: `projects\/{project}\/locations\/{location}\/models\/{model_id}@{version_id}`",
           "readOnly": true,
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelSourceInfo": {
+      "id": "GoogleCloudAiplatformV1beta1ModelSourceInfo",
+      "description": "Detail description of the source information of the model.",
+      "type": "object",
+      "properties": {
+        "sourceType": {
+          "description": "Type of the model source.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "The Model is uploaded by automl training pipeline.",
+            "The Model is uploaded by user or custom training pipeline.",
+            "The Model is registered and sync'ed from BigQuery ML."
+          ],
+          "enum": [
+            "MODEL_SOURCE_TYPE_UNSPECIFIED",
+            "AUTOML",
+            "CUSTOM",
+            "BQML"
+          ]
         }
       }
     },
@@ -6985,7 +7020,15 @@
       "description": "Request message for ModelService.CopyModel.",
       "type": "object",
       "properties": {
-        "model": {
+        "modelId": {
+          "description": "Optional. Copy source_model into a new Model with this ID. The ID will become the final component of the model resource name. This value may be up to 63 characters, and valid characters are `[a-z0-9_-]`. The first character cannot be a number or hyphen.",
+          "type": "string"
+        },
+        "parentModel": {
+          "description": "Optional. Specify this field to copy source_model into this existing Model as a new version. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+          "type": "string"
+        },
+        "sourceModel": {
           "description": "Required. The resource name of the Model to copy. That Model must be in the same Project. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
           "type": "string"
         },
@@ -7830,6 +7873,22 @@
           "description": "Output only. The name of the CustomJob for the pre-caching-check container execution. This job will be available if the PipelineJob.pipeline_spec specifies the `pre_caching_check` hook in the lifecycle events.",
           "readOnly": true,
           "type": "string"
+        },
+        "failedMainJobs": {
+          "description": "Output only. The names of the previously failed CustomJob for the main container executions. The list includes the all attempts in chronological order.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "failedPreCachingCheckJobs": {
+          "description": "Output only. The names of the previously failed CustomJob for the pre-caching-check container executions. This job will be available if the PipelineJob.pipeline_spec specifies the `pre_caching_check` hook in the lifecycle events. The list includes the all attempts in chronological order.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -9943,6 +10002,7 @@
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
             "Nvidia Tesla A100 GPU.",
+            "Nvidia A2 Ultra GPU.",
             "TPU v2.",
             "TPU v3."
           ],
@@ -9954,6 +10014,7 @@
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
             "NVIDIA_TESLA_A100",
+            "NVIDIA_A100_80GB",
             "TPU_V2",
             "TPU_V3"
           ]
@@ -15027,7 +15088,7 @@
           "format": "int64"
         },
         "weightColumn": {
-          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1.",
           "type": "string"
         },
         "timeSeriesAttributeColumns": {
@@ -15392,7 +15453,7 @@
             "Should not be set.",
             "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to have a higher latency, but should also have a higher prediction quality than other cloud models.",
             "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to have a low latency, but may have lower prediction quality than other cloud models.",
-            "A model best tailored to be used within Google Cloud, and which cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and and CLOUD_LOW_LATENCY_1 models above, it is expected to have higher prediction quality and lower latency.",
+            "A model best tailored to be used within Google Cloud, and which cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and CLOUD_LOW_LATENCY_1 models above, it is expected to have higher prediction quality and lower latency.",
             "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have low latency, but may have lower prediction quality than other mobile models.",
             "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards.",
             "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have a higher latency, but should also have a higher prediction quality than other mobile models.",
@@ -21202,7 +21263,7 @@
           "format": "int64"
         },
         "weightColumn": {
-          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1.",
           "type": "string"
         },
         "timeSeriesAttributeColumns": {
@@ -21567,7 +21628,7 @@
             "Should not be set.",
             "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to have a higher latency, but should also have a higher prediction quality than other cloud models.",
             "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to have a low latency, but may have lower prediction quality than other cloud models.",
-            "A model best tailored to be used within Google Cloud, and which cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and and CLOUD_LOW_LATENCY_1 models above, it is expected to have higher prediction quality and lower latency.",
+            "A model best tailored to be used within Google Cloud, and which cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and CLOUD_LOW_LATENCY_1 models above, it is expected to have higher prediction quality and lower latency.",
             "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have low latency, but may have lower prediction quality than other mobile models.",
             "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards.",
             "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have a higher latency, but should also have a higher prediction quality than other mobile models.",
@@ -25914,7 +25975,7 @@
           "format": "int64"
         },
         "weightColumn": {
-          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1.",
           "type": "string"
         },
         "timeSeriesAttributeColumns": {
@@ -26279,7 +26340,7 @@
             "Should not be set.",
             "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to have a higher latency, but should also have a higher prediction quality than other cloud models.",
             "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to have a low latency, but may have lower prediction quality than other cloud models.",
-            "A model best tailored to be used within Google Cloud, and which cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and and CLOUD_LOW_LATENCY_1 models above, it is expected to have higher prediction quality and lower latency.",
+            "A model best tailored to be used within Google Cloud, and which cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and CLOUD_LOW_LATENCY_1 models above, it is expected to have higher prediction quality and lower latency.",
             "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have low latency, but may have lower prediction quality than other mobile models.",
             "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards.",
             "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have a higher latency, but should also have a higher prediction quality than other mobile models.",
@@ -26841,6 +26902,10 @@
         },
         "enableWebAccess": {
           "description": "Optional. Whether you want Vertex AI to enable [interactive shell access](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) to training containers. If set to `true`, you can access interactive shells at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
+          "type": "boolean"
+        },
+        "bqmlJob": {
+          "description": "Optional. True if the job is from BigQuery ML.",
           "type": "boolean"
         }
       }
@@ -34635,7 +34700,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Filter specifying the boolean condition for the Artifacts to satisfy in order to be part of the result set. The syntax to define filter query is based on https:\/\/google.aip.dev\/160. The supported set of filters include the following: * **Attribute filtering**: For example: `display_name = \"test\"`. Supported fields include: `name`, `display_name`, `uri`, `state`, `schema_title`, `create_time`, and `update_time`. Time fields, such as `create_time` and `update_time`, require values specified in RFC-3339 format. For example: `create_time = \"2020-11-19T11:30:00-04:00\"` * **Metadata field**: To filter on metadata fields use traversal operation as follows: `metadata..`. For example: `metadata.field_1.number_value = 10.0` * **Context based filtering**: To filter Artifacts based on the contexts to which they belong, use the function operator with the full resource name `in_context()`. For example: `in_context(\"projects\/\/locations\/\/metadataStores\/\/contexts\/\")` Each of the above supported filter types can be combined together using logical operators (`AND` & `OR`). For example: `display_name = \"test\" AND metadata.field1.bool_value = true`.",
+                          "description": "Filter specifying the boolean condition for the Artifacts to satisfy in order to be part of the result set. The syntax to define filter query is based on https:\/\/google.aip.dev\/160. The supported set of filters include the following: * **Attribute filtering**: For example: `display_name = \"test\"`. Supported fields include: `name`, `display_name`, `uri`, `state`, `schema_title`, `create_time`, and `update_time`. Time fields, such as `create_time` and `update_time`, require values specified in RFC-3339 format. For example: `create_time = \"2020-11-19T11:30:00-04:00\"` * **Metadata field**: To filter on metadata fields use traversal operation as follows: `metadata..`. For example: `metadata.field_1.number_value = 10.0` * **Context based filtering**: To filter Artifacts based on the contexts to which they belong, use the function operator with the full resource name `in_context()`. For example: `in_context(\"projects\/\/locations\/\/metadataStores\/\/contexts\/\")` Each of the above supported filter types can be combined together using logical operators (`AND` & `OR`). Maximum nested expression depth allowed is 5. For example: `display_name = \"test\" AND metadata.field1.bool_value = true`.",
                           "location": "query",
                           "type": "string"
                         },
@@ -34773,7 +34838,7 @@
                           "format": "int32"
                         },
                         "filter": {
-                          "description": "Filter specifying the boolean condition for the Artifacts to satisfy in order to be part of the Lineage Subgraph. The syntax to define filter query is based on https:\/\/google.aip.dev\/160. The supported set of filters include the following: * **Attribute filtering**: For example: `display_name = \"test\"` Supported fields include: `name`, `display_name`, `uri`, `state`, `schema_title`, `create_time`, and `update_time`. Time fields, such as `create_time` and `update_time`, require values specified in RFC-3339 format. For example: `create_time = \"2020-11-19T11:30:00-04:00\"` * **Metadata field**: To filter on metadata fields use traversal operation as follows: `metadata..`. For example: `metadata.field_1.number_value = 10.0` Each of the above supported filter types can be combined together using logical operators (`AND` & `OR`). For example: `display_name = \"test\" AND metadata.field1.bool_value = true`.",
+                          "description": "Filter specifying the boolean condition for the Artifacts to satisfy in order to be part of the Lineage Subgraph. The syntax to define filter query is based on https:\/\/google.aip.dev\/160. The supported set of filters include the following: * **Attribute filtering**: For example: `display_name = \"test\"` Supported fields include: `name`, `display_name`, `uri`, `state`, `schema_title`, `create_time`, and `update_time`. Time fields, such as `create_time` and `update_time`, require values specified in RFC-3339 format. For example: `create_time = \"2020-11-19T11:30:00-04:00\"` * **Metadata field**: To filter on metadata fields use traversal operation as follows: `metadata..`. For example: `metadata.field_1.number_value = 10.0` Each of the above supported filter types can be combined together using logical operators (`AND` & `OR`). Maximum nested expression depth allowed is 5. For example: `display_name = \"test\" AND metadata.field1.bool_value = true`.",
                           "location": "query",
                           "type": "string"
                         }
@@ -34876,7 +34941,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Filter specifying the boolean condition for the Contexts to satisfy in order to be part of the result set. The syntax to define filter query is based on https:\/\/google.aip.dev\/160. Following are the supported set of filters: * **Attribute filtering**: For example: `display_name = \"test\"`. Supported fields include: `name`, `display_name`, `schema_title`, `create_time`, and `update_time`. Time fields, such as `create_time` and `update_time`, require values specified in RFC-3339 format. For example: `create_time = \"2020-11-19T11:30:00-04:00\"`. * **Metadata field**: To filter on metadata fields use traversal operation as follows: `metadata..`. For example: `metadata.field_1.number_value = 10.0`. * **Parent Child filtering**: To filter Contexts based on parent-child relationship use the HAS operator as follows: ``` parent_contexts: \"projects\/\/locations\/\/metadataStores\/\/contexts\/\" child_contexts: \"projects\/\/locations\/\/metadataStores\/\/contexts\/\" ``` Each of the above supported filters can be combined together using logical operators (`AND` & `OR`). For example: `display_name = \"test\" AND metadata.field1.bool_value = true`.",
+                          "description": "Filter specifying the boolean condition for the Contexts to satisfy in order to be part of the result set. The syntax to define filter query is based on https:\/\/google.aip.dev\/160. Following are the supported set of filters: * **Attribute filtering**: For example: `display_name = \"test\"`. Supported fields include: `name`, `display_name`, `schema_title`, `create_time`, and `update_time`. Time fields, such as `create_time` and `update_time`, require values specified in RFC-3339 format. For example: `create_time = \"2020-11-19T11:30:00-04:00\"`. * **Metadata field**: To filter on metadata fields use traversal operation as follows: `metadata..`. For example: `metadata.field_1.number_value = 10.0`. * **Parent Child filtering**: To filter Contexts based on parent-child relationship use the HAS operator as follows: ``` parent_contexts: \"projects\/\/locations\/\/metadataStores\/\/contexts\/\" child_contexts: \"projects\/\/locations\/\/metadataStores\/\/contexts\/\" ``` Each of the above supported filters can be combined together using logical operators (`AND` & `OR`). Maximum nested expression depth allowed is 5. For example: `display_name = \"test\" AND metadata.field1.bool_value = true`.",
                           "location": "query",
                           "type": "string"
                         },
@@ -35195,7 +35260,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Filter specifying the boolean condition for the Executions to satisfy in order to be part of the result set. The syntax to define filter query is based on https:\/\/google.aip.dev\/160. Following are the supported set of filters: * **Attribute filtering**: For example: `display_name = \"test\"`. Supported fields include: `name`, `display_name`, `state`, `schema_title`, `create_time`, and `update_time`. Time fields, such as `create_time` and `update_time`, require values specified in RFC-3339 format. For example: `create_time = \"2020-11-19T11:30:00-04:00\"`. * **Metadata field**: To filter on metadata fields use traversal operation as follows: `metadata..` For example: `metadata.field_1.number_value = 10.0` * **Context based filtering**: To filter Executions based on the contexts to which they belong use the function operator with the full resource name: `in_context()`. For example: `in_context(\"projects\/\/locations\/\/metadataStores\/\/contexts\/\")` Each of the above supported filters can be combined together using logical operators (`AND` & `OR`). For example: `display_name = \"test\" AND metadata.field1.bool_value = true`.",
+                          "description": "Filter specifying the boolean condition for the Executions to satisfy in order to be part of the result set. The syntax to define filter query is based on https:\/\/google.aip.dev\/160. Following are the supported set of filters: * **Attribute filtering**: For example: `display_name = \"test\"`. Supported fields include: `name`, `display_name`, `state`, `schema_title`, `create_time`, and `update_time`. Time fields, such as `create_time` and `update_time`, require values specified in RFC-3339 format. For example: `create_time = \"2020-11-19T11:30:00-04:00\"`. * **Metadata field**: To filter on metadata fields use traversal operation as follows: `metadata..` For example: `metadata.field_1.number_value = 10.0` * **Context based filtering**: To filter Executions based on the contexts to which they belong use the function operator with the full resource name: `in_context()`. For example: `in_context(\"projects\/\/locations\/\/metadataStores\/\/contexts\/\")` Each of the above supported filters can be combined together using logical operators (`AND` & `OR`). Maximum nested expression depth allowed is 5. For example: `display_name = \"test\" AND metadata.field1.bool_value = true`.",
                           "location": "query",
                           "type": "string"
                         },

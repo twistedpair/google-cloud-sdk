@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.container.gkeonprem import flags
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
@@ -42,8 +43,22 @@ def Get(args, flag_name, default=None):
   default_values = {
       'page_size': 100,
   }
-  default_value = default_values.get(flag_name, default)
-  return getattr(args, flag_name, default_value)
+  if hasattr(args, flag_name) and args.IsSpecified(flag_name):
+    return getattr(args, flag_name)
+  return default_values.get(flag_name, default)
+
+
+def IsSet(kwargs):
+  """Returns True if any of the kwargs is set to not None value.
+
+  Args:
+    kwargs: dict, a mapping from proto field to its respective constructor
+      function.
+
+  Returns:
+    True if there exists a field that contains a user specified argument.
+  """
+  return any(value is not None for value in kwargs.values())
 
 
 def LocationAttributeConfig():
@@ -98,18 +113,71 @@ def GetClusterResourceSpec():
   )
 
 
-def AddClusterResourceArg(parser, verb, positional=True):
+def AddClusterResourceArg(parser,
+                          verb,
+                          positional=True,
+                          required=True,
+                          flag_name_overrides=None):
   """Adds a resource argument for an Anthos cluster on VMware.
 
   Args:
     parser: The argparse parser to add the resource arg to.
     verb: str, the verb to describe the resource, such as 'to update'.
     positional: bool, whether the argument is positional or not.
+    required: bool, whether the argument is required or not.
+    flag_name_overrides: {str: str}, dict of attribute names to the desired flag
+      name.
   """
   name = 'cluster' if positional else '--cluster'
   concept_parsers.ConceptParser.ForResource(
-      name, GetClusterResourceSpec(), 'cluster {}'.format(verb),
-      required=True).AddToParser(parser)
+      name,
+      GetClusterResourceSpec(),
+      'cluster {}'.format(verb),
+      required=required,
+      flag_name_overrides=flag_name_overrides,
+  ).AddToParser(parser)
+
+
+def AdminClusterAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='admin_cluster',
+      help_text='cluster of the {resource}.',
+  )
+
+
+def GetAdminClusterResourceSpec():
+  return concepts.ResourceSpec(
+      'gkeonprem.projects.locations.vmwareAdminClusters',
+      resource_name='admin_cluster',
+      vmwareAdminClustersId=AdminClusterAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
+
+
+def AddAdminClusterResourceArg(parser,
+                               verb,
+                               positional=True,
+                               required=True,
+                               flag_name_overrides=None):
+  """Adds a resource argument for an Anthos on VMware admin cluster.
+
+  Args:
+    parser: The argparse parser to add the resource arg to.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    positional: bool, whether the argument is positional or not.
+    required: bool, whether the argument is required or not.
+    flag_name_overrides: {str: str}, dict of attribute names to the desired flag
+      name.
+  """
+  name = 'admin_cluster' if positional else '--admin-cluster'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetAdminClusterResourceSpec(),
+      'admin cluster {}'.format(verb),
+      required=required,
+      flag_name_overrides=flag_name_overrides,
+  ).AddToParser(parser)
 
 
 def NodePoolAttributeConfig():
@@ -142,45 +210,6 @@ def AddNodePoolResourceArg(parser, verb, positional=True):
       GetNodePoolResourceSpec(),
       'node pool {}'.format(verb),
       required=True).AddToParser(parser)
-
-
-def AdminClusterMembershipAttributeConfig():
-  return concepts.ResourceParameterAttributeConfig(
-      name='admin_cluster_membership',
-      help_text='admin cluster membership of the {resource}, in the form of projects/PROJECT/locations/global/memberships/MEMBERSHIP. '
-  )
-
-
-def GetAdminClusterMembershipResourceSpec():
-  return concepts.ResourceSpec(
-      'gkehub.projects.locations.memberships',
-      resource_name='admin_cluster_membership',
-      membershipsId=AdminClusterMembershipAttributeConfig(),
-      locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-  )
-
-
-def AddAdminClusterMembershipResourceArg(parser, positional=True):
-  """Adds a resource argument for a VMware admin cluster membership.
-
-  Args:
-    parser: The argparse parser to add the resource arg to.
-    positional: bool, whether the argument is positional or not.
-  """
-  name = 'admin_cluster_membership' if positional else '--admin-cluster-membership'
-  # TODO(b/227667209): Add fallthrough from cluster location when regional
-  # membership is implemented.
-  concept_parsers.ConceptParser.ForResource(
-      name,
-      GetAdminClusterMembershipResourceSpec(),
-      'membership of the admin cluster. Membership can be the membership ID or the full resource name.',
-      required=True,
-      flag_name_overrides={
-          'location': '--admin-cluster-membership-location',
-      }).AddToParser(parser)
-
-  parser.set_defaults(admin_cluster_membership_location='global')
 
 
 def AddForceUnenroll(parser):
@@ -269,54 +298,201 @@ def AddValidationOnly(parser, hidden=False):
   )
 
 
-def AddImageType(parser, required=False):
+def _AddImageType(vmware_node_config_group, for_update=False):
   """Adds a flag to specify the node pool image type.
 
   Args:
-    parser: The argparse parser to add the flag to.
-    required: bool, True to raise an exception if the property is not set.
+    vmware_node_config_group: The argparse parser to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
-  parser.add_argument(
+  required = False if for_update else True
+  vmware_node_config_group.add_argument(
       '--image-type',
       required=required,
       help='OS image type to use on node pool instances.',
   )
 
 
-def AddReplicas(parser):
+def _AddReplicas(vmware_node_config_group):
   """Adds a flag to specify the number of replicas in the node pool.
 
   Args:
-    parser: The argparse parser to add the flag to.
+    vmware_node_config_group: The parent group to add the flag to.
   """
-  parser.add_argument(
+  vmware_node_config_group.add_argument(
       '--replicas',
       type=int,
       help='Number of replicas to use on node pool instances.',
   )
 
 
-def AddEnableLoadBalancer(parser):
+def _AddEnableLoadBalancer(vmware_node_config_group, for_update=False):
   """Adds a flag to enable load balancer in the node pool.
 
   Args:
-    parser: The argparse parser to add the flag to.
+    vmware_node_config_group: The parent group to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
-  parser.add_argument(
+  if for_update:
+    enable_lb_mutex_group = vmware_node_config_group.add_group(mutex=True)
+    surface = enable_lb_mutex_group
+  else:
+    surface = vmware_node_config_group
+
+  surface.add_argument(
       '--enable-load-balancer',
-      action='store_true',
+      action='store_const',
+      const=True,
       help='If set, enable the use of load balancer on the node pool instances.',
   )
 
+  if for_update:
+    surface.add_argument(
+        '--disable-load-balancer',
+        action='store_const',
+        const=True,
+        help='If set, disable the use of load balancer on the node pool instances.',
+    )
 
-def AddAutoscaling(parser, required=False):
+
+def _AddCpus(vmware_node_config_group):
+  """Adds a flag to specify the number of cpus in the node pool.
+
+  Args:
+    vmware_node_config_group: The parent group to add the flag to.
+  """
+  vmware_node_config_group.add_argument(
+      '--cpus',
+      help='Number of CPUs for each node in the node pool.',
+      type=int,
+  )
+
+
+def _AddMemoryMb(vmware_node_config_group):
+  """Adds a flag to specify the memory in MB in the node pool.
+
+  Args:
+    vmware_node_config_group: The parent group to add the flag to.
+  """
+  vmware_node_config_group.add_argument(
+      '--memory-mb',
+      help='Size of memory for each node in the node pool in MB.',
+      type=arg_parsers.BinarySize(default_unit='MB', type_abbr='MB'),
+  )
+
+
+def _AddImage(vmware_node_config_group):
+  """Adds a flag to specify the image in the node pool.
+
+  Args:
+    vmware_node_config_group: The parent group to add the flag to.
+  """
+  vmware_node_config_group.add_argument(
+      '--image',
+      help='OS image name in vCenter.',
+      type=str,
+  )
+
+
+def _AddBootDiskSizeGb(vmware_node_config_group):
+  """Adds a flag to specify the boot disk size in GB in the node pool.
+
+  Args:
+    vmware_node_config_group: The parent group to add the flag to.
+  """
+  vmware_node_config_group.add_argument(
+      '--boot-disk-size-gb',
+      help='Size of VMware disk to be used during creation in GB.',
+      type=arg_parsers.BinarySize(default_unit='GB', type_abbr='GB'),
+  )
+
+
+def _AddNodeTaint(vmware_node_config_group, for_update=False):
+  """Adds a flag to specify the node taint in the node pool.
+
+  Args:
+    vmware_node_config_group: The parent group to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
+  """
+  node_pool_create_help_text = """\
+Applies the given kubernetes taints on all nodes in the new node pool, which can
+be used with tolerations for pod scheduling.
+
+Examples:
+
+  $ {command} node-pool-1 --cluster=example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
+"""
+  node_pool_update_help_text = """\
+Replaces all the user specified Kubernetes taints on all nodes in an existing
+node pool, which can be used with tolerations for pod scheduling.
+
+Examples:
+
+  $ {command} node-pool-1 --cluster=example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
+"""
+
+  help_text = node_pool_update_help_text if for_update else node_pool_create_help_text
+  vmware_node_config_group.add_argument(
+      '--node-taints',
+      metavar='KEY=VALUE:EFFECT',
+      help=help_text,
+      type=arg_parsers.ArgDict(),
+  )
+
+
+def _AddNodeLabels(vmware_node_config_group):
+  """Adds a flag to specify the labels in the node pool.
+
+  Args:
+    vmware_node_config_group: The parent group to add the flag to.
+  """
+  vmware_node_config_group.add_argument(
+      '--node-labels',
+      metavar='KEY=VALUE',
+      help='Kubernetes labels (key/value pairs) to be applied to each node.',
+      type=arg_parsers.ArgDict(),
+  )
+
+
+def AddVmwareNodeConfig(parser, for_update=False):
+  """Adds flags to specify the configuration of the node pool.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
+  """
+  vmware_node_config_group = parser.add_group(
+      help='Configuration of the node pool.',
+      required=False if for_update else True,
+  )
+  # Workaround when not yet exposed to update command surface.
+  if not for_update:
+    _AddCpus(vmware_node_config_group)
+    _AddMemoryMb(vmware_node_config_group)
+    _AddImage(vmware_node_config_group)
+    _AddBootDiskSizeGb(vmware_node_config_group)
+    _AddNodeLabels(vmware_node_config_group)
+    _AddNodeTaint(vmware_node_config_group)
+
+  _AddReplicas(vmware_node_config_group)
+  _AddImageType(vmware_node_config_group, for_update=for_update)
+  _AddEnableLoadBalancer(vmware_node_config_group, for_update=for_update)
+
+
+def AddVmwareNodePoolAutoscalingConfig(parser, for_update=False):
   """Adds a flag to specify the node pool autoscaling config.
 
   Args:
     parser: The argparse parser to add the flag to.
-    required: bool, True to raise an exception if the property is not set.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
-  group = parser.add_argument_group('Node pool autoscaling')
+  required = False if for_update else True
+  group = parser.add_group('Node pool autoscaling')
   group.add_argument(
       '--min-replicas',
       required=required,
@@ -343,59 +519,27 @@ def AddVersion(parser):
   )
 
 
-def AddServiceAddressCidrBlocks(parser):
-  """Adds a flag to specify the IPv4 address ranges used in the services in the cluster.
-
-  Args:
-    parser: The argparse parser to add the flag to.
-  """
-  parser.add_argument(
-      '--service-address-cidr-blocks',
-      metavar='SERVICE_ADDRESS',
-      type=arg_parsers.ArgList(
-          min_length=1,
-          max_length=1,
-      ),
-      required=True,
-      help='IPv4 address range for all services in the cluster.',
-  )
-
-
-def AddPodAddressCidrBlocks(parser):
-  """Adds a flag to specify the IPv4 address ranges used in the pods in the cluster.
-
-  Args:
-    parser: The argparse parser to add the flag to.
-  """
-  parser.add_argument(
-      '--pod-address-cidr-blocks',
-      metavar='POD_ADDRESS',
-      type=arg_parsers.ArgList(
-          min_length=1,
-          max_length=1,
-      ),
-      required=True,
-      help='IPv4 address range for all pods in the cluster.',
-  )
-
-
-def _AddF5Config(lb_mutex_group):
+def _AddF5Config(lb_config_mutex_group, for_update=False):
   """Adds flags for F5 Big IP load balancer.
 
   Args:
-    lb_mutex_group: The mutex group to add the flags to.
+    lb_config_mutex_group: The parent mutex group to add the flags to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
-  f5_config_group = lb_mutex_group.add_argument_group('F5 Big IP Configuration')
+  required = False if for_update else True
+  f5_config_group = lb_config_mutex_group.add_group(
+      help='F5 Big IP Configuration',)
   f5_config_group.add_argument(
       '--f5-config-address',
       type=str,
-      required=True,
+      required=required,
       help='F5 Big IP load balancer address.',
   )
   f5_config_group.add_argument(
       '--f5-config-partition',
       type=str,
-      required=True,
+      required=required,
       help='F5 Big IP load balancer partition.',
   )
   f5_config_group.add_argument(
@@ -405,18 +549,21 @@ def _AddF5Config(lb_mutex_group):
   )
 
 
-def _AddMetalLbConfig(lb_mutex_group):
+def _AddMetalLbConfig(lb_config_mutex_group, for_update=False):
   """Adds flags for MetalLB load balancer.
 
   Args:
-    lb_mutex_group: The mutex group to add the flags to.
+    lb_config_mutex_group: The parent mutex group to add the flags to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
-  metal_lb_config_group = lb_mutex_group.add_argument_group(
+  required = False if for_update else True
+  metal_lb_config_group = lb_config_mutex_group.add_group(
       'MetalLB Configuration')
   metal_lb_config_group.add_argument(
       '--metal-lb-config-address-pools',
       action='append',
-      required=True,
+      required=required,
       type=arg_parsers.ArgDict(
           spec={
               'pool': str,
@@ -433,34 +580,84 @@ def _AddMetalLbConfig(lb_mutex_group):
   )
 
 
-def AddLoadBalancerConfig(parser):
+def _AddManualLbConfig(lb_config_mutex_group):
+  """Adds flags for Manual load balancer.
+
+  Args:
+    lb_config_mutex_group: The parent mutex group to add the flags to.
+  """
+  manual_lb_config_group = lb_config_mutex_group.add_group(
+      help='Manual load balancer configuration.',)
+  manual_lb_config_group.add_argument(
+      '--ingress-http-node-port',
+      help='NodePort for ingress service\'s http.',
+      type=int,
+  )
+  manual_lb_config_group.add_argument(
+      '--ingress-https-node-port',
+      help='NodePort for ingress service\'s https.',
+      type=int,
+  )
+  manual_lb_config_group.add_argument(
+      '--control-plane-node-port',
+      help='NodePort for control plane service.',
+      type=int,
+  )
+  manual_lb_config_group.add_argument(
+      '--konnectivity-server-node-port',
+      help='NodePort for konnectivity service running as a sidecar in each kube-apiserver pod.',
+      type=int,
+  )
+
+
+def _AddVmwareVipConfig(vmware_load_balancer_config_group, for_update=False):
+  """Adds flags to set VIPs used by the load balancer..
+
+  Args:
+    vmware_load_balancer_config_group: The parent group to add the flags to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
+  """
+  required = False if for_update else True
+  vmware_vip_config_group = vmware_load_balancer_config_group.add_group(
+      help=' VIPs used by the load balancer.',
+      required=required,
+  )
+  vmware_vip_config_group.add_argument(
+      '--control-plane-vip',
+      required=required,
+      help='VIP for the Kubernetes API of this cluster.',
+  )
+  vmware_vip_config_group.add_argument(
+      '--ingress-vip',
+      required=required,
+      help='VIP for ingress traffic into this cluster.',
+  )
+
+
+def AddVmwareLoadBalancerConfig(parser, for_update=False):
   """Adds a command group to set the load balancer config.
 
   Args:
     parser: The argparse parser to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
-
-  lb_config_group = parser.add_argument_group(
+  required = False if for_update else True
+  vmware_load_balancer_config_group = parser.add_group(
       help='Anthos on Vmware cluster load balancer configuration.',
+      required=required,
   )
-  lb_config_group.add_argument(
-      '--control-plane-vip',
-      required=True,
-      help='VIP for the Kubernetes API of this cluster.',
-  )
-  lb_config_group.add_argument(
-      '--ingress-vip',
-      required=True,
-      help='VIP for ingress traffic into this cluster.',
-  )
+  _AddVmwareVipConfig(vmware_load_balancer_config_group)
 
-  lb_mutex_group = lb_config_group.add_mutually_exclusive_group(
+  lb_config_mutex_group = vmware_load_balancer_config_group.add_group(
+      mutex=True,
       help='Populate one of the load balancers.',
-      required=True,
+      required=required,
   )
-
-  _AddMetalLbConfig(lb_mutex_group)
-  _AddF5Config(lb_mutex_group)
+  _AddMetalLbConfig(lb_config_mutex_group, for_update)
+  _AddF5Config(lb_config_mutex_group, for_update)
+  _AddManualLbConfig(lb_config_mutex_group)
 
 
 def AddDescription(parser):
@@ -481,3 +678,172 @@ def AddNodePoolDisplayName(parser):
   """
   parser.add_argument(
       '--display-name', type=str, help='Display name for the resource.')
+
+
+def AddAnnotations(parser):
+  """Adds a flag to specify node pool annotations."""
+  parser.add_argument(
+      '--annotations',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help='Annotations on the node pool.',
+  )
+
+
+def _AddServiceAddressCidrBlocks(vmware_network_config_group, for_update=False):
+  """Adds a flag to specify the IPv4 address ranges used in the services in the cluster.
+
+  Args:
+    vmware_network_config_group: The parent group to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
+  """
+  required = False if for_update else True
+  vmware_network_config_group.add_argument(
+      '--service-address-cidr-blocks',
+      metavar='SERVICE_ADDRESS',
+      type=arg_parsers.ArgList(
+          min_length=1,
+          max_length=1,
+      ),
+      required=required,
+      help='IPv4 address range for all services in the cluster.',
+  )
+
+
+def _AddPodAddressCidrBlocks(vmware_network_config_group, for_update=False):
+  """Adds a flag to specify the IPv4 address ranges used in the pods in the cluster.
+
+  Args:
+    vmware_network_config_group: The parent group to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
+  """
+  required = False if for_update else True
+  vmware_network_config_group.add_argument(
+      '--pod-address-cidr-blocks',
+      metavar='POD_ADDRESS',
+      type=arg_parsers.ArgList(
+          min_length=1,
+          max_length=1,
+      ),
+      required=required,
+      help='IPv4 address range for all pods in the cluster.',
+  )
+
+
+def AddVmwareNetworkConfig(parser, for_update=False):
+  """Adds network config related flags.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
+  """
+  required = False if for_update else True
+  vmware_network_config_group = parser.add_group(
+      help='VMware User Cluster network configuration.',
+      required=required,
+  )
+  _AddServiceAddressCidrBlocks(vmware_network_config_group, for_update)
+  _AddPodAddressCidrBlocks(vmware_network_config_group, for_update)
+  _AddIpConfiguration(vmware_network_config_group)
+  _AddVmwareHostConfig(vmware_network_config_group)
+
+
+def AddConfigType(parser):
+  """Adds flags to specify version config type.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  config_type_group = parser.add_group('Version configuration type', mutex=True)
+
+  create_config = config_type_group.add_group('Create configuration')
+  flags.AddAdminClusterMembershipResourceArg(
+      create_config, positional=False, required=False)
+
+  upgrade_config = config_type_group.add_group('Upgrade configuration')
+  AddClusterResourceArg(
+      upgrade_config,
+      'to query version configuration',
+      positional=False,
+      required=False,
+      flag_name_overrides={'location': ''})
+
+
+def _AddIpConfiguration(vmware_network_config_group):
+  """Adds flags to specify IP configuration used by the VMware User Cluster.
+
+  Args:
+    vmware_network_config_group: The parent group to add the flag to.
+  """
+  ip_configuration_mutex_group = vmware_network_config_group.add_group(
+      mutex=True,
+      help='IP configuration used by the VMware User Cluster.',
+  )
+  dhcp_config_group = ip_configuration_mutex_group.add_group(
+      help='DHCP configuration group.')
+  dhcp_config_group.add_argument(
+      '--enable-dhcp',
+      help='Enable DHCP IP allocation for VMware user clusters.',
+  )
+
+  static_ip_config_group = ip_configuration_mutex_group.add_group(
+      help='Static IP configuration group.')
+  static_ip_config_group.add_argument(
+      '--netmask',
+      help='Netmask used by the VMware user cluster.',
+  )
+  static_ip_config_group.add_argument(
+      '--gateway',
+      help='Gateway used by the VMware user cluster.',
+  )
+  static_ip_config_group.add_argument(
+      '--host-ips',
+      help='Network configurations used by the VMware user cluster node pools.',
+      action='append',
+      type=arg_parsers.ArgDict(spec={
+          'ip': str,
+          'hostname': str,
+      },),
+  )
+
+
+def _AddVmwareHostConfig(vmware_network_config_group):
+  """Adds flags to specify common parameters for all hosts irrespective of their IP address.
+
+  Args:
+    vmware_network_config_group: The parent group to add the flags to.
+  """
+  vmware_host_config_group = vmware_network_config_group.add_group(
+      help='Common parameters for all hosts irrespective of their IP address.')
+
+  vmware_host_config_group.add_argument(
+      '--dns-servers',
+      metavar='DNS_SERVERS',
+      type=arg_parsers.ArgList(str),
+      help='DNS server IP address',
+  )
+  vmware_host_config_group.add_argument(
+      '--ntp-servers',
+      metavar='NTP_SERVERS',
+      type=arg_parsers.ArgList(str),
+      help='NTP server IP address',
+  )
+
+
+def AddRequiredPlatformVersion(parser):
+  """Adds flags to specify required platform version.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--required-platform-version',
+      type=str,
+      help=('Platform version required for upgrading a user cluster. '
+            'If the current platform version is lower than the required '
+            'version, the platform version will be updated to the required '
+            'version. If it is not installed in the platform, '
+            'download the required version bundle.'))

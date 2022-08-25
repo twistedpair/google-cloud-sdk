@@ -65,7 +65,7 @@ def versions_for_member(feature, membership):
 
   Args:
     feature: A v1alpha, v1beta, or v1 ACM Feature.
-    membership: The short membership name whose version to return.
+    membership: The full membership name whose version to return.
 
   Returns:
     A tuple of the form (spec.version, state.spec.version), with unset versions
@@ -74,7 +74,8 @@ def versions_for_member(feature, membership):
   spec_version = None
   specs = client.HubClient.ToPyDict(feature.membershipSpecs)
   for full_membership, spec in specs.items():
-    if util.MembershipShortname(full_membership) == membership:
+    if util.MembershipPartialName(
+        full_membership) == util.MembershipPartialName(membership):
       if spec is not None and spec.configmanagement is not None:
         spec_version = spec.configmanagement.version
       break
@@ -82,7 +83,8 @@ def versions_for_member(feature, membership):
   state_version = None
   states = client.HubClient.ToPyDict(feature.membershipStates)
   for full_membership, state in states.items():
-    if util.MembershipShortname(full_membership) == membership:
+    if util.MembershipPartialName(
+        full_membership) == util.MembershipPartialName(membership):
       if state is not None and state.configmanagement is not None:
         if state.configmanagement.membershipSpec is not None:
           state_version = state.configmanagement.membershipSpec.version
@@ -91,17 +93,17 @@ def versions_for_member(feature, membership):
   return (spec_version or '', state_version or '')
 
 
-def get_backfill_version_from_feature(feature, membership_id):
+def get_backfill_version_from_feature(feature, membership):
   """Get the value the version field in FeatureSpec should be set to.
 
   Args:
     feature: the feature obtained from hub API.
-    membership_id: The membership short name whose Spec will be backfilled.
+    membership: The full membership name whose Spec will be backfilled.
 
   Returns:
     version: A string denoting the version field in MembershipConfig
   """
-  spec_version, state_version = versions_for_member(feature, membership_id)
+  spec_version, state_version = versions_for_member(feature, membership)
 
   if spec_version:
     return spec_version

@@ -60,6 +60,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_OPERATIONS = (
+      'projects.locations.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SESSIONS = (
       'projects.locations.sessions',
       '{+name}',
@@ -117,6 +128,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectId}/regions/{region}/clusters/{clusterName}/'
               'gceNodePools/{gceNodePoolsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_REGIONS_CLUSTERS_NODEGROUPS = (
+      'projects.regions.clusters.nodeGroups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectId}/regions/{region}/clusters/{clusterName}/'
+              'nodeGroups/{nodeGroupsId}',
       },
       ['name'],
       True

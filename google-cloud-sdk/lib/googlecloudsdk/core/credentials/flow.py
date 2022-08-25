@@ -252,7 +252,7 @@ class InstalledAppFlow(
   def FromInstalledAppFlow(cls, source_flow):
     """Creates an instance of the current flow from an existing flow."""
     return cls.from_client_config(
-        source_flow.origional_client_config,
+        source_flow.original_client_config,
         source_flow.oauth2session.scope,
         autogenerate_code_verifier=source_flow.autogenerate_code_verifier)
 

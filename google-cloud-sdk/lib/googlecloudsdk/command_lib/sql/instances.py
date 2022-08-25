@@ -323,13 +323,14 @@ class _BaseInstances(object):
           settings.ipConfiguration = sql_messages.IpConfiguration()
         settings.ipConfiguration.enablePrivatePathForGoogleCloudServices = args.enable_google_private_path
 
+      if args.IsSpecified('connector_enforcement'):
+        settings.connectorEnforcement = _ParseConnectorEnforcement(
+            sql_messages, args.connector_enforcement)
+
     if _IsAlpha(release_track):
       if args.IsSpecified('workload_tier'):
         settings.workloadTier = _ParseWorkloadTier(sql_messages,
                                                    args.workload_tier)
-      if args.IsSpecified('connector_enforcement'):
-        settings.connectorEnforcement = _ParseConnectorEnforcement(
-            sql_messages, args.connector_enforcement)
 
     return settings
 

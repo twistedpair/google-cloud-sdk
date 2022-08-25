@@ -72,7 +72,7 @@ def AddFieldToUpdateMask(field, patch_request):
 
 
 def ClearEndpointValue(endpoint, endpoint_name):
-  proto_endpoint_fields = {"cloudFunction"}
+  proto_endpoint_fields = {"cloudFunction", "cloudRunRevision"}
   if endpoint_name in proto_endpoint_fields:
     # Endpoint is a proto message: Set to None.
     setattr(endpoint, endpoint_name, None)
@@ -143,7 +143,7 @@ def ClearSingleEndpointAttrBeta(patch_request, endpoint_type, endpoint_name):
   endpoint = getattr(test, endpoint_type)
   endpoint_fields = {
       "instance", "ipAddress", "gkeMasterCluster", "cloudSqlInstance",
-      "cloudFunction"
+      "cloudFunction", "cloudRunRevision"
   }
   non_empty_endpoint_fields = 0
   for field in endpoint_fields:
@@ -174,6 +174,7 @@ def ClearEndpointAttrsBeta(unused_ref, args, patch_request):
       ("clear_source_gke_master_cluster", "source", "gkeMasterCluster"),
       ("clear_source_cloud_sql_instance", "source", "cloudSqlInstance"),
       ("clear_source_cloud_function", "source", "cloudFunction"),
+      ("clear_source_cloud_run_revision", "source", "cloudRunRevision"),
       ("clear_destination_instance", "destination", "instance"),
       ("clear_destination_ip_address", "destination", "ipAddress"),
       ("clear_destination_gke_master_cluster", "destination",
@@ -297,4 +298,26 @@ def ValidateCloudFunctionsURIs(unused_ref, args, request):
           "Expected Cloud Function in the following format:\n"
           "  projects/my-project/locations/location/functions/my-function"
           .format(flag, function))
+  return request
+
+
+def ValidateCloudRunRevisionsURIs(unused_ref, args, request):
+  """Checks if all provided Cloud Run revisions URIs are in correct format."""
+  flags = [
+      "source_cloud_run_revision",
+  ]
+  revision_pattern = re.compile(
+      r"projects/(?:[a-z][a-z0-9-\.:]*[a-z0-9])/locations/[-\w]+/revisions/[-\w]+"
+  )
+  for flag in flags:
+    if not args.IsSpecified(flag):
+      continue
+
+    revision = getattr(args, flag)
+    if not revision_pattern.match(revision):
+      raise InvalidInputError(
+          "Invalid value for flag {}: {}\n"
+          "Expected Cloud Run revision in the following format:\n"
+          "  projects/my-project/locations/location/revisions/my-revision"
+          .format(flag, revision))
   return request

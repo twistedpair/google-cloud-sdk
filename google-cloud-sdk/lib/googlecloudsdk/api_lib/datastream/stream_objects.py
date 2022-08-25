@@ -78,6 +78,9 @@ class StreamObjectsClient:
     elif args.mysql_database:
       object_identifier.mysqlIdentifier = self._messages.MysqlObjectIdentifier(
           database=args.mysql_database, table=args.mysql_table)
+    elif args.postgresql_schema:
+      object_identifier.postgresqlIdentifier = self._messages.PostgresqlObjectIdentifier(
+          schema=args.postgresql_schema, table=args.postgresql_table)
 
     stream_ref = self._resource_parser.Create(
         'datastream.projects.locations.streams',

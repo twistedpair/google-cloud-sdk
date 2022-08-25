@@ -86,7 +86,7 @@ class InterconnectAttachment(object):
       vlan_tag_802_1q, candidate_subnets, partner_metadata, partner_asn,
       validate_only, mtu, encryption, ipsec_internal_addresses, stack_type,
       candidate_ipv6_subnets, cloud_router_ipv6_interface_id,
-      customer_router_ipv6_interface_id):
+      customer_router_ipv6_interface_id, subnet_length):
     """Make an interconnect attachment insert request."""
     interconnect_self_link = None
     if interconnect:
@@ -125,6 +125,8 @@ class InterconnectAttachment(object):
       attachment.cloudRouterIpv6InterfaceId = cloud_router_ipv6_interface_id
     if customer_router_ipv6_interface_id:
       attachment.customerRouterIpv6InterfaceId = customer_router_ipv6_interface_id
+    if subnet_length:
+      attachment.subnetLength = subnet_length
     if validate_only is not None:
       return (self._client.interconnectAttachments, 'Insert',
               self._messages.ComputeInterconnectAttachmentsInsertRequest(
@@ -251,6 +253,7 @@ class InterconnectAttachment(object):
                   candidate_ipv6_subnets=None,
                   cloud_router_ipv6_interface_id=None,
                   customer_router_ipv6_interface_id=None,
+                  subnet_length=None,
                   only_generate_request=False,
                   validate_only=None):
     """Create an interconnectAttachment."""
@@ -287,7 +290,7 @@ class InterconnectAttachment(object):
             vlan_tag_802_1q, candidate_subnets, partner_metadata, partner_asn,
             validate_only, mtu, encryption, ipsec_internal_addresses,
             stack_type, candidate_ipv6_subnets, cloud_router_ipv6_interface_id,
-            customer_router_ipv6_interface_id)
+            customer_router_ipv6_interface_id, subnet_length)
     ]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)
@@ -355,9 +358,8 @@ class InterconnectAttachment(object):
       bandwidth = (
           self._messages.InterconnectAttachment.BandwidthValueValuesEnum(
               self._BANDWIDTH_CONVERSION[bandwidth]))
-    if (partner_interconnect is not None
-        or partner_name is not None
-        or partner_portal_url is not None):
+    if (partner_interconnect is not None or partner_name is not None or
+        partner_portal_url is not None):
       partner_metadata = self._messages.InterconnectAttachmentPartnerMetadata(
           interconnectName=partner_interconnect,
           partnerName=partner_name,

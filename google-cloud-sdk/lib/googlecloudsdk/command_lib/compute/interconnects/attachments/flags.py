@@ -49,6 +49,26 @@ _EDGE_AVAILABILITY_DOMAIN_CHOICES = {
 
 _ENCRYPTION_CHOICES = frozenset({'IPSEC', 'NONE'})
 
+_CANDIDATE_SUBNETS_HELP_TEXT = """\
+      Up to 16 candidate prefixes that can be used to restrict the allocation of
+      `cloudRouterIpAddress` and `customerRouterIpAddress` for this
+      attachment. All prefixes must be within link-local address space. Google
+      will attempt to select an unused /29 from the supplied candidate
+      subnet(s), or all of link-local space if no subnets supplied. Google will
+      not re-use a /29 already in-use by your project, even if it's contained in
+      one of the candidate subnets. The request will fail if all /29s within the
+      candidate subnets are in use at Google's edge."""
+
+_CANDIDATE_SUBNETS_HELP_TEXT_ALPHA = """\
+      Up to 16 candidate prefixes that can be used to restrict the allocation of
+      `cloudRouterIpAddress` and `customerRouterIpAddress` for this
+      attachment. All prefixes must be within link-local address space. Google
+      will attempt to select an unused subnet of SUBNET_LENGTH from the supplied
+      candidate subnet(s), or all of link-local space if no subnets supplied.
+      Google will not re-use a subnet already in-use by your project, even if it's
+      contained in one of the candidate subnets. The request will fail if all
+      candidate subnets are in use at Google's edge."""
+
 
 class InterconnectAttachmentsCompleter(compute_completers.ListCommandCompleter):
 
@@ -268,26 +288,23 @@ def AddDescription(parser):
       help='Human-readable plain-text description of attachment.')
 
 
-def AddCandidateSubnets(parser):
+def AddCandidateSubnets(parser, help_text=_CANDIDATE_SUBNETS_HELP_TEXT):
   """Adds candidate subnets flag to the argparse.ArgumetnParser.
 
   Args:
     parser: The argparse parser.
+    help_text: The help message.
   """
   parser.add_argument(
       '--candidate-subnets',
       type=arg_parsers.ArgList(max_length=16),
       metavar='SUBNET',
-      help="""\
-      Up to 16 candidate prefixes that can be used to restrict the allocation of
-      `cloudRouterIpAddress` and `customerRouterIpAddress` for this
-      attachment. All prefixes must be within link-local address space. Google
-      will attempt to select an unused /29 from the supplied candidate
-      subnet(s), or all of link-local space if no subnets supplied. Google will
-      not re-use a /29 already in-use by your project, even if it's contained in
-      one of the candidate subnets. The request will fail if all /29s within the
-      candidate subnets are in use at Google's edge.""",
+      help=help_text,
       default=[])
+
+
+def AddCandidateSubnetsAlpha(parser):
+  AddCandidateSubnets(parser, help_text=_CANDIDATE_SUBNETS_HELP_TEXT_ALPHA)
 
 
 def AddDryRun(parser):
@@ -465,3 +482,29 @@ def AddCustomerRouterIpv6InterfaceId(parser):
       Cloud Router address. The id must be in the range of 1 to 6. If a
       subnet mask is supplied, it must be /125, and the subnet should either be
       0 or match the selected subnet.""")
+
+
+def AddSubnetLength(parser):
+  """Adds subnet length flag to the argparse.ArgumetnParser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      '--subnet-length',
+      metavar='SUBNET_LENGTH',
+      type=int,
+      choices=frozenset({29, 30}),
+      help="""\
+      The length of the IPv4 subnet mask for this attachment. 29 is the
+      default value, except for attachments on Cross-Cloud Interconnects whose
+      remote location's "constraints.subnetLengthRange" field specifies a
+      minimum subnet length of 30. In that case, the default value is 30.
+      The default value is recommended when there's no requirement on the subnet
+      length. SUBNET_LENGTH must be one of:
+
+        29:
+          subnet length 29.
+        30:
+          subnet length 30.
+      """)

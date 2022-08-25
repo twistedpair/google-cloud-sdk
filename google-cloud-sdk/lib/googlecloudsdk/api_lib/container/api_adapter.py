@@ -30,6 +30,7 @@ from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as cloud_resources
@@ -635,7 +636,9 @@ class CreateClusterOptions(object):
                managed_config=None,
                fleet_project=None,
                gateway_api=None,
-               logging_variant=None):
+               logging_variant=None,
+               enable_multi_networking=None,
+               ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -809,6 +812,7 @@ class CreateClusterOptions(object):
     self.fleet_project = fleet_project
     self.gateway_api = gateway_api
     self.logging_variant = logging_variant
+    self.enable_multi_networking = enable_multi_networking
 
 
 class UpdateClusterOptions(object):
@@ -1078,6 +1082,7 @@ class CreateNodePoolOptions(object):
                boot_disk_kms_key=None,
                tags=None,
                node_labels=None,
+               labels=None,
                node_taints=None,
                enable_autoscaling=None,
                max_nodes=None,
@@ -1131,7 +1136,9 @@ class CreateNodePoolOptions(object):
                disable_pod_cidr_overprovision=None,
                enable_fast_socket=None,
                logging_variant=None,
-               windows_os_version=None):
+               windows_os_version=None,
+               additional_node_network=None,
+               additional_pod_network=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -1142,6 +1149,7 @@ class CreateNodePoolOptions(object):
     self.ephemeral_storage = ephemeral_storage
     self.boot_disk_kms_key = boot_disk_kms_key
     self.tags = tags
+    self.labels = labels
     self.node_labels = node_labels
     self.node_taints = node_taints
     self.enable_autoscaling = enable_autoscaling
@@ -1197,6 +1205,8 @@ class CreateNodePoolOptions(object):
     self.enable_fast_socket = enable_fast_socket
     self.logging_variant = logging_variant
     self.windows_os_version = windows_os_version
+    self.additional_node_network = additional_node_network
+    self.additional_pod_network = additional_pod_network
 
 
 class UpdateNodePoolOptions(object):
@@ -1219,6 +1229,7 @@ class UpdateNodePoolOptions(object):
                max_unavailable_upgrade=None,
                system_config_from_file=None,
                node_labels=None,
+               labels=None,
                node_taints=None,
                tags=None,
                enable_private_nodes=None,
@@ -1249,6 +1260,7 @@ class UpdateNodePoolOptions(object):
     self.max_surge_upgrade = max_surge_upgrade
     self.max_unavailable_upgrade = max_unavailable_upgrade
     self.system_config_from_file = system_config_from_file
+    self.labels = labels
     self.node_labels = node_labels
     self.node_taints = node_taints
     self.tags = tags
@@ -1284,6 +1296,7 @@ class UpdateNodePoolOptions(object):
             self.max_surge_upgrade is not None or
             self.max_unavailable_upgrade is not None or
             self.system_config_from_file is not None or
+            self.labels is not None or
             self.node_labels is not None or self.node_taints is not None or
             self.tags is not None or self.enable_private_nodes is not None or
             self.enable_gcfs is not None or self.gvnic is not None or
@@ -1908,6 +1921,13 @@ class APIAdapter(object):
       cluster.costManagementConfig = self.messages.CostManagementConfig(
           enabled=True)
 
+    if options.enable_multi_networking:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig(
+            enableMultiNetworking=options.enable_multi_networking)
+      else:
+        cluster.networkConfig.enableMultiNetworking = options.enable_multi_networking
+
     return cluster
 
   def ParseNodeConfig(self, options):
@@ -1940,6 +1960,7 @@ class APIAdapter(object):
     self.ParseCustomNodeConfig(options, node_config)
 
     _AddNodeLabelsToNodeConfig(node_config, options)
+    _AddLabelsToNodeConfig(node_config, options)
     _AddMetadataToNodeConfig(node_config, options)
     self._AddNodeTaintsToNodeConfig(node_config, options)
 
@@ -3406,6 +3427,7 @@ class APIAdapter(object):
     self.ParseAcceleratorOptions(options, node_config)
 
     _AddMetadataToNodeConfig(node_config, options)
+    _AddLabelsToNodeConfig(node_config, options)
     _AddNodeLabelsToNodeConfig(node_config, options)
     self._AddNodeTaintsToNodeConfig(node_config, options)
 
@@ -3700,6 +3722,15 @@ class APIAdapter(object):
                                     self.messages)
       update_request.linuxNodeConfig = node_config.linuxNodeConfig
       update_request.kubeletConfig = node_config.kubeletConfig
+    elif options.labels is not None:
+      resource_labels = self.messages.ResourceLabels()
+      labels = resource_labels.LabelsValue()
+      props = []
+      for key, value in six.iteritems(options.labels):
+        props.append(labels.AdditionalProperty(key=key, value=value))
+      labels.additionalProperties = props
+      resource_labels.labels = labels
+      update_request.resourceLabels = resource_labels
     elif options.node_labels is not None:
       node_labels = self.messages.NodeLabels()
       labels = node_labels.LabelsValue()
@@ -3919,7 +3950,9 @@ class APIAdapter(object):
         options.create_pod_ipv4_range is None and
         options.enable_private_nodes is None and
         options.network_performance_config is None and
-        options.disable_pod_cidr_overprovision is None):
+        options.disable_pod_cidr_overprovision is None and
+        options.additional_node_network is None and
+        options.additional_pod_network is None):
       return None
 
     network_config = self.messages.NodeNetworkConfig()
@@ -3939,6 +3972,29 @@ class APIAdapter(object):
     if options.disable_pod_cidr_overprovision is not None:
       network_config.podCidrOverprovisionConfig = self.messages.PodCIDROverprovisionConfig(
           disable=options.disable_pod_cidr_overprovision)
+
+    if options.additional_node_network is not None:
+      network_config.additionalNodeNetworkConfigs = []
+      for node_network_option in options.additional_node_network:
+        node_network_config_msg = self.messages.AdditionalNodeNetworkConfig()
+        node_network_config_msg.network = node_network_option['network']
+        node_network_config_msg.subnetwork = node_network_option['subnetwork']
+        network_config.additionalNodeNetworkConfigs.append(
+            node_network_config_msg)
+
+    if options.additional_pod_network is not None:
+      network_config.additionalPodNetworkConfigs = []
+      for pod_network_option in options.additional_pod_network:
+        pod_network_config_msg = self.messages.AdditionalPodNetworkConfig()
+        pod_network_config_msg.subnetwork = pod_network_option.get(
+            'subnetwork', None)
+        pod_network_config_msg.secondaryPodRange = pod_network_option[
+            'pod-ipv4-range']
+        pod_network_config_msg.maxPodsPerNode = self.messages.MaxPodsConstraint(
+            maxPodsPerNode=pod_network_option.get('max-pods-per-node', None))
+        network_config.additionalPodNetworkConfigs.append(
+            pod_network_config_msg)
+
     return network_config
 
   def _GetNetworkPerformanceConfig(self, options):
@@ -5394,6 +5450,11 @@ def _AddMetadataToNodeConfig(node_config, options):
     props.append(metadata.AdditionalProperty(key=key, value=value))
   metadata.additionalProperties = props
   node_config.metadata = metadata
+
+
+def _AddLabelsToNodeConfig(node_config, options):
+  node_config.resourceLabels = labels_util.ParseCreateArgs(
+      options, node_config.ResourceLabelsValue)
 
 
 def _AddNodeLabelsToNodeConfig(node_config, options):

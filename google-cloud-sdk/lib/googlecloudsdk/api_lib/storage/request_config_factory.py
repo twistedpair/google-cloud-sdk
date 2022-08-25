@@ -59,16 +59,27 @@ class _ResourceConfig(object):
 
   Attributes:
     acl_file_path (None|str): Path to file with ACL settings.
+    acl_grants_to_add (None|list[dict]): Contains API representations of ACL.
+      For GCS, this looks like `{ 'entity': ENTITY, 'role': GRANT }`.
+    acl_grants_to_remove: (None|list[str]): Identifier of entity to remove
+      access for. Can be user, group, project, or keyword like "All".
   """
 
-  def __init__(self, acl_file_path=None):
+  def __init__(self,
+               acl_file_path=None,
+               acl_grants_to_add=None,
+               acl_grants_to_remove=None):
     """Initializes class, binding flag values to it."""
     self.acl_file_path = acl_file_path
+    self.acl_grants_to_add = acl_grants_to_add
+    self.acl_grants_to_remove = acl_grants_to_remove
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return self.acl_file_path == other.acl_file_path
+    return (self.acl_file_path == other.acl_file_path and
+            self.acl_grants_to_add == other.acl_grants_to_add and
+            self.acl_grants_to_remove == other.acl_grants_to_remove)
 
   def __repr__(self):
     return debug_output.generic_repr(self)
@@ -99,6 +110,8 @@ class _BucketConfig(_ResourceConfig):
 
   def __init__(self,
                acl_file_path=None,
+               acl_grants_to_add=None,
+               acl_grants_to_remove=None,
                cors_file_path=None,
                labels_file_path=None,
                labels_to_append=None,
@@ -111,7 +124,8 @@ class _BucketConfig(_ResourceConfig):
                versioning=None,
                web_error_page=None,
                web_main_page_suffix=None):
-    super(_BucketConfig, self).__init__(acl_file_path)
+    super(_BucketConfig, self).__init__(acl_file_path, acl_grants_to_add,
+                                        acl_grants_to_remove)
     self.location = location
     self.cors_file_path = cors_file_path
     self.labels_file_path = labels_file_path
@@ -166,6 +180,8 @@ class _GcsBucketConfig(_BucketConfig):
 
   def __init__(self,
                acl_file_path=None,
+               acl_grants_to_add=None,
+               acl_grants_to_remove=None,
                cors_file_path=None,
                default_encryption_key=None,
                default_event_based_hold=None,
@@ -185,11 +201,11 @@ class _GcsBucketConfig(_BucketConfig):
                web_error_page=None,
                web_main_page_suffix=None):
     super(_GcsBucketConfig,
-          self).__init__(acl_file_path, cors_file_path, labels_file_path,
-                         labels_to_append, labels_to_remove,
-                         lifecycle_file_path, location, log_bucket,
-                         log_object_prefix, requester_pays, versioning,
-                         web_error_page, web_main_page_suffix)
+          self).__init__(acl_file_path, acl_grants_to_add, acl_grants_to_remove,
+                         cors_file_path, labels_file_path, labels_to_append,
+                         labels_to_remove, lifecycle_file_path, location,
+                         log_bucket, log_object_prefix, requester_pays,
+                         versioning, web_error_page, web_main_page_suffix)
     self.public_access_prevention = public_access_prevention
     self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
@@ -254,6 +270,8 @@ class _ObjectConfig(_ResourceConfig):
 
   def __init__(self,
                acl_file_path=None,
+               acl_grants_to_add=None,
+               acl_grants_to_remove=None,
                cache_control=None,
                content_disposition=None,
                content_encoding=None,
@@ -268,7 +286,8 @@ class _ObjectConfig(_ResourceConfig):
                preserve_acl=None,
                size=None,
                storage_class=None):
-    super(_ObjectConfig, self).__init__(acl_file_path)
+    super(_ObjectConfig, self).__init__(acl_file_path, acl_grants_to_add,
+                                        acl_grants_to_remove)
     self.cache_control = cache_control
     self.content_disposition = content_disposition
     self.content_encoding = content_encoding
@@ -319,6 +338,8 @@ class _GcsObjectConfig(_ObjectConfig):
 
   def __init__(self,
                acl_file_path=None,
+               acl_grants_to_add=None,
+               acl_grants_to_remove=None,
                cache_control=None,
                content_disposition=None,
                content_encoding=None,
@@ -336,6 +357,8 @@ class _GcsObjectConfig(_ObjectConfig):
                temporary_hold=None):
     super(_GcsObjectConfig, self).__init__(
         acl_file_path=acl_file_path,
+        acl_grants_to_add=acl_grants_to_add,
+        acl_grants_to_remove=acl_grants_to_remove,
         cache_control=cache_control,
         content_disposition=content_disposition,
         content_encoding=content_encoding,
@@ -602,6 +625,9 @@ def _get_request_config_resource_args(url,
   if new_resource_args and user_resource_args:
     # Fields that apply to all resource types.
     new_resource_args.acl_file_path = user_resource_args.acl_file_path
+    new_resource_args.acl_grants_to_add = user_resource_args.acl_grants_to_add
+    new_resource_args.acl_grants_to_remove = (
+        user_resource_args.acl_grants_to_remove)
 
   return new_resource_args
 
@@ -646,8 +672,10 @@ def get_request_config(url,
   return request_config
 
 
-def has_acl_request(request_config):
-  """Checks if RequestConfig has a field attempting to modify ACLs."""
+def modifies_full_acl_policy(request_config):
+  """Checks if RequestConfig has ACL field aside from predefined ACL."""
   return bool(
-      request_config.predefined_acl_string or
-      getattr(request_config.resource_args, 'acl_file_path', False))
+      request_config.resource_args and
+      (request_config.resource_args.acl_file_path or
+       request_config.resource_args.acl_grants_to_add or
+       request_config.resource_args.acl_grants_to_remove))

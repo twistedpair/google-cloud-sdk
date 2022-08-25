@@ -20,6 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import abc
+import collections
 import copy
 import json
 
@@ -374,8 +375,49 @@ def _PruneMapping(mapping, keys_to_remove, clear_others):
         del mapping[var_or_path]
 
 
+def _PruneManagedVolumeMapping(volumes, volume_mounts, removes, clear_others):
+  """Remove the specified volume mappings from the config."""
+  if clear_others:
+    volume_mounts.clear()
+  else:
+    for remove in removes:
+      mount, path = remove.rsplit('/', 1)
+      if mount in volume_mounts:
+        new_paths = []
+        for key_to_path in volumes[volume_mounts[mount]].items:
+          if path != key_to_path.path:
+            new_paths.append(key_to_path)
+        if not new_paths:
+          # there are no more versions in the volume
+          del volume_mounts[mount]
+        else:
+          volumes[volume_mounts[mount]].items = new_paths
+
+
+def _CopyToNewVolume(resource, volume_name, mount_point, volume_source, volumes,
+                     volume_mounts):
+  """Copies existing volume to volume with a new name."""
+  new_volume_name = _UniqueVolumeName(volume_source.secretName,
+                                      resource.template.volumes)
+  try:
+    volume_mounts[mount_point] = new_volume_name
+  except KeyError:
+    raise exceptions.ConfigurationError(
+        'Cannot update mount [{}] because its mounted volume '
+        'is of a different source type.'.format(mount_point))
+    # the volume does not exist so we need a new one
+  new_paths = {item.path for item in volume_source.items}
+  old_volume = volumes[volume_name]
+  for item in old_volume.items:
+    if item.path not in new_paths:
+      volume_source.items.append(item)
+  volumes[new_volume_name] = volume_source
+  return new_volume_name
+
+
 class EnvVarLiteralChanges(ConfigChanger):
-  """Represents the user intent to modify environment variables string literals."""
+  """Represents the user intent to modify environment variables string literals.
+  """
 
   def __init__(self, updates, removes, clear_others):
     """Initialize a new EnvVarLiteralChanges object.
@@ -738,6 +780,68 @@ class SecretVolumeChanges(ConfigChanger):
     self._removes = removes
     self._clear_others = clear_others
 
+  def _UpdateManagedVolumes(self, resource, volume_mounts, volumes):
+    """Update volumes for Cloud Run. Ensure only one secret per directory."""
+    new_volumes = {}
+    volumes_to_mounts = collections.defaultdict(list)
+    for path, vol in volume_mounts.items():
+      volumes_to_mounts[vol].append(path)
+
+    for file_path, reachable_secret in self._updates.items():
+      mount_point = file_path.rsplit('/', 1)[0]
+      if mount_point in new_volumes:
+        if new_volumes[mount_point].secretName != reachable_secret.secret_name:
+          # we don't support subpaths in managed so if there's a second
+          # secret in the same directory, error.
+          raise exceptions.ConfigurationError(
+              'Cannot update secret at [{}] because a different secret is '
+              'already mounted in the same directory.'.format(file_path))
+        reachable_secret.AppendToSecretVolumeSource(resource,
+                                                    new_volumes[mount_point])
+      else:
+        new_volumes[mount_point] = reachable_secret.AsSecretVolumeSource(
+            resource)
+
+    for mount_point, volume_source in new_volumes.items():
+      if mount_point in volume_mounts:
+        volume_name = volume_mounts[mount_point]
+        if len(volumes_to_mounts[volume_name]) > 1:
+          # the volume is used by more than one path, let's separate it into a
+          # separate volume
+          volumes_to_mounts[volume_name].remove(mount_point)
+          new_name = _CopyToNewVolume(resource, volume_name, mount_point,
+                                      volume_source, volumes, volume_mounts)
+          volumes_to_mounts[new_name].append(mount_point)
+          continue
+        else:
+          volume = volumes[volume_name]
+          if volume.secretName != volume_source.secretName:
+            # only allow replacing the secret if all versions are replaced
+            existing_paths = {item.path for item in volume.items}
+            new_paths = {item.path for item in volume_source.items}
+            if not existing_paths.issubset(new_paths):
+              raise exceptions.ConfigurationError(
+                  'Multiple secrets are specified for directory [{}]. Cloud Run '
+                  'only supports one secret per directory'.format(mount_point))
+          else:
+            # we need to merge the two
+            new_paths = {item.path for item in volume_source.items}
+            for item in volume.items:
+              # copy over existing paths that are not overridden
+              if item.path not in new_paths:
+                volume_source.items.append(item)
+      else:
+        volume_name = _UniqueVolumeName(volume_source.secretName,
+                                        resource.template.volumes)
+        try:
+          volume_mounts[mount_point] = volume_name
+        except KeyError:
+          raise exceptions.ConfigurationError(
+              'Cannot update mount [{}] because its mounted volume '
+              'is of a different source type.'.format(mount_point))
+          # the volume does not exist so we need a new one
+      volumes[volume_name] = volume_source
+
   def Adjust(self, resource):
     """Mutates the given config's volumes to match the desired changes.
 
@@ -756,32 +860,29 @@ class SecretVolumeChanges(ConfigChanger):
     volume_mounts = resource.template.volume_mounts.secrets
     volumes = resource.template.volumes.secrets
 
-    # TODO(b/182412304): This is not going to work on secrets in the same dir
-    # (but it could be made to work if they're versions of one secret.)
     if platforms.IsManaged():
-      removes = [p.rsplit('/', 1)[0] for p in self._removes]
+      _PruneManagedVolumeMapping(volumes, volume_mounts, self._removes,
+                                 self._clear_others)
     else:
       removes = self._removes
+      _PruneMapping(volume_mounts, removes, self._clear_others)
+    if platforms.IsManaged():
+      self._UpdateManagedVolumes(resource, volume_mounts, volumes)
+    else:
+      for file_path, reachable_secret in self._updates.items():
+        volume_name = _UniqueVolumeName(reachable_secret.secret_name,
+                                        resource.template.volumes)
 
-    _PruneMapping(volume_mounts, removes, self._clear_others)
-
-    for file_path, reachable_secret in self._updates.items():
-      volume_name = _UniqueVolumeName(reachable_secret.secret_name,
-                                      resource.template.volumes)
-
-      # volume_mounts is a special mapping that filters for the current kind
-      # of mount and KeyErrors on existing keys with other types.
-      try:
-        mount_point = file_path
-        if platforms.IsManaged():
-          # TODO(b/182412304): SubPath handling is not ready.
-          mount_point = file_path.rsplit('/', 1)[0]
-        volume_mounts[mount_point] = volume_name
-      except KeyError:
-        raise exceptions.ConfigurationError(
-            'Cannot update mount [{}] because its mounted volume '
-            'is of a different source type.'.format(file_path))
-      volumes[volume_name] = reachable_secret.AsSecretVolumeSource(resource)
+        # volume_mounts is a special mapping that filters for the current kind
+        # of mount and KeyErrors on existing keys with other types.
+        try:
+          mount_point = file_path
+          volume_mounts[mount_point] = volume_name
+        except KeyError:
+          raise exceptions.ConfigurationError(
+              'Cannot update mount [{}] because its mounted volume '
+              'is of a different source type.'.format(file_path))
+        volumes[volume_name] = reachable_secret.AsSecretVolumeSource(resource)
 
     _PruneVolumes(volume_mounts, volumes)
     secrets_mapping.PruneAnnotation(resource)
@@ -789,7 +890,8 @@ class SecretVolumeChanges(ConfigChanger):
 
 
 class ConfigMapVolumeChanges(ConfigChanger):
-  """Represents the user intent to change volumes with config map source types."""
+  """Represents the user intent to change volumes with config map source types.
+  """
 
   def __init__(self, updates, removes, clear_others):
     """Initialize a new ConfigMapVolumeChanges object.

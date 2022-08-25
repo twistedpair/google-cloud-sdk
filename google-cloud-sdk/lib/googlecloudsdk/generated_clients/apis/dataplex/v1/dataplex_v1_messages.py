@@ -3360,6 +3360,8 @@ class GoogleCloudDataplexV1SessionEvent(_messages.Message):
 
   Fields:
     eventSucceeded: The status of the event.
+    fastStartupEnabled: If the session is associated with an environment with
+      fast startup enabled, and was created before being assigned to a user.
     message: The log message.
     query: The execution details of the query.
     sessionId: Unique identifier for the session.
@@ -3368,7 +3370,6 @@ class GoogleCloudDataplexV1SessionEvent(_messages.Message):
       is assigned to user.
     userId: The information about the user that created the session. It will
       be the email address of the user.
-    warmPoolEnabled: If the session is a warm pooled session.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -3389,13 +3390,13 @@ class GoogleCloudDataplexV1SessionEvent(_messages.Message):
     CREATE = 4
 
   eventSucceeded = _messages.BooleanField(1)
-  message = _messages.StringField(2)
-  query = _messages.MessageField('GoogleCloudDataplexV1SessionEventQueryDetail', 3)
-  sessionId = _messages.StringField(4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
-  unassignedDuration = _messages.StringField(6)
-  userId = _messages.StringField(7)
-  warmPoolEnabled = _messages.BooleanField(8)
+  fastStartupEnabled = _messages.BooleanField(2)
+  message = _messages.StringField(3)
+  query = _messages.MessageField('GoogleCloudDataplexV1SessionEventQueryDetail', 4)
+  sessionId = _messages.StringField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  unassignedDuration = _messages.StringField(7)
+  userId = _messages.StringField(8)
 
 
 class GoogleCloudDataplexV1SessionEventQueryDetail(_messages.Message):
@@ -3829,16 +3830,16 @@ class GoogleCloudDataplexV1TaskNotebookTaskConfig(_messages.Message):
   r"""Config for running scheduled notebooks.
 
   Fields:
-    archiveUris: Optional. GCS URIs of archives to be extracted into the
-      working directory of each executor. Supported file types: .jar, .tar,
-      .tar.gz, .tgz, and .zip.
-    fileUris: Optional. GCS URIs of files to be placed in the working
-      directory of each executor.
+    archiveUris: Optional. Cloud Storage URIs of archives to be extracted into
+      the working directory of each executor. Supported file types: .jar,
+      .tar, .tar.gz, .tgz, and .zip.
+    fileUris: Optional. Cloud Storage URIs of files to be placed in the
+      working directory of each executor.
     infrastructureSpec: Optional. Infrastructure specification for the
       execution.
-    notebook: Required. Path to input notebook. This can be the GCS URI of the
-      notebook file or the path to a Notebook Content. The execution args are
-      accessible as environment variables (TASK_key=value).
+    notebook: Required. Path to input notebook. This can be the Cloud Storage
+      URI of the notebook file or the path to a Notebook Content. The
+      execution args are accessible as environment variables (TASK_key=value).
   """
 
   archiveUris = _messages.StringField(1, repeated=True)

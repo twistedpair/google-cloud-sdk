@@ -135,6 +135,9 @@ class MultiPrinter(resource_printer_base.ResourcePrinter):
       if i != 0 or delimit:
         self._out.write(separator)
       printer.Print(resource_property.Get(record, col.key))
+    terminator = self.attributes.get('terminator', '')
+    if terminator:
+      self._out.write(terminator)
 
 
 class PrinterAttributes(resource_printer_base.ResourcePrinter):

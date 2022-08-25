@@ -2298,7 +2298,7 @@
       "type": "object",
       "properties": {
         "notebook": {
-          "description": "Required. Path to input notebook. This can be the GCS URI of the notebook file or the path to a Notebook Content. The execution args are accessible as environment variables (TASK_key=value).",
+          "description": "Required. Path to input notebook. This can be the Cloud Storage URI of the notebook file or the path to a Notebook Content. The execution args are accessible as environment variables (TASK_key=value).",
           "type": "string"
         },
         "infrastructureSpec": {
@@ -2306,14 +2306,14 @@
           "$ref": "GoogleCloudDataplexV1TaskInfrastructureSpec"
         },
         "fileUris": {
-          "description": "Optional. GCS URIs of files to be placed in the working directory of each executor.",
+          "description": "Optional. Cloud Storage URIs of files to be placed in the working directory of each executor.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "archiveUris": {
-          "description": "Optional. GCS URIs of archives to be extracted into the working directory of each executor. Supported file types: .jar, .tar, .tar.gz, .tgz, and .zip.",
+          "description": "Optional. Cloud Storage URIs of archives to be extracted into the working directory of each executor. Supported file types: .jar, .tar, .tar.gz, .tgz, and .zip.",
           "type": "array",
           "items": {
             "type": "string"
@@ -3010,8 +3010,8 @@
           "description": "The status of the event.",
           "type": "boolean"
         },
-        "warmPoolEnabled": {
-          "description": "If the session is a warm pooled session.",
+        "fastStartupEnabled": {
+          "description": "If the session is associated with an environment with fast startup enabled, and was created before being assigned to a user.",
           "type": "boolean"
         },
         "unassignedDuration": {

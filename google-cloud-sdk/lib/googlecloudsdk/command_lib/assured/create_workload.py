@@ -63,6 +63,7 @@ class CreateWorkload(base.CreateCommand):
       workload = message_util.CreateAssuredWorkload(
           display_name=args.display_name,
           compliance_regime=args.compliance_regime,
+          partner=args.partner,
           billing_account=args.billing_account,
           next_rotation_time=args.next_rotation_time,
           rotation_period=args.rotation_period,

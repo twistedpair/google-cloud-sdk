@@ -211,7 +211,7 @@ def SearchMembershipResource(args, flag_override=''):
   all_memberships, unavailable = api_util.ListMembershipsFull()
   if unavailable:
     raise exceptions.Error(
-        ('Locations [{}] are currently unreachable. Please specify '
+        ('Locations {} are currently unreachable. Please specify '
          'memberships using `--location` or the full resource name '
          '(projects/*/locations/*/memberships/*)').format(unavailable))
   if not all_memberships:

@@ -41,11 +41,13 @@ class DataprocV1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_autoscalingPolicies = self.ProjectsLocationsAutoscalingPoliciesService(self)
     self.projects_locations_batches = self.ProjectsLocationsBatchesService(self)
+    self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_sessions = self.ProjectsLocationsSessionsService(self)
     self.projects_locations_workflowTemplates = self.ProjectsLocationsWorkflowTemplatesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_regions_autoscalingPolicies = self.ProjectsRegionsAutoscalingPoliciesService(self)
     self.projects_regions_clusters_gceNodePools = self.ProjectsRegionsClustersGceNodePoolsService(self)
+    self.projects_regions_clusters_nodeGroups = self.ProjectsRegionsClustersNodeGroupsService(self)
     self.projects_regions_clusters = self.ProjectsRegionsClustersService(self)
     self.projects_regions_jobs = self.ProjectsRegionsJobsService(self)
     self.projects_regions_operations = self.ProjectsRegionsOperationsService(self)
@@ -394,6 +396,124 @@ class DataprocV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataprocProjectsLocationsBatchesListRequest',
         response_type_name='ListBatchesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_operations resource."""
+
+    _NAME = 'projects_locations_operations'
+
+    def __init__(self, client):
+      super(DataprocV1.ProjectsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
+
+      Args:
+        request: (DataprocProjectsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='dataproc.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED.
+
+      Args:
+        request: (DataprocProjectsLocationsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='dataproc.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (DataprocProjectsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='dataproc.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users/*/operations. To override the binding, API services can add a binding such as "/v1/{name=users/*}/operations" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+
+      Args:
+        request: (DataprocProjectsLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='dataproc.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
@@ -1096,7 +1216,7 @@ class DataprocV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#gcenodepooloperationmetadata).
+      r"""Deprecated: creates a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#gcenodepooloperationmetadata).
 
       Args:
         request: (DataprocProjectsRegionsClustersGceNodePoolsCreateRequest) input message
@@ -1123,7 +1243,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#gcenodepooloperationmetadata).
+      r"""Deprecated: Deletes a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#gcenodepooloperationmetadata).
 
       Args:
         request: (DataprocProjectsRegionsClustersGceNodePoolsDeleteRequest) input message
@@ -1150,7 +1270,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the resource representation for a Compute Engine node pool in a cluster.
+      r"""Deprecated: Gets the resource representation for a Compute Engine node pool in a cluster.
 
       Args:
         request: (DataprocProjectsRegionsClustersGceNodePoolsGetRequest) input message
@@ -1177,7 +1297,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all Compute Engine node pools in a given cluster.
+      r"""Deprecated: Lists all Compute Engine node pools in a given cluster.
 
       Args:
         request: (DataprocProjectsRegionsClustersGceNodePoolsListRequest) input message
@@ -1204,7 +1324,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Resize(self, request, global_params=None):
-      r"""Resizes a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#gcenodepooloperationmetadata).
+      r"""Deprecated: resizes a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#gcenodepooloperationmetadata).
 
       Args:
         request: (DataprocProjectsRegionsClustersGceNodePoolsResizeRequest) input message
@@ -1226,6 +1346,151 @@ class DataprocV1(base_api.BaseApiClient):
         relative_path='v1/{+name}:resize',
         request_field='resizeGceNodePoolRequest',
         request_type_name='DataprocProjectsRegionsClustersGceNodePoolsResizeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsRegionsClustersNodeGroupsService(base_api.BaseApiService):
+    """Service class for the projects_regions_clusters_nodeGroups resource."""
+
+    _NAME = 'projects_regions_clusters_nodeGroups'
+
+    def __init__(self, client):
+      super(DataprocV1.ProjectsRegionsClustersNodeGroupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a node group in a cluster. The returned Operation.metadata is NodeGroupOperationMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#nodegroupoperationmetadata).
+
+      Args:
+        request: (DataprocProjectsRegionsClustersNodeGroupsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/nodeGroups',
+        http_method='POST',
+        method_id='dataproc.projects.regions.clusters.nodeGroups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['nodeGroupId', 'requestId'],
+        relative_path='v1/{+parent}/nodeGroups',
+        request_field='nodeGroup',
+        request_type_name='DataprocProjectsRegionsClustersNodeGroupsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a node group in a cluster. The returned Operation.metadata is NodeGroupOperationMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#nodegroupoperationmetadata).
+
+      Args:
+        request: (DataprocProjectsRegionsClustersNodeGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/regions/{regionsId}/clusters/nodeGroups/{nodeGroupsId}',
+        http_method='DELETE',
+        method_id='dataproc.projects.regions.clusters.nodeGroups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataprocProjectsRegionsClustersNodeGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the resource representation for a node group in a cluster.
+
+      Args:
+        request: (DataprocProjectsRegionsClustersNodeGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NodeGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/nodeGroups/{nodeGroupsId}',
+        http_method='GET',
+        method_id='dataproc.projects.regions.clusters.nodeGroups.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataprocProjectsRegionsClustersNodeGroupsGetRequest',
+        response_type_name='NodeGroup',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all node groups in a cluster.
+
+      Args:
+        request: (DataprocProjectsRegionsClustersNodeGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNodeGroupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/nodeGroups',
+        http_method='GET',
+        method_id='dataproc.projects.regions.clusters.nodeGroups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/nodeGroups',
+        request_field='',
+        request_type_name='DataprocProjectsRegionsClustersNodeGroupsListRequest',
+        response_type_name='ListNodeGroupsResponse',
+        supports_download=False,
+    )
+
+    def Resize(self, request, global_params=None):
+      r"""Resizes a node group in a cluster. The returned Operation.metadata is NodeGroupOperationMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#nodegroupoperationmetadata).
+
+      Args:
+        request: (DataprocProjectsRegionsClustersNodeGroupsResizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Resize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resize.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/nodeGroups/{nodeGroupsId}:resize',
+        http_method='POST',
+        method_id='dataproc.projects.regions.clusters.nodeGroups.resize',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:resize',
+        request_field='resizeNodeGroupRequest',
+        request_type_name='DataprocProjectsRegionsClustersNodeGroupsResizeRequest',
         response_type_name='Operation',
         supports_download=False,
     )

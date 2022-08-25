@@ -121,3 +121,30 @@ def AddNodePoolResourceArg(parser, verb, positional=True):
       GetNodePoolResourceSpec(),
       'node pool {}'.format(verb),
       required=True).AddToParser(parser)
+
+
+def AddForceCluster(parser):
+  """Adds a flag for force cluster operation when there are existing node pools.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--force',
+      action='store_true',
+      help='If set, the operation will also apply to the child node pools. This flag is required if the cluster has any associated node pools.',
+  )
+
+
+def AddAllowMissingCluster(parser):
+  """Adds a flag for the cluster operation to return success and perform no action when there is no matching cluster.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--allow-missing',
+      action='store_true',
+      help='If set, and the Bare Metal cluster is not found, the request will succeed but no action will be taken.',
+  )
+

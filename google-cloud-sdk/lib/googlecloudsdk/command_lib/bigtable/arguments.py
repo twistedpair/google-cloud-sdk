@@ -557,6 +557,17 @@ def GetKmsKeyResourceSpec():
       disable_auto_completers=False)
 
 
+def GetBackupResourceSpec():
+  return concepts.ResourceSpec(
+      'bigtableadmin.projects.instances.clusters.backups',
+      resource_name='backup',
+      backupsId=BackupAttributeConfig(),
+      clustersId=ClusterAttributeConfig(),
+      instancesId=InstanceAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
+
+
 def AddInstancesResourceArg(parser, verb, positional=False):
   """Add --instances resource argument to the parser."""
   concept_parsers.ConceptParser.ForResource(
@@ -712,27 +723,33 @@ def AddEndTimeArgs(parser, verb):
 
 def AddCopyBackupResourceArgs(parser):
   """Add backup resource args (source, destination) for copy command."""
-  backup_spec_data = yaml_data.ResourceYAMLData.FromPath('bigtable.backup')
-
   arg_specs = [
-      resource_args.GetResourcePresentationSpec(
-          verb='to copy from',
-          name='source',
+      presentation_specs.ResourcePresentationSpec(
+          '--source',
+          GetBackupResourceSpec(),
+          'The source backup to copy from.',
           required=True,
-          prefixes=True,
-          attribute_overrides={'backup': 'source'},
-          positional=False,
-          resource_data=backup_spec_data.GetData()),
-      resource_args.GetResourcePresentationSpec(
-          verb='to copy to',
-          name='destination',
+          flag_name_overrides={
+              'project': '--source-project',
+              'instance': '--source-instance',
+              'cluster': '--source-cluster',
+              'backup': '--source-backup',
+          }),
+      presentation_specs.ResourcePresentationSpec(
+          '--destination',
+          GetBackupResourceSpec(),
+          'The destination backup to copy to.',
           required=True,
-          prefixes=True,
-          attribute_overrides={'backup': 'destination'},
-          positional=False,
-          resource_data=backup_spec_data.GetData())
+          flag_name_overrides={
+              'project': '--destination-project',
+              'instance': '--destination-instance',
+              'cluster': '--destination-cluster',
+              'backup': '--destination-backup',
+          }),
   ]
   fallthroughs = {
+      '--source.project': ['--destination.project'],
+      '--destination.project': ['--source.project'],
       '--source.instance': ['--destination.instance'],
       '--destination.instance': ['--source.instance']
   }

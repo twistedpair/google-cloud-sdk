@@ -6,7 +6,7 @@ project:
     parameter_name: projectsId
     attribute_name: project
     help: |
-      The Cloud project name to use.
+      Name of the Cloud project to use.
     property: core/project
 
 location:
@@ -19,7 +19,7 @@ location:
     parameter_name: locationsId
     attribute_name: location
     help: |
-      The location of the Dataplex resource.
+      Location of the Dataplex resource.
     property: dataplex/location
 
 lake:
@@ -34,7 +34,7 @@ lake:
     parameter_name: lakesId
     attribute_name: lake
     help: |
-      The identifier of the Dataplex lake resource.
+      Identifier of the Dataplex lake resource.
 
 zone:
   name: zone
@@ -49,7 +49,7 @@ zone:
     parameter_name: zonesId
     attribute_name: zone
     help: |
-      The identifier of the Dataplex zone resource.
+      Identifier of the Dataplex zone resource.
 
 asset:
   name: asset
@@ -65,7 +65,7 @@ asset:
     parameter_name: assetsId
     attribute_name: asset
     help: |
-      The identifier of the Dataplex asset resource.
+      Identifier of the Dataplex asset resource.
 
 task:
   name: task
@@ -80,7 +80,7 @@ task:
     parameter_name: tasksId
     attribute_name: task
     help: |
-      The identifier of the Dataplex task resource.
+      Identifier of the Dataplex task resource.
 
 job:
   name: job
@@ -96,7 +96,7 @@ job:
     parameter_name: jobsId
     attribute_name: job
     help: |
-      The job_id of the Job running a particular Task in Dataplex.
+      Job_id of the Job running a particular Task in Dataplex.
 
 environment:
   name: environment
@@ -111,7 +111,7 @@ environment:
     parameter_name: environmentsId
     attribute_name: environment
     help: |
-      The environment_id of a particular Environment in Dataplex.
+      Environment_id of a particular Environment in Dataplex.
 
 session:
   name: session
@@ -127,7 +127,7 @@ session:
     parameter_name: sessionsId
     attribute_name: session
     help: |
-      The session_id of a particular Session of an Environment in Dataplex.
+      Session_id of a particular Session of an Environment in Dataplex.
 
 content:
   name: content
@@ -142,4 +142,4 @@ content:
     parameter_name: contentitemsId
     attribute_name: content
     help: |
-      The content_id for the Content Resource of the Dataplex service.
+      Content_id for the Content Resource of the Dataplex service.

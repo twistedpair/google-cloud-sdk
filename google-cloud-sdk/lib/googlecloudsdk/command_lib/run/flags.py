@@ -1029,7 +1029,9 @@ def AddBinAuthzBreakglassFlag(parser):
       help='Justification to bypass Binary Authorization policy constraints '
       'and allow the operation. See '
       'https://cloud.google.com/binary-authorization/docs/using-breakglass '
-      'for more information.')
+      'for more information. '
+      'Next update or deploy command will automatically clear existing '
+      'breakglass justification.')
 
 
 def AddVpcNetworkFlags(parser, resource_kind='Service'):
@@ -1579,6 +1581,11 @@ def GetServiceConfigurationChanges(args):
 def GetJobConfigurationChanges(args):
   """Returns a list of changes to the job config, based on the flags set."""
   changes = _GetConfigurationChanges(args)
+  # Deletes existing breakglass annotation first.
+  changes.insert(
+      0,
+      config_changes.DeleteAnnotationChange(
+          k8s_object.BINAUTHZ_BREAKGLASS_ANNOTATION))
 
   if FlagIsExplicitlySet(args, 'parallelism'):
     changes.append(

@@ -42,7 +42,9 @@ def ListNotificationReqHook(ref, args, req):
 def DescribeNotificationReqHook(ref, args, req):
   """Generate a notification config using organization and config id."""
   del ref
-  _ValidateMutexOnConfigIdAndOrganization(args)
+
+  parent = GetParentFromNamedArguments(args)
+  _ValidateMutexOnConfigIdAndParent(args, parent)
   req.name = _GetNotificationConfigName(args)
 
   return req
@@ -59,10 +61,10 @@ def CreateNotificationReqHook(ref, args, req):
   req.configId = _GetNotificationConfigId(config)
   messages = sc_client.GetMessages("v1")
 
-  if (args.filter is None):
+  if args.filter is None:
     streamingConfig = messages.StreamingConfig()
-    streamingConfig.filter = "";
-    req.notificationConfig.streamingConfig = streamingConfig;
+    streamingConfig.filter = ""
+    req.notificationConfig.streamingConfig = streamingConfig
 
   return req
 
@@ -85,6 +87,15 @@ def UpdateNotificationReqHook(ref, args, req):
   parent = GetParentFromNamedArguments(args)
   _ValidateMutexOnConfigIdAndParent(args, parent)
   req.name = _GetNotificationConfigName(args)
+
+  # SCC's custom --filter is passing the streaming config filter as part of
+  # the request body. However --filter is a global filter flag in gcloud. The
+  # --filter flag in gcloud (outside of this command) is used as client side
+  # filtering. This has led to a collision in logic as gcloud believes the
+  # update is trying to perform client side filtering. Since changing the
+  # argument flag would be considered a breaking change, setting args.filter to
+  # None in the request hook will skip over the client side filter logic.
+  args.filter = None
 
   return req
 
@@ -115,20 +126,6 @@ def _GetNotificationConfigName(args):
 def _GetNotificationConfigId(resource_name):
   params_as_list = resource_name.split("/")
   return params_as_list[3]
-
-
-def _ValidateMutexOnConfigIdAndOrganization(args):
-  """Validates that only a full resource name or split arguments are provided."""
-  if "/" in args.notificationConfigId:
-    if args.organization is not None:
-      raise InvalidNotificationConfigError(
-          "Only provide a full resource name "
-          "(organizations/123/notificationConfigs/test-config) or an --organization "
-          "flag, not both.")
-  elif args.organization is None:
-    raise InvalidNotificationConfigError(
-        "Organization must be provided if it is not included in notification id."
-    )
 
 
 def _ValidateMutexOnConfigIdAndParent(args, parent):

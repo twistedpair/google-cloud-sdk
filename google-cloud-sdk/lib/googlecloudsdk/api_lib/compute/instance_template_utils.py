@@ -24,6 +24,7 @@ from googlecloudsdk.api_lib.compute import image_utils
 from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import kms_utils
 from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.api_lib.compute.instances.create import utils as create_utils
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute.networks.subnets import flags as subnet_flags
 from googlecloudsdk.core import properties
@@ -194,6 +195,72 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
   return result
 
 
+def CreateDiskMessages(args,
+                       client,
+                       resources,
+                       project,
+                       image_uri,
+                       boot_disk_size_gb=None,
+                       create_boot_disk=False,
+                       support_kms=False,
+                       support_multi_writer=False,
+                       support_provisioned_throughput=False,
+                       match_container_mount_disks=False
+                       ):
+  """Create disk messages for a single instance template."""
+  container_mount_disk = (
+      args.container_mount_disk if match_container_mount_disks else [])
+
+  persistent_disks = (
+      CreatePersistentAttachedDiskMessages(
+          client.messages, args.disk or [],
+          container_mount_disk=container_mount_disk))
+
+  persistent_create_disks = (
+      CreatePersistentCreateDiskMessages(
+          client,
+          resources,
+          project,
+          getattr(args, 'create_disk', []),
+          support_kms=support_kms,
+          support_multi_writer=support_multi_writer,
+          support_provisioned_throughput=support_provisioned_throughput))
+
+  if create_boot_disk:
+    boot_disk_list = [
+        CreateDefaultBootAttachedDiskMessage(
+            messages=client.messages,
+            disk_type=args.boot_disk_type,
+            disk_device_name=args.boot_disk_device_name,
+            disk_auto_delete=args.boot_disk_auto_delete,
+            disk_size_gb=boot_disk_size_gb,
+            image_uri=image_uri,
+            kms_args=args,
+            support_kms=support_kms,
+            disk_provisioned_iops=args.boot_disk_provisioned_iops)
+    ]
+  elif persistent_create_disks and persistent_create_disks[0].boot:
+    boot_disk_list = [persistent_create_disks.pop(0)]
+  elif persistent_disks and persistent_disks[0].boot:
+    boot_disk_list = [persistent_disks.pop(0)]
+  else:
+    boot_disk_list = []
+
+  local_nvdimms = create_utils.CreateLocalNvdimmMessages(
+      args,
+      resources,
+      client.messages,
+  )
+
+  local_ssds = create_utils.CreateLocalSsdMessages(
+      args,
+      resources,
+      client.messages,
+  )
+
+  return boot_disk_list + persistent_disks + persistent_create_disks + local_nvdimms + local_ssds
+
+
 def CreatePersistentAttachedDiskMessages(
     messages, disks, container_mount_disk=None):
   """Returns a list of AttachedDisk messages and the boot disk's reference.
@@ -354,7 +421,11 @@ def CreatePersistentCreateDiskMessages(client,
         type=client.messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
         diskEncryptionKey=disk_key)
 
-    disks_messages.append(create_disk)
+    # The boot disk must end up at index 0.
+    if boot:
+      disks_messages = [create_disk] + disks_messages
+    else:
+      disks_messages.append(create_disk)
 
   return disks_messages
 

@@ -69,14 +69,21 @@ def _get_gzip_settings_from_command_args(args):
 class _UserResourceArgs(object):
   """Contains user flag values affecting cloud settings."""
 
-  def __init__(self, acl_file_path=None):
+  def __init__(self,
+               acl_file_path=None,
+               acl_grants_to_add=None,
+               acl_grants_to_remove=None):
     """Initializes class, binding flag values to it."""
     self.acl_file_path = acl_file_path
+    self.acl_grants_to_add = acl_grants_to_add
+    self.acl_grants_to_remove = acl_grants_to_remove
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return self.acl_file_path == other.acl_file_path
+    return (self.acl_file_path == other.acl_file_path and
+            self.acl_grants_to_add == other.acl_grants_to_add and
+            self.acl_grants_to_remove == other.acl_grants_to_remove)
 
   def __repr__(self):
     return debug_output.generic_repr(self)
@@ -87,6 +94,8 @@ class _UserBucketArgs(_UserResourceArgs):
 
   def __init__(self,
                acl_file_path=None,
+               acl_grants_to_add=None,
+               acl_grants_to_remove=None,
                cors_file_path=None,
                default_encryption_key=None,
                default_event_based_hold=None,
@@ -106,7 +115,8 @@ class _UserBucketArgs(_UserResourceArgs):
                web_error_page=None,
                web_main_page_suffix=None):
     """Initializes class, binding flag values to it."""
-    super(_UserBucketArgs, self).__init__(acl_file_path)
+    super(_UserBucketArgs, self).__init__(acl_file_path, acl_grants_to_add,
+                                          acl_grants_to_remove)
     self.cors_file_path = cors_file_path
     self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
@@ -157,6 +167,8 @@ class _UserObjectArgs(_UserResourceArgs):
   def __init__(
       self,
       acl_file_path=None,
+      acl_grants_to_add=None,
+      acl_grants_to_remove=None,
       cache_control=None,
       content_disposition=None,
       content_encoding=None,
@@ -173,7 +185,8 @@ class _UserObjectArgs(_UserResourceArgs):
       temporary_hold=None,
   ):
     """Initializes class, binding flag values to it."""
-    super(_UserObjectArgs, self).__init__(acl_file_path)
+    super(_UserObjectArgs, self).__init__(acl_file_path, acl_grants_to_add,
+                                          acl_grants_to_remove)
     self.cache_control = cache_control
     self.content_disposition = content_disposition
     self.content_encoding = content_encoding
@@ -298,6 +311,8 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
 
       resource_args = _UserBucketArgs(
           acl_file_path=getattr(args, 'acl_file', None),
+          acl_grants_to_add=getattr(args, 'add_acl_grant', None),
+          acl_grants_to_remove=getattr(args, 'remove_acl_grant', None),
           cors_file_path=cors_file_path,
           default_encryption_key=default_encryption_key,
           default_event_based_hold=getattr(args, 'default_event_based_hold',
@@ -347,6 +362,8 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
 
       resource_args = _UserObjectArgs(
           acl_file_path=getattr(args, 'acl_file', None),
+          acl_grants_to_add=getattr(args, 'add_acl_grant', None),
+          acl_grants_to_remove=getattr(args, 'remove_acl_grant', None),
           cache_control=cache_control,
           content_disposition=content_disposition,
           content_encoding=content_encoding,

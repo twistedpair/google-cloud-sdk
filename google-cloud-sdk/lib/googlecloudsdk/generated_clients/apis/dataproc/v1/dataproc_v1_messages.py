@@ -157,8 +157,8 @@ class AutoscalingPolicy(_messages.Message):
 
 
 class AuxiliaryGceNodePool(_messages.Message):
-  r"""Dataproc Compute Engine node pool identification and configuration
-  information.
+  r"""Deprecated: Dataproc Compute Engine node pool identification and
+  configuration information.
 
   Fields:
     gceNodePool: Required. Dataproc Compute Engine node pool configuration.
@@ -170,6 +170,21 @@ class AuxiliaryGceNodePool(_messages.Message):
 
   gceNodePool = _messages.MessageField('GceNodePool', 1)
   gceNodePoolId = _messages.StringField(2)
+
+
+class AuxiliaryNodeGroup(_messages.Message):
+  r"""Node group identification and configuration. information.
+
+  Fields:
+    nodeGroup: Required. Node group configuration.
+    nodeGroupId: Optional. A node group ID. Generated if not specified.The ID
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). Cannot begin or end with underscore or hyphen. Must
+      consist of from 3 to 33 characters.
+  """
+
+  nodeGroup = _messages.MessageField('NodeGroup', 1)
+  nodeGroupId = _messages.StringField(2)
 
 
 class AuxiliaryServicesConfig(_messages.Message):
@@ -579,10 +594,9 @@ class ClusterConfig(_messages.Message):
   Fields:
     autoscalingConfig: Optional. Autoscaling config for the policy associated
       with the cluster. Cluster does not autoscale if this field is unset.
-    auxiliaryGceNodePools: Optional. The Compute Engine configuration settings
-      for cluster node pools.
-    auxiliaryNodePoolConfigs: Optional. The config for a cluster auxiliary
-      node pool.
+    auxiliaryGceNodePools: Optional. Deprecated: The Compute Engine
+      configuration settings for cluster node pools.
+    auxiliaryNodeGroups: Optional. The node group settings.
     configBucket: Optional. A Cloud Storage bucket used to stage job
       dependencies, config files, and job driver console output. If you do not
       specify a staging bucket, Cloud Dataproc will determine a Cloud Storage
@@ -637,7 +651,7 @@ class ClusterConfig(_messages.Message):
 
   autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
   auxiliaryGceNodePools = _messages.MessageField('AuxiliaryGceNodePool', 2, repeated=True)
-  auxiliaryNodePoolConfigs = _messages.MessageField('NodePoolConfig', 3, repeated=True)
+  auxiliaryNodeGroups = _messages.MessageField('AuxiliaryNodeGroup', 3, repeated=True)
   configBucket = _messages.StringField(4)
   dataprocMetricConfig = _messages.MessageField('DataprocMetricConfig', 5)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 6)
@@ -1185,6 +1199,52 @@ class DataprocProjectsLocationsBatchesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class DataprocProjectsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsOperationsCancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsLocationsOperationsGetRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsLocationsOperationsListRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class DataprocProjectsLocationsSessionsCreateRequest(_messages.Message):
@@ -1878,6 +1938,103 @@ class DataprocProjectsRegionsClustersListRequest(_messages.Message):
   region = _messages.StringField(5, required=True)
 
 
+class DataprocProjectsRegionsClustersNodeGroupsCreateRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersNodeGroupsCreateRequest object.
+
+  Fields:
+    nodeGroup: A NodeGroup resource to be passed as the request body.
+    nodeGroupId: Optional. An optional node group ID. Generated if not
+      specified.The ID must contain only letters (a-z, A-Z), numbers (0-9),
+      underscores (_), and hyphens (-). Cannot begin or end with underscore or
+      hyphen. Must consist of from 3 to 33 characters.
+    parent: Required. The parent resource where this node group will be
+      created. Format: projects/{project}/regions/{region}/clusters/{cluster}
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two CreateNodeGroupRequest (https://cloud.google.com/dat
+      aproc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.
+      v1.CreateNodeGroupRequest)s with the same id, then the second request
+      will be ignored and the first google.longrunning.Operation created and
+      stored in the backend is returned.It is recommended to always set this
+      value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The ID
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  nodeGroup = _messages.MessageField('NodeGroup', 1)
+  nodeGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class DataprocProjectsRegionsClustersNodeGroupsDeleteRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersNodeGroupsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the node group to delete. Format: projects/{pr
+      oject}/regions/{region}/clusters/{cluster}/nodeGroups/{nodeGroup}
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two DeleteNodeGroupRequest (https://cloud.google.com/dat
+      aproc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.
+      v1.DeleteNodeGroupRequest)s with the same id, then the second request
+      will be ignored and the first google.longrunning.Operation created and
+      stored in the backend is returned.It is recommended to always set this
+      value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The ID
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class DataprocProjectsRegionsClustersNodeGroupsGetRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersNodeGroupsGetRequest object.
+
+  Fields:
+    name: Required. The name of the node group to retrieve. Format: projects/{
+      project}/regions/{region}/clusters/{cluster}/nodeGroups/{nodeGroup}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsRegionsClustersNodeGroupsListRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersNodeGroupsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of node groups to return. The service may
+      return fewer than this value. If unspecified, at most 50 node groups are
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: A page token, received from a previous ListNodeGroups call.
+      Provide this to retrieve the subsequent page.When paginating, all other
+      parameters provided to ListNodeGroups must match the call that provided
+      the page token.
+    parent: Required. The parent, which owns the collection of node groups.
+      Format: projects/{project}/regions/{region}/clusters/{cluster}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DataprocProjectsRegionsClustersNodeGroupsResizeRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersNodeGroupsResizeRequest object.
+
+  Fields:
+    name: Required. The name of the node group to resize. Format: projects/{pr
+      oject}/regions/{region}/clusters/{cluster}/nodeGroups/{nodeGroup}
+    resizeNodeGroupRequest: A ResizeNodeGroupRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resizeNodeGroupRequest = _messages.MessageField('ResizeNodeGroupRequest', 2)
+
+
 class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
   r"""A DataprocProjectsRegionsClustersPatchRequest object.
 
@@ -2514,11 +2671,19 @@ class DiagnoseClusterRequest(_messages.Message):
       the bucket
 
   Fields:
+    diagnosisInterval: Optional. Time interval in which diagnosis should be
+      carried out on the cluster.
+    job: Optional. Specifies the job on which diagnosis is to be performed.
+      Format: projects/{project}/regions/{region}/jobs/{job}
     tarballAccess: Optional. (Optional) The access type to the diagnostic
       tarball. If not specified, falls back to default access of the bucket
     tarballGcsDir: Optional. (Optional) The output Cloud Storage directory for
       the diagnostic tarball. If not specified, a task-specific directory in
       the cluster's staging bucket will be used.
+    workers: Optional. A list of workers in the cluster to run the diagnostic
+      script on.
+    yarnApplicationId: Optional. Specifies the yarn application on which
+      diagnosis is to be performed.
   """
 
   class TarballAccessValueValuesEnum(_messages.Enum):
@@ -2534,8 +2699,12 @@ class DiagnoseClusterRequest(_messages.Message):
     TARBALL_ACCESS_UNSPECIFIED = 0
     GOOGLE_CLOUD_SUPPORT = 1
 
-  tarballAccess = _messages.EnumField('TarballAccessValueValuesEnum', 1)
-  tarballGcsDir = _messages.StringField(2)
+  diagnosisInterval = _messages.MessageField('Interval', 1)
+  job = _messages.StringField(2)
+  tarballAccess = _messages.EnumField('TarballAccessValueValuesEnum', 3)
+  tarballGcsDir = _messages.StringField(4)
+  workers = _messages.StringField(5, repeated=True)
+  yarnApplicationId = _messages.StringField(6)
 
 
 class DiagnoseClusterResults(_messages.Message):
@@ -2909,7 +3078,7 @@ class GceClusterConfig(_messages.Message):
 
 
 class GceNodePool(_messages.Message):
-  r"""Dataproc Compute Engine node pool.
+  r"""Deprecated: Dataproc Compute Engine node pool.
 
   Enums:
     RolesValueListEntryValuesEnum:
@@ -2984,78 +3153,6 @@ class GceNodePool(_messages.Message):
   name = _messages.StringField(2)
   nodePoolConfig = _messages.MessageField('InstanceGroupConfig', 3)
   roles = _messages.EnumField('RolesValueListEntryValuesEnum', 4, repeated=True)
-
-
-class GceNodePoolOperationMetadata(_messages.Message):
-  r"""Metadata describing the Compute Engine node pool operation.
-
-  Enums:
-    OperationTypeValueValuesEnum: The operation type.
-
-  Messages:
-    LabelsValue: Output only. Labels associated with the operation
-
-  Fields:
-    clusterUuid: Output only. Cluster UUID associated with the Compute Engine
-      node pool operation.
-    description: Output only. Short description of operation.
-    gceNodePoolId: Output only. Compute Engine node pool ID for the operation.
-    labels: Output only. Labels associated with the operation
-    operationType: The operation type.
-    status: Output only. Current operation status.
-    statusHistory: Output only. The previous operation status.
-    warnings: Output only. Errors encountered during operation execution.
-  """
-
-  class OperationTypeValueValuesEnum(_messages.Enum):
-    r"""The operation type.
-
-    Values:
-      GCE_NODE_POOL_OPERATION_TYPE_UNSPECIFIED: Compute Engine node pool
-        operation type is unknown.
-      CREATE: Create Compute Engine node pool operation type.
-      UPDATE: Update Compute Engine node pool operation type.
-      DELETE: Delete Compute Engine node pool operation type.
-      RESIZE: Resize Compute Engine node pool operation type.
-    """
-    GCE_NODE_POOL_OPERATION_TYPE_UNSPECIFIED = 0
-    CREATE = 1
-    UPDATE = 2
-    DELETE = 3
-    RESIZE = 4
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Output only. Labels associated with the operation
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  clusterUuid = _messages.StringField(1)
-  description = _messages.StringField(2)
-  gceNodePoolId = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
-  status = _messages.MessageField('ClusterOperationStatus', 6)
-  statusHistory = _messages.MessageField('ClusterOperationStatus', 7, repeated=True)
-  warnings = _messages.StringField(8, repeated=True)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -3151,13 +3248,20 @@ class GkeNodeConfig(_messages.Message):
       platform) to be used by this instance. The instance may be scheduled on
       the specified or a newer CPU platform. Specify the friendly names of CPU
       platforms, such as "Intel Haswell"` or Intel Sandy Bridge".
-    preemptible: Optional. Whether the nodes are created as preemptible VM
-      instances (https://cloud.google.com/compute/docs/instances/preemptible).
-      Preemptible nodes cannot be used in a node pool with the CONTROLLER role
-      or in the DEFAULT node pool if the CONTROLLER role is not assigned (the
-      DEFAULT node pool will assume the CONTROLLER role).
-    spot: Optional. Spot flag for enabling Spot VM, which is a rebrand of the
-      existing preemptible flag.
+    preemptible: Optional. Whether the nodes are created as legacy preemptible
+      VM instances
+      (https://cloud.google.com/compute/docs/instances/preemptible). Also see
+      Spot VMs, preemptible VM instances without a maximum lifetime. Legacy
+      and Spot preemptible nodes cannot be used in a node pool with the
+      CONTROLLER role or in the DEFAULT node pool if the CONTROLLER role is
+      not assigned (the DEFAULT node pool will assume the CONTROLLER role).
+    spot: Optional. Whether the nodes are created as Spot VM instances
+      (https://cloud.google.com/compute/docs/instances/spot). Spot VMs are the
+      latest update to legacy preemptible VMs. Spot VMs do not have a maximum
+      lifetime. Legacy and Spot preemptible nodes cannot be used in a node
+      pool with the CONTROLLER role or in the DEFAULT node pool if the
+      CONTROLLER role is not assigned (the DEFAULT node pool will assume the
+      CONTROLLER role).
   """
 
   accelerators = _messages.MessageField('GkeNodePoolAcceleratorConfig', 1, repeated=True)
@@ -3609,6 +3713,20 @@ class InstanceGroupConfig(_messages.Message):
       Instance Group. See Dataproc -> Minimum CPU Platform
       (https://cloud.google.com/dataproc/docs/concepts/compute/dataproc-min-
       cpu).
+    minNumInstances: Optional. The minimum number of instances to create. If
+      min_num_instances is set, min_num_instances is used for a criteria to
+      decide the cluster. Cluster creation will be failed by being an error
+      state if the total number of instances created is less than the
+      min_num_instances. For example, given that num_instances = 5 and
+      min_num_instances = 3, * if 4 instances are created and then registered
+      successfully but one instance is failed, the failed VM will be deleted
+      and the cluster will be resized to 4 instances in running state. * if 2
+      instances are created successfully and 3 instances are failed, the
+      cluster will be in an error state and does not delete failed VMs for
+      debugging. * if 2 instance are created and then registered successfully
+      but 3 instances are failed to initialize, the cluster will be in an
+      error state and does not delete failed VMs for debugging. NB: This can
+      only be set for primary workers now.
     numInstances: Optional. The number of VM instances in the instance group.
       For HA cluster master_config groups, must be set to 3. For standard
       cluster master_config groups, must be set to 1.
@@ -3630,11 +3748,18 @@ class InstanceGroupConfig(_messages.Message):
       NON_PREEMPTIBLE: Instances are non-preemptible.This option is allowed
         for all instance groups and is the only valid value for Master and
         Worker instance groups.
-      PREEMPTIBLE: Instances are preemptible.This option is allowed only for
-        secondary worker groups.
-      SPOT: Instances are Spot VMsThis option is allowed only for secondary
-        worker groups. See Spot VMs
-        (https://cloud.google.com/compute/docs/instances/spot).
+      PREEMPTIBLE: Instances are preemptible
+        (https://cloud.google.com/compute/docs/instances/preemptible).This
+        option is allowed only for secondary worker
+        (https://cloud.google.com/dataproc/docs/concepts/compute/secondary-
+        vms) groups.
+      SPOT: Instances are Spot VMs
+        (https://cloud.google.com/compute/docs/instances/spot).This option is
+        allowed only for secondary worker
+        (https://cloud.google.com/dataproc/docs/concepts/compute/secondary-
+        vms) groups. Spot VMs are the latest version of preemptible VMs
+        (https://cloud.google.com/compute/docs/instances/preemptible), and
+        provide additional features.
     """
     PREEMPTIBILITY_UNSPECIFIED = 0
     NON_PREEMPTIBLE = 1
@@ -3650,8 +3775,9 @@ class InstanceGroupConfig(_messages.Message):
   machineTypeUri = _messages.StringField(7)
   managedGroupConfig = _messages.MessageField('ManagedGroupConfig', 8)
   minCpuPlatform = _messages.StringField(9)
-  numInstances = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  preemptibility = _messages.EnumField('PreemptibilityValueValuesEnum', 11)
+  minNumInstances = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  numInstances = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  preemptibility = _messages.EnumField('PreemptibilityValueValuesEnum', 12)
 
 
 class InstanceReference(_messages.Message):
@@ -3722,6 +3848,24 @@ class InstantiateWorkflowTemplateRequest(_messages.Message):
   parameters = _messages.MessageField('ParametersValue', 1)
   requestId = _messages.StringField(2)
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class Interval(_messages.Message):
+  r"""Represents a time interval, encoded as a Timestamp start (inclusive) and
+  a Timestamp end (exclusive).The start must be less than or equal to the end.
+  When the start equals the end, the interval is empty (matches no time). When
+  both start and end are unspecified, the interval matches any time.
+
+  Fields:
+    endTime: Optional. Exclusive end of the interval.If specified, a Timestamp
+      matching this interval will have to be before the end.
+    startTime: Optional. Inclusive start of the interval.If specified, a
+      Timestamp matching this interval will have to be the same or after the
+      start.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class Job(_messages.Message):
@@ -4285,7 +4429,8 @@ class ListClustersResponse(_messages.Message):
 
 
 class ListGceNodePoolsResponse(_messages.Message):
-  r"""A response to list the Compute Engine node pools in a given cluster.
+  r"""Deprecated: a response to list the Compute Engine node pools in a given
+  cluster.
 
   Fields:
     gceNodePools: The node pools from the specified cluster.
@@ -4309,6 +4454,19 @@ class ListJobsResponse(_messages.Message):
 
   jobs = _messages.MessageField('Job', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListNodeGroupsResponse(_messages.Message):
+  r"""A response to a request to list the node groups in a cluster.
+
+  Fields:
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    nodeGroups: The node groups in the cluster.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  nodeGroups = _messages.MessageField('NodeGroup', 2, repeated=True)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -4596,6 +4754,82 @@ class NamespacedGkeDeploymentTarget(_messages.Message):
   targetGkeCluster = _messages.StringField(2)
 
 
+class NodeGroup(_messages.Message):
+  r"""Dataproc Node Group.
+
+  Enums:
+    RolesValueListEntryValuesEnum:
+
+  Messages:
+    LabelsValue: Optional. Node group labels. Label keys must consist of from
+      1 to 63 characters and conform to RFC 1035
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values can be empty. If
+      specified, they must consist of from 1 to 63 characters and conform to
+      RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt). The node group must
+      have no more than 32 labelsn.
+
+  Fields:
+    labels: Optional. Node group labels. Label keys must consist of from 1 to
+      63 characters and conform to RFC 1035
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values can be empty. If
+      specified, they must consist of from 1 to 63 characters and conform to
+      RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt). The node group must
+      have no more than 32 labelsn.
+    name: The Node group resource name (https://aip.dev/122).
+    nodePoolConfig: Optional. The node group instance group configuration.
+    roles: Required. Node group roles.
+  """
+
+  class RolesValueListEntryValuesEnum(_messages.Enum):
+    r"""RolesValueListEntryValuesEnum enum type.
+
+    Values:
+      ROLE_UNSPECIFIED: Required unspecified role.
+      DRIVER: Job drivers run on the node pool.
+      MASTER: Master nodes.
+      PRIMARY_WORKER: Primary workers.
+      SECONDARY_WORKER: Secondary workers.
+    """
+    ROLE_UNSPECIFIED = 0
+    DRIVER = 1
+    MASTER = 2
+    PRIMARY_WORKER = 3
+    SECONDARY_WORKER = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Node group labels. Label keys must consist of from 1 to 63
+    characters and conform to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt).
+    Label values can be empty. If specified, they must consist of from 1 to 63
+    characters and conform to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt).
+    The node group must have no more than 32 labelsn.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  name = _messages.StringField(2)
+  nodePoolConfig = _messages.MessageField('InstanceGroupConfig', 3)
+  roles = _messages.EnumField('RolesValueListEntryValuesEnum', 4, repeated=True)
+
+
 class NodeGroupAffinity(_messages.Message):
   r"""Node Group Affinity for clusters using sole-tenant node groups.
 
@@ -4610,6 +4844,78 @@ class NodeGroupAffinity(_messages.Message):
   """
 
   nodeGroupUri = _messages.StringField(1)
+
+
+class NodeGroupOperationMetadata(_messages.Message):
+  r"""Metadata describing the node group operation.
+
+  Enums:
+    OperationTypeValueValuesEnum: The operation type.
+
+  Messages:
+    LabelsValue: Output only. Labels associated with the operation.
+
+  Fields:
+    clusterUuid: Output only. Cluster UUID associated with the node group
+      operation.
+    description: Output only. Short description of operation.
+    labels: Output only. Labels associated with the operation.
+    nodeGroupId: Output only. Node group ID for the operation.
+    operationType: The operation type.
+    status: Output only. Current operation status.
+    statusHistory: Output only. The previous operation status.
+    warnings: Output only. Errors encountered during operation execution.
+  """
+
+  class OperationTypeValueValuesEnum(_messages.Enum):
+    r"""The operation type.
+
+    Values:
+      NODE_GROUP_OPERATION_TYPE_UNSPECIFIED: Node group operation type is
+        unknown.
+      CREATE: Create node group operation type.
+      UPDATE: Update node group operation type.
+      DELETE: Delete node group operation type.
+      RESIZE: Resize node group operation type.
+    """
+    NODE_GROUP_OPERATION_TYPE_UNSPECIFIED = 0
+    CREATE = 1
+    UPDATE = 2
+    DELETE = 3
+    RESIZE = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Output only. Labels associated with the operation.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clusterUuid = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  nodeGroupId = _messages.StringField(4)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
+  status = _messages.MessageField('ClusterOperationStatus', 6)
+  statusHistory = _messages.MessageField('ClusterOperationStatus', 7, repeated=True)
+  warnings = _messages.StringField(8, repeated=True)
 
 
 class NodeInitializationAction(_messages.Message):
@@ -4663,41 +4969,6 @@ class NodePool(_messages.Message):
   id = _messages.StringField(1)
   instanceNames = _messages.StringField(2, repeated=True)
   repairAction = _messages.EnumField('RepairActionValueValuesEnum', 3)
-
-
-class NodePoolConfig(_messages.Message):
-  r"""Node pool config.
-
-  Enums:
-    RolesValueListEntryValuesEnum:
-
-  Fields:
-    nodePoolConfig: Optional. The Compute Engine config settings for node pool
-      instances.
-    nodePoolId: Optional. Node pool identifier. If not specified, a default is
-      assigned.
-    roles: Required. Node pool roles.
-  """
-
-  class RolesValueListEntryValuesEnum(_messages.Enum):
-    r"""RolesValueListEntryValuesEnum enum type.
-
-    Values:
-      ROLE_UNSPECIFIED: Required unspecified role.
-      DRIVER: The node pool will have job drivers run on it.
-      MASTER: Master nodes
-      PRIMARY_WORKER: Primary workers
-      SECONDARY_WORKER: Secondary workers
-    """
-    ROLE_UNSPECIFIED = 0
-    DRIVER = 1
-    MASTER = 2
-    PRIMARY_WORKER = 3
-    SECONDARY_WORKER = 4
-
-  nodePoolConfig = _messages.MessageField('InstanceGroupConfig', 1)
-  nodePoolId = _messages.StringField(2)
-  roles = _messages.EnumField('RolesValueListEntryValuesEnum', 3, repeated=True)
 
 
 class Operation(_messages.Message):
@@ -5352,7 +5623,7 @@ class ReservationAffinity(_messages.Message):
 
 
 class ResizeGceNodePoolRequest(_messages.Message):
-  r"""A request to resize a Compute Engine node pool.
+  r"""Deprecated: a request to resize a Compute Engine node pool.
 
   Fields:
     gracefulDecommissionTimeout: Optional. Timeout for graceful YARN
@@ -5378,6 +5649,39 @@ class ResizeGceNodePoolRequest(_messages.Message):
       maintain at any given time. The group automatically adds or removes
       instances to maintain the number of instances specified by this
       parameter.
+  """
+
+  gracefulDecommissionTimeout = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  size = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class ResizeNodeGroupRequest(_messages.Message):
+  r"""A request to resize a node group.
+
+  Fields:
+    gracefulDecommissionTimeout: Optional. Timeout for graceful YARN
+      decomissioning. Graceful decommissioning allows removing nodes from the
+      Compute Engine timeout without interrupting jobs in progress. Timeout
+      specifies how long to wait for jobs in progress to finish before
+      forcefully removing nodes (and potentially interrupting jobs). Default
+      timeout is 0 (for forceful decommission), and the maximum allowed
+      timeout is 1 day. (see JSON representation of Duration
+      (https://developers.google.com/protocol-buffers/docs/proto3#json)).Only
+      supported on Dataproc image versions 1.2 and higher.
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two ResizeNodeGroupRequest (https://cloud.google.com/dat
+      aproc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.
+      v1.ResizeNodeGroupRequest)s with the same id, then the second request
+      will be ignored and the first google.longrunning.Operation created and
+      stored in the backend is returned.It is recommended to always set this
+      value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The ID
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+    size: Required. The number of running instances for the node group to
+      maintain. The group adds or removes instances to maintain the number of
+      instances specified by this parameter.
   """
 
   gracefulDecommissionTimeout = _messages.StringField(1)
@@ -5444,6 +5748,7 @@ class RuntimeInfo(_messages.Message):
   Fields:
     approximateUsage: Output only. Approximate workload resource usage
       calculated after workload finishes.
+    currentUsage: Output only. Snapshot of current workload resource usage.
     diagnosticOutputUri: Output only. A URI pointing to the location of the
       diagnostics tarball.
     endpoints: Output only. Map of remote access endpoints (such as web
@@ -5480,10 +5785,11 @@ class RuntimeInfo(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   approximateUsage = _messages.MessageField('UsageMetrics', 1)
-  diagnosticOutputUri = _messages.StringField(2)
-  endpoints = _messages.MessageField('EndpointsValue', 3)
-  outputUri = _messages.StringField(4)
-  publicKeys = _messages.MessageField('PublicKeys', 5)
+  currentUsage = _messages.MessageField('UsageSnapshot', 2)
+  diagnosticOutputUri = _messages.StringField(3)
+  endpoints = _messages.MessageField('EndpointsValue', 4)
+  outputUri = _messages.StringField(5)
+  publicKeys = _messages.MessageField('PublicKeys', 6)
 
 
 class SecurityConfig(_messages.Message):
@@ -6617,7 +6923,7 @@ class TrinoJob(_messages.Message):
 
 
 class UsageMetrics(_messages.Message):
-  r"""Usage Metrics represents the usage consumed by resource.
+  r"""Usage metrics represent total resources consumed by a workload.
 
   Fields:
     milliDcuSeconds: Optional. DCU usage in milliDCU*seconds.
@@ -6626,6 +6932,21 @@ class UsageMetrics(_messages.Message):
 
   milliDcuSeconds = _messages.IntegerField(1)
   shuffleStorageGbSeconds = _messages.IntegerField(2)
+
+
+class UsageSnapshot(_messages.Message):
+  r"""Usage snaphot represents the resources consumed by a workload at a given
+  time.
+
+  Fields:
+    milliDcu: Optional. Milli (one-thousandth) Dataproc Compute Units.
+    shuffleStorageGb: Optional. Shuffle Storage in gigabytes (GB).
+    snapshotTime: Optional. The timestamp of the usage snapshot.
+  """
+
+  milliDcu = _messages.IntegerField(1)
+  shuffleStorageGb = _messages.IntegerField(2)
+  snapshotTime = _messages.StringField(3)
 
 
 class ValueValidation(_messages.Message):

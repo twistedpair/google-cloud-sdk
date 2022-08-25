@@ -346,12 +346,16 @@ class ReachableSecret(object):
     else:
       return self._AsSecretVolumeSource_NonManagedMode(resource)
 
+  def AppendToSecretVolumeSource(self, resource, out):
+    messages = resource.MessagesModule()
+    item = messages.KeyToPath(path=self._PathTail(), key=self.secret_version)
+    out.items.append(item)
+
   def _AsSecretVolumeSource_ManagedMode(self, resource):
     messages = resource.MessagesModule()
     out = messages.SecretVolumeSource(
         secretName=self._GetOrCreateAlias(resource))
-    item = messages.KeyToPath(path=self._PathTail(), key=self.secret_version)
-    out.items.append(item)
+    self.AppendToSecretVolumeSource(resource, out)
     return out
 
   def _AsSecretVolumeSource_NonManagedMode(self, resource):

@@ -26,7 +26,7 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 _GA_COMPLIANCE_REGIMES = [
     'CJIS', 'FEDRAMP_HIGH', 'FEDRAMP_MODERATE', 'IL4', 'US_REGIONAL_ACCESS',
     'HIPAA', 'HITRUST', 'EU_REGIONS_AND_SUPPORT', 'CA_REGIONS_AND_SUPPORT',
-    'ITAR'
+    'ITAR', 'ASSURED_WORKLOADS_FOR_PARTNERS'
 ]
 _BETA_COMPLIANCE_REGIMES = _GA_COMPLIANCE_REGIMES
 
@@ -35,6 +35,8 @@ compliance_regimes = {
     ReleaseTrack.BETA: _BETA_COMPLIANCE_REGIMES,
     ReleaseTrack.ALPHA: _BETA_COMPLIANCE_REGIMES
 }
+
+PARTNERS = ['LOCAL_CONTROLS_BY_S3NS']
 
 
 def AddListWorkloadsFlags(parser):
@@ -101,6 +103,11 @@ def AddCreateWorkloadFlags(parser, release_track):
       required=True,
       choices=compliance_regimes.get(release_track),
       help='The compliance regime of the new Assured Workloads environment')
+  parser.add_argument(
+      '--partner',
+      choices=PARTNERS,
+      help='The partner choice when creating a workload managed by local trusted partners.'
+  )
   parser.add_argument(
       '--billing-account',
       required=True,

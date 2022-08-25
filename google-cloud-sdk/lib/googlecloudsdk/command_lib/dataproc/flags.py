@@ -447,31 +447,31 @@ def AddSessionResourceArg(parser, verb, api_version):
       required=True).AddToParser(parser)
 
 
-def AddGceNodePoolResourceArg(parser, verb, api_version):
-  """Adds GCE node pool resource argument to parser."""
+def AddNodeGroupResourceArg(parser, verb, api_version):
+  """Adds node group resource argument to parser."""
 
-  def GceNodePoolConfig():
+  def NodeGroupConfig():
     return concepts.ResourceParameterAttributeConfig(
-        name='gce_node_pool',
-        help_text='GCE node pool ID.',
+        name='node_group',
+        help_text='Node group ID.',
     )
 
-  def GetGceNodePoolResourceSpec(api_version):
+  def GetNodeGroupResourceSpec(api_version):
     return concepts.ResourceSpec(
-        'dataproc.projects.regions.clusters.gceNodePools',
+        'dataproc.projects.regions.clusters.nodeGroups',
         api_version=api_version,
-        resource_name='gce_node_pool',
+        resource_name='node_group',
         disable_auto_completers=True,
         projectId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
         region=_RegionAttributeConfig(),
         clusterName=ClusterConfig(),
-        gceNodePoolsId=GceNodePoolConfig(),
+        nodeGroupsId=NodeGroupConfig(),
     )
 
   concept_parsers.ConceptParser.ForResource(
-      'gce_node_pool',
-      GetGceNodePoolResourceSpec(api_version),
-      'ID of the GCE node pool to {0}.'.format(verb),
+      'node_group',
+      GetNodeGroupResourceSpec(api_version),
+      'ID of the node group to {0}.'.format(verb),
       required=True).AddToParser(parser)
 
 
@@ -782,20 +782,20 @@ def ProjectGcsObjectsAccessBoundary(project):
 
 
 def AddSizeFlag(parser):
-  """Adds the size field for resizing GCE node pools.
+  """Adds the size field for resizing node groups.
 
   Args:
     parser: The argparse parser for the command.
   """
   parser.add_argument(
       '--size',
-      help=('New size for a given GCE node pool.'),
+      help=('New size for a node group.'),
       type=int,
       required=True)
 
 
 def AddGracefulDecommissionTimeoutFlag(parser):
-  """Adds a graceful decommission timeout for resizing a GCE node pool.
+  """Adds a graceful decommission timeout for resizing a node group.
 
   Args:
     parser: The argparse parser for the command.
@@ -803,7 +803,7 @@ def AddGracefulDecommissionTimeoutFlag(parser):
   parser.add_argument(
       '--graceful-decommission-timeout',
       help=(
-          'Graceful decommission timeout for a given GCE node pool scale down resize.'
+          'Graceful decommission timeout for a node group scale-down resize.'
       ),
       required=False)
 
@@ -817,8 +817,8 @@ def AddDriverPoolId(parser):
   parser.add_argument(
       '--driver-pool-id',
       help=("""
-            Custom identifier for the DRIVER Compute Engine node pool being
-            created. If this is not provided a random string will be used.
+            Custom identifier for the DRIVER Node Group being created. If this
+            is not provided a random string will be used.
             """),
       hidden=True,
       required=False,

@@ -645,6 +645,11 @@
           "description": "Output only. Approximate workload resource usage calculated after workload finishes.",
           "readOnly": true,
           "$ref": "UsageMetrics"
+        },
+        "currentUsage": {
+          "description": "Output only. Snapshot of current workload resource usage.",
+          "readOnly": true,
+          "$ref": "UsageSnapshot"
         }
       }
     },
@@ -692,7 +697,7 @@
     },
     "UsageMetrics": {
       "id": "UsageMetrics",
-      "description": "Usage Metrics represents the usage consumed by resource.",
+      "description": "Usage metrics represent total resources consumed by a workload.",
       "type": "object",
       "properties": {
         "milliDcuSeconds": {
@@ -704,6 +709,28 @@
           "description": "Optional. Shuffle storage usage in GB*Seconds",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "UsageSnapshot": {
+      "id": "UsageSnapshot",
+      "description": "Usage snaphot represents the resources consumed by a workload at a given time.",
+      "type": "object",
+      "properties": {
+        "milliDcu": {
+          "description": "Optional. Milli (one-thousandth) Dataproc Compute Units.",
+          "type": "string",
+          "format": "int64"
+        },
+        "shuffleStorageGb": {
+          "description": "Optional. Shuffle Storage in gigabytes (GB).",
+          "type": "string",
+          "format": "int64"
+        },
+        "snapshotTime": {
+          "description": "Optional. The timestamp of the usage snapshot.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -1026,15 +1053,8 @@
           "description": "Optional. BETA. The Kubernetes Engine config for Dataproc clusters deployed to The Kubernetes Engine config for Dataproc clusters deployed to Kubernetes. These config settings are mutually exclusive with Compute Engine-based options, such as gce_cluster_config, master_config, worker_config, secondary_worker_config, and autoscaling_config.",
           "$ref": "GkeClusterConfig"
         },
-        "auxiliaryNodePoolConfigs": {
-          "description": "Optional. The config for a cluster auxiliary node pool.",
-          "type": "array",
-          "items": {
-            "$ref": "NodePoolConfig"
-          }
-        },
         "auxiliaryGceNodePools": {
-          "description": "Optional. The Compute Engine configuration settings for cluster node pools.",
+          "description": "Optional. Deprecated: The Compute Engine configuration settings for cluster node pools.",
           "type": "array",
           "items": {
             "$ref": "AuxiliaryGceNodePool"
@@ -1043,6 +1063,13 @@
         "dataprocMetricConfig": {
           "description": "Optional. The config for Dataproc metrics.",
           "$ref": "DataprocMetricConfig"
+        },
+        "auxiliaryNodeGroups": {
+          "description": "Optional. The node group settings.",
+          "type": "array",
+          "items": {
+            "$ref": "AuxiliaryNodeGroup"
+          }
         }
       }
     },
@@ -1250,8 +1277,8 @@
           "enumDescriptions": [
             "Preemptibility is unspecified, the system will choose the appropriate setting for each instance group.",
             "Instances are non-preemptible.This option is allowed for all instance groups and is the only valid value for Master and Worker instance groups.",
-            "Instances are preemptible.This option is allowed only for secondary worker groups.",
-            "Instances are Spot VMsThis option is allowed only for secondary worker groups. See Spot VMs (https:\/\/cloud.google.com\/compute\/docs\/instances\/spot)."
+            "Instances are preemptible (https:\/\/cloud.google.com\/compute\/docs\/instances\/preemptible).This option is allowed only for secondary worker (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/compute\/secondary-vms) groups.",
+            "Instances are Spot VMs (https:\/\/cloud.google.com\/compute\/docs\/instances\/spot).This option is allowed only for secondary worker (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/compute\/secondary-vms) groups. Spot VMs are the latest version of preemptible VMs (https:\/\/cloud.google.com\/compute\/docs\/instances\/preemptible), and provide additional features."
           ],
           "enum": [
             "PREEMPTIBILITY_UNSPECIFIED",
@@ -1275,6 +1302,11 @@
         "minCpuPlatform": {
           "description": "Optional. Specifies the minimum cpu platform for the Instance Group. See Dataproc -> Minimum CPU Platform (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/compute\/dataproc-min-cpu).",
           "type": "string"
+        },
+        "minNumInstances": {
+          "description": "Optional. The minimum number of instances to create. If min_num_instances is set, min_num_instances is used for a criteria to decide the cluster. Cluster creation will be failed by being an error state if the total number of instances created is less than the min_num_instances. For example, given that num_instances = 5 and min_num_instances = 3, * if 4 instances are created and then registered successfully but one instance is failed, the failed VM will be deleted and the cluster will be resized to 4 instances in running state. * if 2 instances are created successfully and 3 instances are failed, the cluster will be in an error state and does not delete failed VMs for debugging. * if 2 instance are created and then registered successfully but 3 instances are failed to initialize, the cluster will be in an error state and does not delete failed VMs for debugging. NB: This can only be set for primary workers now.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1727,7 +1759,7 @@
           "format": "int32"
         },
         "preemptible": {
-          "description": "Optional. Whether the nodes are created as preemptible VM instances (https:\/\/cloud.google.com\/compute\/docs\/instances\/preemptible). Preemptible nodes cannot be used in a node pool with the CONTROLLER role or in the DEFAULT node pool if the CONTROLLER role is not assigned (the DEFAULT node pool will assume the CONTROLLER role).",
+          "description": "Optional. Whether the nodes are created as legacy preemptible VM instances (https:\/\/cloud.google.com\/compute\/docs\/instances\/preemptible). Also see Spot VMs, preemptible VM instances without a maximum lifetime. Legacy and Spot preemptible nodes cannot be used in a node pool with the CONTROLLER role or in the DEFAULT node pool if the CONTROLLER role is not assigned (the DEFAULT node pool will assume the CONTROLLER role).",
           "type": "boolean"
         },
         "accelerators": {
@@ -1750,7 +1782,7 @@
           "$ref": "GkeEphemeralStorageConfig"
         },
         "spot": {
-          "description": "Optional. Spot flag for enabling Spot VM, which is a rebrand of the existing preemptible flag.",
+          "description": "Optional. Whether the nodes are created as Spot VM instances (https:\/\/cloud.google.com\/compute\/docs\/instances\/spot). Spot VMs are the latest update to legacy preemptible VMs. Spot VMs do not have a maximum lifetime. Legacy and Spot preemptible nodes cannot be used in a node pool with the CONTROLLER role or in the DEFAULT node pool if the CONTROLLER role is not assigned (the DEFAULT node pool will assume the CONTROLLER role).",
           "type": "boolean"
         }
       }
@@ -1804,45 +1836,9 @@
         }
       }
     },
-    "NodePoolConfig": {
-      "id": "NodePoolConfig",
-      "description": "Node pool config.",
-      "type": "object",
-      "properties": {
-        "nodePoolId": {
-          "description": "Optional. Node pool identifier. If not specified, a default is assigned.",
-          "type": "string"
-        },
-        "roles": {
-          "description": "Required. Node pool roles.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enumDescriptions": [
-              "Required unspecified role.",
-              "The node pool will have job drivers run on it.",
-              "Master nodes",
-              "Primary workers",
-              "Secondary workers"
-            ],
-            "enum": [
-              "ROLE_UNSPECIFIED",
-              "DRIVER",
-              "MASTER",
-              "PRIMARY_WORKER",
-              "SECONDARY_WORKER"
-            ]
-          }
-        },
-        "nodePoolConfig": {
-          "description": "Optional. The Compute Engine config settings for node pool instances.",
-          "$ref": "InstanceGroupConfig"
-        }
-      }
-    },
     "AuxiliaryGceNodePool": {
       "id": "AuxiliaryGceNodePool",
-      "description": "Dataproc Compute Engine node pool identification and configuration information.",
+      "description": "Deprecated: Dataproc Compute Engine node pool identification and configuration information.",
       "type": "object",
       "properties": {
         "gceNodePool": {
@@ -1857,7 +1853,7 @@
     },
     "GceNodePool": {
       "id": "GceNodePool",
-      "description": "Dataproc Compute Engine node pool.",
+      "description": "Deprecated: Dataproc Compute Engine node pool.",
       "type": "object",
       "properties": {
         "name": {
@@ -1943,6 +1939,64 @@
           "description": "Optional. Specify one or more available OSS metrics (https:\/\/cloud.google.com\/dataproc\/docs\/guides\/monitoring#available_oss_metrics) to collect for the metric course (for the SPARK metric source, any Spark metric (https:\/\/spark.apache.org\/docs\/latest\/monitoring.html#metrics) can be specified).Provide metrics in the following format: METRIC_SOURCE: INSTANCE:GROUP:METRIC Use camelcase as appropriate.Examples: yarn:ResourceManager:QueueMetrics:AppsCompleted spark:driver:DAGScheduler:job.allJobs sparkHistoryServer:JVM:Memory:NonHeapMemoryUsage.committed hiveserver2:JVM:Memory:NonHeapMemoryUsage.used Notes: Only the specified overridden metrics will be collected for the metric source. For example, if one or more spark:executive metrics are listed as metric overrides, other SPARK metrics will not be collected. The collection of the default metrics for other OSS metric sources is unaffected. For example, if both SPARK andd YARN metric sources are enabled, and overrides are provided for Spark metrics only, all default YARN metrics will be collected.",
           "type": "array",
           "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AuxiliaryNodeGroup": {
+      "id": "AuxiliaryNodeGroup",
+      "description": "Node group identification and configuration. information.",
+      "type": "object",
+      "properties": {
+        "nodeGroup": {
+          "description": "Required. Node group configuration.",
+          "$ref": "NodeGroup"
+        },
+        "nodeGroupId": {
+          "description": "Optional. A node group ID. Generated if not specified.The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end with underscore or hyphen. Must consist of from 3 to 33 characters.",
+          "type": "string"
+        }
+      }
+    },
+    "NodeGroup": {
+      "id": "NodeGroup",
+      "description": "Dataproc Node Group.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The Node group resource name (https:\/\/aip.dev\/122).",
+          "type": "string"
+        },
+        "roles": {
+          "description": "Required. Node group roles.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Required unspecified role.",
+              "Job drivers run on the node pool.",
+              "Master nodes.",
+              "Primary workers.",
+              "Secondary workers."
+            ],
+            "enum": [
+              "ROLE_UNSPECIFIED",
+              "DRIVER",
+              "MASTER",
+              "PRIMARY_WORKER",
+              "SECONDARY_WORKER"
+            ]
+          }
+        },
+        "nodePoolConfig": {
+          "description": "Optional. The node group instance group configuration.",
+          "$ref": "InstanceGroupConfig"
+        },
+        "labels": {
+          "description": "Optional. Node group labels. Label keys must consist of from 1 to 63 characters and conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt). Label values can be empty. If specified, they must consist of from 1 to 63 characters and conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt). The node group must have no more than 32 labelsn.",
+          "type": "object",
+          "additionalProperties": {
             "type": "string"
           }
         }
@@ -2248,6 +2302,42 @@
             "TARBALL_ACCESS_UNSPECIFIED",
             "GOOGLE_CLOUD_SUPPORT"
           ]
+        },
+        "diagnosisInterval": {
+          "description": "Optional. Time interval in which diagnosis should be carried out on the cluster.",
+          "$ref": "Interval"
+        },
+        "job": {
+          "description": "Optional. Specifies the job on which diagnosis is to be performed. Format: projects\/{project}\/regions\/{region}\/jobs\/{job}",
+          "type": "string"
+        },
+        "yarnApplicationId": {
+          "description": "Optional. Specifies the yarn application on which diagnosis is to be performed.",
+          "type": "string"
+        },
+        "workers": {
+          "description": "Optional. A list of workers in the cluster to run the diagnostic script on.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Interval": {
+      "id": "Interval",
+      "description": "Represents a time interval, encoded as a Timestamp start (inclusive) and a Timestamp end (exclusive).The start must be less than or equal to the end. When the start equals the end, the interval is empty (matches no time). When both start and end are unspecified, the interval matches any time.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Optional. Inclusive start of the interval.If specified, a Timestamp matching this interval will have to be the same or after the start.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Optional. Exclusive end of the interval.If specified, a Timestamp matching this interval will have to be before the end.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -3616,7 +3706,7 @@
     },
     "ResizeGceNodePoolRequest": {
       "id": "ResizeGceNodePoolRequest",
-      "description": "A request to resize a Compute Engine node pool.",
+      "description": "Deprecated: a request to resize a Compute Engine node pool.",
       "type": "object",
       "properties": {
         "size": {
@@ -3637,7 +3727,7 @@
     },
     "ListGceNodePoolsResponse": {
       "id": "ListGceNodePoolsResponse",
-      "description": "A response to list the Compute Engine node pools in a given cluster.",
+      "description": "Deprecated: a response to list the Compute Engine node pools in a given cluster.",
       "type": "object",
       "properties": {
         "gceNodePools": {
@@ -3645,6 +3735,45 @@
           "type": "array",
           "items": {
             "$ref": "GceNodePool"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "ResizeNodeGroupRequest": {
+      "id": "ResizeNodeGroupRequest",
+      "description": "A request to resize a node group.",
+      "type": "object",
+      "properties": {
+        "size": {
+          "description": "Required. The number of running instances for the node group to maintain. The group adds or removes instances to maintain the number of instances specified by this parameter.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "requestId": {
+          "description": "Optional. A unique ID used to identify the request. If the server receives two ResizeNodeGroupRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.ResizeNodeGroupRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+          "type": "string"
+        },
+        "gracefulDecommissionTimeout": {
+          "description": "Optional. Timeout for graceful YARN decomissioning. Graceful decommissioning allows removing nodes from the Compute Engine timeout without interrupting jobs in progress. Timeout specifies how long to wait for jobs in progress to finish before forcefully removing nodes (and potentially interrupting jobs). Default timeout is 0 (for forceful decommission), and the maximum allowed timeout is 1 day. (see JSON representation of Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)).Only supported on Dataproc image versions 1.2 and higher.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "ListNodeGroupsResponse": {
+      "id": "ListNodeGroupsResponse",
+      "description": "A response to a request to list the node groups in a cluster.",
+      "type": "object",
+      "properties": {
+        "nodeGroups": {
+          "description": "The node groups in the cluster.",
+          "type": "array",
+          "items": {
+            "$ref": "NodeGroup"
           }
         },
         "nextPageToken": {
@@ -4042,18 +4171,18 @@
         }
       }
     },
-    "GceNodePoolOperationMetadata": {
-      "id": "GceNodePoolOperationMetadata",
-      "description": "Metadata describing the Compute Engine node pool operation.",
+    "NodeGroupOperationMetadata": {
+      "id": "NodeGroupOperationMetadata",
+      "description": "Metadata describing the node group operation.",
       "type": "object",
       "properties": {
-        "gceNodePoolId": {
-          "description": "Output only. Compute Engine node pool ID for the operation.",
+        "nodeGroupId": {
+          "description": "Output only. Node group ID for the operation.",
           "readOnly": true,
           "type": "string"
         },
         "clusterUuid": {
-          "description": "Output only. Cluster UUID associated with the Compute Engine node pool operation.",
+          "description": "Output only. Cluster UUID associated with the node group operation.",
           "readOnly": true,
           "type": "string"
         },
@@ -4074,14 +4203,14 @@
           "description": "The operation type.",
           "type": "string",
           "enumDescriptions": [
-            "Compute Engine node pool operation type is unknown.",
-            "Create Compute Engine node pool operation type.",
-            "Update Compute Engine node pool operation type.",
-            "Delete Compute Engine node pool operation type.",
-            "Resize Compute Engine node pool operation type."
+            "Node group operation type is unknown.",
+            "Create node group operation type.",
+            "Update node group operation type.",
+            "Delete node group operation type.",
+            "Resize node group operation type."
           ],
           "enum": [
-            "GCE_NODE_POOL_OPERATION_TYPE_UNSPECIFIED",
+            "NODE_GROUP_OPERATION_TYPE_UNSPECIFIED",
             "CREATE",
             "UPDATE",
             "DELETE",
@@ -4094,7 +4223,7 @@
           "type": "string"
         },
         "labels": {
-          "description": "Output only. Labels associated with the operation",
+          "description": "Output only. Labels associated with the operation.",
           "readOnly": true,
           "type": "object",
           "additionalProperties": {
@@ -4529,6 +4658,126 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "dataproc.projects.locations.operations.list",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users\/*\/operations. To override the binding, API services can add a binding such as \"\/v1\/{name=users\/*}\/operations\" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "dataproc.projects.locations.operations.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
+                "delete": {
+                  "id": "dataproc.projects.locations.operations.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED."
+                },
+                "cancel": {
+                  "id": "dataproc.projects.locations.operations.cancel",
+                  "path": "v1/{+name}:cancel",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED."
                 }
               }
             },
@@ -6218,7 +6467,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#gcenodepooloperationmetadata)."
+                      "description": "Deprecated: creates a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#gcenodepooloperationmetadata)."
                     },
                     "resize": {
                       "id": "dataproc.projects.regions.clusters.gceNodePools.resize",
@@ -6246,7 +6495,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Resizes a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#gcenodepooloperationmetadata)."
+                      "description": "Deprecated: resizes a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#gcenodepooloperationmetadata)."
                     },
                     "delete": {
                       "id": "dataproc.projects.regions.clusters.gceNodePools.delete",
@@ -6276,7 +6525,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#gcenodepooloperationmetadata)."
+                      "description": "Deprecated: Deletes a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#gcenodepooloperationmetadata)."
                     },
                     "get": {
                       "id": "dataproc.projects.regions.clusters.gceNodePools.get",
@@ -6301,7 +6550,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets the resource representation for a Compute Engine node pool in a cluster."
+                      "description": "Deprecated: Gets the resource representation for a Compute Engine node pool in a cluster."
                     },
                     "list": {
                       "id": "dataproc.projects.regions.clusters.gceNodePools.list",
@@ -6337,7 +6586,168 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists all Compute Engine node pools in a given cluster."
+                      "description": "Deprecated: Lists all Compute Engine node pools in a given cluster."
+                    }
+                  }
+                },
+                "nodeGroups": {
+                  "methods": {
+                    "create": {
+                      "id": "dataproc.projects.regions.clusters.nodeGroups.create",
+                      "path": "v1/{+parent}/nodeGroups",
+                      "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/nodeGroups",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource where this node group will be created. Format: projects\/{project}\/regions\/{region}\/clusters\/{cluster}",
+                          "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "nodeGroupId": {
+                          "description": "Optional. An optional node group ID. Generated if not specified.The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end with underscore or hyphen. Must consist of from 3 to 33 characters.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. A unique ID used to identify the request. If the server receives two CreateNodeGroupRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.CreateNodeGroupRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "NodeGroup"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a node group in a cluster. The returned Operation.metadata is NodeGroupOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#nodegroupoperationmetadata)."
+                    },
+                    "resize": {
+                      "id": "dataproc.projects.regions.clusters.nodeGroups.resize",
+                      "path": "v1/{+name}:resize",
+                      "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/nodeGroups/{nodeGroupsId}:resize",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the node group to resize. Format: projects\/{project}\/regions\/{region}\/clusters\/{cluster}\/nodeGroups\/{nodeGroup}",
+                          "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+\/nodeGroups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ResizeNodeGroupRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Resizes a node group in a cluster. The returned Operation.metadata is NodeGroupOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#nodegroupoperationmetadata)."
+                    },
+                    "delete": {
+                      "id": "dataproc.projects.regions.clusters.nodeGroups.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/clusters/nodeGroups/{nodeGroupsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the node group to delete. Format: projects\/{project}\/regions\/{region}\/clusters\/{cluster}\/nodeGroups\/{nodeGroup}",
+                          "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/nodeGroups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. A unique ID used to identify the request. If the server receives two DeleteNodeGroupRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.DeleteNodeGroupRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a node group in a cluster. The returned Operation.metadata is NodeGroupOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#nodegroupoperationmetadata)."
+                    },
+                    "get": {
+                      "id": "dataproc.projects.regions.clusters.nodeGroups.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/nodeGroups/{nodeGroupsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the node group to retrieve. Format: projects\/{project}\/regions\/{region}\/clusters\/{cluster}\/nodeGroups\/{nodeGroup}",
+                          "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+\/nodeGroups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "NodeGroup"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the resource representation for a node group in a cluster."
+                    },
+                    "list": {
+                      "id": "dataproc.projects.regions.clusters.nodeGroups.list",
+                      "path": "v1/{+parent}/nodeGroups",
+                      "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/nodeGroups",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent, which owns the collection of node groups. Format: projects\/{project}\/regions\/{region}\/clusters\/{cluster}",
+                          "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of node groups to return. The service may return fewer than this value. If unspecified, at most 50 node groups are returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous ListNodeGroups call. Provide this to retrieve the subsequent page.When paginating, all other parameters provided to ListNodeGroups must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListNodeGroupsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists all node groups in a cluster."
                     }
                   }
                 }
