@@ -176,7 +176,7 @@ class BackupRun(_messages.Message):
       `2012-11-15T16:19:00.094Z`.
     status: The status of this run.
     timeZone: Backup time zone to prevent restores to an instance with a
-      different time zone. Now relevant only to SQL Server.
+      different time zone. Now relevant only for SQL Server.
     type: The type of this run; can be either "AUTOMATED" or "ON_DEMAND" or
       "FINAL". This field defaults to "ON_DEMAND" and is ignored, when
       specified for insert requests.
@@ -420,6 +420,8 @@ class ConnectSettings(_messages.Message):
         version is 28.
       MYSQL_8_0_29: The database major version is MySQL 8.0 and the minor
         version is 29.
+      MYSQL_8_0_30: The database major version is MySQL 8.0 and the minor
+        version is 30.
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
@@ -448,12 +450,13 @@ class ConnectSettings(_messages.Message):
     MYSQL_8_0_27 = 16
     MYSQL_8_0_28 = 17
     MYSQL_8_0_29 = 18
-    POSTGRES_13 = 19
-    POSTGRES_14 = 20
-    SQLSERVER_2019_STANDARD = 21
-    SQLSERVER_2019_ENTERPRISE = 22
-    SQLSERVER_2019_EXPRESS = 23
-    SQLSERVER_2019_WEB = 24
+    MYSQL_8_0_30 = 19
+    POSTGRES_13 = 20
+    POSTGRES_14 = 21
+    SQLSERVER_2019_STANDARD = 22
+    SQLSERVER_2019_ENTERPRISE = 23
+    SQLSERVER_2019_EXPRESS = 24
+    SQLSERVER_2019_WEB = 25
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
@@ -659,6 +662,8 @@ class DatabaseInstance(_messages.Message):
         version is 28.
       MYSQL_8_0_29: The database major version is MySQL 8.0 and the minor
         version is 29.
+      MYSQL_8_0_30: The database major version is MySQL 8.0 and the minor
+        version is 30.
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
@@ -687,12 +692,13 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_27 = 16
     MYSQL_8_0_28 = 17
     MYSQL_8_0_29 = 18
-    POSTGRES_13 = 19
-    POSTGRES_14 = 20
-    SQLSERVER_2019_STANDARD = 21
-    SQLSERVER_2019_ENTERPRISE = 22
-    SQLSERVER_2019_EXPRESS = 23
-    SQLSERVER_2019_WEB = 24
+    MYSQL_8_0_30 = 19
+    POSTGRES_13 = 20
+    POSTGRES_14 = 21
+    SQLSERVER_2019_STANDARD = 22
+    SQLSERVER_2019_ENTERPRISE = 23
+    SQLSERVER_2019_EXPRESS = 24
+    SQLSERVER_2019_WEB = 25
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -725,6 +731,8 @@ class DatabaseInstance(_messages.Message):
         version is 28.
       MYSQL_8_0_29: The database major version is MySQL 8.0 and the minor
         version is 29.
+      MYSQL_8_0_30: The database major version is MySQL 8.0 and the minor
+        version is 30.
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
@@ -753,12 +761,13 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_27 = 16
     MYSQL_8_0_28 = 17
     MYSQL_8_0_29 = 18
-    POSTGRES_13 = 19
-    POSTGRES_14 = 20
-    SQLSERVER_2019_STANDARD = 21
-    SQLSERVER_2019_ENTERPRISE = 22
-    SQLSERVER_2019_EXPRESS = 23
-    SQLSERVER_2019_WEB = 24
+    MYSQL_8_0_30 = 19
+    POSTGRES_13 = 20
+    POSTGRES_14 = 21
+    SQLSERVER_2019_STANDARD = 22
+    SQLSERVER_2019_ENTERPRISE = 23
+    SQLSERVER_2019_EXPRESS = 24
+    SQLSERVER_2019_WEB = 25
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -1194,6 +1203,8 @@ class Flag(_messages.Message):
         version is 28.
       MYSQL_8_0_29: The database major version is MySQL 8.0 and the minor
         version is 29.
+      MYSQL_8_0_30: The database major version is MySQL 8.0 and the minor
+        version is 30.
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
@@ -1222,12 +1233,13 @@ class Flag(_messages.Message):
     MYSQL_8_0_27 = 16
     MYSQL_8_0_28 = 17
     MYSQL_8_0_29 = 18
-    POSTGRES_13 = 19
-    POSTGRES_14 = 20
-    SQLSERVER_2019_STANDARD = 21
-    SQLSERVER_2019_ENTERPRISE = 22
-    SQLSERVER_2019_EXPRESS = 23
-    SQLSERVER_2019_WEB = 24
+    MYSQL_8_0_30 = 19
+    POSTGRES_13 = 20
+    POSTGRES_14 = 21
+    SQLSERVER_2019_STANDARD = 22
+    SQLSERVER_2019_ENTERPRISE = 23
+    SQLSERVER_2019_EXPRESS = 24
+    SQLSERVER_2019_WEB = 25
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being `BOOLEAN`, `STRING`,
@@ -2163,6 +2175,14 @@ class Settings(_messages.Message):
       more information, see [Overview of the High Availability
       Configuration](https://cloud.google.com/sql/docs/mysql/high-
       availability).
+    ConnectorEnforcementValueValuesEnum: Specifies if connections must use
+      Cloud SQL connectors. Option values include the following: *
+      `NOT_REQUIRED`: Cloud SQL instances can be connected without Cloud SQL
+      Connectors. * `REQUIRED`: Only allow connections that use Cloud SQL
+      Connectors. Note that using REQUIRED disables all existing authorized
+      networks. If this field is not specified when creating a new instance,
+      NOT_REQUIRED is used. If this field is not specified when patching or
+      updating an existing instance, it is left unchanged in the instance.
     DataDiskTypeValueValuesEnum: The type of data disk: `PD_SSD` (default) or
       `PD_HDD`. Not used for First Generation instances.
     PricingPlanValueValuesEnum: The pricing plan for this instance. This can
@@ -2197,6 +2217,14 @@ class Settings(_messages.Message):
       availability).
     backupConfiguration: The daily backup configuration for the instance.
     collation: The name of server Instance collation.
+    connectorEnforcement: Specifies if connections must use Cloud SQL
+      connectors. Option values include the following: * `NOT_REQUIRED`: Cloud
+      SQL instances can be connected without Cloud SQL Connectors. *
+      `REQUIRED`: Only allow connections that use Cloud SQL Connectors. Note
+      that using REQUIRED disables all existing authorized networks. If this
+      field is not specified when creating a new instance, NOT_REQUIRED is
+      used. If this field is not specified when patching or updating an
+      existing instance, it is left unchanged in the instance.
     crashSafeReplicationEnabled: Configuration specific to read replica
       instances. Indicates whether database flags for crash-safe replication
       are enabled. This property was only applicable to First Generation
@@ -2288,6 +2316,28 @@ class Settings(_messages.Message):
     SQL_AVAILABILITY_TYPE_UNSPECIFIED = 0
     ZONAL = 1
     REGIONAL = 2
+
+  class ConnectorEnforcementValueValuesEnum(_messages.Enum):
+    r"""Specifies if connections must use Cloud SQL connectors. Option values
+    include the following: * `NOT_REQUIRED`: Cloud SQL instances can be
+    connected without Cloud SQL Connectors. * `REQUIRED`: Only allow
+    connections that use Cloud SQL Connectors. Note that using REQUIRED
+    disables all existing authorized networks. If this field is not specified
+    when creating a new instance, NOT_REQUIRED is used. If this field is not
+    specified when patching or updating an existing instance, it is left
+    unchanged in the instance.
+
+    Values:
+      CONNECTOR_ENFORCEMENT_UNSPECIFIED: The requirement for Cloud SQL
+        connectors is unknown.
+      NOT_REQUIRED: Do not require Cloud SQL connectors.
+      REQUIRED: Require all connections to use Cloud SQL connectors, including
+        the Cloud SQL Auth Proxy and Cloud SQL Java, Python, and Go
+        connectors. Note: This disables all existing authorized networks.
+    """
+    CONNECTOR_ENFORCEMENT_UNSPECIFIED = 0
+    NOT_REQUIRED = 1
+    REQUIRED = 2
 
   class DataDiskTypeValueValuesEnum(_messages.Enum):
     r"""The type of data disk: `PD_SSD` (default) or `PD_HDD`. Not used for
@@ -2381,31 +2431,32 @@ class Settings(_messages.Message):
   availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 4)
   backupConfiguration = _messages.MessageField('BackupConfiguration', 5)
   collation = _messages.StringField(6)
-  crashSafeReplicationEnabled = _messages.BooleanField(7)
-  dataDiskSizeGb = _messages.IntegerField(8)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 9)
-  databaseFlags = _messages.MessageField('DatabaseFlags', 10, repeated=True)
-  databaseReplicationEnabled = _messages.BooleanField(11)
-  deletionProtectionEnabled = _messages.BooleanField(12)
-  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 13, repeated=True)
-  insightsConfig = _messages.MessageField('InsightsConfig', 14)
-  instanceVersion = _messages.StringField(15)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 16)
-  kind = _messages.StringField(17)
-  locationPreference = _messages.MessageField('LocationPreference', 18)
-  maintenanceVersion = _messages.StringField(19)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 20)
-  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 21)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 22)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 23)
-  settingsVersion = _messages.IntegerField(24)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 25)
-  storageAutoResize = _messages.BooleanField(26)
-  storageAutoResizeLimit = _messages.IntegerField(27)
-  tier = _messages.StringField(28)
-  timeZone = _messages.StringField(29)
-  userLabels = _messages.MessageField('UserLabelsValue', 30)
-  workloadTier = _messages.EnumField('WorkloadTierValueValuesEnum', 31)
+  connectorEnforcement = _messages.EnumField('ConnectorEnforcementValueValuesEnum', 7)
+  crashSafeReplicationEnabled = _messages.BooleanField(8)
+  dataDiskSizeGb = _messages.IntegerField(9)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 10)
+  databaseFlags = _messages.MessageField('DatabaseFlags', 11, repeated=True)
+  databaseReplicationEnabled = _messages.BooleanField(12)
+  deletionProtectionEnabled = _messages.BooleanField(13)
+  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 14, repeated=True)
+  insightsConfig = _messages.MessageField('InsightsConfig', 15)
+  instanceVersion = _messages.StringField(16)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 17)
+  kind = _messages.StringField(18)
+  locationPreference = _messages.MessageField('LocationPreference', 19)
+  maintenanceVersion = _messages.StringField(20)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 21)
+  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 22)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 23)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 24)
+  settingsVersion = _messages.IntegerField(25)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 26)
+  storageAutoResize = _messages.BooleanField(27)
+  storageAutoResizeLimit = _messages.IntegerField(28)
+  tier = _messages.StringField(29)
+  timeZone = _messages.StringField(30)
+  userLabels = _messages.MessageField('UserLabelsValue', 31)
+  workloadTier = _messages.EnumField('WorkloadTierValueValuesEnum', 32)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):

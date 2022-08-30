@@ -4325,6 +4325,7 @@ class AiplatformProjectsLocationsPipelineJobsListRequest(_messages.Message):
       PipelineService.ListPipelineJobs call.
     parent: Required. The resource name of the Location to list the
       PipelineJobs from. Format: `projects/{project}/locations/{location}`
+    readMask: Mask specifying which fields to read.
   """
 
   filter = _messages.StringField(1)
@@ -4332,6 +4333,7 @@ class AiplatformProjectsLocationsPipelineJobsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+  readMask = _messages.StringField(6)
 
 
 class AiplatformProjectsLocationsPipelineJobsOperationsCancelRequest(_messages.Message):
@@ -7749,7 +7751,6 @@ class GoogleCloudAiplatformInternalHumanInTheLoopEntitlement(_messages.Message):
   r"""A HumanInTheLoopEntitlement represents a purchase of Human-in-the-Loop
   (HITL) product made by a customer on the GCP Marketplace. It allows to the
   purchased HITL product and to ensure the appropriate billing events occur.
-  Next id: 11
 
   Enums:
     StateValueValuesEnum: State of the human in the loop entitlement.
@@ -8182,10 +8183,16 @@ class GoogleCloudAiplatformInternalSendHumanInTheLoopEntryOperationMetadata(_mes
     labelingProgress: Output only. Current labeling job progress percentage
       scaled in interval [0, 100], indicating the percentage of DataItems that
       has been finished.
+    questionIds: Output only. Question Ids associated with the human in the
+      loop entry.
+    taskQueueName: Output only. Name of the task queue the sent human in the
+      loop entry belongs to.
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
   labelingProgress = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  questionIds = _messages.StringField(3, repeated=True)
+  taskQueueName = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformInternalSendHumanInTheLoopEntryResponse(_messages.Message):
@@ -10955,7 +10962,8 @@ class GoogleCloudAiplatformUiMigrateResourceResponse(_messages.Message):
 
 
 class GoogleCloudAiplatformUiModelMonitoringObjectiveConfig(_messages.Message):
-  r"""Next ID: 8
+  r"""The objective configuration for model monitoring, including the
+  information needed to detect anomalies for one particular model.
 
   Fields:
     explanationConfig: The config for integrating with Vertex Explainable AI.
@@ -11552,7 +11560,7 @@ class GoogleCloudAiplatformUiSampledShapleyAttribution(_messages.Message):
 
 class GoogleCloudAiplatformUiSamplingStrategy(_messages.Message):
   r"""Sampling Strategy for logging, can be for both training and prediction
-  dataset. Next ID: 2
+  dataset.
 
   Fields:
     randomSampleConfig: Random sample config. Will support more sampling
@@ -12306,7 +12314,7 @@ class GoogleCloudAiplatformUiTextStatsUnigramStats(_messages.Message):
 
 
 class GoogleCloudAiplatformUiThresholdConfig(_messages.Message):
-  r"""The config for feature monitoring threshold. Next ID: 3
+  r"""The config for feature monitoring threshold.
 
   Fields:
     value: Specify a threshold value that can trigger the alert. If this
@@ -13019,7 +13027,7 @@ class GoogleCloudAiplatformV1CreateTensorboardOperationMetadata(_messages.Messag
 
 
 class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
-  r"""Represents the spec of a CustomJob. Next Id: 15
+  r"""Represents the spec of a CustomJob.
 
   Fields:
     baseOutputDirectory: The Cloud Storage location to store the output of
@@ -22040,6 +22048,20 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
       underscores and dashes. International characters are allowed. See
       https://goo.gl/xmQnxf for more information and examples of labels.
     name: Output only. Resource name of a CustomJob.
+    pubsubTopic: Immutable. The `Topic.name` of the Pub/Sub topic to which to
+      publish the update when this job finishes. Must be of the format:
+      `projects/{project}/topics/{topic}`. If not provided, such an update
+      won't be sent, but the job state can still be polled via
+      JobService.GetCustomJob. If a non-existing topic, or a topic to which
+      Vertex AI is not allowed to publish to is provided, the job creation
+      will succeed, but the update still won't be sent. The update message
+      contains as its data a JSON in the following format: ``` { "title": "Job
+      state update", "type": "object", "properties": { "job": { "type":
+      "string", "description": "The resource name of the job, in
+      \"projects/{project}/locations/{location}/custom_jobs/{custom_job}\"
+      format, this update pertains to." }, "status": { "type": "string",
+      "enum": ["succeeded", "failed", "cancelled", "expired"], "description":
+      "The status in which the job finished its execution." } } } ```
     startTime: Output only. Time when the CustomJob for the first time entered
       the `JOB_STATE_RUNNING` state.
     state: Output only. The detailed state of the job.
@@ -22159,14 +22181,15 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
   jobSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1CustomJobSpec', 6)
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
-  startTime = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
-  webAccessUris = _messages.MessageField('WebAccessUrisValue', 12)
+  pubsubTopic = _messages.StringField(9)
+  startTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
+  webAccessUris = _messages.MessageField('WebAccessUrisValue', 13)
 
 
 class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
-  r"""Represents the spec of a CustomJob. Next Id: 15
+  r"""Represents the spec of a CustomJob.
 
   Fields:
     baseOutputDirectory: The Cloud Storage location to store the output of
@@ -25547,6 +25570,10 @@ class GoogleCloudAiplatformV1beta1Index(_messages.Message):
   r"""A representation of a collection of database items organized in a way
   that allows for approximate nearest neighbor (a.k.a ANN) algorithms search.
 
+  Enums:
+    IndexUpdateMethodValueValuesEnum: Immutable. The update method to use with
+      this Index. If not set, BATCH_UPDATE will be used by default.
+
   Messages:
     LabelsValue: The labels with user-defined metadata to organize your
       Indexes. Label keys and values can be no longer than 64 characters
@@ -25565,6 +25592,9 @@ class GoogleCloudAiplatformV1beta1Index(_messages.Message):
       to 128 characters long and can be consist of any UTF-8 characters.
     etag: Used to perform consistent read-modify-write updates. If not set, a
       blind "overwrite" update happens.
+    indexStats: Output only. Stats of the index resource.
+    indexUpdateMethod: Immutable. The update method to use with this Index. If
+      not set, BATCH_UPDATE will be used by default.
     labels: The labels with user-defined metadata to organize your Indexes.
       Label keys and values can be no longer than 64 characters (Unicode
       codepoints), can only contain lowercase letters, numeric characters,
@@ -25590,6 +25620,22 @@ class GoogleCloudAiplatformV1beta1Index(_messages.Message):
       already reflected in the Index. Result of any successfully completed
       Operation on the Index is reflected in it.
   """
+
+  class IndexUpdateMethodValueValuesEnum(_messages.Enum):
+    r"""Immutable. The update method to use with this Index. If not set,
+    BATCH_UPDATE will be used by default.
+
+    Values:
+      INDEX_UPDATE_METHOD_UNSPECIFIED: Should not be used.
+      BATCH_UPDATE: BatchUpdate: user can call UpdateIndex with files on Cloud
+        Storage of datapoints to update.
+      STREAM_UPDATE: StreamUpdate: user can call
+        UpsertDatapoints/DeleteDatapoints to update the Index and the updates
+        will be applied in corresponding DeployedIndexes in nearly real-time.
+    """
+    INDEX_UPDATE_METHOD_UNSPECIFIED = 0
+    BATCH_UPDATE = 1
+    STREAM_UPDATE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -25624,11 +25670,13 @@ class GoogleCloudAiplatformV1beta1Index(_messages.Message):
   description = _messages.StringField(3)
   displayName = _messages.StringField(4)
   etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  metadata = _messages.MessageField('extra_types.JsonValue', 7)
-  metadataSchemaUri = _messages.StringField(8)
-  name = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  indexStats = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexStats', 6)
+  indexUpdateMethod = _messages.EnumField('IndexUpdateMethodValueValuesEnum', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  metadata = _messages.MessageField('extra_types.JsonValue', 9)
+  metadataSchemaUri = _messages.StringField(10)
+  name = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class GoogleCloudAiplatformV1beta1IndexDatapoint(_messages.Message):
@@ -25784,6 +25832,18 @@ class GoogleCloudAiplatformV1beta1IndexPrivateEndpoints(_messages.Message):
 
   matchGrpcAddress = _messages.StringField(1)
   serviceAttachment = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1IndexStats(_messages.Message):
+  r"""Stats of the Index.
+
+  Fields:
+    shardsCount: Output only. The number of shards in the Index.
+    vectorsCount: Output only. The number of vectors in the Index.
+  """
+
+  shardsCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  vectorsCount = _messages.IntegerField(2)
 
 
 class GoogleCloudAiplatformV1beta1InputDataConfig(_messages.Message):
@@ -27659,7 +27719,7 @@ class GoogleCloudAiplatformV1beta1ModelExportFormat(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig(_messages.Message):
-  r"""Next ID: 3
+  r"""A GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig object.
 
   Fields:
     emailAlertConfig: Email alert config.
@@ -27685,7 +27745,7 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfigEmailAlertConfig(_me
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringConfig(_messages.Message):
-  r"""Next ID: 6
+  r"""The model monitoring configuration used for Batch Prediction Job.
 
   Fields:
     alertConfig: Model monitoring alert config.
@@ -27696,15 +27756,21 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringConfig(_messages.Message):
       override the schema. For models trained with Vertex AI, this field must
       be set as all the fields in predict instance formatted as string.
     objectiveConfigs: Model monitoring objective config.
+    statsAnomaliesBaseDirectory: Add Google Cloud Storage location for batch
+      prediction model monitoring to dump statistics and anomalies. If not
+      provided, a folder will be created in customer project to hold
+      statistics and anomalies.
   """
 
   alertConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig', 1)
   analysisInstanceSchemaUri = _messages.StringField(2)
   objectiveConfigs = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig', 3, repeated=True)
+  statsAnomaliesBaseDirectory = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 4)
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig(_messages.Message):
-  r"""Next ID: 8
+  r"""The objective configuration for model monitoring, including the
+  information needed to detect anomalies for one particular model.
 
   Fields:
     explanationConfig: The config for integrating with Vertex Explainable AI.
@@ -29306,7 +29372,7 @@ class GoogleCloudAiplatformV1beta1SampledShapleyAttribution(_messages.Message):
 
 class GoogleCloudAiplatformV1beta1SamplingStrategy(_messages.Message):
   r"""Sampling Strategy for logging, can be for both training and prediction
-  dataset. Next ID: 2
+  dataset.
 
   Fields:
     randomSampleConfig: Random sample config. Will support more sampling
@@ -32885,7 +32951,8 @@ class GoogleCloudAiplatformV1beta1SuggestTrialsRequest(_messages.Message):
       the service will return the identical suggested Trial if the Trial is
       pending, and provide a new Trial if the last suggested Trial was
       completed.
-    suggestionCount: Required. The number of suggestions requested.
+    suggestionCount: Required. The number of suggestions requested. It must be
+      positive.
   """
 
   clientId = _messages.StringField(1)
@@ -33318,7 +33385,7 @@ class GoogleCloudAiplatformV1beta1TensorboardTimeSeriesMetadata(_messages.Messag
 
 
 class GoogleCloudAiplatformV1beta1ThresholdConfig(_messages.Message):
-  r"""The config for feature monitoring threshold. Next ID: 3
+  r"""The config for feature monitoring threshold.
 
   Fields:
     value: Specify a threshold value that can trigger the alert. If this
@@ -34054,16 +34121,16 @@ class GoogleCloudAiplatformV1beta1WriteFeatureValuesPayload(_messages.Message):
     FeatureValuesValue: Required. Feature values to be written, mapping from
       Feature ID to value. Up to 100,000 `feature_values` entries may be
       written across all payloads. The feature generation time, aligned by
-      days, must be no older than (1825 days) and no later than one year (366
-      days) in the future.
+      days, must be no older than five years (1825 days) and no later than one
+      year (366 days) in the future.
 
   Fields:
     entityId: Required. The ID of the entity.
     featureValues: Required. Feature values to be written, mapping from
       Feature ID to value. Up to 100,000 `feature_values` entries may be
       written across all payloads. The feature generation time, aligned by
-      days, must be no older than (1825 days) and no later than one year (366
-      days) in the future.
+      days, must be no older than five years (1825 days) and no later than one
+      year (366 days) in the future.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -34071,7 +34138,8 @@ class GoogleCloudAiplatformV1beta1WriteFeatureValuesPayload(_messages.Message):
     r"""Required. Feature values to be written, mapping from Feature ID to
     value. Up to 100,000 `feature_values` entries may be written across all
     payloads. The feature generation time, aligned by days, must be no older
-    than (1825 days) and no later than one year (366 days) in the future.
+    than five years (1825 days) and no later than one year (366 days) in the
+    future.
 
     Messages:
       AdditionalProperty: An additional property for a FeatureValuesValue
@@ -34295,8 +34363,14 @@ class GoogleIamV1Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique

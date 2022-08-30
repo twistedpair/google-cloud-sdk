@@ -27,7 +27,7 @@ properties:
       type: string
   cdnPolicy:
     description: |-
-      The policy to use for defining caching and signed request behaviour for
+      The policy to use for defining caching and signed request behavior for
       requests that match this route.
     $ref: CDNPolicy.yaml
   corsPolicy:
@@ -39,3 +39,8 @@ properties:
     description: |-
       The URL rewrite configuration for requests that match this route.
     $ref: UrlRewrite.yaml
+  wasmAction:
+    description: |-
+      Reference to a WasmAction resource in the format:
+      `projects/{project}/locations/{location}/wasmActions/{wasm_action}`
+    type: string

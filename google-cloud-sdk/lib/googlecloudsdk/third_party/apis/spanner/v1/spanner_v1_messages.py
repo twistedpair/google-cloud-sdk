@@ -33,7 +33,8 @@ class Backup(_messages.Message):
       `projects//instances//databases/`.
     databaseDialect: Output only. The database dialect information for the
       backup.
-    encryptionInfo: Output only. The encryption information for the backup.
+    encryptionInfo: Output only. Output only. The encryption information for
+      the backup. .
     expireTime: Required for the CreateBackup operation. The expiration time
       of the backup, with microseconds granularity that must be at least 6
       hours and at most 366 days from the time the CreateBackup request is
@@ -194,8 +195,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -634,9 +641,10 @@ class Database(_messages.Message):
       of encryption, this field is empty.
     encryptionInfo: Output only. For databases that are using customer managed
       encryption, this field contains the encryption information for the
-      database, such as encryption state and the Cloud KMS key versions that
-      are in use. For databases that are using Google default or other types
-      of encryption, this field is empty. This field is propagated lazily from
+      database, such as all Cloud KMS key versions that are in use. The
+      `encryption_status' field inside of each `EncryptionInfo` is not
+      populated. For databases that are using Google default or other types of
+      encryption, this field is empty. This field is propagated lazily from
       the backend. There might be a delay from when a key version is being
       used and when it appears in this field.
     name: Required. The name of the database. Values are of the form
@@ -706,9 +714,8 @@ class DatabaseRole(_messages.Message):
 
   Fields:
     name: Required. The name of the database role. Values are of the form
-      `projects//instances//databases//databaseRoles/ {role}`, where `` is as
-      specified in the `CREATE ROLE` DDL statement. This name can be passed to
-      Get/Set IAMPolicy methods to identify the database role.
+      `projects//instances//databases//databaseRoles/` where `` is as
+      specified in the `CREATE ROLE` DDL statement.
   """
 
   name = _messages.StringField(1)
@@ -3589,6 +3596,20 @@ class SpannerProjectsInstanceConfigsListRequest(_messages.Message):
   r"""A SpannerProjectsInstanceConfigsListRequest object.
 
   Fields:
+    filter: An expression for filtering the results of the request. Filter
+      rules are case insensitive. The fields eligible for filtering are: *
+      `name` * `display_name` * `labels.key` where key is the name of a label
+      * `config_type` Some examples of using filters are: * `name:Howl` -->
+      The instance config's name contains the string "howl". * `name:HOWL` -->
+      Equivalent to above. * `NAME:howl` --> Equivalent to above. *
+      `labels.env:*` --> The instance config has the label "env". *
+      `labels.env:dev` --> The instance config has the label "env" and the
+      value of the label contains the string "dev". *
+      `config_type:GOOGLE_MANAGED` --> Google managed instance configs. *
+      `config_type:USER_MANAGED` --> User managed instance configs. *
+      `name:howl labels.env:dev config_type:USER_MANAGED` --> The instance
+      config is user managed, the name contains "howl" and value of the label
+      "env" contains "dev".
     pageSize: Number of instance configurations to be returned in the
       response. If 0 or less, defaults to the server's maximum allowed page
       size.
@@ -3599,9 +3620,10 @@ class SpannerProjectsInstanceConfigsListRequest(_messages.Message):
       `projects/`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class SpannerProjectsInstanceConfigsOperationsCancelRequest(_messages.Message):

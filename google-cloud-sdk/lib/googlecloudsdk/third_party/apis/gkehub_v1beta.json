@@ -1226,6 +1226,14 @@
           "description": "OIDC specific configuration.",
           "$ref": "IdentityServiceOidcConfig"
         },
+        "azureadConfig": {
+          "description": "AzureAD specific Configuration.",
+          "$ref": "IdentityServiceAzureADConfig"
+        },
+        "googleConfig": {
+          "description": "GoogleConfig specific configuration",
+          "$ref": "IdentityServiceGoogleConfig"
+        },
         "name": {
           "description": "Identifier for auth config.",
           "type": "string"
@@ -1297,6 +1305,46 @@
         }
       }
     },
+    "IdentityServiceAzureADConfig": {
+      "id": "IdentityServiceAzureADConfig",
+      "description": "Configuration for the AzureAD Auth flow.",
+      "type": "object",
+      "properties": {
+        "clientId": {
+          "description": "ID for the registered client application that makes authentication requests to the Azure AD identity provider.",
+          "type": "string"
+        },
+        "tenant": {
+          "description": "Kind of Azure AD account to be authenticated. Supported values are or for accounts belonging to a specific tenant.",
+          "type": "string"
+        },
+        "kubectlRedirectUri": {
+          "description": "The redirect URL that kubectl uses for authorization.",
+          "type": "string"
+        },
+        "clientSecret": {
+          "description": "Input only. Unencrypted AzureAD client secret will be passed to the GKE Hub CLH.",
+          "type": "string"
+        },
+        "encryptedClientSecret": {
+          "description": "Output only. Encrypted AzureAD client secret.",
+          "readOnly": true,
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "IdentityServiceGoogleConfig": {
+      "id": "IdentityServiceGoogleConfig",
+      "description": "Configuration for the Google Plugin Auth flow.",
+      "type": "object",
+      "properties": {
+        "disable": {
+          "description": "Disable automatic configuration of Google Plugin on supported platforms.",
+          "type": "boolean"
+        }
+      }
+    },
     "ServiceMeshMembershipSpec": {
       "id": "ServiceMeshMembershipSpec",
       "description": "**Service Mesh**: Spec for a single Membership for the servicemesh feature",
@@ -1321,7 +1369,7 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified",
-            "Google should manage my Service Mesh for the cluster. This will ensure that a control plane revision is available to the cluster. Google will enroll this revision in a release channel and keep it up to date. Enables a Google-managed data plane that provides L7 service mesh capabilities. Data plane management is enabled at the cluster level. Users can exclude individual workloads or namespaces.",
+            "Google should manage my Service Mesh for the cluster.",
             "User will manually configure their service mesh components."
           ],
           "enum": [
@@ -2151,6 +2199,22 @@
             "INSTALLED",
             "ERROR"
           ]
+        },
+        "gatekeeperMutation": {
+          "description": "Status of the pod serving the mutation webhook.",
+          "type": "string",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "INSTALLED",
+            "ERROR"
+          ]
         }
       }
     },
@@ -2321,7 +2385,8 @@
             "The PC is fully installed, but in the process of changing the configuration (including changing the version of PC either up and down, or modifying the manifests of PC) of the resources running on the cluster. The PCH has a Membership, is aware of the version the cluster should be running in, but has not confirmed for itself that the PC is running with that version.",
             "The PC may have resources on the cluster, but the PCH wishes to remove the Membership. The Membership still exists.",
             "The PC is not operational, and the PCH is unable to act to make it operational. Entering a CLUSTER_ERROR state happens automatically when the PCH determines that a PC installed on the cluster is non-operative or that the cluster does not meet requirements set for the PCH to administer the cluster but has nevertheless been given an instruction to do so (such as \u2018install\u2019).",
-            "In this state, the PC may still be operational, and only the PCH is unable to act. The hub should not issue instructions to change the PC state, or otherwise interfere with the on-cluster resources. Entering a HUB_ERROR state happens automatically when the PCH determines the hub is in an unhealthy state and it wishes to \u2018take hands off\u2019 to avoid corrupting the PC or other data."
+            "In this state, the PC may still be operational, and only the PCH is unable to act. The hub should not issue instructions to change the PC state, or otherwise interfere with the on-cluster resources. Entering a HUB_ERROR state happens automatically when the PCH determines the hub is in an unhealthy state and it wishes to \u2018take hands off\u2019 to avoid corrupting the PC or other data.",
+            "Policy Controller (PC) is installed but suspended. This means that the policies are not enforced, but violations are still recorded (through audit)."
           ],
           "enum": [
             "LIFECYCLE_STATE_UNSPECIFIED",
@@ -2331,7 +2396,8 @@
             "UPDATING",
             "DECOMISSIONING",
             "CLUSTER_ERROR",
-            "HUB_ERROR"
+            "HUB_ERROR",
+            "SUSPENDED"
           ]
         }
       }
@@ -2352,7 +2418,8 @@
             "The PC is fully installed, but in the process of changing the configuration (including changing the version of PC either up and down, or modifying the manifests of PC) of the resources running on the cluster. The PCH has a Membership, is aware of the version the cluster should be running in, but has not confirmed for itself that the PC is running with that version.",
             "The PC may have resources on the cluster, but the PCH wishes to remove the Membership. The Membership still exists.",
             "The PC is not operational, and the PCH is unable to act to make it operational. Entering a CLUSTER_ERROR state happens automatically when the PCH determines that a PC installed on the cluster is non-operative or that the cluster does not meet requirements set for the PCH to administer the cluster but has nevertheless been given an instruction to do so (such as \u2018install\u2019).",
-            "In this state, the PC may still be operational, and only the PCH is unable to act. The hub should not issue instructions to change the PC state, or otherwise interfere with the on-cluster resources. Entering a HUB_ERROR state happens automatically when the PCH determines the hub is in an unhealthy state and it wishes to \u2018take hands off\u2019 to avoid corrupting the PC or other data."
+            "In this state, the PC may still be operational, and only the PCH is unable to act. The hub should not issue instructions to change the PC state, or otherwise interfere with the on-cluster resources. Entering a HUB_ERROR state happens automatically when the PCH determines the hub is in an unhealthy state and it wishes to \u2018take hands off\u2019 to avoid corrupting the PC or other data.",
+            "Policy Controller (PC) is installed but suspended. This means that the policies are not enforced, but violations are still recorded (through audit)."
           ],
           "enum": [
             "LIFECYCLE_STATE_UNSPECIFIED",
@@ -2362,7 +2429,8 @@
             "UPDATING",
             "DECOMISSIONING",
             "CLUSTER_ERROR",
-            "HUB_ERROR"
+            "HUB_ERROR",
+            "SUSPENDED"
           ]
         },
         "details": {
@@ -2618,7 +2686,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"

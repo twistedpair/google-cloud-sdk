@@ -131,8 +131,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -407,6 +413,22 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class ExtendSchemaRequest(_messages.Message):
+  r"""ExtendSchemaRequest is the request message for ExtendSchema method.
+
+  Fields:
+    description: Required. Description for Schema Change.
+    fileContents: File uploaded as a byte stream input.
+    gcsPath: File stored in Cloud Storage bucket and represented in the form
+      projects/{project_id}/buckets/{bucket_name}/objects/{object_name} File
+      should be in the same project as the domain.
+  """
+
+  description = _messages.StringField(1)
+  fileContents = _messages.BytesField(2)
+  gcsPath = _messages.StringField(3)
 
 
 class GoogleCloudManagedidentitiesV1OpMetadata(_messages.Message):
@@ -1568,6 +1590,21 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsDetachTrustRequest(_message
 
   detachTrustRequest = _messages.MessageField('DetachTrustRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsExtendSchemaRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsExtendSchemaRequest
+  object.
+
+  Fields:
+    domain: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+    extendSchemaRequest: A ExtendSchemaRequest resource to be passed as the
+      request body.
+  """
+
+  domain = _messages.StringField(1, required=True)
+  extendSchemaRequest = _messages.MessageField('ExtendSchemaRequest', 2)
 
 
 class ManagedidentitiesProjectsLocationsGlobalDomainsGetIamPolicyRequest(_messages.Message):
@@ -2734,10 +2771,25 @@ class UpdatePolicy(_messages.Message):
       UPDATE_CHANNEL_UNSPECIFIED: Unspecified channel.
       EARLIER: Early channel within a customer project.
       LATER: Later channel within a customer project.
+      WEEK1: ! ! The follow channels can ONLY be used if you adopt the new MW
+        system! ! ! NOTE: all WEEK channels are assumed to be under a weekly
+        window. ! There is currently no dedicated channel definitions for
+        Daily windows. ! If you use Daily window, the system will assume a 1d
+        (24Hours) advanced ! notification period b/w EARLY and LATER. ! We may
+        consider support more flexible daily channel specifications in ! the
+        future. WEEK1 == EARLIER with minimum 7d advanced notification. {7d,
+        14d} The system will treat them equally and will use WEEK1 whenever it
+        can. New customers are encouraged to use this channel annotation.
+      WEEK2: WEEK2 == LATER with minimum 14d advanced notification {14d, 21d}.
+      WEEK5: WEEK5 == 40d support. minimum 35d advanced notification {35d,
+        42d}.
     """
     UPDATE_CHANNEL_UNSPECIFIED = 0
     EARLIER = 1
     LATER = 2
+    WEEK1 = 3
+    WEEK2 = 4
+    WEEK5 = 5
 
   channel = _messages.EnumField('ChannelValueValuesEnum', 1)
   denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 2, repeated=True)

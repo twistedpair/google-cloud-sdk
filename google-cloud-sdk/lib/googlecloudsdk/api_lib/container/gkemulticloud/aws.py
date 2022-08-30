@@ -25,13 +25,16 @@ from googlecloudsdk.command_lib.container.gkemulticloud import flags
 
 
 class _AwsClientBase(client.ClientBase):
-  """Base class for Azure gkemulticloud API clients."""
+  """Base class for AWS gkemulticloud API clients."""
 
   def _Cluster(self, cluster_ref, args):
+    cluster_type = self._messages.GoogleCloudGkemulticloudV1AwsCluster
     kwargs = {
+        'annotations': self._Annotations(args, cluster_type),
         'authorization': self._Authorization(args),
         'awsRegion': aws_flags.GetAwsRegion(args),
         'controlPlane': self._ControlPlane(args),
+        'description': flags.GetDescription(args),
         'fleet': self._Fleet(args),
         'loggingConfig': flags.GetLogging(args),
         'name': cluster_ref.awsClustersId,

@@ -1379,9 +1379,9 @@ class DataflowProjectsLocationsDeploymentsGetRequest(_messages.Message):
         `DEPLOYMENT_VIEW_ALL` information, and may contain additional
         information.
       DEPLOYMENT_VIEW_ALL: Request all information available for this
-        depoyment.
+        deployment.
       DEPLOYMENT_VIEW_MUTABLE: Request all mutable information available for
-        this depoyment.
+        this deployment.
     """
     DEPLOYMENT_VIEW_UNSPECIFIED = 0
     DEPLOYMENT_VIEW_ALL = 1
@@ -2978,6 +2978,8 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
       an out of memory error during processing. The location of the heap file
       is either echoed back to the user, or the user is given the opportunity
       to download the heap file.
+    enableLauncherVmSerialPortLogging: If true serial port logging will be
+      enabled for the launcher VM.
     enableStreamingEngine: Whether to enable Streaming Engine for the job.
     flexrsGoal: Set FlexRS goal for the job.
       https://cloud.google.com/dataflow/docs/guides/flexrs
@@ -3103,24 +3105,25 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
   autoscalingAlgorithm = _messages.EnumField('AutoscalingAlgorithmValueValuesEnum', 3)
   diskSizeGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   dumpHeapOnOom = _messages.BooleanField(5)
-  enableStreamingEngine = _messages.BooleanField(6)
-  flexrsGoal = _messages.EnumField('FlexrsGoalValueValuesEnum', 7)
-  ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 8)
-  kmsKeyName = _messages.StringField(9)
-  launcherMachineType = _messages.StringField(10)
-  machineType = _messages.StringField(11)
-  maxWorkers = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  network = _messages.StringField(13)
-  numWorkers = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  saveHeapDumpsToGcsPath = _messages.StringField(15)
-  sdkContainerImage = _messages.StringField(16)
-  serviceAccountEmail = _messages.StringField(17)
-  stagingLocation = _messages.StringField(18)
-  subnetwork = _messages.StringField(19)
-  tempLocation = _messages.StringField(20)
-  workerRegion = _messages.StringField(21)
-  workerZone = _messages.StringField(22)
-  zone = _messages.StringField(23)
+  enableLauncherVmSerialPortLogging = _messages.BooleanField(6)
+  enableStreamingEngine = _messages.BooleanField(7)
+  flexrsGoal = _messages.EnumField('FlexrsGoalValueValuesEnum', 8)
+  ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 9)
+  kmsKeyName = _messages.StringField(10)
+  launcherMachineType = _messages.StringField(11)
+  machineType = _messages.StringField(12)
+  maxWorkers = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  network = _messages.StringField(14)
+  numWorkers = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  saveHeapDumpsToGcsPath = _messages.StringField(16)
+  sdkContainerImage = _messages.StringField(17)
+  serviceAccountEmail = _messages.StringField(18)
+  stagingLocation = _messages.StringField(19)
+  subnetwork = _messages.StringField(20)
+  tempLocation = _messages.StringField(21)
+  workerRegion = _messages.StringField(22)
+  workerZone = _messages.StringField(23)
+  zone = _messages.StringField(24)
 
 
 class FloatingPointList(_messages.Message):
@@ -3227,6 +3230,47 @@ class Histogram(_messages.Message):
   firstBucketOffset = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class HotKeyDebuggingInfo(_messages.Message):
+  r"""Information useful for debugging a hot key detection.
+
+  Messages:
+    DetectedHotKeysValue: Debugging information for each detected hot key.
+      Keyed by a hash of the key.
+
+  Fields:
+    detectedHotKeys: Debugging information for each detected hot key. Keyed by
+      a hash of the key.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetectedHotKeysValue(_messages.Message):
+    r"""Debugging information for each detected hot key. Keyed by a hash of
+    the key.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetectedHotKeysValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type DetectedHotKeysValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetectedHotKeysValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A HotKeyInfo attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('HotKeyInfo', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  detectedHotKeys = _messages.MessageField('DetectedHotKeysValue', 1)
+
+
 class HotKeyDetection(_messages.Message):
   r"""Proto describing a hot key detected on a given WorkItem.
 
@@ -3241,6 +3285,25 @@ class HotKeyDetection(_messages.Message):
   hotKeyAge = _messages.StringField(1)
   systemName = _messages.StringField(2)
   userStepName = _messages.StringField(3)
+
+
+class HotKeyInfo(_messages.Message):
+  r"""Information about a hot key.
+
+  Fields:
+    hotKeyAge: The age of the hot key measured from when it was first
+      detected.
+    key: A detected hot key that is causing limited parallelism. This field
+      will be populated only if the following flag is set to true: "--
+      enable_hot_key_logging".
+    keyTruncated: If true, then the above key is truncated and cannot be
+      deserialized. This occurs if the key above is populated and the key size
+      is >5MB.
+  """
+
+  hotKeyAge = _messages.StringField(1)
+  key = _messages.StringField(2)
+  keyTruncated = _messages.BooleanField(3)
 
 
 class InstructionInput(_messages.Message):
@@ -6364,6 +6427,7 @@ class StageSummary(_messages.Message):
     stageId: ID of this stage
     startTime: Start time of this stage.
     state: State of this stage.
+    stragglerSummary: Straggler summary for this stage.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -6390,6 +6454,7 @@ class StageSummary(_messages.Message):
   stageId = _messages.StringField(4)
   startTime = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
+  stragglerSummary = _messages.MessageField('StragglerSummary', 7)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -6575,6 +6640,107 @@ class Step(_messages.Message):
   kind = _messages.StringField(1)
   name = _messages.StringField(2)
   properties = _messages.MessageField('PropertiesValue', 3)
+
+
+class StragglerDebuggingInfo(_messages.Message):
+  r"""Information useful for debugging a straggler. Each type will provide
+  specialized debugging information relevant for a particular cause. The
+  StragglerDebuggingInfo will be 1:1 mapping to the StragglerCause enum.
+
+  Fields:
+    hotKey: Hot key debugging details.
+  """
+
+  hotKey = _messages.MessageField('HotKeyDebuggingInfo', 1)
+
+
+class StragglerInfo(_messages.Message):
+  r"""Information useful for straggler identification and debugging.
+
+  Messages:
+    CausesValue: The straggler causes, keyed by the string representation of
+      the StragglerCause enum and contains specialized debugging information
+      for each straggler cause.
+
+  Fields:
+    causes: The straggler causes, keyed by the string representation of the
+      StragglerCause enum and contains specialized debugging information for
+      each straggler cause.
+    startTime: The time when the work item attempt became a straggler.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CausesValue(_messages.Message):
+    r"""The straggler causes, keyed by the string representation of the
+    StragglerCause enum and contains specialized debugging information for
+    each straggler cause.
+
+    Messages:
+      AdditionalProperty: An additional property for a CausesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type CausesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CausesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A StragglerDebuggingInfo attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('StragglerDebuggingInfo', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  causes = _messages.MessageField('CausesValue', 1)
+  startTime = _messages.StringField(2)
+
+
+class StragglerSummary(_messages.Message):
+  r"""Summarized straggler identification details.
+
+  Messages:
+    StragglerCauseCountValue: Aggregated counts of straggler causes, keyed by
+      the string representation of the StragglerCause enum.
+
+  Fields:
+    stragglerCauseCount: Aggregated counts of straggler causes, keyed by the
+      string representation of the StragglerCause enum.
+    totalStragglerCount: The total count of stragglers.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class StragglerCauseCountValue(_messages.Message):
+    r"""Aggregated counts of straggler causes, keyed by the string
+    representation of the StragglerCause enum.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        StragglerCauseCountValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        StragglerCauseCountValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a StragglerCauseCountValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  stragglerCauseCount = _messages.MessageField('StragglerCauseCountValue', 1)
+  totalStragglerCount = _messages.IntegerField(2)
 
 
 class StreamLocation(_messages.Message):
@@ -7174,6 +7340,7 @@ class WorkItemDetails(_messages.Message):
     progress: Progress of this work item.
     startTime: Start time of this work item attempt.
     state: State of this work item.
+    stragglerInfo: Information about straggler detections for this work item.
     taskId: Name of this work item.
   """
 
@@ -7201,7 +7368,8 @@ class WorkItemDetails(_messages.Message):
   progress = _messages.MessageField('ProgressTimeseries', 4)
   startTime = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
-  taskId = _messages.StringField(7)
+  stragglerInfo = _messages.MessageField('StragglerInfo', 7)
+  taskId = _messages.StringField(8)
 
 
 class WorkItemServiceState(_messages.Message):

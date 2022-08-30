@@ -100,6 +100,15 @@
       "location": "query"
     }
   },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
   "schemas": {
     "FleetConstraintTemplate": {
       "id": "FleetConstraintTemplate",
@@ -347,6 +356,22 @@
           "description": "metadata.generation from the constraint.",
           "type": "string",
           "format": "int64"
+        },
+        "constraintInfo": {
+          "description": "constraint bundle information from the metadata.annotation field.",
+          "$ref": "ConstraintInfo"
+        }
+      }
+    },
+    "ConstraintInfo": {
+      "id": "ConstraintInfo",
+      "type": "object",
+      "properties": {
+        "info": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -616,22 +641,6 @@
           "description": "The membership this violation occurs on.",
           "$ref": "MembershipRef"
         },
-        "enforcementAction": {
-          "description": "The enforcement_action of the violation.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unspecified state for an enforcement action.",
-            "The resource is denied admission to the membership.",
-            "Allows testing constraints without enforcing them.",
-            "Provides immediate feedback on why a resource violates a constraint."
-          ],
-          "enum": [
-            "ENFORCEMENT_ACTION_UNSPECIFIED",
-            "ENFORCEMENT_ACTION_DENY",
-            "ENFORCEMENT_ACTION_DRYRUN",
-            "ENFORCEMENT_ACTION_WARN"
-          ]
-        },
         "auditTimestamp": {
           "description": "The audit timestamp when this violation was observed on the membership.",
           "type": "string",
@@ -697,6 +706,10 @@
         "runtimeStatus": {
           "description": "The status of the policy controller runtime configuration. If runtime_status is empty, then the server could not find any existing constraint or templates to report status.",
           "$ref": "MembershipRuntimeStatus"
+        },
+        "featureStatus": {
+          "description": "The status of the policy controller feature.",
+          "$ref": "MembershipFeatureStatus"
         }
       }
     },
@@ -719,6 +732,37 @@
           "description": "The number of constraint violations on the member cluster.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "MembershipFeatureStatus": {
+      "id": "MembershipFeatureStatus",
+      "description": "MembershipFeatureStatus contains aggregate data about the policy controller feature on a cluster that is a member of a fleet.",
+      "type": "object",
+      "properties": {
+        "lifecycleStatus": {
+          "description": "The lifecycle status of the policy controller feature on the membership.",
+          "type": "string",
+          "enumDescriptions": [
+            "The lifecycle state is unspecified.",
+            "Policy Controller (PC) does not exist on the given cluster, and no k8s resources of any type that are associated with the PC should exist there. The cluster does not possess a membership with the Hub Feature controller.",
+            "The Hub Feature controller possesses a Membership, however Policy Controller is not fully installed on the cluster. In this state the hub can be expected to be taking actions to install the PC on the cluster.",
+            "Policy Controller (PC) is fully installed on the cluster and in an operational mode. In this state the Hub Feature controller will be reconciling state with the PC, and the PC will be performing it\u2019s operational tasks per that software. Entering a READY state requires that the hub has confirmed the PC is installed and its pods are operational with the version of the PC the Hub Feature controller expects.",
+            "Policy Controller (PC) is fully installed, but in the process of changing the configuration (including changing the version of PC either up and down, or modifying the manifests of PC) of the resources running on the cluster. The Hub Feature controller has a Membership, is aware of the version the cluster should be running in, but has not confirmed for itself that the PC is running with that version.",
+            "Policy Controller (PC) may have resources on the cluster, but the Hub Feature controller wishes to remove the Membership. The Membership still exists.",
+            "Policy Controller (PC) is not operational, and the Hub Feature controller is unable to act to make it operational. Entering a CLUSTER_ERROR state happens automatically when the PCH determines that a PC installed on the cluster is non-operative or that the cluster does not meet requirements set for the Hub Feature controller to administer the cluster but has nevertheless been given an instruction to do so (such as \u2018install\u2019).",
+            "In this state, the PC may still be operational, and only the Hub Feature controller is unable to act. The hub should not issue instructions to change the PC state, or otherwise interfere with the on-cluster resources. Entering a HUB_ERROR state happens automatically when the Hub Feature controller determines the hub is in an unhealthy state and it wishes to \u2018take hands off\u2019 to avoid corrupting the PC or other data."
+          ],
+          "enum": [
+            "LIFECYCLE_STATE_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "INSTALLING",
+            "ACTIVE",
+            "UPDATING",
+            "DECOMISSIONING",
+            "CLUSTER_ERROR",
+            "HUB_ERROR"
+          ]
         }
       }
     }
@@ -748,6 +792,9 @@
               "response": {
                 "$ref": "FleetConstraintTemplate"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "Retrieves status for a single constraint template. The status is aggregated across all member clusters in a fleet."
             },
             "list": {
@@ -781,6 +828,9 @@
               "response": {
                 "$ref": "ListFleetConstraintTemplatesResponse"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "Lists aggregate status for constraint templates within a fleet. Each entry in the response contains status for a particular template aggregated across all clusters within a single fleet, in pseudocode the response's shape is: [FleetWideStatusForConstraintTemplate1, FleetWideStatusForConstraintTemplate2, FleetWideStatusForConstraintTemplate3, ...]"
             }
           }
@@ -807,6 +857,9 @@
               "response": {
                 "$ref": "MembershipConstraintTemplate"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "Retrieves status for a single membership constraint template on a single member cluster."
             },
             "list": {
@@ -840,6 +893,9 @@
               "response": {
                 "$ref": "ListMembershipConstraintTemplatesResponse"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "Lists status for constraint templates. Each entry in the response has a ConstraintTemplateRef and MembershipRef, corresponding to status aggregated across all resources within a single member cluster, in pseudocode the response's shape is: [StatusForConstraintTemplate1OnMemberClusterA, StatusForConstraintTemplate2OnMemberClusterA, StatusForConstraintTemplate1OnMemberClusterB, StatusForConstraintTemplate3OnMemberClusterC, ...]"
             }
           }
@@ -866,6 +922,9 @@
               "response": {
                 "$ref": "FleetConstraint"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "Retrieves fleet-wide constraint info."
             },
             "list": {
@@ -899,6 +958,9 @@
               "response": {
                 "$ref": "ListFleetConstraintsResponse"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "ListFleetConstraints returns fleet-wide constraint info."
             }
           }
@@ -925,6 +987,9 @@
               "response": {
                 "$ref": "MembershipConstraint"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "Retrieves status for a single constraints a a single member cluster."
             },
             "list": {
@@ -958,6 +1023,9 @@
               "response": {
                 "$ref": "ListMembershipConstraintsResponse"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "ListMembershipConstraints returns per-membership runtime status for constraints. The response contains a list of MembershipConstraints. Each MembershipConstraint contains a MembershipRef indicating which member cluster the constraint status corresponds to. Note that if the request is ListMembershipConstraints(parent=project1) and clusterA is registered to project2 via a Membership in project1, then clusterA's info will appear in the response."
             }
           }
@@ -995,6 +1063,9 @@
               "response": {
                 "$ref": "ListMembershipConstraintAuditViolationsResponse"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "ListMembershipConstraintAuditViolations returns membership specific constraint audit violation info."
             }
           }
@@ -1032,6 +1103,9 @@
               "response": {
                 "$ref": "ListMembershipsResponse"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "ListMemberships returns runtime status from memberships of a fleet."
             }
           }

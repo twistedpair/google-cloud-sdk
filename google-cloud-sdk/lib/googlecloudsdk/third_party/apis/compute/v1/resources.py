@@ -455,6 +455,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'sslCertificate'],
       True
   )
+  REGIONSSLPOLICIES = (
+      'regionSslPolicies',
+      'projects/{project}/regions/{region}/sslPolicies/{sslPolicy}',
+      {},
+      ['project', 'region', 'sslPolicy'],
+      True
+  )
   REGIONTARGETHTTPPROXIES = (
       'regionTargetHttpProxies',
       'projects/{project}/regions/{region}/targetHttpProxies/'

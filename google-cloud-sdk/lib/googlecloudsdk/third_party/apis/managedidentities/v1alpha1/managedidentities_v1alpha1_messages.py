@@ -135,8 +135,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -188,6 +194,44 @@ class Certificate(_messages.Message):
   subject = _messages.StringField(3)
   subjectAlternativeName = _messages.StringField(4, repeated=True)
   thumbprint = _messages.StringField(5)
+
+
+class CheckMigrationPermissionRequest(_messages.Message):
+  r"""CheckMigrationPermissionRequest is the request message for
+  CheckMigrationPermission method.
+  """
+
+
+
+class CheckMigrationPermissionResponse(_messages.Message):
+  r"""CheckMigrationPermissionResponse is the response message for
+  CheckMigrationPermission method.
+
+  Enums:
+    StateValueValuesEnum: The state of DomainMigration.
+
+  Fields:
+    onpremDomains: The state of SID filtering of all the domains which has
+      trust established.
+    state: The state of DomainMigration.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of DomainMigration.
+
+    Values:
+      STATE_UNSPECIFIED: DomainMigration is in unspecified state.
+      DISABLED: Domain Migration is Disabled.
+      ENABLED: Domain Migration is Enabled.
+      NEEDS_MAINTENANCE: Domain Migration is not in valid state.
+    """
+    STATE_UNSPECIFIED = 0
+    DISABLED = 1
+    ENABLED = 2
+    NEEDS_MAINTENANCE = 3
+
+  onpremDomains = _messages.MessageField('OnPremDomainSIDDetails', 1, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class DailyCycle(_messages.Message):
@@ -259,6 +303,13 @@ class DetachTrustRequest(_messages.Message):
   """
 
   trust = _messages.MessageField('Trust', 1)
+
+
+class DisableMigrationRequest(_messages.Message):
+  r"""DisableMigrationRequest is the request message for DisableMigration
+  method.
+  """
+
 
 
 class Domain(_messages.Message):
@@ -1337,14 +1388,15 @@ class Machine(_messages.Message):
   r"""Machine is the resource containing VM information to be domain joined
 
   Fields:
-    id: Required. Instance Id of the GCE VM
-    name: Required. Instance name of the GCE VM which will be used as host
-      name for domain join
-    token: Required. Instance token of the GCE VM to verify instance identity
+    hostName: Required. Host name of the Compute Engine VM which will be used
+      as host name for domain join
+    id: Required. Instance Id of the Compute Engine VM
+    token: Required. Instance token of the Compute Engine VM to verify
+      instance identity
   """
 
-  id = _messages.StringField(1)
-  name = _messages.StringField(2)
+  hostName = _messages.StringField(1)
+  id = _messages.StringField(2)
   token = _messages.StringField(3)
 
 
@@ -1614,6 +1666,21 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsTestIamPermissionsRe
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class ManagedidentitiesProjectsLocationsGlobalDomainsCheckMigrationPermissionRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsCheckMigrationPermissio
+  nRequest object.
+
+  Fields:
+    checkMigrationPermissionRequest: A CheckMigrationPermissionRequest
+      resource to be passed as the request body.
+    domain: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+  """
+
+  checkMigrationPermissionRequest = _messages.MessageField('CheckMigrationPermissionRequest', 1)
+  domain = _messages.StringField(2, required=True)
+
+
 class ManagedidentitiesProjectsLocationsGlobalDomainsCreateRequest(_messages.Message):
   r"""A ManagedidentitiesProjectsLocationsGlobalDomainsCreateRequest object.
 
@@ -1660,6 +1727,37 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsDetachTrustRequest(_message
 
   detachTrustRequest = _messages.MessageField('DetachTrustRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsDisableMigrationRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsDisableMigrationRequest
+  object.
+
+  Fields:
+    disableMigrationRequest: A DisableMigrationRequest resource to be passed
+      as the request body.
+    domain: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+  """
+
+  disableMigrationRequest = _messages.MessageField('DisableMigrationRequest', 1)
+  domain = _messages.StringField(2, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsDomainJoinMachineRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalDomainsDomainJoinMachineRequest
+  object.
+
+  Fields:
+    domain: Required. The domain resource name using the form:
+      projects/{project_id}/locations/global/domains/{domain_name}
+    domainJoinMachineRequest: A DomainJoinMachineRequest resource to be passed
+      as the request body.
+  """
+
+  domain = _messages.StringField(1, required=True)
+  domainJoinMachineRequest = _messages.MessageField('DomainJoinMachineRequest', 2)
 
 
 class ManagedidentitiesProjectsLocationsGlobalDomainsEnableMigrationRequest(_messages.Message):
@@ -1740,21 +1838,6 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsGetRequest(_messages.Messag
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class ManagedidentitiesProjectsLocationsGlobalDomainsJoinMachineRequest(_messages.Message):
-  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsJoinMachineRequest
-  object.
-
-  Fields:
-    domainJoinMachineRequest: A DomainJoinMachineRequest resource to be passed
-      as the request body.
-    name: Required. The domain resource name using the form:
-      projects/{project_id}/locations/global/domains/{domain_name}
-  """
-
-  domainJoinMachineRequest = _messages.MessageField('DomainJoinMachineRequest', 1)
-  name = _messages.StringField(2, required=True)
 
 
 class ManagedidentitiesProjectsLocationsGlobalDomainsListRequest(_messages.Message):
@@ -2247,6 +2330,34 @@ class OnPremDomainDetails(_messages.Message):
 
   disableSidFiltering = _messages.BooleanField(1)
   domainName = _messages.StringField(2)
+
+
+class OnPremDomainSIDDetails(_messages.Message):
+  r"""OnPremDomainDetails is the message which contains details of on-prem
+  domain which is trusted and needs to be migrated.
+
+  Enums:
+    SidFilteringStateValueValuesEnum: Current SID filtering state.
+
+  Fields:
+    name: FQDN of the on-prem domain being migrated.
+    sidFilteringState: Current SID filtering state.
+  """
+
+  class SidFilteringStateValueValuesEnum(_messages.Enum):
+    r"""Current SID filtering state.
+
+    Values:
+      SID_FILTERING_STATE_UNSPECIFIED: SID Filtering is in unspecified state.
+      ENABLED: SID Filtering is Enabled.
+      DISABLED: SID Filtering is Disabled.
+    """
+    SID_FILTERING_STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  name = _messages.StringField(1)
+  sidFilteringState = _messages.EnumField('SidFilteringStateValueValuesEnum', 2)
 
 
 class Operation(_messages.Message):
@@ -2990,10 +3101,25 @@ class UpdatePolicy(_messages.Message):
       UPDATE_CHANNEL_UNSPECIFIED: Unspecified channel.
       EARLIER: Early channel within a customer project.
       LATER: Later channel within a customer project.
+      WEEK1: ! ! The follow channels can ONLY be used if you adopt the new MW
+        system! ! ! NOTE: all WEEK channels are assumed to be under a weekly
+        window. ! There is currently no dedicated channel definitions for
+        Daily windows. ! If you use Daily window, the system will assume a 1d
+        (24Hours) advanced ! notification period b/w EARLY and LATER. ! We may
+        consider support more flexible daily channel specifications in ! the
+        future. WEEK1 == EARLIER with minimum 7d advanced notification. {7d,
+        14d} The system will treat them equally and will use WEEK1 whenever it
+        can. New customers are encouraged to use this channel annotation.
+      WEEK2: WEEK2 == LATER with minimum 14d advanced notification {14d, 21d}.
+      WEEK5: WEEK5 == 40d support. minimum 35d advanced notification {35d,
+        42d}.
     """
     UPDATE_CHANNEL_UNSPECIFIED = 0
     EARLIER = 1
     LATER = 2
+    WEEK1 = 3
+    WEEK2 = 4
+    WEEK5 = 5
 
   channel = _messages.EnumField('ChannelValueValuesEnum', 1)
   denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 2, repeated=True)

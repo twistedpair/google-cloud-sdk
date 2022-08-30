@@ -50,18 +50,20 @@ def _ConvertPyListToMessageList(message_type, values):
   return [encoding.PyValueToMessage(message_type, v) for v in values]
 
 
-def _GetModelDeploymentResourceType(model_ref, client):
+def _GetModelDeploymentResourceType(model_ref,
+                                    client,
+                                    shared_resources_ref=None):
   """Gets the deployment resource type of a model.
-
-  Each model resource belongs to exactly one supported deployment resource type.
-  The value is the first item in the list, the length of which must be one.
 
   Args:
     model_ref: a model resource object.
     client: an apis.GetClientInstance object.
+    shared_resources_ref: str, the shared deployment resource pool
+        the model should use, formatted as the full URI
 
   Returns:
-    A string which value must be 'DEDICATED_RESOURCES' or 'AUTOMATIC_RESOURCES'.
+    A string which value must be 'DEDICATED_RESOURCES', 'AUTOMATIC_RESOURCES'
+    or 'SHARED_RESOURCES'
 
   Raises:
     ArgumentError: if the model resource object is not found.
@@ -73,7 +75,24 @@ def _GetModelDeploymentResourceType(model_ref, client):
         ('There is an error while getting the model information. '
          'Please make sure the model %r exists.' % model_ref.RelativeName()))
   model_resource = encoding.MessageToPyValue(model_msg)
-  return model_resource['supportedDeploymentResourcesTypes'][0]
+
+  #  The resource values returned in the list could be multiple.
+  supported_deployment_resources_types = model_resource[
+      'supportedDeploymentResourcesTypes']
+  if shared_resources_ref is not None:
+    if 'SHARED_RESOURCES' not in supported_deployment_resources_types:
+      raise errors.ArgumentError(
+          'Shared resources not supported for model {}.'.format(
+              model_ref.RelativeName()))
+    else:
+      return 'SHARED_RESOURCES'
+  try:
+    supported_deployment_resources_types.remove('SHARED_RESOURCES')
+    return supported_deployment_resources_types[0]
+  # Throws value error if dedicated/automatic resources was the only supported
+  # resource found in list
+  except ValueError:
+    return model_resource['supportedDeploymentResourcesTypes'][0]
 
 
 def _DoHttpPost(url, headers, body):
@@ -589,9 +608,8 @@ class EndpointsClient(object):
     if deployed_model_id is not None:
       deployed_model.id = deployed_model_id
 
-    deployed_model_req = \
-        self.messages.GoogleCloudAiplatformV1DeployModelRequest(
-            deployedModel=deployed_model)
+    deployed_model_req = self.messages.GoogleCloudAiplatformV1DeployModelRequest(
+        deployedModel=deployed_model)
 
     if traffic_split is not None:
       additional_properties = []
@@ -621,7 +639,8 @@ class EndpointsClient(object):
                       enable_container_logging=False,
                       service_account=None,
                       traffic_split=None,
-                      deployed_model_id=None):
+                      deployed_model_id=None,
+                      shared_resources_ref=None):
     """Deploys a model to an existing endpoint using v1beta1 API.
 
     Args:
@@ -645,13 +664,16 @@ class EndpointsClient(object):
         runs as.
       traffic_split: dict or None, the new traffic split of the endpoint.
       deployed_model_id: str or None, id of the deployed model.
+      shared_resources_ref: str or None, the shared deployment resource pool
+        the model should use
 
     Returns:
       A long-running operation for DeployModel.
     """
     model_ref = _ParseModel(model, region)
 
-    resource_type = _GetModelDeploymentResourceType(model_ref, self.client)
+    resource_type = _GetModelDeploymentResourceType(model_ref, self.client,
+                                                    shared_resources_ref)
     deployed_model = None
     if resource_type == 'DEDICATED_RESOURCES':
       # dedicated resources
@@ -685,7 +707,7 @@ class EndpointsClient(object):
           dedicatedResources=dedicated,
           displayName=display_name,
           model=model_ref.RelativeName())
-    else:
+    elif resource_type == 'AUTOMATIC_RESOURCES':
       # automatic resources
       automatic = self.messages.GoogleCloudAiplatformV1beta1AutomaticResources()
       if min_replica_count is not None:
@@ -697,6 +719,12 @@ class EndpointsClient(object):
           automaticResources=automatic,
           displayName=display_name,
           model=model_ref.RelativeName())
+    # if resource type is SHARED_RESOURCES
+    else:
+      deployed_model = self.messages.GoogleCloudAiplatformV1beta1DeployedModel(
+          displayName=display_name,
+          model=model_ref.RelativeName(),
+          sharedResources=shared_resources_ref.RelativeName())
 
     deployed_model.enableAccessLogging = enable_access_logging
     deployed_model.enableContainerLogging = enable_container_logging
@@ -707,9 +735,8 @@ class EndpointsClient(object):
     if deployed_model_id is not None:
       deployed_model.id = deployed_model_id
 
-    deployed_model_req = \
-        self.messages.GoogleCloudAiplatformV1beta1DeployModelRequest(
-            deployedModel=deployed_model)
+    deployed_model_req = self.messages.GoogleCloudAiplatformV1beta1DeployModelRequest(
+        deployedModel=deployed_model)
 
     if traffic_split is not None:
       additional_properties = []

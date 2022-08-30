@@ -110,58 +110,6 @@
     }
   },
   "schemas": {
-    "ListLocationsResponse": {
-      "id": "ListLocationsResponse",
-      "description": "The response message for Locations.ListLocations.",
-      "type": "object",
-      "properties": {
-        "locations": {
-          "description": "A list of locations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "Location"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
-        }
-      }
-    },
-    "Location": {
-      "id": "Location",
-      "description": "A resource that represents Google Cloud Platform location.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
-          "type": "string"
-        },
-        "locationId": {
-          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
-          "type": "string"
-        },
-        "labels": {
-          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "metadata": {
-          "description": "Service-specific metadata. For example the available capacity at the given location.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
     "ListOperationsResponse": {
       "id": "ListOperationsResponse",
       "description": "The response message for Operations.ListOperations.",
@@ -363,7 +311,7 @@
     },
     "ResourceConfig": {
       "id": "ResourceConfig",
-      "description": "Message for the Resource configuration.",
+      "description": "Message for the Resource configuration. Next tag: 8",
       "type": "object",
       "properties": {
         "router": {
@@ -378,9 +326,10 @@
           "description": "Redis configuration.",
           "$ref": "RedisConfig"
         },
-        "vpc": {
-          "description": "VPC configuration.",
-          "$ref": "VPCConfig"
+        "latestDeployment": {
+          "description": "Output only. The deployment name for the most recent deployment that has been triggered for a given resource. If a resource was never deployed then this field will be empty.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -472,15 +421,15 @@
     },
     "ServiceResourceBindingConfig": {
       "id": "ServiceResourceBindingConfig",
-      "description": "Message for a binding between a Cloud Run service and a resource.",
+      "description": "Message for a resource binding, defined in config of the source resource.",
       "type": "object",
       "properties": {
         "ref": {
-          "description": "Reference to another resource. Format: \"\/\", e.g. \"cloudsql\/sql_db\".",
+          "description": "Reference to a target resource that is being bound. Format: \"\/\", e.g. \"cloudsql\/sql_db\"",
           "type": "string"
         },
         "binding-config": {
-          "description": "Any configs associated with the binding. e.g. \"db-name-env-name\": \"SQL_NAME\".",
+          "description": "Any configs associated with the binding. Supported keys are resource type specific.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -508,17 +457,6 @@
           "description": "The redis instance memory size, in GB.",
           "type": "integer",
           "format": "int32"
-        }
-      }
-    },
-    "VPCConfig": {
-      "id": "VPCConfig",
-      "description": "Message for VPC configs.",
-      "type": "object",
-      "properties": {
-        "network": {
-          "description": "Network is an existing network name. If omitted, a new network will be created for the application.",
-          "type": "string"
         }
       }
     },
@@ -578,6 +516,10 @@
       "description": "Status for a resource.",
       "type": "object",
       "properties": {
+        "routerDetails": {
+          "description": "Detail Status of Router resource.",
+          "$ref": "RouterStatus"
+        },
         "resourceName": {
           "description": "Name of the resource, pulled from the Application Config.",
           "type": "string"
@@ -593,9 +535,10 @@
             "The status of this resource is unspecified.",
             "The resource is active.",
             "Some of the components of the resource are not working.",
-            "The key components are missing.",
+            "The key components are missing after at least one successful deployment. The user could have manually removed a resource that was deployed.",
             "The resource is being deployed.",
-            "Some of the resource's child resources are not in ready state."
+            "Some of the resource's child resources are not in ready state.",
+            "The resource is currently not deployed. This could happen if the resource was added to the application config, but was not deployed yet, or the resource was undeployed."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -603,7 +546,8 @@
             "FAILED",
             "MISSING",
             "UPDATING",
-            "NOT_READY"
+            "NOT_READY",
+            "NOT_DEPLOYED"
           ]
         },
         "reason": {
@@ -628,12 +572,19 @@
           "description": "Indicates that a child component of this resource has been altered and may not match the expected state.",
           "type": "boolean"
         },
-        "routerDetails": {
-          "description": "Detail Status of Router resource.",
-          "$ref": "RouterStatus"
-        },
         "consoleLink": {
           "description": "Pantheon link for the resource. For example, the custom domain will link to the GCLB page.",
+          "type": "string"
+        }
+      }
+    },
+    "RouterStatus": {
+      "id": "RouterStatus",
+      "description": "Detail Status of Router resource.",
+      "type": "object",
+      "properties": {
+        "ipAddress": {
+          "description": "IP Address of the Google Cloud Load Balancer.",
           "type": "string"
         }
       }
@@ -726,17 +677,6 @@
         }
       }
     },
-    "RouterStatus": {
-      "id": "RouterStatus",
-      "description": "Detail Status of Router resource.",
-      "type": "object",
-      "properties": {
-        "ipAddress": {
-          "description": "IP Address of the Google Cloud Load Balancer.",
-          "type": "string"
-        }
-      }
-    },
     "ListDeploymentsResponse": {
       "id": "ListDeploymentsResponse",
       "description": "Message for response to listing Deployments",
@@ -764,9 +704,17 @@
     },
     "Deployment": {
       "id": "Deployment",
-      "description": "Message describing Deployment object Next tag: 13",
+      "description": "Message describing Deployment object Next tag: 14",
       "type": "object",
       "properties": {
+        "createSelector": {
+          "description": "Optional selectors that should be applied to limit the scope of the deployment creation.",
+          "$ref": "Selector"
+        },
+        "deleteSelector": {
+          "description": "Optional selectors that should be applied to limit the scope of the deployment deletion.",
+          "$ref": "Selector"
+        },
         "name": {
           "description": "Output only. Canonical name of resource",
           "readOnly": true,
@@ -814,14 +762,6 @@
           "readOnly": true,
           "$ref": "DeploymentStatus"
         },
-        "createSelector": {
-          "description": "Optional selectors that should be applied to limit the scope of the deployment creation.",
-          "$ref": "Selector"
-        },
-        "deleteSelector": {
-          "description": "Optional selectors that should be applied to limit the scope of the deployment deletion.",
-          "$ref": "Selector"
-        },
         "render": {
           "description": "If specified, the configurations for the deployment will be output as described but the underlying resources will not be actuated.",
           "$ref": "Render"
@@ -829,6 +769,10 @@
         "serviceAccount": {
           "description": "Email address of the service account to use for the resource actuation.",
           "type": "string"
+        },
+        "dryRun": {
+          "description": "The data used for dry run. When this dry run message is set, a dry run deployment will be created. A dry run deployment will not deploy live resources. It will generate change plans that include proposed changes and drift changes. The results will be populated inside the dry run message.",
+          "$ref": "DryRun"
         },
         "reconciling": {
           "description": "Output only. Indicates whether the resource's reconciliation is still in progress.",
@@ -838,6 +782,42 @@
         "etag": {
           "description": "Output only. A system-generated fingerprint for this version of the resource. May be used to detect modification conflict during updates.",
           "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "Selector": {
+      "id": "Selector",
+      "description": "Message for selecting the resources within an application. Next tag: 3",
+      "type": "object",
+      "properties": {
+        "matchTypeNames": {
+          "description": "match_type_names is a list resource name + type to match. Use '*' or empty string for wildcard either the name or the type. E.g. type='service' name='' will match all services. type='*' name='default' will match all resources named as 'default'.",
+          "type": "array",
+          "items": {
+            "$ref": "TypedName"
+          }
+        },
+        "notTypeNames": {
+          "description": "not_type_names excludes the names + types. If a type+name is in this list as well as match_type_names, it will not be selected.",
+          "type": "array",
+          "items": {
+            "$ref": "TypedName"
+          }
+        }
+      }
+    },
+    "TypedName": {
+      "id": "TypedName",
+      "description": "TypedName is a resource name + its type. Next tag: 3",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of the resource.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of the resource.",
           "type": "string"
         }
       }
@@ -872,6 +852,13 @@
           "type": "array",
           "items": {
             "$ref": "JobDetails"
+          }
+        },
+        "resourceStatus": {
+          "description": "The state of resources that are being deployed. Order is not guaranteed to be stable when deployment is in progress.",
+          "type": "array",
+          "items": {
+            "$ref": "ResourceDeploymentStatus"
           }
         }
       }
@@ -939,39 +926,52 @@
         }
       }
     },
-    "TypedName": {
-      "id": "TypedName",
-      "description": "TypedName is a resource name + its type. Next tag: 3",
+    "ResourceDeploymentStatus": {
+      "id": "ResourceDeploymentStatus",
+      "description": "Message decribing the status of a resource being deployed. Next tag: 5",
       "type": "object",
       "properties": {
-        "type": {
-          "description": "The type of the resource.",
-          "type": "string"
-        },
         "name": {
-          "description": "The name of the resource.",
-          "type": "string"
-        }
-      }
-    },
-    "Selector": {
-      "id": "Selector",
-      "description": "Message for selecting the resources within an application. Next tag: 3",
-      "type": "object",
-      "properties": {
-        "matchTypeNames": {
-          "description": "match_type_names is a list resource name + type to match. Use '*' or empty string for wildcard either the name or the type. E.g. type='service' name='' will match all services. type='*' name='default' will match all resources named as 'default'.",
-          "type": "array",
-          "items": {
-            "$ref": "TypedName"
-          }
+          "description": "Name of the resource.",
+          "$ref": "TypedName"
         },
-        "notTypeNames": {
-          "description": "not_type_names excludes the names + types. If a type+name is in this list as well as match_type_names, it will not be selected.",
-          "type": "array",
-          "items": {
-            "$ref": "TypedName"
-          }
+        "state": {
+          "description": "Current status of the resource.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value indicating the state is unknown.",
+            "Resource queued for deployment.",
+            "Deployment in progress.",
+            "Deployment completed.",
+            "Deployment completed successfully.",
+            "Deployment completed with failure."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "NOT_STARTED",
+            "RUNNING",
+            "FINISHED",
+            "SUCCEEDED",
+            "FAILED"
+          ]
+        },
+        "operation": {
+          "description": "Operation to be performed on the resource .",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value indicating the operation is unknown.",
+            "Apply configuration to resource.",
+            "Destroy resource."
+          ],
+          "enum": [
+            "OPERATION_UNSPECIFIED",
+            "APPLY",
+            "DESTROY"
+          ]
+        },
+        "errorMessage": {
+          "description": "The error details if the state is FAILED.",
+          "type": "string"
         }
       }
     },
@@ -1023,6 +1023,98 @@
         "object": {
           "description": "Google Cloud Storage object containing the source.",
           "type": "string"
+        }
+      }
+    },
+    "DryRun": {
+      "id": "DryRun",
+      "description": "Message describing the dry run deployment options and outputs.",
+      "type": "object",
+      "properties": {
+        "useParent": {
+          "description": "Indicates whether to use the parent application for dry run execution.",
+          "type": "boolean"
+        },
+        "applicationConfig": {
+          "description": "The Application Config to run the dry run on.",
+          "$ref": "Config"
+        },
+        "resourceDrift": {
+          "description": "Output only. Changes that were made externally since the previous non-dry run deployment.",
+          "readOnly": true,
+          "$ref": "DryRunChanges"
+        },
+        "resourceChanges": {
+          "description": "Output only. Resulting changes as a result of the provided dry run Application Config.",
+          "readOnly": true,
+          "$ref": "DryRunChanges"
+        }
+      }
+    },
+    "DryRunChanges": {
+      "id": "DryRunChanges",
+      "description": "Message describing proposed changes from dry run.",
+      "type": "object",
+      "properties": {
+        "hasChanges": {
+          "description": "Whether there are changes.",
+          "type": "boolean"
+        },
+        "textOutput": {
+          "description": "Formatted output of the changes. Same format as the terraform plan output.",
+          "type": "string"
+        }
+      }
+    },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
         }
       }
     },
@@ -1100,47 +1192,6 @@
           "items": {
             "$ref": "ResourceDeploymentStatus"
           }
-        }
-      }
-    },
-    "ResourceDeploymentStatus": {
-      "id": "ResourceDeploymentStatus",
-      "description": "Message decribing the status of a resource being deployed. Next tag: 4",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Name of the resource.",
-          "$ref": "TypedName"
-        },
-        "state": {
-          "description": "Current status of the resource.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default value indicating the state is unknown.",
-            "Resource queued for deployment.",
-            "Deployment in progress.",
-            "Deployment completed."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "NOT_STARTED",
-            "RUNNING",
-            "FINISHED"
-          ]
-        },
-        "operation": {
-          "description": "Operation to be performed on the resource .",
-          "type": "string",
-          "enumDescriptions": [
-            "Default value indicating the operation is unknown.",
-            "Apply configuration to resource.",
-            "Destroy resource."
-          ],
-          "enum": [
-            "OPERATION_UNSPECIFIED",
-            "APPLY",
-            "DESTROY"
-          ]
         }
       }
     }

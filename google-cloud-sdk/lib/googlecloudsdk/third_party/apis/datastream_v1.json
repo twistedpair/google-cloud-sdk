@@ -278,6 +278,10 @@
           "description": "BigQuery Connection Profile configuration.",
           "$ref": "BigQueryProfile"
         },
+        "postgresqlProfile": {
+          "description": "PostgreSQL Connection Profile configuration.",
+          "$ref": "PostgresqlProfile"
+        },
         "staticServiceIpConnectivity": {
           "description": "Static Service IP connectivity.",
           "$ref": "StaticServiceIpConnectivity"
@@ -406,8 +410,37 @@
     },
     "BigQueryProfile": {
       "id": "BigQueryProfile",
+      "description": "BigQuery warehouse profile.",
       "type": "object",
       "properties": {
+      }
+    },
+    "PostgresqlProfile": {
+      "id": "PostgresqlProfile",
+      "description": "PostgreSQL database profile.",
+      "type": "object",
+      "properties": {
+        "hostname": {
+          "description": "Required. Hostname for the PostgreSQL connection.",
+          "type": "string"
+        },
+        "port": {
+          "description": "Port for the PostgreSQL connection, default value is 5432.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "username": {
+          "description": "Required. Username for the PostgreSQL connection.",
+          "type": "string"
+        },
+        "password": {
+          "description": "Required. Password for the PostgreSQL connection.",
+          "type": "string"
+        },
+        "database": {
+          "description": "Required. Database for the PostgreSQL connection.",
+          "type": "string"
+        }
       }
     },
     "StaticServiceIpConnectivity": {
@@ -485,6 +518,10 @@
         "mysqlRdbms": {
           "description": "MySQL RDBMS to enrich with child data objects and metadata.",
           "$ref": "MysqlRdbms"
+        },
+        "postgresqlRdbms": {
+          "description": "PostgreSQL RDBMS to enrich with child data objects and metadata.",
+          "$ref": "PostgresqlRdbms"
         }
       }
     },
@@ -672,6 +709,99 @@
         }
       }
     },
+    "PostgresqlRdbms": {
+      "id": "PostgresqlRdbms",
+      "description": "PostgreSQL database structure.",
+      "type": "object",
+      "properties": {
+        "postgresqlSchemas": {
+          "description": "PostgreSQL schemas in the database server.",
+          "type": "array",
+          "items": {
+            "$ref": "PostgresqlSchema"
+          }
+        }
+      }
+    },
+    "PostgresqlSchema": {
+      "id": "PostgresqlSchema",
+      "description": "PostgreSQL schema.",
+      "type": "object",
+      "properties": {
+        "schema": {
+          "description": "Schema name.",
+          "type": "string"
+        },
+        "postgresqlTables": {
+          "description": "Tables in the schema.",
+          "type": "array",
+          "items": {
+            "$ref": "PostgresqlTable"
+          }
+        }
+      }
+    },
+    "PostgresqlTable": {
+      "id": "PostgresqlTable",
+      "description": "PostgreSQL table.",
+      "type": "object",
+      "properties": {
+        "table": {
+          "description": "Table name.",
+          "type": "string"
+        },
+        "postgresqlColumns": {
+          "description": "PostgreSQL columns in the schema. When unspecified as part of include\/exclude objects, includes\/excludes everything.",
+          "type": "array",
+          "items": {
+            "$ref": "PostgresqlColumn"
+          }
+        }
+      }
+    },
+    "PostgresqlColumn": {
+      "id": "PostgresqlColumn",
+      "description": "PostgreSQL Column.",
+      "type": "object",
+      "properties": {
+        "column": {
+          "description": "Column name.",
+          "type": "string"
+        },
+        "dataType": {
+          "description": "The PostgreSQL data type.",
+          "type": "string"
+        },
+        "length": {
+          "description": "Column length.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "precision": {
+          "description": "Column precision.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "scale": {
+          "description": "Column scale.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "primaryKey": {
+          "description": "Whether or not the column represents a primary key.",
+          "type": "boolean"
+        },
+        "nullable": {
+          "description": "Whether or not the column can accept a null value.",
+          "type": "boolean"
+        },
+        "ordinalPosition": {
+          "description": "The ordinal position of the column in the table.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "DiscoverConnectionProfileResponse": {
       "id": "DiscoverConnectionProfileResponse",
       "description": "Response from a discover request.",
@@ -684,6 +814,10 @@
         "mysqlRdbms": {
           "description": "Enriched MySQL RDBMS object.",
           "$ref": "MysqlRdbms"
+        },
+        "postgresqlRdbms": {
+          "description": "Enriched PostgreSQL RDBMS object.",
+          "$ref": "PostgresqlRdbms"
         }
       }
     },
@@ -817,6 +951,10 @@
         "mysqlSourceConfig": {
           "description": "MySQL data source configuration.",
           "$ref": "MysqlSourceConfig"
+        },
+        "postgresqlSourceConfig": {
+          "description": "PostgreSQL data source configuration.",
+          "$ref": "PostgresqlSourceConfig"
         }
       }
     },
@@ -879,6 +1017,29 @@
           "description": "Maximum number of concurrent CDC tasks. The number should be non negative. If not set (or set to 0), the system's default value will be used.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "PostgresqlSourceConfig": {
+      "id": "PostgresqlSourceConfig",
+      "description": "PostgreSQL data source configuration",
+      "type": "object",
+      "properties": {
+        "includeObjects": {
+          "description": "PostgreSQL objects to include in the stream.",
+          "$ref": "PostgresqlRdbms"
+        },
+        "excludeObjects": {
+          "description": "PostgreSQL objects to exclude from the stream.",
+          "$ref": "PostgresqlRdbms"
+        },
+        "replicationSlot": {
+          "description": "Required. The name of the logical replication slot that's configured with the pgoutput plugin.",
+          "type": "string"
+        },
+        "publication": {
+          "description": "Required. The name of the publication that includes the set of all tables that are defined in the stream's include_objects.",
+          "type": "string"
         }
       }
     },
@@ -1042,6 +1203,10 @@
         "mysqlExcludedObjects": {
           "description": "MySQL data source objects to avoid backfilling.",
           "$ref": "MysqlRdbms"
+        },
+        "postgresqlExcludedObjects": {
+          "description": "PostgreSQL data source objects to avoid backfilling.",
+          "$ref": "PostgresqlRdbms"
         }
       }
     },
@@ -1204,6 +1369,10 @@
         "mysqlIdentifier": {
           "description": "Mysql data source object identifier.",
           "$ref": "MysqlObjectIdentifier"
+        },
+        "postgresqlIdentifier": {
+          "description": "PostgreSQL data source object identifier.",
+          "$ref": "PostgresqlObjectIdentifier"
         }
       }
     },
@@ -1229,6 +1398,21 @@
       "properties": {
         "database": {
           "description": "Required. The database name.",
+          "type": "string"
+        },
+        "table": {
+          "description": "Required. The table name.",
+          "type": "string"
+        }
+      }
+    },
+    "PostgresqlObjectIdentifier": {
+      "id": "PostgresqlObjectIdentifier",
+      "description": "PostgreSQL data source object identifier.",
+      "type": "object",
+      "properties": {
+        "schema": {
+          "description": "Required. The schema name.",
           "type": "string"
         },
         "table": {

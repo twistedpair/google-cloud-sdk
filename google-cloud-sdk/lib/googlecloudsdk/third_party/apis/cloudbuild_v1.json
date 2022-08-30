@@ -4395,7 +4395,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "The maximum number of configs to return. The service may return fewer than this value. If unspecified, at most 50 configs will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "description": "The maximum number of configs to return. The service may return fewer than this value. The maximum value is 1000; values above 1000 will be coerced to 1000.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -6045,6 +6045,32 @@
               "description": "Get the GitHub App associated with a GitHub Enterprise Config. Uses the GitHub API: https:\/\/developer.github.com\/enterprise\/2.21\/v3\/apps\/#get-an-app This API is experimental."
             }
           }
+        }
+      }
+    },
+    "githubDotComWebhook": {
+      "methods": {
+        "receive": {
+          "id": "cloudbuild.githubDotComWebhook.receive",
+          "path": "v1/githubDotComWebhook:receive",
+          "flatPath": "v1/githubDotComWebhook:receive",
+          "httpMethod": "POST",
+          "parameters": {
+            "webhookKey": {
+              "description": "For GitHub Enterprise webhooks, this key is used to associate the webhook request with the GitHubEnterpriseConfig to use for validation.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "HttpBody"
+          },
+          "response": {
+            "$ref": "Empty"
+          },
+          "description": "ReceiveGitHubDotComWebhook is called when the API receives a github.com webhook."
         }
       }
     },

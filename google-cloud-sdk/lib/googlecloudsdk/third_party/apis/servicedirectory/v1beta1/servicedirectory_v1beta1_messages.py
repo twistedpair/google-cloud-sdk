@@ -161,8 +161,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -738,32 +744,6 @@ class ListServicesResponse(_messages.Message):
   services = _messages.MessageField('Service', 2, repeated=True)
 
 
-class ListWorkloadGroupsResponse(_messages.Message):
-  r"""The response message for RegistrationService.ListWorkloadGroups.
-
-  Fields:
-    nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-    workloadGroups: The list of workload groups.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  workloadGroups = _messages.MessageField('WorkloadGroup', 2, repeated=True)
-
-
-class ListWorkloadsResponse(_messages.Message):
-  r"""The response message for RegistrationService.ListWorkloads.
-
-  Fields:
-    nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-    workloads: The list of workloads.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  workloads = _messages.MessageField('Workload', 2, repeated=True)
-
-
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -1315,6 +1295,15 @@ class ServiceWorkload(_messages.Message):
     attributes: Optional. Attributes associated with this service workload. --
       Attributes should stay visibility protected until we have user-visible
       attributes to share with the user.
+    backendServices: Optional. List of backend services (as schemeless URIs)
+      used as grouping constructs for this ServiceWorkload. Populated for
+      service workloads that are auto-registered from Google Compute Engine.
+      For service workloads auto-registed from Google Kubernetes Engine, this
+      field is not populated. Example: [
+      //compute.googleapis.com/projects/123/zones/us-
+      east1-c/backend_services/bs1,
+      //compute.googleapis.com/projects/123/regions/us-
+      east1/backend_services/bs2]
     components: Optional. List of workloads (as schemeless URIs) that are part
       of this ServiceWorkload. Ex. [
       //compute.googleapis.com/projects/1234/zones/us-east1-c/instances/mig1,
@@ -1357,12 +1346,13 @@ class ServiceWorkload(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   attributes = _messages.MessageField('ServiceWorkloadAttributes', 2)
-  components = _messages.StringField(3, repeated=True)
-  createTime = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  name = _messages.StringField(6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  backendServices = _messages.StringField(3, repeated=True)
+  components = _messages.StringField(4, repeated=True)
+  createTime = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  name = _messages.StringField(7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ServiceWorkloadAttributes(_messages.Message):
@@ -1634,19 +1624,19 @@ class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsListRequest(_me
   Fields:
     filter: Optional. The filter to list results by. General `filter` string
       syntax: ` ()` * `` can be any field name on the ServiceWorkload proto.
-      For example: `name`, `create_time`, `annotations.`, or `workloads` * ``
+      For example: `name`, `create_time`, `annotations.`, or `components` * ``
       can be `<`, `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:` means `HAS`,
       and is roughly the same as `=` * `` must be the same data type as field
       * `` can be `AND`, `OR`, `NOT` Examples of valid filters: *
       `annotations.owner` returns service workloads that have an annotation
       with the key `owner`, this is the same as `annotations:owner` *
-      `workloads:projects/123/locations/us-east1/namespaces/my-
-      ns/workloads/my-wl` returns service workloads that contain the specified
-      workload * `name>projects/my-project/locations/us-east1/namespaces/my-
-      namespace/serviceWorkloads/service-workload-c` returns workloads that
-      have names that are alphabetically later than the string, so "service-
-      workload-e" is returned but "service-workload-a" is not *
-      `annotations.owner!=sd AND annotations.foo=bar` returns service
+      `components://compute.googleapis.com/projects/1234/zones/us-
+      east1-c/instances/mig1` returns service workloads that contain the
+      specified component * `name>projects/my-project/locations/us-
+      east1/namespaces/my-namespace/serviceWorkloads/service-workload-c`
+      returns workloads that have names that are alphabetically later than the
+      string, so "service-workload-e" is returned but "service-workload-a" is
+      not * `annotations.owner!=sd AND annotations.foo=bar` returns service
       workloads that have `owner` in annotation key but value is not `sd` AND
       have key/value `foo=bar` * `doesnotexist.foo=bar` returns an empty list.
       Note that service workload doesn't have a field called "doesnotexist".
@@ -2040,226 +2030,6 @@ class ServicedirectoryProjectsLocationsNamespacesTestIamPermissionsRequest(_mess
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
-class ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsCreateRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsCreateRequest
-  object.
-
-  Fields:
-    parent: Required. The resource name of the namespace this workload group
-      will belong to.
-    workloadGroup: A WorkloadGroup resource to be passed as the request body.
-    workloadGroupId: Required. The Resource ID must be 1-63 characters long,
-      and comply with [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt).
-      Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?` which means the
-      first character must be a lowercase letter, and all following characters
-      must be a dash, lowercase letter, or digit, except the last character,
-      which cannot be a dash.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  workloadGroup = _messages.MessageField('WorkloadGroup', 2)
-  workloadGroupId = _messages.StringField(3)
-
-
-class ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsDeleteRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsDeleteRequest
-  object.
-
-  Fields:
-    name: Required. The name of the workload group to delete.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsGetRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsGetRequest
-  object.
-
-  Fields:
-    name: Required. The name of the workload group to get.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsListRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsListRequest
-  object.
-
-  Fields:
-    filter: Optional. The filter to list results by. General `filter` string
-      syntax: ` ()` * `` can be any field name on the WorkloadGroup proto. For
-      example: `name`, `create_time`, `annotations.`, or `workloads` * `` can
-      be `<`, `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:` means `HAS`, and
-      is roughly the same as `=` * `` must be the same data type as field * ``
-      can be `AND`, `OR`, `NOT` Examples of valid filters: *
-      `annotations.owner` returns workload groups that have an annotation with
-      the key `owner`, this is the same as `annotations:owner` *
-      `workloads:projects/123/locations/us-east1/namespaces/my-
-      ns/workloads/my-wl` returns workload groups that contain the specified
-      workload * `name>projects/my-project/locations/us-east1/namespaces/my-
-      namespace/workloadGroups/workload-group-c` returns workloads that have
-      names that are alphabetically later than the string, so "workload-
-      group-e" is returned but "workload-group-a" is not *
-      `annotations.owner!=sd AND annotations.foo=bar` returns workload groups
-      that have `owner` in annotation key but value is not `sd` AND have
-      key/value `foo=bar` * `doesnotexist.foo=bar` returns an empty list. Note
-      that workload group doesn't have a field called "doesnotexist". Since
-      the filter does not match any workload groups, it returns no results For
-      more information about filtering, see [API
-      Filtering](https://aip.dev/160).
-    orderBy: Optional. The order to list results by. General `order_by` string
-      syntax: ` () (,)` * `` allows values: `name`, `display_name`,
-      `create_time`, `update_time` * `` ascending or descending order by ``.
-      If this is left blank, `asc` is used Note that an empty `order_by`
-      string results in default order, which is order by `name` in ascending
-      order.
-    pageSize: Optional. The maximum number of items to return.
-    pageToken: Optional. The next_page_token value returned from a previous
-      List request, if any.
-    parent: Required. The resource name of the namespace whose workload groups
-      you'd like to list.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsPatchRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsPatchRequest
-  object.
-
-  Fields:
-    allowMissing: If set to true, and the workload group is not found, a new
-      workload group will be created. -- Will remain GOOGLE_INTERNAL
-      visibility post-launch.
-    name: Immutable. The resource name for the workload group in the format
-      `projects/*/locations/*/namespaces/*/workloadGroups/*`.
-    updateMask: Required. List of fields to be updated in this request.
-      Allowable fields: `display_name`, `annotations`. -- Internal
-      integrations may update other workload_group fields
-    workloadGroup: A WorkloadGroup resource to be passed as the request body.
-  """
-
-  allowMissing = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-  workloadGroup = _messages.MessageField('WorkloadGroup', 4)
-
-
-class ServicedirectoryProjectsLocationsNamespacesWorkloadsCreateRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsNamespacesWorkloadsCreateRequest
-  object.
-
-  Fields:
-    parent: Required. The resource name of the namespace this workload will
-      belong to.
-    workload: A Workload resource to be passed as the request body.
-    workloadId: Required. The Resource ID must be 1-63 characters long, and
-      comply with [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt).
-      Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?` which means the
-      first character must be a lowercase letter, and all following characters
-      must be a dash, lowercase letter, or digit, except the last character,
-      which cannot be a dash.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  workload = _messages.MessageField('Workload', 2)
-  workloadId = _messages.StringField(3)
-
-
-class ServicedirectoryProjectsLocationsNamespacesWorkloadsDeleteRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsNamespacesWorkloadsDeleteRequest
-  object.
-
-  Fields:
-    name: Required. The name of the workload to delete.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ServicedirectoryProjectsLocationsNamespacesWorkloadsGetRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsNamespacesWorkloadsGetRequest object.
-
-  Fields:
-    name: Required. The name of the workload to get.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ServicedirectoryProjectsLocationsNamespacesWorkloadsListRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsNamespacesWorkloadsListRequest
-  object.
-
-  Fields:
-    filter: Optional. The filter to list results by. General `filter` string
-      syntax: ` ()` * `` can be any field name on the Workload proto. For
-      example: `name`, `create_time`, `annotations.`, or `attributes.region` *
-      `` can be `<`, `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:` means
-      `HAS`, and is roughly the same as `=` * `` must be the same data type as
-      field * `` can be `AND`, `OR`, `NOT` Examples of valid filters: *
-      `annotations.owner` returns workloads that have a annotation with the
-      key `owner`, this is the same as `annotations:owner` *
-      `attributes.zone=us-west1-a` returns workloads that run in the gcp zone
-      `us-west1-a` * `name>projects/my-project/locations/us-
-      east1/namespaces/my-namespace/workloads/workload-c` returns workloads
-      that have names that are alphabetically later than the string, so
-      "workload-e" is returned but "workload-a" is not *
-      `annotations.owner!=sd AND annotations.foo=bar` returns workloads that
-      have `owner` in annotation key but value is not `sd` AND have key/value
-      `foo=bar` * `doesnotexist.foo=bar` returns an empty list. Note that
-      workload doesn't have a field called "doesnotexist". Since the filter
-      does not match any workloads, it returns no results For more information
-      about filtering, see [API Filtering](https://aip.dev/160).
-    orderBy: Optional. The order to list results by. General `order_by` string
-      syntax: ` () (,)` * `` allows values: `name`, `display_name`,
-      `create_time`, `update_time`, `attributes.region`, `attributes.zone` *
-      `` ascending or descending order by ``. If this is left blank, `asc` is
-      used Note that an empty `order_by` string results in default order,
-      which is order by `name` in ascending order.
-    pageSize: Optional. The maximum number of items to return.
-    pageToken: Optional. The next_page_token value returned from a previous
-      List request, if any.
-    parent: Required. The resource name of the namespace whose workloads you'd
-      like to list.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class ServicedirectoryProjectsLocationsNamespacesWorkloadsPatchRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsNamespacesWorkloadsPatchRequest
-  object.
-
-  Fields:
-    allowMissing: If set to true, and the workload is not found, a new
-      workload will be created. -- Will remain GOOGLE_INTERNAL visibility
-      post-launch.
-    name: Immutable. The resource name for the workload in the format
-      `projects/*/locations/*/namespaces/*/workloads/*`.
-    updateMask: Required. List of fields to be updated in this request.
-      Allowable fields: `display_name`, `annotations`.
-    workload: A Workload resource to be passed as the request body.
-  """
-
-  allowMissing = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-  workload = _messages.MessageField('Workload', 4)
-
-
 class ServicedirectoryProjectsLocationsRegistrationPoliciesCreateRequest(_messages.Message):
   r"""A ServicedirectoryProjectsLocationsRegistrationPoliciesCreateRequest
   object.
@@ -2292,6 +2062,24 @@ class ServicedirectoryProjectsLocationsRegistrationPoliciesDeleteRequest(_messag
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class ServicedirectoryProjectsLocationsRegistrationPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A
+  ServicedirectoryProjectsLocationsRegistrationPoliciesGetIamPolicyRequest
+  object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class ServicedirectoryProjectsLocationsRegistrationPoliciesGetRequest(_messages.Message):
@@ -2363,6 +2151,41 @@ class ServicedirectoryProjectsLocationsRegistrationPoliciesPatchRequest(_message
   name = _messages.StringField(2, required=True)
   registrationPolicy = _messages.MessageField('RegistrationPolicy', 3)
   updateMask = _messages.StringField(4)
+
+
+class ServicedirectoryProjectsLocationsRegistrationPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A
+  ServicedirectoryProjectsLocationsRegistrationPoliciesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class ServicedirectoryProjectsLocationsRegistrationPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A ServicedirectoryProjectsLocationsRegistrationPoliciesTestIamPermission
+  sRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2467,212 +2290,6 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
-
-
-class Workload(_messages.Message):
-  r"""An individual Workload. The smallest deployable unit for operational
-  purposes.
-
-  Messages:
-    AnnotationsValue: Optional. Blackbox annotations on the workload.
-
-  Fields:
-    annotations: Optional. Blackbox annotations on the workload.
-    attributes: Optional. Attributes associated with this workload.
-    createTime: Output only. The timestamp when this workload was created in
-      Service Directory. This does not refer to the time that the underlying
-      workload was created.
-    displayName: Optional. Friendly name. User modifiable.
-    name: Immutable. The resource name for the workload in the format
-      `projects/*/locations/*/namespaces/*/workloads/*`.
-    uid: Output only. A globally unique identifier (in UUID4 format) for this
-      workload.
-    updateTime: Output only. The timestamp when the workload was last updated
-      in Service Directory. This does not refer to the last time the
-      underlying workload was updated.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AnnotationsValue(_messages.Message):
-    r"""Optional. Blackbox annotations on the workload.
-
-    Messages:
-      AdditionalProperty: An additional property for a AnnotationsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AnnotationsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AnnotationsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  attributes = _messages.MessageField('WorkloadAttributes', 2)
-  createTime = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  name = _messages.StringField(5)
-  uid = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
-
-
-class WorkloadAttributes(_messages.Message):
-  r"""Attributes associated with workloads.
-
-  Enums:
-    KubernetesResourceTypeValueValuesEnum: Optional. The Kubernetes workload
-      type of the underlying resource. Unset for non-Kubernetes workloads.
-    ManagerTypeValueValuesEnum: Output only. The GCP resource/product
-      responsible for this workload.
-
-  Fields:
-    kubernetesResourceType: Optional. The Kubernetes workload type of the
-      underlying resource. Unset for non-Kubernetes workloads.
-    managedRegistration: Output only. Set to `true` if this workload's
-      registration is GCP-managed.
-    managerType: Output only. The GCP resource/product responsible for this
-      workload.
-    originResource: Optional. Reference to the underlying resource that this
-      workload represents. This should be the full name of the resource that
-      this workload was created from.
-    region: Optional. Region of the underlying resource.
-    zone: Optional. Zone of the underlying resource. Meant to be populated
-      only for zonal resources, left unset for others.
-  """
-
-  class KubernetesResourceTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. The Kubernetes workload type of the underlying resource.
-    Unset for non-Kubernetes workloads.
-
-    Values:
-      KUBERNETES_RESOURCE_TYPE_UNSPECIFIED: Not a Kubernetes workload.
-      DEPLOYMENT: A Kubernetes Deployment.
-      REPLICA_SET: A Kubernetes ReplicaSet.
-    """
-    KUBERNETES_RESOURCE_TYPE_UNSPECIFIED = 0
-    DEPLOYMENT = 1
-    REPLICA_SET = 2
-
-  class ManagerTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. The GCP resource/product responsible for this workload.
-
-    Values:
-      TYPE_UNSPECIFIED: Default. Should not be used.
-      MIG: Resource managed by Arcus, Managed Instance Group.
-      GKE_HUB: Resource managed by GKE Hub.
-    """
-    TYPE_UNSPECIFIED = 0
-    MIG = 1
-    GKE_HUB = 2
-
-  kubernetesResourceType = _messages.EnumField('KubernetesResourceTypeValueValuesEnum', 1)
-  managedRegistration = _messages.BooleanField(2)
-  managerType = _messages.EnumField('ManagerTypeValueValuesEnum', 3)
-  originResource = _messages.StringField(4)
-  region = _messages.StringField(5)
-  zone = _messages.StringField(6)
-
-
-class WorkloadGroup(_messages.Message):
-  r"""An individual WorkloadGroup. A logical collection of workloads that
-  provide the same functionality, with a common set of core attributes, that
-  power services in Service Directory and to which policies can be applied.
-
-  Messages:
-    AnnotationsValue: Optional. Blackbox annotations on the workload group.
-
-  Fields:
-    annotations: Optional. Blackbox annotations on the workload group.
-    attributes: Optional. Attributes associated with this workload group. --
-      Attributes should stay visibility protected until we have user-visible
-      attributes to share with the user.
-    createTime: Output only. The timestamp when this workload group was
-      created in Service Directory.
-    displayName: Optional. Friendly name. User modifiable.
-    name: Immutable. The resource name for the workload group in the format
-      `projects/*/locations/*/namespaces/*/workloadGroups/*`.
-    uid: Output only. A globally unique identifier (in UUID4 format) for this
-      workload group.
-    updateTime: Output only. The timestamp when the workload group was last
-      updated in Service Directory.
-    workloads: Optional. List of workloads that are a part of this workload
-      group.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AnnotationsValue(_messages.Message):
-    r"""Optional. Blackbox annotations on the workload group.
-
-    Messages:
-      AdditionalProperty: An additional property for a AnnotationsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AnnotationsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AnnotationsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  attributes = _messages.MessageField('WorkloadGroupAttributes', 2)
-  createTime = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  name = _messages.StringField(5)
-  uid = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
-  workloads = _messages.StringField(8, repeated=True)
-
-
-class WorkloadGroupAttributes(_messages.Message):
-  r"""Attributes associated with workload groups.
-
-  Enums:
-    ManagerTypeValueValuesEnum: Output only. The GCP resource/product
-      responsible for this workload group.
-
-  Fields:
-    managedRegistration: Output only. TODO(b/230323652) Update documentation
-      for managed_registration field !
-    managerType: Output only. The GCP resource/product responsible for this
-      workload group.
-  """
-
-  class ManagerTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. The GCP resource/product responsible for this workload
-    group.
-
-    Values:
-      TYPE_UNSPECIFIED: Default. Should not be used.
-      GKE_HUB: Resource managed by GKE Hub.
-      BACKEND_SERVICE: Resource managed by Arcus, Backend Service
-    """
-    TYPE_UNSPECIFIED = 0
-    GKE_HUB = 1
-    BACKEND_SERVICE = 2
-
-  managedRegistration = _messages.BooleanField(1)
-  managerType = _messages.EnumField('ManagerTypeValueValuesEnum', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

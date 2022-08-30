@@ -884,6 +884,24 @@ class ListDashboardsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListLabelsRequest(_messages.Message):
+  r"""ListLabelsRequest holds all parameters of the Prometheus upstream API
+  for returning a list of label names.
+
+  Fields:
+    end: The end time to evaluate the query for. Either floating point UNIX
+      seconds or RFC3339 formatted timestamp.
+    match: A list of matchers encoded in the Prometheus label matcher format
+      to constrain the values to series that satisfy them.
+    start: The start time to evaluate the query for. Either floating point
+      UNIX seconds or RFC3339 formatted timestamp.
+  """
+
+  end = _messages.StringField(1)
+  match = _messages.StringField(2)
+  start = _messages.StringField(3)
+
+
 class ListMetricsScopesByMonitoredProjectResponse(_messages.Message):
   r"""Response for the ListMetricsScopesByMonitoredProject method.
 
@@ -1117,6 +1135,48 @@ class MonitoringProjectsLocationPrometheusApiV1LabelValuesRequest(_messages.Mess
   match = _messages.StringField(4)
   name = _messages.StringField(5, required=True)
   start = _messages.StringField(6)
+
+
+class MonitoringProjectsLocationPrometheusApiV1LabelsListRequest(_messages.Message):
+  r"""A MonitoringProjectsLocationPrometheusApiV1LabelsListRequest object.
+
+  Fields:
+    end: The end time to evaluate the query for. Either floating point UNIX
+      seconds or RFC3339 formatted timestamp.
+    location: Location of the resource information. Has to be "global" now.
+    match: A list of matchers encoded in the Prometheus label matcher format
+      to constrain the values to series that satisfy them.
+    name: The workspace on which to execute the request. It is not part of the
+      open source API but used as a request path prefix to distinguish
+      different virtual Prometheus instances of Google Prometheus Engine. The
+      format is: projects/PROJECT_ID_OR_NUMBER.
+    start: The start time to evaluate the query for. Either floating point
+      UNIX seconds or RFC3339 formatted timestamp.
+  """
+
+  end = _messages.StringField(1)
+  location = _messages.StringField(2, required=True)
+  match = _messages.StringField(3)
+  name = _messages.StringField(4, required=True)
+  start = _messages.StringField(5)
+
+
+class MonitoringProjectsLocationPrometheusApiV1LabelsRequest(_messages.Message):
+  r"""A MonitoringProjectsLocationPrometheusApiV1LabelsRequest object.
+
+  Fields:
+    listLabelsRequest: A ListLabelsRequest resource to be passed as the
+      request body.
+    location: Location of the resource information. Has to be "global" now.
+    name: The workspace on which to execute the request. It is not part of the
+      open source API but used as a request path prefix to distinguish
+      different virtual Prometheus instances of Google Prometheus Engine. The
+      format is: projects/PROJECT_ID_OR_NUMBER.
+  """
+
+  listLabelsRequest = _messages.MessageField('ListLabelsRequest', 1)
+  location = _messages.StringField(2, required=True)
+  name = _messages.StringField(3, required=True)
 
 
 class MonitoringProjectsLocationPrometheusApiV1MetadataListRequest(_messages.Message):
@@ -2068,11 +2128,28 @@ class TimeSeriesQuery(_messages.Message):
 class TimeSeriesTable(_messages.Message):
   r"""A table that displays time series data.
 
+  Enums:
+    MetricVisualizationValueValuesEnum: Optional. Store rendering strategy
+
   Fields:
     dataSets: Required. The data displayed in this table.
+    metricVisualization: Optional. Store rendering strategy
   """
 
+  class MetricVisualizationValueValuesEnum(_messages.Enum):
+    r"""Optional. Store rendering strategy
+
+    Values:
+      METRIC_VISUALIZATION_UNSPECIFIED: Unspecified state
+      NUMBER: Default text rendering
+      BAR: Horizontal bar rendering
+    """
+    METRIC_VISUALIZATION_UNSPECIFIED = 0
+    NUMBER = 1
+    BAR = 2
+
   dataSets = _messages.MessageField('TableDataSet', 1, repeated=True)
+  metricVisualization = _messages.EnumField('MetricVisualizationValueValuesEnum', 2)
 
 
 class Type(_messages.Message):

@@ -805,6 +805,8 @@ class ClusterUpdate(_messages.Message):
     desiredDnsConfig: DNSConfig contains clusterDNS config for this cluster.
     desiredEnablePrivateEndpoint: Enable/Disable private endpoint for the
       cluster.
+    desiredGatewayApiConfig: The desired config of Gateway API on this
+      cluster.
     desiredGcfsConfig: The desired GCFS config for the cluster
     desiredIdentityServiceConfig: The desired Identity Service component
       configuration.
@@ -943,37 +945,38 @@ class ClusterUpdate(_messages.Message):
   desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 8)
   desiredDnsConfig = _messages.MessageField('DNSConfig', 9)
   desiredEnablePrivateEndpoint = _messages.BooleanField(10)
-  desiredGcfsConfig = _messages.MessageField('GcfsConfig', 11)
-  desiredIdentityServiceConfig = _messages.MessageField('IdentityServiceConfig', 12)
-  desiredImage = _messages.StringField(13)
-  desiredImageProject = _messages.StringField(14)
-  desiredImageType = _messages.StringField(15)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 16)
-  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 17)
-  desiredLocations = _messages.StringField(18, repeated=True)
-  desiredLoggingConfig = _messages.MessageField('LoggingConfig', 19)
-  desiredLoggingService = _messages.StringField(20)
-  desiredManagedConfig = _messages.MessageField('ManagedConfig', 21)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 22)
-  desiredMasterVersion = _messages.StringField(23)
-  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 24)
-  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 25)
-  desiredMonitoringService = _messages.StringField(26)
-  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 27)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 28)
-  desiredNodePoolId = _messages.StringField(29)
-  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 30)
-  desiredNodeVersion = _messages.StringField(31)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 32)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 33)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 34)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 35)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 36)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 37)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 38)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 39)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 40)
-  etag = _messages.StringField(41)
+  desiredGatewayApiConfig = _messages.MessageField('GatewayAPIConfig', 11)
+  desiredGcfsConfig = _messages.MessageField('GcfsConfig', 12)
+  desiredIdentityServiceConfig = _messages.MessageField('IdentityServiceConfig', 13)
+  desiredImage = _messages.StringField(14)
+  desiredImageProject = _messages.StringField(15)
+  desiredImageType = _messages.StringField(16)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 17)
+  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 18)
+  desiredLocations = _messages.StringField(19, repeated=True)
+  desiredLoggingConfig = _messages.MessageField('LoggingConfig', 20)
+  desiredLoggingService = _messages.StringField(21)
+  desiredManagedConfig = _messages.MessageField('ManagedConfig', 22)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 23)
+  desiredMasterVersion = _messages.StringField(24)
+  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 25)
+  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 26)
+  desiredMonitoringService = _messages.StringField(27)
+  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 28)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 29)
+  desiredNodePoolId = _messages.StringField(30)
+  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 31)
+  desiredNodeVersion = _messages.StringField(32)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 33)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 34)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 35)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 36)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 37)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 38)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 39)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 40)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 41)
+  etag = _messages.StringField(42)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1818,6 +1821,37 @@ class GPUSharingConfig(_messages.Message):
   maxSharedClientsPerGpu = _messages.IntegerField(2)
 
 
+class GatewayAPIConfig(_messages.Message):
+  r"""GatewayAPIConfig contains the desired config of Gateway API on this
+  cluster.
+
+  Enums:
+    ChannelValueValuesEnum: The Gateway API release channel to use for Gateway
+      API.
+
+  Fields:
+    channel: The Gateway API release channel to use for Gateway API.
+  """
+
+  class ChannelValueValuesEnum(_messages.Enum):
+    r"""The Gateway API release channel to use for Gateway API.
+
+    Values:
+      CHANNEL_UNSPECIFIED: Default value.
+      CHANNEL_DISABLED: Gateway API support is disabled
+      CHANNEL_EXPERIMENTAL: Gateway API support is enabled, experimental CRDs
+        are installed
+      CHANNEL_STANDARD: Gateway API support is enabled, standard CRDs are
+        installed
+    """
+    CHANNEL_UNSPECIFIED = 0
+    CHANNEL_DISABLED = 1
+    CHANNEL_EXPERIMENTAL = 2
+    CHANNEL_STANDARD = 3
+
+  channel = _messages.EnumField('ChannelValueValuesEnum', 1)
+
+
 class GcePersistentDiskCsiDriverConfig(_messages.Message):
   r"""Configuration for the Compute Engine PD CSI driver.
 
@@ -1975,6 +2009,14 @@ class IPAllocationPolicy(_messages.Message):
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
       range to use.
+    podCidrOverprovisionConfig: Pod CIDR size overprovisioning config for the
+      nodepool. Pod CIDR size per node depends on max_pods_per_node. By
+      default, the value of max_pods_per_node is doubled and then rounded off
+      to next power of 2 to get the size of pod CIDR block per node. Example:
+      max_pods_per_node of 30 would result in 64 IPs (/26). This config can
+      disable the doubling of IPs (we still round off to next power of 2)
+      Example: max_pods_per_node of 30 will result in 32 IPs (/27) when
+      overprovisioning is disabled.
     servicesIpv4Cidr: This field is deprecated, use services_ipv4_cidr_block.
     servicesIpv4CidrBlock: The IP address range of the services IPs in this
       cluster. If blank, a range will be automatically chosen with the default
@@ -2018,13 +2060,14 @@ class IPAllocationPolicy(_messages.Message):
   createSubnetwork = _messages.BooleanField(4)
   nodeIpv4Cidr = _messages.StringField(5)
   nodeIpv4CidrBlock = _messages.StringField(6)
-  servicesIpv4Cidr = _messages.StringField(7)
-  servicesIpv4CidrBlock = _messages.StringField(8)
-  servicesSecondaryRangeName = _messages.StringField(9)
-  subnetworkName = _messages.StringField(10)
-  tpuIpv4CidrBlock = _messages.StringField(11)
-  useIpAliases = _messages.BooleanField(12)
-  useRoutes = _messages.BooleanField(13)
+  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 7)
+  servicesIpv4Cidr = _messages.StringField(8)
+  servicesIpv4CidrBlock = _messages.StringField(9)
+  servicesSecondaryRangeName = _messages.StringField(10)
+  subnetworkName = _messages.StringField(11)
+  tpuIpv4CidrBlock = _messages.StringField(12)
+  useIpAliases = _messages.BooleanField(13)
+  useRoutes = _messages.BooleanField(14)
 
 
 class IdentityServiceConfig(_messages.Message):
@@ -2587,6 +2630,8 @@ class NetworkConfig(_messages.Message):
       network.
     enableL4ilbSubsetting: Whether L4ILB Subsetting is enabled for this
       cluster.
+    gatewayApiConfig: GatewayAPIConfig contains the desired config of Gateway
+      API on this cluster.
     network: Output only. The relative name of the Google Compute Engine
       network(https://cloud.google.com/compute/docs/networks-and-
       firewalls#networks) to which the cluster is connected. Example:
@@ -2648,10 +2693,11 @@ class NetworkConfig(_messages.Message):
   dnsConfig = _messages.MessageField('DNSConfig', 3)
   enableIntraNodeVisibility = _messages.BooleanField(4)
   enableL4ilbSubsetting = _messages.BooleanField(5)
-  network = _messages.StringField(6)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 7)
-  serviceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 8)
-  subnetwork = _messages.StringField(9)
+  gatewayApiConfig = _messages.MessageField('GatewayAPIConfig', 6)
+  network = _messages.StringField(7)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 8)
+  serviceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 9)
+  subnetwork = _messages.StringField(10)
 
 
 class NetworkPerformanceConfig(_messages.Message):
@@ -3119,6 +3165,14 @@ class NodeNetworkConfig(_messages.Message):
       enable_private_nodes is not specified, then the value is derived from
       cluster.privateClusterConfig.enablePrivateNodes
     networkPerformanceConfig: Network bandwidth tier configuration.
+    podCidrOverprovisionConfig: Pod CIDR size overprovisioning config for the
+      nodepool. Pod CIDR size per node depends on max_pods_per_node. By
+      default, the value of max_pods_per_node is rounded off to next power of
+      2 and we then double that to get the size of pod CIDR block per node.
+      Example: max_pods_per_node of 30 would result in 64 IPs (/26). This
+      config can disable the doubling of IPs (we still round off to next power
+      of 2) Example: max_pods_per_node of 30 will result in 32 IPs (/27) when
+      overprovisioning is disabled.
     podIpv4CidrBlock: The IP address range for pod IPs in this node pool. Only
       applicable if `create_pod_range` is true. Set to blank to have a range
       chosen with the default size. Set to /netmask (e.g. `/14`) to have a
@@ -3137,8 +3191,9 @@ class NodeNetworkConfig(_messages.Message):
   createPodRange = _messages.BooleanField(1)
   enablePrivateNodes = _messages.BooleanField(2)
   networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 3)
-  podIpv4CidrBlock = _messages.StringField(4)
-  podRange = _messages.StringField(5)
+  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 4)
+  podIpv4CidrBlock = _messages.StringField(5)
+  podRange = _messages.StringField(6)
 
 
 class NodePool(_messages.Message):
@@ -3542,6 +3597,17 @@ class OperationProgress(_messages.Message):
   name = _messages.StringField(2)
   stages = _messages.MessageField('OperationProgress', 3, repeated=True)
   status = _messages.EnumField('StatusValueValuesEnum', 4)
+
+
+class PodCIDROverprovisionConfig(_messages.Message):
+  r"""Config for pod CIDR size overprovisioning.
+
+  Fields:
+    disable: Whether Pod CIDR overprovisioning is disabled. Note: Pod CIDR
+      overprovisioning is enabled by default.
+  """
+
+  disable = _messages.BooleanField(1)
 
 
 class PrivateClusterConfig(_messages.Message):

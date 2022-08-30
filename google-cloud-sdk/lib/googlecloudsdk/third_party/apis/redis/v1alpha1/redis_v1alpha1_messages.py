@@ -51,57 +51,25 @@ class Cluster(_messages.Message):
   r"""A cluster instance.
 
   Enums:
-    RedisVersionValueValuesEnum: Output only. Redis version. This is an output
-      only field and currently only Redis 6 is supported.
     StateValueValuesEnum: Output only. The current state of this cluster. Can
       be CREATING, READY, UPDATING, DELETING and SUSPENDED
-
-  Messages:
-    RedisConfigsValue: Optional. Redis configuration parameters, according to
-      http://redis.io/topics/config. Currently, the only supported parameters
-      are: Redis version 6.x and newer: * lfu-decay-time * lfu-log-factor *
-      maxmemory-policy
 
   Fields:
     createTime: Output only. The timestamp associated with the cluster
       creation request.
-    customerManagedKey: Input only. The KMS key reference that the customer
-      provides when trying to create the instance.
-    defaultReplicaCount: Optional. Input only. The number of replica nodes per
-      shard. Valid range is [0-2] and defaults to 0. This field is INPUT only.
     displayName: Optional. An arbitrary and optional user-provided name for
       the cluster.
-    endpoints: Output only. Hostname or IP address and port pairs used to
-      connect to the cluster.
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
-    redisConfigs: Optional. Redis configuration parameters, according to
-      http://redis.io/topics/config. Currently, the only supported parameters
-      are: Redis version 6.x and newer: * lfu-decay-time * lfu-log-factor *
-      maxmemory-policy
-    redisVersion: Output only. Redis version. This is an output only field and
-      currently only Redis 6 is supported.
-    slots: Output only. The slots making up the cluster. Read-only. In future
-      versions this will be writable to allow for heterogeneous clusters.
+    privateServiceConnect: Optional. Populate to use private service connect
+      network option.
     state: Output only. The current state of this cluster. Can be CREATING,
       READY, UPDATING, DELETING and SUSPENDED
     totalMemorySizeGb: Optional. Redis memory size in GiB for the entire
-      cluster. Defaults to 48 for Dense tier and 12 for Performance tier.
-    uid: Output only.
+      cluster.
+    uid: Output only. System assigned, unique identifier for the cluster.
   """
-
-  class RedisVersionValueValuesEnum(_messages.Enum):
-    r"""Output only. Redis version. This is an output only field and currently
-    only Redis 6 is supported.
-
-    Values:
-      REDIS_VERSION_UNSPECIFIED: <no description>
-      REDIS_6_X: `REDIS_6_X` for Redis 6.x compatibility This is the default
-        and only supported version in Flex for now.
-    """
-    REDIS_VERSION_UNSPECIFIED = 0
-    REDIS_6_X = 1
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of this cluster. Can be CREATING,
@@ -113,7 +81,7 @@ class Cluster(_messages.Message):
       ACTIVE: Redis cluster has been created and is fully usable.
       UPDATING: Redis cluster configuration is being updated.
       DELETING: Redis cluster is being deleted.
-      REPAIRING: Redis instance is being repaired and may be unusable.
+      REPAIRING: Redis instance is being reparied.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -122,64 +90,13 @@ class Cluster(_messages.Message):
     DELETING = 4
     REPAIRING = 5
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RedisConfigsValue(_messages.Message):
-    r"""Optional. Redis configuration parameters, according to
-    http://redis.io/topics/config. Currently, the only supported parameters
-    are: Redis version 6.x and newer: * lfu-decay-time * lfu-log-factor *
-    maxmemory-policy
-
-    Messages:
-      AdditionalProperty: An additional property for a RedisConfigsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type RedisConfigsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RedisConfigsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   createTime = _messages.StringField(1)
-  customerManagedKey = _messages.StringField(2)
-  defaultReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  displayName = _messages.StringField(4)
-  endpoints = _messages.MessageField('Endpoint', 5, repeated=True)
-  name = _messages.StringField(6)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 7)
-  redisVersion = _messages.EnumField('RedisVersionValueValuesEnum', 8)
-  slots = _messages.MessageField('ClusterSlots', 9, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  totalMemorySizeGb = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  uid = _messages.StringField(12)
-
-
-class ClusterSlots(_messages.Message):
-  r"""A series of slots belonging to a cluster.
-
-  Fields:
-    endSlotsExclusive: Output only. The end of the slots that make up this
-      series.
-    memorySizeGb: Output only. The total size of keyspace this series has.
-    replicaCount: Output only. The number of replicas this series has.
-    startSlotsInclusive: Output only. The start of the slots that make up this
-      series.
-  """
-
-  endSlotsExclusive = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  memorySizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  replicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  startSlotsInclusive = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  privateServiceConnect = _messages.MessageField('PrivateServiceConnect', 4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  totalMemorySizeGb = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  uid = _messages.StringField(7)
 
 
 class Empty(_messages.Message):
@@ -189,21 +106,6 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
-
-
-class Endpoint(_messages.Message):
-  r"""An endpoint exposed by a cluster. In the future we will add an enum to
-  identify whether this endpoint is read/write or read-only when the feature
-  is ready.
-
-  Fields:
-    host: Output only. Hostname or IP address of the exposed Redis endpoint
-      used by clients to connect to the service.
-    port: Output only. The port number of the exposed Redis endpoint.
-  """
-
-  host = _messages.StringField(1)
-  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class ExportInstanceRequest(_messages.Message):
@@ -1176,6 +1078,18 @@ class PersistenceConfig(_messages.Message):
   rdbNextSnapshotTime = _messages.StringField(2)
   rdbSnapshotPeriod = _messages.EnumField('RdbSnapshotPeriodValueValuesEnum', 3)
   rdbSnapshotStartTime = _messages.StringField(4)
+
+
+class PrivateServiceConnect(_messages.Message):
+  r"""Contains private service connect specific options.
+
+  Fields:
+    serviceAttachment: Output only. The address of the Private Service Connect
+      (PSC) service that the customer can use to connect this instance to
+      their local network.
+  """
+
+  serviceAttachment = _messages.StringField(1)
 
 
 class RedisProjectsLocationsClustersCreateRequest(_messages.Message):

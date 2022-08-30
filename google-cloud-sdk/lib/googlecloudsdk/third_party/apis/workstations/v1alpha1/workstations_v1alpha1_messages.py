@@ -129,8 +129,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -407,6 +413,23 @@ class CustomField(_messages.Message):
   value = _messages.StringField(2)
 
 
+class CustomerEncryptionKey(_messages.Message):
+  r"""A customer-specified encryption key for the Google Compute Engine
+  resources of this workstation configuration.
+
+  Fields:
+    kmsKey: The name of the encryption key that is stored in Google Cloud KMS
+      e.g., projects/PROJECT_ID/locations/REGION/keyRings/KEY_RING/cryptoKeys/
+      KEY_NAME.
+    kmsKeyServiceAccount: The service account being used for the encryption
+      request for the given KMS key. If absent, the Compute Engine default
+      service account is used.
+  """
+
+  kmsKey = _messages.StringField(1)
+  kmsKeyServiceAccount = _messages.StringField(2)
+
+
 class DataAccessOptions(_messages.Message):
   r"""Write a Data Access (Gin) log
 
@@ -487,9 +510,10 @@ class Expr(_messages.Message):
 
 
 class GceInstanceConfig(_messages.Message):
-  r"""Describe a runtime using a Gce Instance.
+  r"""Describe a runtime using a Google Compute Engine Instance.
 
   Fields:
+    bootDiskSizeGb: Size of the boot disk in GB.
     disablePublicIpAddresses: Whether instances have no public IP address.
     enableNestedVirtualization: Whether to enable nested virtualization on
       instances.
@@ -502,17 +526,21 @@ class GceInstanceConfig(_messages.Message):
       accessible.
     serviceAccountScopes: Scopes to grant to the service account. Various
       scopes are automatically added based on feature usage.
+    shieldedInstanceConfig: A set of Shielded Google Compute Engine Instance
+      options.
     tags: Network tags to add to the Google Compute Engine machines backing
       the Workstations.
   """
 
-  disablePublicIpAddresses = _messages.BooleanField(1)
-  enableNestedVirtualization = _messages.BooleanField(2)
-  machineType = _messages.StringField(3)
-  poolSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  serviceAccount = _messages.StringField(5)
-  serviceAccountScopes = _messages.StringField(6, repeated=True)
-  tags = _messages.StringField(7, repeated=True)
+  bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  disablePublicIpAddresses = _messages.BooleanField(2)
+  enableNestedVirtualization = _messages.BooleanField(3)
+  machineType = _messages.StringField(4)
+  poolSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  serviceAccount = _messages.StringField(6)
+  serviceAccountScopes = _messages.StringField(7, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 8)
+  tags = _messages.StringField(9, repeated=True)
 
 
 class GceRegionalPersistentDisk(_messages.Message):
@@ -552,6 +580,21 @@ class GceRegionalPersistentDisk(_messages.Message):
   sizeGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class GceShieldedInstanceConfig(_messages.Message):
+  r"""A set of Shielded Google Compute Engine Instance options.
+
+  Fields:
+    enableIntegrityMonitoring: Whether the instance has integrity monitoring
+      enabled.
+    enableSecureBoot: Whether the instance has Secure Boot enabled.
+    enableVtpm: Whether the instance has the vTPM enabled.
+  """
+
+  enableIntegrityMonitoring = _messages.BooleanField(1)
+  enableSecureBoot = _messages.BooleanField(2)
+  enableVtpm = _messages.BooleanField(3)
+
+
 class GenerateAccessTokenRequest(_messages.Message):
   r"""Request message for GenerateAccessToken.
 
@@ -587,7 +630,7 @@ class HostConfig(_messages.Message):
   r"""Describes the runtime host for the Workstation.
 
   Fields:
-    gceInstanceConfig: Specifies a Gce Instance as the host.
+    gceInstanceConfig: Specifies a Google Compute Engine Instance as the host.
   """
 
   gceInstanceConfig = _messages.MessageField('GceInstanceConfig', 1)
@@ -937,8 +980,6 @@ class PrivateClusterConfig(_messages.Message):
       name to an internal IP address and a forwarding rule mapping that
       address to the service attachment.
     enablePrivateEndpoint: Whether Workstations endpoint is private.
-    enablePrivateVmInstances: Whether Workstation VM instances have no public
-      IP address.
     serviceAttachmentUri: Output only. Service attachment URI for the
       Workstation Cluster. The service attachemnt is created when private
       endpoint is enabled. To access workstations in the cluster, configure
@@ -949,8 +990,7 @@ class PrivateClusterConfig(_messages.Message):
 
   clusterHostname = _messages.StringField(1)
   enablePrivateEndpoint = _messages.BooleanField(2)
-  enablePrivateVmInstances = _messages.BooleanField(3)
-  serviceAttachmentUri = _messages.StringField(4)
+  serviceAttachmentUri = _messages.StringField(3)
 
 
 class Rule(_messages.Message):
@@ -1194,7 +1234,7 @@ class Workstation(_messages.Message):
   storage.
 
   Enums:
-    StateValueValuesEnum: Current state of the workstation.
+    StateValueValuesEnum: Output only. Current state of the workstation.
 
   Messages:
     AnnotationsValue: Client-specified annotations.
@@ -1217,14 +1257,14 @@ class Workstation(_messages.Message):
     name: Full name of this resource.
     reconciling: Output only. Indicates whether this resource is currently
       being updated to match its intended state.
-    state: Current state of the workstation.
+    state: Output only. Current state of the workstation.
     uid: Output only. A system-assigned unique identified for this resource.
     updateTime: Output only. Time when this resource was most recently
       updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Current state of the workstation.
+    r"""Output only. Current state of the workstation.
 
     Values:
       STATE_UNSPECIFIED: Do not use.
@@ -1374,31 +1414,33 @@ class WorkstationConfig(_messages.Message):
       can be found in the `conditions` field.
     deleteTime: Output only. Time when this resource was soft-deleted.
     displayName: Human-readable name for this resource.
+    encryptionKey: Encrypts resources of this workstation config using a
+      customer specified encryption key. Boot disk of the Compute Engine
+      instance and the GceRegionalPersistentDisk, if specified will be
+      encrypted using this encryption key. If encryption_key is not set, the
+      disks will be encrypted using automatically generated key. Customer
+      specified encryption keys do not protect access to metadata of the
+      disks. If the customer specified encryption key is rotated, Workstation
+      will attempt to recreate the GceRegionalPersistentDisk with new version
+      of the key, when the Workstation instance is stopped. Older versions of
+      the key are expected to be kept around until the
+      GceRegionalPersistentDisk is recreated, otherwise data on the
+      GceRegionalPersistentDisk will be lost.
     etag: Checksum computed by the server. May be sent on update and delete
       requests to ensure that the client has an up-to-date value before
       proceeding.
-    fastStartWorkstationCount: The system will attempt to keep enough
-      computational resources on standby to support this many workstations.
-      Increasing this number will allow workstations to be started more
-      quickly but will impose additional costs.
     hostConfig: Runtime host for the Workstation.
     idleTimeout: How long to wait before automatically stopping an instance
       that hasn't received any user traffic. A value of 0 indicates that this
       instance should never time out due to idleness.
-    machineType: The name of a Google Compute Engine machine type.
     name: Full name of this resource.
     persistentDirectories: Directories to persist across Workstation sessions.
     reconciling: Output only. Indicates whether this resource is currently
       being updated to match its intended state.
-    serviceAccount: Email address of the service account that will be used on
-      VM instances used to support this config. This service account must have
-      permission to pull the specified container image. If not set, VMs will
-      run without a service account, in which case the image must be publicly
-      accessible.
-    serviceAccountScopes: Scopes to grant to the service account. Various
-      scopes are automatically added based on feature usage.
-    tags: Network tags to add to the Google Compute Engine machines backing
-      the Workstations.
+    runningTimeout: How long to wait before automatically stopping an
+      workstation after it started. A value of 0 indicates that workstations
+      using this config should never time out. Must be non-zero value if
+      encryption_key is set.
     uid: Output only. A system-assigned unique identified for this resource.
     updateTime: Output only. Time when this resource was most recently
       updated.
@@ -1436,19 +1478,16 @@ class WorkstationConfig(_messages.Message):
   degraded = _messages.BooleanField(5)
   deleteTime = _messages.StringField(6)
   displayName = _messages.StringField(7)
-  etag = _messages.StringField(8)
-  fastStartWorkstationCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  encryptionKey = _messages.MessageField('CustomerEncryptionKey', 8)
+  etag = _messages.StringField(9)
   hostConfig = _messages.MessageField('HostConfig', 10)
   idleTimeout = _messages.StringField(11)
-  machineType = _messages.StringField(12)
-  name = _messages.StringField(13)
-  persistentDirectories = _messages.MessageField('PersistentDirectory', 14, repeated=True)
-  reconciling = _messages.BooleanField(15)
-  serviceAccount = _messages.StringField(16)
-  serviceAccountScopes = _messages.StringField(17, repeated=True)
-  tags = _messages.StringField(18, repeated=True)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
+  name = _messages.StringField(12)
+  persistentDirectories = _messages.MessageField('PersistentDirectory', 13, repeated=True)
+  reconciling = _messages.BooleanField(14)
+  runningTimeout = _messages.StringField(15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class WorkstationsProjectsLocationsOperationsCancelRequest(_messages.Message):

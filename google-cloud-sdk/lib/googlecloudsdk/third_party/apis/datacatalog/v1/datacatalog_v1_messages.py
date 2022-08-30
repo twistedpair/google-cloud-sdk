@@ -35,8 +35,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -1643,7 +1649,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       the `EntryType` enum. Currently, only `FILESET` enum value is allowed.
       All other entries created in Data Catalog must use the
       `user_specified_type`.
-    usageSignal: Output only. Resource usage statistics.
+    usageSignal: Resource usage statistics.
     userSpecifiedSystem: Indicates the entry's source system that Data Catalog
       doesn't automatically integrate with. The `user_specified_system` string
       has the following limitations: * Is case insensitive. * Must begin with
@@ -2902,19 +2908,22 @@ class GoogleCloudDatacatalogV1UsageSignal(_messages.Message):
   be performed again on the next day.
 
   Messages:
-    UsageWithinTimeRangeValue: Usage statistics over each of the predefined
-      time ranges. Supported time ranges are `{"24H", "7D", "30D"}`.
+    UsageWithinTimeRangeValue: Output only. BigQuery usage statistics over
+      each of the predefined time ranges. Supported time ranges are `{"24H",
+      "7D", "30D"}`.
 
   Fields:
+    favoriteCount: Favorite count in the source system.
     updateTime: The end timestamp of the duration of usage statistics.
-    usageWithinTimeRange: Usage statistics over each of the predefined time
-      ranges. Supported time ranges are `{"24H", "7D", "30D"}`.
+    usageWithinTimeRange: Output only. BigQuery usage statistics over each of
+      the predefined time ranges. Supported time ranges are `{"24H", "7D",
+      "30D"}`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class UsageWithinTimeRangeValue(_messages.Message):
-    r"""Usage statistics over each of the predefined time ranges. Supported
-    time ranges are `{"24H", "7D", "30D"}`.
+    r"""Output only. BigQuery usage statistics over each of the predefined
+    time ranges. Supported time ranges are `{"24H", "7D", "30D"}`.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -2938,8 +2947,9 @@ class GoogleCloudDatacatalogV1UsageSignal(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  updateTime = _messages.StringField(1)
-  usageWithinTimeRange = _messages.MessageField('UsageWithinTimeRangeValue', 2)
+  favoriteCount = _messages.IntegerField(1)
+  updateTime = _messages.StringField(2)
+  usageWithinTimeRange = _messages.MessageField('UsageWithinTimeRangeValue', 3)
 
 
 class GoogleCloudDatacatalogV1UsageStats(_messages.Message):

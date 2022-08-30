@@ -156,8 +156,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -2692,7 +2698,9 @@ class ReconciliationOperationMetadata(_messages.Message):
     Values:
       UNKNOWN_REPAIR_ACTION: <no description>
       DELETE: The resource has to be deleted. When using this bit, the CLH
-        should fail the operation.
+        should fail the operation. DEPRECATED. Instead use DELETE_RESOURCE
+        OperationSignal in SideChannel. For more information - go/ccfe-delete-
+        on-upsert, go/ccfe-reconciliation-protocol-ug#apply_delete
       RETRY: This resource could not be repaired but the repair should be
         tried again at a later time. This can happen if there is a dependency
         that needs to be resolved first- e.g. if a parent resource must be

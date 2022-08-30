@@ -96,8 +96,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -177,6 +183,22 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class HostConfig(_messages.Message):
+  r"""HostConfig has different instance endpoints.
+
+  Fields:
+    api: API endpoint.
+    gitHttp: Git HTTP endpoint.
+    gitSsh: Git SSH endpoint.
+    html: HTML endpoint.
+  """
+
+  api = _messages.StringField(1)
+  gitHttp = _messages.StringField(2)
+  gitSsh = _messages.StringField(3)
+  html = _messages.StringField(4)
+
+
 class Instance(_messages.Message):
   r"""All state for a SecureSourceManager instance.
 
@@ -191,10 +213,7 @@ class Instance(_messages.Message):
       This must support authentication for both Gaia users and third-party
       users.
     createTime: Output only. Create timestamp.
-    hostIp: The public IP address accessible by clients for HTTP and SSH
-      connections. Only valid when the instance is in READY state.
-    hostName: Output only. The host name accessible by clients for HTTP and
-      SSH connections. Only specified when the instance is in READY state.
+    hostConfig: Output only. The proto for different host endpoints.
     labels: Optional. Labels as key value pairs.
     name: Optional. A unique identifier for an instance. The name should be of
       the format: projects/{project_number}/locations/{location_id}/instances/
@@ -216,12 +235,12 @@ class Instance(_messages.Message):
       STATE_UNSPECIFIED: Not set. This should only be the case for incoming
         requests.
       CREATING: Instance is being created.
-      READY: Instance is ready.
+      ACTIVE: Instance is ready.
       DELETING: Instance is being deleted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
-    READY = 2
+    ACTIVE = 2
     DELETING = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -250,12 +269,11 @@ class Instance(_messages.Message):
 
   adminAccount = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  hostIp = _messages.StringField(3)
-  hostName = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  hostConfig = _messages.MessageField('HostConfig', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -306,12 +324,10 @@ class ListRepositoriesResponse(_messages.Message):
     nextPageToken: A token identifying a page of results the server should
       return.
     repositories: The list of Repositories.
-    unreachable: Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
   repositories = _messages.MessageField('Repository', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListSshKeysResponse(_messages.Message):
@@ -321,12 +337,10 @@ class ListSshKeysResponse(_messages.Message):
     nextPageToken: A token identifying a page of results the server should
       return.
     sshkeys: The list of SSH keys.
-    unreachable: Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
   sshkeys = _messages.MessageField('SshKey', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -647,6 +661,7 @@ class Repository(_messages.Message):
       projects/{project}/locations/{location_id}/repositories/{repository_id}
     uid: Output only. Unique identifier of the repository.
     updateTime: Output only. Update timestamp.
+    uris: Output only. uris for the repository.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -684,6 +699,7 @@ class Repository(_messages.Message):
   name = _messages.StringField(6)
   uid = _messages.StringField(7)
   updateTime = _messages.StringField(8)
+  uris = _messages.MessageField('URIs', 9)
 
 
 class SecuresourcemanagerProjectsLocationsGetRequest(_messages.Message):
@@ -1398,6 +1414,20 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class URIs(_messages.Message):
+  r"""URIs holds the uris for the repository.
+
+  Fields:
+    api: api is the uri for the user to access the repository on the API.
+    gitHttps: git_https is the git http uri for user to do git operations.
+    html: html is the uri for user to check the repository in a browser.
+  """
+
+  api = _messages.StringField(1)
+  gitHttps = _messages.StringField(2)
+  html = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -39,10 +39,156 @@ class TranslateV3(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_glossaries_glossaryEntries = self.ProjectsLocationsGlossariesGlossaryEntriesService(self)
     self.projects_locations_glossaries = self.ProjectsLocationsGlossariesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsGlossariesGlossaryEntriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_glossaries_glossaryEntries resource."""
+
+    _NAME = 'projects_locations_glossaries_glossaryEntries'
+
+    def __init__(self, client):
+      super(TranslateV3.ProjectsLocationsGlossariesGlossaryEntriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a glossary entry.
+
+      Args:
+        request: (TranslateProjectsLocationsGlossariesGlossaryEntriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GlossaryEntry) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/glossaryEntries',
+        http_method='POST',
+        method_id='translate.projects.locations.glossaries.glossaryEntries.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v3/{+parent}/glossaryEntries',
+        request_field='glossaryEntry',
+        request_type_name='TranslateProjectsLocationsGlossariesGlossaryEntriesCreateRequest',
+        response_type_name='GlossaryEntry',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single entry from the glossary.
+
+      Args:
+        request: (TranslateProjectsLocationsGlossariesGlossaryEntriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/glossaryEntries/{glossaryEntriesId}',
+        http_method='DELETE',
+        method_id='translate.projects.locations.glossaries.glossaryEntries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsGlossariesGlossaryEntriesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a single glossary entry by the given id.
+
+      Args:
+        request: (TranslateProjectsLocationsGlossariesGlossaryEntriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GlossaryEntry) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/glossaryEntries/{glossaryEntriesId}',
+        http_method='GET',
+        method_id='translate.projects.locations.glossaries.glossaryEntries.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsGlossariesGlossaryEntriesGetRequest',
+        response_type_name='GlossaryEntry',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List the entries for the glossary.
+
+      Args:
+        request: (TranslateProjectsLocationsGlossariesGlossaryEntriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListGlossaryEntriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/glossaryEntries',
+        http_method='GET',
+        method_id='translate.projects.locations.glossaries.glossaryEntries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/glossaryEntries',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsGlossariesGlossaryEntriesListRequest',
+        response_type_name='ListGlossaryEntriesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a glossary entry.
+
+      Args:
+        request: (GlossaryEntry) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GlossaryEntry) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}/glossaryEntries/{glossaryEntriesId}',
+        http_method='PATCH',
+        method_id='translate.projects.locations.glossaries.glossaryEntries.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='<request>',
+        request_type_name='GlossaryEntry',
+        response_type_name='GlossaryEntry',
+        supports_download=False,
+    )
 
   class ProjectsLocationsGlossariesService(base_api.BaseApiService):
     """Service class for the projects_locations_glossaries resource."""
@@ -159,6 +305,33 @@ class TranslateV3(base_api.BaseApiClient):
         request_field='',
         request_type_name='TranslateProjectsLocationsGlossariesListRequest',
         response_type_name='ListGlossariesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a glossary. A LRO is used since the update can be async if the glossary's entry file is updated.
+
+      Args:
+        request: (TranslateProjectsLocationsGlossariesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/glossaries/{glossariesId}',
+        http_method='PATCH',
+        method_id='translate.projects.locations.glossaries.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v3/{+name}',
+        request_field='glossary',
+        request_type_name='TranslateProjectsLocationsGlossariesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

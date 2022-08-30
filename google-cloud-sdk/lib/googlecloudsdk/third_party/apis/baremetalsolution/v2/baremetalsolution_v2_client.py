@@ -630,6 +630,60 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Create an NFS share.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsNfsSharesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/nfsShares',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.nfsShares.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/nfsShares',
+        request_field='nfsShare',
+        request_type_name='BaremetalsolutionProjectsLocationsNfsSharesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete an NFS share. The underlying volume is automatically deleted.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsNfsSharesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/nfsShares/{nfsSharesId}',
+        http_method='DELETE',
+        method_id='baremetalsolution.projects.locations.nfsShares.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsNfsSharesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Get details of a single NFS share.
 

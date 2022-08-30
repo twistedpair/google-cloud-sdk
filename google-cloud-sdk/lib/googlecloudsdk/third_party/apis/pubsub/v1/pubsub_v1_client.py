@@ -57,33 +57,6 @@ class PubsubV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Commit(self, request, global_params=None):
-      r"""Commits a new schema revision to an existing schema.
-
-      Args:
-        request: (PubsubProjectsSchemasCommitRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Schema) The response message.
-      """
-      config = self.GetMethodConfig('Commit')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Commit.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/schemas/{schemasId}:commit',
-        http_method='POST',
-        method_id='pubsub.projects.schemas.commit',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:commit',
-        request_field='commitSchemaRequest',
-        request_type_name='PubsubProjectsSchemasCommitRequest',
-        response_type_name='Schema',
-        supports_download=False,
-    )
-
     def Create(self, request, global_params=None):
       r"""Creates a schema.
 
@@ -135,33 +108,6 @@ class PubsubV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='PubsubProjectsSchemasDeleteRequest',
         response_type_name='Empty',
-        supports_download=False,
-    )
-
-    def DeleteRevision(self, request, global_params=None):
-      r"""Deletes a specific schema revision.
-
-      Args:
-        request: (PubsubProjectsSchemasDeleteRevisionRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Schema) The response message.
-      """
-      config = self.GetMethodConfig('DeleteRevision')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    DeleteRevision.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/schemas/{schemasId}:deleteRevision',
-        http_method='DELETE',
-        method_id='pubsub.projects.schemas.deleteRevision',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['revisionId'],
-        relative_path='v1/{+name}:deleteRevision',
-        request_field='',
-        request_type_name='PubsubProjectsSchemasDeleteRevisionRequest',
-        response_type_name='Schema',
         supports_download=False,
     )
 
@@ -243,60 +189,6 @@ class PubsubV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='PubsubProjectsSchemasListRequest',
         response_type_name='ListSchemasResponse',
-        supports_download=False,
-    )
-
-    def ListRevisions(self, request, global_params=None):
-      r"""Lists all schema revisions for the named schema.
-
-      Args:
-        request: (PubsubProjectsSchemasListRevisionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListSchemaRevisionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('ListRevisions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ListRevisions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/schemas/{schemasId}:listRevisions',
-        http_method='GET',
-        method_id='pubsub.projects.schemas.listRevisions',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['pageSize', 'pageToken', 'view'],
-        relative_path='v1/{+name}:listRevisions',
-        request_field='',
-        request_type_name='PubsubProjectsSchemasListRevisionsRequest',
-        response_type_name='ListSchemaRevisionsResponse',
-        supports_download=False,
-    )
-
-    def Rollback(self, request, global_params=None):
-      r"""Creates a new schema revision that is a copy of the provided revision_id.
-
-      Args:
-        request: (PubsubProjectsSchemasRollbackRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Schema) The response message.
-      """
-      config = self.GetMethodConfig('Rollback')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Rollback.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/schemas/{schemasId}:rollback',
-        http_method='POST',
-        method_id='pubsub.projects.schemas.rollback',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:rollback',
-        request_field='rollbackSchemaRequest',
-        request_type_name='PubsubProjectsSchemasRollbackRequest',
-        response_type_name='Schema',
         supports_download=False,
     )
 
@@ -915,7 +807,7 @@ class PubsubV1(base_api.BaseApiClient):
     )
 
     def Pull(self, request, global_params=None):
-      r"""Pulls messages from the server. The server may return `UNAVAILABLE` if there are too many concurrent pull requests pending for the given subscription.
+      r"""Pulls messages from the server.
 
       Args:
         request: (PubsubProjectsSubscriptionsPullRequest) input message

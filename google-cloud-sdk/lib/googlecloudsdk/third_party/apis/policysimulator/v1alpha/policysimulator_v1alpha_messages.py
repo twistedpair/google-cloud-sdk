@@ -794,6 +794,52 @@ class GoogleCloudPolicysimulatorV1beta1ReplayResultsSummary(_messages.Message):
   unchangedCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudPolicysimulatorV1mainGenerateOrgPolicyViolationsPreviewOperationMetadata(_messages.Message):
+  r"""GenerateOrgPolicyViolationsPreviewOperationMetadata is metadata about an
+  OrgPolicyViolationsPreview generations operation.
+
+  Enums:
+    StateValueValuesEnum: The current state of the operation.
+
+  Fields:
+    requestTime: Time when the request was received.
+    resourcesFound: Total number of resources that need scanning. Should equal
+      resource_scanned + resources_pending
+    resourcesPending: Number of resources still to scan.
+    resourcesScanned: Number of resources already scanned.
+    startTime: Time when the request started processing, i.e. when the state
+      was set to RUNNING.
+    state: The current state of the operation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The current state of the operation.
+
+    Values:
+      PREVIEW_STATE_UNSPECIFIED: The state is unspecified.
+      PREVIEW_PENDING: The OrgPolicyViolationsPreview has not been created
+        yet.
+      PREVIEW_RUNNING: The OrgPolicyViolationsPreview is currently being
+        created.
+      PREVIEW_SUCCEEDED: The OrgPolicyViolationsPreview creation finished
+        successfully.
+      PREVIEW_FAILED: The OrgPolicyViolationsPreview creation failed with an
+        error.
+    """
+    PREVIEW_STATE_UNSPECIFIED = 0
+    PREVIEW_PENDING = 1
+    PREVIEW_RUNNING = 2
+    PREVIEW_SUCCEEDED = 3
+    PREVIEW_FAILED = 4
+
+  requestTime = _messages.StringField(1)
+  resourcesFound = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  resourcesPending = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  resourcesScanned = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
 class GoogleIamV1AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -880,8 +926,14 @@ class GoogleIamV1Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -1292,6 +1344,19 @@ class GoogleIamV1Rule(_messages.Message):
   permissions = _messages.StringField(7, repeated=True)
 
 
+class GoogleLongrunningListOperationsResponse(_messages.Message):
+  r"""The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
+
+
 class GoogleLongrunningOperation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -1511,6 +1576,32 @@ class GoogleTypeExpr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class PolicysimulatorOperationsGetRequest(_messages.Message):
+  r"""A PolicysimulatorOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class PolicysimulatorOperationsListRequest(_messages.Message):
+  r"""A PolicysimulatorOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsGetRequest(_messages.Message):

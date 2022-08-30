@@ -288,10 +288,6 @@
       "description": "Configuration options for private clusters.",
       "type": "object",
       "properties": {
-        "enablePrivateVmInstances": {
-          "description": "Whether Workstation VM instances have no public IP address.",
-          "type": "boolean"
-        },
         "enablePrivateEndpoint": {
           "description": "Whether Workstations endpoint is private.",
           "type": "boolean"
@@ -385,19 +381,15 @@
           "description": "Checksum computed by the server. May be sent on update and delete requests to ensure that the client has an up-to-date value before proceeding.",
           "type": "string"
         },
-        "machineType": {
-          "description": "The name of a Google Compute Engine machine type.",
-          "type": "string"
-        },
         "idleTimeout": {
           "description": "How long to wait before automatically stopping an instance that hasn't received any user traffic. A value of 0 indicates that this instance should never time out due to idleness.",
           "type": "string",
           "format": "google-duration"
         },
-        "fastStartWorkstationCount": {
-          "description": "The system will attempt to keep enough computational resources on standby to support this many workstations. Increasing this number will allow workstations to be started more quickly but will impose additional costs.",
-          "type": "integer",
-          "format": "int32"
+        "runningTimeout": {
+          "description": "How long to wait before automatically stopping an workstation after it started. A value of 0 indicates that workstations using this config should never time out. Must be non-zero value if encryption_key is set.",
+          "type": "string",
+          "format": "google-duration"
         },
         "hostConfig": {
           "description": "Runtime host for the Workstation.",
@@ -414,23 +406,9 @@
           "description": "Container that will be run for each Workstation using this config when that Workstation is started.",
           "$ref": "Container"
         },
-        "serviceAccount": {
-          "description": "Email address of the service account that will be used on VM instances used to support this config. This service account must have permission to pull the specified container image. If not set, VMs will run without a service account, in which case the image must be publicly accessible.",
-          "type": "string"
-        },
-        "serviceAccountScopes": {
-          "description": "Scopes to grant to the service account. Various scopes are automatically added based on feature usage.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "tags": {
-          "description": "Network tags to add to the Google Compute Engine machines backing the Workstations.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+        "encryptionKey": {
+          "description": "Encrypts resources of this workstation config using a customer specified encryption key. Boot disk of the Compute Engine instance and the GceRegionalPersistentDisk, if specified will be encrypted using this encryption key. If encryption_key is not set, the disks will be encrypted using automatically generated key. Customer specified encryption keys do not protect access to metadata of the disks. If the customer specified encryption key is rotated, Workstation will attempt to recreate the GceRegionalPersistentDisk with new version of the key, when the Workstation instance is stopped. Older versions of the key are expected to be kept around until the GceRegionalPersistentDisk is recreated, otherwise data on the GceRegionalPersistentDisk will be lost.",
+          "$ref": "CustomerEncryptionKey"
         },
         "degraded": {
           "description": "Output only. Whether this resource is in degraded mode, in which case it may require user action to restore full functionality. Details can be found in the `conditions` field.",
@@ -453,14 +431,14 @@
       "type": "object",
       "properties": {
         "gceInstanceConfig": {
-          "description": "Specifies a Gce Instance as the host.",
+          "description": "Specifies a Google Compute Engine Instance as the host.",
           "$ref": "GceInstanceConfig"
         }
       }
     },
     "GceInstanceConfig": {
       "id": "GceInstanceConfig",
-      "description": "Describe a runtime using a Gce Instance.",
+      "description": "Describe a runtime using a Google Compute Engine Instance.",
       "type": "object",
       "properties": {
         "machineType": {
@@ -496,6 +474,34 @@
         },
         "enableNestedVirtualization": {
           "description": "Whether to enable nested virtualization on instances.",
+          "type": "boolean"
+        },
+        "shieldedInstanceConfig": {
+          "description": "A set of Shielded Google Compute Engine Instance options.",
+          "$ref": "GceShieldedInstanceConfig"
+        },
+        "bootDiskSizeGb": {
+          "description": "Size of the boot disk in GB.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GceShieldedInstanceConfig": {
+      "id": "GceShieldedInstanceConfig",
+      "description": "A set of Shielded Google Compute Engine Instance options.",
+      "type": "object",
+      "properties": {
+        "enableSecureBoot": {
+          "description": "Whether the instance has Secure Boot enabled.",
+          "type": "boolean"
+        },
+        "enableVtpm": {
+          "description": "Whether the instance has the vTPM enabled.",
+          "type": "boolean"
+        },
+        "enableIntegrityMonitoring": {
+          "description": "Whether the instance has integrity monitoring enabled.",
           "type": "boolean"
         }
       }
@@ -587,6 +593,21 @@
           "description": "If set, overrides the USER specified in the image with the given uid.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "CustomerEncryptionKey": {
+      "id": "CustomerEncryptionKey",
+      "description": "A customer-specified encryption key for the Google Compute Engine resources of this workstation configuration.",
+      "type": "object",
+      "properties": {
+        "kmsKey": {
+          "description": "The name of the encryption key that is stored in Google Cloud KMS e.g., projects\/PROJECT_ID\/locations\/REGION\/keyRings\/KEY_RING\/cryptoKeys\/KEY_NAME.",
+          "type": "string"
+        },
+        "kmsKeyServiceAccount": {
+          "description": "The service account being used for the encryption request for the given KMS key. If absent, the Compute Engine default service account is used.",
+          "type": "string"
         }
       }
     },
@@ -697,7 +718,8 @@
           "type": "string"
         },
         "state": {
-          "description": "Current state of the workstation.",
+          "description": "Output only. Current state of the workstation.",
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Do not use.",
@@ -898,7 +920,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"

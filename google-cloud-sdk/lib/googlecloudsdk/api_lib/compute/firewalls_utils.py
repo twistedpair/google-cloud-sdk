@@ -303,9 +303,8 @@ def AddArgsForEgress(parser, ruleset_parser, for_update=False):
         type=lambda x: x.upper(),
         help="""\
         If direction is NOT specified, then default is to apply on incoming
-        traffic. For incoming traffic, it is NOT supported to specify
-        destination-ranges; For outbound traffic, it is NOT supported to specify
-        source-ranges or source-tags.
+        traffic. For outbound traffic, it is NOT supported to specify
+        source-tags.
 
         For convenience, 'IN' can be used to represent ingress direction and
         'OUT' can be used to represent egress direction.

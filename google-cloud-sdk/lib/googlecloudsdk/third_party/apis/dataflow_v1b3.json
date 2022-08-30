@@ -2209,6 +2209,10 @@
         "launcherMachineType": {
           "description": "The machine type to use for launching the job. The default is n1-standard-1.",
           "type": "string"
+        },
+        "enableLauncherVmSerialPortLogging": {
+          "description": "If true serial port logging will be enabled for the launcher VM.",
+          "type": "boolean"
         }
       }
     },
@@ -2856,6 +2860,10 @@
           "items": {
             "$ref": "MetricUpdate"
           }
+        },
+        "stragglerSummary": {
+          "description": "Straggler summary for this stage.",
+          "$ref": "StragglerSummary"
         }
       }
     },
@@ -2892,6 +2900,26 @@
           "description": "The value of the point.",
           "type": "number",
           "format": "double"
+        }
+      }
+    },
+    "StragglerSummary": {
+      "id": "StragglerSummary",
+      "description": "Summarized straggler identification details.",
+      "type": "object",
+      "properties": {
+        "totalStragglerCount": {
+          "description": "The total count of stragglers.",
+          "type": "string",
+          "format": "int64"
+        },
+        "stragglerCauseCount": {
+          "description": "Aggregated counts of straggler causes, keyed by the string representation of the StragglerCause enum.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },
@@ -2984,6 +3012,74 @@
           "items": {
             "$ref": "MetricUpdate"
           }
+        },
+        "stragglerInfo": {
+          "description": "Information about straggler detections for this work item.",
+          "$ref": "StragglerInfo"
+        }
+      }
+    },
+    "StragglerInfo": {
+      "id": "StragglerInfo",
+      "description": "Information useful for straggler identification and debugging.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "The time when the work item attempt became a straggler.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "causes": {
+          "description": "The straggler causes, keyed by the string representation of the StragglerCause enum and contains specialized debugging information for each straggler cause.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "StragglerDebuggingInfo"
+          }
+        }
+      }
+    },
+    "StragglerDebuggingInfo": {
+      "id": "StragglerDebuggingInfo",
+      "description": "Information useful for debugging a straggler. Each type will provide specialized debugging information relevant for a particular cause. The StragglerDebuggingInfo will be 1:1 mapping to the StragglerCause enum.",
+      "type": "object",
+      "properties": {
+        "hotKey": {
+          "description": "Hot key debugging details.",
+          "$ref": "HotKeyDebuggingInfo"
+        }
+      }
+    },
+    "HotKeyDebuggingInfo": {
+      "id": "HotKeyDebuggingInfo",
+      "description": "Information useful for debugging a hot key detection.",
+      "type": "object",
+      "properties": {
+        "detectedHotKeys": {
+          "description": "Debugging information for each detected hot key. Keyed by a hash of the key.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "HotKeyInfo"
+          }
+        }
+      }
+    },
+    "HotKeyInfo": {
+      "id": "HotKeyInfo",
+      "description": "Information about a hot key.",
+      "type": "object",
+      "properties": {
+        "hotKeyAge": {
+          "description": "The age of the hot key measured from when it was first detected.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "key": {
+          "description": "A detected hot key that is causing limited parallelism. This field will be populated only if the following flag is set to true: \"--enable_hot_key_logging\".",
+          "type": "string"
+        },
+        "keyTruncated": {
+          "description": "If true, then the above key is truncated and cannot be deserialized. This occurs if the key above is populated and the key size is >5MB.",
+          "type": "boolean"
         }
       }
     },
@@ -8004,8 +8100,8 @@
                       "type": "string",
                       "enumDescriptions": [
                         "The deployment view to return isn't specified, or is unknown. Responses will contain at least the `DEPLOYMENT_VIEW_ALL` information, and may contain additional information.",
-                        "Request all information available for this depoyment.",
-                        "Request all mutable information available for this depoyment."
+                        "Request all information available for this deployment.",
+                        "Request all mutable information available for this deployment."
                       ],
                       "enum": [
                         "DEPLOYMENT_VIEW_UNSPECIFIED",

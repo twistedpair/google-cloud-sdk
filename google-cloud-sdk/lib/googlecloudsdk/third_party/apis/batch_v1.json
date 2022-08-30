@@ -648,7 +648,7 @@
       "type": "object",
       "properties": {
         "allowedLocations": {
-          "description": "A list of allowed location names represented by internal URLs, only the first region is supported now. for example, [\"regions\/us-central1\"] allow VMs in region us-central1, [\"regions\/us-central1\", \"zones\/us-central1-a\"] only allow VMs in zone us-central1-a. [\"regions\/us-central1\", \"zones\/us-central1-a\", \"zones\/us-central1-b\", \"regions\/us-west1\", \"zones\/us-west1-a\"] only allow VMs in zone us-central1-a or zones\/us-central1-b.",
+          "description": "A list of allowed location names represented by internal URLs. Each location can be a region or a zone. Only one region or multiple zones in one region is supported now. For example, [\"regions\/us-central1\"] allow VMs in any zones in region us-central1. [\"zones\/us-central1-a\", \"zones\/us-central1-c\"] only allow VMs in zones us-central1-a and us-central1-c. All locations end up in different regions would cause errors. For example, [\"regions\/us-central1\", \"zones\/us-central1-a\", \"zones\/us-central1-b\", \"zones\/us-west1-a\"] contains 2 regions \"us-central1\" and \"us-west1\". An error is expected in this case.",
           "type": "array",
           "items": {
             "type": "string"
@@ -729,12 +729,16 @@
           "description": "The number of accelerators of this type.",
           "type": "string",
           "format": "int64"
+        },
+        "installGpuDrivers": {
+          "description": "When true, Batch will install the GPU drivers. This field will be ignored if specified.",
+          "type": "boolean"
         }
       }
     },
     "AttachedDisk": {
       "id": "AttachedDisk",
-      "description": "A new or an existing persistent disk attached to a VM instance.",
+      "description": "A new or an existing persistent disk or a local ssd attached to a VM instance.",
       "type": "object",
       "properties": {
         "newDisk": {
@@ -752,7 +756,7 @@
     },
     "Disk": {
       "id": "Disk",
-      "description": "A new persistent disk. https:\/\/cloud.google.com\/compute\/docs\/disks#pdspecs.",
+      "description": "A new persistent disk or a local ssd. A VM can only have one local SSD setting but multiple local SSD partitions. https:\/\/cloud.google.com\/compute\/docs\/disks#pdspecs. https:\/\/cloud.google.com\/compute\/docs\/disks#localssds.",
       "type": "object",
       "properties": {
         "image": {
@@ -764,13 +768,17 @@
           "type": "string"
         },
         "type": {
-          "description": "Disk type as shown in `gcloud compute disk-types list` For example, \"pd-ssd\", \"pd-standard\", \"pd-balanced\".",
+          "description": "Disk type as shown in `gcloud compute disk-types list` For example, \"pd-ssd\", \"pd-standard\", \"pd-balanced\", \"local-ssd\".",
           "type": "string"
         },
         "sizeGb": {
-          "description": "Disk size in GB. This field is ignored if `data_source` is `disk` or `image`.",
+          "description": "Disk size in GB. This field is ignored if `data_source` is `disk` or `image`. If `type` is `local-ssd`, size_gb should be a multiple of 375GB, otherwise, the final size will be the next greater multiple of 375 GB.",
           "type": "string",
           "format": "int64"
+        },
+        "diskInterface": {
+          "description": "Local SSDs are available through both \"SCSI\" and \"NVMe\" interfaces. If not indicated, \"NVMe\" will be the default one for local ssds. We only support \"SCSI\" for persistent disks now.",
+          "type": "string"
         }
       }
     },
@@ -1256,7 +1264,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"

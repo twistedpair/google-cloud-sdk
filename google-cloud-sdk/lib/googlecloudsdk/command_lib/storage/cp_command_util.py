@@ -136,13 +136,6 @@ def add_cp_flags(parser):
   parser.add_argument(
       '-A', '--all-versions', action='store_true', help=_ALL_VERSIONS_HELP_TEXT)
   parser.add_argument(
-      '-R',
-      '-r',
-      '--recursive',
-      action='store_true',
-      help='Recursively copy the contents of any directories that match the'
-      ' source path expression.')
-  parser.add_argument(
       '--do-not-decompress',
       action='store_true',
       help='Do not automatically decompress downloaded gzip files.')
@@ -337,7 +330,7 @@ def _is_parallelizable(args, raw_destination_url, first_source_url):
   return True
 
 
-def run_cp(args):
+def run_cp(args, delete_source=False):
   """Runs implementation of cp surface with tweaks for similar commands."""
   raw_destination_url = storage_url.storage_url_from_string(args.destination)
   _validate_args(args, raw_destination_url)
@@ -382,6 +375,7 @@ def run_cp(args):
         source_expansion_iterator,
         args.destination,
         custom_md5_digest=args.content_md5,
+        delete_source=delete_source,
         do_not_decompress=args.do_not_decompress,
         force_daisy_chain=args.daisy_chain,
         print_created_message=args.print_created_message,

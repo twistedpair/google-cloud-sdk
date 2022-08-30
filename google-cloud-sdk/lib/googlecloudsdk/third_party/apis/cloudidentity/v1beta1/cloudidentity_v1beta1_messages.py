@@ -2268,7 +2268,6 @@ class Group(_messages.Message):
       an empty value.
 
   Fields:
-    additionalGroupKeys: Additional entity key aliases for a Group.
     createTime: Output only. The time when the `Group` was created.
     description: An extended description to help users determine the purpose
       of a `Group`. Must not be longer than 4,096 characters.
@@ -2333,17 +2332,16 @@ class Group(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  additionalGroupKeys = _messages.MessageField('EntityKey', 1, repeated=True)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  dynamicGroupMetadata = _messages.MessageField('DynamicGroupMetadata', 5)
-  groupKey = _messages.MessageField('EntityKey', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  parent = _messages.StringField(9)
-  posixGroups = _messages.MessageField('PosixGroup', 10, repeated=True)
-  updateTime = _messages.StringField(11)
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  dynamicGroupMetadata = _messages.MessageField('DynamicGroupMetadata', 4)
+  groupKey = _messages.MessageField('EntityKey', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  parent = _messages.StringField(8)
+  posixGroups = _messages.MessageField('PosixGroup', 9, repeated=True)
+  updateTime = _messages.StringField(10)
 
 
 class GroupRelation(_messages.Message):

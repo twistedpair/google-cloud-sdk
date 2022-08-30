@@ -1737,6 +1737,10 @@
             "type": "string"
           }
         },
+        "pubsubTopic": {
+          "description": "Immutable. The `Topic.name` of the Pub\/Sub topic to which to publish the update when this job finishes. Must be of the format: `projects\/{project}\/topics\/{topic}`. If not provided, such an update won't be sent, but the job state can still be polled via JobService.GetCustomJob. If a non-existing topic, or a topic to which Vertex AI is not allowed to publish to is provided, the job creation will succeed, but the update still won't be sent. The update message contains as its data a JSON in the following format: ``` { \"title\": \"Job state update\", \"type\": \"object\", \"properties\": { \"job\": { \"type\": \"string\", \"description\": \"The resource name of the job, in \\\"projects\/{project}\/locations\/{location}\/custom_jobs\/{custom_job}\\\" format, this update pertains to.\" }, \"status\": { \"type\": \"string\", \"enum\": [\"succeeded\", \"failed\", \"cancelled\", \"expired\"], \"description\": \"The status in which the job finished its execution.\" } } } ```",
+          "type": "string"
+        },
         "encryptionSpec": {
           "description": "Customer-managed encryption key options for a CustomJob. If this is set, then all resources created by the CustomJob will be encrypted with the provided encryption key.",
           "$ref": "GoogleCloudAiplatformV1alpha1EncryptionSpec"
@@ -1753,7 +1757,7 @@
     },
     "GoogleCloudAiplatformV1alpha1CustomJobSpec": {
       "id": "GoogleCloudAiplatformV1alpha1CustomJobSpec",
-      "description": "Represents the spec of a CustomJob. Next Id: 15",
+      "description": "Represents the spec of a CustomJob.",
       "type": "object",
       "properties": {
         "workerPoolSpecs": {
@@ -3190,7 +3194,7 @@
     },
     "GoogleCloudAiplatformV1alpha1ModelMonitoringConfig": {
       "id": "GoogleCloudAiplatformV1alpha1ModelMonitoringConfig",
-      "description": "Next ID: 6",
+      "description": "The model monitoring configuration used for Batch Prediction Job.",
       "type": "object",
       "properties": {
         "objectiveConfigs": {
@@ -3207,12 +3211,16 @@
         "analysisInstanceSchemaUri": {
           "description": "YAML schema file uri in Cloud Storage describing the format of a single instance that you want Tensorflow Data Validation (TFDV) to analyze. If there are any data type differences between predict instance and TFDV instance, this field can be used to override the schema. For models trained with Vertex AI, this field must be set as all the fields in predict instance formatted as string.",
           "type": "string"
+        },
+        "statsAnomaliesBaseDirectory": {
+          "description": "Add Google Cloud Storage location for batch prediction model monitoring to dump statistics and anomalies. If not provided, a folder will be created in customer project to hold statistics and anomalies.",
+          "$ref": "GoogleCloudAiplatformV1alpha1GcsDestination"
         }
       }
     },
     "GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfig": {
       "id": "GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfig",
-      "description": "Next ID: 8",
+      "description": "The objective configuration for model monitoring, including the information needed to detect anomalies for one particular model.",
       "type": "object",
       "properties": {
         "trainingDataset": {
@@ -3266,7 +3274,7 @@
     },
     "GoogleCloudAiplatformV1alpha1SamplingStrategy": {
       "id": "GoogleCloudAiplatformV1alpha1SamplingStrategy",
-      "description": "Sampling Strategy for logging, can be for both training and prediction dataset. Next ID: 2",
+      "description": "Sampling Strategy for logging, can be for both training and prediction dataset.",
       "type": "object",
       "properties": {
         "randomSampleConfig": {
@@ -3314,7 +3322,7 @@
     },
     "GoogleCloudAiplatformV1alpha1ThresholdConfig": {
       "id": "GoogleCloudAiplatformV1alpha1ThresholdConfig",
-      "description": "The config for feature monitoring threshold. Next ID: 3",
+      "description": "The config for feature monitoring threshold.",
       "type": "object",
       "properties": {
         "value": {
@@ -3395,7 +3403,6 @@
     },
     "GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfig": {
       "id": "GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfig",
-      "description": "Next ID: 3",
       "type": "object",
       "properties": {
         "emailAlertConfig": {
@@ -6747,7 +6754,7 @@
       "type": "object",
       "properties": {
         "suggestionCount": {
-          "description": "Required. The number of suggestions requested.",
+          "description": "Required. The number of suggestions requested. It must be positive.",
           "type": "integer",
           "format": "int32"
         },
@@ -8629,7 +8636,7 @@
     },
     "GoogleCloudAiplatformInternalHumanInTheLoopEntitlement": {
       "id": "GoogleCloudAiplatformInternalHumanInTheLoopEntitlement",
-      "description": "A HumanInTheLoopEntitlement represents a purchase of Human-in-the-Loop (HITL) product made by a customer on the GCP Marketplace. It allows to the purchased HITL product and to ensure the appropriate billing events occur. Next id: 11",
+      "description": "A HumanInTheLoopEntitlement represents a purchase of Human-in-the-Loop (HITL) product made by a customer on the GCP Marketplace. It allows to the purchased HITL product and to ensure the appropriate billing events occur.",
       "type": "object",
       "properties": {
         "name": {
@@ -8906,6 +8913,19 @@
           "readOnly": true,
           "type": "integer",
           "format": "int32"
+        },
+        "taskQueueName": {
+          "description": "Output only. Name of the task queue the sent human in the loop entry belongs to.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "questionIds": {
+          "description": "Output only. Question Ids associated with the human in the loop entry.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -11290,7 +11310,7 @@
     },
     "GoogleCloudAiplatformUiModelMonitoringObjectiveConfig": {
       "id": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfig",
-      "description": "Next ID: 8",
+      "description": "The objective configuration for model monitoring, including the information needed to detect anomalies for one particular model.",
       "type": "object",
       "properties": {
         "trainingDataset": {
@@ -11355,7 +11375,7 @@
     },
     "GoogleCloudAiplatformUiSamplingStrategy": {
       "id": "GoogleCloudAiplatformUiSamplingStrategy",
-      "description": "Sampling Strategy for logging, can be for both training and prediction dataset. Next ID: 2",
+      "description": "Sampling Strategy for logging, can be for both training and prediction dataset.",
       "type": "object",
       "properties": {
         "randomSampleConfig": {
@@ -11403,7 +11423,7 @@
     },
     "GoogleCloudAiplatformUiThresholdConfig": {
       "id": "GoogleCloudAiplatformUiThresholdConfig",
-      "description": "The config for feature monitoring threshold. Next ID: 3",
+      "description": "The config for feature monitoring threshold.",
       "type": "object",
       "properties": {
         "value": {
@@ -18448,7 +18468,7 @@
     },
     "GoogleCloudAiplatformV1beta1CustomJobSpec": {
       "id": "GoogleCloudAiplatformV1beta1CustomJobSpec",
-      "description": "Represents the spec of a CustomJob. Next Id: 15",
+      "description": "Represents the spec of a CustomJob.",
       "type": "object",
       "properties": {
         "workerPoolSpecs": {
@@ -23766,7 +23786,7 @@
     },
     "GoogleCloudAiplatformV1CustomJobSpec": {
       "id": "GoogleCloudAiplatformV1CustomJobSpec",
-      "description": "Represents the spec of a CustomJob. Next Id: 15",
+      "description": "Represents the spec of a CustomJob.",
       "type": "object",
       "properties": {
         "workerPoolSpecs": {

@@ -52,6 +52,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GLOSSARIES_GLOSSARYENTRIES = (
+      'projects.locations.glossaries.glossaryEntries',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/glossaries/'
+              '{glossariesId}/glossaryEntries/{glossaryEntriesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

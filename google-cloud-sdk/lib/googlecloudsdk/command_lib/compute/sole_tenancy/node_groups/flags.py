@@ -136,6 +136,15 @@ def AddListingShareSettingsArgToParser(parser):
       help='If provided, shows details for the share setting')
 
 
+def AddNodesArgToParser(parser):
+  """Add --nodes flag."""
+  parser.add_argument(
+      '--nodes',
+      metavar='NODE',
+      type=arg_parsers.ArgList(),
+      help='The names of the nodes to simulate maintenance event.')
+
+
 def GetMaintenancePolicyEnumMapper(messages):
   return arg_utils.ChoiceEnumMapper(
       '--maintenance-policy',

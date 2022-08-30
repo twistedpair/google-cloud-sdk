@@ -39,11 +39,158 @@ class NetappV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_activedirectories = self.ProjectsLocationsActivedirectoriesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_storagepools = self.ProjectsLocationsStoragepoolsService(self)
+    self.projects_locations_volumes_snapshots = self.ProjectsLocationsVolumesSnapshotsService(self)
     self.projects_locations_volumes = self.ProjectsLocationsVolumesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsActivedirectoriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_activedirectories resource."""
+
+    _NAME = 'projects_locations_activedirectories'
+
+    def __init__(self, client):
+      super(NetappV1alpha1.ProjectsLocationsActivedirectoriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""CreateActiveDirectory Creates the active directory specified in the request.
+
+      Args:
+        request: (NetappProjectsLocationsActivedirectoriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories',
+        http_method='POST',
+        method_id='netapp.projects.locations.activedirectories.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha1/{+parent}/activedirectories',
+        request_field='activeDirectory',
+        request_type_name='NetappProjectsLocationsActivedirectoriesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeleteActiveDirectory Delete the active directory specified in the request.
+
+      Args:
+        request: (NetappProjectsLocationsActivedirectoriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories/{activedirectoriesId}',
+        http_method='DELETE',
+        method_id='netapp.projects.locations.activedirectories.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsActivedirectoriesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""DescribeActiveDirectory Describes a specified active directory.
+
+      Args:
+        request: (NetappProjectsLocationsActivedirectoriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ActiveDirectory) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories/{activedirectoriesId}',
+        http_method='GET',
+        method_id='netapp.projects.locations.activedirectories.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsActivedirectoriesGetRequest',
+        response_type_name='ActiveDirectory',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListActiveDirectories Lists active directories.
+
+      Args:
+        request: (NetappProjectsLocationsActivedirectoriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListActiveDirectoryResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories',
+        http_method='GET',
+        method_id='netapp.projects.locations.activedirectories.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/activedirectories',
+        request_field='',
+        request_type_name='NetappProjectsLocationsActivedirectoriesListRequest',
+        response_type_name='ListActiveDirectoryResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""UpdateActiveDirectory Update the parameters of an active directories.
+
+      Args:
+        request: (NetappProjectsLocationsActivedirectoriesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories/{activedirectoriesId}',
+        http_method='PATCH',
+        method_id='netapp.projects.locations.activedirectories.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='activeDirectory',
+        request_type_name='NetappProjectsLocationsActivedirectoriesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
@@ -308,6 +455,151 @@ class NetappV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsVolumesSnapshotsService(base_api.BaseApiService):
+    """Service class for the projects_locations_volumes_snapshots resource."""
+
+    _NAME = 'projects_locations_volumes_snapshots'
+
+    def __init__(self, client):
+      super(NetappV1alpha1.ProjectsLocationsVolumesSnapshotsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a new snapshot for a volume.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesSnapshotsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots',
+        http_method='POST',
+        method_id='netapp.projects.locations.volumes.snapshots.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['snapshotId'],
+        relative_path='v1alpha1/{+parent}/snapshots',
+        request_field='snapshot',
+        request_type_name='NetappProjectsLocationsVolumesSnapshotsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a snapshot.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesSnapshotsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots/{snapshotsId}',
+        http_method='DELETE',
+        method_id='netapp.projects.locations.volumes.snapshots.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsVolumesSnapshotsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Describe a snapshot for a volume.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesSnapshotsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Snapshot) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots/{snapshotsId}',
+        http_method='GET',
+        method_id='netapp.projects.locations.volumes.snapshots.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsVolumesSnapshotsGetRequest',
+        response_type_name='Snapshot',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns descriptions of all snapshots for a volume.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesSnapshotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSnapshotsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots',
+        http_method='GET',
+        method_id='netapp.projects.locations.volumes.snapshots.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/snapshots',
+        request_field='',
+        request_type_name='NetappProjectsLocationsVolumesSnapshotsListRequest',
+        response_type_name='ListSnapshotsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the settings of a specific snapshot.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesSnapshotsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots/{snapshotsId}',
+        http_method='PATCH',
+        method_id='netapp.projects.locations.volumes.snapshots.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='snapshot',
+        request_type_name='NetappProjectsLocationsVolumesSnapshotsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsVolumesService(base_api.BaseApiService):
     """Service class for the projects_locations_volumes resource."""
 
@@ -449,6 +741,33 @@ class NetappV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='volume',
         request_type_name='NetappProjectsLocationsVolumesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Revert(self, request, global_params=None):
+      r"""Revert an existing volume to a specified snapshot. Warning! This operation will permanently revert all changes made after the snapshot was created.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesRevertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Revert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Revert.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}:revert',
+        http_method='POST',
+        method_id='netapp.projects.locations.volumes.revert',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:revert',
+        request_field='revertVolumeRequest',
+        request_type_name='NetappProjectsLocationsVolumesRevertRequest',
         response_type_name='Operation',
         supports_download=False,
     )

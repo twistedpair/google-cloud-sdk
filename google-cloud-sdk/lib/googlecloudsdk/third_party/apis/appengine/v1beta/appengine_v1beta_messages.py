@@ -15,9 +15,8 @@ package = 'appengine'
 
 
 class ApiConfigHandler(_messages.Message):
-  r"""Google Cloud Endpoints
-  (https://cloud.google.com/appengine/docs/python/endpoints/) configuration
-  for API handlers.
+  r"""Google Cloud Endpoints (https://cloud.google.com/endpoints)
+  configuration for API handlers.
 
   Enums:
     AuthFailActionValueValuesEnum: Action to take when users access resources
@@ -1222,11 +1221,11 @@ class Empty(_messages.Message):
 
 
 class EndpointsApiService(_messages.Message):
-  r"""Cloud Endpoints (https://cloud.google.com/endpoints) configuration. The
-  Endpoints API Service provides tooling for serving Open API and gRPC
-  endpoints via an NGINX proxy. Only valid for App Engine Flexible environment
-  deployments.The fields here refer to the name and configuration ID of a
-  "service" resource in the Service Management API
+  r"""Google Cloud Endpoints (https://cloud.google.com/endpoints)
+  configuration. The Endpoints API Service provides tooling for serving Open
+  API and gRPC endpoints via an NGINX proxy. Only valid for App Engine
+  Flexible environment deployments.The fields here refer to the name and
+  configuration ID of a "service" resource in the Service Management API
   (https://cloud.google.com/service-management/overview).
 
   Enums:
@@ -2870,8 +2869,8 @@ class Version(_messages.Message):
 
   Fields:
     apiConfig: Serving configuration for Google Cloud Endpoints
-      (https://cloud.google.com/appengine/docs/python/endpoints/).Only
-      returned in GET requests if view=FULL is set.
+      (https://cloud.google.com/endpoints).Only returned in GET requests if
+      view=FULL is set.
     appEngineApis: Allows App Engine second generation runtimes to access the
       legacy bundled services.
     automaticScaling: Automatic scaling is based on request rate, response

@@ -23,6 +23,9 @@ class AbortInfo(_messages.Message):
 
   Fields:
     cause: Causes that the analysis is aborted.
+    projectsMissingPermission: List of project IDs that the user has specified
+      in the request but does not have permission to access network configs.
+      Analysis is aborted in this case with the PERMISSION_DENIED cause.
     resourceUri: URI of the resource that caused the abort.
   """
 
@@ -85,23 +88,8 @@ class AbortInfo(_messages.Message):
     UNSUPPORTED = 15
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
-  resourceUri = _messages.StringField(2)
-
-
-class AppEngineVersionInfo(_messages.Message):
-  r"""For display only. Metadata associated with an App Engine version.
-
-  Fields:
-    displayName: Name of an App Engine version.
-    environment: App Engine execution environment for a version.
-    runtime: Runtime of the App Engine version.
-    uri: URI of an App Engine version.
-  """
-
-  displayName = _messages.StringField(1)
-  environment = _messages.StringField(2)
-  runtime = _messages.StringField(3)
-  uri = _messages.StringField(4)
+  projectsMissingPermission = _messages.StringField(2, repeated=True)
+  resourceUri = _messages.StringField(3)
 
 
 class AuditConfig(_messages.Message):
@@ -187,8 +175,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -426,7 +420,7 @@ class DropInfo(_messages.Message):
       UNKNOWN_EXTERNAL_ADDRESS: Destination external address cannot be
         resolved to a known target. If the address is used in a Google Cloud
         project, provide the project ID as test input.
-      FOREIGN_IP_DISALLOWED: a Compute Engine instance can only send or
+      FOREIGN_IP_DISALLOWED: A Compute Engine instance can only send or
         receive a packet with a foreign IP address if ip_forward is enabled.
       FIREWALL_RULE: Dropped due to a firewall rule, unless allowed due to
         connection tracking.
@@ -493,6 +487,10 @@ class DropInfo(_messages.Message):
         access.
       PSC_CONNECTION_NOT_ACCEPTED: Privte Service Connect (PSC) connection is
         not in accepted state.
+      GKE_CLUSTER_NOT_RUNNING: Packet sent from or to a GKE cluster that is
+        not in running state.
+      CLOUD_SQL_INSTANCE_NOT_RUNNING: Packet sent from or to a Cloud SQL
+        instance that is not in running state.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -521,6 +519,8 @@ class DropInfo(_messages.Message):
     VPC_CONNECTOR_NOT_RUNNING = 24
     FORWARDING_RULE_REGION_MISMATCH = 25
     PSC_CONNECTION_NOT_ACCEPTED = 26
+    GKE_CLUSTER_NOT_RUNNING = 27
+    CLOUD_SQL_INSTANCE_NOT_RUNNING = 28
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)
@@ -719,12 +719,14 @@ class FirewallInfo(_messages.Message):
         [VPC connector's implicit
         rules](https://cloud.google.com/functions/docs/networking/connecting-
         vpc#restrict-access).
+      NETWORK_FIREWALL_POLICY_RULE: Global network firewall policy rule.
     """
     FIREWALL_RULE_TYPE_UNSPECIFIED = 0
     HIERARCHICAL_FIREWALL_POLICY_RULE = 1
     VPC_FIREWALL_RULE = 2
     IMPLIED_VPC_FIREWALL_RULE = 3
     SERVERLESS_VPC_ACCESS_MANAGED_FIREWALL_RULE = 4
+    NETWORK_FIREWALL_POLICY_RULE = 5
 
   action = _messages.StringField(1)
   direction = _messages.StringField(2)
@@ -762,6 +764,7 @@ class ForwardInfo(_messages.Message):
       IMPORTED_CUSTOM_ROUTE_NEXT_HOP: Forwarded to the next hop of a custom
         route imported from a peering VPC.
       CLOUD_SQL_INSTANCE: Forwarded to a Cloud SQL instance.
+      ANOTHER_PROJECT: Forwarded to a VPC network in another project.
     """
     TARGET_UNSPECIFIED = 0
     PEERING_VPC = 1
@@ -770,6 +773,7 @@ class ForwardInfo(_messages.Message):
     GKE_MASTER = 4
     IMPORTED_CUSTOM_ROUTE_NEXT_HOP = 5
     CLOUD_SQL_INSTANCE = 6
+    ANOTHER_PROJECT = 7
 
   resourceUri = _messages.StringField(1)
   target = _messages.EnumField('TargetValueValuesEnum', 2)
@@ -1919,7 +1923,6 @@ class Step(_messages.Message):
 
   Fields:
     abort: Display information of the final state "abort" and reason.
-    appEngineVersion: Display information of an App Engine service version.
     causesDrop: This is a step that leads to the final state Drop.
     cloudFunction: Display information of a Cloud function.
     cloudSqlInstance: Display information of a Cloud SQL instance.
@@ -1971,9 +1974,6 @@ class Step(_messages.Message):
       START_FROM_CLOUD_FUNCTION: Initial state: packet originating from a
         Cloud function. A CloudFunctionInfo is populated with starting
         function information.
-      START_FROM_APP_ENGINE_VERSION: Initial state: packet originating from an
-        App Engine service version. An AppEngineVersionInfo is populated with
-        starting version information.
       APPLY_INGRESS_FIREWALL_RULE: Config checking state: verify ingress
         firewall rule.
       APPLY_EGRESS_FIREWALL_RULE: Config checking state: verify egress
@@ -2010,48 +2010,46 @@ class Step(_messages.Message):
     START_FROM_GKE_MASTER = 4
     START_FROM_CLOUD_SQL_INSTANCE = 5
     START_FROM_CLOUD_FUNCTION = 6
-    START_FROM_APP_ENGINE_VERSION = 7
-    APPLY_INGRESS_FIREWALL_RULE = 8
-    APPLY_EGRESS_FIREWALL_RULE = 9
-    APPLY_ROUTE = 10
-    APPLY_FORWARDING_RULE = 11
-    SPOOFING_APPROVED = 12
-    ARRIVE_AT_INSTANCE = 13
-    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 14
-    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 15
-    ARRIVE_AT_VPN_GATEWAY = 16
-    ARRIVE_AT_VPN_TUNNEL = 17
-    ARRIVE_AT_VPC_CONNECTOR = 18
-    NAT = 19
-    PROXY_CONNECTION = 20
-    DELIVER = 21
-    DROP = 22
-    FORWARD = 23
-    ABORT = 24
-    VIEWER_PERMISSION_MISSING = 25
+    APPLY_INGRESS_FIREWALL_RULE = 7
+    APPLY_EGRESS_FIREWALL_RULE = 8
+    APPLY_ROUTE = 9
+    APPLY_FORWARDING_RULE = 10
+    SPOOFING_APPROVED = 11
+    ARRIVE_AT_INSTANCE = 12
+    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 13
+    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 14
+    ARRIVE_AT_VPN_GATEWAY = 15
+    ARRIVE_AT_VPN_TUNNEL = 16
+    ARRIVE_AT_VPC_CONNECTOR = 17
+    NAT = 18
+    PROXY_CONNECTION = 19
+    DELIVER = 20
+    DROP = 21
+    FORWARD = 22
+    ABORT = 23
+    VIEWER_PERMISSION_MISSING = 24
 
   abort = _messages.MessageField('AbortInfo', 1)
-  appEngineVersion = _messages.MessageField('AppEngineVersionInfo', 2)
-  causesDrop = _messages.BooleanField(3)
-  cloudFunction = _messages.MessageField('CloudFunctionInfo', 4)
-  cloudSqlInstance = _messages.MessageField('CloudSQLInstanceInfo', 5)
-  deliver = _messages.MessageField('DeliverInfo', 6)
-  description = _messages.StringField(7)
-  drop = _messages.MessageField('DropInfo', 8)
-  endpoint = _messages.MessageField('EndpointInfo', 9)
-  firewall = _messages.MessageField('FirewallInfo', 10)
-  forward = _messages.MessageField('ForwardInfo', 11)
-  forwardingRule = _messages.MessageField('ForwardingRuleInfo', 12)
-  gkeMaster = _messages.MessageField('GKEMasterInfo', 13)
-  instance = _messages.MessageField('InstanceInfo', 14)
-  loadBalancer = _messages.MessageField('LoadBalancerInfo', 15)
-  network = _messages.MessageField('NetworkInfo', 16)
-  projectId = _messages.StringField(17)
-  route = _messages.MessageField('RouteInfo', 18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  vpcConnector = _messages.MessageField('VpcConnectorInfo', 20)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 21)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 22)
+  causesDrop = _messages.BooleanField(2)
+  cloudFunction = _messages.MessageField('CloudFunctionInfo', 3)
+  cloudSqlInstance = _messages.MessageField('CloudSQLInstanceInfo', 4)
+  deliver = _messages.MessageField('DeliverInfo', 5)
+  description = _messages.StringField(6)
+  drop = _messages.MessageField('DropInfo', 7)
+  endpoint = _messages.MessageField('EndpointInfo', 8)
+  firewall = _messages.MessageField('FirewallInfo', 9)
+  forward = _messages.MessageField('ForwardInfo', 10)
+  forwardingRule = _messages.MessageField('ForwardingRuleInfo', 11)
+  gkeMaster = _messages.MessageField('GKEMasterInfo', 12)
+  instance = _messages.MessageField('InstanceInfo', 13)
+  loadBalancer = _messages.MessageField('LoadBalancerInfo', 14)
+  network = _messages.MessageField('NetworkInfo', 15)
+  projectId = _messages.StringField(16)
+  route = _messages.MessageField('RouteInfo', 17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 19)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 20)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 21)
 
 
 class TestIamPermissionsRequest(_messages.Message):

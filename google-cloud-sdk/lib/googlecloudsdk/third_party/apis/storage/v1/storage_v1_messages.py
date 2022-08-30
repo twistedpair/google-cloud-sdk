@@ -931,6 +931,11 @@ class Object(_messages.Message):
       last changed. When the object is initially created, it will be set to
       timeCreated.
     updated: The modification time of the object metadata in RFC 3339 format.
+      Set initially to object creation time and then updated whenever any
+      metadata of the object changes. This includes changes made by a
+      requester, such as modifying custom metadata, as well as changes made by
+      Cloud Storage on behalf of a requester, such as changing the storage
+      class based on an Object Lifecycle Configuration.
   """
 
   class CustomerEncryptionValue(_messages.Message):

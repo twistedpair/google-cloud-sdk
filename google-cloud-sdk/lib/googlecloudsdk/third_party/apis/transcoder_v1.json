@@ -309,6 +309,10 @@
         "pad": {
           "description": "Specify the video pad filter configuration.",
           "$ref": "Pad"
+        },
+        "deinterlace": {
+          "description": "Specify the video deinterlace configuration.",
+          "$ref": "Deinterlace"
         }
       }
     },
@@ -437,6 +441,63 @@
           "description": "The number of pixels to add to the right. The default is 0.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "Deinterlace": {
+      "id": "Deinterlace",
+      "description": "Deinterlace configuration for input video.",
+      "type": "object",
+      "properties": {
+        "yadif": {
+          "description": "Specifies the Yet Another Deinterlacing Filter Configuration.",
+          "$ref": "YadifConfig"
+        },
+        "bwdif": {
+          "description": "Specifies the Bob Weaver Deinterlacing Filter Configuration.",
+          "$ref": "BwdifConfig"
+        }
+      }
+    },
+    "YadifConfig": {
+      "id": "YadifConfig",
+      "description": "Yet Another Deinterlacing Filter Configuration.",
+      "type": "object",
+      "properties": {
+        "mode": {
+          "description": "Specifies the deinterlacing mode to adopt. The default is `send_frame`. Supported values: - `send_frame`: Output one frame for each frame - `send_field`: Output one frame for each field",
+          "type": "string"
+        },
+        "disableSpatialInterlacing": {
+          "description": "Disable spacial interlacing. The default is `false`.",
+          "type": "boolean"
+        },
+        "parity": {
+          "description": "The picture field parity assumed for the input interlaced video. The default is `auto`. Supported values: - `tff`: Assume the top field is first - `bff`: Assume the bottom field is first - `auto`: Enable automatic detection of field parity",
+          "type": "string"
+        },
+        "deinterlaceAllFrames": {
+          "description": "Deinterlace all frames rather than just the frames identified as interlaced. The default is `false`.",
+          "type": "boolean"
+        }
+      }
+    },
+    "BwdifConfig": {
+      "id": "BwdifConfig",
+      "description": "Bob Weaver Deinterlacing Filter Configuration.",
+      "type": "object",
+      "properties": {
+        "mode": {
+          "description": "Specifies the deinterlacing mode to adopt. The default is `send_frame`. Supported values: - `send_frame`: Output one frame for each frame - `send_field`: Output one frame for each field",
+          "type": "string"
+        },
+        "parity": {
+          "description": "The picture field parity assumed for the input interlaced video. The default is `auto`. Supported values: - `tff`: Assume the top field is first - `bff`: Assume the bottom field is first - `auto`: Enable automatic detection of field parity",
+          "type": "string"
+        },
+        "deinterlaceAllFrames": {
+          "description": "Deinterlace all frames rather than just the frames identified as interlaced. The default is `false`.",
+          "type": "boolean"
         }
       }
     },

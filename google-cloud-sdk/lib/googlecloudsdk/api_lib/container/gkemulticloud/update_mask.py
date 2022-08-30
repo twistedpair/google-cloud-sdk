@@ -18,6 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+ATTACHED_CLUSTER_ARGS_TO_UPDATE_MASKS = {
+    'description': 'description',
+    'annotations': 'annotations',
+}
+
 AWS_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'cluster_version':
         'control_plane.version',

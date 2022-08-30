@@ -62,6 +62,24 @@ class ClientBase(object):
         tag_type(key=k, value=v) for k, v in tags.items()
     ])
 
+  def _Annotations(self, args, parent_type):
+    """Parses the annotations from the args.
+
+    Args:
+      args: Arguments to be parsed.
+      parent_type: Type of the parent object.
+
+    Returns:
+      Returns the parsed annotations.
+    """
+    annotations = flags.GetAnnotations(args)
+    if not annotations:
+      return None
+    annotation_type = parent_type.AnnotationsValue.AdditionalProperty
+    return parent_type.AnnotationsValue(additionalProperties=[
+        annotation_type(key=k, value=v) for k, v in annotations.items()
+    ])
+
   def List(self, parent_ref, page_size=None, limit=None, parent_field='parent'):
     """Lists gkemulticloud API resources."""
     kwargs = {parent_field: parent_ref.RelativeName()}

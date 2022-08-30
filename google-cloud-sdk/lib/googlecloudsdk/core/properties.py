@@ -291,8 +291,6 @@ class _Sections(object):
       override properties for the Cloud SDK.
     app: Section, The section containing app properties for the Cloud SDK.
     auth: Section, The section containing auth properties for the Cloud SDK.
-    aws: Section, The section containing properties for GKE on AWS.
-    azure: Section, The section containing properties for GKE on Azure.
     billing: Section, The section containing billing properties for the Cloud
       SDK.
     blueprints: Section, the section containing blueprints properties for the
@@ -310,6 +308,8 @@ class _Sections(object):
       SDK.
     container: Section, The section containing container properties for the
       Cloud SDK.
+    container_attached: Section, The section containing properties for Attached
+      clusters.
     container_aws: Section, The section containing properties for Anthos
       clusters on AWS.
     container_azure: Section, The section containing properties for Anthos
@@ -424,8 +424,6 @@ class _Sections(object):
     self.app = _SectionApp()
     self.artifacts = _SectionArtifacts()
     self.auth = _SectionAuth()
-    self.aws = _SectionAws()
-    self.azure = _SectionAzure()
     self.billing = _SectionBilling()
     self.blueprints = _SectionBlueprints()
     self.builds = _SectionBuilds()
@@ -434,6 +432,7 @@ class _Sections(object):
     self.composer = _SectionComposer()
     self.compute = _SectionCompute()
     self.container = _SectionContainer()
+    self.container_attached = _SectionContainerAttached()
     self.container_aws = _SectionContainerAws()
     self.container_azure = _SectionContainerAzure()
     self.container_vmware = _SectionContainerVmware()
@@ -497,8 +496,6 @@ class _Sections(object):
         self.api_endpoint_overrides,
         self.app,
         self.auth,
-        self.aws,
-        self.azure,
         self.billing,
         self.blueprints,
         self.builds,
@@ -508,6 +505,7 @@ class _Sections(object):
         self.composer,
         self.compute,
         self.container,
+        self.container_attached,
         self.container_aws,
         self.container_azure,
         self.container_vmware,
@@ -1162,8 +1160,9 @@ class _SectionApiEndpointOverrides(_Section):
     self.gkehub = self._Add('gkehub', hidden=True)
     self.gkemulticloud = self._Add(
         'gkemulticloud',
-        help_text=('Overrides API endpoint for `gcloud container aws` and '
-                   '`gcloud container azure` command groups. '))
+        help_text=('Overrides API endpoint for `gcloud container aws`, '
+                   '`gcloud container azure` and `gcloud container attached` '
+                   'command groups. '))
     # TODO(b/236427906): Unhide after gcloud client releases to GA.
     self.gkeonprem = self._Add('gkeonprem', hidden=True)
     self.healthcare = self._Add('healthcare', command='gcloud healthcare')
@@ -1470,30 +1469,6 @@ class _SectionAuth(_Section):
         'does not work for some surface.')
 
 
-class _SectionAws(_Section):
-  """Contains the properties for the 'aws' section."""
-
-  def __init__(self):
-    super(_SectionAws, self).__init__('aws', hidden=True)
-    self.location = self._Add(
-        'location',
-        help_text=('DEPRECATED. Use `container_aws/location` instead. '
-                   'This property will be removed in a future release.'),
-        hidden=True)
-
-
-class _SectionAzure(_Section):
-  """Contains the properties for the 'azure' section."""
-
-  def __init__(self):
-    super(_SectionAzure, self).__init__('azure', hidden=True)
-    self.location = self._Add(
-        'location',
-        help_text=('DEPRECATED. Use `container_azure/location` instead. '
-                   'This property will be removed in a future release.'),
-        hidden=True)
-
-
 class _SectionBilling(_Section):
   """Contains the properties for the 'auth' section."""
 
@@ -1736,6 +1711,17 @@ class _SectionContainer(_Section):
         hidden=True,
         help_text='If True, validate that the --tag value to container builds '
         'submit is in the gcr.io or *.gcr.io namespace.')
+
+
+class _SectionContainerAttached(_Section):
+  """Contains the properties for the 'container_attached' section."""
+
+  def __init__(self):
+    super(_SectionContainerAttached, self).__init__('container_attached')
+    self.location = self._Add(
+        'location',
+        help_text=('Default Google Cloud location to use for Attached '
+                   'clusters.'))
 
 
 class _SectionContainerAws(_Section):

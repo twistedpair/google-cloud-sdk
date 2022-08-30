@@ -24,6 +24,16 @@ DOCS_URL = 'https://cloud.google.com/iam/docs/simulating-access'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  OPERATIONS = (
+      'operations',
+      '{+name}',
+      {
+          '':
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',

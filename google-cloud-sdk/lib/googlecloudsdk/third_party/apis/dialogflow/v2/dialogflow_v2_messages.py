@@ -9792,7 +9792,14 @@ class GoogleCloudDialogflowV2ConversationProfile(_messages.Message):
 
 
 class GoogleCloudDialogflowV2CreateConversationDatasetOperationMetadata(_messages.Message):
-  r"""Metadata for ConversationDatasets."""
+  r"""Metadata for ConversationDatasets.
+
+  Fields:
+    conversationDataset: The resource name of the conversation dataset that
+      will be created. Format: `projects//locations//conversationDatasets/`
+  """
+
+  conversationDataset = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowV2CreateConversationModelEvaluationOperationMetadata(_messages.Message):

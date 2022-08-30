@@ -43,6 +43,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     self.github_installations_projects = self.GithubInstallationsProjectsService(self)
     self.github_installations = self.GithubInstallationsService(self)
     self.github = self.GithubService(self)
+    self.githubDotComWebhook = self.GithubDotComWebhookService(self)
     self.installations_installations = self.InstallationsInstallationsService(self)
     self.installations = self.InstallationsService(self)
     self.locations = self.LocationsService(self)
@@ -161,6 +162,42 @@ class CloudbuildV1(base_api.BaseApiClient):
       super(CloudbuildV1.GithubService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class GithubDotComWebhookService(base_api.BaseApiService):
+    """Service class for the githubDotComWebhook resource."""
+
+    _NAME = 'githubDotComWebhook'
+
+    def __init__(self, client):
+      super(CloudbuildV1.GithubDotComWebhookService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Receive(self, request, global_params=None):
+      r"""ReceiveGitHubDotComWebhook is called when the API receives a github.com webhook.
+
+      Args:
+        request: (CloudbuildGithubDotComWebhookReceiveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Receive')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Receive.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='cloudbuild.githubDotComWebhook.receive',
+        ordered_params=[],
+        path_params=[],
+        query_params=['webhookKey'],
+        relative_path='v1/githubDotComWebhook:receive',
+        request_field='httpBody',
+        request_type_name='CloudbuildGithubDotComWebhookReceiveRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
 
   class InstallationsInstallationsService(base_api.BaseApiService):
     """Service class for the installations_installations resource."""

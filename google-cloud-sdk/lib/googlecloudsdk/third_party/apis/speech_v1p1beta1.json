@@ -732,6 +732,11 @@
           "description": "When available, billed audio seconds for the corresponding request.",
           "type": "string",
           "format": "google-duration"
+        },
+        "requestId": {
+          "description": "The ID associated with the request. This is a unique ID specific only to the given request.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -909,6 +914,11 @@
         "outputError": {
           "description": "If the transcript output fails this field contains the relevant error.",
           "$ref": "Status"
+        },
+        "requestId": {
+          "description": "The ID associated with the request. This is a unique ID specific only to the given request.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

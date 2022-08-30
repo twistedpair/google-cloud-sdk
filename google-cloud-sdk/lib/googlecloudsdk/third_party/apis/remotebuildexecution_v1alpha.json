@@ -1356,7 +1356,8 @@
             "The docker volume specification is invalid (e.g. root).",
             "Docker failed to create OCI runtime because input root cannot be proc.",
             "Docker failed to start OCI runtime because of file not found.",
-            "Docker failed to run because the layerchain json was invalid (see b\/234782336)."
+            "Docker failed to run because the layerchain json was invalid (see b\/234782336).",
+            "Docker failed to create OCI runtime because of incompatible cuda version."
           ],
           "enum": [
             "OK",
@@ -1406,7 +1407,8 @@
             "DOCKER_INVALID_VOLUME",
             "DOCKER_CREATE_RUNTIME_CANNOT_MOUNT_TO_PROC",
             "DOCKER_START_RUNTIME_FILE_NOT_FOUND",
-            "DOCKER_CREATE_INVALID_LAYERCHAIN_JSON"
+            "DOCKER_CREATE_INVALID_LAYERCHAIN_JSON",
+            "INCOMPATIBLE_CUDA_VERSION"
           ]
         },
         "message": {

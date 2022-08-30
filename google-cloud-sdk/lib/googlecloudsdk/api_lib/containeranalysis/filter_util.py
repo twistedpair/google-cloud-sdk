@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 # The default maximum number of resource URLs by which to filter when showing
 # occurrences. This is required since filtering by too many causes the
 # API request to be too large. Instead, the requests are chunkified.
-_DEFAULT_RESOURCE_URI_CHUNK_SIZE = 5
+_DEFAULT_RESOURCE_URI_CHUNK_SIZE = 6
 
 
 class ContainerAnalysisFilter:
@@ -32,22 +32,22 @@ class ContainerAnalysisFilter:
   and satisfies self._custom_filter will be retrieved.
 
   Properties:
-    resource_prefix: str, the resource prefix filter added to this filter.
+    resource_prefixes: list, the resource prefixes filter added to this filter.
     custom_filter: str, the user provided filter added to this filter.
     kinds: list, metadata kinds added to this filter.
     resources: list, resource URLs added to this filter.
   """
 
   def __init__(self, max_resource_chunk_size=_DEFAULT_RESOURCE_URI_CHUNK_SIZE):
-    self._resource_prefix = ''
+    self._resource_prefixes = []
     self._custom_filter = ''
     self._kinds = []
     self._resources = []
     self._max_resource_chunk_size = max_resource_chunk_size
 
   @property
-  def resource_prefix(self):
-    return self._resource_prefix
+  def resource_prefixes(self):
+    return self._resource_prefixes
 
   @property
   def custom_filter(self):
@@ -76,9 +76,9 @@ class ContainerAnalysisFilter:
     self._custom_filter = custom_filter
     return self
 
-  def WithResourcePrefix(self, resource_prefix):
-    """Add a resource prefix to this filter."""
-    self._resource_prefix = resource_prefix
+  def WithResourcePrefixes(self, resource_prefixes):
+    """Add resource prefixes to this filter."""
+    self._resource_prefixes = list(resource_prefixes)
     return self
 
   def GetFilter(self):
@@ -87,7 +87,7 @@ class ContainerAnalysisFilter:
     resources = _OrJoinFilters(
         *[_HasField('resourceUrl', r) for r in self._resources])
     return _AndJoinFilters(
-        _HasPrefix('resourceUrl', self.resource_prefix), self.custom_filter,
+        _HasPrefixes('resourceUrl', self.resource_prefixes), self.custom_filter,
         kinds, resources)
 
   def GetChunkifiedFilters(self):
@@ -118,7 +118,7 @@ class ContainerAnalysisFilter:
     kinds = _OrJoinFilters(*[_HasField('kind', k) for k in self._kinds])
     resources = [_HasField('resourceUrl', r) for r in self._resources]
     base_filter = _AndJoinFilters(
-        _HasPrefix('resourceUrl', self.resource_prefix), self.custom_filter,
+        _HasPrefixes('resourceUrl', self.resource_prefixes), self.custom_filter,
         kinds)
 
     if not resources:
@@ -141,8 +141,34 @@ def _OrJoinFilters(*filters):
   return ' OR '.join(['({})'.format(f) for f in filters if f])
 
 
-def _HasPrefix(field, prefix):
-  return 'has_prefix({}, "{}")'.format(field, prefix) if prefix else None
+def _HasPrefixes(field, prefixes):
+  """Returns a filter string where each field is matched with the prefix.
+
+    _HasPrefixes is always an OR join, because multiple ANDs can just
+    resolve to the longest one, so multiple ANDs shouldn't be provided.
+
+    Note that there should never be more than 2 prefixes (one with and one
+    without https), as then there may be an issue with a request that's too
+    long. This can't be solved with chunking, as we need chunking for the
+    resource list itself, and since they're ANDed together, they can't be
+    chunked separately.
+
+  Args:
+    field: The field that must contain one of the given prefixes.
+    prefixes: The list of values of allowed prefixes.
+
+  Returns:
+    A filter string where each field is matched with the prefix.
+
+  Raises:
+    An ArtifactRegistryError if more than 2 prefixes are passed in.
+  """
+
+  if len(prefixes) > 2:
+    raise ValueError('Can only have at most 2 prefix filters.')
+  return ' OR '.join([
+      'has_prefix({}, "{}")'.format(field, prefix) for prefix in prefixes
+  ]) if prefixes else None
 
 
 def _HasField(field, value):

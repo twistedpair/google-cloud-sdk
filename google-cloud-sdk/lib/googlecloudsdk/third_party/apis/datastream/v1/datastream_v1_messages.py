@@ -24,10 +24,13 @@ class BackfillAllStrategy(_messages.Message):
   Fields:
     mysqlExcludedObjects: MySQL data source objects to avoid backfilling.
     oracleExcludedObjects: Oracle data source objects to avoid backfilling.
+    postgresqlExcludedObjects: PostgreSQL data source objects to avoid
+      backfilling.
   """
 
   mysqlExcludedObjects = _messages.MessageField('MysqlRdbms', 1)
   oracleExcludedObjects = _messages.MessageField('OracleRdbms', 2)
+  postgresqlExcludedObjects = _messages.MessageField('PostgresqlRdbms', 3)
 
 
 class BackfillJob(_messages.Message):
@@ -117,7 +120,7 @@ class BigQueryDestinationConfig(_messages.Message):
 
 
 class BigQueryProfile(_messages.Message):
-  r"""A BigQueryProfile object."""
+  r"""BigQuery warehouse profile."""
 
 
 class CancelOperationRequest(_messages.Message):
@@ -141,6 +144,7 @@ class ConnectionProfile(_messages.Message):
     mysqlProfile: MySQL ConnectionProfile configuration.
     name: Output only. The resource's name.
     oracleProfile: Oracle ConnectionProfile configuration.
+    postgresqlProfile: PostgreSQL Connection Profile configuration.
     privateConnectivity: Private connectivity.
     staticServiceIpConnectivity: Static Service IP connectivity.
     updateTime: Output only. The update time of the resource.
@@ -179,9 +183,10 @@ class ConnectionProfile(_messages.Message):
   mysqlProfile = _messages.MessageField('MysqlProfile', 7)
   name = _messages.StringField(8)
   oracleProfile = _messages.MessageField('OracleProfile', 9)
-  privateConnectivity = _messages.MessageField('PrivateConnectivity', 10)
-  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 11)
-  updateTime = _messages.StringField(12)
+  postgresqlProfile = _messages.MessageField('PostgresqlProfile', 10)
+  privateConnectivity = _messages.MessageField('PrivateConnectivity', 11)
+  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 12)
+  updateTime = _messages.StringField(13)
 
 
 class DatasetTemplate(_messages.Message):
@@ -834,6 +839,8 @@ class DiscoverConnectionProfileRequest(_messages.Message):
       be retrieved.
     mysqlRdbms: MySQL RDBMS to enrich with child data objects and metadata.
     oracleRdbms: Oracle RDBMS to enrich with child data objects and metadata.
+    postgresqlRdbms: PostgreSQL RDBMS to enrich with child data objects and
+      metadata.
   """
 
   connectionProfile = _messages.MessageField('ConnectionProfile', 1)
@@ -842,6 +849,7 @@ class DiscoverConnectionProfileRequest(_messages.Message):
   hierarchyDepth = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   mysqlRdbms = _messages.MessageField('MysqlRdbms', 5)
   oracleRdbms = _messages.MessageField('OracleRdbms', 6)
+  postgresqlRdbms = _messages.MessageField('PostgresqlRdbms', 7)
 
 
 class DiscoverConnectionProfileResponse(_messages.Message):
@@ -850,10 +858,12 @@ class DiscoverConnectionProfileResponse(_messages.Message):
   Fields:
     mysqlRdbms: Enriched MySQL RDBMS object.
     oracleRdbms: Enriched Oracle RDBMS object.
+    postgresqlRdbms: Enriched PostgreSQL RDBMS object.
   """
 
   mysqlRdbms = _messages.MessageField('MysqlRdbms', 1)
   oracleRdbms = _messages.MessageField('OracleRdbms', 2)
+  postgresqlRdbms = _messages.MessageField('PostgresqlRdbms', 3)
 
 
 class DropLargeObjects(_messages.Message):
@@ -1622,6 +1632,113 @@ class OracleTable(_messages.Message):
   table = _messages.StringField(2)
 
 
+class PostgresqlColumn(_messages.Message):
+  r"""PostgreSQL Column.
+
+  Fields:
+    column: Column name.
+    dataType: The PostgreSQL data type.
+    length: Column length.
+    nullable: Whether or not the column can accept a null value.
+    ordinalPosition: The ordinal position of the column in the table.
+    precision: Column precision.
+    primaryKey: Whether or not the column represents a primary key.
+    scale: Column scale.
+  """
+
+  column = _messages.StringField(1)
+  dataType = _messages.StringField(2)
+  length = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  nullable = _messages.BooleanField(4)
+  ordinalPosition = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  precision = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  primaryKey = _messages.BooleanField(7)
+  scale = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+
+
+class PostgresqlObjectIdentifier(_messages.Message):
+  r"""PostgreSQL data source object identifier.
+
+  Fields:
+    schema: Required. The schema name.
+    table: Required. The table name.
+  """
+
+  schema = _messages.StringField(1)
+  table = _messages.StringField(2)
+
+
+class PostgresqlProfile(_messages.Message):
+  r"""PostgreSQL database profile.
+
+  Fields:
+    database: Required. Database for the PostgreSQL connection.
+    hostname: Required. Hostname for the PostgreSQL connection.
+    password: Required. Password for the PostgreSQL connection.
+    port: Port for the PostgreSQL connection, default value is 5432.
+    username: Required. Username for the PostgreSQL connection.
+  """
+
+  database = _messages.StringField(1)
+  hostname = _messages.StringField(2)
+  password = _messages.StringField(3)
+  port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  username = _messages.StringField(5)
+
+
+class PostgresqlRdbms(_messages.Message):
+  r"""PostgreSQL database structure.
+
+  Fields:
+    postgresqlSchemas: PostgreSQL schemas in the database server.
+  """
+
+  postgresqlSchemas = _messages.MessageField('PostgresqlSchema', 1, repeated=True)
+
+
+class PostgresqlSchema(_messages.Message):
+  r"""PostgreSQL schema.
+
+  Fields:
+    postgresqlTables: Tables in the schema.
+    schema: Schema name.
+  """
+
+  postgresqlTables = _messages.MessageField('PostgresqlTable', 1, repeated=True)
+  schema = _messages.StringField(2)
+
+
+class PostgresqlSourceConfig(_messages.Message):
+  r"""PostgreSQL data source configuration
+
+  Fields:
+    excludeObjects: PostgreSQL objects to exclude from the stream.
+    includeObjects: PostgreSQL objects to include in the stream.
+    publication: Required. The name of the publication that includes the set
+      of all tables that are defined in the stream's include_objects.
+    replicationSlot: Required. The name of the logical replication slot that's
+      configured with the pgoutput plugin.
+  """
+
+  excludeObjects = _messages.MessageField('PostgresqlRdbms', 1)
+  includeObjects = _messages.MessageField('PostgresqlRdbms', 2)
+  publication = _messages.StringField(3)
+  replicationSlot = _messages.StringField(4)
+
+
+class PostgresqlTable(_messages.Message):
+  r"""PostgreSQL table.
+
+  Fields:
+    postgresqlColumns: PostgreSQL columns in the schema. When unspecified as
+      part of include/exclude objects, includes/excludes everything.
+    table: Table name.
+  """
+
+  postgresqlColumns = _messages.MessageField('PostgresqlColumn', 1, repeated=True)
+  table = _messages.StringField(2)
+
+
 class PrivateConnection(_messages.Message):
   r"""The PrivateConnection resource is used to establish private connectivity
   between Datastream and a customer's network.
@@ -1777,6 +1894,7 @@ class SourceConfig(_messages.Message):
   Fields:
     mysqlSourceConfig: MySQL data source configuration.
     oracleSourceConfig: Oracle data source configuration.
+    postgresqlSourceConfig: PostgreSQL data source configuration.
     sourceConnectionProfile: Required. Source connection profile resoource.
       Format:
       `projects/{project}/locations/{location}/connectionProfiles/{name}`
@@ -1784,7 +1902,8 @@ class SourceConfig(_messages.Message):
 
   mysqlSourceConfig = _messages.MessageField('MysqlSourceConfig', 1)
   oracleSourceConfig = _messages.MessageField('OracleSourceConfig', 2)
-  sourceConnectionProfile = _messages.StringField(3)
+  postgresqlSourceConfig = _messages.MessageField('PostgresqlSourceConfig', 3)
+  sourceConnectionProfile = _messages.StringField(4)
 
 
 class SourceHierarchyDatasets(_messages.Message):
@@ -1804,10 +1923,12 @@ class SourceObjectIdentifier(_messages.Message):
   Fields:
     mysqlIdentifier: Mysql data source object identifier.
     oracleIdentifier: Oracle data source object identifier.
+    postgresqlIdentifier: PostgreSQL data source object identifier.
   """
 
   mysqlIdentifier = _messages.MessageField('MysqlObjectIdentifier', 1)
   oracleIdentifier = _messages.MessageField('OracleObjectIdentifier', 2)
+  postgresqlIdentifier = _messages.MessageField('PostgresqlObjectIdentifier', 3)
 
 
 class StandardQueryParameters(_messages.Message):

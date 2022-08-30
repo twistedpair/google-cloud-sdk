@@ -21,10 +21,8 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.configurations import named_configs
 
 
 def GetOperationResource(op):
@@ -48,31 +46,8 @@ def LocationAttributeConfig():
       name='location',
       help_text='Google Cloud location for the {resource}.',
       fallthroughs=[
-          deps.PropertyFallthrough(properties.VALUES.container_aws.location),
-          deps.Fallthrough(
-              _LocationFallthrough, 'set the property `{}` (deprecated)'.format(
-                  properties.VALUES.aws.location))
+          deps.PropertyFallthrough(properties.VALUES.container_aws.location)
       ])
-
-
-def _LocationFallthrough():
-  """Gets the fallthrough value for --location from the deprecated property."""
-  prop = properties.VALUES.aws.location
-  location = prop.Get()
-  if location is None:
-    return None
-  log.warning('Property [aws/location] is deprecated '
-              'and will be removed in a future release. '
-              'Use [container_aws/location] instead.')
-  properties_file = named_configs.ActivePropertiesFile.Load()
-  value = properties_file.Get(prop.section, prop.name)
-  if value == location:
-    log.warning(
-        'The value [%s] from the [aws/location] property '
-        'has been copied to the [container_aws/location] property.', location)
-    properties.PersistProperty(properties.VALUES.container_aws.location,
-                               location)
-  return location
 
 
 def OperationAttributeConfig():

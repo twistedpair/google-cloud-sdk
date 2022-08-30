@@ -257,10 +257,6 @@
             "type": "string"
           }
         },
-        "hub": {
-          "description": "Optional. GKE Hub configuration. DEPRECATED Use fleet instead.",
-          "$ref": "Hub"
-        },
         "fleet": {
           "description": "Optional. Fleet configuration.",
           "$ref": "Fleet"
@@ -291,16 +287,15 @@
         "maintenancePolicy": {
           "description": "Optional. Cluster-wide maintenance policy configuration.",
           "$ref": "MaintenancePolicy"
-        }
-      }
-    },
-    "Hub": {
-      "id": "Hub",
-      "description": "GKE Hub configuration. DEPRECATED Use Fleet instead.",
-      "type": "object",
-      "properties": {
-        "membership": {
-          "description": "Required. The resource name of the membership resource to use when registering this cluster to GKE Hub e.g. projects\/{project}\/locations\/global\/memberships\/{membership}.",
+        },
+        "controlPlaneVersion": {
+          "description": "Output only. The control plane release version",
+          "readOnly": true,
+          "type": "string"
+        },
+        "nodeVersion": {
+          "description": "Output only. The lowest release version among all worker nodes. This field can be empty if the cluster does not have any worker nodes.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -523,6 +518,11 @@
         "localDiskEncryption": {
           "description": "Optional. Local disk encryption options. This field is only used when enabling CMEK support.",
           "$ref": "LocalDiskEncryption"
+        },
+        "nodeVersion": {
+          "description": "Output only. The lowest release version among all worker nodes.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -622,6 +622,11 @@
         "zone": {
           "description": "The Google Distributed Cloud Edge zone of this machine.",
           "type": "string"
+        },
+        "version": {
+          "description": "Output only. The software version of the machine.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -704,6 +709,10 @@
           "description": "The network ID of VPC to connect to.",
           "type": "string"
         },
+        "vpcProject": {
+          "description": "Project detail of the VPC network. Required if VPC is in a different project than the cluster project.",
+          "$ref": "VpcProject"
+        },
         "enableHighAvailability": {
           "description": "Whether this VPN connection has HA enabled on cluster side. If enabled, when creating VPN connection we will attempt to use 2 ANG floating IPs.",
           "type": "boolean"
@@ -712,6 +721,21 @@
           "description": "Output only. The created connection details.",
           "readOnly": true,
           "$ref": "Details"
+        }
+      }
+    },
+    "VpcProject": {
+      "id": "VpcProject",
+      "description": "Project detail of the VPC network.",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "description": "The project of the VPC to connect to. If not specified, it is the same as the cluster project.",
+          "type": "string"
+        },
+        "serviceAccount": {
+          "description": "The service account in the VPC project configured by user. It is used to create\/delete Cloud Router and Cloud HA VPNs for VPN connection. If this SA is changed during\/after a VPN connection is created, you need to remove the Cloud Router and Cloud VPN resources in |project_id|. Must be set if |project_id| is set.",
+          "type": "string"
         }
       }
     },

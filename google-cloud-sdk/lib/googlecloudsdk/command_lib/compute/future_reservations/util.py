@@ -35,7 +35,8 @@ def MakeFutureReservationMessageFromArgs(messages, args,
       getattr(args, 'maintenance_freeze_duration', None),
       getattr(args, 'maintenance_interval', None))
   sku_properties = MakeSpecificSKUPropertiesMessage(
-      messages, allocated_instance_properties, args.total_count)
+      messages, allocated_instance_properties, args.total_count,
+      getattr(args, 'source_instance_template', None))
   time_window = MakeTimeWindowMessage(messages, args.start_time,
                                       getattr(args, 'end_time', None),
                                       getattr(args, 'duration', None))
@@ -76,11 +77,19 @@ def MakeAllocatedInstanceProperties(messages,
   return instance_properties
 
 
-def MakeSpecificSKUPropertiesMessage(messages, instance_properties,
-                                     total_count):
+def MakeSpecificSKUPropertiesMessage(messages,
+                                     instance_properties,
+                                     total_count,
+                                     source_instance_template=None):
   """Constructs a specific sku properties message object."""
+  if source_instance_template:
+    properties = None
+  else:
+    properties = instance_properties
   return messages.FutureReservationSpecificSKUProperties(
-      totalCount=total_count, instanceProperties=instance_properties)
+      totalCount=total_count,
+      sourceInstanceTemplate=source_instance_template,
+      instanceProperties=properties)
 
 
 def MakeTimeWindowMessage(messages, start_time, end_time, duration):

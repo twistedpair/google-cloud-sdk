@@ -270,9 +270,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -610,11 +612,14 @@ class ConfigManagementGatekeeperDeploymentState(_messages.Message):
     GatekeeperAuditValueValuesEnum: Status of gatekeeper-audit deployment.
     GatekeeperControllerManagerStateValueValuesEnum: Status of gatekeeper-
       controller-manager pod.
+    GatekeeperMutationValueValuesEnum: Status of the pod serving the mutation
+      webhook.
 
   Fields:
     gatekeeperAudit: Status of gatekeeper-audit deployment.
     gatekeeperControllerManagerState: Status of gatekeeper-controller-manager
       pod.
+    gatekeeperMutation: Status of the pod serving the mutation webhook.
   """
 
   class GatekeeperAuditValueValuesEnum(_messages.Enum):
@@ -645,8 +650,23 @@ class ConfigManagementGatekeeperDeploymentState(_messages.Message):
     INSTALLED = 2
     ERROR = 3
 
+  class GatekeeperMutationValueValuesEnum(_messages.Enum):
+    r"""Status of the pod serving the mutation webhook.
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
   gatekeeperAudit = _messages.EnumField('GatekeeperAuditValueValuesEnum', 1)
   gatekeeperControllerManagerState = _messages.EnumField('GatekeeperControllerManagerStateValueValuesEnum', 2)
+  gatekeeperMutation = _messages.EnumField('GatekeeperMutationValueValuesEnum', 3)
 
 
 class ConfigManagementGitConfig(_messages.Message):
@@ -2059,14 +2079,50 @@ class IdentityServiceAuthMethod(_messages.Message):
   authentication method (e.g., OIDC and LDAP) can be set per AuthMethod.
 
   Fields:
+    azureadConfig: AzureAD specific Configuration.
+    googleConfig: GoogleConfig specific configuration
     name: Identifier for auth config.
     oidcConfig: OIDC specific configuration.
     proxy: Proxy server address to use for auth method.
   """
 
-  name = _messages.StringField(1)
-  oidcConfig = _messages.MessageField('IdentityServiceOidcConfig', 2)
-  proxy = _messages.StringField(3)
+  azureadConfig = _messages.MessageField('IdentityServiceAzureADConfig', 1)
+  googleConfig = _messages.MessageField('IdentityServiceGoogleConfig', 2)
+  name = _messages.StringField(3)
+  oidcConfig = _messages.MessageField('IdentityServiceOidcConfig', 4)
+  proxy = _messages.StringField(5)
+
+
+class IdentityServiceAzureADConfig(_messages.Message):
+  r"""Configuration for the AzureAD Auth flow.
+
+  Fields:
+    clientId: ID for the registered client application that makes
+      authentication requests to the Azure AD identity provider.
+    clientSecret: Input only. Unencrypted AzureAD client secret will be passed
+      to the GKE Hub CLH.
+    encryptedClientSecret: Output only. Encrypted AzureAD client secret.
+    kubectlRedirectUri: The redirect URL that kubectl uses for authorization.
+    tenant: Kind of Azure AD account to be authenticated. Supported values are
+      or for accounts belonging to a specific tenant.
+  """
+
+  clientId = _messages.StringField(1)
+  clientSecret = _messages.StringField(2)
+  encryptedClientSecret = _messages.BytesField(3)
+  kubectlRedirectUri = _messages.StringField(4)
+  tenant = _messages.StringField(5)
+
+
+class IdentityServiceGoogleConfig(_messages.Message):
+  r"""Configuration for the Google Plugin Auth flow.
+
+  Fields:
+    disable: Disable automatic configuration of Google Plugin on supported
+      platforms.
+  """
+
+  disable = _messages.BooleanField(1)
 
 
 class IdentityServiceMembershipSpec(_messages.Message):
@@ -3119,6 +3175,9 @@ class PolicyControllerMembershipState(_messages.Message):
         Entering a HUB_ERROR state happens automatically when the PCH
         determines the hub is in an unhealthy state and it wishes to 'take
         hands off' to avoid corrupting the PC or other data.
+      SUSPENDED: Policy Controller (PC) is installed but suspended. This means
+        that the policies are not enforced, but violations are still recorded
+        (through audit).
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
@@ -3128,6 +3187,7 @@ class PolicyControllerMembershipState(_messages.Message):
     DECOMISSIONING = 5
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
+    SUSPENDED = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ComponentStatesValue(_messages.Message):
@@ -3238,6 +3298,9 @@ class PolicyControllerOnClusterState(_messages.Message):
         Entering a HUB_ERROR state happens automatically when the PCH
         determines the hub is in an unhealthy state and it wishes to 'take
         hands off' to avoid corrupting the PC or other data.
+      SUSPENDED: Policy Controller (PC) is installed but suspended. This means
+        that the policies are not enforced, but violations are still recorded
+        (through audit).
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
@@ -3247,6 +3310,7 @@ class PolicyControllerOnClusterState(_messages.Message):
     DECOMISSIONING = 5
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
+    SUSPENDED = 8
 
   details = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
@@ -3377,12 +3441,7 @@ class ServiceMeshMembershipSpec(_messages.Message):
     Values:
       MANAGEMENT_UNSPECIFIED: Unspecified
       MANAGEMENT_AUTOMATIC: Google should manage my Service Mesh for the
-        cluster. This will ensure that a control plane revision is available
-        to the cluster. Google will enroll this revision in a release channel
-        and keep it up to date. Enables a Google-managed data plane that
-        provides L7 service mesh capabilities. Data plane management is
-        enabled at the cluster level. Users can exclude individual workloads
-        or namespaces.
+        cluster.
       MANAGEMENT_MANUAL: User will manually configure their service mesh
         components.
     """

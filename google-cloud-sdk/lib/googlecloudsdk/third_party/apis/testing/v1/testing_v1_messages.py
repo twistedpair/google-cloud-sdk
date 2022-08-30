@@ -421,6 +421,8 @@ class ApkManifest(_messages.Message):
     targetSdkVersion: Specifies the API Level on which the application is
       designed to run.
     usesPermission: Permissions declared to be used by the application
+    versionCode: Version number used internally by the app.
+    versionName: Version number shown to users.
   """
 
   applicationLabel = _messages.StringField(1)
@@ -430,6 +432,8 @@ class ApkManifest(_messages.Message):
   packageName = _messages.StringField(5)
   targetSdkVersion = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   usesPermission = _messages.StringField(7, repeated=True)
+  versionCode = _messages.IntegerField(8)
+  versionName = _messages.StringField(9)
 
 
 class AppBundle(_messages.Message):
@@ -983,7 +987,7 @@ class ManualSharding(_messages.Message):
       least one shard if this field is present. When you select one or more
       physical devices, the number of repeated test_targets_for_shard must be
       <= 50. When you select one or more ARM virtual devices, it must be <=
-      100. When you select only x86 virtual devices, it must be <= 500.
+      50. When you select only x86 virtual devices, it must be <= 500.
   """
 
   testTargetsForShard = _messages.MessageField('TestTargetsForShard', 1, repeated=True)
@@ -1976,7 +1980,7 @@ class UniformSharding(_messages.Message):
       always be a positive number that is no greater than the total number of
       test cases. When you select one or more physical devices, the number of
       shards must be <= 50. When you select one or more ARM virtual devices,
-      it must be <= 100. When you select only x86 virtual devices, it must be
+      it must be <= 50. When you select only x86 virtual devices, it must be
       <= 500.
   """
 

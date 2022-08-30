@@ -749,6 +749,32 @@ class AssetQueryClient(object):
     timeout = None
     if args.IsSpecified('timeout'):
       timeout = six.text_type(args.timeout) + 's'
+    output_config = None
+    bigquery_table = args.CONCEPTS.bigquery_table.Parse()
+    if bigquery_table:
+      output_config = self.message_module.QueryAssetsOutputConfig(
+          bigqueryDestination=self.message_module
+          .GoogleCloudAssetV1QueryAssetsOutputConfigBigQueryDestination(
+              dataset='projects/' + bigquery_table.projectId + '/datasets/' +
+              bigquery_table.datasetId,
+              table=bigquery_table.tableId,
+              writeDisposition=args.write_disposition))
+    elif args.IsSpecified('write_disposition'):
+      raise gcloud_exceptions.InvalidArgumentException(
+          '--write_disposition',
+          'Must be set together with --bigquery-table to take effect.')
+    end_time = None
+    readtime_window = None
+    if args.IsSpecified('end_time'):
+      end_time = times.FormatDateTime(args.end_time)
+    start_time = None
+    if args.IsSpecified('start_time'):
+      start_time = times.FormatDateTime(args.start_time)
+      readtime_window = self.message_module.TimeWindow(
+          endTime=end_time, startTime=start_time)
+    read_time = None
+    if args.IsSpecified('snapshot_time'):
+      read_time = times.FormatDateTime(args.snapshot_time)
     query_assets_request = self.message_module.CloudassetQueryAssetsRequest(
         parent=self.parent,
         queryAssetsRequest=self.message_module.QueryAssetsRequest(
@@ -756,7 +782,10 @@ class AssetQueryClient(object):
             pageSize=args.page_size,
             pageToken=args.page_token,
             statement=args.statement,
-            timeout=timeout))
+            timeout=timeout,
+            readTime=read_time,
+            readTimeWindow=readtime_window,
+            outputConfig=output_config))
     return self.service.QueryAssets(query_assets_request)
 
 

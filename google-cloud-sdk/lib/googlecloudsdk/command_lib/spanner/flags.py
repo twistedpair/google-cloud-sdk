@@ -97,6 +97,16 @@ class DatabaseSessionCompleter(completers.ListCommandCompleter):
         **kwargs)
 
 
+class DatabaseRoleCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(DatabaseRoleCompleter, self).__init__(
+        collection='spanner.projects.instances.databases.roles',
+        list_command='beta spanner databases roles list --uri',
+        flags=['database', 'instance'],
+        **kwargs)
+
+
 def Database(positional=True,
              required=True,
              text='Cloud Spanner database ID.'):
@@ -413,3 +423,11 @@ def AddCommonCancelArgs(parser):
       text='For a backup operation, the name of the backup '
       'the operation is executing on.').AddToParser(parser)
   OperationId().AddToParser(parser)
+
+
+def DatabaseRole():
+  return base.Argument(
+      '--database-role',
+      required=False,
+      completer=DatabaseRoleCompleter,
+      help='Cloud Spanner database role to assume for this request.')

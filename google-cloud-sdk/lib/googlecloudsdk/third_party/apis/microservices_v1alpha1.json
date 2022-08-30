@@ -6,7 +6,7 @@
   "canonicalName": "Microservices",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "microservices API (prod)",
+  "title": "Microservices API",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "",
+  "documentationLink": "https://cloud.google.com",
   "protocol": "rest",
   "rootUrl": "https://microservices.googleapis.com/",
   "mtlsRootUrl": "https://microservices.mtls.googleapis.com/",
@@ -22,6 +22,7 @@
   "baseUrl": "https://microservices.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",

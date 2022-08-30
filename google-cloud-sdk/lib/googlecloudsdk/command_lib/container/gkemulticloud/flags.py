@@ -142,6 +142,38 @@ def GetClusterVersion(args):
   return getattr(args, 'cluster_version', None)
 
 
+def AddDescription(parser, required=False):
+  parser.add_argument(
+      '--description',
+      required=required,
+      help='Description for the cluster.')
+
+
+def GetDescription(args):
+  return getattr(args, 'description', None)
+
+
+def AddClearDescription(parser):
+  """Adds the --clear-description flag."""
+  parser.add_argument(
+      '--clear-description',
+      action='store_true',
+      default=None,
+      help='Clear the description for the cluster.')
+
+
+def AddAnnotations(parser):
+  parser.add_argument(
+      '--annotations',
+      type=arg_parsers.ArgDict(min_length=1),
+      metavar='ANNOTATION',
+      help='Annotations for the cluster.')
+
+
+def GetAnnotations(args):
+  return getattr(args, 'annotations', None) or {}
+
+
 def AddNodeVersion(parser, required=True):
   parser.add_argument(
       '--node-version',

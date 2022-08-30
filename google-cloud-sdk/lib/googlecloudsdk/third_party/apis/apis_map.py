@@ -2807,6 +2807,15 @@ MAP = {
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v2':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.speech.v2',
+                    client_classpath='speech_v2_client.SpeechV2',
+                    messages_modulepath='speech_v2_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
     },
     'sqladmin': {
         'v1beta4':
@@ -3091,6 +3100,15 @@ MAP = {
                     client_classpath='workstations_v1alpha1_client.WorkstationsV1alpha1',
                     messages_modulepath='workstations_v1alpha1_messages'),
                 default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v1beta':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.workstations.v1beta',
+                    client_classpath='workstations_v1beta_client.WorkstationsV1beta',
+                    messages_modulepath='workstations_v1beta_messages'),
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

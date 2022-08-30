@@ -1083,8 +1083,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -1318,13 +1324,13 @@ class CopyBackupMetadata(_messages.Message):
     name: The name of the backup being created through the copy operation.
       Values are of the form `projects//instances//clusters//backups/`.
     progress: The progress of the CopyBackup operation.
-    sourceBackup: The name of the source backup that is being copied from.
-      Values are of the form `projects//instances//clusters//backups/`.
+    sourceBackupInfo: Information about the source backup that is being copied
+      from.
   """
 
   name = _messages.StringField(1)
   progress = _messages.MessageField('OperationProgress', 2)
-  sourceBackup = _messages.StringField(3)
+  sourceBackupInfo = _messages.MessageField('BackupInfo', 3)
 
 
 class CopyBackupRequest(_messages.Message):
@@ -1777,11 +1783,10 @@ class Instance(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the instance.
-    TypeValueValuesEnum: Required. The type of the instance. Defaults to
-      `PRODUCTION`.
+    TypeValueValuesEnum: The type of the instance. Defaults to `PRODUCTION`.
 
   Messages:
-    LabelsValue: Required. Labels are a flexible and lightweight mechanism for
+    LabelsValue: Labels are a flexible and lightweight mechanism for
       organizing cloud resources into groups that reflect a customer's
       organizational needs and deployment strategies. They can be used to
       filter resources and aggregate metrics. * Label keys must be between 1
@@ -1799,21 +1804,20 @@ class Instance(_messages.Message):
     displayName: Required. The descriptive name for this instance as it
       appears in UIs. Can be changed at any time, but should be kept globally
       unique to avoid confusion.
-    labels: Required. Labels are a flexible and lightweight mechanism for
-      organizing cloud resources into groups that reflect a customer's
-      organizational needs and deployment strategies. They can be used to
-      filter resources and aggregate metrics. * Label keys must be between 1
-      and 63 characters long and must conform to the regular expression:
-      `\p{Ll}\p{Lo}{0,62}`. * Label values must be between 0 and 63 characters
-      long and must conform to the regular expression:
-      `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`. * No more than 64 labels can be
-      associated with a given resource. * Keys and values must both be under
-      128 bytes.
+    labels: Labels are a flexible and lightweight mechanism for organizing
+      cloud resources into groups that reflect a customer's organizational
+      needs and deployment strategies. They can be used to filter resources
+      and aggregate metrics. * Label keys must be between 1 and 63 characters
+      long and must conform to the regular expression: `\p{Ll}\p{Lo}{0,62}`. *
+      Label values must be between 0 and 63 characters long and must conform
+      to the regular expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`. * No more than
+      64 labels can be associated with a given resource. * Keys and values
+      must both be under 128 bytes.
     name: The unique name of the instance. Values are of the form
       `projects/{project}/instances/a-z+[a-z0-9]`.
     satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The current state of the instance.
-    type: Required. The type of the instance. Defaults to `PRODUCTION`.
+    type: The type of the instance. Defaults to `PRODUCTION`.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1831,7 +1835,7 @@ class Instance(_messages.Message):
     CREATING = 2
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. The type of the instance. Defaults to `PRODUCTION`.
+    r"""The type of the instance. Defaults to `PRODUCTION`.
 
     Values:
       TYPE_UNSPECIFIED: The type of the instance is unspecified. If set when
@@ -1848,15 +1852,15 @@ class Instance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Required. Labels are a flexible and lightweight mechanism for
-    organizing cloud resources into groups that reflect a customer's
-    organizational needs and deployment strategies. They can be used to filter
-    resources and aggregate metrics. * Label keys must be between 1 and 63
-    characters long and must conform to the regular expression:
-    `\p{Ll}\p{Lo}{0,62}`. * Label values must be between 0 and 63 characters
-    long and must conform to the regular expression:
-    `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`. * No more than 64 labels can be associated
-    with a given resource. * Keys and values must both be under 128 bytes.
+    r"""Labels are a flexible and lightweight mechanism for organizing cloud
+    resources into groups that reflect a customer's organizational needs and
+    deployment strategies. They can be used to filter resources and aggregate
+    metrics. * Label keys must be between 1 and 63 characters long and must
+    conform to the regular expression: `\p{Ll}\p{Lo}{0,62}`. * Label values
+    must be between 0 and 63 characters long and must conform to the regular
+    expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`. * No more than 64 labels can be
+    associated with a given resource. * Keys and values must both be under 128
+    bytes.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2744,6 +2748,8 @@ class Table(_messages.Message):
       `FULL`
     columnFamilies: The column families configured for this table, mapped by
       column family ID. Views: `SCHEMA_VIEW`, `FULL`
+    deletionProtection: Set to true to make the table protected from being
+      deleted.
     granularity: Immutable. The granularity (i.e. `MILLIS`) at which
       timestamps are stored in this table. Timestamps not matching the
       granularity will be rejected. If unspecified at creation time, the value
@@ -2829,9 +2835,10 @@ class Table(_messages.Message):
   changeStreamConfig = _messages.MessageField('ChangeStreamConfig', 1)
   clusterStates = _messages.MessageField('ClusterStatesValue', 2)
   columnFamilies = _messages.MessageField('ColumnFamiliesValue', 3)
-  granularity = _messages.EnumField('GranularityValueValuesEnum', 4)
-  name = _messages.StringField(5)
-  restoreInfo = _messages.MessageField('RestoreInfo', 6)
+  deletionProtection = _messages.BooleanField(4)
+  granularity = _messages.EnumField('GranularityValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  restoreInfo = _messages.MessageField('RestoreInfo', 7)
 
 
 class TableProgress(_messages.Message):

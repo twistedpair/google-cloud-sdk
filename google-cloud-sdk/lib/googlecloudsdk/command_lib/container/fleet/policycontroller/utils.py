@@ -39,21 +39,25 @@ def select_memberships(args):
   """
   memberships = []
   all_memberships = base.ListMemberships()
+  if not all_memberships:
+    raise exceptions.Error('A membership is required for this command.')
 
   if args.all_memberships:
     memberships = all_memberships
   elif args.memberships:
     memberships = args.memberships.split(',')
-    for membership in memberships:
-      if membership not in all_memberships:
-        raise exceptions.Error('Membership {} not found'.format(membership))
   else:
     index = console_io.PromptChoice(
         options=all_memberships, message='Please specify a membership:\n')
-    memberships = [all_memberships[index]]
+    if index is not None:
+      memberships.append(all_memberships[index])
 
   if not memberships:
     raise exceptions.Error('A membership is required for this command.')
+
+  for membership in memberships:
+    if membership not in all_memberships:
+      raise exceptions.Error('Membership {} not found'.format(membership))
 
   return memberships
 
@@ -69,21 +73,24 @@ def select_memberships_full(args):
   """
   memberships = []
   all_memberships, _ = base.ListMembershipsFull()
+  if not all_memberships:
+    raise exceptions.Error('A membership is required for this command.')
 
   if args.all_memberships:
     memberships = all_memberships
   elif args.memberships:
     memberships = resources.PluralMembershipsResourceNames(args)
-  for membership in memberships:
-    if membership not in all_memberships:
-      raise exceptions.Error('Membership {} not found.'.format(membership))
   else:
-    membership = resources.PromptForMembership()
+    membership = resources.PromptForMembership(flag='memberships')
     if membership:
       memberships.append(membership)
 
   if not memberships:
     raise exceptions.Error('A membership is required for this command.')
+
+  for membership in memberships:
+    if membership not in all_memberships:
+      raise exceptions.Error('Membership {} not found.'.format(membership))
 
   if len(resources.GetMembershipProjects(memberships)) > 1:
     raise base.CrossProjectError(resources.GetMembershipProjects(memberships))

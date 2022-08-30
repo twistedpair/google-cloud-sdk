@@ -61,3 +61,33 @@ class NodePoolsClient(object):
         name=resource_ref.RelativeName(),
         validateOnly=validate_only)
     return self._service.Delete(req)
+
+  def Create(
+      self,
+      resource_ref,
+      image_type,
+      replicas,
+      enable_load_balancer,
+      min_replicas=0,
+      max_replicas=0,
+      validate_only=False,
+  ):
+    """Creates a gkeonprem node pool API resource."""
+    vmware_node_pool = self.messages.VmwareNodePool(
+        name=resource_ref.RelativeName(),
+        config=self.messages.VmwareNodeConfig(
+            imageType=image_type,
+            replicas=replicas,
+            enableLoadBalancer=enable_load_balancer,
+        ),
+        nodePoolAutoscaling=self.messages.VmwareNodePoolAutoscalingConfig(
+            minReplicas=min_replicas,
+            maxReplicas=max_replicas,
+        ))
+    req = self.messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsCreateRequest(
+        parent=resource_ref.Parent().RelativeName(),
+        validateOnly=validate_only,
+        vmwareNodePool=vmware_node_pool,
+        vmwareNodePoolId=resource_ref.Name(),
+    )
+    return self._service.Create(req)

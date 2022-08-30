@@ -50,7 +50,7 @@ def AddPoolsArg(parser):
       default=[],
       metavar='KEY=VALUE[;VALUE]',
       help="""
-        Each `--pools` flag represents a single GKE node pool associated with
+        Each `--pools` flag represents a GKE node pool associated with
         the virtual cluster. It is comprised of a CSV in the form
         `KEY=VALUE[;VALUE]`, where certain keys may have multiple values.
 
@@ -68,29 +68,104 @@ The following KEYs must be specified:
 The following KEYs may be specified:
 
         ----------------------------------------------------------------------------------------------------------------------------------------------------------------
-        KEY             Type             Example                                       Description
+        KEY                Type             Example                                       Description
         --------------- ---------------- --------------------------------------------- ---------------------------------------------------------------------------------
-        machineType     string           `n1-standard-8`                               Compute Engine machine type to use.
+        machineType        string           `n1-standard-8`                               Compute Engine machine type to use.
 
-        preemptible     boolean          `false`                                       If true, then this node pool uses preemptible VMs.
-                                                                                       This cannot be true on the node pool with the `controllers` role
-                                                                                       (or `default` role if `controllers` role is not specified).
+        preemptible        boolean          `false`                                       If true, then this node pool uses preemptible VMs.
+                                                                                          This cannot be true on the node pool with the `controllers` role
+                                                                                          (or `default` role if `controllers` role is not specified).
 
-        localSsdCount   int              `2`                                           The number of local SSDs to attach to each node.
+        localSsdCount      int              `2`                                           The number of local SSDs to attach to each node.
 
-        accelerator     repeated string  `nvidia-tesla-a100=1`                         Accelerators to attach to each node. In the format NAME=COUNT.
+        accelerator        repeated string  `nvidia-tesla-a100=1`                         Accelerators to attach to each node. In the format NAME=COUNT.
 
-        minCpuPlatform  string           `Intel Skylake`                               Minimum CPU platform for each node.
+        minCpuPlatform     string           `Intel Skylake`                               Minimum CPU platform for each node.
 
-        bootDiskKmsKey  string           `projects/project-id/locations/us-central1    The Customer Managed Encryption Key (CMEK) used to encrypt
-                                         /keyRings/keyRing-name/cryptoKeys/key-name`   the boot disk attached to each node in the node pool.
+        bootDiskKmsKey     string           `projects/project-id/locations/us-central1    The Customer Managed Encryption Key (CMEK) used to encrypt
+                                            /keyRings/keyRing-name/cryptoKeys/key-name`   the boot disk attached to each node in the node pool.
 
-        locations       repeated string  `us-west1-a;us-west1-c`                       Zones within the location of the GKE cluster.
-                                                                                       All `--pools` flags for a single Dataproc cluster must have identical locations.
+        locations          repeated string  `us-west1-a;us-west1-c`                       Zones within the location of the GKE cluster.
+                                                                                          All `--pools` flags for a Dataproc cluster must have identical locations.
 
-        min             int              `0`                                           Minimum number of nodes per zone that this node pool can scale down to.
+        min                int              `0`                                           Minimum number of nodes per zone that this node pool can scale down to.
 
-        max             int              `10`                                          Maximum number of nodes per zone that this node pool can scale up to.
+        max                int              `10`                                          Maximum number of nodes per zone that this node pool can scale up to.
+        ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+        """)
+
+
+def AddPoolsAlphaArg(parser):
+  parser.add_argument(
+      '--pools',
+      type=arg_parsers.ArgDict(
+          required_keys=[
+              'name',
+              'roles',
+          ],
+          spec={
+              'name': str,
+              'roles': str,
+              'machineType': str,
+              'preemptible': arg_parsers.ArgBoolean(),
+              'localSsdCount': int,
+              'localNvmeSsdCount': int,
+              'accelerators': str,
+              'minCpuPlatform': str,
+              'bootDiskKmsKey': str,
+              'locations': str,
+              'min': int,
+              'max': int,
+          },
+      ),
+      action='append',
+      default=[],
+      metavar='KEY=VALUE[;VALUE]',
+      help="""
+        Each `--pools` flag represents a GKE node pool associated with
+        the virtual cluster. It is a comma-separated list in the form
+        `KEY=VALUE[;VALUE]`, where certain keys may have multiple values.
+
+The following KEYs must be specified:
+
+        -----------------------------------------------------------------------------------------------------------
+        KEY    Type             Example                  Description
+        ------ ---------------- ------------------------ ----------------------------------------------------------
+        name   string           `my-node-pool`          Name of the node pool.
+
+        roles  repeated string  `default;spark-driver`  Roles that each node pool will perform.
+                                                        [One Pool must have DEFAULT role] Valid values are
+                                                        `default`, `controller`, `spark-driver`, `spark-executor`.
+        -----------------------------------------------------------------------------------------------------------
+
+The following KEYs may be specified:
+
+        ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+        KEY                Type             Example                                       Description
+        --------------- ---------------- --------------------------------------------- ---------------------------------------------------------------------------------
+        machineType        string           `n1-standard-8`                               Compute Engine machine type to use.
+
+        preemptible        boolean          `false`                                       If true, then this node pool uses preemptible VMs.
+                                                                                          This Must be `false` for a node pool with the CONTROLLER role or
+                                                                                          for a node pool with the DEFAULT role in no node pool has the CONTROLLER role.
+
+        localSsdCount      int              `2`                                           The number of local SSDs to attach to each node.
+
+        localNvmeSsdCount  int              `2`                                           The number of local NVMe SSDs to attach to each node.
+
+        accelerator        repeated string  `nvidia-tesla-a100=1`                         Accelerators to attach to each node, in NODE=COUNT format.
+
+        minCpuPlatform     string           `Intel Skylake`                               Minimum CPU platform for each node.
+
+        bootDiskKmsKey     string           `projects/project-id/locations/us-central1    The Customer Managed Encryption Key (CMEK) used to encrypt
+                                            /keyRings/keyRing-name/cryptoKeys/key-name`   the boot disk attached to each node in the node pool.
+
+        locations          repeated string  `us-west1-a;us-west1-c`                       Zones within the location of the GKE cluster.
+                                                                                          All `--pools` flags for a Dataproc cluster must have identical locations.
+
+        min                int              `0`                                           Minimum number of nodes per zone that this node pool can scale down to.
+
+        max                int              `10`                                          Maximum number of nodes per zone that this node pool can scale up to.
         ----------------------------------------------------------------------------------------------------------------------------------------------------------------
         """)
 
@@ -99,22 +174,23 @@ class GkeNodePoolTargetsParser():
   """Parses all the --pools flags into a list of GkeNodePoolTarget messages."""
 
   @staticmethod
-  def Parse(dataproc, gke_cluster, arg_pools):
+  def Parse(dataproc, gke_cluster, arg_pools, support_shuffle_service=False):
     """Parses all the --pools flags into a list of GkeNodePoolTarget messages.
 
     Args:
-      dataproc: The Dataproc API version to use for GkeNodePoolTarget
-        messages.
+      dataproc: The Dataproc API version to use for GkeNodePoolTarget messages.
       gke_cluster: The GKE cluster's relative name, for example,
         'projects/p1/locations/l1/clusters/c1'.
       arg_pools: The list of dict[str, any] generated from all --pools flags.
+      support_shuffle_service: support shuffle service.
 
     Returns:
       A list of GkeNodePoolTargets message, one for each entry in the arg_pools
       list.
     """
     pools = [
-        _GkeNodePoolTargetParser.Parse(dataproc, gke_cluster, arg_pool)
+        _GkeNodePoolTargetParser.Parse(dataproc, gke_cluster, arg_pool,
+                                       support_shuffle_service)
         for arg_pool in arg_pools
     ]
     GkeNodePoolTargetsParser._ValidateUniqueNames(pools)
@@ -194,7 +270,7 @@ class GkeNodePoolTargetsParser():
 
 
 class _GkeNodePoolTargetParser():
-  """Helper to parse a single --pools flag into a GkeNodePoolTarget message."""
+  """Helper to parse a --pools flag into a GkeNodePoolTarget message."""
 
   _ARG_ROLE_TO_API_ROLE = {
       'default': 'DEFAULT',
@@ -204,8 +280,8 @@ class _GkeNodePoolTargetParser():
   }
 
   @staticmethod
-  def Parse(dataproc, gke_cluster, arg_pool):
-    """Parses a single --pools flag into a GkeNodePoolTarget message.
+  def Parse(dataproc, gke_cluster, arg_pool, support_shuffle_service=False):
+    """Parses a --pools flag into a GkeNodePoolTarget message.
 
     Args:
       dataproc: The Dataproc API version to use for the GkeNodePoolTarget
@@ -213,33 +289,42 @@ class _GkeNodePoolTargetParser():
       gke_cluster: The GKE cluster's relative name, for example,
         'projects/p1/locations/l1/clusters/c1'.
       arg_pool: The dict[str, any] generated from the --pools flag.
+      support_shuffle_service: support shuffle service.
 
     Returns:
       A GkeNodePoolTarget message.
     """
     return _GkeNodePoolTargetParser._GkeNodePoolTargetFromArgPool(
-        dataproc, gke_cluster, arg_pool)
+        dataproc, gke_cluster, arg_pool, support_shuffle_service)
 
   @staticmethod
-  def _GkeNodePoolTargetFromArgPool(dataproc, gke_cluster, arg_pool):
-    """Creates a GkeNodePoolTarget from a single --pool argument."""
+  def _GkeNodePoolTargetFromArgPool(dataproc,
+                                    gke_cluster,
+                                    arg_pool,
+                                    support_shuffle_service=False):
+    """Creates a GkeNodePoolTarget from a --pool argument."""
     return dataproc.messages.GkeNodePoolTarget(
         nodePool='{0}/nodePools/{1}'.format(gke_cluster, arg_pool['name']),
-        roles=_GkeNodePoolTargetParser._SplitRoles(dataproc, arg_pool['roles']),
+        roles=_GkeNodePoolTargetParser._SplitRoles(dataproc, arg_pool['roles'],
+                                                   support_shuffle_service),
         nodePoolConfig=_GkeNodePoolTargetParser._GkeNodePoolConfigFromArgPool(
             dataproc, arg_pool))
 
   @staticmethod
-  def _SplitRoles(dataproc, arg_roles):
+  def _SplitRoles(dataproc, arg_roles, support_shuffle_service=False):
     """Splits the role string given as an argument into a list of Role enums."""
     roles = []
+    support_shuffle_service = _GkeNodePoolTargetParser._ARG_ROLE_TO_API_ROLE
+    if support_shuffle_service:
+      defined_roles = _GkeNodePoolTargetParser._ARG_ROLE_TO_API_ROLE.copy()
+      defined_roles.update({'shuffle-service': 'SHUFFLE_SERVICE'})
     for arg_role in arg_roles.split(';'):
-      if arg_role.lower() not in _GkeNodePoolTargetParser._ARG_ROLE_TO_API_ROLE:
+      if arg_role.lower() not in defined_roles:
         raise exceptions.InvalidArgumentException(
             '--pools', 'Unrecognized role "%s".' % arg_role)
       roles.append(
           dataproc.messages.GkeNodePoolTarget.RolesValueListEntryValuesEnum(
-              _GkeNodePoolTargetParser._ARG_ROLE_TO_API_ROLE[arg_role.lower()]))
+              defined_roles[arg_role.lower()]))
     return roles
 
   @staticmethod
@@ -268,6 +353,9 @@ class _GkeNodePoolTargetParser():
     if 'localSsdCount' in arg_pool:
       # The ArgDict's spec declares this as an int, so it is an int.
       pool.localSsdCount = arg_pool['localSsdCount']
+    if 'localNvmeSsdCount' in arg_pool:
+      pool.ephemeralStorageConfig = dataproc.messages.GkeEphemeralStorageConfig(
+          localSsdCount=arg_pool['localNvmeSsdCount'])
     if 'accelerators' in arg_pool:
       pool.accelerators = _GkeNodePoolTargetParser._GkeNodePoolAcceleratorConfigFromArgPool(
           dataproc, arg_pool['accelerators'])

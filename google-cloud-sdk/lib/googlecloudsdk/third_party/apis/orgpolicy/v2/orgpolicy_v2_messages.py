@@ -28,6 +28,37 @@ class GoogleCloudOrgpolicyV2AlternatePolicySpec(_messages.Message):
   spec = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpec', 2)
 
 
+class GoogleCloudOrgpolicyV2CheckOrgPolicyResponse(_messages.Message):
+  r"""The response returned from the CheckOrgPolicy method. For list
+  constraints, the Result will be ALLOWED/DENIED. For boolean constraints, the
+  Result will be ENFORCED/NOT_ENFORCED.
+
+  Enums:
+    ResultValueValuesEnum: The result of the org policy being checked
+
+  Fields:
+    result: The result of the org policy being checked
+  """
+
+  class ResultValueValuesEnum(_messages.Enum):
+    r"""The result of the org policy being checked
+
+    Values:
+      RESULT_UNSPECIFIED: Default unspecified value
+      ALLOWED: List type constraint is allowed
+      DENIED: List type constraint is denied
+      ENFORCED: Boolean type constraint in enforced
+      NOT_ENFORCED: Boolean type constraint is not enforced
+    """
+    RESULT_UNSPECIFIED = 0
+    ALLOWED = 1
+    DENIED = 2
+    ENFORCED = 3
+    NOT_ENFORCED = 4
+
+  result = _messages.EnumField('ResultValueValuesEnum', 1)
+
+
 class GoogleCloudOrgpolicyV2Constraint(_messages.Message):
   r"""A `constraint` describes a way to restrict resource's configuration. For
   example, you could enforce a constraint that controls which cloud services
@@ -413,6 +444,22 @@ class OrgpolicyFoldersConstraintsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class OrgpolicyFoldersPoliciesCheckRequest(_messages.Message):
+  r"""A OrgpolicyFoldersPoliciesCheckRequest object.
+
+  Fields:
+    listValue: For List canned constraints, set the literal field. Custom
+      constraints (NOT YET SUPPORTED).
+    name: Required. The CRM resource name. Can be a project, folder or
+      organization. Ex: "projects/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
+      "folders/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
+      "organizations/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
+  """
+
+  listValue = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
 class OrgpolicyFoldersPoliciesCreateRequest(_messages.Message):
   r"""A OrgpolicyFoldersPoliciesCreateRequest object.
 
@@ -611,6 +658,22 @@ class OrgpolicyOrganizationsCustomConstraintsPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(3)
 
 
+class OrgpolicyOrganizationsPoliciesCheckRequest(_messages.Message):
+  r"""A OrgpolicyOrganizationsPoliciesCheckRequest object.
+
+  Fields:
+    listValue: For List canned constraints, set the literal field. Custom
+      constraints (NOT YET SUPPORTED).
+    name: Required. The CRM resource name. Can be a project, folder or
+      organization. Ex: "projects/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
+      "folders/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
+      "organizations/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
+  """
+
+  listValue = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
 class OrgpolicyOrganizationsPoliciesCreateRequest(_messages.Message):
   r"""A OrgpolicyOrganizationsPoliciesCreateRequest object.
 
@@ -727,6 +790,22 @@ class OrgpolicyProjectsConstraintsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class OrgpolicyProjectsPoliciesCheckRequest(_messages.Message):
+  r"""A OrgpolicyProjectsPoliciesCheckRequest object.
+
+  Fields:
+    listValue: For List canned constraints, set the literal field. Custom
+      constraints (NOT YET SUPPORTED).
+    name: Required. The CRM resource name. Can be a project, folder or
+      organization. Ex: "projects/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
+      "folders/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
+      "organizations/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
+  """
+
+  listValue = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class OrgpolicyProjectsPoliciesCreateRequest(_messages.Message):

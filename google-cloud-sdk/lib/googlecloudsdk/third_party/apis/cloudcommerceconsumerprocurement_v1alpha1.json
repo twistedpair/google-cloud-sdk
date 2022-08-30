@@ -284,7 +284,7 @@
           "type": "string"
         },
         "provider": {
-          "description": "Required. Provider of the items being purchased. Provider has the format of `providers\/{provider_id}`. Optional when an offer is specified.",
+          "description": "Required. Provider of the items being purchased. Provider has the format of `providers\/{provider_id}`. Optional when an offer is specified. TODO(b\/241564581) Hide provider id in the consumer API.",
           "type": "string"
         },
         "placeProductsOrderRequest": {
@@ -767,7 +767,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest",
-      "description": "Request message for ConsumerProcurementService.ModifyOrder. Next Id: 9",
+      "description": "Request message for ConsumerProcurementService.ModifyOrder. Next Id: 10",
       "type": "object",
       "properties": {
         "modifications": {
@@ -1174,7 +1174,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial",
-      "description": "FreeTrial represents the free trial created for a specific provider, product id and billing id with argentum. Free Trial resource are created for products by placing orders for 3p or just enabling free trials for 1p product. Next Id: 5",
+      "description": "FreeTrial represents the free trial created for a specific provider, product id and billing id with argentum. Free Trial resource are created for products by placing orders for 3p or just enabling free trials for 1p product. Next Id: 6",
       "type": "object",
       "properties": {
         "name": {

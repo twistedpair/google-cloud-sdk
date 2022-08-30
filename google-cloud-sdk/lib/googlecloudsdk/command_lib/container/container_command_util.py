@@ -338,7 +338,8 @@ def ParseUpdateOptionsBase(args, locations):
       min_memory=args.min_memory,
       max_memory=args.max_memory,
       min_accelerator=args.min_accelerator,
-      max_accelerator=args.max_accelerator)
+      max_accelerator=args.max_accelerator,
+      logging_variant=args.logging_variant)
 
   if (args.disable_addons and
       api_adapter.GCEPDCSIDRIVER in args.disable_addons):

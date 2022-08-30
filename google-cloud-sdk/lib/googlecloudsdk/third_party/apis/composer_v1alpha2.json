@@ -1405,6 +1405,10 @@
           "description": "Optional. The number of days describing the minimum period for how long to store snapshots. If the scheduled snapshot creation is enabled this value must be a non-negative integer.",
           "type": "integer",
           "format": "int32"
+        },
+        "timeZone": {
+          "description": "Optional. Time zone that sets the context to interpret snapshots_creation_schedule.",
+          "type": "string"
         }
       }
     },

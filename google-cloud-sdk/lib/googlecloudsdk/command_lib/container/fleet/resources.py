@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import re
 
 from googlecloudsdk.calliope import base as calliope_base
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.container.fleet import util as cmd_util
@@ -30,56 +31,39 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
-SUPPORTED_LOCATIONS = ('global')
 
+def PromptForMembership(flag='--membership',
+                        message='Please specify a membership:\n'):
+  """Prompt the user for a membership from a list of memberships in the fleet.
 
-def PromptForLocation(available_locations=SUPPORTED_LOCATIONS):
-  """Prompt for location from list of available locations.
-
-  This method is referenced by fleet commands as a fallthrough
-  for getting the location when required.
+  This method is referenced by fleet and feature commands as a fallthrough
+  for getting the memberships when required.
 
   Args:
-    available_locations: list of the available locations to choose from
-
-  Returns:
-    The location specified by the user (str), or None if unable to prompt.
-
-  Raises:
-    OperationCancelledError if the prompt is cancelled by user
-  """
-
-  if console_io.CanPrompt():
-    all_locations = list(available_locations)
-    idx = console_io.PromptChoice(
-        all_locations,
-        message='Please specify a location:\n',
-        cancel_option=True)
-    location = all_locations[idx]
-    return location
-
-
-def PromptForMembership():
-  """Prompt for memberships from list of memberships.
-
-  This method is referenced by fleet commands as a fallthrough
-  for getting the memberships when required.
+    flag: The name of the membership flag, used in the error message
+    message: The message given to the user describing the prompt.
 
   Returns:
     The membership specified by the user (str), or None if unable to prompt.
 
   Raises:
     OperationCancelledError if the prompt is cancelled by user
+    RequiredArgumentException if the console is unable to prompt
   """
 
   if console_io.CanPrompt():
-    all_memberships = base.ListMembershipsFull()
+    all_memberships, _ = base.ListMembershipsFull()
     idx = console_io.PromptChoice(
         base.MembershipPartialNames(all_memberships),
-        message='Please specify a membership:\n',
+        message=message,
         cancel_option=True)
     membership = all_memberships[idx]
     return membership
+  else:
+    raise calliope_exceptions.RequiredArgumentException(
+        flag, ('Cannot prompt a console for membership. Membership is '
+               'required. Please specify `{}` to select at '
+               'least one membership.'.format(flag)))
 
 
 def _LocationAttributeConfig(help_text=''):

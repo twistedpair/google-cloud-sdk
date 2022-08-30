@@ -609,7 +609,8 @@
             "Overlapping UI elements are found in the Robo crawl",
             "An uncaught Unity exception was detected (these don't crash apps).",
             "Device running out of memory was detected",
-            "Problems detected while collecting logcat"
+            "Problems detected while collecting logcat",
+            "Robo detected a splash screen provided by app (vs. Android OS splash screen)."
           ],
           "enum": [
             "unspecifiedType",
@@ -642,7 +643,8 @@
             "overlappingUiElements",
             "unityException",
             "deviceOutOfMemory",
-            "logcatCollectionError"
+            "logcatCollectionError",
+            "detectedAppSplashScreen"
           ]
         },
         "category": {
@@ -2154,6 +2156,13 @@
           "description": "The name of the package that caused the dialog.",
           "type": "string"
         }
+      }
+    },
+    "DetectedAppSplashScreen": {
+      "id": "DetectedAppSplashScreen",
+      "description": "A notification that Robo detected a splash screen provided by app (vs. Android OS splash screen).",
+      "type": "object",
+      "properties": {
       }
     },
     "DeviceOutOfMemory": {

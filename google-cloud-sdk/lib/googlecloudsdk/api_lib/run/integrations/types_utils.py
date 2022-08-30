@@ -29,6 +29,7 @@ BASELINE_APIS = (
 RESOURCE_TYPE = 'resource_type'
 INTEGRATION_TYPE = 'integration_type'
 REQUIRED_FIELD = 'required_field'
+LATEST_DEPLOYMENT_FIELD = 'latestDeployment'
 
 # TODO(b/237328242) Convert this to class
 _INTEGRATION_TYPES = frozenset([
@@ -257,8 +258,10 @@ def GetIntegration(integration_type):
 def GetResourceTypeFromConfig(resource_config):
   """Gets the resource type.
 
-  The input is converted from proto with "oneof" property. Thus the dictionary
-  is expected to have only one key, matching the type of the matching oneof.
+  The input is converted from proto with potentially two fields.
+  One of them is the latestDeployment field (may not be present) and the other
+  is a "oneof" property.  Thus the dictionary is expected to have one or
+  two keys and we only want the one with the "oneof" property.
 
   Args:
     resource_config: dict, the resource configuration.
@@ -268,7 +271,10 @@ def GetResourceTypeFromConfig(resource_config):
   """
   if resource_config is None:
     raise exceptions.ConfigurationError('resource config is none.')
-  keys = list(resource_config.keys())
+
+  keys = [
+      key for key in resource_config.keys() if key != LATEST_DEPLOYMENT_FIELD
+  ]
   if len(keys) != 1:
     # We should never gets here, because having more than one key in a
     # oneof field in not allowed in proto.

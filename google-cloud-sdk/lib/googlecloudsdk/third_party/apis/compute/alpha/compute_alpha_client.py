@@ -102,7 +102,6 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionInstantSnapshots = self.RegionInstantSnapshotsService(self)
     self.regionNetworkEndpointGroups = self.RegionNetworkEndpointGroupsService(self)
     self.regionNetworkFirewallPolicies = self.RegionNetworkFirewallPoliciesService(self)
-    self.regionNetworks = self.RegionNetworksService(self)
     self.regionNotificationEndpoints = self.RegionNotificationEndpointsService(self)
     self.regionOperations = self.RegionOperationsService(self)
     self.regionSecurityPolicies = self.RegionSecurityPoliciesService(self)
@@ -1866,7 +1865,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         path_params=['project', 'zone'],
         query_params=['requestId'],
         relative_path='projects/{project}/zones/{zone}/disks/stopGroupAsyncReplication',
-        request_field='disksStopGroupAsyncReplicationRequest',
+        request_field='disksStopGroupAsyncReplicationResource',
         request_type_name='ComputeDisksStopGroupAsyncReplicationRequest',
         response_type_name='Operation',
         supports_download=False,
@@ -13698,7 +13697,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         path_params=['project', 'region'],
         query_params=['requestId'],
         relative_path='projects/{project}/regions/{region}/disks/stopGroupAsyncReplication',
-        request_field='regionDisksStopGroupAsyncReplicationRequest',
+        request_field='disksStopGroupAsyncReplicationResource',
         request_type_name='ComputeRegionDisksStopGroupAsyncReplicationRequest',
         response_type_name='Operation',
         supports_download=False,
@@ -15952,198 +15951,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class RegionNetworksService(base_api.BaseApiService):
-    """Service class for the regionNetworks resource."""
-
-    _NAME = 'regionNetworks'
-
-    def __init__(self, client):
-      super(ComputeAlpha.RegionNetworksService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes the specified network.
-
-      Args:
-        request: (ComputeRegionNetworksDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='DELETE',
-        method_id='compute.regionNetworks.delete',
-        ordered_params=['project', 'region', 'network'],
-        path_params=['network', 'project', 'region'],
-        query_params=['requestId'],
-        relative_path='projects/{project}/regions/{region}/networks/{network}',
-        request_field='',
-        request_type_name='ComputeRegionNetworksDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Returns the specified network.
-
-      Args:
-        request: (ComputeRegionNetworksGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Network) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.regionNetworks.get',
-        ordered_params=['project', 'region', 'network'],
-        path_params=['network', 'project', 'region'],
-        query_params=[],
-        relative_path='projects/{project}/regions/{region}/networks/{network}',
-        request_field='',
-        request_type_name='ComputeRegionNetworksGetRequest',
-        response_type_name='Network',
-        supports_download=False,
-    )
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeRegionNetworksGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.regionNetworks.getIamPolicy',
-        ordered_params=['project', 'region', 'resource'],
-        path_params=['project', 'region', 'resource'],
-        query_params=['optionsRequestedPolicyVersion'],
-        relative_path='projects/{project}/regions/{region}/networks/{resource}/getIamPolicy',
-        request_field='',
-        request_type_name='ComputeRegionNetworksGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def Insert(self, request, global_params=None):
-      r"""Creates a network in the specified project and region using the data included in the request.
-
-      Args:
-        request: (ComputeRegionNetworksInsertRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Insert')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='compute.regionNetworks.insert',
-        ordered_params=['project', 'region'],
-        path_params=['project', 'region'],
-        query_params=['requestId'],
-        relative_path='projects/{project}/regions/{region}/networks',
-        request_field='network',
-        request_type_name='ComputeRegionNetworksInsertRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Retrieves the list of networks available to the specified project in the given region.
-
-      Args:
-        request: (ComputeRegionNetworksListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (NetworkList) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.regionNetworks.list',
-        ordered_params=['project', 'region'],
-        path_params=['project', 'region'],
-        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
-        relative_path='projects/{project}/regions/{region}/networks',
-        request_field='',
-        request_type_name='ComputeRegionNetworksListRequest',
-        response_type_name='NetworkList',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeRegionNetworksSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='compute.regionNetworks.setIamPolicy',
-        ordered_params=['project', 'region', 'resource'],
-        path_params=['project', 'region', 'resource'],
-        query_params=[],
-        relative_path='projects/{project}/regions/{region}/networks/{resource}/setIamPolicy',
-        request_field='regionSetPolicyRequest',
-        request_type_name='ComputeRegionNetworksSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-
-      Args:
-        request: (ComputeRegionNetworksTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='compute.regionNetworks.testIamPermissions',
-        ordered_params=['project', 'region', 'resource'],
-        path_params=['project', 'region', 'resource'],
-        query_params=[],
-        relative_path='projects/{project}/regions/{region}/networks/{resource}/testIamPermissions',
-        request_field='testPermissionsRequest',
-        request_type_name='ComputeRegionNetworksTestIamPermissionsRequest',
-        response_type_name='TestPermissionsResponse',
-        supports_download=False,
-    )
-
   class RegionNotificationEndpointsService(base_api.BaseApiService):
     """Service class for the regionNotificationEndpoints resource."""
 
@@ -16434,6 +16241,32 @@ class ComputeAlpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AddRule(self, request, global_params=None):
+      r"""Inserts a rule into a security policy.
+
+      Args:
+        request: (ComputeRegionSecurityPoliciesAddRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionSecurityPolicies.addRule',
+        ordered_params=['project', 'region', 'securityPolicy'],
+        path_params=['project', 'region', 'securityPolicy'],
+        query_params=['validateOnly'],
+        relative_path='projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/addRule',
+        request_field='securityPolicyRule',
+        request_type_name='ComputeRegionSecurityPoliciesAddRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified policy.
 
@@ -16483,6 +16316,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeRegionSecurityPoliciesGetRequest',
         response_type_name='SecurityPolicy',
+        supports_download=False,
+    )
+
+    def GetRule(self, request, global_params=None):
+      r"""Gets a rule at the specified priority.
+
+      Args:
+        request: (ComputeRegionSecurityPoliciesGetRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPolicyRule) The response message.
+      """
+      config = self.GetMethodConfig('GetRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionSecurityPolicies.getRule',
+        ordered_params=['project', 'region', 'securityPolicy'],
+        path_params=['project', 'region', 'securityPolicy'],
+        query_params=['priority'],
+        relative_path='projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/getRule',
+        request_field='',
+        request_type_name='ComputeRegionSecurityPoliciesGetRuleRequest',
+        response_type_name='SecurityPolicyRule',
         supports_download=False,
     )
 
@@ -16556,10 +16415,62 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id='compute.regionSecurityPolicies.patch',
         ordered_params=['project', 'region', 'securityPolicy'],
         path_params=['project', 'region', 'securityPolicy'],
-        query_params=['requestId'],
+        query_params=['paths', 'requestId', 'updateMask'],
         relative_path='projects/{project}/regions/{region}/securityPolicies/{securityPolicy}',
         request_field='securityPolicyResource',
         request_type_name='ComputeRegionSecurityPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def PatchRule(self, request, global_params=None):
+      r"""Patches a rule at the specified priority.
+
+      Args:
+        request: (ComputeRegionSecurityPoliciesPatchRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionSecurityPolicies.patchRule',
+        ordered_params=['project', 'region', 'securityPolicy'],
+        path_params=['project', 'region', 'securityPolicy'],
+        query_params=['priority', 'validateOnly'],
+        relative_path='projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/patchRule',
+        request_field='securityPolicyRule',
+        request_type_name='ComputeRegionSecurityPoliciesPatchRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemoveRule(self, request, global_params=None):
+      r"""Deletes a rule at the specified priority.
+
+      Args:
+        request: (ComputeRegionSecurityPoliciesRemoveRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionSecurityPolicies.removeRule',
+        ordered_params=['project', 'region', 'securityPolicy'],
+        path_params=['project', 'region', 'securityPolicy'],
+        query_params=['priority'],
+        relative_path='projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/removeRule',
+        request_field='',
+        request_type_name='ComputeRegionSecurityPoliciesRemoveRuleRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -18886,7 +18797,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id='compute.securityPolicies.patch',
         ordered_params=['project', 'securityPolicy'],
         path_params=['project', 'securityPolicy'],
-        query_params=['requestId'],
+        query_params=['paths', 'requestId', 'updateMask'],
         relative_path='projects/{project}/global/securityPolicies/{securityPolicy}',
         request_field='securityPolicyResource',
         request_type_name='ComputeSecurityPoliciesPatchRequest',

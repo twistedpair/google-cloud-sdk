@@ -68,9 +68,10 @@ def GetLocationHint():
 def GetMachineType(required=True):
   """Gets the --machine-type flag."""
   help_text = """\
-  The type of machine (name only) which has a fixed number of vCPUs and a fixed
-  amount of memory. This also includes specifying custom machine type following
-  `custom-number_of_CPUs-amount_of_memory` pattern, e.g. `custom-32-29440`.
+  The type of machine (name only) that has a fixed number of vCPUs and a fixed
+  amount of memory. You can also specify a custom machine type by using the
+  pattern `custom-number_of_CPUs-amount_of_memory`-for example,
+  `custom-32-29440`.
   """
   return base.Argument('--machine-type', required=required, help=help_text)
 
@@ -180,29 +181,64 @@ def GetResourcePolicyFlag(custom_name=None):
       help=help_text)
 
 
+def GetSourceInstanceTemplateFlag(custom_name=None):
+  """Gets the --source-instance-template flag."""
+  help_text = """\
+  The url of the instance template that will be used to populate the fields of
+  the reservation. Instance properties can not be defined in addition to source
+  instance template.
+  """
+  return base.Argument(
+      custom_name or '--source-instance-template', help=help_text
+  )
+
+
 def AddCreateFlags(parser,
                    support_fleet=False,
                    support_share_setting=False,
-                   support_resource_policies=False):
+                   support_resource_policies=False,
+                   support_instance_template=False):
   """Adds all flags needed for the create command."""
   GetDescriptionFlag().AddToParser(parser)
 
-  group = base.ArgumentGroup(
-      'Manage the specific SKU reservation properties.', required=True)
+  # create the group for all properties used in SpecificSkuReservations
+  specific_sku_group = base.ArgumentGroup(
+      'Manage the SpecificSKU reservation properties.', required=True)
 
-  group.AddArgument(GetRequireSpecificAllocation())
-  group.AddArgument(GetVmCountFlag())
-  group.AddArgument(GetMinCpuPlatform())
-  group.AddArgument(GetMachineType())
-  group.AddArgument(GetLocalSsdFlag())
-  group.AddArgument(GetAcceleratorFlag())
-  group.AddArgument(GetLocationHint())
+  specific_sku_group.AddArgument(GetRequireSpecificAllocation())
+  specific_sku_group.AddArgument(GetVmCountFlag())
   if support_resource_policies:
-    group.AddArgument(GetResourcePolicyFlag())
+    specific_sku_group.AddArgument(GetResourcePolicyFlag())
+
+  # create the sku properties group for the SpecificSkuReservation
+  # this group allows instance properties XOR source instance template
+  # to be provided
+  specific_sku_properties_group = base.ArgumentGroup(
+      'Manage the instance properties for the SpecificSKU reservation.',
+      required=True,
+      mutex=True)
+  if support_instance_template:
+    specific_sku_properties_group.AddArgument(GetSourceInstanceTemplateFlag())
+
+  # create the instance properties group for the SpecificSkuReservation
+  instance_properties_group = base.ArgumentGroup(
+      'Define the individual instance properties for the SpecificSKU reservation.',
+      required=False)
+  instance_properties_group.AddArgument(GetMinCpuPlatform())
+  instance_properties_group.AddArgument(GetMachineType())
+  instance_properties_group.AddArgument(GetLocalSsdFlag())
+  instance_properties_group.AddArgument(GetAcceleratorFlag())
+  instance_properties_group.AddArgument(GetLocationHint())
   if support_fleet:
-    group.AddArgument(instance_flags.AddMaintenanceFreezeDuration())
-    group.AddArgument(instance_flags.AddMaintenanceInterval())
-  group.AddToParser(parser)
+    instance_properties_group.AddArgument(
+        instance_flags.AddMaintenanceFreezeDuration())
+    instance_properties_group.AddArgument(
+        instance_flags.AddMaintenanceInterval())
+
+  # add all the groups to each other and the parser
+  specific_sku_properties_group.AddArgument(instance_properties_group)
+  specific_sku_group.AddArgument(specific_sku_properties_group)
+  specific_sku_group.AddToParser(parser)
 
   if support_share_setting:
     share_group = base.ArgumentGroup(

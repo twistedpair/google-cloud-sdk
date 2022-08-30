@@ -8554,6 +8554,10 @@
       "description": "Metadata for ConversationDatasets.",
       "type": "object",
       "properties": {
+        "conversationDataset": {
+          "description": "The resource name of the conversation dataset that will be created. Format: `projects\/\/locations\/\/conversationDatasets\/`",
+          "type": "string"
+        }
       }
     },
     "GoogleCloudDialogflowV2CreateConversationModelOperationMetadata": {

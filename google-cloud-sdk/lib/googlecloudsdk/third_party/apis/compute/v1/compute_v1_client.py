@@ -99,6 +99,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.regionOperations = self.RegionOperationsService(self)
     self.regionSecurityPolicies = self.RegionSecurityPoliciesService(self)
     self.regionSslCertificates = self.RegionSslCertificatesService(self)
+    self.regionSslPolicies = self.RegionSslPoliciesService(self)
     self.regionTargetHttpProxies = self.RegionTargetHttpProxiesService(self)
     self.regionTargetHttpsProxies = self.RegionTargetHttpsProxiesService(self)
     self.regionUrlMaps = self.RegionUrlMapsService(self)
@@ -352,6 +353,32 @@ class ComputeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeAddressesListRequest',
         response_type_name='AddressList',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on an Address. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeAddressesSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.addresses.setLabels',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/addresses/{resource}/setLabels',
+        request_field='regionSetLabelsRequest',
+        request_type_name='ComputeAddressesSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2688,6 +2715,32 @@ class ComputeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeGlobalAddressesListRequest',
         response_type_name='AddressList',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on a GlobalAddress. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeGlobalAddressesSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.globalAddresses.setLabels',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/addresses/{resource}/setLabels',
+        request_field='globalSetLabelsRequest',
+        request_type_name='ComputeGlobalAddressesSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -6611,6 +6664,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on an InterconnectAttachment. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.interconnectAttachments.setLabels',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/interconnectAttachments/{resource}/setLabels',
+        request_field='regionSetLabelsRequest',
+        request_type_name='ComputeInterconnectAttachmentsSetLabelsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class InterconnectLocationsService(base_api.BaseApiService):
     """Service class for the interconnectLocations resource."""
 
@@ -6835,6 +6914,32 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/global/interconnects/{interconnect}',
         request_field='interconnectResource',
         request_type_name='ComputeInterconnectsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on an Interconnect. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeInterconnectsSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.interconnects.setLabels',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnects/{resource}/setLabels',
+        request_field='globalSetLabelsRequest',
+        request_type_name='ComputeInterconnectsSetLabelsRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -12869,6 +12974,172 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class RegionSslPoliciesService(base_api.BaseApiService):
+    """Service class for the regionSslPolicies resource."""
+
+    _NAME = 'regionSslPolicies'
+
+    def __init__(self, client):
+      super(ComputeV1.RegionSslPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
+
+      Args:
+        request: (ComputeRegionSslPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.regionSslPolicies.delete',
+        ordered_params=['project', 'region', 'sslPolicy'],
+        path_params=['project', 'region', 'sslPolicy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/sslPolicies/{sslPolicy}',
+        request_field='',
+        request_type_name='ComputeRegionSslPoliciesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Lists all of the ordered rules present in a single specified policy.
+
+      Args:
+        request: (ComputeRegionSslPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionSslPolicies.get',
+        ordered_params=['project', 'region', 'sslPolicy'],
+        path_params=['project', 'region', 'sslPolicy'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/sslPolicies/{sslPolicy}',
+        request_field='',
+        request_type_name='ComputeRegionSslPoliciesGetRequest',
+        response_type_name='SslPolicy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new policy in the specified project and region using the data included in the request.
+
+      Args:
+        request: (ComputeRegionSslPoliciesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionSslPolicies.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/sslPolicies',
+        request_field='sslPolicy',
+        request_type_name='ComputeRegionSslPoliciesInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the SSL policies that have been configured for the specified project and region.
+
+      Args:
+        request: (ComputeRegionSslPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslPoliciesList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionSslPolicies.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/sslPolicies',
+        request_field='',
+        request_type_name='ComputeRegionSslPoliciesListRequest',
+        response_type_name='SslPoliciesList',
+        supports_download=False,
+    )
+
+    def ListAvailableFeatures(self, request, global_params=None):
+      r"""Lists all features that can be specified in the SSL policy when using custom profile.
+
+      Args:
+        request: (ComputeRegionSslPoliciesListAvailableFeaturesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslPoliciesListAvailableFeaturesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListAvailableFeatures')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListAvailableFeatures.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionSslPolicies.listAvailableFeatures',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/sslPolicies/listAvailableFeatures',
+        request_field='',
+        request_type_name='ComputeRegionSslPoliciesListAvailableFeaturesRequest',
+        response_type_name='SslPoliciesListAvailableFeaturesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified SSL policy with the data included in the request.
+
+      Args:
+        request: (ComputeRegionSslPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.regionSslPolicies.patch',
+        ordered_params=['project', 'region', 'sslPolicy'],
+        path_params=['project', 'region', 'sslPolicy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/sslPolicies/{sslPolicy}',
+        request_field='sslPolicyResource',
+        request_type_name='ComputeRegionSslPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class RegionTargetHttpProxiesService(base_api.BaseApiService):
     """Service class for the regionTargetHttpProxies resource."""
 
@@ -14619,6 +14890,32 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/global/securityPolicies/{securityPolicy}/removeRule',
         request_field='',
         request_type_name='ComputeSecurityPoliciesRemoveRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeSecurityPoliciesSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.securityPolicies.setLabels',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/securityPolicies/{resource}/setLabels',
+        request_field='globalSetLabelsRequest',
+        request_type_name='ComputeSecurityPoliciesSetLabelsRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -17327,6 +17624,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on a TargetVpnGateway. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeTargetVpnGatewaysSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.targetVpnGateways.setLabels',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetVpnGateways/{resource}/setLabels',
+        request_field='regionSetLabelsRequest',
+        request_type_name='ComputeTargetVpnGatewaysSetLabelsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class UrlMapsService(base_api.BaseApiService):
     """Service class for the urlMaps resource."""
 
@@ -17926,6 +18249,32 @@ class ComputeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeVpnTunnelsListRequest',
         response_type_name='VpnTunnelList',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on a VpnTunnel. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeVpnTunnelsSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.vpnTunnels.setLabels',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/vpnTunnels/{resource}/setLabels',
+        request_field='regionSetLabelsRequest',
+        request_type_name='ComputeVpnTunnelsSetLabelsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

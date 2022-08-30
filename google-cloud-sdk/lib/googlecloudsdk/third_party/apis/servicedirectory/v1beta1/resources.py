@@ -85,28 +85,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_NAMESPACES_WORKLOADGROUPS = (
-      'projects.locations.namespaces.workloadGroups',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/namespaces/'
-              '{namespacesId}/workloadGroups/{workloadGroupsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_NAMESPACES_WORKLOADS = (
-      'projects.locations.namespaces.workloads',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/namespaces/'
-              '{namespacesId}/workloads/{workloadsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_REGISTRATIONPOLICIES = (
       'projects.locations.registrationPolicies',
       '{+name}',

@@ -207,7 +207,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
@@ -2041,7 +2041,7 @@
           "type": "string"
         },
         "featureValues": {
-          "description": "Required. Feature values to be written, mapping from Feature ID to value. Up to 100,000 `feature_values` entries may be written across all payloads. The feature generation time, aligned by days, must be no older than (1825 days) and no later than one year (366 days) in the future.",
+          "description": "Required. Feature values to be written, mapping from Feature ID to value. Up to 100,000 `feature_values` entries may be written across all payloads. The feature generation time, aligned by days, must be no older than five years (1825 days) and no later than one year (366 days) in the future.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1beta1FeatureValue"
@@ -2889,6 +2889,25 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "indexStats": {
+          "description": "Output only. Stats of the index resource.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1beta1IndexStats"
+        },
+        "indexUpdateMethod": {
+          "description": "Immutable. The update method to use with this Index. If not set, BATCH_UPDATE will be used by default.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "BatchUpdate: user can call UpdateIndex with files on Cloud Storage of datapoints to update.",
+            "StreamUpdate: user can call UpsertDatapoints\/DeleteDatapoints to update the Index and the updates will be applied in corresponding DeployedIndexes in nearly real-time."
+          ],
+          "enum": [
+            "INDEX_UPDATE_METHOD_UNSPECIFIED",
+            "BATCH_UPDATE",
+            "STREAM_UPDATE"
+          ]
         }
       }
     },
@@ -2904,6 +2923,25 @@
         "deployedIndexId": {
           "description": "Immutable. The ID of the DeployedIndex in the above IndexEndpoint.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1IndexStats": {
+      "id": "GoogleCloudAiplatformV1beta1IndexStats",
+      "description": "Stats of the Index.",
+      "type": "object",
+      "properties": {
+        "vectorsCount": {
+          "description": "Output only. The number of vectors in the Index.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "shardsCount": {
+          "description": "Output only. The number of shards in the Index.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -3329,6 +3367,10 @@
             "type": "string"
           }
         },
+        "pubsubTopic": {
+          "description": "Immutable. The `Topic.name` of the Pub\/Sub topic to which to publish the update when this job finishes. Must be of the format: `projects\/{project}\/topics\/{topic}`. If not provided, such an update won't be sent, but the job state can still be polled via JobService.GetCustomJob. If a non-existing topic, or a topic to which Vertex AI is not allowed to publish to is provided, the job creation will succeed, but the update still won't be sent. The update message contains as its data a JSON in the following format: ``` { \"title\": \"Job state update\", \"type\": \"object\", \"properties\": { \"job\": { \"type\": \"string\", \"description\": \"The resource name of the job, in \\\"projects\/{project}\/locations\/{location}\/custom_jobs\/{custom_job}\\\" format, this update pertains to.\" }, \"status\": { \"type\": \"string\", \"enum\": [\"succeeded\", \"failed\", \"cancelled\", \"expired\"], \"description\": \"The status in which the job finished its execution.\" } } } ```",
+          "type": "string"
+        },
         "encryptionSpec": {
           "description": "Customer-managed encryption key options for a CustomJob. If this is set, then all resources created by the CustomJob will be encrypted with the provided encryption key.",
           "$ref": "GoogleCloudAiplatformV1beta1EncryptionSpec"
@@ -3345,7 +3387,7 @@
     },
     "GoogleCloudAiplatformV1beta1CustomJobSpec": {
       "id": "GoogleCloudAiplatformV1beta1CustomJobSpec",
-      "description": "Represents the spec of a CustomJob. Next Id: 15",
+      "description": "Represents the spec of a CustomJob.",
       "type": "object",
       "properties": {
         "workerPoolSpecs": {
@@ -4915,7 +4957,7 @@
     },
     "GoogleCloudAiplatformV1beta1ModelMonitoringConfig": {
       "id": "GoogleCloudAiplatformV1beta1ModelMonitoringConfig",
-      "description": "Next ID: 6",
+      "description": "The model monitoring configuration used for Batch Prediction Job.",
       "type": "object",
       "properties": {
         "objectiveConfigs": {
@@ -4932,12 +4974,16 @@
         "analysisInstanceSchemaUri": {
           "description": "YAML schema file uri in Cloud Storage describing the format of a single instance that you want Tensorflow Data Validation (TFDV) to analyze. If there are any data type differences between predict instance and TFDV instance, this field can be used to override the schema. For models trained with Vertex AI, this field must be set as all the fields in predict instance formatted as string.",
           "type": "string"
+        },
+        "statsAnomaliesBaseDirectory": {
+          "description": "Add Google Cloud Storage location for batch prediction model monitoring to dump statistics and anomalies. If not provided, a folder will be created in customer project to hold statistics and anomalies.",
+          "$ref": "GoogleCloudAiplatformV1beta1GcsDestination"
         }
       }
     },
     "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig": {
       "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig",
-      "description": "Next ID: 8",
+      "description": "The objective configuration for model monitoring, including the information needed to detect anomalies for one particular model.",
       "type": "object",
       "properties": {
         "trainingDataset": {
@@ -4991,7 +5037,7 @@
     },
     "GoogleCloudAiplatformV1beta1SamplingStrategy": {
       "id": "GoogleCloudAiplatformV1beta1SamplingStrategy",
-      "description": "Sampling Strategy for logging, can be for both training and prediction dataset. Next ID: 2",
+      "description": "Sampling Strategy for logging, can be for both training and prediction dataset.",
       "type": "object",
       "properties": {
         "randomSampleConfig": {
@@ -5039,7 +5085,7 @@
     },
     "GoogleCloudAiplatformV1beta1ThresholdConfig": {
       "id": "GoogleCloudAiplatformV1beta1ThresholdConfig",
-      "description": "The config for feature monitoring threshold. Next ID: 3",
+      "description": "The config for feature monitoring threshold.",
       "type": "object",
       "properties": {
         "value": {
@@ -5120,7 +5166,6 @@
     },
     "GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig": {
       "id": "GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig",
-      "description": "Next ID: 3",
       "type": "object",
       "properties": {
         "emailAlertConfig": {
@@ -8915,7 +8960,7 @@
       "type": "object",
       "properties": {
         "suggestionCount": {
-          "description": "Required. The number of suggestions requested.",
+          "description": "Required. The number of suggestions requested. It must be positive.",
           "type": "integer",
           "format": "int32"
         },
@@ -10797,7 +10842,7 @@
     },
     "GoogleCloudAiplatformInternalHumanInTheLoopEntitlement": {
       "id": "GoogleCloudAiplatformInternalHumanInTheLoopEntitlement",
-      "description": "A HumanInTheLoopEntitlement represents a purchase of Human-in-the-Loop (HITL) product made by a customer on the GCP Marketplace. It allows to the purchased HITL product and to ensure the appropriate billing events occur. Next id: 11",
+      "description": "A HumanInTheLoopEntitlement represents a purchase of Human-in-the-Loop (HITL) product made by a customer on the GCP Marketplace. It allows to the purchased HITL product and to ensure the appropriate billing events occur.",
       "type": "object",
       "properties": {
         "name": {
@@ -11074,6 +11119,19 @@
           "readOnly": true,
           "type": "integer",
           "format": "int32"
+        },
+        "taskQueueName": {
+          "description": "Output only. Name of the task queue the sent human in the loop entry belongs to.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "questionIds": {
+          "description": "Output only. Question Ids associated with the human in the loop entry.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -13458,7 +13516,7 @@
     },
     "GoogleCloudAiplatformUiModelMonitoringObjectiveConfig": {
       "id": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfig",
-      "description": "Next ID: 8",
+      "description": "The objective configuration for model monitoring, including the information needed to detect anomalies for one particular model.",
       "type": "object",
       "properties": {
         "trainingDataset": {
@@ -13523,7 +13581,7 @@
     },
     "GoogleCloudAiplatformUiSamplingStrategy": {
       "id": "GoogleCloudAiplatformUiSamplingStrategy",
-      "description": "Sampling Strategy for logging, can be for both training and prediction dataset. Next ID: 2",
+      "description": "Sampling Strategy for logging, can be for both training and prediction dataset.",
       "type": "object",
       "properties": {
         "randomSampleConfig": {
@@ -13571,7 +13629,7 @@
     },
     "GoogleCloudAiplatformUiThresholdConfig": {
       "id": "GoogleCloudAiplatformUiThresholdConfig",
-      "description": "The config for feature monitoring threshold. Next ID: 3",
+      "description": "The config for feature monitoring threshold.",
       "type": "object",
       "properties": {
         "value": {
@@ -24617,7 +24675,7 @@
     },
     "GoogleCloudAiplatformV1CustomJobSpec": {
       "id": "GoogleCloudAiplatformV1CustomJobSpec",
-      "description": "Represents the spec of a CustomJob. Next Id: 15",
+      "description": "Represents the spec of a CustomJob.",
       "type": "object",
       "properties": {
         "workerPoolSpecs": {
@@ -34698,6 +34756,12 @@
                       "description": "A comma-separated list of fields to order by. The default sort order is in ascending order. Use \"desc\" after a field name for descending. You can have multiple order_by fields provided e.g. \"create_time desc, end_time\", \"end_time, start_time, update_time\" For example, using \"create_time desc, end_time\" will order results by create time in descending order, and if there are multiple jobs having the same create time, order them by the end time in ascending order. if order_by is not specified, it will order by default order is create time in descending order. Supported fields: * `create_time` * `update_time` * `end_time` * `start_time`",
                       "location": "query",
                       "type": "string"
+                    },
+                    "readMask": {
+                      "description": "Mask specifying which fields to read.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
                     }
                   },
                   "parameterOrder": [

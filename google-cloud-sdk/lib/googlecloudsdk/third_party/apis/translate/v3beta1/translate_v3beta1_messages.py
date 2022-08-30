@@ -62,9 +62,9 @@ class BatchDocumentOutputConfig(_messages.Message):
       consumed (that is, no partial output file is written). Since index.csv
       will be keeping updated during the process, please make sure there is no
       custom retention policy applied on the output bucket that may avoid file
-      updating. (https://cloud.google.com/storage/docs/bucket-
-      lock?hl=en#retention-policy) The naming format of translation output
-      files follows (for target language code [trg]): `translation_output`:
+      updating. (https://cloud.google.com/storage/docs/bucket-lock#retention-
+      policy) The naming format of translation output files follows (for
+      target language code [trg]): `translation_output`:
       gs://translation_output/a_b_c_[trg]_translation.[extension]
       `glossary_translation_output`:
       gs://translation_test/a_b_c_[trg]_glossary_translation.[extension] The
@@ -115,8 +115,8 @@ class BatchTranslateDocumentRequest(_messages.Message):
       duplicate inputs.
     sourceLanguageCode: Required. The BCP-47 language code of the input
       document if known, for example, "en-US" or "sr-Latn". Supported language
-      codes are listed in Language Support
-      (https://cloud.google.com/translate/docs/languages).
+      codes are listed in [Language
+      Support](https://cloud.google.com/translate/docs/languages).
     targetLanguageCodes: Required. The BCP-47 language code to use for
       translation of the input document. Specify up to 10 language codes here.
   """
@@ -608,10 +608,9 @@ class GlossaryInputConfig(_messages.Message):
       not contain headers. That is, the first row is data, not column names. -
       TMX (`.tmx`): TMX file with parallel data defining source/target term
       pairs. For equivalent term sets glossaries: - CSV (`.csv`): Multi-column
-      CSV file defining equivalent glossary terms in multiple languages. The
-      format is defined for Google Translation Toolkit and documented in [Use
-      a glossary](https://support.google.com/translatortoolkit/answer/6306379?
-      hl=en).
+      CSV file defining equivalent glossary terms in multiple languages. See
+      documentation for more information -
+      [glossaries](https://cloud.google.com/translate/docs/advanced/glossary).
   """
 
   gcsSource = _messages.MessageField('GcsSource', 1)
@@ -929,20 +928,20 @@ class OutputConfig(_messages.Message):
       output file is written). Since index.csv will be keeping updated during
       the process, please make sure there is no custom retention policy
       applied on the output bucket that may avoid file updating.
-      (https://cloud.google.com/storage/docs/bucket-lock?hl=en#retention-
-      policy) The format of translations_file (for target language code 'trg')
-      is: gs://translation_test/a_b_c_'trg'_translations.[extension] If the
-      input file extension is tsv, the output has the following columns:
-      Column 1: ID of the request provided in the input, if it's not provided
-      in the input, then the input row number is used (0-based). Column 2:
-      source sentence. Column 3: translation without applying a glossary.
-      Empty string if there is an error. Column 4 (only present if a glossary
-      is provided in the request): translation after applying the glossary.
-      Empty string if there is an error applying the glossary. Could be same
-      string as column 3 if there is no glossary applied. If input file
-      extension is a txt or html, the translation is directly written to the
-      output file. If glossary is requested, a separate
-      glossary_translations_file has format of
+      (https://cloud.google.com/storage/docs/bucket-lock#retention-policy) The
+      format of translations_file (for target language code 'trg') is:
+      gs://translation_test/a_b_c_'trg'_translations.[extension] If the input
+      file extension is tsv, the output has the following columns: Column 1:
+      ID of the request provided in the input, if it's not provided in the
+      input, then the input row number is used (0-based). Column 2: source
+      sentence. Column 3: translation without applying a glossary. Empty
+      string if there is an error. Column 4 (only present if a glossary is
+      provided in the request): translation after applying the glossary. Empty
+      string if there is an error applying the glossary. Could be same string
+      as column 3 if there is no glossary applied. If input file extension is
+      a txt or html, the translation is directly written to the output file.
+      If glossary is requested, a separate glossary_translations_file has
+      format of
       gs://translation_test/a_b_c_'trg'_glossary_translations.[extension] The
       format of errors file (for target language code 'trg') is:
       gs://translation_test/a_b_c_'trg'_errors.[extension] If the input file

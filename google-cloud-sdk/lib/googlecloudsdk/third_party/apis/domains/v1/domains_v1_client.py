@@ -470,7 +470,7 @@ class DomainsV1(base_api.BaseApiClient):
     )
 
     def RetrieveImportableDomains(self, request, global_params=None):
-      r"""Lists domain names from [Google Domains](https://domains.google/) that can be imported to Cloud Domains using the `ImportDomain` method. Since individual users can own domains in Google Domains, the list of domains returned depends on the individual user making the call. Domains supported by Google Domains, but not supported by Cloud Domains, are not returned.
+      r"""Lists domain names from [Google Domains](https://domains.google/) that can be imported to Cloud Domains using the `ImportDomain` method. Since individual users can own domains in Google Domains, the list of domains returned depends on the individual user making the call. Domains already managed by Cloud Domains are not returned.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsRetrieveImportableDomainsRequest) input message

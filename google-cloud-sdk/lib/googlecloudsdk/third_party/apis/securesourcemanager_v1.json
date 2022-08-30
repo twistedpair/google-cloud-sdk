@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "",
+  "documentationLink": "https://docs.google.com/document/d/1RDDT2H8WccCLnE3mgcJCmk7KfEEVPaX7sS4T2_jTHHo/edit",
   "protocol": "rest",
   "rootUrl": "https://securesourcemanager.googleapis.com/",
   "mtlsRootUrl": "https://securesourcemanager.mtls.googleapis.com/",
@@ -322,21 +322,40 @@
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
-            "READY",
+            "ACTIVE",
             "DELETING"
           ]
-        },
-        "hostIp": {
-          "description": "The public IP address accessible by clients for HTTP and SSH connections. Only valid when the instance is in READY state.",
-          "type": "string"
         },
         "adminAccount": {
           "description": "Optional. The email account used to set up the Gitea admin. This must support authentication for both Gaia users and third-party users.",
           "type": "string"
         },
-        "hostName": {
-          "description": "Output only. The host name accessible by clients for HTTP and SSH connections. Only specified when the instance is in READY state.",
+        "hostConfig": {
+          "description": "Output only. The proto for different host endpoints.",
           "readOnly": true,
+          "$ref": "HostConfig"
+        }
+      }
+    },
+    "HostConfig": {
+      "id": "HostConfig",
+      "description": "HostConfig has different instance endpoints.",
+      "type": "object",
+      "properties": {
+        "html": {
+          "description": "HTML endpoint.",
+          "type": "string"
+        },
+        "api": {
+          "description": "API endpoint.",
+          "type": "string"
+        },
+        "gitHttp": {
+          "description": "Git HTTP endpoint.",
+          "type": "string"
+        },
+        "gitSsh": {
+          "description": "Git SSH endpoint.",
           "type": "string"
         }
       }
@@ -356,13 +375,6 @@
         "nextPageToken": {
           "description": "A token identifying a page of results the server should return.",
           "type": "string"
-        },
-        "unreachable": {
-          "description": "Locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -411,6 +423,30 @@
         "etag": {
           "description": "Optional. This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
+        },
+        "uris": {
+          "description": "Output only. uris for the repository.",
+          "readOnly": true,
+          "$ref": "URIs"
+        }
+      }
+    },
+    "URIs": {
+      "id": "URIs",
+      "description": "URIs holds the uris for the repository.",
+      "type": "object",
+      "properties": {
+        "html": {
+          "description": "html is the uri for user to check the repository in a browser.",
+          "type": "string"
+        },
+        "gitHttps": {
+          "description": "git_https is the git http uri for user to do git operations.",
+          "type": "string"
+        },
+        "api": {
+          "description": "api is the uri for the user to access the repository on the API.",
+          "type": "string"
         }
       }
     },
@@ -429,13 +465,6 @@
         "nextPageToken": {
           "description": "A token identifying a page of results the server should return.",
           "type": "string"
-        },
-        "unreachable": {
-          "description": "Locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -550,7 +579,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"

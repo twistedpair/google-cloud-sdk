@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ACTIVEDIRECTORIES = (
+      'projects.locations.activedirectories',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'activedirectories/{activedirectoriesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -70,6 +81,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/volumes/'
               '{volumesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_VOLUMES_SNAPSHOTS = (
+      'projects.locations.volumes.snapshots',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/volumes/'
+              '{volumesId}/snapshots/{snapshotsId}',
       },
       ['name'],
       True

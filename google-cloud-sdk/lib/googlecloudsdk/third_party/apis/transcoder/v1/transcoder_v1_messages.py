@@ -183,6 +183,26 @@ class AudioStream(_messages.Message):
   sampleRateHertz = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
+class BwdifConfig(_messages.Message):
+  r"""Bob Weaver Deinterlacing Filter Configuration.
+
+  Fields:
+    deinterlaceAllFrames: Deinterlace all frames rather than just the frames
+      identified as interlaced. The default is `false`.
+    mode: Specifies the deinterlacing mode to adopt. The default is
+      `send_frame`. Supported values: - `send_frame`: Output one frame for
+      each frame - `send_field`: Output one frame for each field
+    parity: The picture field parity assumed for the input interlaced video.
+      The default is `auto`. Supported values: - `tff`: Assume the top field
+      is first - `bff`: Assume the bottom field is first - `auto`: Enable
+      automatic detection of field parity
+  """
+
+  deinterlaceAllFrames = _messages.BooleanField(1)
+  mode = _messages.StringField(2)
+  parity = _messages.StringField(3)
+
+
 class Color(_messages.Message):
   r"""Color preprocessing configuration. **Note:** This configuration is not
   supported.
@@ -236,6 +256,18 @@ class Deblock(_messages.Message):
 
   enabled = _messages.BooleanField(1)
   strength = _messages.FloatField(2)
+
+
+class Deinterlace(_messages.Message):
+  r"""Deinterlace configuration for input video.
+
+  Fields:
+    bwdif: Specifies the Bob Weaver Deinterlacing Filter Configuration.
+    yadif: Specifies the Yet Another Deinterlacing Filter Configuration.
+  """
+
+  bwdif = _messages.MessageField('BwdifConfig', 1)
+  yadif = _messages.MessageField('YadifConfig', 2)
 
 
 class Denoise(_messages.Message):
@@ -873,6 +905,7 @@ class PreprocessingConfig(_messages.Message):
     color: Color preprocessing configuration.
     crop: Specify the video cropping configuration.
     deblock: Deblock preprocessing configuration.
+    deinterlace: Specify the video deinterlace configuration.
     denoise: Denoise preprocessing configuration.
     pad: Specify the video pad filter configuration.
   """
@@ -881,8 +914,9 @@ class PreprocessingConfig(_messages.Message):
   color = _messages.MessageField('Color', 2)
   crop = _messages.MessageField('Crop', 3)
   deblock = _messages.MessageField('Deblock', 4)
-  denoise = _messages.MessageField('Denoise', 5)
-  pad = _messages.MessageField('Pad', 6)
+  deinterlace = _messages.MessageField('Deinterlace', 5)
+  denoise = _messages.MessageField('Denoise', 6)
+  pad = _messages.MessageField('Pad', 7)
 
 
 class PubsubDestination(_messages.Message):
@@ -1302,6 +1336,29 @@ class Vp9CodecSettings(_messages.Message):
   profile = _messages.StringField(8)
   rateControlMode = _messages.StringField(9)
   widthPixels = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+
+
+class YadifConfig(_messages.Message):
+  r"""Yet Another Deinterlacing Filter Configuration.
+
+  Fields:
+    deinterlaceAllFrames: Deinterlace all frames rather than just the frames
+      identified as interlaced. The default is `false`.
+    disableSpatialInterlacing: Disable spacial interlacing. The default is
+      `false`.
+    mode: Specifies the deinterlacing mode to adopt. The default is
+      `send_frame`. Supported values: - `send_frame`: Output one frame for
+      each frame - `send_field`: Output one frame for each field
+    parity: The picture field parity assumed for the input interlaced video.
+      The default is `auto`. Supported values: - `tff`: Assume the top field
+      is first - `bff`: Assume the bottom field is first - `auto`: Enable
+      automatic detection of field parity
+  """
+
+  deinterlaceAllFrames = _messages.BooleanField(1)
+  disableSpatialInterlacing = _messages.BooleanField(2)
+  mode = _messages.StringField(3)
+  parity = _messages.StringField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

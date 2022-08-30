@@ -225,3 +225,63 @@ def AddValidationOnly(parser, hidden=False):
       help='If set, only validate the request, but do not actually perform the operation.',
       hidden=hidden,
   )
+
+
+def AddImageType(parser):
+  """Adds a flag to specify the node pool image type.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--image-type',
+      required=True,
+      help='Set the OS image type to use on node pool instances.',
+  )
+
+
+def AddReplicas(parser):
+  """Adds a flag to specify the number of replicas in the node pool.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--replicas',
+      type=int,
+      help='Set the number of replicas to use on node pool instances.',
+  )
+
+
+def AddEnableLoadBalancer(parser):
+  """Adds a flag to enable load balancer in the node pool.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--enable-load-balancer',
+      action='store_true',
+      help='If set, enable the use of load balancer on the node pool instances.',
+  )
+
+
+def AddAutoscaling(parser):
+  """Adds a flag to specify the node pool autoscaling config.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  group = parser.add_argument_group('Node pool autoscaling')
+  group.add_argument(
+      '--min-replicas',
+      required=True,
+      type=int,
+      help='Minimum number of replicas in the node pool',
+  )
+  group.add_argument(
+      '--max-replicas',
+      required=True,
+      type=int,
+      help='Maximum number of replicas in the node pool',
+  )

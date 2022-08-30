@@ -1589,11 +1589,10 @@ class AttachedDisk(_messages.Message):
     ArchitectureValueValuesEnum: [Output Only] The architecture of the
       attached disk. Valid values are ARM64 or X86_64.
     InterfaceValueValuesEnum: Specifies the disk interface to use for
-      attaching this disk, which is either SCSI or NVME. The default is SCSI.
-      Persistent disks must always use SCSI and the request will fail if you
-      attempt to attach a persistent disk in any other format than SCSI. Local
-      SSDs can use either NVME or SCSI. For performance characteristics of
-      SCSI over NVMe, see Local SSD performance.
+      attaching this disk, which is either SCSI or NVME. For most machine
+      types, the default is SCSI. Local SSDs can use either NVME or SCSI. In
+      certain configurations, persistent disks can use NVMe. For more
+      information, see About persistent disks.
     ModeValueValuesEnum: The mode in which to attach this disk, either
       READ_WRITE or READ_ONLY. If not specified, the default is to attach the
       disk in READ_WRITE mode.
@@ -1631,6 +1630,9 @@ class AttachedDisk(_messages.Message):
       encryption keys, so you cannot use your own keys to encrypt disks in a
       managed instance group.
     diskSizeGb: The size of the disk in GB.
+    forceAttach: [Input Only] Whether to force attach the regional disk even
+      if it's currently attached to another instance. If you try to force
+      attach a zonal disk to an instance, you will receive an error.
     guestOsFeatures: A list of features to enable on the guest operating
       system. Applicable only for bootable images. Read Enabling guest
       operating system features to see a list of available options.
@@ -1643,11 +1645,10 @@ class AttachedDisk(_messages.Message):
       instance. This property is mutually exclusive with the source property;
       you can only define one or the other, but not both.
     interface: Specifies the disk interface to use for attaching this disk,
-      which is either SCSI or NVME. The default is SCSI. Persistent disks must
-      always use SCSI and the request will fail if you attempt to attach a
-      persistent disk in any other format than SCSI. Local SSDs can use either
-      NVME or SCSI. For performance characteristics of SCSI over NVMe, see
-      Local SSD performance.
+      which is either SCSI or NVME. For most machine types, the default is
+      SCSI. Local SSDs can use either NVME or SCSI. In certain configurations,
+      persistent disks can use NVMe. For more information, see About
+      persistent disks.
     kind: [Output Only] Type of the resource. Always compute#attachedDisk for
       attached disks.
     licenses: [Output Only] Any valid publicly visible licenses.
@@ -1695,10 +1696,9 @@ class AttachedDisk(_messages.Message):
 
   class InterfaceValueValuesEnum(_messages.Enum):
     r"""Specifies the disk interface to use for attaching this disk, which is
-    either SCSI or NVME. The default is SCSI. Persistent disks must always use
-    SCSI and the request will fail if you attempt to attach a persistent disk
-    in any other format than SCSI. Local SSDs can use either NVME or SCSI. For
-    performance characteristics of SCSI over NVMe, see Local SSD performance.
+    either SCSI or NVME. For most machine types, the default is SCSI. Local
+    SSDs can use either NVME or SCSI. In certain configurations, persistent
+    disks can use NVMe. For more information, see About persistent disks.
 
     Values:
       NVME: <no description>
@@ -1738,18 +1738,19 @@ class AttachedDisk(_messages.Message):
   deviceName = _messages.StringField(4)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 5)
   diskSizeGb = _messages.IntegerField(6)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 7, repeated=True)
-  index = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 9)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 10)
-  kind = _messages.StringField(11, default='compute#attachedDisk')
-  licenses = _messages.StringField(12, repeated=True)
-  locked = _messages.BooleanField(13)
-  mode = _messages.EnumField('ModeValueValuesEnum', 14)
-  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 15)
-  source = _messages.StringField(16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
-  userLicenses = _messages.StringField(18, repeated=True)
+  forceAttach = _messages.BooleanField(7)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 8, repeated=True)
+  index = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 10)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 11)
+  kind = _messages.StringField(12, default='compute#attachedDisk')
+  licenses = _messages.StringField(13, repeated=True)
+  locked = _messages.BooleanField(14)
+  mode = _messages.EnumField('ModeValueValuesEnum', 15)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 16)
+  source = _messages.StringField(17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  userLicenses = _messages.StringField(19, repeated=True)
 
 
 class AttachedDiskInitializeParams(_messages.Message):
@@ -5533,8 +5534,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -5794,6 +5801,8 @@ class Commitment(_messages.Message):
       commitments.
     licenseResource: The license specification required as part of a license
       commitment.
+    mergeSourceCommitments: List of source commitments to be merged into a new
+      commitment.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -5809,6 +5818,8 @@ class Commitment(_messages.Message):
     resources: A list of commitment amounts for particular resources. Note
       that VCPU and MEMORY resource commitments must occur together.
     selfLink: [Output Only] Server-defined URL for the resource.
+    splitSourceCommitment: Source commitment to be splitted into a new
+      commitment.
     startTimestamp: [Output Only] Commitment start time in RFC3339 text
       format.
     status: [Output Only] Status of the commitment with regards to eventual
@@ -5911,16 +5922,18 @@ class Commitment(_messages.Message):
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(7, default='compute#commitment')
   licenseResource = _messages.MessageField('LicenseResourceCommitment', 8)
-  name = _messages.StringField(9)
-  plan = _messages.EnumField('PlanValueValuesEnum', 10)
-  region = _messages.StringField(11)
-  reservations = _messages.MessageField('Reservation', 12, repeated=True)
-  resources = _messages.MessageField('ResourceCommitment', 13, repeated=True)
-  selfLink = _messages.StringField(14)
-  startTimestamp = _messages.StringField(15)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
-  statusMessage = _messages.StringField(17)
-  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  mergeSourceCommitments = _messages.StringField(9, repeated=True)
+  name = _messages.StringField(10)
+  plan = _messages.EnumField('PlanValueValuesEnum', 11)
+  region = _messages.StringField(12)
+  reservations = _messages.MessageField('Reservation', 13, repeated=True)
+  resources = _messages.MessageField('ResourceCommitment', 14, repeated=True)
+  selfLink = _messages.StringField(15)
+  splitSourceCommitment = _messages.StringField(16)
+  startTimestamp = _messages.StringField(17)
+  status = _messages.EnumField('StatusValueValuesEnum', 18)
+  statusMessage = _messages.StringField(19)
+  type = _messages.EnumField('TypeValueValuesEnum', 20)
 
 
 class CommitmentAggregatedList(_messages.Message):
@@ -32338,9 +32351,7 @@ class Firewall(_messages.Message):
   Enums:
     DirectionValueValuesEnum: Direction of traffic to which this firewall
       applies, either `INGRESS` or `EGRESS`. The default is `INGRESS`. For
-      `INGRESS` traffic, you cannot specify the destinationRanges field, and
-      for `EGRESS` traffic, you cannot specify the sourceRanges or sourceTags
-      fields.
+      `EGRESS` traffic, you cannot specify the sourceTags fields.
 
   Messages:
     AllowedValueListEntry: A AllowedValueListEntry object.
@@ -32362,9 +32373,8 @@ class Firewall(_messages.Message):
       These ranges must be expressed in CIDR format. Both IPv4 and IPv6 are
       supported.
     direction: Direction of traffic to which this firewall applies, either
-      `INGRESS` or `EGRESS`. The default is `INGRESS`. For `INGRESS` traffic,
-      you cannot specify the destinationRanges field, and for `EGRESS`
-      traffic, you cannot specify the sourceRanges or sourceTags fields.
+      `INGRESS` or `EGRESS`. The default is `INGRESS`. For `EGRESS` traffic,
+      you cannot specify the sourceTags fields.
     disabled: Denotes whether the firewall rule is disabled. When set to true,
       the firewall rule is not enforced and the network behaves as if it did
       not exist. If this is unspecified, the firewall rule will be enabled.
@@ -32448,9 +32458,8 @@ class Firewall(_messages.Message):
 
   class DirectionValueValuesEnum(_messages.Enum):
     r"""Direction of traffic to which this firewall applies, either `INGRESS`
-    or `EGRESS`. The default is `INGRESS`. For `INGRESS` traffic, you cannot
-    specify the destinationRanges field, and for `EGRESS` traffic, you cannot
-    specify the sourceRanges or sourceTags fields.
+    or `EGRESS`. The default is `INGRESS`. For `EGRESS` traffic, you cannot
+    specify the sourceTags fields.
 
     Values:
       EGRESS: Indicates that firewall should apply to outgoing traffic.
@@ -36367,9 +36376,9 @@ class HttpRouteRule(_messages.Message):
       If routeAction specifies any weightedBackendServices, service must not
       be set. Conversely if service is set, routeAction cannot contain any
       weightedBackendServices. Only one of urlRedirect, service or
-      routeAction.weightedBackendService must be set. UrlMaps for external
-      HTTP(S) load balancers support only the urlRewrite action within a route
-      rule's routeAction.
+      routeAction.weightedBackendService must be set. URL maps for Classic
+      external HTTP(S) load balancers only support the urlRewrite action
+      within a route rule's routeAction.
     service: The full or partial URL of the backend service resource to which
       traffic is directed if this rule is matched. If routeAction is also
       specified, advanced routing actions, such as URL rewrites, take effect
@@ -43734,8 +43743,8 @@ class LocalizedMessage(_messages.Message):
 
   Fields:
     locale: The locale used following the specification defined at
-      http://www.rfc-editor.org/rfc/bcp/bcp47.txt. Examples are: "en-US", "fr-
-      CH", "es-MX"
+      https://www.rfc-editor.org/rfc/bcp/bcp47.txt. Examples are: "en-US",
+      "fr-CH", "es-MX"
     message: The localized error message in the above locale.
   """
 
@@ -45249,8 +45258,9 @@ class Network(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#network for
       networks.
     mtu: Maximum Transmission Unit in bytes. The minimum value for this field
-      is 1460 and the maximum value is 1500 bytes. If unspecified, defaults to
-      1460.
+      is 1300 and the maximum value is 8896. The suggested value is 1500,
+      which is the default MTU used on the Internet, or 8896 if you want to
+      use Jumbo frames. If unspecified, the value defaults to 1460.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -45800,6 +45810,7 @@ class NetworkEndpointGroup(_messages.Message):
       group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT,
       INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS,
       PRIVATE_SERVICE_CONNECT.
+    pscData: A NetworkEndpointGroupPscData attribute.
     pscTargetService: The target service url used to set up private service
       connection to a Google API or a PSC Producer Service Attachment. An
       example value is: "asia-northeast3-cloudkms.googleapis.com"
@@ -45885,13 +45896,14 @@ class NetworkEndpointGroup(_messages.Message):
   name = _messages.StringField(11)
   network = _messages.StringField(12)
   networkEndpointType = _messages.EnumField('NetworkEndpointTypeValueValuesEnum', 13)
-  pscTargetService = _messages.StringField(14)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  serverlessDeployment = _messages.MessageField('NetworkEndpointGroupServerlessDeployment', 17)
-  size = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  subnetwork = _messages.StringField(19)
-  zone = _messages.StringField(20)
+  pscData = _messages.MessageField('NetworkEndpointGroupPscData', 14)
+  pscTargetService = _messages.StringField(15)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  serverlessDeployment = _messages.MessageField('NetworkEndpointGroupServerlessDeployment', 18)
+  size = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  subnetwork = _messages.StringField(20)
+  zone = _messages.StringField(21)
 
 
 class NetworkEndpointGroupAggregatedList(_messages.Message):
@@ -46338,6 +46350,50 @@ class NetworkEndpointGroupList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class NetworkEndpointGroupPscData(_messages.Message):
+  r"""All data that is specifically relevant to only network endpoint groups
+  of type PRIVATE_SERVICE_CONNECT.
+
+  Enums:
+    PscConnectionStatusValueValuesEnum: [Output Only] The connection status of
+      the PSC Forwarding Rule.
+
+  Fields:
+    consumerPscAddress: [Output Only] Address allocated from given subnetwork
+      for PSC. This IP address acts as a VIP for a PSC NEG, allowing it to act
+      as an endpoint in L7 PSC-XLB.
+    pscConnectionId: [Output Only] The PSC connection id of the PSC Network
+      Endpoint Group Consumer.
+    pscConnectionStatus: [Output Only] The connection status of the PSC
+      Forwarding Rule.
+  """
+
+  class PscConnectionStatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The connection status of the PSC Forwarding Rule.
+
+    Values:
+      ACCEPTED: The connection has been accepted by the producer.
+      CLOSED: The connection has been closed by the producer and will not
+        serve traffic going forward.
+      NEEDS_ATTENTION: The connection has been accepted by the producer, but
+        the producer needs to take further action before the forwarding rule
+        can serve traffic.
+      PENDING: The connection is pending acceptance by the producer.
+      REJECTED: The connection has been rejected by the producer.
+      STATUS_UNSPECIFIED: <no description>
+    """
+    ACCEPTED = 0
+    CLOSED = 1
+    NEEDS_ATTENTION = 2
+    PENDING = 3
+    REJECTED = 4
+    STATUS_UNSPECIFIED = 5
+
+  consumerPscAddress = _messages.StringField(1)
+  pscConnectionId = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 3)
 
 
 class NetworkEndpointGroupServerlessDeployment(_messages.Message):
@@ -51257,9 +51313,9 @@ class PathMatcher(_messages.Message):
       specifies any weightedBackendServices, defaultService must not be set.
       Conversely if defaultService is set, defaultRouteAction cannot contain
       any weightedBackendServices. Only one of defaultRouteAction or
-      defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load
-      balancers support only the urlRewrite action within a path matcher's
-      defaultRouteAction.
+      defaultUrlRedirect must be set. URL maps for Classic external HTTP(S)
+      load balancers only support the urlRewrite action within a path
+      matcher's defaultRouteAction.
     defaultService: The full or partial URL to the BackendService resource.
       This URL is used if none of the pathRules or routeRules defined by this
       PathMatcher are matched. For example, the following are all valid URLs
@@ -51332,8 +51388,8 @@ class PathRule(_messages.Message):
       If routeAction specifies any weightedBackendServices, service must not
       be set. Conversely if service is set, routeAction cannot contain any
       weightedBackendServices. Only one of routeAction or urlRedirect must be
-      set. URL maps for external HTTP(S) load balancers support only the
-      urlRewrite action within a path rule's routeAction.
+      set. URL maps for Classic external HTTP(S) load balancers only support
+      the urlRewrite action within a path rule's routeAction.
     service: The full or partial URL of the backend service resource to which
       traffic is directed if this rule is matched. If routeAction is also
       specified, advanced routing actions, such as URL rewrites, take effect
@@ -68332,10 +68388,11 @@ class UrlMap(_messages.Message):
       weightedBackendServices, defaultService must not be set. Conversely if
       defaultService is set, defaultRouteAction cannot contain any
       weightedBackendServices. Only one of defaultRouteAction or
-      defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load
-      balancers support only the urlRewrite action within defaultRouteAction.
-      defaultRouteAction has no effect when the URL map is bound to a target
-      gRPC proxy that has the validateForProxyless field set to true.
+      defaultUrlRedirect must be set. URL maps for Classic external HTTP(S)
+      load balancers only support the urlRewrite action within
+      defaultRouteAction. defaultRouteAction has no effect when the URL map is
+      bound to a target gRPC proxy that has the validateForProxyless field set
+      to true.
     defaultService: The full or partial URL of the defaultService resource to
       which traffic is directed if none of the hostRules match. If
       defaultRouteAction is also specified, advanced routing actions, such as

@@ -24,7 +24,32 @@ class Access(_messages.Message):
       came from.
     methodName: The method that the service account called, e.g.
       "SetIamPolicy".
-    principalEmail: Associated email, such as "foo@google.com".
+    principalEmail: Associated email, such as "foo@google.com". The email
+      address of the authenticated user (or service account on behalf of third
+      party principal) making the request. For third party identity callers,
+      the `principal_subject` field is populated instead of this field. For
+      privacy reasons, the principal email address is sometimes redacted. For
+      more information, see [Caller identities in audit
+      logs](https://cloud.google.com/logging/docs/audit#user-id).
+    principalSubject: A string representing the principal_subject associated
+      with the identity. As compared to `principal_email`, supports principals
+      that aren't associated with email addresses, such as third party
+      principals. For most identities, the format will be
+      `principal://iam.googleapis.com/{identity pool name}/subject/{subject)`
+      except for some GKE identities (GKE_WORKLOAD, FREEFORM,
+      GKE_HUB_WORKLOAD) that are still in the legacy format
+      `serviceAccount:{identity pool name}[{subject}]`
+    serviceAccountDelegationInfo: Identity delegation history of an
+      authenticated service account that makes the request. It contains
+      information on the real authorities that try to access GCP resources by
+      delegating on a service account. When multiple authorities are present,
+      they are guaranteed to be sorted based on the original ordering of the
+      identity delegation events.
+    serviceAccountKeyName: The name of the service account key used to create
+      or exchange credentials for authenticating the service account making
+      the request. This is a scheme-less URI full resource name. For example:
+      "//iam.googleapis.com/projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/ke
+      ys/{key}"
     serviceName: This is the API service that the service account made a call
       to, e.g. "iam.googleapis.com"
     userAgentFamily: What kind of user agent is associated, e.g. operating
@@ -35,8 +60,37 @@ class Access(_messages.Message):
   callerIpGeo = _messages.MessageField('Geolocation', 2)
   methodName = _messages.StringField(3)
   principalEmail = _messages.StringField(4)
-  serviceName = _messages.StringField(5)
-  userAgentFamily = _messages.StringField(6)
+  principalSubject = _messages.StringField(5)
+  serviceAccountDelegationInfo = _messages.MessageField('ServiceAccountDelegationInfo', 6, repeated=True)
+  serviceAccountKeyName = _messages.StringField(7)
+  serviceName = _messages.StringField(8)
+  userAgentFamily = _messages.StringField(9)
+
+
+class AccessReview(_messages.Message):
+  r"""Conveys information about a Kubernetes access review (e.g. kubectl auth
+  can-i ...) that was involved in a finding.
+
+  Fields:
+    group: Group is the API Group of the Resource. "*" means all.
+    name: Name is the name of the resource being requested. Empty means all.
+    ns: Namespace of the action being requested. Currently, there is no
+      distinction between no namespace and all namespaces. Both are
+      represented by "" (empty).
+    resource: Resource is the optional resource type requested. "*" means all.
+    subresource: Subresource is the optional subresource type.
+    verb: Verb is a Kubernetes resource API verb, like: get, list, watch,
+      create, update, delete, proxy. "*" means all.
+    version: Version is the API Version of the Resource. "*" means all.
+  """
+
+  group = _messages.StringField(1)
+  name = _messages.StringField(2)
+  ns = _messages.StringField(3)
+  resource = _messages.StringField(4)
+  subresource = _messages.StringField(5)
+  verb = _messages.StringField(6)
+  version = _messages.StringField(7)
 
 
 class Asset(_messages.Message):
@@ -233,8 +287,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -367,6 +427,25 @@ class ContactDetails(_messages.Message):
   """
 
   contacts = _messages.MessageField('Contact', 1, repeated=True)
+
+
+class Container(_messages.Message):
+  r"""Container associated with the finding.
+
+  Fields:
+    imageId: Optional container image id, when provided by the container
+      runtime. Uniquely identifies the container image launched using a
+      container image digest.
+    labels: Container labels, as provided by the container runtime.
+    name: Container name.
+    uri: Container image URI provided when configuring a pod/container. May
+      identify a container image version using mutable tags.
+  """
+
+  imageId = _messages.StringField(1)
+  labels = _messages.MessageField('Label', 2, repeated=True)
+  name = _messages.StringField(3)
+  uri = _messages.StringField(4)
 
 
 class Cve(_messages.Message):
@@ -600,6 +679,33 @@ class Cvssv3(_messages.Message):
   userInteraction = _messages.EnumField('UserInteractionValueValuesEnum', 9)
 
 
+class Database(_messages.Message):
+  r"""Represents database access information, such as queries. A database may
+  be a sub-resource of an instance (as in the case of CloudSQL instances or
+  Cloud Spanner instances), or the database instance itself. Some database
+  resources may not have the full resource name populated because these
+  resource types are not yet supported by Cloud Asset Inventory (e.g. CloudSQL
+  databases). In these cases only the display name will be provided.
+
+  Fields:
+    displayName: The human readable name of the database the user connected
+      to.
+    grantees: The target usernames/roles/groups of a SQL privilege grant (not
+      an IAM policy change).
+    name: The full resource name of the database the user connected to, if it
+      is supported by CAI. (https://google.aip.dev/122#full-resource-names)
+    query: The SQL statement associated with the relevant access.
+    userName: The username used to connect to the DB. This may not necessarily
+      be an IAM principal, and has no required format.
+  """
+
+  displayName = _messages.StringField(1)
+  grantees = _messages.StringField(2, repeated=True)
+  name = _messages.StringField(3)
+  query = _messages.StringField(4)
+  userName = _messages.StringField(5)
+
+
 class Detection(_messages.Message):
   r"""Memory hash detection contributing to the binary family match.
 
@@ -798,8 +904,9 @@ class Finding(_messages.Message):
       given finding. The key represents the type of contact, while the value
       contains a list of all the contacts that pertain. Please refer to:
       https://cloud.google.com/resource-manager/docs/managing-notification-
-      contacts#notification-categories { "security": {contact: {email:
-      "person1@company.com"} contact: {email: "person2@company.com"} }
+      contacts#notification-categories { "security": { "contacts": [ {
+      "email": "person1@company.com" }, { "email": "person2@company.com" } ] }
+      }
     ExternalSystemsValue: Output only. Third party SIEM/SOAR fields within
       SCC, contains external system information and external system finding
       fields.
@@ -829,10 +936,14 @@ class Finding(_messages.Message):
       finding. The key represents the type of contact, while the value
       contains a list of all the contacts that pertain. Please refer to:
       https://cloud.google.com/resource-manager/docs/managing-notification-
-      contacts#notification-categories { "security": {contact: {email:
-      "person1@company.com"} contact: {email: "person2@company.com"} }
+      contacts#notification-categories { "security": { "contacts": [ {
+      "email": "person1@company.com" }, { "email": "person2@company.com" } ] }
+      }
+    containers: Containers associated with the finding. containers provides
+      information for both Kubernetes and non-Kubernetes containers.
     createTime: The time at which the finding was created in Security Command
       Center.
+    database: Database associated with the finding.
     description: Contains more detail about the finding.
     eventTime: The time the finding was first detected. If an existing finding
       is updated, then this is the time the update occurred. For example, if
@@ -855,6 +966,7 @@ class Finding(_messages.Message):
       or in an operating system that, with high confidence, indicates a
       computer intrusion. Reference:
       https://en.wikipedia.org/wiki/Indicator_of_compromise
+    kubernetes: Kubernetes resources associated with the finding.
     mitreAttack: MITRE ATT&CK tactics and techniques related to this finding.
       See: https://attack.mitre.org
     mute: Indicates the mute state of a finding (either muted, unmuted or
@@ -1008,8 +1120,8 @@ class Finding(_messages.Message):
     finding. The key represents the type of contact, while the value contains
     a list of all the contacts that pertain. Please refer to:
     https://cloud.google.com/resource-manager/docs/managing-notification-
-    contacts#notification-categories { "security": {contact: {email:
-    "person1@company.com"} contact: {email: "person2@company.com"} }
+    contacts#notification-categories { "security": { "contacts": [ { "email":
+    "person1@company.com" }, { "email": "person2@company.com" } ] } }
 
     Messages:
       AdditionalProperty: An additional property for a ContactsValue object.
@@ -1092,30 +1204,33 @@ class Finding(_messages.Message):
   compliances = _messages.MessageField('Compliance', 4, repeated=True)
   connections = _messages.MessageField('Connection', 5, repeated=True)
   contacts = _messages.MessageField('ContactsValue', 6)
-  createTime = _messages.StringField(7)
-  description = _messages.StringField(8)
-  eventTime = _messages.StringField(9)
-  exfiltration = _messages.MessageField('Exfiltration', 10)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 11)
-  externalUri = _messages.StringField(12)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 13)
-  iamBindings = _messages.MessageField('IamBinding', 14, repeated=True)
-  indicator = _messages.MessageField('Indicator', 15)
-  mitreAttack = _messages.MessageField('MitreAttack', 16)
-  mute = _messages.EnumField('MuteValueValuesEnum', 17)
-  muteAnnotation = _messages.StringField(18)
-  muteInitiator = _messages.StringField(19)
-  muteUpdateTime = _messages.StringField(20)
-  name = _messages.StringField(21)
-  nextSteps = _messages.StringField(22)
-  parent = _messages.StringField(23)
-  processes = _messages.MessageField('Process', 24, repeated=True)
-  resourceName = _messages.StringField(25)
-  securityMarks = _messages.MessageField('SecurityMarks', 26)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 27)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 28)
-  state = _messages.EnumField('StateValueValuesEnum', 29)
-  vulnerability = _messages.MessageField('Vulnerability', 30)
+  containers = _messages.MessageField('Container', 7, repeated=True)
+  createTime = _messages.StringField(8)
+  database = _messages.MessageField('Database', 9)
+  description = _messages.StringField(10)
+  eventTime = _messages.StringField(11)
+  exfiltration = _messages.MessageField('Exfiltration', 12)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 13)
+  externalUri = _messages.StringField(14)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 15)
+  iamBindings = _messages.MessageField('IamBinding', 16, repeated=True)
+  indicator = _messages.MessageField('Indicator', 17)
+  kubernetes = _messages.MessageField('Kubernetes', 18)
+  mitreAttack = _messages.MessageField('MitreAttack', 19)
+  mute = _messages.EnumField('MuteValueValuesEnum', 20)
+  muteAnnotation = _messages.StringField(21)
+  muteInitiator = _messages.StringField(22)
+  muteUpdateTime = _messages.StringField(23)
+  name = _messages.StringField(24)
+  nextSteps = _messages.StringField(25)
+  parent = _messages.StringField(26)
+  processes = _messages.MessageField('Process', 27, repeated=True)
+  resourceName = _messages.StringField(28)
+  securityMarks = _messages.MessageField('SecurityMarks', 29)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 30)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 31)
+  state = _messages.EnumField('StateValueValuesEnum', 32)
+  vulnerability = _messages.MessageField('Vulnerability', 33)
 
 
 class Folder(_messages.Message):
@@ -1222,6 +1337,23 @@ class GoogleCloudSecuritycenterV1BigQueryExport(_messages.Message):
   name = _messages.StringField(6)
   principal = _messages.StringField(7)
   updateTime = _messages.StringField(8)
+
+
+class GoogleCloudSecuritycenterV1Binding(_messages.Message):
+  r"""Represents a Kubernetes RoleBinding or ClusterRoleBinding.
+
+  Fields:
+    name: Name for binding.
+    ns: Namespace for binding.
+    role: The Role or ClusterRole referenced by the binding.
+    subjects: Represents the subjects(s) bound to the role. Not always
+      available for PATCH requests.
+  """
+
+  name = _messages.StringField(1)
+  ns = _messages.StringField(2)
+  role = _messages.MessageField('Role', 3)
+  subjects = _messages.MessageField('Subject', 4, repeated=True)
 
 
 class GoogleCloudSecuritycenterV1BulkMuteFindingsResponse(_messages.Message):
@@ -2133,11 +2265,51 @@ class Indicator(_messages.Message):
     ipAddresses: List of ip addresses associated to the Finding.
     signatures: The list of matched signatures indicating that the given
       process is present in the environment.
+    uris: The list of URIs associated to the Findings.
   """
 
   domains = _messages.StringField(1, repeated=True)
   ipAddresses = _messages.StringField(2, repeated=True)
   signatures = _messages.MessageField('ProcessSignature', 3, repeated=True)
+  uris = _messages.StringField(4, repeated=True)
+
+
+class Kubernetes(_messages.Message):
+  r"""Kubernetes related attributes.
+
+  Fields:
+    accessReviews: Provides information on any Kubernetes access reviews (i.e.
+      privilege checks) relevant to the finding.
+    bindings: Provides Kubernetes role binding information for findings that
+      involve RoleBindings or ClusterRoleBindings.
+    nodePools: GKE Node Pools associated with the finding. This field will
+      contain NodePool information for each Node, when it is available.
+    nodes: Provides Kubernetes Node information.
+    pods: Kubernetes Pods associated with the finding. This field will contain
+      Pod records for each container that is owned by a Pod.
+    roles: Provides Kubernetes role information for findings that involve
+      Roles or ClusterRoles.
+  """
+
+  accessReviews = _messages.MessageField('AccessReview', 1, repeated=True)
+  bindings = _messages.MessageField('GoogleCloudSecuritycenterV1Binding', 2, repeated=True)
+  nodePools = _messages.MessageField('NodePool', 3, repeated=True)
+  nodes = _messages.MessageField('Node', 4, repeated=True)
+  pods = _messages.MessageField('Pod', 5, repeated=True)
+  roles = _messages.MessageField('Role', 6, repeated=True)
+
+
+class Label(_messages.Message):
+  r"""Label represents a generic name=value label. Label has separate name and
+  value fields to support filtering with contains().
+
+  Fields:
+    name: Label name.
+    value: Label value.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class ListAssetsResponse(_messages.Message):
@@ -2467,6 +2639,9 @@ class MitreAttack(_messages.Message):
       DATA_DESTRUCTION: T1485
       DOMAIN_POLICY_MODIFICATION: T1484
       IMPAIR_DEFENSES: T1562
+      NETWORK_SERVICE_DISCOVERY: T1046
+      ACCESS_TOKEN_MANIPULATION: T1134
+      ABUSE_ELEVATION_CONTROL_MECHANISM: T1548
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -2500,6 +2675,9 @@ class MitreAttack(_messages.Message):
     DATA_DESTRUCTION = 29
     DOMAIN_POLICY_MODIFICATION = 30
     IMPAIR_DEFENSES = 31
+    NETWORK_SERVICE_DISCOVERY = 32
+    ACCESS_TOKEN_MANIPULATION = 33
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 34
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -2574,6 +2752,9 @@ class MitreAttack(_messages.Message):
       DATA_DESTRUCTION: T1485
       DOMAIN_POLICY_MODIFICATION: T1484
       IMPAIR_DEFENSES: T1562
+      NETWORK_SERVICE_DISCOVERY: T1046
+      ACCESS_TOKEN_MANIPULATION: T1134
+      ABUSE_ELEVATION_CONTROL_MECHANISM: T1548
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -2607,12 +2788,38 @@ class MitreAttack(_messages.Message):
     DATA_DESTRUCTION = 29
     DOMAIN_POLICY_MODIFICATION = 30
     IMPAIR_DEFENSES = 31
+    NETWORK_SERVICE_DISCOVERY = 32
+    ACCESS_TOKEN_MANIPULATION = 33
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 34
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
   primaryTactic = _messages.EnumField('PrimaryTacticValueValuesEnum', 3)
   primaryTechniques = _messages.EnumField('PrimaryTechniquesValueListEntryValuesEnum', 4, repeated=True)
   version = _messages.StringField(5)
+
+
+class Node(_messages.Message):
+  r"""Kubernetes Nodes associated with the finding.
+
+  Fields:
+    name: Full Resource name of the Compute Engine VM running the cluster
+      node.
+  """
+
+  name = _messages.StringField(1)
+
+
+class NodePool(_messages.Message):
+  r"""Provides GKE Node Pool information.
+
+  Fields:
+    name: Kubernetes Node pool name.
+    nodes: Nodes associated with the finding.
+  """
+
+  name = _messages.StringField(1)
+  nodes = _messages.MessageField('Node', 2, repeated=True)
 
 
 class NotificationConfig(_messages.Message):
@@ -2769,6 +2976,23 @@ class OrganizationSettings(_messages.Message):
   name = _messages.StringField(3)
 
 
+class Pod(_messages.Message):
+  r"""Kubernetes Pod.
+
+  Fields:
+    containers: Pod containers associated with this finding, if any.
+    labels: Pod labels. For Kubernetes containers, these are applied to the
+      container.
+    name: Kubernetes Pod name.
+    ns: Kubernetes Pod namespace.
+  """
+
+  containers = _messages.MessageField('Container', 1, repeated=True)
+  labels = _messages.MessageField('Label', 2, repeated=True)
+  name = _messages.StringField(3)
+  ns = _messages.StringField(4)
+
+
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
@@ -2857,8 +3081,8 @@ class Process(_messages.Message):
     envVariables: Process environment variables.
     envVariablesTruncated: True if `env_variables` is incomplete.
     libraries: File information for libraries loaded by the process.
-    name: The process name visible in utilities like top and ps; it can be
-      accessed via /proc/[pid]/comm and changed with prctl(PR_SET_NAME).
+    name: The process name visible in utilities like `top` and `ps`; it can be
+      accessed via `/proc/[pid]/comm` and changed with `prctl(PR_SET_NAME)`.
     parentPid: The parent process id.
     pid: The process id.
     script: When the process represents the invocation of a script, `binary`
@@ -2931,6 +3155,35 @@ class Resource(_messages.Message):
   projectDisplayName = _messages.StringField(6)
   projectName = _messages.StringField(7)
   type = _messages.StringField(8)
+
+
+class Role(_messages.Message):
+  r"""Kubernetes Role or ClusterRole.
+
+  Enums:
+    KindValueValuesEnum: Role type.
+
+  Fields:
+    kind: Role type.
+    name: Role name.
+    ns: Role namespace.
+  """
+
+  class KindValueValuesEnum(_messages.Enum):
+    r"""Role type.
+
+    Values:
+      KIND_UNSPECIFIED: Role type is not specified.
+      ROLE: Kubernetes Role.
+      CLUSTER_ROLE: Kubernetes ClusterRole.
+    """
+    KIND_UNSPECIFIED = 0
+    ROLE = 1
+    CLUSTER_ROLE = 2
+
+  kind = _messages.EnumField('KindValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  ns = _messages.StringField(3)
 
 
 class RunAssetDiscoveryRequest(_messages.Message):
@@ -5531,6 +5784,25 @@ class SecuritycenterProjectsSourcesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class ServiceAccountDelegationInfo(_messages.Message):
+  r"""Identity delegation history of an authenticated service account.
+
+  Fields:
+    principalEmail: The email address of a Google account. .
+    principalSubject: A string representing the principal_subject associated
+      with the identity. As compared to `principal_email`, supports principals
+      that aren't associated with email addresses, such as third party
+      principals. For most identities, the format will be
+      `principal://iam.googleapis.com/{identity pool name}/subject/{subject)`
+      except for some GKE identities (GKE_WORKLOAD, FREEFORM,
+      GKE_HUB_WORKLOAD) that are still in the legacy format
+      `serviceAccount:{identity pool name}[{subject}]`
+  """
+
+  principalEmail = _messages.StringField(1)
+  principalSubject = _messages.StringField(2)
+
+
 class SetFindingStateRequest(_messages.Message):
   r"""Request message for updating a finding's state.
 
@@ -5768,6 +6040,38 @@ class StreamingConfig(_messages.Message):
   """
 
   filter = _messages.StringField(1)
+
+
+class Subject(_messages.Message):
+  r"""Represents a Kubernetes Subject.
+
+  Enums:
+    KindValueValuesEnum: Authentication type for subject.
+
+  Fields:
+    kind: Authentication type for subject.
+    name: Name for subject.
+    ns: Namespace for subject.
+  """
+
+  class KindValueValuesEnum(_messages.Enum):
+    r"""Authentication type for subject.
+
+    Values:
+      AUTH_TYPE_UNSPECIFIED: Authentication is not specified.
+      USER: User with valid certificate.
+      SERVICEACCOUNT: Users managed by Kubernetes API with credentials stored
+        as Secrets.
+      GROUP: Collection of users.
+    """
+    AUTH_TYPE_UNSPECIFIED = 0
+    USER = 1
+    SERVICEACCOUNT = 2
+    GROUP = 3
+
+  kind = _messages.EnumField('KindValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  ns = _messages.StringField(3)
 
 
 class TestAsset(_messages.Message):

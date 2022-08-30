@@ -230,7 +230,7 @@
     },
     "StoragePool": {
       "id": "StoragePool",
-      "description": "Resources StoragePool StoragePool is a container for volumes with a service level and capacity. Volumes can be created in a storage pool of sufficient available capacity. StoragePool capacity is what you are billed for.",
+      "description": "Resources StoragePool StoragePool is a container for volumes with a service level and capacity. Volumes can be created in a pool of sufficient available capacity. StoragePool capacity is what you are billed for.",
       "type": "object",
       "properties": {
         "name": {
@@ -251,12 +251,12 @@
           ],
           "enum": [
             "SERVICE_LEVEL_UNSPECIFIED",
-            "SERVICE_LEVEL_PREMIUM",
-            "SERVICE_LEVEL_EXTREME"
+            "PREMIUM",
+            "EXTREME"
           ]
         },
         "capacityGib": {
-          "description": "Required. Capacity in GIB of the storage pool",
+          "description": "Required. Capacity in GIB of the pool",
           "type": "string",
           "format": "int64"
         },
@@ -277,18 +277,18 @@
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
-            "Unspecified StoragePool State",
+            "Unspecified Storage Pool State",
             "Ready",
             "Creating",
             "Deleting",
             "Updating"
           ],
           "enum": [
-            "RESOURCE_STATE_UNSPECIFIED",
-            "RESOURCE_STATE_READY",
-            "RESOURCE_STATE_CREATING",
-            "RESOURCE_STATE_DELETING",
-            "RESOURCE_STATE_UPDATING"
+            "STORAGE_POOL_STATE_UNSPECIFIED",
+            "READY",
+            "CREATING",
+            "DELETING",
+            "UPDATING"
           ]
         },
         "stateDetails": {
@@ -358,7 +358,7 @@
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
-            "Unspecified StoragePool State",
+            "Unspecified Volume State",
             "Ready",
             "Creating",
             "Deleting",
@@ -368,12 +368,12 @@
           ],
           "enum": [
             "VOLUME_STATE_UNSPECIFIED",
-            "VOLUME_STATE_READY",
-            "VOLUME_STATE_CREATING",
-            "VOLUME_STATE_DELETING",
-            "VOLUME_STATE_UPDATING",
-            "VOLUME_STATE_RESTORING",
-            "VOLUME_STATE_DISABLED"
+            "READY",
+            "CREATING",
+            "DELETING",
+            "UPDATING",
+            "RESTORING",
+            "DISABLED"
           ]
         },
         "stateDetails": {
@@ -387,8 +387,8 @@
           "type": "string",
           "format": "google-datetime"
         },
-        "mountPoint": {
-          "description": "Required. MountPoint or share name of the volume",
+        "shareName": {
+          "description": "Required. Share name of the volume",
           "type": "string"
         },
         "psaRange": {
@@ -396,7 +396,7 @@
           "type": "string"
         },
         "storagePoolName": {
-          "description": "Required. StoragePool name of the volume",
+          "description": "Required. Storage Pool name of the volume",
           "type": "string"
         },
         "network": {
@@ -414,8 +414,8 @@
           ],
           "enum": [
             "SERVICE_LEVEL_UNSPECIFIED",
-            "SERVICE_LEVEL_PREMIUM",
-            "SERVICE_LEVEL_EXTREME"
+            "PREMIUM",
+            "EXTREME"
           ]
         },
         "capacityGib": {
@@ -424,11 +424,11 @@
           "format": "int64"
         },
         "exportPolicy": {
-          "description": "Required. Export policy of the volume",
+          "description": "Export policy of the volume",
           "$ref": "ExportPolicy"
         },
-        "protocolTypes": {
-          "description": "Required. Protocol types required for the volume",
+        "protocols": {
+          "description": "Required. Protocols required for the volume",
           "type": "array",
           "items": {
             "type": "string",
@@ -439,10 +439,10 @@
               "SMB protocol"
             ],
             "enum": [
-              "PROTOCOL_TYPE_UNSPECIFIED",
-              "PROTOCOL_TYPE_NFSV3",
-              "PROTOCOL_TYPE_NFSV4",
-              "PROTOCOL_TYPE_SMB"
+              "PROTOCOL_UNSPECIFIED",
+              "NFSV3",
+              "NFSV4",
+              "SMB"
             ]
           }
         },
@@ -468,6 +468,10 @@
         "description": {
           "description": "Description of the volume",
           "type": "string"
+        },
+        "snapshotPolicy": {
+          "description": "SnapshotPolicy for a volume.",
+          "$ref": "SnapshotPolicy"
         }
       }
     },
@@ -509,9 +513,9 @@
           ],
           "enum": [
             "ACCESS_TYPE_UNSPECIFIED",
-            "ACCESS_TYPE_READ_ONLY",
-            "ACCESS_TYPE_READ_WRITE",
-            "ACCESS_TYPE_READ_NONE"
+            "READ_ONLY",
+            "READ_WRITE",
+            "READ_NONE"
           ]
         },
         "nfsV3": {
@@ -537,8 +541,8 @@
           "description": "Full export string",
           "type": "string"
         },
-        "protocolType": {
-          "description": "Protocol type to mount with.",
+        "protocol": {
+          "description": "Protocol to mount with.",
           "type": "string",
           "enumDescriptions": [
             "Unspecified protocol",
@@ -547,15 +551,391 @@
             "SMB protocol"
           ],
           "enum": [
-            "PROTOCOL_TYPE_UNSPECIFIED",
-            "PROTOCOL_TYPE_NFSV3",
-            "PROTOCOL_TYPE_NFSV4",
-            "PROTOCOL_TYPE_SMB"
+            "PROTOCOL_UNSPECIFIED",
+            "NFSV3",
+            "NFSV4",
+            "SMB"
           ]
         },
         "instructions": {
           "description": "Instructions for mounting",
           "type": "string"
+        }
+      }
+    },
+    "SnapshotPolicy": {
+      "id": "SnapshotPolicy",
+      "description": "Snapshot Policy for a volume.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "If enabled, make snapshots automatically according to the schedules. Default is false.",
+          "type": "boolean"
+        },
+        "hourlySchedule": {
+          "description": "Hourly schedule policy",
+          "$ref": "HourlySchedule"
+        },
+        "dailySchedule": {
+          "description": "Daily schedule policy",
+          "$ref": "DailySchedule"
+        },
+        "weeklySchedule": {
+          "description": "Weekly schedule policy",
+          "$ref": "WeeklySchedule"
+        },
+        "monthlySchedule": {
+          "description": "Monthly schedule policy",
+          "$ref": "MonthlySchedule"
+        }
+      }
+    },
+    "HourlySchedule": {
+      "id": "HourlySchedule",
+      "description": "Make a snapshot every hour e.g. at 04:00, 05:00, 06:00",
+      "type": "object",
+      "properties": {
+        "snapshotsToKeep": {
+          "description": "The maximum number of Snapshots to keep for the hourly schedule",
+          "type": "number",
+          "format": "double"
+        },
+        "minute": {
+          "description": "Set the minute of the hour to start the snapshot (0-59), defaults to the top of the hour (0).",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "DailySchedule": {
+      "id": "DailySchedule",
+      "description": "Make a snapshot every day e.g. at 04:00, 05:20, 23:50",
+      "type": "object",
+      "properties": {
+        "snapshotsToKeep": {
+          "description": "The maximum number of Snapshots to keep for the hourly schedule",
+          "type": "number",
+          "format": "double"
+        },
+        "minute": {
+          "description": "Set the minute of the hour to start the snapshot (0-59), defaults to the top of the hour (0).",
+          "type": "number",
+          "format": "double"
+        },
+        "hour": {
+          "description": "Set the hour to start the snapshot (0-23), defaults to midnight (0).",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "WeeklySchedule": {
+      "id": "WeeklySchedule",
+      "description": "Make a snapshot every week e.g. at Monday 04:00, Wednesday 05:20, Sunday 23:50",
+      "type": "object",
+      "properties": {
+        "snapshotsToKeep": {
+          "description": "The maximum number of Snapshots to keep for the hourly schedule",
+          "type": "number",
+          "format": "double"
+        },
+        "minute": {
+          "description": "Set the minute of the hour to start the snapshot (0-59), defaults to the top of the hour (0).",
+          "type": "number",
+          "format": "double"
+        },
+        "hour": {
+          "description": "Set the hour to start the snapshot (0-23), defaults to midnight (0).",
+          "type": "number",
+          "format": "double"
+        },
+        "day": {
+          "description": "Set the day or days of the week to make a snapshot. Accepts a repeated days of the week. Defaults to 'Sunday'.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "The day of the week is unspecified.",
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ],
+            "enum": [
+              "DAY_OF_WEEK_UNSPECIFIED",
+              "MONDAY",
+              "TUESDAY",
+              "WEDNESDAY",
+              "THURSDAY",
+              "FRIDAY",
+              "SATURDAY",
+              "SUNDAY"
+            ]
+          }
+        }
+      }
+    },
+    "MonthlySchedule": {
+      "id": "MonthlySchedule",
+      "description": "Make a snapshot once a month e.g. at 2nd 04:00, 7th 05:20, 24th 23:50",
+      "type": "object",
+      "properties": {
+        "snapshotsToKeep": {
+          "description": "The maximum number of Snapshots to keep for the hourly schedule",
+          "type": "number",
+          "format": "double"
+        },
+        "minute": {
+          "description": "Set the minute of the hour to start the snapshot (0-59), defaults to the top of the hour (0).",
+          "type": "number",
+          "format": "double"
+        },
+        "hour": {
+          "description": "Set the hour to start the snapshot (0-23), defaults to midnight (0).",
+          "type": "number",
+          "format": "double"
+        },
+        "daysOfMonth": {
+          "description": "Set the day or days of the month to make a snapshot (1-31). Accepts a repeated number of days. Defaults to '1'.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32"
+          }
+        }
+      }
+    },
+    "RevertVolumeRequest": {
+      "id": "RevertVolumeRequest",
+      "description": "RevertVolumeRequest reverts the given volume to the specified snapshot.",
+      "type": "object",
+      "properties": {
+        "snapshotId": {
+          "description": "Required. The snapshot resource ID, in the format 'my-snapshot', where the specified ID is the {snapshot_id} of the fully qualified name like projects\/{project_id}\/locations\/{location_id}\/volumes\/{volume_id}\/snapshots\/{snapshot_id}",
+          "type": "string"
+        }
+      }
+    },
+    "ListSnapshotsResponse": {
+      "id": "ListSnapshotsResponse",
+      "description": "ListSnapshotsResponse is the result of ListSnapshotsRequest.",
+      "type": "object",
+      "properties": {
+        "snapshots": {
+          "description": "A list of snapshots in the project for the specified volume.",
+          "type": "array",
+          "items": {
+            "$ref": "Snapshot"
+          }
+        },
+        "nextPageToken": {
+          "description": "The token you can use to retrieve the next page of results. Not returned if there are no more results in the list.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Snapshot": {
+      "id": "Snapshot",
+      "description": "Snapshot",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The resource name of the snapshot.",
+          "type": "string"
+        },
+        "snapshotId": {
+          "description": "Required. Unique id of the snapshot.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The snapshot state.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified Snapshot State",
+            "Ready",
+            "Creating",
+            "Deleting",
+            "Updating"
+          ],
+          "enum": [
+            "SNAPSHOT_STATE_UNSPECIFIED",
+            "READY",
+            "CREATING",
+            "DELETING",
+            "UPDATING"
+          ]
+        },
+        "stateDetails": {
+          "description": "Output only. State details of the storage pool",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "A description of the snapshot with 2048 characters or less. Requests with longer descriptions will be rejected.",
+          "type": "string"
+        },
+        "usedBytes": {
+          "description": "Output only. Current storage usage for the snapshot in bytes.",
+          "readOnly": true,
+          "type": "number",
+          "format": "double"
+        },
+        "createTime": {
+          "description": "Output only. The time when the snapshot was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Resource labels to represent user provided metadata.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListActiveDirectoryResponse": {
+      "id": "ListActiveDirectoryResponse",
+      "type": "object",
+      "properties": {
+        "activeDirectories": {
+          "description": "The list of active directories.",
+          "type": "array",
+          "items": {
+            "$ref": "ActiveDirectory"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ActiveDirectory": {
+      "id": "ActiveDirectory",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. Create time of the active directory.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. The state of the AD.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state",
+            "Creating",
+            "Ready",
+            "Updating",
+            "In use",
+            "Deleting",
+            "Error"
+          ],
+          "enum": [
+            "ACTIVE_DIRECTORY_STATE_UNSPECIFIED",
+            "CREATING",
+            "READY",
+            "UPDATING",
+            "IN_USE",
+            "DELETING",
+            "ERROR"
+          ]
+        },
+        "name": {
+          "description": "Required. User specified name for the AD. Must be unique to the project.",
+          "type": "string"
+        },
+        "domain": {
+          "description": "Required. Name of the Active Directory domain",
+          "type": "string"
+        },
+        "site": {
+          "description": "The Active Directory site the service will limit Domain Controller discovery too.",
+          "type": "string"
+        },
+        "dns": {
+          "description": "Required. Comma separated list of DNS server IP addresses for the Active Directory domain.",
+          "type": "string"
+        },
+        "netBios": {
+          "description": "Required. NetBIOS name of the server.",
+          "type": "string"
+        },
+        "organizationalUnit": {
+          "description": "The Organizational Unit (OU) within the Windows Active Directory the user belongs to.",
+          "type": "string"
+        },
+        "aesEncryption": {
+          "description": "If enabled, AES encryption will be enabled for SMB communication.",
+          "type": "boolean"
+        },
+        "username": {
+          "description": "Required. Username of the Active Directory domain administrator.",
+          "type": "string"
+        },
+        "password": {
+          "description": "Required. Password of the Active Directory domain administrator.",
+          "type": "string"
+        },
+        "backupOperators": {
+          "description": "Users to be added to the Built-in Backup Operator active directory group.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "securityOperators": {
+          "description": "Domain users to be given the SeSecurityPrivilege.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "kdcHostname": {
+          "description": "Name of the active directory machine. (ad_name on SDE)",
+          "type": "string"
+        },
+        "kdcIp": {
+          "description": "KDC server IP address for the active directory machine.",
+          "type": "string"
+        },
+        "nfsUsersWithLdap": {
+          "description": "If enabled, will allow access to local users and LDAP users. If access is needed for only LDAP users, it has to be disabled.",
+          "type": "boolean"
+        },
+        "description": {
+          "description": "Description of the active directory.",
+          "type": "string"
+        },
+        "ldapSigning": {
+          "description": "Specifies whether or not the LDAP traffic needs to be signed.",
+          "type": "boolean"
+        },
+        "encryptDcConnections": {
+          "description": "If enabled, traffic between the SMB server to Domain Controller (DC) will be encrypted.",
+          "type": "boolean"
         }
       }
     },
@@ -1184,6 +1564,366 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "DeleteVolume Deletes a single Volume."
+                },
+                "revert": {
+                  "id": "netapp.projects.locations.volumes.revert",
+                  "path": "v1alpha1/{+name}:revert",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}:revert",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the volume, in the format of projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RevertVolumeRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Revert an existing volume to a specified snapshot. Warning! This operation will permanently revert all changes made after the snapshot was created."
+                }
+              }
+              ,
+              "resources": {
+                "snapshots": {
+                  "methods": {
+                    "list": {
+                      "id": "netapp.projects.locations.volumes.snapshots.list",
+                      "path": "v1alpha1/{+parent}/snapshots",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The volume for which to retrieve snapshot information, in the format `projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of items to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The next_page_token value to use if there are additional results to retrieve for this list request.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Sort results. Supported values are \"name\", \"name desc\" or \"\" (unsorted).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "List filter.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListSnapshotsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns descriptions of all snapshots for a volume."
+                    },
+                    "get": {
+                      "id": "netapp.projects.locations.volumes.snapshots.get",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots/{snapshotsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The snapshot resource name, in the format `projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}\/snapshots\/{snapshot_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/snapshots\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Snapshot"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Describe a snapshot for a volume."
+                    },
+                    "create": {
+                      "id": "netapp.projects.locations.volumes.snapshots.create",
+                      "path": "v1alpha1/{+parent}/snapshots",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The NetApp volume to create the snapshots of, in the format `projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "snapshotId": {
+                          "description": "Required. The ID to use for the snapshot. The ID must be unique within the specified volume. This value must start with a lowercase letter followed by up to 62 lowercase letters, numbers, or hyphens, and cannot end with a hyphen.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Snapshot"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Create a new snapshot for a volume."
+                    },
+                    "delete": {
+                      "id": "netapp.projects.locations.volumes.snapshots.delete",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots/{snapshotsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The snapshot resource name, in the format `projects\/*\/locations\/*\/volumes\/*\/snapshots\/{snapshot_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/snapshots\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a snapshot."
+                    },
+                    "patch": {
+                      "id": "netapp.projects.locations.volumes.snapshots.patch",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots/{snapshotsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the snapshot.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/snapshots\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "Snapshot"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the settings of a specific snapshot."
+                    }
+                  }
+                }
+              }
+            },
+            "activedirectories": {
+              "methods": {
+                "list": {
+                  "id": "netapp.projects.locations.activedirectories.list",
+                  "path": "v1alpha1/{+parent}/activedirectories",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent value for ListActiveDirectoryRequest",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, the server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results the server should return.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Filtering results",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Hint for how to order the results",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListActiveDirectoryResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "ListActiveDirectories Lists active directories."
+                },
+                "get": {
+                  "id": "netapp.projects.locations.activedirectories.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories/{activedirectoriesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the active directory.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/activedirectories\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ActiveDirectory"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "DescribeActiveDirectory Describes a specified active directory."
+                },
+                "create": {
+                  "id": "netapp.projects.locations.activedirectories.create",
+                  "path": "v1alpha1/{+parent}/activedirectories",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Value for parent.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "ActiveDirectory"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "CreateActiveDirectory Creates the active directory specified in the request."
+                },
+                "patch": {
+                  "id": "netapp.projects.locations.activedirectories.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories/{activedirectoriesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. User specified name for the AD. Must be unique to the project.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/activedirectories\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the Active Directory resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ActiveDirectory"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "UpdateActiveDirectory Update the parameters of an active directories."
+                },
+                "delete": {
+                  "id": "netapp.projects.locations.activedirectories.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories/{activedirectoriesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the active directory.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/activedirectories\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "DeleteActiveDirectory Delete the active directory specified in the request."
                 }
               }
             }

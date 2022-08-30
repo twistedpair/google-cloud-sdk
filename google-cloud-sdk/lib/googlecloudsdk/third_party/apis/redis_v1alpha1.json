@@ -1027,6 +1027,10 @@
       "description": "A cluster instance.",
       "type": "object",
       "properties": {
+        "privateServiceConnect": {
+          "description": "Optional. Populate to use private service connect network option.",
+          "$ref": "PrivateServiceConnect"
+        },
         "name": {
           "description": "Required. Unique name of the resource in this scope including project and location using the form: `projects\/{project_id}\/locations\/{location_id}\/clusters\/{cluster_id}`",
           "type": "string"
@@ -1034,14 +1038,6 @@
         "displayName": {
           "description": "Optional. An arbitrary and optional user-provided name for the cluster.",
           "type": "string"
-        },
-        "endpoints": {
-          "description": "Output only. Hostname or IP address and port pairs used to connect to the cluster.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "Endpoint"
-          }
         },
         "createTime": {
           "description": "Output only. The timestamp associated with the cluster creation request.",
@@ -1059,7 +1055,7 @@
             "Redis cluster has been created and is fully usable.",
             "Redis cluster configuration is being updated.",
             "Redis cluster is being deleted.",
-            "Redis instance is being repaired and may be unusable."
+            "Redis instance is being reparied."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -1070,101 +1066,27 @@
             "REPAIRING"
           ]
         },
-        "redisConfigs": {
-          "description": "Optional. Redis configuration parameters, according to http:\/\/redis.io\/topics\/config. Currently, the only supported parameters are: Redis version 6.x and newer: * lfu-decay-time * lfu-log-factor * maxmemory-policy",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
         "uid": {
-          "description": "Output only.",
+          "description": "Output only. System assigned, unique identifier for the cluster.",
           "readOnly": true,
           "type": "string"
         },
         "totalMemorySizeGb": {
-          "description": "Optional. Redis memory size in GiB for the entire cluster. Defaults to 48 for Dense tier and 12 for Performance tier.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "defaultReplicaCount": {
-          "description": "Optional. Input only. The number of replica nodes per shard. Valid range is [0-2] and defaults to 0. This field is INPUT only.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "slots": {
-          "description": "Output only. The slots making up the cluster. Read-only. In future versions this will be writable to allow for heterogeneous clusters.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "ClusterSlots"
-          }
-        },
-        "customerManagedKey": {
-          "description": "Input only. The KMS key reference that the customer provides when trying to create the instance.",
-          "type": "string"
-        },
-        "redisVersion": {
-          "description": "Output only. Redis version. This is an output only field and currently only Redis 6 is supported.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "",
-            "`REDIS_6_X` for Redis 6.x compatibility This is the default and only supported version in Flex for now."
-          ],
-          "enum": [
-            "REDIS_VERSION_UNSPECIFIED",
-            "REDIS_6_X"
-          ]
-        }
-      }
-    },
-    "Endpoint": {
-      "id": "Endpoint",
-      "description": "An endpoint exposed by a cluster. In the future we will add an enum to identify whether this endpoint is read\/write or read-only when the feature is ready.",
-      "type": "object",
-      "properties": {
-        "host": {
-          "description": "Output only. Hostname or IP address of the exposed Redis endpoint used by clients to connect to the service.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "port": {
-          "description": "Output only. The port number of the exposed Redis endpoint.",
-          "readOnly": true,
+          "description": "Optional. Redis memory size in GiB for the entire cluster.",
           "type": "integer",
           "format": "int32"
         }
       }
     },
-    "ClusterSlots": {
-      "id": "ClusterSlots",
-      "description": "A series of slots belonging to a cluster.",
+    "PrivateServiceConnect": {
+      "id": "PrivateServiceConnect",
+      "description": "Contains private service connect specific options.",
       "type": "object",
       "properties": {
-        "startSlotsInclusive": {
-          "description": "Output only. The start of the slots that make up this series.",
+        "serviceAttachment": {
+          "description": "Output only. The address of the Private Service Connect (PSC) service that the customer can use to connect this instance to their local network.",
           "readOnly": true,
-          "type": "integer",
-          "format": "int32"
-        },
-        "endSlotsExclusive": {
-          "description": "Output only. The end of the slots that make up this series.",
-          "readOnly": true,
-          "type": "integer",
-          "format": "int32"
-        },
-        "memorySizeGb": {
-          "description": "Output only. The total size of keyspace this series has.",
-          "readOnly": true,
-          "type": "integer",
-          "format": "int32"
-        },
-        "replicaCount": {
-          "description": "Output only. The number of replicas this series has.",
-          "readOnly": true,
-          "type": "integer",
-          "format": "int32"
+          "type": "string"
         }
       }
     },
@@ -1241,32 +1163,39 @@
       "properties": {
         "createTime": {
           "description": "Output only. The time the operation was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
           "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
           "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "verb": {
           "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "statusMessage": {
           "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
           "type": "string"
         },
         "requestedCancellation": {
           "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
           "type": "boolean"
         },
         "apiVersion": {
           "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
           "type": "string"
         }
       }

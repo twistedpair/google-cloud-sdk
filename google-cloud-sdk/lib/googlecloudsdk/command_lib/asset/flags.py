@@ -675,39 +675,117 @@ def AddAnalyzerConditionContextGroup(parser):
 
 
 def AddStatementArgs(parser):
+  """Adds the sql statement."""
   parser.add_argument(
       '--statement',
       help=(
-          'A BigQuery Standard SQL compatible statement. If the query execution'
-          'finishes within timeout and there is no pagination, the full query'
+          'A BigQuery Standard SQL compatible statement. If the query execution '
+          'finishes within timeout and there is no pagination, the full query '
           'results will be returned. Otherwise, pass job_reference from '
           'previous call as `--job-referrence` to obtain the full results.'))
 
 
 def AddJobReferenceArgs(parser):
+  """Adds the previous job reference."""
   parser.add_argument(
       '--job-reference',
       help=('Reference to the query job, which is from the previous call.'))
 
 
+def AddQueryArgs(parser):
+  """Adds query args."""
+  query_group = parser.add_group(
+      mutex=True,
+      required=True,
+      help='The query or job reference of the query request.')
+  AddStatementArgs(query_group)
+  AddJobReferenceArgs(query_group)
+
+
 def AddPageSize(parser):
+  """Adds page size."""
   parser.add_argument(
       '--page-size',
       type=int,
       help=(
-          'The maximum number of rows to return in the results. Other than that, one page is also limited to 10 MB.'
+          'The maximum number of rows to return in the results. One page is also limited to 10 MB.'
       ))
 
 
 def AddPageToken(parser):
+  """Adds page token."""
   parser.add_argument(
       '--page-token', help=('A page token received from previous call.'))
 
 
 def AddTimeout(parser):
+  """Adds timeout."""
   parser.add_argument(
       '--timeout',
       type=arg_parsers.Duration(),
       help=(
-          'Maximum amount of time that the client is willing to wait for the query to complete.'
+          'Maximum amount of time that the client will wait for the query to complete.'
       ))
+
+
+def AddReadTimeWindowArgs(parser):
+  """Adds read time window."""
+  time_window_group = parser.add_group(
+      mutex=False,
+      required=False,
+      help='Specifies what time period or point in time to query asset metadata at.'
+  )
+  AddStartTimeArgs(time_window_group)
+  AddEndTimeArgs(time_window_group)
+
+
+def AddTimeArgs(parser):
+  """Adds read time."""
+  time_group = parser.add_group(
+      mutex=True,
+      required=False,
+      help='Specifies what time period or point in time to query asset metadata at.'
+  )
+  AddSnapshotTimeArgs(time_group)
+  AddReadTimeWindowArgs(time_group)
+
+
+def AddQuerySystemBigQueryArgs(parser):
+  """Add BigQuery destination args to argument list for query system."""
+  bigquery_group = parser.add_group(
+      mutex=False,
+      required=False,
+      help='The BigQuery destination for query system.')
+  resource = yaml_data.ResourceYAMLData.FromPath('bq.table')
+  table_dic = resource.GetData()
+  # Update the name 'dataset' in table_ref to 'bigquery-dataset'
+  attributes = table_dic['attributes']
+  for attr in attributes:
+    if attr['attribute_name'] == 'dataset':
+      attr['attribute_name'] = 'bigquery-dataset'
+  arg_specs = [
+      resource_args.GetResourcePresentationSpec(
+          verb='for the export',
+          name='bigquery-table',
+          required=False,
+          prefixes=False,
+          positional=False,
+          resource_data=table_dic)
+  ]
+  if arg_specs:
+    concept_parsers.ConceptParser(arg_specs).AddToParser(bigquery_group)
+  base.ChoiceArgument(
+      '--write-disposition',
+      help_str='Specifies the action that occurs if the destination table or partition already exists.',
+      choices={
+          'write-truncate':
+              """If the table or partition already exists, BigQuery overwrites
+              the entire table or all the partition\'s data.""",
+          'write-append':
+              """AIf the table or partition already exists, BigQuery appends the
+              data to the table or the latest partition.""",
+          'write-empty':
+              """If the table already exists and contains data, an error is
+              returned.""",
+      },
+  ).AddToParser(bigquery_group)

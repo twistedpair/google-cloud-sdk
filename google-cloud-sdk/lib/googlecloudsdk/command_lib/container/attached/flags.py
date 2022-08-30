@@ -28,4 +28,3 @@ def AddPlatformVersion(parser, required=True):
 
 def GetPlatformVersion(args):
   return getattr(args, 'platform_version', None)
-

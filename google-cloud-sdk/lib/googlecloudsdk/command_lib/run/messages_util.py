@@ -94,9 +94,16 @@ def GetExecutionCreatedMessage(release_track, execution):
                            if release_track.prefix is not None else ''),
             execution_name=execution.name)
   if execution.status and execution.status.logUri:
-    msg += '\n\nSee logs for this execution at: {}'.format(
-        execution.status.logUri)
+    msg += '\n\nOr visit ' + _GetExecutionUiLink(execution)
   return msg
+
+
+def _GetExecutionUiLink(execution):
+  return ('https://console.cloud.google.com/run/jobs/executions/'
+          'details/{region}/{execution_name}/tasks?project={project}').format(
+              region=execution.region,
+              execution_name=execution.name,
+              project=execution.namespace)
 
 
 def GetBuildEquivalentForSourceRunMessage(serv, pack, source):

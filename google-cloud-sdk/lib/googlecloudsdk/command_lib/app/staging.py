@@ -224,10 +224,10 @@ class NoopCommand(_Command):
   def GetPath(self):
     return None
 
-  def GetArgs(self, descriptor, app_dir, staging_dir, appyaml=None):
+  def GetArgs(self, descriptor, app_dir, staging_dir, explicit_appyaml=None):
     return None
 
-  def Run(self, staging_area, descriptor, app_dir, appyaml=None):
+  def Run(self, staging_area, descriptor, app_dir, explicit_appyaml=None):
     """Does nothing."""
     pass
 
@@ -235,8 +235,8 @@ class NoopCommand(_Command):
     return isinstance(other, NoopCommand)
 
 
-class CreateJava11ProjectCommand(_Command):
-  """A command that creates a java11 runtime app.yaml."""
+class CreateJava17ProjectCommand(_Command):
+  """A command that creates a java17 runtime app.yaml."""
 
   def EnsureInstalled(self):
     pass
@@ -247,35 +247,35 @@ class CreateJava11ProjectCommand(_Command):
   def GetArgs(self, descriptor, staging_dir, appyaml=None):
     return
 
-  def Run(self, staging_area, config_file, project_dir, explicit_appyaml=None):
+  def Run(self, staging_area, descriptor, app_dir, explicit_appyaml=None):
     # Logic is: copy/symlink the project in the staged area, and create a
-    # simple file app.yaml for runtime: java11 if it does not exist.
+    # simple file app.yaml for runtime: java17 if it does not exist.
     # If it exists in the standard and documented default location
     # (in project_dir/src/main/appengine/app.yaml), copy it in the staged
     # area.
-    appenginewebxml = os.path.join(project_dir, 'src', 'main', 'webapp',
-                                   'WEB-INF', 'appengine-web.xml')
+    appenginewebxml = os.path.join(app_dir, 'src', 'main', 'webapp', 'WEB-INF',
+                                   'appengine-web.xml')
     if os.path.exists(appenginewebxml):
       raise self.error()
     if explicit_appyaml:
       shutil.copyfile(explicit_appyaml, os.path.join(staging_area, 'app.yaml'))
     else:
-      appyaml = os.path.join(project_dir, 'src', 'main', 'appengine',
-                             'app.yaml')
+      appyaml = os.path.join(app_dir, 'src', 'main', 'appengine', 'app.yaml')
       if os.path.exists(appyaml):
         # Put the user app.yaml at the root of the staging directory to deploy
         # as required by the Cloud SDK.
         shutil.copy2(appyaml, staging_area)
       else:
-        # Create a very simple 1 liner app.yaml for Java11 runtime.
+        # Create a very simple 1 liner app.yaml for Java17 runtime.
         files.WriteFileContents(
-            os.path.join(staging_area, 'app.yaml'), 'runtime: java11\n')
+            os.path.join(staging_area, 'app.yaml'),
+            'runtime: java17\ninstance_class: F2\n')
 
-    for name in os.listdir(project_dir):
+    for name in os.listdir(app_dir):
       # Do not deploy locally built artifacts, buildpack will clean this anyway.
       if name == self.ignore:
         continue
-      srcname = os.path.join(project_dir, name)
+      srcname = os.path.join(app_dir, name)
       dstname = os.path.join(staging_area, name)
       try:
         os.symlink(srcname, dstname)
@@ -295,35 +295,35 @@ class CreateJava11ProjectCommand(_Command):
     return staging_area
 
   def __eq__(self, other):
-    return isinstance(other, CreateJava11ProjectCommand)
+    return isinstance(other, CreateJava17ProjectCommand)
 
 
-class CreateJava11MavenProjectCommand(CreateJava11ProjectCommand):
-  """A command that creates a java11 runtime app.yaml from a pom.xml file."""
+class CreateJava17MavenProjectCommand(CreateJava17ProjectCommand):
+  """A command that creates a java17 runtime app.yaml from a pom.xml file."""
 
   def __init__(self):
     self.error = MavenPomNotSupported
     self.ignore = 'target'
-    super(CreateJava11MavenProjectCommand, self).__init__()
+    super(CreateJava17MavenProjectCommand, self).__init__()
 
   def __eq__(self, other):
-    return isinstance(other, CreateJava11GradleProjectCommand)
+    return isinstance(other, CreateJava17GradleProjectCommand)
 
 
-class CreateJava11GradleProjectCommand(CreateJava11ProjectCommand):
-  """A command that creates a java11 runtime app.yaml from a build.gradle file."""
+class CreateJava17GradleProjectCommand(CreateJava17ProjectCommand):
+  """A command that creates a java17 runtime app.yaml from a build.gradle file."""
 
   def __init__(self):
     self.error = GradleBuildNotSupported
     self.ignore = 'build'
-    super(CreateJava11GradleProjectCommand, self).__init__()
+    super(CreateJava17GradleProjectCommand, self).__init__()
 
   def __eq__(self, other):
-    return isinstance(other, CreateJava11GradleProjectCommand)
+    return isinstance(other, CreateJava17GradleProjectCommand)
 
 
-class CreateJava11YamlCommand(_Command):
-  """A command that creates a java11 runtime app.yaml from a jar file."""
+class CreateJava17YamlCommand(_Command):
+  """A command that creates a java17 runtime app.yaml from a jar file."""
 
   def EnsureInstalled(self):
     pass
@@ -331,21 +331,21 @@ class CreateJava11YamlCommand(_Command):
   def GetPath(self):
     return None
 
-  def GetArgs(self, descriptor, jar_file, staging_dir, appyaml=None):
+  def GetArgs(self, descriptor, app_dir, staging_dir, explicit_appyaml=None):
     return None
 
-  def Run(self, staging_area, jar_file, app_dir, appyaml=None):
+  def Run(self, staging_area, descriptor, app_dir, explicit_appyaml=None):
     # Logic is simple: copy the jar in the staged area, and create a simple
-    # file app.yaml for runtime: java11.
-    shutil.copy2(jar_file, staging_area)
-    if appyaml:
-      shutil.copyfile(appyaml, os.path.join(staging_area, 'app.yaml'))
+    # file app.yaml for runtime: java17.
+    shutil.copy2(descriptor, staging_area)
+    if explicit_appyaml:
+      shutil.copyfile(explicit_appyaml, os.path.join(staging_area, 'app.yaml'))
     else:
       files.WriteFileContents(
           os.path.join(staging_area, 'app.yaml'),
-          'runtime: java11\n',
+          'runtime: java17\ninstance_class: F2\n',
           private=True)
-    manifest = jarfile.ReadManifest(jar_file)
+    manifest = jarfile.ReadManifest(descriptor)
     if manifest:
       main_entry = manifest.main_section.get('Main-Class')
       if main_entry is None:
@@ -370,7 +370,7 @@ class CreateJava11YamlCommand(_Command):
     return staging_area
 
   def __eq__(self, other):
-    return isinstance(other, CreateJava11YamlCommand)
+    return isinstance(other, CreateJava17YamlCommand)
 
 
 class StageAppWithoutAppYamlCommand(_Command):
@@ -382,19 +382,19 @@ class StageAppWithoutAppYamlCommand(_Command):
   def GetPath(self):
     return None
 
-  def GetArgs(self, descriptor, app, staging_dir, appyaml=None):
+  def GetArgs(self, descriptor, app_dir, staging_dir, explicit_appyaml=None):
     return None
 
-  def Run(self, staging_area, descriptor, app, appyaml=None):
+  def Run(self, staging_area, descriptor, app_dir, explicit_appyaml=None):
     # Copy the application in tmp area, and copy the optional app.yaml in it.
     scratch_area = os.path.join(staging_area, 'scratch')
-    if os.path.isdir(app):
-      files.CopyTree(app, scratch_area)
+    if os.path.isdir(app_dir):
+      files.CopyTree(app_dir, scratch_area)
     else:
       os.mkdir(scratch_area)
-      shutil.copy2(app, scratch_area)
-    if appyaml:
-      shutil.copyfile(appyaml, os.path.join(scratch_area, 'app.yaml'))
+      shutil.copy2(app_dir, scratch_area)
+    if explicit_appyaml:
+      shutil.copyfile(explicit_appyaml, os.path.join(scratch_area, 'app.yaml'))
 
     return scratch_area
 
@@ -444,7 +444,7 @@ class _BundledCommand(_Command):
       raise NoSdkRootError()
     return os.path.join(sdk_root, self.name)
 
-  def GetArgs(self, descriptor, app_dir, staging_dir, appyaml=None):
+  def GetArgs(self, descriptor, app_dir, staging_dir, explicit_appyaml=None):
     if self._mapper:
       return self._mapper(self.GetPath(), descriptor, app_dir, staging_dir)
     else:
@@ -481,9 +481,11 @@ class ExecutableCommand(_Command):
   def EnsureInstalled(self):
     pass
 
-  def GetArgs(self, descriptor, app_dir, staging_dir, appyaml=None):
-    if appyaml:
-      return [self.GetPath(), descriptor, app_dir, staging_dir, appyaml]
+  def GetArgs(self, descriptor, app_dir, staging_dir, explicit_appyaml=None):
+    if explicit_appyaml:
+      return [
+          self.GetPath(), descriptor, app_dir, staging_dir, explicit_appyaml
+      ]
     else:
       return [self.GetPath(), descriptor, app_dir, staging_dir]
 
@@ -550,11 +552,11 @@ _STAGING_REGISTRY = {
             component='app-engine-java',
             mapper=_JavaStagingMapper),
     runtime_registry.RegistryEntry('java-jar', {env.STANDARD}):
-        CreateJava11YamlCommand(),
+        CreateJava17YamlCommand(),
     runtime_registry.RegistryEntry('java-maven-project', {env.STANDARD}):
-        CreateJava11MavenProjectCommand(),
+        CreateJava17MavenProjectCommand(),
     runtime_registry.RegistryEntry('java-gradle-project', {env.STANDARD}):
-        CreateJava11GradleProjectCommand(),
+        CreateJava17GradleProjectCommand(),
     runtime_registry.RegistryEntry('generic-copy', {env.FLEX, env.STANDARD}):
         StageAppWithoutAppYamlCommand(),
 }

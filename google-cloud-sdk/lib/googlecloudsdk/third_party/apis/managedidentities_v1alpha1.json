@@ -1013,6 +1013,75 @@
         }
       }
     },
+    "DisableMigrationRequest": {
+      "id": "DisableMigrationRequest",
+      "description": "DisableMigrationRequest is the request message for DisableMigration method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CheckMigrationPermissionRequest": {
+      "id": "CheckMigrationPermissionRequest",
+      "description": "CheckMigrationPermissionRequest is the request message for CheckMigrationPermission method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CheckMigrationPermissionResponse": {
+      "id": "CheckMigrationPermissionResponse",
+      "description": "CheckMigrationPermissionResponse is the response message for CheckMigrationPermission method.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "The state of DomainMigration.",
+          "type": "string",
+          "enumDescriptions": [
+            "DomainMigration is in unspecified state.",
+            "Domain Migration is Disabled.",
+            "Domain Migration is Enabled.",
+            "Domain Migration is not in valid state."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "DISABLED",
+            "ENABLED",
+            "NEEDS_MAINTENANCE"
+          ]
+        },
+        "onpremDomains": {
+          "description": "The state of SID filtering of all the domains which has trust established.",
+          "type": "array",
+          "items": {
+            "$ref": "OnPremDomainSIDDetails"
+          }
+        }
+      }
+    },
+    "OnPremDomainSIDDetails": {
+      "id": "OnPremDomainSIDDetails",
+      "description": "OnPremDomainDetails is the message which contains details of on-prem domain which is trusted and needs to be migrated.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "FQDN of the on-prem domain being migrated.",
+          "type": "string"
+        },
+        "sidFilteringState": {
+          "description": "Current SID filtering state.",
+          "type": "string",
+          "enumDescriptions": [
+            "SID Filtering is in unspecified state.",
+            "SID Filtering is Enabled.",
+            "SID Filtering is Disabled."
+          ],
+          "enum": [
+            "SID_FILTERING_STATE_UNSPECIFIED",
+            "ENABLED",
+            "DISABLED"
+          ]
+        }
+      }
+    },
     "DomainJoinMachineRequest": {
       "id": "DomainJoinMachineRequest",
       "description": "DomainJoinMachineRequest is the request message for DomainJoinMachine method",
@@ -1033,16 +1102,16 @@
       "description": "Machine is the resource containing VM information to be domain joined",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "Required. Instance name of the GCE VM which will be used as host name for domain join",
+        "hostName": {
+          "description": "Required. Host name of the Compute Engine VM which will be used as host name for domain join",
           "type": "string"
         },
         "id": {
-          "description": "Required. Instance Id of the GCE VM",
+          "description": "Required. Instance Id of the Compute Engine VM",
           "type": "string"
         },
         "token": {
-          "description": "Required. Instance token of the GCE VM to verify instance identity",
+          "description": "Required. Instance token of the Compute Engine VM to verify instance identity",
           "type": "string"
         }
       }
@@ -1103,7 +1172,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
@@ -1651,12 +1720,18 @@
           "enumDescriptions": [
             "Unspecified channel.",
             "Early channel within a customer project.",
-            "Later channel within a customer project."
+            "Later channel within a customer project.",
+            "! ! The follow channels can ONLY be used if you adopt the new MW system! ! ! NOTE: all WEEK channels are assumed to be under a weekly window. ! There is currently no dedicated channel definitions for Daily windows. ! If you use Daily window, the system will assume a 1d (24Hours) advanced ! notification period b\/w EARLY and LATER. ! We may consider support more flexible daily channel specifications in ! the future. WEEK1 == EARLIER with minimum 7d advanced notification. {7d, 14d} The system will treat them equally and will use WEEK1 whenever it can. New customers are encouraged to use this channel annotation.",
+            "WEEK2 == LATER with minimum 14d advanced notification {14d, 21d}.",
+            "WEEK5 == 40d support. minimum 35d advanced notification {35d, 42d}."
           ],
           "enum": [
             "UPDATE_CHANNEL_UNSPECIFIED",
             "EARLIER",
-            "LATER"
+            "LATER",
+            "WEEK1",
+            "WEEK2",
+            "WEEK5"
           ]
         },
         "denyMaintenancePeriods": {
@@ -2483,13 +2558,69 @@
                       ],
                       "description": "Enable Domain Migration"
                     },
-                    "joinMachine": {
-                      "id": "managedidentities.projects.locations.global.domains.joinMachine",
-                      "path": "v1alpha1/{+name}:joinMachine",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}:joinMachine",
+                    "disableMigration": {
+                      "id": "managedidentities.projects.locations.global.domains.disableMigration",
+                      "path": "v1alpha1/{+domain}:disableMigration",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}:disableMigration",
                       "httpMethod": "POST",
                       "parameters": {
-                        "name": {
+                        "domain": {
+                          "description": "Required. The domain resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "domain"
+                      ],
+                      "request": {
+                        "$ref": "DisableMigrationRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Disable Domain Migration"
+                    },
+                    "checkMigrationPermission": {
+                      "id": "managedidentities.projects.locations.global.domains.checkMigrationPermission",
+                      "path": "v1alpha1/{+domain}:checkMigrationPermission",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}:checkMigrationPermission",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "domain": {
+                          "description": "Required. The domain resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "domain"
+                      ],
+                      "request": {
+                        "$ref": "CheckMigrationPermissionRequest"
+                      },
+                      "response": {
+                        "$ref": "CheckMigrationPermissionResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "AuditMigration API gets the current state of DomainMigration"
+                    },
+                    "domainJoinMachine": {
+                      "id": "managedidentities.projects.locations.global.domains.domainJoinMachine",
+                      "path": "v1alpha1/{+domain}:domainJoinMachine",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}:domainJoinMachine",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "domain": {
                           "description": "Required. The domain resource name using the form: projects\/{project_id}\/locations\/global\/domains\/{domain_name}",
                           "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                           "location": "path",
@@ -2498,7 +2629,7 @@
                         }
                       },
                       "parameterOrder": [
-                        "name"
+                        "domain"
                       ],
                       "request": {
                         "$ref": "DomainJoinMachineRequest"
@@ -2509,7 +2640,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "DomainJoinMachine API joins a GCE VM to the domain"
+                      "description": "DomainJoinMachine API joins a Compute Engine VM to the domain"
                     },
                     "setIamPolicy": {
                       "id": "managedidentities.projects.locations.global.domains.setIamPolicy",

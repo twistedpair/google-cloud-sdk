@@ -441,6 +441,31 @@
           "type": "string"
         }
       }
+    },
+    "GoogleCloudOrgpolicyV2CheckOrgPolicyResponse": {
+      "id": "GoogleCloudOrgpolicyV2CheckOrgPolicyResponse",
+      "description": "The response returned from the CheckOrgPolicy method. For list constraints, the Result will be ALLOWED\/DENIED. For boolean constraints, the Result will be ENFORCED\/NOT_ENFORCED.",
+      "type": "object",
+      "properties": {
+        "result": {
+          "description": "The result of the org policy being checked",
+          "type": "string",
+          "enumDescriptions": [
+            "Default unspecified value",
+            "List type constraint is allowed",
+            "List type constraint is denied",
+            "Boolean type constraint in enforced",
+            "Boolean type constraint is not enforced"
+          ],
+          "enum": [
+            "RESULT_UNSPECIFIED",
+            "ALLOWED",
+            "DENIED",
+            "ENFORCED",
+            "NOT_ENFORCED"
+          ]
+        }
+      }
     }
   },
   "resources": {
@@ -660,6 +685,36 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Deletes a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or Org Policy does not exist."
+            },
+            "check": {
+              "id": "orgpolicy.projects.policies.check",
+              "path": "v2/{+name}:check",
+              "flatPath": "v2/projects/{projectsId}/policies/{policiesId}:check",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The CRM resource name. Can be a project, folder or organization. Ex: \u201Cprojects\/ID_OR_NUMBER\/policies\/CONSTRAINT_NAME\u201D \u201Cfolders\/ID_OR_NUMBER\/policies\/CONSTRAINT_NAME\u201D \u201Corganizations\/ID_OR_NUMBER\/policies\/CONSTRAINT_NAME\u201D",
+                  "pattern": "^projects\/[^\/]+\/policies\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "listValue": {
+                  "description": "For List canned constraints, set the literal field. Custom constraints (NOT YET SUPPORTED).",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudOrgpolicyV2CheckOrgPolicyResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Checks an org policy's conformance to a specified value at a particular node in the hierarchy."
             }
           }
         }
@@ -881,6 +936,36 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Deletes a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or Org Policy does not exist."
+            },
+            "check": {
+              "id": "orgpolicy.folders.policies.check",
+              "path": "v2/{+name}:check",
+              "flatPath": "v2/folders/{foldersId}/policies/{policiesId}:check",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The CRM resource name. Can be a project, folder or organization. Ex: \u201Cprojects\/ID_OR_NUMBER\/policies\/CONSTRAINT_NAME\u201D \u201Cfolders\/ID_OR_NUMBER\/policies\/CONSTRAINT_NAME\u201D \u201Corganizations\/ID_OR_NUMBER\/policies\/CONSTRAINT_NAME\u201D",
+                  "pattern": "^folders\/[^\/]+\/policies\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "listValue": {
+                  "description": "For List canned constraints, set the literal field. Custom constraints (NOT YET SUPPORTED).",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudOrgpolicyV2CheckOrgPolicyResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Checks an org policy's conformance to a specified value at a particular node in the hierarchy."
             }
           }
         }
@@ -1102,6 +1187,36 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Deletes a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or Org Policy does not exist."
+            },
+            "check": {
+              "id": "orgpolicy.organizations.policies.check",
+              "path": "v2/{+name}:check",
+              "flatPath": "v2/organizations/{organizationsId}/policies/{policiesId}:check",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The CRM resource name. Can be a project, folder or organization. Ex: \u201Cprojects\/ID_OR_NUMBER\/policies\/CONSTRAINT_NAME\u201D \u201Cfolders\/ID_OR_NUMBER\/policies\/CONSTRAINT_NAME\u201D \u201Corganizations\/ID_OR_NUMBER\/policies\/CONSTRAINT_NAME\u201D",
+                  "pattern": "^organizations\/[^\/]+\/policies\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "listValue": {
+                  "description": "For List canned constraints, set the literal field. Custom constraints (NOT YET SUPPORTED).",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudOrgpolicyV2CheckOrgPolicyResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Checks an org policy's conformance to a specified value at a particular node in the hierarchy."
             }
           }
         },

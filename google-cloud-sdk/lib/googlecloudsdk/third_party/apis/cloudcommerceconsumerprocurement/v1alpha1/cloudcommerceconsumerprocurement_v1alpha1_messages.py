@@ -985,7 +985,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial(_messages.Message)
   r"""FreeTrial represents the free trial created for a specific provider,
   product id and billing id with argentum. Free Trial resource are created for
   products by placing orders for 3p or just enabling free trials for 1p
-  product. Next Id: 5
+  product. Next Id: 6
 
   Fields:
     credit: Output only. Credit tracking the real time credit status.
@@ -1366,7 +1366,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderMetadata(_message
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest(_messages.Message):
-  r"""Request message for ConsumerProcurementService.ModifyOrder. Next Id: 9
+  r"""Request message for ConsumerProcurementService.ModifyOrder. Next Id: 10
 
   Fields:
     displayName: Optional. Updated display name of the order, leave as empty
@@ -1813,7 +1813,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.
     placeQuoteOrderRequest: Optional. Places order for quote.
     provider: Required. Provider of the items being purchased. Provider has
       the format of `providers/{provider_id}`. Optional when an offer is
-      specified.
+      specified. TODO(b/241564581) Hide provider id in the consumer API.
     requestId: Optional. A unique identifier for this request. The server will
       ignore subsequent requests that provide a duplicate request ID for at
       least 120 minutes after the first request. The request ID must be a

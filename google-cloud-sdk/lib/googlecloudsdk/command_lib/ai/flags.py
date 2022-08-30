@@ -34,6 +34,7 @@ from googlecloudsdk.command_lib.iam import iam_util as core_iam_util
 from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -801,6 +802,15 @@ def AddDeploymentResourcePoolArg(
       GetDeploymentResourcePoolResourceSpec(prompt_func=prompt_func),
       'The deployment resource pool {}.'.format(verb),
       required=True).AddToParser(parser)
+
+
+def AddSharedResourcesArg(parser, verb):
+  concept_parsers.ConceptParser([
+      presentation_specs.ResourcePresentationSpec(
+          '--shared-resources',
+          GetDeploymentResourcePoolResourceSpec(),
+          'The deployment resource pool {}.'.format(verb),
+          prefixes=True)]).AddToParser(parser)
 
 
 def GetEndpointId():

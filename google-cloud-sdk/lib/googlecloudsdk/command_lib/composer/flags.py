@@ -35,6 +35,10 @@ from googlecloudsdk.core import properties
 
 import six
 
+INVALID_OPTION_FOR_MIN_AIRFLOW_VERSION_ERROR_MSG = """\
+Cannot specify {opt}. Airflow version {airflow_version} is required.
+"""
+
 _INVALID_OPTION_FOR_V2_ERROR_MSG = """\
 Cannot specify {opt} with Composer 2.X or greater.
 """
@@ -284,6 +288,10 @@ AUTOSCALING_FLAG_GROUP_DESCRIPTION = (
 TRIGGERER_PARAMETERS_FLAG_GROUP_DESCRIPTION = (
     'Group of arguments for setting triggerer settings in Composer 2.2.X '
     'or greater')
+
+TRIGGERER_ENABLED_GROUP_DESCRIPTION = (
+    'Group of arguments for setting triggerer settings during update '
+    'in Composer 2.2.X or greater')
 
 MASTER_AUTHORIZED_NETWORKS_GROUP_DESCRIPTION = (
     'Group of arguments for setting master authorized networks configuration.')
@@ -644,9 +652,19 @@ NUM_SCHEDULERS = base.Argument(
 ENABLE_TRIGGERER = base.Argument(
     '--enable-triggerer',
     default=None,
-    action='store_true',
+    const=True,
+    action='store_const',
     help="""\
-    Enable use of triggerer, Supported in the Environments with Airflow 2.2.x and greater.
+    Enable use of a triggerer, supported in the Environments with Airflow 2.2.x and greater.
+    """)
+
+DISABLE_TRIGGERER = base.Argument(
+    '--disable-triggerer',
+    default=None,
+    const=True,
+    action='store_const',
+    help="""\
+    Disable a triggerer, supported in the Environments with Airflow 2.2.x and greater.
     """)
 
 ENVIRONMENT_SIZE_GA = arg_utils.ChoiceEnumMapper(
@@ -1326,6 +1344,19 @@ def AddAutoscalingUpdateFlagsToGroup(update_type_group, release_track):
   WEB_SERVER_STORAGE.AddToParser(update_group)
   MIN_WORKERS.AddToParser(update_group)
   MAX_WORKERS.AddToParser(update_group)
+  if release_track != base.ReleaseTrack.GA:
+    triggerer_params_group = update_group.add_argument_group(
+        TRIGGERER_PARAMETERS_FLAG_GROUP_DESCRIPTION, hidden=True, mutex=True)
+    triggerer_enabled_group = triggerer_params_group.add_argument_group(
+        TRIGGERER_ENABLED_GROUP_DESCRIPTION)
+    TRIGGERER_CPU.AddToParser(triggerer_enabled_group)
+    TRIGGERER_MEMORY.AddToParser(
+        triggerer_enabled_group)
+    ENABLE_TRIGGERER.AddToParser(
+        triggerer_enabled_group)
+    DISABLE_TRIGGERER.AddToParser(
+        triggerer_params_group)
+
   # Note: this flag is available for patching of both Composer 1.*.* and 2.*.*
   # environments.
   NUM_SCHEDULERS.AddToParser(update_group)

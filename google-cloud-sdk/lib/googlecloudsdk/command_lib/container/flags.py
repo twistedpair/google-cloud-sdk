@@ -577,10 +577,10 @@ maxUnavailableUpgrade: Number of nodes that can be unavailable at the
 same time on each upgrade of an autoprovisioned node pool.
 
 Node Management settings are specified under the field
-'nodeManagement', which has the following fields:
-enableAutoUpgrade: A boolean field that indicates if node
+'management', which has the following fields:
+autoUpgrade: A boolean field that indicates if node
 autoupgrade is enabled for autoprovisioned node pools.
-enableAutoRepair: A boolean field that indicates if node
+autoRepair: A boolean field that indicates if node
 autorepair is enabled for autoprovisioned node pools.
 
 minCpuPlatform (deprecated): If specified, new autoprovisioned nodes will be
@@ -4700,3 +4700,33 @@ Enable GKE Gateway support for this cluster.
       choices=['disabled', 'standard'],
       default=None,
       hidden=hidden)
+
+
+def AddLoggingVariantFlag(parser, for_node_pool=False, hidden=False):
+  """Adds a --logging-variant flag to the given parser."""
+  help_text = """\
+  Specifies the logging variant that will be deployed on all the nodes
+  in the cluster. Valid logging variants are `MAX_THROUGHPUT`, `DEFAULT`.
+  If no value is specified, DEFAULT is used."""
+  if for_node_pool:
+    help_text = """\
+        Specifies the logging variant that will be deployed on all the nodes
+        in the node pool. If the node pool doesn't specify a logging variant,
+        then the logging variant specified for the cluster will be deployed on
+        all the nodes in the node pool. Valid logging variants are
+        `MAX_THROUGHPUT`, `DEFAULT`."""
+  parser.add_argument(
+      '--logging-variant',
+      help=help_text,
+      hidden=hidden,
+      choices={
+          'DEFAULT':
+              """\
+                'DEFAULT' variant requests minimal resources but may not
+                guarantee high throughput. """,
+          'MAX_THROUGHPUT':
+              """\
+                'MAX_THROUGHPUT' variant requests more node resources and is
+                able to achieve logging throughput up to 10MB per sec. """
+      },
+      default=None)

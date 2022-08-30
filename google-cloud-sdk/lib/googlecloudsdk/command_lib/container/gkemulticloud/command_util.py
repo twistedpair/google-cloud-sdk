@@ -117,7 +117,7 @@ def Update(resource_ref=None,
 
 def _DeletePrompt(kind, items):
   title = 'The following {} will be deleted.'
-  if kind == constants.AWS_CLUSTER_KIND or kind == constants.AZURE_CLUSTER_KIND:
+  if kind == constants.AWS_CLUSTER_KIND or kind == constants.AZURE_CLUSTER_KIND or kind == constants.ATTACHED_CLUSTER_KIND:
     title = title.format('clusters')
   elif kind == constants.AWS_NODEPOOL_KIND or kind == constants.AZURE_NODEPOOL_KIND:
     title = title.format('node pool')

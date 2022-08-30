@@ -467,6 +467,33 @@ class ManagedidentitiesV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def CheckMigrationPermission(self, request, global_params=None):
+      r"""AuditMigration API gets the current state of DomainMigration.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsCheckMigrationPermissionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckMigrationPermissionResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckMigrationPermission')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckMigrationPermission.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}:checkMigrationPermission',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.checkMigrationPermission',
+        ordered_params=['domain'],
+        path_params=['domain'],
+        query_params=[],
+        relative_path='v1alpha1/{+domain}:checkMigrationPermission',
+        request_field='checkMigrationPermissionRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsCheckMigrationPermissionRequest',
+        response_type_name='CheckMigrationPermissionResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a Microsoft AD Domain in a given project. Operation.
 
@@ -545,6 +572,60 @@ class ManagedidentitiesV1alpha1(base_api.BaseApiClient):
         request_field='detachTrustRequest',
         request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsDetachTrustRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def DisableMigration(self, request, global_params=None):
+      r"""Disable Domain Migration.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsDisableMigrationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DisableMigration')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DisableMigration.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}:disableMigration',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.disableMigration',
+        ordered_params=['domain'],
+        path_params=['domain'],
+        query_params=[],
+        relative_path='v1alpha1/{+domain}:disableMigration',
+        request_field='disableMigrationRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsDisableMigrationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def DomainJoinMachine(self, request, global_params=None):
+      r"""DomainJoinMachine API joins a Compute Engine VM to the domain.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsDomainJoinMachineRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DomainJoinMachineResponse) The response message.
+      """
+      config = self.GetMethodConfig('DomainJoinMachine')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DomainJoinMachine.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}:domainJoinMachine',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.domainJoinMachine',
+        ordered_params=['domain'],
+        path_params=['domain'],
+        query_params=[],
+        relative_path='v1alpha1/{+domain}:domainJoinMachine',
+        request_field='domainJoinMachineRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsDomainJoinMachineRequest',
+        response_type_name='DomainJoinMachineResponse',
         supports_download=False,
     )
 
@@ -680,33 +761,6 @@ class ManagedidentitiesV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsGetLdapssettingsRequest',
         response_type_name='LDAPSSettings',
-        supports_download=False,
-    )
-
-    def JoinMachine(self, request, global_params=None):
-      r"""DomainJoinMachine API joins a GCE VM to the domain.
-
-      Args:
-        request: (ManagedidentitiesProjectsLocationsGlobalDomainsJoinMachineRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (DomainJoinMachineResponse) The response message.
-      """
-      config = self.GetMethodConfig('JoinMachine')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    JoinMachine.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}:joinMachine',
-        http_method='POST',
-        method_id='managedidentities.projects.locations.global.domains.joinMachine',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:joinMachine',
-        request_field='domainJoinMachineRequest',
-        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsJoinMachineRequest',
-        response_type_name='DomainJoinMachineResponse',
         supports_download=False,
     )
 

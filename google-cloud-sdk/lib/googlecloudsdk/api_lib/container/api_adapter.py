@@ -635,6 +635,7 @@ class CreateClusterOptions(object):
       enable_google_cloud_access=None,
       managed_config=None,
       gateway_api=None,
+      logging_variant=None
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -808,6 +809,7 @@ class CreateClusterOptions(object):
     self.enable_google_cloud_access = enable_google_cloud_access
     self.managed_config = managed_config
     self.gateway_api = gateway_api
+    self.logging_variant = logging_variant
 
 
 class UpdateClusterOptions(object):
@@ -923,6 +925,7 @@ class UpdateClusterOptions(object):
       enable_google_cloud_access=None,
       stack_type=None,
       gateway_api=None,
+      logging_variant=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1033,6 +1036,7 @@ class UpdateClusterOptions(object):
     self.enable_google_cloud_access = enable_google_cloud_access
     self.stack_type = stack_type
     self.gateway_api = gateway_api
+    self.logging_variant = logging_variant
 
 
 class SetMasterAuthOptions(object):
@@ -1120,7 +1124,8 @@ class CreateNodePoolOptions(object):
                network_performance_config=None,
                enable_confidential_nodes=None,
                disable_pod_cidr_overprovision=None,
-               enable_fast_socket=None):
+               enable_fast_socket=None,
+               logging_variant=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -1184,6 +1189,7 @@ class CreateNodePoolOptions(object):
     self.enable_confidential_nodes = enable_confidential_nodes
     self.disable_pod_cidr_overprovision = disable_pod_cidr_overprovision
     self.enable_fast_socket = enable_fast_socket
+    self.logging_variant = logging_variant
 
 
 class UpdateNodePoolOptions(object):
@@ -1218,7 +1224,8 @@ class UpdateNodePoolOptions(object):
                standard_rollout_policy=None,
                network_performance_config=None,
                enable_confidential_nodes=None,
-               enable_fast_socket=None):
+               enable_fast_socket=None,
+               logging_variant=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -1248,6 +1255,7 @@ class UpdateNodePoolOptions(object):
     self.network_performance_config = network_performance_config
     self.enable_confidential_nodes = enable_confidential_nodes
     self.enable_fast_socket = enable_fast_socket
+    self.logging_variant = logging_variant
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -1277,7 +1285,8 @@ class UpdateNodePoolOptions(object):
             self.standard_rollout_policy is not None or
             self.network_performance_config is not None or
             self.enable_confidential_nodes is not None or
-            self.enable_fast_socket is not None)
+            self.enable_fast_socket is not None or
+            self.logging_variant is not None)
 
 
 class APIAdapter(object):
@@ -1722,15 +1731,6 @@ class APIAdapter(object):
       cluster.autopilot = self.messages.Autopilot()
       cluster.autopilot.enabled = True
 
-      if options.service_account:
-        if cluster.autoscaling is None:
-          cluster.autoscaling = self.messages.ClusterAutoscaling()
-        if cluster.autoscaling.autoprovisioningNodePoolDefaults is None:
-          cluster.autoscaling.autoprovisioningNodePoolDefaults = self.messages.AutoprovisioningNodePoolDefaults(
-          )
-        cluster.autoscaling.autoprovisioningNodePoolDefaults.serviceAccount = options.service_account
-        cluster.autoscaling.autoprovisioningNodePoolDefaults.oauthScopes = _SERVICE_ACCOUNT_SCOPES
-
       if options.boot_disk_kms_key:
         if cluster.autoscaling is None:
           cluster.autoscaling = self.messages.ClusterAutoscaling()
@@ -1851,6 +1851,20 @@ class APIAdapter(object):
         raise util.Error(
             MANGED_CONFIG_TYPE_NOT_SUPPORTED.format(
                 type=options.managed_config))
+
+    if options.logging_variant is not None:
+      if cluster.nodePoolDefaults is None:
+        cluster.nodePoolDefaults = self.messages.NodePoolDefaults()
+      if cluster.nodePoolDefaults.nodeConfigDefaults is None:
+        cluster.nodePoolDefaults.nodeConfigDefaults = (
+            self.messages.NodeConfigDefaults())
+      if cluster.nodePoolDefaults.nodeConfigDefaults.loggingConfig is None:
+        cluster.nodePoolDefaults.nodeConfigDefaults.loggingConfig = (
+            self.messages.NodePoolLoggingConfig())
+      cluster.nodePoolDefaults.nodeConfigDefaults.loggingConfig.variantConfig = (
+          self.messages.LoggingVariantConfig(
+              variant=VariantConfigEnumFromString(
+                  self.messages, options.logging_variant)))
 
     return cluster
 
@@ -2908,6 +2922,13 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredEnablePrivateEndpoint=options.enable_private_endpoint)
 
+    if options.logging_variant is not None:
+      logging_config = self.messages.NodePoolLoggingConfig()
+      logging_config.variantConfig = self.messages.LoggingVariantConfig(
+          variant=VariantConfigEnumFromString(
+              self.messages, options.logging_variant))
+      update = self.messages.ClusterUpdate(
+          desiredNodePoolLoggingConfig=logging_config)
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -3344,6 +3365,13 @@ class APIAdapter(object):
       node_config.stableFleetConfig = _GetStableFleetConfig(
           options, self.messages)
 
+    if options.logging_variant is not None:
+      logging_config = self.messages.NodePoolLoggingConfig()
+      logging_config.variantConfig = self.messages.LoggingVariantConfig(
+          variant=VariantConfigEnumFromString(
+              self.messages, options.logging_variant))
+      node_config.loggingConfig = logging_config
+
     self._AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
     _AddShieldedInstanceConfigToNodeConfig(node_config, options, self.messages)
@@ -3653,6 +3681,12 @@ class APIAdapter(object):
     elif options.enable_fast_socket is not None:
       fast_socket = self.messages.FastSocket(enabled=options.enable_fast_socket)
       update_request.fastSocket = fast_socket
+    elif options.logging_variant is not None:
+      logging_config = self.messages.NodePoolLoggingConfig()
+      logging_config.variantConfig = self.messages.LoggingVariantConfig(
+          variant=VariantConfigEnumFromString(
+              self.messages, options.logging_variant))
+      update_request.loggingConfig = logging_config
     return update_request
 
   def UpdateNodePool(self, node_pool_ref, options):
@@ -5720,3 +5754,12 @@ def GetBinauthzEvaluationModeOptions(messages):
       messages.BinaryAuthorization.EvaluationModeValueValuesEnum.to_dict())
   options.remove('EVALUATION_MODE_UNSPECIFIED')
   return sorted(options)
+
+
+def VariantConfigEnumFromString(messages, variant):
+  variant_config_enum = messages.LoggingVariantConfig.VariantValueValuesEnum.VARIANT_UNSPECIFIED
+  if variant == 'DEFAULT':
+    variant_config_enum = messages.LoggingVariantConfig.VariantValueValuesEnum.DEFAULT
+  elif variant == 'MAX_THROUGHPUT':
+    variant_config_enum = messages.LoggingVariantConfig.VariantValueValuesEnum.MAX_THROUGHPUT
+  return variant_config_enum

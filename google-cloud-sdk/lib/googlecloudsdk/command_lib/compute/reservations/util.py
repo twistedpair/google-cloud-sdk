@@ -34,7 +34,8 @@ def MakeReservationMessageFromArgs(messages, args, reservation_ref, resources):
       messages, args.vm_count, accelerators, local_ssds, args.machine_type,
       args.min_cpu_platform, getattr(args, 'location_hint', None),
       getattr(args, 'maintenance_freeze_duration', None),
-      getattr(args, 'maintenance_interval', None))
+      getattr(args, 'maintenance_interval', None),
+      getattr(args, 'source_instance_template', None))
   resource_policies = MakeResourcePolicies(
       messages, reservation_ref, getattr(args, 'resource_policies', None),
       resources)
@@ -182,25 +183,32 @@ def MakeSpecificSKUReservationMessage(messages,
                                       min_cpu_platform,
                                       location_hint=None,
                                       freeze_duration=None,
-                                      freeze_interval=None):
+                                      freeze_interval=None,
+                                      source_instance_template=None):
   """Constructs a single specific sku reservation message object."""
   prop_msgs = (
       messages.AllocationSpecificSKUAllocationReservedInstanceProperties)
-  instance_properties = prop_msgs(
-      guestAccelerators=accelerators,
-      localSsds=local_ssds,
-      machineType=machine_type,
-      minCpuPlatform=min_cpu_platform)
-  if freeze_duration:
-    instance_properties.maintenanceFreezeDurationHours = freeze_duration // 3600
-  if freeze_interval:
-    instance_properties.maintenanceInterval = (
-        messages.AllocationSpecificSKUAllocationReservedInstanceProperties
-        .MaintenanceIntervalValueValuesEnum(freeze_interval))
-  if location_hint:
-    instance_properties.locationHint = location_hint
-  return messages.AllocationSpecificSKUReservation(
-      count=vm_count, instanceProperties=instance_properties)
+  if source_instance_template:
+    return messages.AllocationSpecificSKUReservation(
+        count=vm_count,
+        sourceInstanceTemplate=source_instance_template,
+        instanceProperties=None)
+  else:
+    instance_properties = prop_msgs(
+        guestAccelerators=accelerators,
+        localSsds=local_ssds,
+        machineType=machine_type,
+        minCpuPlatform=min_cpu_platform)
+    if freeze_duration:
+      instance_properties.maintenanceFreezeDurationHours = freeze_duration // 3600
+    if freeze_interval:
+      instance_properties.maintenanceInterval = (
+          messages.AllocationSpecificSKUAllocationReservedInstanceProperties
+          .MaintenanceIntervalValueValuesEnum(freeze_interval))
+    if location_hint:
+      instance_properties.locationHint = location_hint
+    return messages.AllocationSpecificSKUReservation(
+        count=vm_count, instanceProperties=instance_properties)
 
 
 def MakeReservationMessage(messages, reservation_name, share_settings,

@@ -1514,11 +1514,10 @@ class AttachedDisk(_messages.Message):
     ArchitectureValueValuesEnum: [Output Only] The architecture of the
       attached disk. Valid values are ARM64 or X86_64.
     InterfaceValueValuesEnum: Specifies the disk interface to use for
-      attaching this disk, which is either SCSI or NVME. The default is SCSI.
-      Persistent disks must always use SCSI and the request will fail if you
-      attempt to attach a persistent disk in any other format than SCSI. Local
-      SSDs can use either NVME or SCSI. For performance characteristics of
-      SCSI over NVMe, see Local SSD performance.
+      attaching this disk, which is either SCSI or NVME. For most machine
+      types, the default is SCSI. Local SSDs can use either NVME or SCSI. In
+      certain configurations, persistent disks can use NVMe. For more
+      information, see About persistent disks.
     ModeValueValuesEnum: The mode in which to attach this disk, either
       READ_WRITE or READ_ONLY. If not specified, the default is to attach the
       disk in READ_WRITE mode.
@@ -1556,6 +1555,9 @@ class AttachedDisk(_messages.Message):
       encryption keys, so you cannot use your own keys to encrypt disks in a
       managed instance group.
     diskSizeGb: The size of the disk in GB.
+    forceAttach: [Input Only] Whether to force attach the regional disk even
+      if it's currently attached to another instance. If you try to force
+      attach a zonal disk to an instance, you will receive an error.
     guestOsFeatures: A list of features to enable on the guest operating
       system. Applicable only for bootable images. Read Enabling guest
       operating system features to see a list of available options.
@@ -1568,11 +1570,10 @@ class AttachedDisk(_messages.Message):
       instance. This property is mutually exclusive with the source property;
       you can only define one or the other, but not both.
     interface: Specifies the disk interface to use for attaching this disk,
-      which is either SCSI or NVME. The default is SCSI. Persistent disks must
-      always use SCSI and the request will fail if you attempt to attach a
-      persistent disk in any other format than SCSI. Local SSDs can use either
-      NVME or SCSI. For performance characteristics of SCSI over NVMe, see
-      Local SSD performance.
+      which is either SCSI or NVME. For most machine types, the default is
+      SCSI. Local SSDs can use either NVME or SCSI. In certain configurations,
+      persistent disks can use NVMe. For more information, see About
+      persistent disks.
     kind: [Output Only] Type of the resource. Always compute#attachedDisk for
       attached disks.
     licenses: [Output Only] Any valid publicly visible licenses.
@@ -1609,10 +1610,9 @@ class AttachedDisk(_messages.Message):
 
   class InterfaceValueValuesEnum(_messages.Enum):
     r"""Specifies the disk interface to use for attaching this disk, which is
-    either SCSI or NVME. The default is SCSI. Persistent disks must always use
-    SCSI and the request will fail if you attempt to attach a persistent disk
-    in any other format than SCSI. Local SSDs can use either NVME or SCSI. For
-    performance characteristics of SCSI over NVMe, see Local SSD performance.
+    either SCSI or NVME. For most machine types, the default is SCSI. Local
+    SSDs can use either NVME or SCSI. In certain configurations, persistent
+    disks can use NVMe. For more information, see About persistent disks.
 
     Values:
       NVME: <no description>
@@ -1652,16 +1652,17 @@ class AttachedDisk(_messages.Message):
   deviceName = _messages.StringField(4)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 5)
   diskSizeGb = _messages.IntegerField(6)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 7, repeated=True)
-  index = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 9)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 10)
-  kind = _messages.StringField(11, default='compute#attachedDisk')
-  licenses = _messages.StringField(12, repeated=True)
-  mode = _messages.EnumField('ModeValueValuesEnum', 13)
-  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 14)
-  source = _messages.StringField(15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  forceAttach = _messages.BooleanField(7)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 8, repeated=True)
+  index = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 10)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 11)
+  kind = _messages.StringField(12, default='compute#attachedDisk')
+  licenses = _messages.StringField(13, repeated=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 14)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 15)
+  source = _messages.StringField(16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
 
 
 class AttachedDiskInitializeParams(_messages.Message):
@@ -3196,9 +3197,15 @@ class BackendBucket(_messages.Message):
   resource is referenced by a URL map of a load balancer. For more
   information, read Backend Buckets.
 
+  Enums:
+    CompressionModeValueValuesEnum: Compress text responses using Brotli or
+      gzip compression, based on the client's Accept-Encoding header.
+
   Fields:
     bucketName: Cloud Storage bucket name.
     cdnPolicy: Cloud CDN configuration for this BackendBucket.
+    compressionMode: Compress text responses using Brotli or gzip compression,
+      based on the client's Accept-Encoding header.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     customResponseHeaders: Headers that the HTTP/S load balancer should add to
@@ -3221,17 +3228,31 @@ class BackendBucket(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
   """
 
+  class CompressionModeValueValuesEnum(_messages.Enum):
+    r"""Compress text responses using Brotli or gzip compression, based on the
+    client's Accept-Encoding header.
+
+    Values:
+      AUTOMATIC: Automatically uses the best compression based on the Accept-
+        Encoding header sent by the client.
+      DISABLED: Disables compression. Existing compressed responses cached by
+        Cloud CDN will not be served to clients.
+    """
+    AUTOMATIC = 0
+    DISABLED = 1
+
   bucketName = _messages.StringField(1)
   cdnPolicy = _messages.MessageField('BackendBucketCdnPolicy', 2)
-  creationTimestamp = _messages.StringField(3)
-  customResponseHeaders = _messages.StringField(4, repeated=True)
-  description = _messages.StringField(5)
-  edgeSecurityPolicy = _messages.StringField(6)
-  enableCdn = _messages.BooleanField(7)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default='compute#backendBucket')
-  name = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
+  compressionMode = _messages.EnumField('CompressionModeValueValuesEnum', 3)
+  creationTimestamp = _messages.StringField(4)
+  customResponseHeaders = _messages.StringField(5, repeated=True)
+  description = _messages.StringField(6)
+  edgeSecurityPolicy = _messages.StringField(7)
+  enableCdn = _messages.BooleanField(8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default='compute#backendBucket')
+  name = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
 
 
 class BackendBucketCdnPolicy(_messages.Message):
@@ -3613,6 +3634,8 @@ class BackendService(_messages.Message):
   kendServices) For more information, see Backend Services.
 
   Enums:
+    CompressionModeValueValuesEnum: Compress text responses using Brotli or
+      gzip compression, based on the client's Accept-Encoding header.
     LoadBalancingSchemeValueValuesEnum: Specifies the load balancer type. A
       backend service created for one type of load balancer cannot be used
       with another. For more information, refer to Choosing a load balancer.
@@ -3669,6 +3692,8 @@ class BackendService(_messages.Message):
     cdnPolicy: Cloud CDN configuration for this BackendService. Only available
       for specified load balancer types.
     circuitBreakers: A CircuitBreakers attribute.
+    compressionMode: Compress text responses using Brotli or gzip compression,
+      based on the client's Accept-Encoding header.
     connectionDraining: A ConnectionDraining attribute.
     connectionTrackingPolicy: Connection Tracking configuration for this
       BackendService. Connection tracking policy settings are only available
@@ -3838,6 +3863,19 @@ class BackendService(_messages.Message):
       validateForProxyless field set to true. Instead, use maxStreamDuration.
   """
 
+  class CompressionModeValueValuesEnum(_messages.Enum):
+    r"""Compress text responses using Brotli or gzip compression, based on the
+    client's Accept-Encoding header.
+
+    Values:
+      AUTOMATIC: Automatically uses the best compression based on the Accept-
+        Encoding header sent by the client.
+      DISABLED: Disables compression. Existing compressed responses cached by
+        Cloud CDN will not be served to clients.
+    """
+    AUTOMATIC = 0
+    DISABLED = 1
+
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     r"""Specifies the load balancer type. A backend service created for one
     type of load balancer cannot be used with another. For more information,
@@ -3995,40 +4033,41 @@ class BackendService(_messages.Message):
   backends = _messages.MessageField('Backend', 2, repeated=True)
   cdnPolicy = _messages.MessageField('BackendServiceCdnPolicy', 3)
   circuitBreakers = _messages.MessageField('CircuitBreakers', 4)
-  connectionDraining = _messages.MessageField('ConnectionDraining', 5)
-  connectionTrackingPolicy = _messages.MessageField('BackendServiceConnectionTrackingPolicy', 6)
-  consistentHash = _messages.MessageField('ConsistentHashLoadBalancerSettings', 7)
-  creationTimestamp = _messages.StringField(8)
-  customRequestHeaders = _messages.StringField(9, repeated=True)
-  customResponseHeaders = _messages.StringField(10, repeated=True)
-  description = _messages.StringField(11)
-  edgeSecurityPolicy = _messages.StringField(12)
-  enableCDN = _messages.BooleanField(13)
-  failoverPolicy = _messages.MessageField('BackendServiceFailoverPolicy', 14)
-  fingerprint = _messages.BytesField(15)
-  healthChecks = _messages.StringField(16, repeated=True)
-  iap = _messages.MessageField('BackendServiceIAP', 17)
-  id = _messages.IntegerField(18, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(19, default='compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 20)
-  localityLbPolicies = _messages.MessageField('BackendServiceLocalityLoadBalancingPolicyConfig', 21, repeated=True)
-  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 22)
-  logConfig = _messages.MessageField('BackendServiceLogConfig', 23)
-  maxStreamDuration = _messages.MessageField('Duration', 24)
-  name = _messages.StringField(25)
-  network = _messages.StringField(26)
-  outlierDetection = _messages.MessageField('OutlierDetection', 27)
-  port = _messages.IntegerField(28, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(29)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 30)
-  region = _messages.StringField(31)
-  securityPolicy = _messages.StringField(32)
-  securitySettings = _messages.MessageField('SecuritySettings', 33)
-  selfLink = _messages.StringField(34)
-  serviceBindings = _messages.StringField(35, repeated=True)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 36)
-  subsetting = _messages.MessageField('Subsetting', 37)
-  timeoutSec = _messages.IntegerField(38, variant=_messages.Variant.INT32)
+  compressionMode = _messages.EnumField('CompressionModeValueValuesEnum', 5)
+  connectionDraining = _messages.MessageField('ConnectionDraining', 6)
+  connectionTrackingPolicy = _messages.MessageField('BackendServiceConnectionTrackingPolicy', 7)
+  consistentHash = _messages.MessageField('ConsistentHashLoadBalancerSettings', 8)
+  creationTimestamp = _messages.StringField(9)
+  customRequestHeaders = _messages.StringField(10, repeated=True)
+  customResponseHeaders = _messages.StringField(11, repeated=True)
+  description = _messages.StringField(12)
+  edgeSecurityPolicy = _messages.StringField(13)
+  enableCDN = _messages.BooleanField(14)
+  failoverPolicy = _messages.MessageField('BackendServiceFailoverPolicy', 15)
+  fingerprint = _messages.BytesField(16)
+  healthChecks = _messages.StringField(17, repeated=True)
+  iap = _messages.MessageField('BackendServiceIAP', 18)
+  id = _messages.IntegerField(19, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(20, default='compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 21)
+  localityLbPolicies = _messages.MessageField('BackendServiceLocalityLoadBalancingPolicyConfig', 22, repeated=True)
+  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 23)
+  logConfig = _messages.MessageField('BackendServiceLogConfig', 24)
+  maxStreamDuration = _messages.MessageField('Duration', 25)
+  name = _messages.StringField(26)
+  network = _messages.StringField(27)
+  outlierDetection = _messages.MessageField('OutlierDetection', 28)
+  port = _messages.IntegerField(29, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(30)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 31)
+  region = _messages.StringField(32)
+  securityPolicy = _messages.StringField(33)
+  securitySettings = _messages.MessageField('SecuritySettings', 34)
+  selfLink = _messages.StringField(35)
+  serviceBindings = _messages.StringField(36, repeated=True)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 37)
+  subsetting = _messages.MessageField('Subsetting', 38)
+  timeoutSec = _messages.IntegerField(39, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -5351,8 +5390,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -5610,6 +5655,8 @@ class Commitment(_messages.Message):
       commitments.
     licenseResource: The license specification required as part of a license
       commitment.
+    mergeSourceCommitments: List of source commitments to be merged into a new
+      commitment.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -5625,6 +5672,8 @@ class Commitment(_messages.Message):
     resources: A list of commitment amounts for particular resources. Note
       that VCPU and MEMORY resource commitments must occur together.
     selfLink: [Output Only] Server-defined URL for the resource.
+    splitSourceCommitment: Source commitment to be splitted into a new
+      commitment.
     startTimestamp: [Output Only] Commitment start time in RFC3339 text
       format.
     status: [Output Only] Status of the commitment with regards to eventual
@@ -5727,16 +5776,18 @@ class Commitment(_messages.Message):
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(7, default='compute#commitment')
   licenseResource = _messages.MessageField('LicenseResourceCommitment', 8)
-  name = _messages.StringField(9)
-  plan = _messages.EnumField('PlanValueValuesEnum', 10)
-  region = _messages.StringField(11)
-  reservations = _messages.MessageField('Reservation', 12, repeated=True)
-  resources = _messages.MessageField('ResourceCommitment', 13, repeated=True)
-  selfLink = _messages.StringField(14)
-  startTimestamp = _messages.StringField(15)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
-  statusMessage = _messages.StringField(17)
-  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  mergeSourceCommitments = _messages.StringField(9, repeated=True)
+  name = _messages.StringField(10)
+  plan = _messages.EnumField('PlanValueValuesEnum', 11)
+  region = _messages.StringField(12)
+  reservations = _messages.MessageField('Reservation', 13, repeated=True)
+  resources = _messages.MessageField('ResourceCommitment', 14, repeated=True)
+  selfLink = _messages.StringField(15)
+  splitSourceCommitment = _messages.StringField(16)
+  startTimestamp = _messages.StringField(17)
+  status = _messages.EnumField('StatusValueValuesEnum', 18)
+  statusMessage = _messages.StringField(19)
+  type = _messages.EnumField('TypeValueValuesEnum', 20)
 
 
 class CommitmentAggregatedList(_messages.Message):
@@ -6593,6 +6644,34 @@ class ComputeAddressesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeAddressesSetLabelsRequest(_messages.Message):
+  r"""A ComputeAddressesSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region for this request.
+    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
+      the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
 
 
 class ComputeAutoscalersAggregatedListRequest(_messages.Message):
@@ -9177,6 +9256,21 @@ class ComputeGlobalAddressesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   returnPartialSuccess = _messages.BooleanField(6)
+
+
+class ComputeGlobalAddressesSetLabelsRequest(_messages.Message):
+  r"""A ComputeGlobalAddressesSetLabelsRequest object.
+
+  Fields:
+    globalSetLabelsRequest: A GlobalSetLabelsRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeGlobalForwardingRulesDeleteRequest(_messages.Message):
@@ -13783,6 +13877,34 @@ class ComputeInterconnectAttachmentsPatchRequest(_messages.Message):
   requestId = _messages.StringField(5)
 
 
+class ComputeInterconnectAttachmentsSetLabelsRequest(_messages.Message):
+  r"""A ComputeInterconnectAttachmentsSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region for this request.
+    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
+      the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
+
+
 class ComputeInterconnectLocationsGetRequest(_messages.Message):
   r"""A ComputeInterconnectLocationsGetRequest object.
 
@@ -14021,6 +14143,21 @@ class ComputeInterconnectsPatchRequest(_messages.Message):
   interconnectResource = _messages.MessageField('Interconnect', 2)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ComputeInterconnectsSetLabelsRequest(_messages.Message):
+  r"""A ComputeInterconnectsSetLabelsRequest object.
+
+  Fields:
+    globalSetLabelsRequest: A GlobalSetLabelsRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeLicenseCodesGetRequest(_messages.Message):
@@ -21084,6 +21221,236 @@ class ComputeRegionSslCertificatesListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(7)
 
 
+class ComputeRegionSslPoliciesDeleteRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    sslPolicy: Name of the SSL policy to delete. The name must be 1-63
+      characters long, and comply with RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  sslPolicy = _messages.StringField(4, required=True)
+
+
+class ComputeRegionSslPoliciesGetRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    sslPolicy: Name of the SSL policy to update. The name must be 1-63
+      characters long, and comply with RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  sslPolicy = _messages.StringField(3, required=True)
+
+
+class ComputeRegionSslPoliciesInsertRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    sslPolicy: A SslPolicy resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  sslPolicy = _messages.MessageField('SslPolicy', 4)
+
+
+class ComputeRegionSslPoliciesListAvailableFeaturesRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesListAvailableFeaturesRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:` operator can be used with string fields to
+      match substrings. For non-string fields it is equivalent to the `=`
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. For example, to find all objects with `owner` label use: ```
+      labels.owner:* ``` You can also filter nested fields. For example, you
+      could specify `scheduling.automaticRestart = false` to include instances
+      only if they are not scheduled for automatic restarts. You can use
+      filtering on nested fields to filter based on resource labels. To filter
+      on multiple expressions, provide each separate expression within
+      parentheses. For example: ``` (scheduling.automaticRestart = true)
+      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
+      `AND` expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
+      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
+      true) ``` If you want to use a regular expression, use the `eq` (equal)
+      or `ne` (not equal) operator against a single un-parenthesized
+      expression with or without quotes or against multiple parenthesized
+      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
+      'single quoted literal'` `fieldname eq "double quoted literal"`
+      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
+      interpreted as a regular expression using Google RE2 library syntax. The
+      literal value must match the entire field. For example, to filter for
+      instances that do not end with name "instance", you would use `name ne
+      .*instance`.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeRegionSslPoliciesListRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:` operator can be used with string fields to
+      match substrings. For non-string fields it is equivalent to the `=`
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. For example, to find all objects with `owner` label use: ```
+      labels.owner:* ``` You can also filter nested fields. For example, you
+      could specify `scheduling.automaticRestart = false` to include instances
+      only if they are not scheduled for automatic restarts. You can use
+      filtering on nested fields to filter based on resource labels. To filter
+      on multiple expressions, provide each separate expression within
+      parentheses. For example: ``` (scheduling.automaticRestart = true)
+      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
+      `AND` expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
+      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
+      true) ``` If you want to use a regular expression, use the `eq` (equal)
+      or `ne` (not equal) operator against a single un-parenthesized
+      expression with or without quotes or against multiple parenthesized
+      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
+      'single quoted literal'` `fieldname eq "double quoted literal"`
+      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
+      interpreted as a regular expression using Google RE2 library syntax. The
+      literal value must match the entire field. For example, to filter for
+      instances that do not end with name "instance", you would use `name ne
+      .*instance`.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeRegionSslPoliciesPatchRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    sslPolicy: Name of the SSL policy to update. The name must be 1-63
+      characters long, and comply with RFC1035.
+    sslPolicyResource: A SslPolicy resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  sslPolicy = _messages.StringField(4, required=True)
+  sslPolicyResource = _messages.MessageField('SslPolicy', 5)
+
+
 class ComputeRegionTargetHttpProxiesDeleteRequest(_messages.Message):
   r"""A ComputeRegionTargetHttpProxiesDeleteRequest object.
 
@@ -23128,6 +23495,21 @@ class ComputeSecurityPoliciesRemoveRuleRequest(_messages.Message):
   priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   project = _messages.StringField(2, required=True)
   securityPolicy = _messages.StringField(3, required=True)
+
+
+class ComputeSecurityPoliciesSetLabelsRequest(_messages.Message):
+  r"""A ComputeSecurityPoliciesSetLabelsRequest object.
+
+  Fields:
+    globalSetLabelsRequest: A GlobalSetLabelsRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeServiceAttachmentsAggregatedListRequest(_messages.Message):
@@ -26426,6 +26808,34 @@ class ComputeTargetVpnGatewaysListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(7)
 
 
+class ComputeTargetVpnGatewaysSetLabelsRequest(_messages.Message):
+  r"""A ComputeTargetVpnGatewaysSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region for this request.
+    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
+      the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
+
+
 class ComputeUrlMapsAggregatedListRequest(_messages.Message):
   r"""A ComputeUrlMapsAggregatedListRequest object.
 
@@ -27184,6 +27594,34 @@ class ComputeVpnTunnelsListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeVpnTunnelsSetLabelsRequest(_messages.Message):
+  r"""A ComputeVpnTunnelsSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region for this request.
+    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
+      the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
 
 
 class ComputeZoneOperationsDeleteRequest(_messages.Message):
@@ -29918,9 +30356,7 @@ class Firewall(_messages.Message):
   Enums:
     DirectionValueValuesEnum: Direction of traffic to which this firewall
       applies, either `INGRESS` or `EGRESS`. The default is `INGRESS`. For
-      `INGRESS` traffic, you cannot specify the destinationRanges field, and
-      for `EGRESS` traffic, you cannot specify the sourceRanges or sourceTags
-      fields.
+      `EGRESS` traffic, you cannot specify the sourceTags fields.
 
   Messages:
     AllowedValueListEntry: A AllowedValueListEntry object.
@@ -29942,9 +30378,8 @@ class Firewall(_messages.Message):
       These ranges must be expressed in CIDR format. Both IPv4 and IPv6 are
       supported.
     direction: Direction of traffic to which this firewall applies, either
-      `INGRESS` or `EGRESS`. The default is `INGRESS`. For `INGRESS` traffic,
-      you cannot specify the destinationRanges field, and for `EGRESS`
-      traffic, you cannot specify the sourceRanges or sourceTags fields.
+      `INGRESS` or `EGRESS`. The default is `INGRESS`. For `EGRESS` traffic,
+      you cannot specify the sourceTags fields.
     disabled: Denotes whether the firewall rule is disabled. When set to true,
       the firewall rule is not enforced and the network behaves as if it did
       not exist. If this is unspecified, the firewall rule will be enabled.
@@ -30025,9 +30460,8 @@ class Firewall(_messages.Message):
 
   class DirectionValueValuesEnum(_messages.Enum):
     r"""Direction of traffic to which this firewall applies, either `INGRESS`
-    or `EGRESS`. The default is `INGRESS`. For `INGRESS` traffic, you cannot
-    specify the destinationRanges field, and for `EGRESS` traffic, you cannot
-    specify the sourceRanges or sourceTags fields.
+    or `EGRESS`. The default is `INGRESS`. For `EGRESS` traffic, you cannot
+    specify the sourceTags fields.
 
     Values:
       EGRESS: Indicates that firewall should apply to outgoing traffic.
@@ -33840,9 +34274,9 @@ class HttpRouteRule(_messages.Message):
       If routeAction specifies any weightedBackendServices, service must not
       be set. Conversely if service is set, routeAction cannot contain any
       weightedBackendServices. Only one of urlRedirect, service or
-      routeAction.weightedBackendService must be set. UrlMaps for external
-      HTTP(S) load balancers support only the urlRewrite action within a route
-      rule's routeAction.
+      routeAction.weightedBackendService must be set. URL maps for Classic
+      external HTTP(S) load balancers only support the urlRewrite action
+      within a route rule's routeAction.
     service: The full or partial URL of the backend service resource to which
       traffic is directed if this rule is matched. If routeAction is also
       specified, advanced routing actions, such as URL rewrites, take effect
@@ -40786,8 +41220,8 @@ class LocalizedMessage(_messages.Message):
 
   Fields:
     locale: The locale used following the specification defined at
-      http://www.rfc-editor.org/rfc/bcp/bcp47.txt. Examples are: "en-US", "fr-
-      CH", "es-MX"
+      https://www.rfc-editor.org/rfc/bcp/bcp47.txt. Examples are: "en-US",
+      "fr-CH", "es-MX"
     message: The localized error message in the above locale.
   """
 
@@ -42303,8 +42737,9 @@ class Network(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#network for
       networks.
     mtu: Maximum Transmission Unit in bytes. The minimum value for this field
-      is 1460 and the maximum value is 1500 bytes. If unspecified, defaults to
-      1460.
+      is 1300 and the maximum value is 8896. The suggested value is 1500,
+      which is the default MTU used on the Internet, or 8896 if you want to
+      use Jumbo frames. If unspecified, the value defaults to 1460.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -48207,9 +48642,9 @@ class PathMatcher(_messages.Message):
       specifies any weightedBackendServices, defaultService must not be set.
       Conversely if defaultService is set, defaultRouteAction cannot contain
       any weightedBackendServices. Only one of defaultRouteAction or
-      defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load
-      balancers support only the urlRewrite action within a path matcher's
-      defaultRouteAction.
+      defaultUrlRedirect must be set. URL maps for Classic external HTTP(S)
+      load balancers only support the urlRewrite action within a path
+      matcher's defaultRouteAction.
     defaultService: The full or partial URL to the BackendService resource.
       This URL is used if none of the pathRules or routeRules defined by this
       PathMatcher are matched. For example, the following are all valid URLs
@@ -48282,8 +48717,8 @@ class PathRule(_messages.Message):
       If routeAction specifies any weightedBackendServices, service must not
       be set. Conversely if service is set, routeAction cannot contain any
       weightedBackendServices. Only one of routeAction or urlRedirect must be
-      set. URL maps for external HTTP(S) load balancers support only the
-      urlRewrite action within a path rule's routeAction.
+      set. URL maps for Classic external HTTP(S) load balancers only support
+      the urlRewrite action within a path rule's routeAction.
     service: The full or partial URL of the backend service resource to which
       traffic is directed if this rule is matched. If routeAction is also
       specified, advanced routing actions, such as URL rewrites, take effect
@@ -58789,6 +59224,8 @@ class SslPolicy(_messages.Message):
       load balancer when negotiating SSL with clients. This can be one of
       COMPATIBLE, MODERN, RESTRICTED, or CUSTOM. If using CUSTOM, the set of
       SSL features to enable must be specified in the customFeatures field.
+    region: [Output Only] URL of the region where the regional SSL policy
+      resides. This field is not applicable to global SSL policies.
     selfLink: [Output Only] Server-defined URL for the resource.
     warnings: [Output Only] If potential misconfigurations are detected for
       this SSL policy, this field will be populated with warning messages.
@@ -58970,8 +59407,9 @@ class SslPolicy(_messages.Message):
   minTlsVersion = _messages.EnumField('MinTlsVersionValueValuesEnum', 8)
   name = _messages.StringField(9)
   profile = _messages.EnumField('ProfileValueValuesEnum', 10)
-  selfLink = _messages.StringField(11)
-  warnings = _messages.MessageField('WarningsValueListEntry', 12, repeated=True)
+  region = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  warnings = _messages.MessageField('WarningsValueListEntry', 13, repeated=True)
 
 
 class SslPolicyReference(_messages.Message):
@@ -63933,10 +64371,11 @@ class UrlMap(_messages.Message):
       weightedBackendServices, defaultService must not be set. Conversely if
       defaultService is set, defaultRouteAction cannot contain any
       weightedBackendServices. Only one of defaultRouteAction or
-      defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load
-      balancers support only the urlRewrite action within defaultRouteAction.
-      defaultRouteAction has no effect when the URL map is bound to a target
-      gRPC proxy that has the validateForProxyless field set to true.
+      defaultUrlRedirect must be set. URL maps for Classic external HTTP(S)
+      load balancers only support the urlRewrite action within
+      defaultRouteAction. defaultRouteAction has no effect when the URL map is
+      bound to a target gRPC proxy that has the validateForProxyless field set
+      to true.
     defaultService: The full or partial URL of the defaultService resource to
       which traffic is directed if none of the hostRules match. If
       defaultRouteAction is also specified, advanced routing actions, such as

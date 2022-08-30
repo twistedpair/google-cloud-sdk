@@ -44,6 +44,17 @@ class AliasContext(_messages.Message):
   name = _messages.StringField(2)
 
 
+class AnalysisCompleted(_messages.Message):
+  r"""Indicates which analysis completed successfully. Multiple types of
+  analysis can be performed on a single resource.
+
+  Fields:
+    analysisType: A string attribute.
+  """
+
+  analysisType = _messages.StringField(1, repeated=True)
+
+
 class AnalyzePackagesMetadata(_messages.Message):
   r"""AnalyzePackagesMetadata contains metadata for an active scan of a
   container image.
@@ -590,6 +601,9 @@ class DiscoveryOccurrence(_messages.Message):
       analyzed.
 
   Fields:
+    analysisCompleted: A AnalysisCompleted attribute.
+    analysisError: Indicates any errors encountered during analysis of a
+      resource. There could be 0 or more of these errors.
     analysisStatus: The status of discovery for the resource.
     analysisStatusError: When an error is encountered this will contain a
       LocalizedMessage under details to show to the user. The LocalizedMessage
@@ -609,16 +623,18 @@ class DiscoveryOccurrence(_messages.Message):
       PENDING: Resource is known but no action has been taken yet.
       SCANNING: Resource is being analyzed.
       FINISHED_SUCCESS: Analysis has finished successfully.
+      COMPLETE: Analysis has completed
       FINISHED_FAILED: Analysis has finished unsuccessfully, the analysis
         itself is in a bad state.
-      FINISHED_UNSUPPORTED: The resource is known not to be supported
+      FINISHED_UNSUPPORTED: The resource is known not to be supported.
     """
     ANALYSIS_STATUS_UNSPECIFIED = 0
     PENDING = 1
     SCANNING = 2
     FINISHED_SUCCESS = 3
-    FINISHED_FAILED = 4
-    FINISHED_UNSUPPORTED = 5
+    COMPLETE = 4
+    FINISHED_FAILED = 5
+    FINISHED_UNSUPPORTED = 6
 
   class ContinuousAnalysisValueValuesEnum(_messages.Enum):
     r"""Whether the resource is continuously analyzed.
@@ -632,12 +648,14 @@ class DiscoveryOccurrence(_messages.Message):
     ACTIVE = 1
     INACTIVE = 2
 
-  analysisStatus = _messages.EnumField('AnalysisStatusValueValuesEnum', 1)
-  analysisStatusError = _messages.MessageField('Status', 2)
-  archiveTime = _messages.StringField(3)
-  continuousAnalysis = _messages.EnumField('ContinuousAnalysisValueValuesEnum', 4)
-  cpe = _messages.StringField(5)
-  lastScanTime = _messages.StringField(6)
+  analysisCompleted = _messages.MessageField('AnalysisCompleted', 1)
+  analysisError = _messages.MessageField('Status', 2, repeated=True)
+  analysisStatus = _messages.EnumField('AnalysisStatusValueValuesEnum', 3)
+  analysisStatusError = _messages.MessageField('Status', 4)
+  archiveTime = _messages.StringField(5)
+  continuousAnalysis = _messages.EnumField('ContinuousAnalysisValueValuesEnum', 6)
+  cpe = _messages.StringField(7)
+  lastScanTime = _messages.StringField(8)
 
 
 class Empty(_messages.Message):

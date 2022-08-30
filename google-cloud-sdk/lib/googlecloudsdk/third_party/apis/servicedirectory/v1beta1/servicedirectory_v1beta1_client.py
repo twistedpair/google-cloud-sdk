@@ -42,8 +42,6 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
     self.projects_locations_namespaces_serviceWorkloads = self.ProjectsLocationsNamespacesServiceWorkloadsService(self)
     self.projects_locations_namespaces_services_endpoints = self.ProjectsLocationsNamespacesServicesEndpointsService(self)
     self.projects_locations_namespaces_services = self.ProjectsLocationsNamespacesServicesService(self)
-    self.projects_locations_namespaces_workloadGroups = self.ProjectsLocationsNamespacesWorkloadGroupsService(self)
-    self.projects_locations_namespaces_workloads = self.ProjectsLocationsNamespacesWorkloadsService(self)
     self.projects_locations_namespaces = self.ProjectsLocationsNamespacesService(self)
     self.projects_locations_registrationPolicies = self.ProjectsLocationsRegistrationPoliciesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -141,7 +139,7 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the IAM Policy for a resource (namespace or service only).
+      r"""Gets the IAM Policy for a resource.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetIamPolicyRequest) input message
@@ -222,7 +220,7 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the IAM Policy for a resource (namespace or service only).
+      r"""Sets the IAM Policy for a resource.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsSetIamPolicyRequest) input message
@@ -512,7 +510,7 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the IAM Policy for a resource (namespace or service only).
+      r"""Gets the IAM Policy for a resource.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesServicesGetIamPolicyRequest) input message
@@ -620,7 +618,7 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the IAM Policy for a resource (namespace or service only).
+      r"""Sets the IAM Policy for a resource.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesServicesSetIamPolicyRequest) input message
@@ -670,296 +668,6 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='ServicedirectoryProjectsLocationsNamespacesServicesTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsNamespacesWorkloadGroupsService(base_api.BaseApiService):
-    """Service class for the projects_locations_namespaces_workloadGroups resource."""
-
-    _NAME = 'projects_locations_namespaces_workloadGroups'
-
-    def __init__(self, client):
-      super(ServicedirectoryV1beta1.ProjectsLocationsNamespacesWorkloadGroupsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a workload group, and returns the new workload group.
-
-      Args:
-        request: (ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (WorkloadGroup) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloadGroups',
-        http_method='POST',
-        method_id='servicedirectory.projects.locations.namespaces.workloadGroups.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['workloadGroupId'],
-        relative_path='v1beta1/{+parent}/workloadGroups',
-        request_field='workloadGroup',
-        request_type_name='ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsCreateRequest',
-        response_type_name='WorkloadGroup',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a workload group.
-
-      Args:
-        request: (ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloadGroups/{workloadGroupsId}',
-        http_method='DELETE',
-        method_id='servicedirectory.projects.locations.namespaces.workloadGroups.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsDeleteRequest',
-        response_type_name='Empty',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets a workload group.
-
-      Args:
-        request: (ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (WorkloadGroup) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloadGroups/{workloadGroupsId}',
-        http_method='GET',
-        method_id='servicedirectory.projects.locations.namespaces.workloadGroups.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsGetRequest',
-        response_type_name='WorkloadGroup',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists all workload groups.
-
-      Args:
-        request: (ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListWorkloadGroupsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloadGroups',
-        http_method='GET',
-        method_id='servicedirectory.projects.locations.namespaces.workloadGroups.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1beta1/{+parent}/workloadGroups',
-        request_field='',
-        request_type_name='ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsListRequest',
-        response_type_name='ListWorkloadGroupsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates a workload group.
-
-      Args:
-        request: (ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (WorkloadGroup) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloadGroups/{workloadGroupsId}',
-        http_method='PATCH',
-        method_id='servicedirectory.projects.locations.namespaces.workloadGroups.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['allowMissing', 'updateMask'],
-        relative_path='v1beta1/{+name}',
-        request_field='workloadGroup',
-        request_type_name='ServicedirectoryProjectsLocationsNamespacesWorkloadGroupsPatchRequest',
-        response_type_name='WorkloadGroup',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsNamespacesWorkloadsService(base_api.BaseApiService):
-    """Service class for the projects_locations_namespaces_workloads resource."""
-
-    _NAME = 'projects_locations_namespaces_workloads'
-
-    def __init__(self, client):
-      super(ServicedirectoryV1beta1.ProjectsLocationsNamespacesWorkloadsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a workload, and returns the new workload.
-
-      Args:
-        request: (ServicedirectoryProjectsLocationsNamespacesWorkloadsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Workload) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloads',
-        http_method='POST',
-        method_id='servicedirectory.projects.locations.namespaces.workloads.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['workloadId'],
-        relative_path='v1beta1/{+parent}/workloads',
-        request_field='workload',
-        request_type_name='ServicedirectoryProjectsLocationsNamespacesWorkloadsCreateRequest',
-        response_type_name='Workload',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a workload.
-
-      Args:
-        request: (ServicedirectoryProjectsLocationsNamespacesWorkloadsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloads/{workloadsId}',
-        http_method='DELETE',
-        method_id='servicedirectory.projects.locations.namespaces.workloads.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='ServicedirectoryProjectsLocationsNamespacesWorkloadsDeleteRequest',
-        response_type_name='Empty',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets a workload.
-
-      Args:
-        request: (ServicedirectoryProjectsLocationsNamespacesWorkloadsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Workload) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloads/{workloadsId}',
-        http_method='GET',
-        method_id='servicedirectory.projects.locations.namespaces.workloads.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='ServicedirectoryProjectsLocationsNamespacesWorkloadsGetRequest',
-        response_type_name='Workload',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists all workloads.
-
-      Args:
-        request: (ServicedirectoryProjectsLocationsNamespacesWorkloadsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListWorkloadsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloads',
-        http_method='GET',
-        method_id='servicedirectory.projects.locations.namespaces.workloads.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1beta1/{+parent}/workloads',
-        request_field='',
-        request_type_name='ServicedirectoryProjectsLocationsNamespacesWorkloadsListRequest',
-        response_type_name='ListWorkloadsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates a workload.
-
-      Args:
-        request: (ServicedirectoryProjectsLocationsNamespacesWorkloadsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Workload) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloads/{workloadsId}',
-        http_method='PATCH',
-        method_id='servicedirectory.projects.locations.namespaces.workloads.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['allowMissing', 'updateMask'],
-        relative_path='v1beta1/{+name}',
-        request_field='workload',
-        request_type_name='ServicedirectoryProjectsLocationsNamespacesWorkloadsPatchRequest',
-        response_type_name='Workload',
         supports_download=False,
     )
 
@@ -1055,7 +763,7 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the IAM Policy for a resource (namespace or service only).
+      r"""Gets the IAM Policy for a resource.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesGetIamPolicyRequest) input message
@@ -1136,7 +844,7 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the IAM Policy for a resource (namespace or service only).
+      r"""Sets the IAM Policy for a resource.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesSetIamPolicyRequest) input message
@@ -1280,6 +988,33 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the IAM Policy for a resource.
+
+      Args:
+        request: (ServicedirectoryProjectsLocationsRegistrationPoliciesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/registrationPolicies/{registrationPoliciesId}:getIamPolicy',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.registrationPolicies.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='ServicedirectoryProjectsLocationsRegistrationPoliciesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists all registration policies.
 
@@ -1331,6 +1066,60 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
         request_field='registrationPolicy',
         request_type_name='ServicedirectoryProjectsLocationsRegistrationPoliciesPatchRequest',
         response_type_name='RegistrationPolicy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the IAM Policy for a resource.
+
+      Args:
+        request: (ServicedirectoryProjectsLocationsRegistrationPoliciesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/registrationPolicies/{registrationPoliciesId}:setIamPolicy',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.registrationPolicies.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='ServicedirectoryProjectsLocationsRegistrationPoliciesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Tests IAM permissions for a resource (namespace, service or service workload only).
+
+      Args:
+        request: (ServicedirectoryProjectsLocationsRegistrationPoliciesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/registrationPolicies/{registrationPoliciesId}:testIamPermissions',
+        http_method='POST',
+        method_id='servicedirectory.projects.locations.registrationPolicies.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='ServicedirectoryProjectsLocationsRegistrationPoliciesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

@@ -133,6 +133,7 @@ def AddCreateFlags(
     support_location_hint=False,
     support_share_setting=False,
     support_fleet=False,
+    support_instance_template=False,
     support_planning_status=False,
 ):
   """Adds all flags needed for the create command."""
@@ -141,12 +142,36 @@ def AddCreateFlags(
   reservation_flags.GetDescriptionFlag().AddToParser(parser)
   if support_planning_status:
     GetPlanningStatusFlag().AddToParser(parser)
-  AddSpecificSkuFlags(
-      parser,
-      sku_properties_required=True,
-      support_location_hint=support_location_hint,
-      support_fleet=support_fleet)
+
+  specific_sku_properties_group = base.ArgumentGroup(
+      'Manage the instance properties for the Specific SKU reservation. You must either provide a source instance template or define the instance properties.',
+      required=True,
+      mutex=True)
+
+  if support_instance_template:
+    specific_sku_properties_group.AddArgument(
+        reservation_flags.GetSourceInstanceTemplateFlag())
+
   AddTimeWindowFlags(parser, time_window_requird=True)
+
+  instance_properties_group = base.ArgumentGroup(
+      'Define individual instance properties for the specific SKU reservation.')
+  instance_properties_group.AddArgument(
+      reservation_flags.GetMachineType())
+  instance_properties_group.AddArgument(reservation_flags.GetMinCpuPlatform())
+  instance_properties_group.AddArgument(reservation_flags.GetLocalSsdFlag())
+  instance_properties_group.AddArgument(reservation_flags.GetAcceleratorFlag())
+  if support_location_hint:
+    instance_properties_group.AddArgument(reservation_flags.GetLocationHint())
+  if support_fleet:
+    instance_properties_group.AddArgument(
+        instance_flags.AddMaintenanceFreezeDuration())
+    instance_properties_group.AddArgument(
+        instance_flags.AddMaintenanceInterval())
+
+  specific_sku_properties_group.AddArgument(instance_properties_group)
+  specific_sku_properties_group.AddToParser(parser)
+
   if support_share_setting:
     share_group = base.ArgumentGroup(
         'Manage the properties of a shared reservation.', required=False)
@@ -176,26 +201,6 @@ def AddUpdateFlags(parser,
     group.AddArgument(instance_flags.AddMaintenanceInterval())
   group.AddToParser(parser)
   AddTimeWindowFlags(parser, time_window_requird=False)
-
-
-def AddSpecificSkuFlags(parser,
-                        sku_properties_required=False,
-                        support_location_hint=False,
-                        support_fleet=False):
-  """Adds all flags in the specificSkuReservationProperties group."""
-  group = base.ArgumentGroup(
-      'Manage the specific SKU reservation properties.',
-      required=sku_properties_required)
-  group.AddArgument(reservation_flags.GetMachineType())
-  group.AddArgument(reservation_flags.GetMinCpuPlatform())
-  group.AddArgument(reservation_flags.GetLocalSsdFlag())
-  group.AddArgument(reservation_flags.GetAcceleratorFlag())
-  if support_location_hint:
-    group.AddArgument(reservation_flags.GetLocationHint())
-  if support_fleet:
-    group.AddArgument(instance_flags.AddMaintenanceFreezeDuration())
-    group.AddArgument(instance_flags.AddMaintenanceInterval())
-  group.AddToParser(parser)
 
 
 def AddTimeWindowFlags(parser, time_window_requird=False):

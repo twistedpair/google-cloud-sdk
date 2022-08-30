@@ -115,7 +115,8 @@ class Secrets(Client):
              keys=None,
              next_rotation_time=None,
              rotation_period=None,
-             topics=None):
+             topics=None,
+             annotations=None):
     """Create a secret."""
     keys = keys or []
     replication = _MakeReplicationMessage(self.messages, policy, locations,
@@ -124,6 +125,11 @@ class Secrets(Client):
     if topics:
       for topic in topics:
         topics_message_list.append(self.messages.Topic(name=topic))
+    new_annotations = self.messages.Secret.AnnotationsValue(
+        additionalProperties=[])
+    if annotations:
+      for annotation_pair in annotations:
+        new_annotations.additionalProperties.append(annotation_pair)
 
     rotation = None
     if next_rotation_time or rotation_period:
@@ -140,6 +146,7 @@ class Secrets(Client):
                 expireTime=expire_time,
                 ttl=ttl,
                 topics=topics_message_list,
+                annotations=new_annotations,
                 rotation=rotation)))
 
   def Delete(self, secret_ref, etag=None):
@@ -192,6 +199,7 @@ class Secrets(Client):
              ttl=None,
              topics=None,
              version_aliases=None,
+             annotations=None,
              next_rotation_time=None,
              rotation_period=None):
     """Update a secret."""
@@ -211,12 +219,18 @@ class Secrets(Client):
     if version_aliases:
       for version_alias_pair in version_aliases:
         new_version_aliases.additionalProperties.append(version_alias_pair)
+    new_annotations = self.messages.Secret.AnnotationsValue(
+        additionalProperties=[])
+    if annotations:
+      for annotation_pair in annotations:
+        new_annotations.additionalProperties.append(annotation_pair)
     return self.service.Patch(
         self.messages.SecretmanagerProjectsSecretsPatchRequest(
             name=secret_ref.RelativeName(),
             secret=self.messages.Secret(
                 labels=labels,
                 versionAliases=new_version_aliases,
+                annotations=new_annotations,
                 etag=etag,
                 expireTime=expire_time,
                 ttl=ttl,

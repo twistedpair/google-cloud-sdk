@@ -243,7 +243,7 @@
           "type": "string"
         },
         "contentVersionTags": {
-          "description": "Output only. User-specified version tags of content builds.",
+          "description": "Output only. User-specified version tags of content builds",
           "readOnly": true,
           "type": "array",
           "items": {

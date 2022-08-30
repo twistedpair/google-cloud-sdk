@@ -169,7 +169,7 @@ class CancelExecutionRequest(_messages.Message):
 
 
 class ConfigMapEnvSource(_messages.Message):
-  r"""Not supported by Cloud Run ConfigMapEnvSource selects a ConfigMap to
+  r"""Not supported by Cloud Run. ConfigMapEnvSource selects a ConfigMap to
   populate the environment variables with. The contents of the target
   ConfigMap's Data field will represent the key-value pairs as environment
   variables.
@@ -179,7 +179,7 @@ class ConfigMapEnvSource(_messages.Message):
       meant to be inlined directly into the message. Use the "name" field
       instead.
     name: The ConfigMap to select from.
-    optional: (Optional) Specify whether the ConfigMap must be defined
+    optional: Specify whether the ConfigMap must be defined.
   """
 
   localObjectReference = _messages.MessageField('LocalObjectReference', 1)
@@ -188,16 +188,13 @@ class ConfigMapEnvSource(_messages.Message):
 
 
 class ConfigMapKeySelector(_messages.Message):
-  r"""Not supported by Cloud Run Selects a key from a ConfigMap.
+  r"""Not supported by Cloud Run.
 
   Fields:
-    key: The key to select.
-    localObjectReference: This field should not be used directly as it is
-      meant to be inlined directly into the message. Use the "name" field
-      instead.
-    name: The ConfigMap to select from.
-    optional: (Optional) Specify whether the ConfigMap or its key must be
-      defined
+    key: Required. Not supported by Cloud Run.
+    localObjectReference: Not supported by Cloud Run.
+    name: Required. Not supported by Cloud Run.
+    optional: Not supported by Cloud Run.
   """
 
   key = _messages.StringField(1)
@@ -207,7 +204,7 @@ class ConfigMapKeySelector(_messages.Message):
 
 
 class ConfigMapVolumeSource(_messages.Message):
-  r"""Not supported by Cloud Run Adapts a ConfigMap into a volume. The
+  r"""Not supported by Cloud Run. Adapts a ConfigMap into a volume. The
   contents of the target ConfigMap's Data field will be presented in a volume
   as files using the keys in the Data field as the file names, unless the
   items element is populated with specific mappings of keys to paths.
@@ -247,8 +244,8 @@ class Configuration(_messages.Message):
   Revisions, and optionally how the containers those revisions reference are
   built. Users create new Revisions by updating the Configuration's spec. The
   "latest created" revision's name is available under status, as is the
-  "latest ready" revision's name. See also: https://github.com/knative/serving
-  /blob/main/docs/spec/overview.md#configuration
+  "latest ready" revision's name. See also: https://github.com/knative/specs/b
+  lob/main/specs/serving/overview.md#configuration
 
   Fields:
     apiVersion: The API version for this call such as
@@ -285,12 +282,12 @@ class ConfigurationStatus(_messages.Message):
   (from the controller).
 
   Fields:
-    conditions: Conditions communicates information about ongoing/complete
+    conditions: Conditions communicate information about ongoing/complete
       reconciliation processes that bring the "spec" inline with the observed
       state of the world.
     latestCreatedRevisionName: LatestCreatedRevisionName is the last revision
-      that was created from this Configuration. It might not be ready yet, for
-      that use LatestReadyRevisionName.
+      that was created from this Configuration. It might not be ready yet, so
+      for the latest ready revision, use LatestReadyRevisionName.
     latestReadyRevisionName: LatestReadyRevisionName holds the name of the
       latest Revision stamped out from this Configuration that has had its
       "Ready" condition become "True".
@@ -315,79 +312,62 @@ class Container(_messages.Message):
   container at runtime.
 
   Fields:
-    args: (Optional) Arguments to the entrypoint. The docker image's CMD is
-      used if this is not provided. Variable references $(VAR_NAME) are
-      expanded using the container's environment. If a variable cannot be
-      resolved, the reference in the input string will be unchanged. The
-      $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME).
-      Escaped references will never be expanded, regardless of whether the
-      variable exists or not. More info:
-      https://kubernetes.io/docs/tasks/inject-data-application/define-command-
-      argument-container/#running-a-command-in-a-shell
-    command: A string attribute.
-    env: (Optional) List of environment variables to set in the container.
-    envFrom: (Optional) List of sources to populate environment variables in
-      the container. The keys defined within a source must be a C_IDENTIFIER.
-      All invalid keys will be reported as an event when the container is
-      starting. When a key exists in multiple sources, the value associated
-      with the last source will take precedence. Values defined by an Env with
-      a duplicate key will take precedence. Cannot be updated.
-    image: Only supports containers from Google Container Registry or Artifact
-      Registry URL of the Container image. More info:
+    args: Arguments to the entrypoint. The docker image's CMD is used if this
+      is not provided. Variable references are not supported in Cloud Run.
+    command: Entrypoint array. Not executed within a shell. The docker image's
+      ENTRYPOINT is used if this is not provided. Variable references are not
+      supported in Cloud Run.
+    env: List of environment variables to set in the container.
+    envFrom: Not supported by Cloud Run.
+    image: Required. URL of the Container image in Google Container Registry
+      or Google Artifact Registry. More info:
       https://kubernetes.io/docs/concepts/containers/images
-    imagePullPolicy: (Optional) Image pull policy. One of Always, Never,
-      IfNotPresent. Defaults to Always if :latest tag is specified, or
-      IfNotPresent otherwise. More info:
+    imagePullPolicy: Image pull policy. One of Always, Never, IfNotPresent.
+      Defaults to Always if :latest tag is specified, or IfNotPresent
+      otherwise. More info:
       https://kubernetes.io/docs/concepts/containers/images#updating-images
-    livenessProbe: (Optional) Periodic probe of container liveness. Container
-      will be restarted if the probe fails. More info:
+    livenessProbe: Periodic probe of container liveness. Container will be
+      restarted if the probe fails. More info:
       https://kubernetes.io/docs/concepts/workloads/pods/pod-
       lifecycle#container-probes
-    name: (Optional) Name of the container specified as a DNS_LABEL. Currently
-      unused in Cloud Run. More info:
+    name: Name of the container specified as a DNS_LABEL. Currently unused in
+      Cloud Run. More info:
       https://kubernetes.io/docs/concepts/overview/working-with-
       objects/names/#dns-label-names
-    ports: (Optional) List of ports to expose from the container. Only a
-      single port can be specified. The specified ports must be listening on
-      all interfaces (0.0.0.0) within the container to be accessible. If
-      omitted, a port number will be chosen and passed to the container
-      through the PORT environment variable for the container to listen on.
-    readinessProbe: (Optional) Periodic probe of container service readiness.
-      Container will be removed from service endpoints if the probe fails.
-      More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-
-      lifecycle#container-probes
-    resources: (Optional) Compute Resources required by this container. More
-      info: https://kubernetes.io/docs/concepts/storage/persistent-
-      volumes#resources
-    securityContext: (Optional) Security options the pod should run with. More
-      info: https://kubernetes.io/docs/concepts/policy/security-context/ More
-      info: https://kubernetes.io/docs/tasks/configure-pod-container/security-
-      context/
-    startupProbe: (Optional) Startup probe of application within the
-      container. All other probes are disabled if a startup probe is provided,
-      until it succeeds. Container will not be added to service endpoints if
-      the probe fails. More info:
+    ports: List of ports to expose from the container. Only a single port can
+      be specified. The specified ports must be listening on all interfaces
+      (0.0.0.0) within the container to be accessible. If omitted, a port
+      number will be chosen and passed to the container through the PORT
+      environment variable for the container to listen on.
+    readinessProbe: Not supported by Cloud Run.
+    resources: Compute Resources required by this container. More info:
+      https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+    securityContext: Not supported by Cloud Run.
+    startupProbe: Startup probe of application within the container. All other
+      probes are disabled if a startup probe is provided, until it succeeds.
+      Container will not receive traffic if the probe fails. If not provided,
+      a default startup probe with TCP socket action is used. More info:
       https://kubernetes.io/docs/concepts/workloads/pods/pod-
       lifecycle#container-probes
-    terminationMessagePath: (Optional) Path at which the file to which the
-      container's termination message will be written is mounted into the
-      container's filesystem. Message written is intended to be brief final
-      status, such as an assertion failure message. Will be truncated by the
-      node if greater than 4096 bytes. The total message length across all
-      containers will be limited to 12kb. Defaults to /dev/termination-log.
-    terminationMessagePolicy: (Optional) Indicate how the termination message
-      should be populated. File will use the contents of
-      terminationMessagePath to populate the container status message on both
-      success and failure. FallbackToLogsOnError will use the last chunk of
-      container log output if the termination message file is empty and the
-      container exited with an error. The log output is limited to 2048 bytes
-      or 80 lines, whichever is smaller. Defaults to File. Cannot be updated.
-    volumeMounts: (Optional) Volume to mount into the container's filesystem.
-      Only supports SecretVolumeSources. Pod volumes to mount into the
-      container's filesystem.
-    workingDir: (Optional) Container's working directory. If not specified,
-      the container runtime's default will be used, which might be configured
-      in the container image.
+    terminationMessagePath: Path at which the file to which the container's
+      termination message will be written is mounted into the container's
+      filesystem. Message written is intended to be brief final status, such
+      as an assertion failure message. Will be truncated by the node if
+      greater than 4096 bytes. The total message length across all containers
+      will be limited to 12kb. Defaults to /dev/termination-log.
+    terminationMessagePolicy: Indicate how the termination message should be
+      populated. File will use the contents of terminationMessagePath to
+      populate the container status message on both success and failure.
+      FallbackToLogsOnError will use the last chunk of container log output if
+      the termination message file is empty and the container exited with an
+      error. The log output is limited to 2048 bytes or 80 lines, whichever is
+      smaller. Defaults to File. Cannot be updated.
+    volumeMounts: Volume to mount into the container's filesystem. Only
+      supports SecretVolumeSources. Pod volumes to mount into the container's
+      filesystem.
+    workingDir: Container's working directory. If not specified, the container
+      runtime's default will be used, which might be configured in the
+      container image.
   """
 
   args = _messages.StringField(1, repeated=True)
@@ -413,11 +393,11 @@ class ContainerPort(_messages.Message):
   r"""ContainerPort represents a network port in a single container.
 
   Fields:
-    containerPort: (Optional) Port number the container listens on. This must
-      be a valid port number, 0 < x < 65536.
-    name: (Optional) If specified, used to specify which protocol to use.
-      Allowed values are "http1" and "h2c".
-    protocol: (Optional) Protocol for port. Must be "TCP". Defaults to "TCP".
+    containerPort: Port number the container listens on. This must be a valid
+      port number, 0 < x < 65536.
+    name: If specified, used to specify which protocol to use. Allowed values
+      are "http1" and "h2c".
+    protocol: Protocol for port. Must be "TCP". Defaults to "TCP".
   """
 
   containerPort = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -467,8 +447,7 @@ class DomainMappingSpec(_messages.Message):
     Values:
       CERTIFICATE_MODE_UNSPECIFIED: <no description>
       NONE: Do not provision an HTTPS certificate.
-      AUTOMATIC: Automatically provisions an HTTPS certificate via GoogleCA or
-        LetsEncrypt.
+      AUTOMATIC: Automatically provisions an HTTPS certificate via GoogleCA.
     """
     CERTIFICATE_MODE_UNSPECIFIED = 0
     NONE = 1
@@ -494,9 +473,7 @@ class DomainMappingStatus(_messages.Message):
     resourceRecords: The resource records required to configure this domain
       mapping. These records must be added to the domain's DNS configuration
       in order to serve the application via this domain mapping.
-    url: Optional. Cloud Run fully managed: not supported Cloud Run on GKE:
-      supported Holds the URL that will serve the traffic of the
-      DomainMapping.
+    url: Optional. Not supported by Cloud Run.
   """
 
   conditions = _messages.MessageField('GoogleCloudRunV1Condition', 1, repeated=True)
@@ -507,14 +484,14 @@ class DomainMappingStatus(_messages.Message):
 
 
 class EnvFromSource(_messages.Message):
-  r"""Not supported by Cloud Run EnvFromSource represents the source of a set
+  r"""Not supported by Cloud Run. EnvFromSource represents the source of a set
   of ConfigMaps
 
   Fields:
-    configMapRef: (Optional) The ConfigMap to select from
-    prefix: (Optional) An optional identifier to prepend to each key in the
-      ConfigMap. Must be a C_IDENTIFIER.
-    secretRef: (Optional) The Secret to select from
+    configMapRef: The ConfigMap to select from
+    prefix: An optional identifier to prepend to each key in the ConfigMap.
+      Must be a C_IDENTIFIER.
+    secretRef: The Secret to select from
   """
 
   configMapRef = _messages.MessageField('ConfigMapEnvSource', 1)
@@ -526,17 +503,11 @@ class EnvVar(_messages.Message):
   r"""EnvVar represents an environment variable present in a Container.
 
   Fields:
-    name: Name of the environment variable. Must be a C_IDENTIFIER.
-    value: (Optional) Variable references $(VAR_NAME) are expanded using the
-      previous defined environment variables in the container and any route
-      environment variables. If a variable cannot be resolved, the reference
-      in the input string will be unchanged. The $(VAR_NAME) syntax can be
-      escaped with a double $$, ie: $$(VAR_NAME). Escaped references will
-      never be expanded, regardless of whether the variable exists or not.
-      Defaults to "".
-    valueFrom: (Optional) Source for the environment variable's value. Only
-      supports secret_key_ref. Source for the environment variable's value.
-      Cannot be used if value is not empty.
+    name: Required. Name of the environment variable. Must be a C_IDENTIFIER.
+    value: Value of the environment variable. Defaults to "". Variable
+      references are not supported in Cloud Run.
+    valueFrom: Source for the environment variable's value. Only supports
+      secret_key_ref. Cannot be used if value is not empty.
   """
 
   name = _messages.StringField(1)
@@ -548,10 +519,8 @@ class EnvVarSource(_messages.Message):
   r"""EnvVarSource represents a source for the value of an EnvVar.
 
   Fields:
-    configMapKeyRef: (Optional) Not supported by Cloud Run Selects a key of a
-      ConfigMap.
-    secretKeyRef: (Optional) Selects a key (version) of a secret in Secret
-      Manager.
+    configMapKeyRef: Not supported by Cloud Run. Not supported in Cloud Run.
+    secretKeyRef: Selects a key (version) of a secret in Secret Manager.
   """
 
   configMapKeyRef = _messages.MessageField('ConfigMapKeySelector', 1)
@@ -559,46 +528,46 @@ class EnvVarSource(_messages.Message):
 
 
 class ExecAction(_messages.Message):
-  r"""Not supported by Cloud Run ExecAction describes a "run in container"
+  r"""Not supported by Cloud Run. ExecAction describes a "run in container"
   action.
 
   Fields:
-    command: (Optional) Command is the command line to execute inside the
-      container, the working directory for the command is root ('/') in the
-      container's filesystem. The command is simply exec'd, it is not run
-      inside a shell, so traditional shell instructions ('|', etc) won't work.
-      To use a shell, you need to explicitly call out to that shell. Exit
-      status of 0 is treated as live/healthy and non-zero is unhealthy.
+    command: Command is the command line to execute inside the container, the
+      working directory for the command is root ('/') in the container's
+      filesystem. The command is simply exec'd, it is not run inside a shell,
+      so traditional shell instructions ('|', etc) won't work. To use a shell,
+      you need to explicitly call out to that shell. Exit status of 0 is
+      treated as live/healthy and non-zero is unhealthy.
   """
 
   command = _messages.StringField(1, repeated=True)
 
 
 class Execution(_messages.Message):
-  r"""Execution represents the configuration of a single execution. A
-  execution an immutable resource that references a container image which is
-  run to completion.
+  r"""Execution represents the configuration of a single execution. An
+  execution is an immutable resource that references a container image which
+  is run to completion.
 
   Fields:
     apiVersion: Optional. APIVersion defines the versioned schema of this
       representation of an object. Servers should convert recognized schemas
       to the latest internal value, and may reject unrecognized values. More
       info: https://git.k8s.io/community/contributors/devel/sig-
-      architecture/api-conventions.md#resources +optional
+      architecture/api-conventions.md#resources
     kind: Optional. Kind is a string value representing the REST resource this
       object represents. Servers may infer this from the endpoint the client
       submits requests to. Cannot be updated. In CamelCase. More info:
       https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#types-kinds +optional
+      conventions.md#types-kinds
     metadata: Optional. Standard object's metadata. More info:
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#metadata +optional
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#metadata
     spec: Optional. Specification of the desired behavior of an execution.
-      More info: https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#spec-and-status +optional
+      More info: https://git.k8s.io/community/contributors/devel/sig-
+      architecture/api-conventions.md#spec-and-status
     status: Output only. Current status of an execution. More info:
-      https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-
-      and-status +optional
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#spec-and-status
   """
 
   apiVersion = _messages.StringField(1)
@@ -632,13 +601,11 @@ class ExecutionSpec(_messages.Message):
       is run, if this field is 0 or unset, the maximum possible value will be
       used for that execution. The actual number of tasks running in steady
       state will be less than this number when there are fewer tasks waiting
-      to be completed remaining, i.e. when the work left to do is less than
-      max parallelism. +optional
+      to be completed, i.e. when the work left to do is less than max
+      parallelism.
     taskCount: Optional. Specifies the desired number of tasks the execution
       should run. Setting to 1 means that parallelism is limited to 1 and the
-      success of that task signals the success of the execution. More info:
-      https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-
-      completion/ +optional
+      success of that task signals the success of the execution.
     template: Optional. Describes the task(s) that will be created when
       executing an execution.
   """
@@ -649,33 +616,35 @@ class ExecutionSpec(_messages.Message):
 
 
 class ExecutionStatus(_messages.Message):
-  r"""ExecutionStatus represents the current state of a Execution.
+  r"""ExecutionStatus represents the current state of an Execution.
 
   Fields:
     cancelledCount: Optional. The number of tasks which reached phase
-      Cancelled. +optional
-    completionTime: Optional. Represents time when the execution was
+      Cancelled.
+    completionTime: Optional. Represents the time that the execution was
       completed. It is not guaranteed to be set in happens-before order across
       separate operations. It is represented in RFC3339 form and is in UTC.
       +optional
-    conditions: Optional. The latest available observations of an execution's
-      current state. More info:
-      https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-
-      completion/ +optional
+    conditions: Optional. Conditions communicate information about
+      ongoing/complete reconciliation processes that bring the "spec" inline
+      with the observed state of the world. Execution-specific conditions
+      include: * `ResourcesAvailable`: `True` when underlying resources have
+      been provisioned. * `Started`: `True` when the execution has started to
+      execute. * `Completed`: `True` when the execution has succeeded. `False`
+      when the execution has failed.
     failedCount: Optional. The number of tasks which reached phase Failed.
-      +optional
     logUri: Optional. URI where logs for this execution can be found in Cloud
       Console.
     observedGeneration: Optional. The 'generation' of the execution that was
       last processed by the controller.
     retriedCount: Optional. The number of tasks which have retried at least
-      once. +optional
-    runningCount: Optional. The number of actively running tasks. +optional
-    startTime: Optional. Represents time when the execution started to run. It
-      is not guaranteed to be set in happens-before order across separate
-      operations. It is represented in RFC3339 form and is in UTC. +optional
+      once.
+    runningCount: Optional. The number of actively running tasks.
+    startTime: Optional. Represents the time that the execution started to
+      run. It is not guaranteed to be set in happens-before order across
+      separate operations. It is represented in RFC3339 form and is in UTC.
     succeededCount: Optional. The number of tasks which reached phase
-      Succeeded. +optional
+      Succeeded.
   """
 
   cancelledCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -767,7 +736,12 @@ class GRPCAction(_messages.Message):
 
 
 class GoogleCloudRunV1Condition(_messages.Message):
-  r"""Condition defines a generic condition for a Resource.
+  r"""Conditions show the status of reconciliation progress on a given
+  resource. Most resource use a top-level condition type "Ready" or
+  "Completed" to show overall status with other conditions to checkpoint each
+  stage of reconciliation. Note that if metadata.Generation does not equal
+  status.ObservedGeneration, the conditions shown may not be relevant for the
+  current spec.
 
   Fields:
     lastTransitionTime: Optional. Last time the condition transitioned from
@@ -775,15 +749,18 @@ class GoogleCloudRunV1Condition(_messages.Message):
     message: Optional. Human readable message indicating details about the
       current status.
     reason: Optional. One-word CamelCase reason for the condition's last
-      transition.
-    severity: Optional. How to interpret failures of this condition, one of
-      Error, Warning, Info
+      transition. These are intended to be stable, unique values which the
+      client may use to trigger error handling logic, whereas messages which
+      may be changed later by the server.
+    severity: Optional. How to interpret this condition. One of Error,
+      Warning, or Info. Conditions of severity Info do not contribute to
+      resource readiness.
     status: Status of the condition, one of True, False, Unknown.
     type: type is used to communicate the status of the reconciliation
       process. See also:
       https://github.com/knative/serving/blob/main/docs/spec/errors.md#error-
       conditions-and-reporting Types common to all resources include: *
-      "Ready": True when the Resource is ready.
+      "Ready" or "Completed": True when the Resource is ready.
   """
 
   lastTransitionTime = _messages.StringField(1)
@@ -849,13 +826,11 @@ class HTTPGetAction(_messages.Message):
   r"""HTTPGetAction describes an action based on HTTP Get requests.
 
   Fields:
-    host: (Optional) Host name to connect to, defaults to the pod IP. You
-      probably want to set "Host" in httpHeaders instead.
-    httpHeaders: (Optional) Custom headers to set in the request. HTTP allows
-      repeated headers.
-    path: (Optional) Path to access on the HTTP server.
-    scheme: (Optional) Scheme to use for connecting to the host. Defaults to
-      HTTP.
+    host: Not supported by Cloud Run.
+    httpHeaders: Custom headers to set in the request. HTTP allows repeated
+      headers.
+    path: Path to access on the HTTP server.
+    scheme: Not supported by Cloud Run.
   """
 
   host = _messages.StringField(1)
@@ -877,29 +852,29 @@ class HTTPHeader(_messages.Message):
 
 
 class Job(_messages.Message):
-  r"""Job represents the configuration of a single job. A job an immutable
-  resource that references a container image which is run to completion.
+  r"""Job represents the configuration of a single job, which references a
+  container image which is run to completion.
 
   Fields:
     apiVersion: Optional. APIVersion defines the versioned schema of this
       representation of an object. Servers should convert recognized schemas
       to the latest internal value, and may reject unrecognized values. More
       info: https://git.k8s.io/community/contributors/devel/sig-
-      architecture/api-conventions.md#resources +optional
+      architecture/api-conventions.md#resources
     kind: Optional. Kind is a string value representing the REST resource this
       object represents. Servers may infer this from the endpoint the client
       submits requests to. Cannot be updated. In CamelCase. More info:
       https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#types-kinds +optional
+      conventions.md#types-kinds
     metadata: Optional. Standard object's metadata. More info:
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#metadata +optional
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#metadata
     spec: Optional. Specification of the desired behavior of a job. More info:
-      https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-
-      and-status +optional
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#spec-and-status
     status: Output only. Current status of a job. More info:
-      https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-
-      and-status +optional
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#spec-and-status
   """
 
   apiVersion = _messages.StringField(1)
@@ -924,10 +899,10 @@ class JobStatus(_messages.Message):
   r"""JobStatus represents the current state of a Job.
 
   Fields:
-    conditions: The latest available observations of a job's current state.
-      More info:
-      https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-
-      completion/
+    conditions: Conditions communicate information about ongoing/complete
+      reconciliation processes that bring the "spec" inline with the observed
+      state of the world. Job-specific conditions include: * `Ready`: `True`
+      when the job is ready to be executed.
     executionCount: Number of executions created for this job.
     latestCreatedExecution: A pointer to the most recently created execution
       for this job. This is set regardless of the eventual state of the
@@ -1069,27 +1044,20 @@ class ListLocationsResponse(_messages.Message):
 
 
 class ListMeta(_messages.Message):
-  r"""ListMeta describes metadata that synthetic resources must have,
-  including lists and various status objects. A resource may have only one of
-  {ObjectMeta, ListMeta}.
+  r"""Metadata for synthetic resources like List. In Cloud Run, all List
+  Resources Responses will have a ListMeta instead of ObjectMeta.
 
   Fields:
-    continue_: continue may be set if the user set a limit on the number of
-      items returned, and indicates that the server has more data available.
-      The value is opaque and may be used to issue another request to the
-      endpoint that served this list to retrieve the next set of available
-      objects. Continuing a list may not be possible if the server
-      configuration has changed or more than a few minutes have passed. The
-      resourceVersion field returned when using this continue value will be
-      identical to the value in the first response.
-    resourceVersion: String that identifies the server's internal version of
-      this object that can be used by clients to determine when objects have
-      changed. Value must be treated as opaque by clients and passed
-      unmodified back to the server. Populated by the system. Read-only. More
-      info: https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#concurrency-control-and-consistency +optional
-    selfLink: SelfLink is a URL representing this object. Populated by the
-      system. Read-only. +optional
+    continue_: Continuation token is a value emitted when the count of items
+      is larger than the user/system limit. To retrieve the next page of
+      items, pass the value of `continue` as the next request's `page_token`.
+    resourceVersion: Opaque string that identifies the server's internal
+      version of this object. It can be used by clients to determine when
+      objects have changed. If the message is passed back to the server, it
+      must be left unmodified.
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#concurrency-control-and-consistency
+    selfLink: URL representing this object.
   """
 
   continue_ = _messages.StringField(1)
@@ -1139,12 +1107,14 @@ class ListServicesResponse(_messages.Message):
   r"""A list of Service resources.
 
   Fields:
-    apiVersion: The API version for this call such as
+    apiVersion: The API version for this call; returns
       "serving.knative.dev/v1".
     items: List of Services.
-    kind: The kind of this resource, in this case "ServiceList".
+    kind: The kind of this resource; returns "ServiceList".
     metadata: Metadata associated with this Service list.
-    unreachable: Locations that could not be reached.
+    unreachable: For calls against the global endpoint, returns the list of
+      Cloud locations that could not be reached. For regional calls, this
+      field is not used.
   """
 
   apiVersion = _messages.StringField(1)
@@ -1173,12 +1143,12 @@ class ListTasksResponse(_messages.Message):
 
 
 class LocalObjectReference(_messages.Message):
-  r"""Not supported by Cloud Run LocalObjectReference contains enough
+  r"""Not supported by Cloud Run. LocalObjectReference contains enough
   information to let you locate the referenced object inside the same
   namespace.
 
   Fields:
-    name: (Optional) Name of the referent. More info:
+    name: Name of the referent. More info:
       https://kubernetes.io/docs/concepts/overview/working-with-
       objects/names/#names
   """
@@ -1267,8 +1237,8 @@ class Location(_messages.Message):
 
 
 class Namespace(_messages.Message):
-  r"""Not supported by Cloud Run Cloud Run on GKE: supported Namespace
-  provides a scope for Names. Use of multiple namespaces is optional.
+  r"""Not supported by Cloud Run. Namespace provides a scope for Names. Use of
+  multiple namespaces is optional.
 
   Fields:
     metadata: Standard object's metadata. More info:
@@ -1288,8 +1258,8 @@ class Namespace(_messages.Message):
 
 
 class NamespaceSpec(_messages.Message):
-  r"""Not supported by Cloud Run Cloud Run on GKE: supported NamespaceSpec
-  describes the attributes on a Namespace.
+  r"""Not supported by Cloud Run. NamespaceSpec describes the attributes on a
+  Namespace.
 
   Fields:
     finalizers: Finalizers is an opaque list of values that must be empty to
@@ -1301,8 +1271,8 @@ class NamespaceSpec(_messages.Message):
 
 
 class NamespaceStatus(_messages.Message):
-  r"""Not supported by Cloud Run Cloud Run on GKE: supported NamespaceStatus
-  is information about the current status of a Namespace.
+  r"""Not supported by Cloud Run. NamespaceStatus is information about the
+  current status of a Namespace.
 
   Fields:
     phase: Phase is the current lifecycle phase of the namespace. More info:
@@ -1317,124 +1287,137 @@ class ObjectMeta(_messages.Message):
   persisted resources must have, which includes all objects users must create.
 
   Messages:
-    AnnotationsValue: (Optional) Annotations is an unstructured key value map
-      stored with a resource that may be set by external tools to store and
-      retrieve arbitrary metadata. They are not queryable and should be
-      preserved when modifying objects. More info:
-      https://kubernetes.io/docs/user-guide/annotations
-    LabelsValue: (Optional) Map of string keys and values that can be used to
-      organize and categorize (scope and select) objects. May match selectors
-      of replication controllers and routes. More info:
+    AnnotationsValue: Unstructured key value map stored with a resource that
+      may be set by external tools to store and retrieve arbitrary metadata.
+      They are not queryable and should be preserved when modifying objects.
+      In Cloud Run, annotations with 'run.googleapis.com/' and
+      'autoscaling.knative.dev' are restricted, and the accepted annotations
+      will be different depending on the resource type. *
+      `autoscaling.knative.dev/maxScale`: Revision. *
+      `autoscaling.knative.dev/minScale`: Revision. *
+      `run.googleapis.com/binary-authorization-breakglass`: Service, Job, *
+      `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
+      `run.googleapis.com/client-name`: All resources. *
+      `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
+      `run.googleapis.com/cpu-throttling`: Revision. *
+      `run.googleapis.com/custom-audiences`: Service. *
+      `run.googleapis.com/description`: Service. *
+      `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
+      `run.googleapis.com/encryption-key`: Revision, Execution. *
+      `run.googleapis.com/execution-environment`: Revision, Execution. *
+      `run.googleapis.com/gc-traffic-tags`: Service. *
+      `run.googleapis.com/ingress`: Service. * `run.googleapis.com/network-
+      interfaces`: Revision, Execution. * `run.googleapis.com/post-key-
+      revocation-action-type`: Revision. * `run.googleapis.com/secrets`:
+      Revision, Execution. * `run.googleapis.com/secure-session-agent`:
+      Revision. * `run.googleapis.com/sessionAffinity`: Revision. *
+      `run.googleapis.com/startup-cpu-boost`: Revision. *
+      `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
+      `run.googleapis.com/vpc-access-egress`: Revision, Execution. Execution.
+      More info: https://kubernetes.io/docs/user-guide/annotations
+    LabelsValue: Map of string keys and values that can be used to organize
+      and categorize (scope and select) objects. May match selectors of
+      replication controllers and routes. More info:
       https://kubernetes.io/docs/user-guide/labels
 
   Fields:
-    annotations: (Optional) Annotations is an unstructured key value map
-      stored with a resource that may be set by external tools to store and
-      retrieve arbitrary metadata. They are not queryable and should be
-      preserved when modifying objects. More info:
-      https://kubernetes.io/docs/user-guide/annotations
-    clusterName: (Optional) Not supported by Cloud Run The name of the cluster
-      which the object belongs to. This is used to distinguish resources with
-      same name and namespace in different clusters. This field is not set
-      anywhere right now and apiserver is going to ignore it if set in create
-      or update request.
-    creationTimestamp: (Optional) CreationTimestamp is a timestamp
-      representing the server time when this object was created. It is not
-      guaranteed to be set in happens-before order across separate operations.
-      Clients may not set this value. It is represented in RFC3339 form and is
-      in UTC. Populated by the system. Read-only. Null for lists. More info:
+    annotations: Unstructured key value map stored with a resource that may be
+      set by external tools to store and retrieve arbitrary metadata. They are
+      not queryable and should be preserved when modifying objects. In Cloud
+      Run, annotations with 'run.googleapis.com/' and
+      'autoscaling.knative.dev' are restricted, and the accepted annotations
+      will be different depending on the resource type. *
+      `autoscaling.knative.dev/maxScale`: Revision. *
+      `autoscaling.knative.dev/minScale`: Revision. *
+      `run.googleapis.com/binary-authorization-breakglass`: Service, Job, *
+      `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
+      `run.googleapis.com/client-name`: All resources. *
+      `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
+      `run.googleapis.com/cpu-throttling`: Revision. *
+      `run.googleapis.com/custom-audiences`: Service. *
+      `run.googleapis.com/description`: Service. *
+      `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
+      `run.googleapis.com/encryption-key`: Revision, Execution. *
+      `run.googleapis.com/execution-environment`: Revision, Execution. *
+      `run.googleapis.com/gc-traffic-tags`: Service. *
+      `run.googleapis.com/ingress`: Service. * `run.googleapis.com/network-
+      interfaces`: Revision, Execution. * `run.googleapis.com/post-key-
+      revocation-action-type`: Revision. * `run.googleapis.com/secrets`:
+      Revision, Execution. * `run.googleapis.com/secure-session-agent`:
+      Revision. * `run.googleapis.com/sessionAffinity`: Revision. *
+      `run.googleapis.com/startup-cpu-boost`: Revision. *
+      `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
+      `run.googleapis.com/vpc-access-egress`: Revision, Execution. Execution.
+      More info: https://kubernetes.io/docs/user-guide/annotations
+    clusterName: Not supported by Cloud Run
+    creationTimestamp: UTC timestamp representing the server time when this
+      object was created. More info:
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#metadata
-    deletionGracePeriodSeconds: (Optional) Not supported by Cloud Run Number
-      of seconds allowed for this object to gracefully terminate before it
-      will be removed from the system. Only set when deletionTimestamp is also
-      set. May only be shortened. Read-only.
-    deletionTimestamp: (Optional) Not supported by Cloud Run DeletionTimestamp
-      is RFC 3339 date and time at which this resource will be deleted. This
-      field is set by the server when a graceful deletion is requested by the
-      user, and is not directly settable by a client. The resource is expected
-      to be deleted (no longer visible from resource lists, and not reachable
-      by name) after the time in this field, once the finalizers list is
-      empty. As long as the finalizers list contains items, deletion is
-      blocked. Once the deletionTimestamp is set, this value may not be unset
-      or be set further into the future, although it may be shortened or the
-      resource may be deleted prior to this time. For example, a user may
-      request that a pod is deleted in 30 seconds. The Kubelet will react by
-      sending a graceful termination signal to the containers in the pod.
-      After that 30 seconds, the Kubelet will send a hard termination signal
-      (SIGKILL) to the container and after cleanup, remove the pod from the
-      API. In the presence of network partitions, this object may still exist
-      after this timestamp, until an administrator or automated process can
-      determine the resource is fully terminated. If not set, graceful
-      deletion of the object has not been requested. Populated by the system
-      when a graceful deletion is requested. Read-only. More info:
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#metadata
-    finalizers: (Optional) Not supported by Cloud Run Must be empty before the
-      object is deleted from the registry. Each entry is an identifier for the
-      responsible component that will remove the entry from the list. If the
-      deletionTimestamp of the object is non-nil, entries in this list can
-      only be removed. +patchStrategy=merge
-    generateName: (Optional) Not supported by Cloud Run GenerateName is an
-      optional prefix, used by the server, to generate a unique name ONLY IF
-      the Name field has not been provided. If this field is used, the name
-      returned to the client will be different than the name passed. This
-      value will also be combined with a unique suffix. The provided value has
-      the same validation rules as the Name field, and may be truncated by the
-      length of the suffix required to make the value unique on the server. If
-      this field is specified and the generated name exists, the server will
-      NOT return a 409 - instead, it will either return 201 Created or 500
-      with Reason ServerTimeout indicating a unique name could not be found in
-      the time allotted, and the client should retry (optionally after the
-      time indicated in the Retry-After header). Applied only if Name is not
-      specified. More info:
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#idempotency string generateName = 2;
-    generation: (Optional) A sequence number representing a specific
-      generation of the desired state. Populated by the system. Read-only.
-    labels: (Optional) Map of string keys and values that can be used to
-      organize and categorize (scope and select) objects. May match selectors
-      of replication controllers and routes. More info:
+    deletionGracePeriodSeconds: Not supported by Cloud Run
+    deletionTimestamp: The read-only soft deletion timestamp for this
+      resource. In Cloud Run, users are not able to set this field. Instead,
+      they must call the corresponding Delete API.
+    finalizers: Not supported by Cloud Run
+    generateName: Not supported by Cloud Run
+    generation: A system-provided sequence number representing a specific
+      generation of the desired state.
+    labels: Map of string keys and values that can be used to organize and
+      categorize (scope and select) objects. May match selectors of
+      replication controllers and routes. More info:
       https://kubernetes.io/docs/user-guide/labels
-    name: Name must be unique within a namespace, within a Cloud Run region.
-      Is required when creating resources, although some resources may allow a
-      client to request the generation of an appropriate name automatically.
-      Name is primarily intended for creation idempotence and configuration
-      definition. Cannot be updated. More info:
+    name: The immutable name of the resource. In Cloud Run, name is required
+      when creating top-level resources (Service, Job), and must be unique
+      within a Cloud Run project/region. More info:
       https://kubernetes.io/docs/user-guide/identifiers#names If ObjectMeta is
-      part of a namespaces.services.create request, name must contain fewer
-      than 50 characters. +optional
-    namespace: Namespace defines the space within each name must be unique,
-      within a Cloud Run region. In Cloud Run the namespace must be equal to
-      either the project ID or project number.
-    ownerReferences: (Optional) Not supported by Cloud Run List of objects
-      that own this object. If ALL objects in the list have been deleted, this
-      object will be garbage collected.
-    resourceVersion: Optional. An opaque value that represents the internal
-      version of this object that can be used by clients to determine when
-      objects have changed. May be used for optimistic concurrency, change
-      detection, and the watch operation on a resource or set of resources.
-      Clients must treat these values as opaque and passed unmodified back to
-      the server or omit the value to disable conflict-detection. They may
-      only be valid for a particular resource or set of resources. Populated
-      by the system. Read-only. Value must be treated as opaque by clients or
-      omitted. More info: https://git.k8s.io/community/contributors/devel/sig-
-      architecture/api-conventions.md#concurrency-control-and-consistency
-    selfLink: (Optional) SelfLink is a URL representing this object. Populated
-      by the system. Read-only. string selfLink = 4;
-    uid: (Optional) UID is the unique in time and space value for this object.
-      It is typically generated by the server on successful creation of a
-      resource and is not allowed to change on PUT operations. Populated by
-      the system. Read-only. More info: https://kubernetes.io/docs/user-
-      guide/identifiers#uids
+      part of a CreateServiceRequest, name must contain fewer than 50
+      characters. Otherwise,
+    namespace: Defines the space within each name must be unique within a
+      Cloud Run region. In Cloud Run, it must be project ID or number.
+    ownerReferences: Not supported by Cloud Run
+    resourceVersion: Optional. Opaque, system-generated value that represents
+      the internal version of this object that can be used by clients to
+      determine when objects have changed. May be used for optimistic
+      concurrency, change detection, and the watch operation on a resource or
+      set of resources. Clients must treat these values as opaque and passed
+      unmodified back to the server or omit the value to disable conflict-
+      detection. More info:
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#concurrency-control-and-consistency
+    selfLink: URL representing this object.
+    uid: Unique, system-generated identifier for this resource. More info:
+      https://kubernetes.io/docs/user-guide/identifiers#uids
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""(Optional) Annotations is an unstructured key value map stored with a
-    resource that may be set by external tools to store and retrieve arbitrary
-    metadata. They are not queryable and should be preserved when modifying
-    objects. More info: https://kubernetes.io/docs/user-guide/annotations
+    r"""Unstructured key value map stored with a resource that may be set by
+    external tools to store and retrieve arbitrary metadata. They are not
+    queryable and should be preserved when modifying objects. In Cloud Run,
+    annotations with 'run.googleapis.com/' and 'autoscaling.knative.dev' are
+    restricted, and the accepted annotations will be different depending on
+    the resource type. * `autoscaling.knative.dev/maxScale`: Revision. *
+    `autoscaling.knative.dev/minScale`: Revision. *
+    `run.googleapis.com/binary-authorization-breakglass`: Service, Job, *
+    `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
+    `run.googleapis.com/client-name`: All resources. *
+    `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
+    `run.googleapis.com/cpu-throttling`: Revision. *
+    `run.googleapis.com/custom-audiences`: Service. *
+    `run.googleapis.com/description`: Service. *
+    `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
+    `run.googleapis.com/encryption-key`: Revision, Execution. *
+    `run.googleapis.com/execution-environment`: Revision, Execution. *
+    `run.googleapis.com/gc-traffic-tags`: Service. *
+    `run.googleapis.com/ingress`: Service. * `run.googleapis.com/network-
+    interfaces`: Revision, Execution. * `run.googleapis.com/post-key-
+    revocation-action-type`: Revision. * `run.googleapis.com/secrets`:
+    Revision, Execution. * `run.googleapis.com/secure-session-agent`:
+    Revision. * `run.googleapis.com/sessionAffinity`: Revision. *
+    `run.googleapis.com/startup-cpu-boost`: Revision. *
+    `run.googleapis.com/vpc-access-connector`: Revision, Execution. *
+    `run.googleapis.com/vpc-access-egress`: Revision, Execution. Execution.
+    More info: https://kubernetes.io/docs/user-guide/annotations
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -1459,10 +1442,10 @@ class ObjectMeta(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""(Optional) Map of string keys and values that can be used to organize
-    and categorize (scope and select) objects. May match selectors of
-    replication controllers and routes. More info:
-    https://kubernetes.io/docs/user-guide/labels
+    r"""Map of string keys and values that can be used to organize and
+    categorize (scope and select) objects. May match selectors of replication
+    controllers and routes. More info: https://kubernetes.io/docs/user-
+    guide/labels
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1502,26 +1485,15 @@ class ObjectMeta(_messages.Message):
 
 
 class OwnerReference(_messages.Message):
-  r"""OwnerReference contains enough information to let you identify an owning
-  object. Currently, an owning object must be in the same namespace, so there
-  is no namespace field.
+  r"""This is not supported or used by Cloud Run.
 
   Fields:
-    apiVersion: API version of the referent.
-    blockOwnerDeletion: If true, AND if the owner has the "foregroundDeletion"
-      finalizer, then the owner cannot be deleted from the key-value store
-      until this reference is removed. Defaults to false. To set this field, a
-      user needs "delete" permission of the owner, otherwise 422
-      (Unprocessable Entity) will be returned. +optional
-    controller: If true, this reference points to the managing controller.
-      +optional
-    kind: Kind of the referent. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#types-kinds
-    name: Name of the referent. More info: https://kubernetes.io/docs/user-
-      guide/identifiers#names
-    uid: UID of the referent. More info: https://kubernetes.io/docs/user-
-      guide/identifiers#uids
+    apiVersion: This is not supported or used by Cloud Run.
+    blockOwnerDeletion: This is not supported or used by Cloud Run.
+    controller: This is not supported or used by Cloud Run.
+    kind: This is not supported or used by Cloud Run.
+    name: This is not supported or used by Cloud Run.
+    uid: This is not supported or used by Cloud Run.
   """
 
   apiVersion = _messages.StringField(1)
@@ -1611,38 +1583,32 @@ class Policy(_messages.Message):
 
 
 class Probe(_messages.Message):
-  r"""Not supported by Cloud Run Probe describes a health check to be
-  performed against a container to determine whether it is alive or ready to
-  receive traffic.
+  r"""Probe describes a health check to be performed against a container to
+  determine whether it is alive or ready to receive traffic.
 
   Fields:
-    exec_: (Optional) Not supported by Cloud Run One and only one of the
-      following should be specified. Exec specifies the action to take. A
-      field inlined from the Handler message.
-    failureThreshold: (Optional) Minimum consecutive failures for the probe to
-      be considered failed after having succeeded. Defaults to 3. Minimum
-      value is 1.
-    grpc: (Optional) GRPCAction specifies an action involving a GRPC port. A
-      field inlined from the Handler message.
-    httpGet: (Optional) HTTPGet specifies the http request to perform. A field
-      inlined from the Handler message.
-    initialDelaySeconds: (Optional) Number of seconds after the container has
-      started before the probe is initiated. Defaults to 0 seconds. Minimum
-      value is 0. Maximum value for liveness probe is 3600. Maximum value for
-      startup probe is 240. More info:
+    exec_: Not supported by Cloud Run.
+    failureThreshold: Minimum consecutive failures for the probe to be
+      considered failed after having succeeded. Defaults to 3. Minimum value
+      is 1.
+    grpc: GRPCAction specifies an action involving a GRPC port.
+    httpGet: HTTPGet specifies the http request to perform.
+    initialDelaySeconds: Number of seconds after the container has started
+      before the probe is initiated. Defaults to 0 seconds. Minimum value is
+      0. Maximum value for liveness probe is 3600. Maximum value for startup
+      probe is 240. More info:
       https://kubernetes.io/docs/concepts/workloads/pods/pod-
       lifecycle#container-probes
-    periodSeconds: (Optional) How often (in seconds) to perform the probe.
-      Default to 10 seconds. Minimum value is 1. Maximum value for liveness
-      probe is 3600. Maximum value for startup probe is 240. Must be greater
-      or equal than timeout_seconds.
-    successThreshold: (Optional) Minimum consecutive successes for the probe
-      to be considered successful after having failed. Must be 1 if set.
-    tcpSocket: (Optional) TCPSocket specifies an action involving a TCP port.
-      TCP hooks not yet supported A field inlined from the Handler message.
-    timeoutSeconds: (Optional) Number of seconds after which the probe times
-      out. Defaults to 1 second. Minimum value is 1. Maximum value is 3600.
-      Must be smaller than period_seconds. More info:
+    periodSeconds: How often (in seconds) to perform the probe. Default to 10
+      seconds. Minimum value is 1. Maximum value for liveness probe is 3600.
+      Maximum value for startup probe is 240. Must be greater or equal than
+      timeout_seconds.
+    successThreshold: Minimum consecutive successes for the probe to be
+      considered successful after having failed. Must be 1 if set.
+    tcpSocket: TCPSocket specifies an action involving a TCP port.
+    timeoutSeconds: Number of seconds after which the probe times out.
+      Defaults to 1 second. Minimum value is 1. Maximum value is 3600. Must be
+      smaller than period_seconds. More info:
       https://kubernetes.io/docs/concepts/workloads/pods/pod-
       lifecycle#container-probes
   """
@@ -1695,28 +1661,28 @@ class ResourceRequirements(_messages.Message):
   r"""ResourceRequirements describes the compute resource requirements.
 
   Messages:
-    LimitsValue: (Optional) Only memory and CPU are supported. Limits
-      describes the maximum amount of compute resources allowed. The values of
-      the map is string form of the 'quantity' k8s type: https://github.com/ku
-      bernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/
-      resource/quantity.go
-    RequestsValue: (Optional) Only memory and CPU are supported. Requests
-      describes the minimum amount of compute resources required. If Requests
-      is omitted for a container, it defaults to Limits if that is explicitly
-      specified, otherwise to an implementation-defined value. The values of
-      the map is string form of the 'quantity' k8s type: https://github.com/ku
-      bernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/
-      resource/quantity.go
-
-  Fields:
-    limits: (Optional) Only memory and CPU are supported. Limits describes the
+    LimitsValue: Only memory and CPU are supported. Limits describes the
       maximum amount of compute resources allowed. The values of the map is
       string form of the 'quantity' k8s type: https://github.com/kubernetes/ku
       bernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/qu
       antity.go
-    requests: (Optional) Only memory and CPU are supported. Requests describes
-      the minimum amount of compute resources required. If Requests is omitted
-      for a container, it defaults to Limits if that is explicitly specified,
+    RequestsValue: Only memory and CPU are supported. Requests describes the
+      minimum amount of compute resources required. If Requests is omitted for
+      a container, it defaults to Limits if that is explicitly specified,
+      otherwise to an implementation-defined value. The values of the map is
+      string form of the 'quantity' k8s type: https://github.com/kubernetes/ku
+      bernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/qu
+      antity.go
+
+  Fields:
+    limits: Only memory and CPU are supported. Limits describes the maximum
+      amount of compute resources allowed. The values of the map is string
+      form of the 'quantity' k8s type: https://github.com/kubernetes/kubernete
+      s/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/quantity.
+      go
+    requests: Only memory and CPU are supported. Requests describes the
+      minimum amount of compute resources required. If Requests is omitted for
+      a container, it defaults to Limits if that is explicitly specified,
       otherwise to an implementation-defined value. The values of the map is
       string form of the 'quantity' k8s type: https://github.com/kubernetes/ku
       bernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/qu
@@ -1725,11 +1691,10 @@ class ResourceRequirements(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LimitsValue(_messages.Message):
-    r"""(Optional) Only memory and CPU are supported. Limits describes the
-    maximum amount of compute resources allowed. The values of the map is
-    string form of the 'quantity' k8s type: https://github.com/kubernetes/kube
-    rnetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/quanti
-    ty.go
+    r"""Only memory and CPU are supported. Limits describes the maximum amount
+    of compute resources allowed. The values of the map is string form of the
+    'quantity' k8s type: https://github.com/kubernetes/kubernetes/blob/master/
+    staging/src/k8s.io/apimachinery/pkg/api/resource/quantity.go
 
     Messages:
       AdditionalProperty: An additional property for a LimitsValue object.
@@ -1753,8 +1718,8 @@ class ResourceRequirements(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RequestsValue(_messages.Message):
-    r"""(Optional) Only memory and CPU are supported. Requests describes the
-    minimum amount of compute resources required. If Requests is omitted for a
+    r"""Only memory and CPU are supported. Requests describes the minimum
+    amount of compute resources required. If Requests is omitted for a
     container, it defaults to Limits if that is explicitly specified,
     otherwise to an implementation-defined value. The values of the map is
     string form of the 'quantity' k8s type: https://github.com/kubernetes/kube
@@ -1788,8 +1753,8 @@ class ResourceRequirements(_messages.Message):
 class Revision(_messages.Message):
   r"""Revision is an immutable snapshot of code and configuration. A revision
   references a container image. Revisions are created by updates to a
-  Configuration. See also:
-  https://github.com/knative/serving/blob/main/docs/spec/overview.md#revision
+  Configuration. See also: https://github.com/knative/specs/blob/main/specs/se
+  rving/overview.md#revision
 
   Fields:
     apiVersion: The API version for this call such as
@@ -1815,38 +1780,24 @@ class RevisionSpec(_messages.Message):
   Fields:
     containerConcurrency: ContainerConcurrency specifies the maximum allowed
       in-flight (concurrent) requests per container instance of the Revision.
-      Cloud Run fully managed: supported, defaults to 80 Cloud Run for Anthos:
-      supported, defaults to 0, which means concurrency to the application is
-      not limited, and the system decides the target concurrency for the
-      autoscaler.
+      If not specified, defaults to 80.
     containers: Containers holds the single container that defines the unit of
       execution for this Revision. In the context of a Revision, we disallow a
       number of fields on this Container, including: name and lifecycle. In
       Cloud Run, only a single container may be provided. The runtime contract
       is documented here:
-      https://github.com/knative/serving/blob/main/docs/runtime-contract.md
-    enableServiceLinks: Indicates whether information about services should be
-      injected into pod's environment variables, matching the syntax of Docker
-      links. Cloud Run fully managed: Not supported. Cloud Run for Anthos:
-      supported, defaults to true.
-    imagePullSecrets: ImagePullSecrets is a list of references to secrets in
-      the same namespace to use for pulling any images in pods that reference
-      this ServiceAccount. ImagePullSecrets are distinct from Secrets because
-      Secrets can be mounted in the pod, but ImagePullSecrets are only
-      accessed by the kubelet. More info:
-      https://kubernetes.io/docs/concepts/containers/images/#specifying-
-      imagepullsecrets-on-a-pod Cloud Run fully managed: Not supported. Cloud
-      Run for Anthos: supported.
+      https://github.com/knative/specs/blob/main/specs/serving/runtime-
+      contract.md
+    enableServiceLinks: Not supported by Cloud Run.
+    imagePullSecrets: Not supported by Cloud Run.
     serviceAccountName: Email address of the IAM service account associated
       with the revision of the service. The service account represents the
       identity of the running revision, and determines what permissions the
       revision has. If not provided, the revision will use the project's
       default service account.
     timeoutSeconds: TimeoutSeconds holds the max duration the instance is
-      allowed for responding to a request. Cloud Run fully managed: defaults
-      to 300 seconds (5 minutes). Maximum allowed value is 3600 seconds (1
-      hour). Cloud Run for Anthos: defaults to 300 seconds (5 minutes).
-      Maximum allowed value is configurable by the cluster operator.
+      allowed for responding to a request. Cloud Run: defaults to 300 seconds
+      (5 minutes). Maximum allowed value is 3600 seconds (1 hour).
     volumes: A Volume attribute.
   """
 
@@ -1864,13 +1815,14 @@ class RevisionStatus(_messages.Message):
   controller).
 
   Fields:
-    conditions: Conditions communicates information about ongoing/complete
+    conditions: Conditions communicate information about ongoing/complete
       reconciliation processes that bring the "spec" inline with the observed
       state of the world. As a Revision is being prepared, it will
       incrementally update conditions. Revision-specific conditions include: *
-      "ResourcesAvailable": True when underlying resources have been
-      provisioned. * "ContainerHealthy": True when the Revision readiness
-      check completes. * "Active": True when the Revision may receive traffic.
+      `ResourcesAvailable`: `True` when underlying resources have been
+      provisioned. * `ContainerHealthy`: `True` when the Revision readiness
+      check completes. * `Active`: `True` when the Revision may receive
+      traffic.
     imageDigest: ImageDigest holds the resolved digest for the image specified
       within .Spec.Container.Image. The digest is resolved during the creation
       of Revision. This field holds the digest value regardless of whether a
@@ -1926,7 +1878,7 @@ class Route(_messages.Message):
   these cases the Route is additionally responsible for monitoring the
   Configuration for "latest ready" revision changes, and smoothly rolling out
   latest revisions. See also:
-  https://github.com/knative/serving/blob/main/docs/spec/overview.md#route
+  https://github.com/knative/specs/blob/main/specs/serving/overview.md#route
   Cloud Run currently supports referencing a single Configuration to
   automatically deploy the "latest ready" Revision from that Configuration.
 
@@ -1981,7 +1933,7 @@ class RouteStatus(_messages.Message):
       Route's spec.
     traffic: Traffic holds the configured traffic distribution. These entries
       will always contain RevisionName references. When ConfigurationName
-      appears in the spec, this will hold the LatestReadyRevisionName that we
+      appears in the spec, this will hold the LatestReadyRevisionName that was
       last observed.
     url: URL holds the url that will distribute traffic over the provided
       traffic targets. It generally has the form: https://{route-
@@ -2084,8 +2036,8 @@ class RunNamespacesConfigurationsGetRequest(_messages.Message):
   r"""A RunNamespacesConfigurationsGetRequest object.
 
   Fields:
-    name: The name of the configuration to retrieve. For Cloud Run (fully
-      managed), replace {namespace_id} with the project ID or number.
+    name: The name of the configuration to retrieve. For Cloud Run, replace
+      {namespace_id} with the project ID or number.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2096,20 +2048,16 @@ class RunNamespacesConfigurationsListRequest(_messages.Message):
 
   Fields:
     continue_: Optional. Encoded string to continue paging.
-    fieldSelector: Allows to filter resources based on a specific value for a
-      field name. Send this in a query string format. i.e.
-      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
-    includeUninitialized: Not currently used by Cloud Run.
+    fieldSelector: Not supported by Cloud Run.
+    includeUninitialized: Not supported by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
-    limit: Optional. The maximum number of records that should be returned.
+    limit: Optional. The maximum number of the records that should be
+      returned.
     parent: The namespace from which the configurations should be listed. For
-      Cloud Run (fully managed), replace {namespace_id} with the project ID or
-      number.
-    resourceVersion: The baseline resource version from which the list or
-      watch operation should start. Not currently used by Cloud Run.
-    watch: Flag that indicates that the client expects to watch this resource
-      as well. Not currently used by Cloud Run.
+      Cloud Run, replace {namespace_id} with the project ID or number.
+    resourceVersion: Not supported by Cloud Run.
+    watch: Not supported by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2153,8 +2101,8 @@ class RunNamespacesDomainmappingsDeleteRequest(_messages.Message):
       the form namespaces/{namespace}. For example: namespaces/PROJECT_ID
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
-      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
+      see kubernetes.io/docs/concepts/architecture/garbage-collection/ for
+      more information.
   """
 
   apiVersion = _messages.StringField(1)
@@ -2234,7 +2182,8 @@ class RunNamespacesExecutionsDeleteRequest(_messages.Message):
       For example: namespaces/PROJECT_ID
     propagationPolicy: Optional. Specifies the propagation policy of delete.
       Cloud Run currently ignores this setting, and deletes in the background.
-      Please see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      Please see
+      https://kubernetes.io/docs/concepts/workloads/controllers/garbage-
       collection/ for more information.
   """
 
@@ -2261,20 +2210,17 @@ class RunNamespacesExecutionsListRequest(_messages.Message):
 
   Fields:
     continue_: Optional. Optional encoded string to continue paging.
-    fieldSelector: Optional. Allows to filter resources based on a specific
-      value for a field name. Send this in a query string format. i.e.
-      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
-    includeUninitialized: Optional. Not currently used by Cloud Run.
+    fieldSelector: Optional. Not supported by Cloud Run.
+    includeUninitialized: Optional. Not supported by Cloud Run.
     labelSelector: Optional. Allows to filter resources based on a label.
       Supported operations are =, !=, exists, in, and notIn.
-    limit: Optional. The maximum number of records that should be returned.
+    limit: Optional. The maximum number of the records that should be
+      returned.
     parent: Required. The namespace from which the executions should be
       listed. Replace {namespace} with the project ID or number. It takes the
       form namespaces/{namespace}. For example: namespaces/PROJECT_ID
-    resourceVersion: Optional. The baseline resource version from which the
-      list or watch operation should start. Not currently used by Cloud Run.
-    watch: Optional. Flag that indicates that the client expects to watch this
-      resource as well. Not currently used by Cloud Run.
+    resourceVersion: Optional. Not supported by Cloud Run.
+    watch: Optional. Not supported by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2339,20 +2285,16 @@ class RunNamespacesJobsListRequest(_messages.Message):
 
   Fields:
     continue_: Optional. Optional encoded string to continue paging.
-    fieldSelector: Optional. Allows to filter resources based on a specific
-      value for a field name. Send this in a query string format. i.e.
-      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
-    includeUninitialized: Optional. Not currently used by Cloud Run.
+    fieldSelector: Optional. Not supported by Cloud Run.
+    includeUninitialized: Optional. Not supported by Cloud Run.
     labelSelector: Optional. Allows to filter resources based on a label.
       Supported operations are =, !=, exists, in, and notIn.
     limit: Optional. The maximum number of records that should be returned.
     parent: Required. The namespace from which the jobs should be listed.
       Replace {namespace} with the project ID or number. It takes the form
       namespaces/{namespace}. For example: namespaces/PROJECT_ID
-    resourceVersion: Optional. The baseline resource version from which the
-      list or watch operation should start. Not currently used by Cloud Run.
-    watch: Optional. Flag that indicates that the client expects to watch this
-      resource as well. Not currently used by Cloud Run.
+    resourceVersion: Optional. Not supported by Cloud Run.
+    watch: Optional. Not supported by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2370,9 +2312,9 @@ class RunNamespacesJobsReplaceJobRequest(_messages.Message):
 
   Fields:
     job: A Job resource to be passed as the request body.
-    name: Required. The name of the service being replaced. Replace
-      {namespace} with the project ID or number. It takes the form
-      namespaces/{namespace}. For example: namespaces/PROJECT_ID
+    name: Required. The name of the job being replaced. Replace {namespace}
+      with the project ID or number. It takes the form namespaces/{namespace}.
+      For example: namespaces/PROJECT_ID
   """
 
   job = _messages.MessageField('Job', 1)
@@ -2406,8 +2348,8 @@ class RunNamespacesRevisionsDeleteRequest(_messages.Message):
       namespaces/{namespace}. For example: namespaces/PROJECT_ID
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
-      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
+      see https://kubernetes.io/docs/concepts/architecture/garbage-collection/
+      for more information.
   """
 
   apiVersion = _messages.StringField(1)
@@ -2511,10 +2453,10 @@ class RunNamespacesServicesCreateRequest(_messages.Message):
   Fields:
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
-    parent: The namespace in which the service should be created. For Cloud
-      Run (fully managed), replace {namespace} with the project ID or number.
-      It takes the form namespaces/{namespace}. For example:
-      namespaces/PROJECT_ID
+    parent: The resource's parent. In Cloud Run, it may be one of the
+      following: * `namespaces/{project_id_or_number}` *
+      `projects/{project_id_or_number}/locations/{region}` *
+      `projects/{project_id_or_number}/regions/{region}`
     service: A Service resource to be passed as the request body.
   """
 
@@ -2527,17 +2469,16 @@ class RunNamespacesServicesDeleteRequest(_messages.Message):
   r"""A RunNamespacesServicesDeleteRequest object.
 
   Fields:
-    apiVersion: Cloud Run currently ignores this parameter.
+    apiVersion: Not supported, and ignored by Cloud Run.
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
-    kind: Cloud Run currently ignores this parameter.
-    name: The name of the service to delete. For Cloud Run (fully managed),
-      replace {namespace} with the project ID or number. It takes the form
-      namespaces/{namespace}. For example: namespaces/PROJECT_ID
-    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
-      currently ignores this setting, and deletes in the background. Please
-      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
+    kind: Not supported, and ignored by Cloud Run.
+    name: The fully qualified name of the service to delete. It can be any of
+      the following forms: *
+      `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
+      {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
+      ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
+    propagationPolicy: Not supported, and ignored by Cloud Run.
   """
 
   apiVersion = _messages.StringField(1)
@@ -2551,9 +2492,11 @@ class RunNamespacesServicesGetRequest(_messages.Message):
   r"""A RunNamespacesServicesGetRequest object.
 
   Fields:
-    name: The name of the service to retrieve. For Cloud Run (fully managed),
-      replace {namespace} with the project ID or number. It takes the form
-      namespaces/{namespace}. For example: namespaces/PROJECT_ID
+    name: The fully qualified name of the service to retrieve. It can be any
+      of the following forms: *
+      `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
+      {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
+      ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2564,21 +2507,18 @@ class RunNamespacesServicesListRequest(_messages.Message):
 
   Fields:
     continue_: Optional. Encoded string to continue paging.
-    fieldSelector: Allows to filter resources based on a specific value for a
-      field name. Send this in a query string format. i.e.
-      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
-    includeUninitialized: Not currently used by Cloud Run.
+    fieldSelector: Not supported, and ignored by Cloud Run.
+    includeUninitialized: Not supported, and ignored by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: Optional. The maximum number of records that should be returned.
-    parent: The namespace from which the services should be listed. For Cloud
-      Run (fully managed), replace {namespace} with the project ID or number.
-      It takes the form namespaces/{namespace}. For example:
-      namespaces/PROJECT_ID
-    resourceVersion: The baseline resource version from which the list or
-      watch operation should start. Not currently used by Cloud Run.
-    watch: Flag that indicates that the client expects to watch this resource
-      as well. Not currently used by Cloud Run.
+    parent: The parent from where the resources should be listed. In Cloud
+      Run, it may be one of the following: *
+      `namespaces/{project_id_or_number}` *
+      `projects/{project_id_or_number}/locations/{region}` *
+      `projects/{project_id_or_number}/regions/{region}`
+    resourceVersion: Not supported, and ignored by Cloud Run.
+    watch: Not supported, and ignored by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2597,9 +2537,11 @@ class RunNamespacesServicesReplaceServiceRequest(_messages.Message):
   Fields:
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
-    name: The name of the service being replaced. For Cloud Run (fully
-      managed), replace {namespace} with the project ID or number. It takes
-      the form namespaces/{namespace}. For example: namespaces/PROJECT_ID
+    name: The fully qualified name of the service to replace. It can be any of
+      the following forms: *
+      `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
+      {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
+      ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
     service: A Service resource to be passed as the request body.
   """
 
@@ -2625,20 +2567,27 @@ class RunNamespacesTasksListRequest(_messages.Message):
 
   Fields:
     continue_: Optional. Optional encoded string to continue paging.
-    fieldSelector: Optional. Allows to filter resources based on a specific
-      value for a field name. Send this in a query string format. i.e.
-      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
-    includeUninitialized: Optional. Not currently used by Cloud Run.
+    fieldSelector: Optional. Not supported by Cloud Run.
+    includeUninitialized: Optional. Not supported by Cloud Run.
     labelSelector: Optional. Allows to filter resources based on a label.
-      Supported operations are =, !=, exists, in, and notIn.
+      Supported operations are =, !=, exists, in, and notIn. For example, to
+      list all tasks of execution "foo" in succeeded state: `run.googleapis.co
+      m/execution=foo,run.googleapis.com/runningState=Succeeded`. Supported
+      states are: * `Pending`: Initial state of all tasks. The task has not
+      yet started but eventually will. * `Running`: Container instances for
+      this task are running or will be running shortly. * `Succeeded`: No more
+      container instances to run for the task, and the last attempt succeeded.
+      * `Failed`: No more container instances to run for the task, and the
+      last attempt failed. This task has run out of retry attempts. *
+      `Cancelled`: Task was running but got stopped because its parent
+      execution has been aborted. * `Abandoned`: The task has not yet started
+      and never will because its parent execution has been aborted.
     limit: Optional. The maximum number of records that should be returned.
     parent: Required. The namespace from which the tasks should be listed.
       Replace {namespace} with the project ID or number. It takes the form
       namespaces/{namespace}. For example: namespaces/PROJECT_ID
-    resourceVersion: Optional. The baseline resource version from which the
-      list or watch operation should start. Not currently used by Cloud Run.
-    watch: Optional. Flag that indicates that the client expects to watch this
-      resource as well. Not currently used by Cloud Run.
+    resourceVersion: Optional. Not supported by Cloud Run.
+    watch: Optional. Not supported by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2685,8 +2634,8 @@ class RunProjectsLocationsConfigurationsGetRequest(_messages.Message):
   r"""A RunProjectsLocationsConfigurationsGetRequest object.
 
   Fields:
-    name: The name of the configuration to retrieve. For Cloud Run (fully
-      managed), replace {namespace_id} with the project ID or number.
+    name: The name of the configuration to retrieve. For Cloud Run, replace
+      {namespace_id} with the project ID or number.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2697,20 +2646,16 @@ class RunProjectsLocationsConfigurationsListRequest(_messages.Message):
 
   Fields:
     continue_: Optional. Encoded string to continue paging.
-    fieldSelector: Allows to filter resources based on a specific value for a
-      field name. Send this in a query string format. i.e.
-      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
-    includeUninitialized: Not currently used by Cloud Run.
+    fieldSelector: Not supported by Cloud Run.
+    includeUninitialized: Not supported by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
-    limit: Optional. The maximum number of records that should be returned.
+    limit: Optional. The maximum number of the records that should be
+      returned.
     parent: The namespace from which the configurations should be listed. For
-      Cloud Run (fully managed), replace {namespace_id} with the project ID or
-      number.
-    resourceVersion: The baseline resource version from which the list or
-      watch operation should start. Not currently used by Cloud Run.
-    watch: Flag that indicates that the client expects to watch this resource
-      as well. Not currently used by Cloud Run.
+      Cloud Run, replace {namespace_id} with the project ID or number.
+    resourceVersion: Not supported by Cloud Run.
+    watch: Not supported by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2754,8 +2699,8 @@ class RunProjectsLocationsDomainmappingsDeleteRequest(_messages.Message):
       the form namespaces/{namespace}. For example: namespaces/PROJECT_ID
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
-      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
+      see kubernetes.io/docs/concepts/architecture/garbage-collection/ for
+      more information.
   """
 
   apiVersion = _messages.StringField(1)
@@ -2927,8 +2872,8 @@ class RunProjectsLocationsRevisionsDeleteRequest(_messages.Message):
       namespaces/{namespace}. For example: namespaces/PROJECT_ID
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
-      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
+      see https://kubernetes.io/docs/concepts/architecture/garbage-collection/
+      for more information.
   """
 
   apiVersion = _messages.StringField(1)
@@ -3071,10 +3016,10 @@ class RunProjectsLocationsServicesCreateRequest(_messages.Message):
   Fields:
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
-    parent: The namespace in which the service should be created. For Cloud
-      Run (fully managed), replace {namespace} with the project ID or number.
-      It takes the form namespaces/{namespace}. For example:
-      namespaces/PROJECT_ID
+    parent: The resource's parent. In Cloud Run, it may be one of the
+      following: * `namespaces/{project_id_or_number}` *
+      `projects/{project_id_or_number}/locations/{region}` *
+      `projects/{project_id_or_number}/regions/{region}`
     service: A Service resource to be passed as the request body.
   """
 
@@ -3087,17 +3032,16 @@ class RunProjectsLocationsServicesDeleteRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesDeleteRequest object.
 
   Fields:
-    apiVersion: Cloud Run currently ignores this parameter.
+    apiVersion: Not supported, and ignored by Cloud Run.
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
-    kind: Cloud Run currently ignores this parameter.
-    name: The name of the service to delete. For Cloud Run (fully managed),
-      replace {namespace} with the project ID or number. It takes the form
-      namespaces/{namespace}. For example: namespaces/PROJECT_ID
-    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
-      currently ignores this setting, and deletes in the background. Please
-      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
+    kind: Not supported, and ignored by Cloud Run.
+    name: The fully qualified name of the service to delete. It can be any of
+      the following forms: *
+      `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
+      {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
+      ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
+    propagationPolicy: Not supported, and ignored by Cloud Run.
   """
 
   apiVersion = _messages.StringField(1)
@@ -3137,9 +3081,11 @@ class RunProjectsLocationsServicesGetRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesGetRequest object.
 
   Fields:
-    name: The name of the service to retrieve. For Cloud Run (fully managed),
-      replace {namespace} with the project ID or number. It takes the form
-      namespaces/{namespace}. For example: namespaces/PROJECT_ID
+    name: The fully qualified name of the service to retrieve. It can be any
+      of the following forms: *
+      `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
+      {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
+      ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -3150,21 +3096,18 @@ class RunProjectsLocationsServicesListRequest(_messages.Message):
 
   Fields:
     continue_: Optional. Encoded string to continue paging.
-    fieldSelector: Allows to filter resources based on a specific value for a
-      field name. Send this in a query string format. i.e.
-      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
-    includeUninitialized: Not currently used by Cloud Run.
+    fieldSelector: Not supported, and ignored by Cloud Run.
+    includeUninitialized: Not supported, and ignored by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: Optional. The maximum number of records that should be returned.
-    parent: The namespace from which the services should be listed. For Cloud
-      Run (fully managed), replace {namespace} with the project ID or number.
-      It takes the form namespaces/{namespace}. For example:
-      namespaces/PROJECT_ID
-    resourceVersion: The baseline resource version from which the list or
-      watch operation should start. Not currently used by Cloud Run.
-    watch: Flag that indicates that the client expects to watch this resource
-      as well. Not currently used by Cloud Run.
+    parent: The parent from where the resources should be listed. In Cloud
+      Run, it may be one of the following: *
+      `namespaces/{project_id_or_number}` *
+      `projects/{project_id_or_number}/locations/{region}` *
+      `projects/{project_id_or_number}/regions/{region}`
+    resourceVersion: Not supported, and ignored by Cloud Run.
+    watch: Not supported, and ignored by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -3183,9 +3126,11 @@ class RunProjectsLocationsServicesReplaceServiceRequest(_messages.Message):
   Fields:
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
-    name: The name of the service being replaced. For Cloud Run (fully
-      managed), replace {namespace} with the project ID or number. It takes
-      the form namespaces/{namespace}. For example: namespaces/PROJECT_ID
+    name: The fully qualified name of the service to replace. It can be any of
+      the following forms: *
+      `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
+      {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
+      ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
     service: A Service resource to be passed as the request body.
   """
 
@@ -3227,7 +3172,7 @@ class RunProjectsLocationsServicesTestIamPermissionsRequest(_messages.Message):
 
 
 class Secret(_messages.Message):
-  r"""Not supported by Cloud Run Cloud Run on GKE: supported Secret holds
+  r"""Not supported by Cloud Run. Cloud Run on GKE: supported Secret holds
   secret data of a certain type. The total bytes of the values in the Data
   field must be less than MaxSecretSize bytes.
 
@@ -3322,7 +3267,7 @@ class Secret(_messages.Message):
 
 
 class SecretEnvSource(_messages.Message):
-  r"""Not supported by Cloud Run SecretEnvSource selects a Secret to populate
+  r"""Not supported by Cloud Run. SecretEnvSource selects a Secret to populate
   the environment variables with. The contents of the target Secret's Data
   field will represent the key-value pairs as environment variables.
 
@@ -3331,7 +3276,7 @@ class SecretEnvSource(_messages.Message):
       meant to be inlined directly into the message. Use the "name" field
       instead.
     name: The Secret to select from.
-    optional: (Optional) Specify whether the Secret must be defined
+    optional: Specify whether the Secret must be defined
   """
 
   localObjectReference = _messages.MessageField('LocalObjectReference', 1)
@@ -3343,8 +3288,8 @@ class SecretKeySelector(_messages.Message):
   r"""SecretKeySelector selects a key of a Secret.
 
   Fields:
-    key: A Cloud Secret Manager secret version. Must be 'latest' for the
-      latest version or an integer for a specific version. The key of the
+    key: Required. A Cloud Secret Manager secret version. Must be 'latest' for
+      the latest version or an integer for a specific version. The key of the
       secret to select from. Must be a valid secret key.
     localObjectReference: This field should not be used directly as it is
       meant to be inlined directly into the message. Use the "name" field
@@ -3356,7 +3301,7 @@ class SecretKeySelector(_messages.Message):
       be separated by commas. The alias definitions must be set on the
       run.googleapis.com/secrets annotation. The name of the secret in the
       pod's namespace to select from.
-    optional: (Optional) Specify whether the Secret or its key must be defined
+    optional: Specify whether the Secret or its key must be defined.
   """
 
   key = _messages.StringField(1)
@@ -3366,9 +3311,10 @@ class SecretKeySelector(_messages.Message):
 
 
 class SecretVolumeSource(_messages.Message):
-  r"""The secret's value will be presented as the content of a file whose name
-  is defined in the item path. If no items are defined, the name of the file
-  is the secret_name. The contents of the target Secret's Data field will be
+  r"""A volume representing a secret stored in Google Secret Manager. The
+  secret's value will be presented as the content of a file whose name is
+  defined in the item path. If no items are defined, the name of the file is
+  the secret_name. The contents of the target Secret's Data field will be
   presented in a volume as files using the keys in the Data field as the file
   names.
 
@@ -3385,18 +3331,14 @@ class SecretVolumeSource(_messages.Message):
       set to 0755 (octal) or 493 (base-10). * This might be in conflict with
       other options that affect the file mode, like fsGroup, and the result
       can be other mode bits set.
-    items: (Optional) If unspecified, the volume will expose a file whose name
-      is the secret_name. If specified, the key will be used as the version to
-      fetch from Cloud Secret Manager and the path will be the name of the
-      file exposed in the volume. When items are defined, they must specify a
-      key and a path. If unspecified, each key-value pair in the Data field of
-      the referenced Secret will be projected into the volume as a file whose
-      name is the key and content is the value. If specified, the listed keys
-      will be projected into the specified paths, and unlisted keys will not
-      be present. If a key is specified that is not present in the Secret, the
-      volume setup will error unless it is marked optional.
-    optional: (Optional) Specify whether the Secret or its keys must be
-      defined.
+    items: A list of secret versions to mount in the volume. If no items are
+      specified, the volume will expose a file with the same name as the
+      secret name. The contents of the file will be the data in the latest
+      version of the secret. If items are specified, the key will be used as
+      the version to fetch from Cloud Secret Manager and the path will be the
+      name of the file exposed in the volume. When items are defined, they
+      must specify both a key and a path.
+    optional: Not supported by Cloud Run.
     secretName: The name of the secret in Cloud Secret Manager. By default,
       the secret is assumed to be in the same project. If the secret is in
       another project, you must define an alias. An alias definition has the
@@ -3413,16 +3355,16 @@ class SecretVolumeSource(_messages.Message):
 
 
 class SecurityContext(_messages.Message):
-  r"""Not supported by Cloud Run SecurityContext holds security configuration
+  r"""Not supported by Cloud Run. SecurityContext holds security configuration
   that will be applied to a container. Some fields are present in both
   SecurityContext and PodSecurityContext. When both are set, the values in
   SecurityContext take precedence.
 
   Fields:
-    runAsUser: (Optional) The UID to run the entrypoint of the container
-      process. Defaults to user specified in image metadata if unspecified.
-      May also be set in PodSecurityContext. If set in both SecurityContext
-      and PodSecurityContext, the value specified in SecurityContext takes
+    runAsUser: The UID to run the entrypoint of the container process.
+      Defaults to user specified in image metadata if unspecified. May also be
+      set in PodSecurityContext. If set in both SecurityContext and
+      PodSecurityContext, the value specified in SecurityContext takes
       precedence.
   """
 
@@ -3442,25 +3384,31 @@ class Service(_messages.Message):
   https://github.com/knative/serving/blob/main/docs/spec/overview.md#service
 
   Fields:
-    apiVersion: The API version for this call such as
+    apiVersion: The API version for this call. It must be
       "serving.knative.dev/v1".
-    kind: The kind of resource, in this case "Service".
+    kind: The kind of resource. It must be "Service".
     metadata: Metadata associated with this Service, including name,
-      namespace, labels, and annotations. Cloud Run (fully managed) uses the
-      following annotation keys to configure features on a Service: *
-      `run.googleapis.com/ingress` sets the ingress settings for the Service.
-      See [the ingress settings documentation](/run/docs/securing/ingress) for
-      details on configuring ingress settings. * `run.googleapis.com/ingress-
-      status` is output-only and contains the currently active ingress
-      settings for the Service. `run.googleapis.com/ingress-status` may differ
-      from `run.googleapis.com/ingress` while the system is processing a
-      change to `run.googleapis.com/ingress` or if the system failed to
-      process a change to `run.googleapis.com/ingress`. When the system has
-      processed all changes successfully `run.googleapis.com/ingress-status`
-      and `run.googleapis.com/ingress` are equal.
-    spec: Spec holds the desired state of the Service (from the client).
-    status: Status communicates the observed state of the Service (from the
-      controller).
+      namespace, labels, and annotations. In Cloud Run, annotations with
+      'run.googleapis.com/' and 'autoscaling.knative.dev' are restricted, and
+      the accepted annotations will be different depending on the resource
+      type. The following Cloud Run-specific annotations are accepted in
+      Service.metadata.annotations. * `run.googleapis.com/binary-
+      authorization-breakglass` * `run.googleapis.com/binary-authorization` *
+      `run.googleapis.com/client-name` * `run.googleapis.com/custom-audiences`
+      * `run.googleapis.com/description` * `run.googleapis.com/gc-traffic-
+      tags` * `run.googleapis.com/ingress` * `run.googleapis.com/ingress` sets
+      the ingress settings for the Service. See [the ingress settings
+      documentation](/run/docs/securing/ingress) for details on configuring
+      ingress settings. * `run.googleapis.com/ingress-status` is output-only
+      and contains the currently active ingress settings for the Service.
+      `run.googleapis.com/ingress-status` may differ from
+      `run.googleapis.com/ingress` while the system is processing a change to
+      `run.googleapis.com/ingress` or if the system failed to process a change
+      to `run.googleapis.com/ingress`. When the system has processed all
+      changes successfully `run.googleapis.com/ingress-status` and
+      `run.googleapis.com/ingress` are equal.
+    spec: Holds the desired state of the Service (from the client).
+    status: Communicates the system-controlled state of the Service.
   """
 
   apiVersion = _messages.StringField(1)
@@ -3475,10 +3423,10 @@ class ServiceSpec(_messages.Message):
   which is used to manipulate the underlying Route and Configuration(s).
 
   Fields:
-    template: Template holds the latest specification for the Revision to be
-      stamped out.
-    traffic: Traffic specifies how to distribute traffic over a collection of
-      Knative Revisions and Configurations.
+    template: Holds the latest specification for the Revision to be stamped
+      out.
+    traffic: Specifies how to distribute traffic over a collection of Knative
+      Revisions and Configurations to the Service's main URL.
   """
 
   template = _messages.MessageField('RevisionTemplate', 1)
@@ -3489,32 +3437,31 @@ class ServiceStatus(_messages.Message):
   r"""The current state of the Service. Output only.
 
   Fields:
-    address: From RouteStatus. Similar to url, information on where the
-      service is available on HTTP.
-    conditions: Conditions communicates information about ongoing/complete
-      reconciliation processes that bring the "spec" inline with the observed
+    address: Similar to url, information on where the service is available on
+      HTTP.
+    conditions: Conditions communicate information about ongoing/complete
+      reconciliation processes that bring the `spec` inline with the observed
       state of the world. Service-specific conditions include: *
-      "ConfigurationsReady": true when the underlying Configuration is ready.
-      * "RoutesReady": true when the underlying Route is ready. * "Ready":
-      true when both the underlying Route and Configuration are ready.
-    latestCreatedRevisionName: From ConfigurationStatus.
-      LatestCreatedRevisionName is the last revision that was created from
+      `ConfigurationsReady`: `True` when the underlying Configuration is
+      ready. * `RoutesReady`: `True` when the underlying Route is ready. *
+      `Ready`: `True` when all underlying resources are ready.
+    latestCreatedRevisionName: Name of the last revision that was created from
       this Service's Configuration. It might not be ready yet, for that use
       LatestReadyRevisionName.
-    latestReadyRevisionName: From ConfigurationStatus. LatestReadyRevisionName
-      holds the name of the latest Revision stamped out from this Service's
-      Configuration that has had its "Ready" condition become "True".
-    observedGeneration: ObservedGeneration is the 'Generation' of the Route
-      that was last processed by the controller. Clients polling for completed
-      reconciliation should poll until observedGeneration =
-      metadata.generation and the Ready condition's status is True or False.
-    traffic: From RouteStatus. Traffic holds the configured traffic
-      distribution. These entries will always contain RevisionName references.
-      When ConfigurationName appears in the spec, this will hold the
-      LatestReadyRevisionName that we last observed.
-    url: From RouteStatus. URL holds the url that will distribute traffic over
-      the provided traffic targets. It generally has the form https://{route-
-      hash}-{project-hash}-{cluster-level-suffix}.a.run.app
+    latestReadyRevisionName: Name of the latest Revision from this Service's
+      Configuration that has had its `Ready` condition become `True`.
+    observedGeneration: Returns the generation last fully processed by the
+      system. This will only match metadata.generation when reconciliation is
+      complete. Clients polling for completed reconciliation should poll until
+      observedGeneration = metadata.generation and the Ready condition's
+      status is True or False.
+    traffic: Holds the configured traffic distribution. These entries will
+      always contain RevisionName references. When ConfigurationName appears
+      in the spec, this will hold the LatestReadyRevisionName that we last
+      observed.
+    url: URL that will distribute traffic over the provided traffic targets.
+      It generally has the form https://{route-hash}-{project-hash}-{cluster-
+      level-suffix}.a.run.app
   """
 
   address = _messages.MessageField('Addressable', 1)
@@ -3607,26 +3554,25 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  r"""Status is a return value for calls that don't return other objects
+  r"""Status is a return value for calls that don't return other objects.
 
   Fields:
-    code: Suggested HTTP return code for this status, 0 if not set. +optional
+    code: Suggested HTTP return code for this status, 0 if not set.
     details: Extended data associated with the reason. Each reason may define
       its own extended details. This field is optional and the data returned
       is not guaranteed to conform to any schema except that defined by the
-      reason type. +optional
+      reason type.
     message: A human-readable description of the status of this operation.
-      +optional
     metadata: Standard list metadata. More info:
       https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#types-kinds +optional
+      conventions.md#types-kinds
     reason: A machine-readable description of why this operation is in the
       "Failure" status. If this value is empty there is no information
       available. A Reason clarifies an HTTP status code but does not override
-      it. +optional
+      it.
     status: Status of the operation. One of: "Success" or "Failure". More
       info: https://git.k8s.io/community/contributors/devel/sig-
-      architecture/api-conventions.md#spec-and-status +optional
+      architecture/api-conventions.md#spec-and-status
   """
 
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3645,14 +3591,13 @@ class StatusCause(_messages.Message):
     field: The field of the resource that has caused this error, as named by
       its JSON serialization. May include dot and postfix notation for nested
       attributes. Arrays are zero-indexed. Fields may appear more than once in
-      an array of causes due to fields having multiple errors. Optional.
-      Examples: "name" - the field "name" on the current resource
-      "items[0].name" - the field "name" on the first array entry in "items"
-      +optional
+      an array of causes due to fields having multiple errors. Examples:
+      "name" - the field "name" on the current resource "items[0].name" - the
+      field "name" on the first array entry in "items"
     message: A human-readable description of the cause of the error. This
-      field may be presented as-is to a reader. +optional
+      field may be presented as-is to a reader.
     reason: A machine-readable description of the cause of the error. If this
-      value is empty there is no information available. +optional
+      value is empty there is no information available.
   """
 
   field = _messages.StringField(1)
@@ -3670,23 +3615,21 @@ class StatusDetails(_messages.Message):
   Fields:
     causes: The Causes array includes more details associated with the
       StatusReason failure. Not all StatusReasons may provide detailed causes.
-      +optional
     group: The group attribute of the resource associated with the status
-      StatusReason. +optional
+      StatusReason.
     kind: The kind attribute of the resource associated with the status
       StatusReason. On some operations may differ from the requested resource
       Kind. More info: https://git.k8s.io/community/contributors/devel/sig-
-      architecture/api-conventions.md#types-kinds +optional
+      architecture/api-conventions.md#types-kinds
     name: The name attribute of the resource associated with the status
       StatusReason (when there is a single name which can be described).
-      +optional
     retryAfterSeconds: If specified, the time in seconds before the operation
       should be retried. Some errors may indicate the client must take an
       alternate action - for those errors this field may indicate how long to
-      wait before taking the alternate action. +optional
+      wait before taking the alternate action.
     uid: UID of the resource. (when there is a single resource which can be
       described). More info: https://kubernetes.io/docs/user-
-      guide/identifiers#uids +optional
+      guide/identifiers#uids
   """
 
   causes = _messages.MessageField('StatusCause', 1, repeated=True)
@@ -3701,12 +3644,9 @@ class TCPSocketAction(_messages.Message):
   r"""TCPSocketAction describes an action based on opening a socket
 
   Fields:
-    host: (Optional) Optional: Host name to connect to, defaults to the pod
-      IP.
-    port: Number or name of the port to access on the container. Number must
-      be in the range 1 to 65535. Name must be an IANA_SVC_NAME. This field is
-      currently limited to integer types only because of proto's inability to
-      properly support the IntOrString golang type.
+    host: Not supported by Cloud Run.
+    port: Port number to access on the container. Number must be in the range
+      1 to 65535.
   """
 
   host = _messages.StringField(1)
@@ -3721,21 +3661,21 @@ class Task(_messages.Message):
       representation of an object. Servers should convert recognized schemas
       to the latest internal value, and may reject unrecognized values. More
       info: https://git.k8s.io/community/contributors/devel/sig-
-      architecture/api-conventions.md#resources +optional
+      architecture/api-conventions.md#resources
     kind: Optional. Kind is a string value representing the REST resource this
       object represents. Servers may infer this from the endpoint the client
       submits requests to. Cannot be updated. In CamelCase. More info:
       https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#types-kinds +optional
+      conventions.md#types-kinds
     metadata: Optional. Standard object's metadata. More info:
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#metadata +optional
-    spec: Optional. Specification of the desired behavior of an execution.
-      More info: https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#spec-and-status +optional
-    status: Output only. Current status of an execution. More info:
-      https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-
-      and-status +optional
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#metadata
+    spec: Optional. Specification of the desired behavior of a task. More
+      info: https://git.k8s.io/community/contributors/devel/sig-
+      architecture/api-conventions.md#spec-and-status
+    status: Output only. Current status of a task. More info:
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#spec-and-status
   """
 
   apiVersion = _messages.StringField(1)
@@ -3773,14 +3713,14 @@ class TaskSpec(_messages.Message):
       associated with the task of a job execution. The service account
       represents the identity of the running task, and determines what
       permissions the task has. If not provided, the task will use the
-      project's default service account. +optional
-    timeoutSeconds: Optional. Optional duration in seconds the task may be
-      active before the system will actively try to mark it failed and kill
+      project's default service account.
+    timeoutSeconds: Optional. Duration in seconds the task may be active
+      before the system will actively try to mark it failed and kill
       associated containers. This applies per attempt of a task, meaning each
-      retry can run for the full timeout. +optional
+      retry can run for the full timeout.
     volumes: Optional. List of volumes that can be mounted by containers
       belonging to the task. More info:
-      https://kubernetes.io/docs/concepts/storage/volumes +optional
+      https://kubernetes.io/docs/concepts/storage/volumes
   """
 
   containers = _messages.MessageField('Container', 1, repeated=True)
@@ -3791,29 +3731,29 @@ class TaskSpec(_messages.Message):
 
 
 class TaskStatus(_messages.Message):
-  r"""TaskStatus represents the status of a task of a job execution.
+  r"""TaskStatus represents the status of a task.
 
   Fields:
     completionTime: Optional. Represents time when the task was completed. It
       is not guaranteed to be set in happens-before order across separate
-      operations. It is represented in RFC3339 form and is in UTC. +optional
-    conditions: Optional. The latest available observations of a task's
-      current state. More info:
-      https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-
-      completion/ +optional
+      operations. It is represented in RFC3339 form and is in UTC.
+    conditions: Optional. Conditions communicate information about
+      ongoing/complete reconciliation processes that bring the "spec" inline
+      with the observed state of the world. Task-specific conditions include:
+      * `Started`: `True` when the task has started to execute. * `Completed`:
+      `True` when the task has succeeded. `False` when the task has failed.
     index: Required. Index of the task, unique per execution, and beginning at
       0.
     lastAttemptResult: Optional. Result of the last attempt of this task.
-      +optional
     logUri: Optional. URI where logs for this task can be found in Cloud
       Console.
-    observedGeneration: Optional. The 'generation' of the execution that was
-      last processed by the controller.
+    observedGeneration: Optional. The 'generation' of the task that was last
+      processed by the controller.
     retried: Optional. The number of times this task was retried. Instances
-      are retried when they fail up to the maxRetries limit. +optional
+      are retried when they fail up to the maxRetries limit.
     startTime: Optional. Represents time when the task started to run. It is
       not guaranteed to be set in happens-before order across separate
-      operations. It is represented in RFC3339 form and is in UTC. +optional
+      operations. It is represented in RFC3339 form and is in UTC.
   """
 
   completionTime = _messages.StringField(1)
@@ -3833,7 +3773,7 @@ class TaskTemplateSpec(_messages.Message):
   Fields:
     spec: Optional. Specification of the desired behavior of the task. More
       info: https://git.k8s.io/community/contributors/devel/sig-
-      architecture/api-conventions.md#spec-and-status +optional
+      architecture/api-conventions.md#spec-and-status
   """
 
   spec = _messages.MessageField('TaskSpec', 1)
@@ -3868,9 +3808,9 @@ class TrafficTarget(_messages.Message):
 
   Fields:
     configurationName: ConfigurationName of a configuration to whose latest
-      revision we will send this portion of traffic. When the
+      revision which will be sent this portion of traffic. When the
       "status.latestReadyRevisionName" of the referenced configuration
-      changes, we will automatically migrate traffic from the prior "latest
+      changes, traffic will automatically migrate from the prior "latest
       ready" revision to the new one. This field is never set in Route's
       status, only its spec. This is mutually exclusive with RevisionName.
       Cloud Run currently supports a single ConfigurationName.
@@ -3902,10 +3842,12 @@ class Volume(_messages.Message):
   r"""Volume represents a named volume in a container.
 
   Fields:
-    configMap: A ConfigMapVolumeSource attribute.
+    configMap: Not supported in Cloud Run.
     name: Volume's name. In Cloud Run Fully Managed, the name 'cloudsql' is
       reserved.
-    secret: A SecretVolumeSource attribute.
+    secret: The secret's value will be presented as the content of a file
+      whose name is defined in the item path. If no items are defined, the
+      name of the file is the secretName.
   """
 
   configMap = _messages.MessageField('ConfigMapVolumeSource', 1)
@@ -3917,13 +3859,14 @@ class VolumeMount(_messages.Message):
   r"""VolumeMount describes a mounting of a Volume within a container.
 
   Fields:
-    mountPath: Path within the container at which the volume should be
-      mounted. Must not contain ':'.
-    name: The name of the volume. There must be a corresponding Volume with
-      the same name.
-    readOnly: (Optional) Only true is accepted. Defaults to true.
-    subPath: (Optional) Path within the volume from which the container's
-      volume should be mounted. Defaults to "" (volume's root).
+    mountPath: Required. Path within the container at which the volume should
+      be mounted. Must not contain ':'.
+    name: Required. The name of the volume. There must be a corresponding
+      Volume with the same name.
+    readOnly: Only true is accepted for Secret Volumes. Defaults to true for
+      Secrets Volumes.
+    subPath: Path within the volume from which the container's volume should
+      be mounted. Defaults to "" (volume's root).
   """
 
   mountPath = _messages.StringField(1)

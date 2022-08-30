@@ -548,7 +548,7 @@ class StreamContent(_messages.Message):
     buildVersions: Output only. User-specified version tags and unique build
       IDs of content builds
     contentVersionTags: Output only. User-specified version tags of content
-      builds.
+      builds
     createTime: Output only. [Output only] Create time stamp
     labels: Labels as key value pairs
     lifecycleState: Output only. Current state of the content.

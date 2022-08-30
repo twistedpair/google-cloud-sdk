@@ -18,8 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.core.util import times
+
 DNS_AUTHORIZATIONS_TEMPLATE = "{}/dnsAuthorizations/{}"
 ISSUANCE_CONFIG_TEMPLATE = "{}/certificateIssuanceConfigs/{}"
+CA_POOL_TEMPLATE = "{}/caPools/{}"
 
 
 def GetLocation():
@@ -81,3 +84,40 @@ def SetIssuanceConfigURL(ref, args, request):
         request.parent, args.issuance_config)
 
   return request
+
+
+def SetCAPoolURL(ref, args, request):
+  """Converts the ca-pool argument into a relative URL with project name and location.
+
+  Args:
+    ref: reference to the membership object.
+    args: command line arguments.
+    request: API request to be issued
+
+  Returns:
+    modified request
+  """
+
+  del ref
+  if not args:
+    return request
+
+  if args.ca_pool:
+    if not args.ca_pool.startswith("projects/"):
+      request.certificateIssuanceConfig.certificateAuthorityConfig.certificateAuthorityServiceConfig.caPool = CA_POOL_TEMPLATE.format(
+          request.parent, args.ca_pool)
+
+  return request
+
+
+def ParseIso8601LifetimeFlag(value):
+  """Parses the ISO 8601 lifetime argument.
+
+  Args:
+    value: An ISO 8601 valid value.
+
+  Returns:
+    modified value as expected by the API
+  """
+
+  return times.FormatDurationForJson(times.ParseDuration(value))

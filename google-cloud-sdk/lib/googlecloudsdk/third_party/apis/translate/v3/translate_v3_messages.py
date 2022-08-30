@@ -62,9 +62,9 @@ class BatchDocumentOutputConfig(_messages.Message):
       consumed (that is, no partial output file is written). Since index.csv
       will be keeping updated during the process, please make sure there is no
       custom retention policy applied on the output bucket that may avoid file
-      updating. (https://cloud.google.com/storage/docs/bucket-
-      lock?hl=en#retention-policy) The naming format of translation output
-      files follows (for target language code [trg]): `translation_output`:
+      updating. (https://cloud.google.com/storage/docs/bucket-lock#retention-
+      policy) The naming format of translation output files follows (for
+      target language code [trg]): `translation_output`:
       gs://translation_output/a_b_c_[trg]_translation.[extension]
       `glossary_translation_output`:
       gs://translation_test/a_b_c_[trg]_glossary_translation.[extension] The
@@ -115,8 +115,8 @@ class BatchTranslateDocumentRequest(_messages.Message):
       duplicate inputs.
     sourceLanguageCode: Required. The BCP-47 language code of the input
       document if known, for example, "en-US" or "sr-Latn". Supported language
-      codes are listed in Language Support
-      (https://cloud.google.com/translate/docs/languages).
+      codes are listed in [Language
+      Support](https://cloud.google.com/translate/docs/languages).
     targetLanguageCodes: Required. The BCP-47 language code to use for
       translation of the input document. Specify up to 10 language codes here.
   """
@@ -581,6 +581,7 @@ class Glossary(_messages.Message):
   r"""Represents a glossary built from user provided data.
 
   Fields:
+    displayName: Optional. The display name of the glossary.
     endTime: Output only. When the glossary creation was finished.
     entryCount: Output only. The number of entries defined in the glossary.
     inputConfig: Required. Provides examples to build the glossary from. Total
@@ -593,13 +594,31 @@ class Glossary(_messages.Message):
     submitTime: Output only. When CreateGlossary was called.
   """
 
-  endTime = _messages.StringField(1)
-  entryCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  inputConfig = _messages.MessageField('GlossaryInputConfig', 3)
-  languageCodesSet = _messages.MessageField('LanguageCodesSet', 4)
-  languagePair = _messages.MessageField('LanguageCodePair', 5)
-  name = _messages.StringField(6)
-  submitTime = _messages.StringField(7)
+  displayName = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  entryCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  inputConfig = _messages.MessageField('GlossaryInputConfig', 4)
+  languageCodesSet = _messages.MessageField('LanguageCodesSet', 5)
+  languagePair = _messages.MessageField('LanguageCodePair', 6)
+  name = _messages.StringField(7)
+  submitTime = _messages.StringField(8)
+
+
+class GlossaryEntry(_messages.Message):
+  r"""Represents a single entry in a glossary.
+
+  Fields:
+    description: Describes the glossary entry.
+    name: Required. The resource name of the entry. Format:
+      "projects/*/locations/*/glossaries/*/glossaryEntries/*"
+    termsPair: Used for an unidirectional glossary.
+    termsSet: Used for an equivalent term sets glossary.
+  """
+
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+  termsPair = _messages.MessageField('GlossaryTermsPair', 3)
+  termsSet = _messages.MessageField('GlossaryTermsSet', 4)
 
 
 class GlossaryInputConfig(_messages.Message):
@@ -622,6 +641,43 @@ class GlossaryInputConfig(_messages.Message):
   """
 
   gcsSource = _messages.MessageField('GcsSource', 1)
+
+
+class GlossaryTerm(_messages.Message):
+  r"""Represents a single glossary term
+
+  Fields:
+    languageCode: The language for this glossary term.
+    text: The text for the glossary term.
+  """
+
+  languageCode = _messages.StringField(1)
+  text = _messages.StringField(2)
+
+
+class GlossaryTermsPair(_messages.Message):
+  r"""Represents a single entry for an unidirectional glossary.
+
+  Fields:
+    sourceTerm: The source term is the term that will get match in the text,
+    targetTerm: The term that will replace the match source term.
+  """
+
+  sourceTerm = _messages.MessageField('GlossaryTerm', 1)
+  targetTerm = _messages.MessageField('GlossaryTerm', 2)
+
+
+class GlossaryTermsSet(_messages.Message):
+  r"""Represents a single entry for an equivalent term set glossary. This is
+  used for equivalent term sets where each term can be replaced by the other
+  terms in the set.
+
+  Fields:
+    terms: Each term in the set represents a term that can be replaced by the
+      other terms.
+  """
+
+  terms = _messages.MessageField('GlossaryTerm', 1, repeated=True)
 
 
 class InputConfig(_messages.Message):
@@ -690,6 +746,20 @@ class ListGlossariesResponse(_messages.Message):
   """
 
   glossaries = _messages.MessageField('Glossary', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListGlossaryEntriesResponse(_messages.Message):
+  r"""Response message for ListGlossaryEntries
+
+  Fields:
+    glossaryEntries: Optional. The Glossary Entries
+    nextPageToken: Optional. A token to retrieve a page of results. Pass this
+      value in the [ListGLossaryEntriesRequest.page_token] field in the
+      subsequent calls.
+  """
+
+  glossaryEntries = _messages.MessageField('GlossaryEntry', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -936,20 +1006,20 @@ class OutputConfig(_messages.Message):
       output file is written). Since index.csv will be keeping updated during
       the process, please make sure there is no custom retention policy
       applied on the output bucket that may avoid file updating.
-      (https://cloud.google.com/storage/docs/bucket-lock?hl=en#retention-
-      policy) The format of translations_file (for target language code 'trg')
-      is: gs://translation_test/a_b_c_'trg'_translations.[extension] If the
-      input file extension is tsv, the output has the following columns:
-      Column 1: ID of the request provided in the input, if it's not provided
-      in the input, then the input row number is used (0-based). Column 2:
-      source sentence. Column 3: translation without applying a glossary.
-      Empty string if there is an error. Column 4 (only present if a glossary
-      is provided in the request): translation after applying the glossary.
-      Empty string if there is an error applying the glossary. Could be same
-      string as column 3 if there is no glossary applied. If input file
-      extension is a txt or html, the translation is directly written to the
-      output file. If glossary is requested, a separate
-      glossary_translations_file has format of
+      (https://cloud.google.com/storage/docs/bucket-lock#retention-policy) The
+      format of translations_file (for target language code 'trg') is:
+      gs://translation_test/a_b_c_'trg'_translations.[extension] If the input
+      file extension is tsv, the output has the following columns: Column 1:
+      ID of the request provided in the input, if it's not provided in the
+      input, then the input row number is used (0-based). Column 2: source
+      sentence. Column 3: translation without applying a glossary. Empty
+      string if there is an error. Column 4 (only present if a glossary is
+      provided in the request): translation after applying the glossary. Empty
+      string if there is an error applying the glossary. Could be same string
+      as column 3 if there is no glossary applied. If input file extension is
+      a txt or html, the translation is directly written to the output file.
+      If glossary is requested, a separate glossary_translations_file has
+      format of
       gs://translation_test/a_b_c_'trg'_glossary_translations.[extension] The
       format of errors file (for target language code 'trg') is:
       gs://translation_test/a_b_c_'trg'_errors.[extension] If the input file
@@ -1394,6 +1464,61 @@ class TranslateProjectsLocationsGlossariesGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class TranslateProjectsLocationsGlossariesGlossaryEntriesCreateRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsGlossariesGlossaryEntriesCreateRequest
+  object.
+
+  Fields:
+    glossaryEntry: A GlossaryEntry resource to be passed as the request body.
+    parent: Required. The resource name of the glossary to create the entry
+      under.
+  """
+
+  glossaryEntry = _messages.MessageField('GlossaryEntry', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class TranslateProjectsLocationsGlossariesGlossaryEntriesDeleteRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsGlossariesGlossaryEntriesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the glossary entry to delete
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TranslateProjectsLocationsGlossariesGlossaryEntriesGetRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsGlossariesGlossaryEntriesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the glossary entry to get
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TranslateProjectsLocationsGlossariesGlossaryEntriesListRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsGlossariesGlossaryEntriesListRequest object.
+
+  Fields:
+    pageSize: Optional. Requested page size. The server may return fewer
+      glossary entries than requested. If unspecified, the server picks an
+      appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return. Typically, this is the value of
+      [ListGlossaryEntriesResponse.next_page_token] returned from the previous
+      call. The first page is returned if `page_token`is empty or missing.
+    parent: Required. The parent glossary resource name for listing the
+      glossary's entries.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class TranslateProjectsLocationsGlossariesListRequest(_messages.Message):
   r"""A TranslateProjectsLocationsGlossariesListRequest object.
 
@@ -1429,6 +1554,23 @@ class TranslateProjectsLocationsGlossariesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class TranslateProjectsLocationsGlossariesPatchRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsGlossariesPatchRequest object.
+
+  Fields:
+    glossary: A Glossary resource to be passed as the request body.
+    name: Required. The resource name of the glossary. Glossary names have the
+      form `projects/{project-number-or-id}/locations/{location-
+      id}/glossaries/{glossary-id}`.
+    updateMask: The list of fields to be updated. Currently only
+      `display_name` and 'input_config'
+  """
+
+  glossary = _messages.MessageField('Glossary', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class TranslateProjectsLocationsListRequest(_messages.Message):

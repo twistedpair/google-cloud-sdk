@@ -131,7 +131,7 @@ class RunV1(base_api.BaseApiClient):
     )
 
     def ReplaceSecret(self, request, global_params=None):
-      r"""Rpc to replace a secret. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
+      r"""Rpc to replace a secret. Only the spec, metadata labels, and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (RunApiV1NamespacesSecretsReplaceSecretRequest) input message
@@ -434,7 +434,7 @@ class RunV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List domain mappings.
+      r"""List all domain mappings.
 
       Args:
         request: (RunNamespacesDomainmappingsListRequest) input message
@@ -916,7 +916,7 @@ class RunV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a service.
+      r"""Creates a new Service. Service creation will trigger a new deployment. Use GetService, and check service.status to determine if the Service is ready.
 
       Args:
         request: (RunNamespacesServicesCreateRequest) input message
@@ -943,7 +943,7 @@ class RunV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete a service. This will cause the Service to stop serving traffic and will delete the child entities like Routes, Configurations and Revisions.
+      r"""Deletes the provided service. This will cause the Service to stop serving traffic and will delete all associated Revisions.
 
       Args:
         request: (RunNamespacesServicesDeleteRequest) input message
@@ -970,7 +970,7 @@ class RunV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get information about a service.
+      r"""Gets information about a service.
 
       Args:
         request: (RunNamespacesServicesGetRequest) input message
@@ -997,7 +997,7 @@ class RunV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List services.
+      r"""Lists services for the given project and region.
 
       Args:
         request: (RunNamespacesServicesListRequest) input message
@@ -1024,7 +1024,7 @@ class RunV1(base_api.BaseApiClient):
     )
 
     def ReplaceService(self, request, global_params=None):
-      r"""Replace a service. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
+      r"""Replaces a service. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (RunNamespacesServicesReplaceServiceRequest) input message
@@ -1354,7 +1354,7 @@ class RunV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List domain mappings.
+      r"""List all domain mappings.
 
       Args:
         request: (RunProjectsLocationsDomainmappingsListRequest) input message
@@ -1755,7 +1755,7 @@ class RunV1(base_api.BaseApiClient):
     )
 
     def ReplaceSecret(self, request, global_params=None):
-      r"""Rpc to replace a secret. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
+      r"""Rpc to replace a secret. Only the spec, metadata labels, and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (RunProjectsLocationsSecretsReplaceSecretRequest) input message
@@ -1792,7 +1792,7 @@ class RunV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a service.
+      r"""Creates a new Service. Service creation will trigger a new deployment. Use GetService, and check service.status to determine if the Service is ready.
 
       Args:
         request: (RunProjectsLocationsServicesCreateRequest) input message
@@ -1819,7 +1819,7 @@ class RunV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete a service. This will cause the Service to stop serving traffic and will delete the child entities like Routes, Configurations and Revisions.
+      r"""Deletes the provided service. This will cause the Service to stop serving traffic and will delete all associated Revisions.
 
       Args:
         request: (RunProjectsLocationsServicesDeleteRequest) input message
@@ -1846,7 +1846,7 @@ class RunV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get information about a service.
+      r"""Gets information about a service.
 
       Args:
         request: (RunProjectsLocationsServicesGetRequest) input message
@@ -1873,7 +1873,7 @@ class RunV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Get the IAM Access Control policy currently in effect for the given Cloud Run service. This result does not include any inherited policies.
+      r"""Gets the IAM Access Control policy currently in effect for the given Cloud Run service. This result does not include any inherited policies.
 
       Args:
         request: (RunProjectsLocationsServicesGetIamPolicyRequest) input message
@@ -1900,7 +1900,7 @@ class RunV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List services.
+      r"""Lists services for the given project and region.
 
       Args:
         request: (RunProjectsLocationsServicesListRequest) input message
@@ -1927,7 +1927,7 @@ class RunV1(base_api.BaseApiClient):
     )
 
     def ReplaceService(self, request, global_params=None):
-      r"""Replace a service. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
+      r"""Replaces a service. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (RunProjectsLocationsServicesReplaceServiceRequest) input message

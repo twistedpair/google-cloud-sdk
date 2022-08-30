@@ -97,8 +97,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -130,7 +136,7 @@ class Binding(_messages.Message):
 
 
 class ConnectionPolicy(_messages.Message):
-  r"""The ConnectionPolicy resource. Next id: 7
+  r"""The ConnectionPolicy resource. Next id: 8
 
   Messages:
     LabelsValue: User-defined labels.
@@ -144,6 +150,8 @@ class ConnectionPolicy(_messages.Message):
       https://google.aip.dev/122#fields-representing-resource-names
     network: The URI of the consumer network. Example:
       projects/{project}/global/networks/{resourceId}.
+    serviceIdentifier: A unique, symbolic representation for a service class
+      or service type. For example: cloud-sql-a3dfcx.
     updateTime: Output only. Time when the ServiceInstance was updated.
   """
 
@@ -176,7 +184,8 @@ class ConnectionPolicy(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   network = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  serviceIdentifier = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class Empty(_messages.Message):
@@ -483,9 +492,10 @@ class InternalRange(_messages.Message):
   Used to represent a private address range along with behavioral
   characterstics of that range (it's usage and peering behavior). Networking
   resources can link to this range if they are created as belonging to it.
-  Next id: 13
+  Next id: 14
 
   Enums:
+    OverlapsValueListEntryValuesEnum:
     PeeringValueValuesEnum: The type of peering set for this InternalRange.
     UsageValueValuesEnum: The type of usage set for this InternalRange.
 
@@ -506,6 +516,8 @@ class InternalRange(_messages.Message):
       can only be specified for a global internal address. Example: - URL:
       /compute/v1/projects/{project}/global/networks/{resourceId} - ID:
       network123
+    overlaps: Optional. Types of resources that are allowed to overlap with
+      the current InternalRange.
     peering: The type of peering set for this InternalRange.
     prefixLength: An alternate to ip_cidr_range. Can be set when trying to
       create a reservation that automatically finds a free range of the given
@@ -526,6 +538,17 @@ class InternalRange(_messages.Message):
       Having a user, based on this reference, prevents deletion of the
       InternalRange referred to. Can be empty.
   """
+
+  class OverlapsValueListEntryValuesEnum(_messages.Enum):
+    r"""OverlapsValueListEntryValuesEnum enum type.
+
+    Values:
+      OVERLAP_UNSPECIFIED: No overlap overrides.
+      OVERLAP_ROUTE_RANGE: Allow creation of static routes more specific that
+        the current InternalRange.
+    """
+    OVERLAP_UNSPECIFIED = 0
+    OVERLAP_ROUTE_RANGE = 1
 
   class PeeringValueValuesEnum(_messages.Enum):
     r"""The type of peering set for this InternalRange.
@@ -607,12 +630,13 @@ class InternalRange(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   network = _messages.StringField(6)
-  peering = _messages.EnumField('PeeringValueValuesEnum', 7)
-  prefixLength = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  targetCidrRange = _messages.StringField(9, repeated=True)
-  updateTime = _messages.StringField(10)
-  usage = _messages.EnumField('UsageValueValuesEnum', 11)
-  users = _messages.StringField(12, repeated=True)
+  overlaps = _messages.EnumField('OverlapsValueListEntryValuesEnum', 7, repeated=True)
+  peering = _messages.EnumField('PeeringValueValuesEnum', 8)
+  prefixLength = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  targetCidrRange = _messages.StringField(10, repeated=True)
+  updateTime = _messages.StringField(11)
+  usage = _messages.EnumField('UsageValueValuesEnum', 12)
+  users = _messages.StringField(13, repeated=True)
 
 
 class ListConnectionPoliciesResponse(_messages.Message):
@@ -2112,7 +2136,7 @@ class ServiceIdentifier(_messages.Message):
 
 
 class ServiceInstance(_messages.Message):
-  r"""The ServiceInstance resource. Next id: 7
+  r"""The ServiceInstance resource. Next id: 8
 
   Messages:
     LabelsValue: User-defined labels.
@@ -2126,6 +2150,7 @@ class ServiceInstance(_messages.Message):
       https://google.aip.dev/122#fields-representing-resource-names
     network: The URI of the producer network. Example:
       projects/{project}/global/networks/{resourceId}.
+    serviceIdentifierUri: The URI of the service identifier.
     updateTime: Output only. Time when the ServiceInstance was updated.
   """
 
@@ -2158,7 +2183,8 @@ class ServiceInstance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   network = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  serviceIdentifierUri = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class SetIamPolicyRequest(_messages.Message):

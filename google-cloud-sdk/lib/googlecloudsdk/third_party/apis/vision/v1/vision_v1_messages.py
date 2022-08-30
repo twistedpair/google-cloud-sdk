@@ -7380,12 +7380,15 @@ class TextDetectionParams(_messages.Message):
   and DOCUMENT_TEXT_DETECTION features.
 
   Fields:
+    advancedOcrOptions: A list of advanced OCR options to fine-tune OCR
+      behavior.
     enableTextDetectionConfidenceScore: By default, Cloud Vision API only
       includes confidence score for DOCUMENT_TEXT_DETECTION result. Set the
       flag to true to include confidence score for TEXT_DETECTION as well.
   """
 
-  enableTextDetectionConfidenceScore = _messages.BooleanField(1)
+  advancedOcrOptions = _messages.StringField(1, repeated=True)
+  enableTextDetectionConfidenceScore = _messages.BooleanField(2)
 
 
 class TextProperty(_messages.Message):

@@ -1524,8 +1524,14 @@ class GoogleIamV1Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -2033,11 +2039,9 @@ class Input(_messages.Message):
   r"""Input describes an input of a transformer.
 
   Fields:
-    required: If true, this input is required to be specified for a
-      transformation.
-    type: Required. The type could be one of: - Primitive types ("string",
-      "number", "bool") - Custom complex type. Format:
-      "p/p/l/l/complexTypes/*" - Collections of the above - list(), dict()
+    required: A required field is for inputs which must be specified in the
+      TransformationConfig rule.
+    type: A string attribute.
   """
 
   required = _messages.BooleanField(1)
@@ -4405,20 +4409,14 @@ class TransformationConfig(_messages.Message):
   transformers on its Assets.
 
   Messages:
-    InputsValue: Required. Key-value pairs representing input parameters to
-      the transformers. The key maps to the transformer input parameter name.
-      The value is interpreted as a literal or a path within asset if it's
-      prefixed by "$asset.", e.g. "$asset.file.url".
+    InputsValue: A InputsValue object.
     OutputsValue: Required. Key-value pairs representing output parameters
       from the transformers. The key maps to the transformer output parameter
       name. The value will be the path to the metadata in the asset to which
       this output should be assigned.
 
   Fields:
-    inputs: Required. Key-value pairs representing input parameters to the
-      transformers. The key maps to the transformer input parameter name. The
-      value is interpreted as a literal or a path within asset if it's
-      prefixed by "$asset.", e.g. "$asset.file.url".
+    inputs: A InputsValue attribute.
     outputs: Required. Key-value pairs representing output parameters from the
       transformers. The key maps to the transformer output parameter name. The
       value will be the path to the metadata in the asset to which this output
@@ -4430,10 +4428,7 @@ class TransformationConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class InputsValue(_messages.Message):
-    r"""Required. Key-value pairs representing input parameters to the
-    transformers. The key maps to the transformer input parameter name. The
-    value is interpreted as a literal or a path within asset if it's prefixed
-    by "$asset.", e.g. "$asset.file.url".
+    r"""A InputsValue object.
 
     Messages:
       AdditionalProperty: An additional property for a InputsValue object.

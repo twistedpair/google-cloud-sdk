@@ -61,6 +61,7 @@ class Cluster(_messages.Message):
       managed by GEC.
     clusterCaCertificate: Output only. The PEM-encoded public certificate of
       the cluster's CA.
+    controlPlaneVersion: Output only. The control plane release version
     createTime: Output only. The time when the cluster was created.
     defaultMaxPodsPerNode: Optional. The default maximum number of pods per
       node used if a maximum value is not specified explicitly for a node pool
@@ -68,12 +69,14 @@ class Cluster(_messages.Message):
       used.
     endpoint: Output only. The IP address of the Kubernetes API server.
     fleet: Optional. Fleet configuration.
-    hub: Optional. GKE Hub configuration. DEPRECATED Use fleet instead.
     labels: Labels associated with this resource.
     maintenancePolicy: Optional. Cluster-wide maintenance policy
       configuration.
     name: Required. The resource name of the cluster.
     networking: Required. Cluster-wide networking configuration.
+    nodeVersion: Output only. The lowest release version among all worker
+      nodes. This field can be empty if the cluster does not have any worker
+      nodes.
     updateTime: Output only. The time when the cluster was last updated.
   """
 
@@ -103,16 +106,17 @@ class Cluster(_messages.Message):
 
   authorization = _messages.MessageField('Authorization', 1)
   clusterCaCertificate = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  defaultMaxPodsPerNode = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  endpoint = _messages.StringField(5)
-  fleet = _messages.MessageField('Fleet', 6)
-  hub = _messages.MessageField('Hub', 7)
+  controlPlaneVersion = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  defaultMaxPodsPerNode = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  endpoint = _messages.StringField(6)
+  fleet = _messages.MessageField('Fleet', 7)
   labels = _messages.MessageField('LabelsValue', 8)
   maintenancePolicy = _messages.MessageField('MaintenancePolicy', 9)
   name = _messages.StringField(10)
   networking = _messages.MessageField('ClusterNetworking', 11)
-  updateTime = _messages.StringField(12)
+  nodeVersion = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class ClusterNetworking(_messages.Message):
@@ -573,18 +577,6 @@ class GenerateAccessTokenResponse(_messages.Message):
   expireTime = _messages.StringField(2)
 
 
-class Hub(_messages.Message):
-  r"""GKE Hub configuration. DEPRECATED Use Fleet instead.
-
-  Fields:
-    membership: Required. The resource name of the membership resource to use
-      when registering this cluster to GKE Hub e.g.
-      projects/{project}/locations/global/memberships/{membership}.
-  """
-
-  membership = _messages.StringField(1)
-
-
 class ListClustersResponse(_messages.Message):
   r"""List of clusters in a location.
 
@@ -855,6 +847,7 @@ class Machine(_messages.Message):
     labels: Labels associated with this resource.
     name: Required. The resource name of the machine.
     updateTime: Output only. The time when the node pool was last updated.
+    version: Output only. The software version of the machine.
     zone: The Google Distributed Cloud Edge zone of this machine.
   """
 
@@ -887,7 +880,8 @@ class Machine(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   updateTime = _messages.StringField(5)
-  zone = _messages.StringField(6)
+  version = _messages.StringField(6)
+  zone = _messages.StringField(7)
 
 
 class MaintenancePolicy(_messages.Message):
@@ -930,6 +924,8 @@ class NodePool(_messages.Message):
     nodeCount: Required. The number of nodes in the pool.
     nodeLocation: Name of the Google Distributed Cloud Edge zone where this
       node pool will be created. For example: `us-central1-edge-customer-a`.
+    nodeVersion: Output only. The lowest release version among all worker
+      nodes.
     site: Name of the Google Distributed Cloud Edge zone where this node pool
       will be created.
     updateTime: Output only. The time when the node pool was last updated.
@@ -966,8 +962,9 @@ class NodePool(_messages.Message):
   name = _messages.StringField(5)
   nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   nodeLocation = _messages.StringField(7)
-  site = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  nodeVersion = _messages.StringField(8)
+  site = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class Operation(_messages.Message):
@@ -1258,6 +1255,23 @@ class TimeWindow(_messages.Message):
   startTime = _messages.StringField(2)
 
 
+class VpcProject(_messages.Message):
+  r"""Project detail of the VPC network.
+
+  Fields:
+    projectId: The project of the VPC to connect to. If not specified, it is
+      the same as the cluster project.
+    serviceAccount: The service account in the VPC project configured by user.
+      It is used to create/delete Cloud Router and Cloud HA VPNs for VPN
+      connection. If this SA is changed during/after a VPN connection is
+      created, you need to remove the Cloud Router and Cloud VPN resources in
+      |project_id|. Must be set if |project_id| is set.
+  """
+
+  projectId = _messages.StringField(1)
+  serviceAccount = _messages.StringField(2)
+
+
 class VpnConnection(_messages.Message):
   r"""A VPN connection .
 
@@ -1287,6 +1301,8 @@ class VpnConnection(_messages.Message):
     updateTime: Output only. The time when the VPN connection was last
       updated.
     vpc: The network ID of VPC to connect to.
+    vpcProject: Project detail of the VPC network. Required if VPC is in a
+      different project than the cluster project.
   """
 
   class BgpRoutingModeValueValuesEnum(_messages.Enum):
@@ -1335,6 +1351,7 @@ class VpnConnection(_messages.Message):
   natGatewayIp = _messages.StringField(8)
   updateTime = _messages.StringField(9)
   vpc = _messages.StringField(10)
+  vpcProject = _messages.MessageField('VpcProject', 11)
 
 
 class ZoneMetadata(_messages.Message):

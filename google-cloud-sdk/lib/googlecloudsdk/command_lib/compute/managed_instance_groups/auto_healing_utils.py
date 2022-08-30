@@ -24,7 +24,7 @@ from googlecloudsdk.command_lib.compute.health_checks import flags as health_che
 
 
 HEALTH_CHECK_ARG = health_checks_flags.HealthCheckArgument(
-    '', '--health-check', required=False)
+    '', '--health-check', required=False, include_regional_health_check=False)
 
 
 # Allow only up to 1 year initial delay

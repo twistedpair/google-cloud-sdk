@@ -307,8 +307,11 @@ class DsseAttestaionSummary:
 def GetContainerAnalysisMetadata(docker_version, args):
   """Retrieves metadata for a docker image."""
   metadata = ContainerAnalysisMetadata()
-  docker_url = 'https://{}'.format(docker_version.GetDockerString())
-  occ_filter = _CreateFilterFromImagesDescribeArgs(docker_url, args)
+  docker_urls = [
+      'https://{}'.format(docker_version.GetDockerString()),
+      docker_version.GetDockerString()
+  ]
+  occ_filter = _CreateFilterFromImagesDescribeArgs(docker_urls, args)
   if occ_filter is None:
     return metadata
   occurrences = ca_requests.ListOccurrences(docker_version.project, occ_filter)
@@ -319,26 +322,44 @@ def GetContainerAnalysisMetadata(docker_version, args):
   if metadata.vulnerability.vulnerabilities:
     vuln_summary = ca_requests.GetVulnerabilitySummary(
         docker_version.project,
-        filter_util.ContainerAnalysisFilter().WithResources([docker_url
-                                                            ]).GetFilter())
+        filter_util.ContainerAnalysisFilter().WithResources(docker_urls)
+        .GetFilter())
     metadata.vulnerability.AddSummary(vuln_summary)
   return metadata
 
 
 def GetContainerAnalysisMetadataForImages(repo_or_image, occurrence_filter,
                                           images):
-  """Retrieves metadata for all images with a given path prefix."""
+  """Retrieves metadata for all images with a given path prefix.
+
+  The prefix may initially be used to resolve to a list of images if
+  --show-occurrences-from is used.
+  To account for cases where there is or isn't a list of images,
+  this always filters on both prefix and the list of images. In both of
+  those cases, the lookup is for both the case where there is and isn't
+  an https prefix, in both the prefixes and in the images list.
+
+  Args:
+    repo_or_image: The repository originally given by the user.
+    occurrence_filter: The repository originally given by the user.
+    images: The list of images that matched the prefix, without https prepended.
+
+  Returns:
+    The metadata about the given images.
+  """
   metadata = collections.defaultdict(ContainerAnalysisMetadata)
-  prefix = 'https://{}'.format(repo_or_image.GetDockerString())
-  occ_filters = _CreateFilterForImages(prefix, occurrence_filter, images)
+  prefixes = ['https://{}'.format(repo_or_image.GetDockerString()),
+              repo_or_image.GetDockerString()]
+  image_urls = images + ['https://{}'.format(img) for img in images]
+  occ_filters = _CreateFilterForImages(prefixes, occurrence_filter, image_urls)
   occurrences = ca_requests.ListOccurrencesWithFilters(repo_or_image.project,
                                                        occ_filters)
   for occ in occurrences:
     metadata.setdefault(occ.resourceUri,
                         ContainerAnalysisMetadata()).AddOccurrence(occ)
 
-  summary_filters = filter_util.ContainerAnalysisFilter().WithResourcePrefix(
-      prefix).WithResources(images).GetChunkifiedFilters()
+  summary_filters = filter_util.ContainerAnalysisFilter().WithResourcePrefixes(
+      prefixes).WithResources(image_urls).GetChunkifiedFilters()
   summaries = ca_requests.GetVulnerabilitySummaryWithFilters(
       repo_or_image.project, summary_filters)
   for summary in summaries:
@@ -350,7 +371,7 @@ def GetContainerAnalysisMetadataForImages(repo_or_image, occurrence_filter,
   return metadata
 
 
-def _CreateFilterFromImagesDescribeArgs(image, args):
+def _CreateFilterFromImagesDescribeArgs(images, args):
   r"""Parses `docker images describe` arguments into a filter to send to containeranalysis API.
 
   The returned filter will combine the user-provided filter specified by
@@ -360,7 +381,7 @@ def _CreateFilterFromImagesDescribeArgs(image, args):
   Returns None if there is no information to fetch from containeranalysis API.
 
   Args:
-    image: the fully-qualified path of a docker image.
+    images: list, the fully-qualified path of docker images.
     args: user provided command line arguments.
 
   Returns:
@@ -378,7 +399,8 @@ def _CreateFilterFromImagesDescribeArgs(image, args):
   '''
   ((kind="VULNERABILITY") OR (kind="IMAGE")) AND
   (createTime>"2019-04-10T") AND
-  (resourceUrl=us-west1-docker.pkg.dev/my-project/my-repo/ubuntu@sha256:abc'))
+  (resourceUrl=us-west1-docker.pkg.dev/my-project/my-repo/ubuntu@sha256:abc' OR
+  resourceUrl=https://us-west1-docker.pkg.dev/my-project/my-repo/ubuntu@sha256:abc'))
   '''
   """
 
@@ -406,16 +428,16 @@ def _CreateFilterFromImagesDescribeArgs(image, args):
 
   occ_filter.WithKinds(filter_kinds)
   occ_filter.WithCustomFilter(args.metadata_filter)
-  occ_filter.WithResources([image])
+  occ_filter.WithResources(images)
   return occ_filter.GetFilter()
 
 
-def _CreateFilterForImages(prefix, custom_filter, images):
+def _CreateFilterForImages(prefixes, custom_filter, images):
   """Creates a list of filters from a docker image prefix, a custom filter and fully-qualified image URLs.
 
   Args:
-    prefix: an URL prefix. Only metadata of images with this prefix will be
-      retrieved.
+    prefixes: URL prefixes. Only metadata of images with any of these
+    prefixes will be retrieved.
     custom_filter: user provided filter string.
     images: fully-qualified docker image URLs. Only metadata of these images
       will be retrieved.
@@ -424,7 +446,7 @@ def _CreateFilterForImages(prefix, custom_filter, images):
     A filter string to send to the containeranalysis API.
   """
   occ_filter = filter_util.ContainerAnalysisFilter()
-  occ_filter.WithResourcePrefix(prefix)
+  occ_filter.WithResourcePrefixes(prefixes)
   occ_filter.WithResources(images)
   occ_filter.WithCustomFilter(custom_filter)
   return occ_filter.GetChunkifiedFilters()

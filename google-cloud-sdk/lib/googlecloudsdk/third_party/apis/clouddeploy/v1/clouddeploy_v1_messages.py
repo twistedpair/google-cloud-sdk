@@ -2850,6 +2850,8 @@ class TargetRender(_messages.Message):
   Fields:
     failureCause: Output only. Reason this render failed. This will always be
       unspecified while the render in progress.
+    failureMessage: Output only. Additional information about the render
+      failure, if available.
     renderingBuild: Output only. The resource name of the Cloud Build `Build`
       object that is used to render the manifest for this target. Format is
       `projects/{project}/locations/{location}/builds/{build}`.
@@ -2890,8 +2892,9 @@ class TargetRender(_messages.Message):
     IN_PROGRESS = 3
 
   failureCause = _messages.EnumField('FailureCauseValueValuesEnum', 1)
-  renderingBuild = _messages.StringField(2)
-  renderingState = _messages.EnumField('RenderingStateValueValuesEnum', 3)
+  failureMessage = _messages.StringField(2)
+  renderingBuild = _messages.StringField(3)
+  renderingState = _messages.EnumField('RenderingStateValueValuesEnum', 4)
 
 
 class TargetsPresentCondition(_messages.Message):

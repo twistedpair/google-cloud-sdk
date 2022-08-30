@@ -241,9 +241,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -541,11 +543,14 @@ class ConfigManagementGatekeeperDeploymentState(_messages.Message):
     GatekeeperAuditValueValuesEnum: Status of gatekeeper-audit deployment.
     GatekeeperControllerManagerStateValueValuesEnum: Status of gatekeeper-
       controller-manager pod.
+    GatekeeperMutationValueValuesEnum: Status of the pod serving the mutation
+      webhook.
 
   Fields:
     gatekeeperAudit: Status of gatekeeper-audit deployment.
     gatekeeperControllerManagerState: Status of gatekeeper-controller-manager
       pod.
+    gatekeeperMutation: Status of the pod serving the mutation webhook.
   """
 
   class GatekeeperAuditValueValuesEnum(_messages.Enum):
@@ -576,8 +581,23 @@ class ConfigManagementGatekeeperDeploymentState(_messages.Message):
     INSTALLED = 2
     ERROR = 3
 
+  class GatekeeperMutationValueValuesEnum(_messages.Enum):
+    r"""Status of the pod serving the mutation webhook.
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
   gatekeeperAudit = _messages.EnumField('GatekeeperAuditValueValuesEnum', 1)
   gatekeeperControllerManagerState = _messages.EnumField('GatekeeperControllerManagerStateValueValuesEnum', 2)
+  gatekeeperMutation = _messages.EnumField('GatekeeperMutationValueValuesEnum', 3)
 
 
 class ConfigManagementGitConfig(_messages.Message):

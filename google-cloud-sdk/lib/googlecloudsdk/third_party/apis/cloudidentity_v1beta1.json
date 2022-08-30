@@ -908,13 +908,6 @@
           "description": "Required. The `EntityKey` of the `Group`.",
           "$ref": "EntityKey"
         },
-        "additionalGroupKeys": {
-          "description": "Additional entity key aliases for a Group.",
-          "type": "array",
-          "items": {
-            "$ref": "EntityKey"
-          }
-        },
         "parent": {
           "description": "Required. Immutable. The resource name of the entity under which this `Group` resides in the Cloud Identity resource hierarchy. Must be of the form `identitysources\/{identity_source_id}` for external- identity-mapped groups or `customers\/{customer_id}` for Google Groups. The `customer_id` must begin with \"C\" (for example, 'C046psxkn').",
           "type": "string"

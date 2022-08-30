@@ -770,10 +770,7 @@ class DlpOrganizationsLocationsStoredInfoTypesListRequest(_messages.Message):
       location](https://cloud.google.com/dlp/docs/specifying-location): +
       Projects scope, location specified:
       `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      location specified (defaults to global): `projects/`PROJECT_ID The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -877,10 +874,7 @@ class DlpOrganizationsStoredInfoTypesListRequest(_messages.Message):
       location](https://cloud.google.com/dlp/docs/specifying-location): +
       Projects scope, location specified:
       `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      location specified (defaults to global): `projects/`PROJECT_ID The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -2196,10 +2190,7 @@ class DlpProjectsLocationsStoredInfoTypesListRequest(_messages.Message):
       location](https://cloud.google.com/dlp/docs/specifying-location): +
       Projects scope, location specified:
       `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      location specified (defaults to global): `projects/`PROJECT_ID The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -2303,10 +2294,7 @@ class DlpProjectsStoredInfoTypesListRequest(_messages.Message):
       location](https://cloud.google.com/dlp/docs/specifying-location): +
       Projects scope, location specified:
       `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
-      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
-      location specified (defaults to global): `organizations/`ORG_ID The
+      location specified (defaults to global): `projects/`PROJECT_ID The
       following example `parent` string specifies a parent project with the
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
@@ -2341,9 +2329,7 @@ class GooglePrivacyDlpV2Action(_messages.Message):
   https://cloud.google.com/dlp/docs/concepts-actions to learn more.
 
   Fields:
-    deidentify: Create a de-identified copy of the input data. Applicable for
-      non-image data only. The de-identified copy is in the same location as
-      the original data.
+    deidentify: Create a de-identified copy of the input data.
     jobNotificationEmails: Enable email notification for project owners and
       editors on job's completion/failure.
     pubSub: Publish a notification to a pubsub topic.
@@ -2366,6 +2352,14 @@ class GooglePrivacyDlpV2Action(_messages.Message):
 
 class GooglePrivacyDlpV2ActivateJobTriggerRequest(_messages.Message):
   r"""Request message for ActivateJobTrigger."""
+
+
+class GooglePrivacyDlpV2AllInfoTypes(_messages.Message):
+  r"""Apply transformation to all findings."""
+
+
+class GooglePrivacyDlpV2AllText(_messages.Message):
+  r"""Apply to all text."""
 
 
 class GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails(_messages.Message):
@@ -3657,7 +3651,7 @@ class GooglePrivacyDlpV2DateTime(_messages.Message):
 
 
 class GooglePrivacyDlpV2Deidentify(_messages.Message):
-  r"""Create a de-identified copy of the requested table or files. . A
+  r"""Create a de-identified copy of the requested table or files. A
   TransformationDetail will be created for each transformation. If any rows in
   BigQuery are skipped during de-identification (transformation errors or row
   size exceeds BigQuery insert API limits) they are placed in the failure
@@ -3672,11 +3666,11 @@ class GooglePrivacyDlpV2Deidentify(_messages.Message):
     FileTypesToTransformValueListEntryValuesEnum:
 
   Fields:
-    cloudStorageOutput: Required. User settable GCS bucket and folders to
-      store de-identified files. This field must be set for cloud storage
-      deidentification. The output GCS bucket must be different from the input
-      bucket. De-identified files will overwrite files in the output path.
-      Form of: gs://bucket/folder/ or gs://bucket
+    cloudStorageOutput: Required. User settable Cloud Storage bucket and
+      folders to store de-identified files. This field must be set for cloud
+      storage deidentification. The output Cloud Storage bucket must be
+      different from the input bucket. De-identified files will overwrite
+      files in the output path. Form of: gs://bucket/folder/ or gs://bucket
     fileTypesToTransform: List of user-specified file type groups to
       transform. If specified, only the files with these filetypes will be
       transformed. If empty, all supported files will be transformed.
@@ -3747,6 +3741,7 @@ class GooglePrivacyDlpV2DeidentifyConfig(_messages.Message):
   r"""The configuration that controls how the data will change.
 
   Fields:
+    imageTransformations: Treat the dataset as an image and redact.
     infoTypeTransformations: Treat the dataset as free-form text and apply the
       same free text transformation everywhere.
     recordTransformations: Treat the dataset as structured. Transformations
@@ -3757,9 +3752,10 @@ class GooglePrivacyDlpV2DeidentifyConfig(_messages.Message):
       `TransformationErrorHandling.ThrowError`.
   """
 
-  infoTypeTransformations = _messages.MessageField('GooglePrivacyDlpV2InfoTypeTransformations', 1)
-  recordTransformations = _messages.MessageField('GooglePrivacyDlpV2RecordTransformations', 2)
-  transformationErrorHandling = _messages.MessageField('GooglePrivacyDlpV2TransformationErrorHandling', 3)
+  imageTransformations = _messages.MessageField('GooglePrivacyDlpV2ImageTransformations', 1)
+  infoTypeTransformations = _messages.MessageField('GooglePrivacyDlpV2InfoTypeTransformations', 2)
+  recordTransformations = _messages.MessageField('GooglePrivacyDlpV2RecordTransformations', 3)
+  transformationErrorHandling = _messages.MessageField('GooglePrivacyDlpV2TransformationErrorHandling', 4)
 
 
 class GooglePrivacyDlpV2DeidentifyContentRequest(_messages.Message):
@@ -4663,6 +4659,36 @@ class GooglePrivacyDlpV2ImageRedactionConfig(_messages.Message):
   redactionColor = _messages.MessageField('GooglePrivacyDlpV2Color', 3)
 
 
+class GooglePrivacyDlpV2ImageTransformation(_messages.Message):
+  r"""Configuration for determining how redaction of images should occur.
+
+  Fields:
+    allInfoTypes: Apply transformation to all findings not specified in other
+      ImageTransformation's selected_info_types. Only one instance is allowed
+      within the ImageTransformations message.
+    allText: Apply transformation to all text that doesn't match an infoType.
+      Only one instance is allowed within the ImageTransformations message.
+    redactionColor: The color to use when redacting content from an image. If
+      not specified, the default is black.
+    selectedInfoTypes: Apply transformation to the selected info_types.
+  """
+
+  allInfoTypes = _messages.MessageField('GooglePrivacyDlpV2AllInfoTypes', 1)
+  allText = _messages.MessageField('GooglePrivacyDlpV2AllText', 2)
+  redactionColor = _messages.MessageField('GooglePrivacyDlpV2Color', 3)
+  selectedInfoTypes = _messages.MessageField('GooglePrivacyDlpV2SelectedInfoTypes', 4)
+
+
+class GooglePrivacyDlpV2ImageTransformations(_messages.Message):
+  r"""A type of transformation that is applied over images.
+
+  Fields:
+    transforms: A GooglePrivacyDlpV2ImageTransformation attribute.
+  """
+
+  transforms = _messages.MessageField('GooglePrivacyDlpV2ImageTransformation', 1, repeated=True)
+
+
 class GooglePrivacyDlpV2InfoType(_messages.Message):
   r"""Type of information detected by the API.
 
@@ -5158,8 +5184,9 @@ class GooglePrivacyDlpV2InspectionRuleSet(_messages.Message):
 
 
 class GooglePrivacyDlpV2JobNotificationEmails(_messages.Message):
-  r"""Enable email notification to project owners and editors on jobs's
-  completion/failure.
+  r"""Sends an email when the job completes. The email goes to IAM project
+  owners and technical [Essential Contacts](https://cloud.google.com/resource-
+  manager/docs/managing-notification-contacts).
   """
 
 
@@ -6072,15 +6099,20 @@ class GooglePrivacyDlpV2PubSubNotification(_messages.Message):
 
 
 class GooglePrivacyDlpV2PublishFindingsToCloudDataCatalog(_messages.Message):
-  r"""Publish findings of a DlpJob to Data Catalog. Labels summarizing the
-  results of the DlpJob will be applied to the entry for the resource scanned
-  in Data Catalog. Any labels previously written by another DlpJob will be
-  deleted. InfoType naming patterns are strictly enforced when using this
-  feature. Note that the findings will be persisted in Data Catalog storage
-  and are governed by Data Catalog service-specific policy, see
-  https://cloud.google.com/terms/service-terms Only a single instance of this
-  action can be specified and only allowed if all resources being scanned are
-  BigQuery tables. Compatible with: Inspect
+  r"""Publish findings of a DlpJob to Data Catalog. In Data Catalog, tag
+  templates are applied to the resource that Cloud DLP scanned. Data Catalog
+  tag templates are stored in the same project and region where the BigQuery
+  table exists. For Cloud DLP to create and apply the tag template, the Cloud
+  DLP service agent must have the `roles/datacatalog.tagTemplateOwner`
+  permission on the project. The tag template contains fields summarizing the
+  results of the DlpJob. Any field values previously written by another DlpJob
+  are deleted. InfoType naming patterns are strictly enforced when using this
+  feature. Findings are persisted in Data Catalog storage and are governed by
+  service-specific policies for Data Catalog. For more information, see
+  [Service Specific Terms](https://cloud.google.com/terms/service-terms). Only
+  a single instance of this action can be specified. This action is allowed
+  only if all resources being scanned are BigQuery tables. Compatible with:
+  Inspect
   """
 
 
@@ -6247,6 +6279,22 @@ class GooglePrivacyDlpV2RecordSuppression(_messages.Message):
   """
 
   condition = _messages.MessageField('GooglePrivacyDlpV2RecordCondition', 1)
+
+
+class GooglePrivacyDlpV2RecordTransformation(_messages.Message):
+  r"""A GooglePrivacyDlpV2RecordTransformation object.
+
+  Fields:
+    containerTimestamp: Findings container modification timestamp, if
+      applicable.
+    containerVersion: Container version, if available ("generation" for Cloud
+      Storage).
+    fieldId: For record transformations, provide a field.
+  """
+
+  containerTimestamp = _messages.StringField(1)
+  containerVersion = _messages.StringField(2)
+  fieldId = _messages.MessageField('GooglePrivacyDlpV2FieldId', 3)
 
 
 class GooglePrivacyDlpV2RecordTransformations(_messages.Message):
@@ -6494,6 +6542,18 @@ class GooglePrivacyDlpV2Schedule(_messages.Message):
   """
 
   recurrencePeriodDuration = _messages.StringField(1)
+
+
+class GooglePrivacyDlpV2SelectedInfoTypes(_messages.Message):
+  r"""Apply transformation to the selected info_types.
+
+  Fields:
+    infoTypes: Required. InfoTypes to apply the transformation to. Required.
+      Provided InfoType must be unique within the ImageTransformations
+      message.
+  """
+
+  infoTypes = _messages.MessageField('GooglePrivacyDlpV2InfoType', 1, repeated=True)
 
 
 class GooglePrivacyDlpV2SensitivityScore(_messages.Message):
@@ -7068,6 +7128,105 @@ class GooglePrivacyDlpV2TransformationConfig(_messages.Message):
   structuredDeidentifyTemplate = _messages.StringField(3)
 
 
+class GooglePrivacyDlpV2TransformationDescription(_messages.Message):
+  r"""A flattened description of a `PrimitiveTransformation` or
+  `RecordSuppression`.
+
+  Enums:
+    TypeValueValuesEnum: The transformation type.
+
+  Fields:
+    condition: A human-readable string representation of the `RecordCondition`
+      corresponding to this transformation. Set if a `RecordCondition` was
+      used to determine whether or not to apply this transformation. Examples:
+      * (age_field > 85) * (age_field <= 18) * (zip_field exists) * (zip_field
+      == 01234) && (city_field != "Springville") * (zip_field == 01234) &&
+      (age_field <= 18) && (city_field exists)
+    description: A description of the transformation. This is empty for a
+      RECORD_SUPPRESSION, or is the output of calling toString() on the
+      `PrimitiveTransformation` protocol buffer message for any other type of
+      transformation.
+    infoType: Set if the transformation was limited to a specific `InfoType`.
+    type: The transformation type.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The transformation type.
+
+    Values:
+      TRANSFORMATION_TYPE_UNSPECIFIED: Unused
+      RECORD_SUPPRESSION: Record suppression
+      REPLACE_VALUE: Replace value
+      REPLACE_DICTIONARY: Replace value using a dictionary.
+      REDACT: Redact
+      CHARACTER_MASK: Character mask
+      CRYPTO_REPLACE_FFX_FPE: FFX-FPE
+      FIXED_SIZE_BUCKETING: Fixed size bucketing
+      BUCKETING: Bucketing
+      REPLACE_WITH_INFO_TYPE: Replace with info type
+      TIME_PART: Time part
+      CRYPTO_HASH: Crypto hash
+      DATE_SHIFT: Date shift
+      CRYPTO_DETERMINISTIC_CONFIG: Deterministic crypto
+      REDACT_IMAGE: Redact image
+    """
+    TRANSFORMATION_TYPE_UNSPECIFIED = 0
+    RECORD_SUPPRESSION = 1
+    REPLACE_VALUE = 2
+    REPLACE_DICTIONARY = 3
+    REDACT = 4
+    CHARACTER_MASK = 5
+    CRYPTO_REPLACE_FFX_FPE = 6
+    FIXED_SIZE_BUCKETING = 7
+    BUCKETING = 8
+    REPLACE_WITH_INFO_TYPE = 9
+    TIME_PART = 10
+    CRYPTO_HASH = 11
+    DATE_SHIFT = 12
+    CRYPTO_DETERMINISTIC_CONFIG = 13
+    REDACT_IMAGE = 14
+
+  condition = _messages.StringField(1)
+  description = _messages.StringField(2)
+  infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
+class GooglePrivacyDlpV2TransformationDetails(_messages.Message):
+  r"""Details about a single transformation. This object contains a
+  description of the transformation, information about whether the
+  transformation was successfully applied, and the precise location where the
+  transformation occurred. These details are stored in a user-specified
+  BigQuery table.
+
+  Fields:
+    containerName: The top level name of the container where the
+      transformation is located (this will be the source file name or table
+      name).
+    resourceName: The name of the job that completed the transformation.
+    statusDetails: Status of the transformation, if transformation was not
+      successful, this will specify what caused it to fail, otherwise it will
+      show that the transformation was successful.
+    transformation: Description of transformation. This would only contain
+      more than one element if there were multiple matching transformations
+      and which one to apply was ambiguous. Not set for states that contain no
+      transformation, currently only state that contains no transformation is
+      TransformationResultStateType.METADATA_UNRETRIEVABLE.
+    transformationLocation: The precise location of the transformed content in
+      the original container.
+    transformedBytes: The number of bytes that were transformed. If
+      transformation was unsuccessful or did not take place because there was
+      no content to transform, this will be zero.
+  """
+
+  containerName = _messages.StringField(1)
+  resourceName = _messages.StringField(2)
+  statusDetails = _messages.MessageField('GooglePrivacyDlpV2TransformationResultStatus', 3)
+  transformation = _messages.MessageField('GooglePrivacyDlpV2TransformationDescription', 4, repeated=True)
+  transformationLocation = _messages.MessageField('GooglePrivacyDlpV2TransformationLocation', 5)
+  transformedBytes = _messages.IntegerField(6)
+
+
 class GooglePrivacyDlpV2TransformationDetailsStorageConfig(_messages.Message):
   r"""Config for storing transformation details.
 
@@ -7100,6 +7259,45 @@ class GooglePrivacyDlpV2TransformationErrorHandling(_messages.Message):
   throwError = _messages.MessageField('GooglePrivacyDlpV2ThrowError', 2)
 
 
+class GooglePrivacyDlpV2TransformationLocation(_messages.Message):
+  r"""Specifies the location of a transformation.
+
+  Enums:
+    ContainerTypeValueValuesEnum: Information about the functionality of the
+      container where this finding occurred, if available.
+
+  Fields:
+    containerType: Information about the functionality of the container where
+      this finding occurred, if available.
+    findingId: For infotype transformations, link to the corresponding
+      findings ID so that location information does not need to be duplicated.
+      Each findings ID correlates to an entry in the findings output table,
+      this table only gets created when users specify to save findings (add
+      the save findings action to the request).
+    recordTransformation: For record transformations, provide a field and
+      container information.
+  """
+
+  class ContainerTypeValueValuesEnum(_messages.Enum):
+    r"""Information about the functionality of the container where this
+    finding occurred, if available.
+
+    Values:
+      TRANSFORM_UNKNOWN_CONTAINER: <no description>
+      TRANSFORM_BODY: <no description>
+      TRANSFORM_METADATA: <no description>
+      TRANSFORM_TABLE: <no description>
+    """
+    TRANSFORM_UNKNOWN_CONTAINER = 0
+    TRANSFORM_BODY = 1
+    TRANSFORM_METADATA = 2
+    TRANSFORM_TABLE = 3
+
+  containerType = _messages.EnumField('ContainerTypeValueValuesEnum', 1)
+  findingId = _messages.StringField(2)
+  recordTransformation = _messages.MessageField('GooglePrivacyDlpV2RecordTransformation', 3)
+
+
 class GooglePrivacyDlpV2TransformationOverview(_messages.Message):
   r"""Overview of the modifications that occurred.
 
@@ -7110,6 +7308,49 @@ class GooglePrivacyDlpV2TransformationOverview(_messages.Message):
 
   transformationSummaries = _messages.MessageField('GooglePrivacyDlpV2TransformationSummary', 1, repeated=True)
   transformedBytes = _messages.IntegerField(2)
+
+
+class GooglePrivacyDlpV2TransformationResultStatus(_messages.Message):
+  r"""A GooglePrivacyDlpV2TransformationResultStatus object.
+
+  Enums:
+    ResultStatusTypeValueValuesEnum: Transformation result status type, this
+      will be either SUCCESS, or it will be the reason for why the
+      transformation was not completely successful.
+
+  Fields:
+    details: Detailed error codes and messages
+    resultStatusType: Transformation result status type, this will be either
+      SUCCESS, or it will be the reason for why the transformation was not
+      completely successful.
+  """
+
+  class ResultStatusTypeValueValuesEnum(_messages.Enum):
+    r"""Transformation result status type, this will be either SUCCESS, or it
+    will be the reason for why the transformation was not completely
+    successful.
+
+    Values:
+      STATE_TYPE_UNSPECIFIED: <no description>
+      INVALID_TRANSFORM: This will be set when a finding could not be
+        transformed (i.e. outside user set bucket range).
+      BIGQUERY_MAX_ROW_SIZE_EXCEEDED: This will be set when a BigQuery
+        transformation was successful but could not be stored back in BigQuery
+        because the transformed row exceeds BigQuery's max row size.
+      METADATA_UNRETRIEVABLE: This will be set when there is a finding in the
+        custom metadata of a file, but at the write time of the transformed
+        file, this key / value pair is unretrievable.
+      SUCCESS: This will be set when the transformation and storing of it is
+        successful.
+    """
+    STATE_TYPE_UNSPECIFIED = 0
+    INVALID_TRANSFORM = 1
+    BIGQUERY_MAX_ROW_SIZE_EXCEEDED = 2
+    METADATA_UNRETRIEVABLE = 3
+    SUCCESS = 4
+
+  details = _messages.MessageField('GoogleRpcStatus', 1)
+  resultStatusType = _messages.EnumField('ResultStatusTypeValueValuesEnum', 2)
 
 
 class GooglePrivacyDlpV2TransformationSummary(_messages.Message):

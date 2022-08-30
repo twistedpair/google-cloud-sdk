@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import exceptions as core_exceptions
 import six
 
 _API_NAME = 'servicedirectory'
@@ -28,6 +29,11 @@ _VERSION_MAP = {
     base.ReleaseTrack.BETA: 'v1beta1',
     base.ReleaseTrack.GA: 'v1'
 }
+
+
+class PolicyFileRequiredFieldsUnsetError(core_exceptions.Error):
+  """An exception to be raised when a policy file is missing required fields.
+  """
 
 
 def ParseAnnotationsArg(annotations=None, resource_type=None):

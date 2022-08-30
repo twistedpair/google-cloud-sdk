@@ -504,215 +504,6 @@
         }
       }
     },
-    "Workload": {
-      "id": "Workload",
-      "description": "An individual Workload. The smallest deployable unit for operational purposes.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Immutable. The resource name for the workload in the format `projects\/*\/locations\/*\/namespaces\/*\/workloads\/*`.",
-          "type": "string"
-        },
-        "uid": {
-          "description": "Output only. A globally unique identifier (in UUID4 format) for this workload.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "displayName": {
-          "description": "Optional. Friendly name. User modifiable.",
-          "type": "string"
-        },
-        "createTime": {
-          "description": "Output only. The timestamp when this workload was created in Service Directory. This does not refer to the time that the underlying workload was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. The timestamp when the workload was last updated in Service Directory. This does not refer to the last time the underlying workload was updated.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "annotations": {
-          "description": "Optional. Blackbox annotations on the workload.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "attributes": {
-          "description": "Optional. Attributes associated with this workload.",
-          "$ref": "WorkloadAttributes"
-        }
-      }
-    },
-    "WorkloadAttributes": {
-      "id": "WorkloadAttributes",
-      "description": "Attributes associated with workloads.",
-      "type": "object",
-      "properties": {
-        "originResource": {
-          "description": "Optional. Reference to the underlying resource that this workload represents. This should be the full name of the resource that this workload was created from.",
-          "type": "string"
-        },
-        "managedRegistration": {
-          "description": "Output only. Set to `true` if this workload's registration is GCP-managed.",
-          "readOnly": true,
-          "type": "boolean"
-        },
-        "region": {
-          "description": "Optional. Region of the underlying resource.",
-          "type": "string"
-        },
-        "zone": {
-          "description": "Optional. Zone of the underlying resource. Meant to be populated only for zonal resources, left unset for others.",
-          "type": "string"
-        },
-        "kubernetesResourceType": {
-          "description": "Optional. The Kubernetes workload type of the underlying resource. Unset for non-Kubernetes workloads.",
-          "type": "string",
-          "enumDescriptions": [
-            "Not a Kubernetes workload.",
-            "A Kubernetes Deployment.",
-            "A Kubernetes ReplicaSet."
-          ],
-          "enum": [
-            "KUBERNETES_RESOURCE_TYPE_UNSPECIFIED",
-            "DEPLOYMENT",
-            "REPLICA_SET"
-          ]
-        },
-        "managerType": {
-          "description": "Output only. The GCP resource\/product responsible for this workload.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Default. Should not be used.",
-            "Resource managed by Arcus, Managed Instance Group.",
-            "Resource managed by GKE Hub."
-          ],
-          "enum": [
-            "TYPE_UNSPECIFIED",
-            "MIG",
-            "GKE_HUB"
-          ]
-        }
-      }
-    },
-    "ListWorkloadsResponse": {
-      "id": "ListWorkloadsResponse",
-      "description": "The response message for RegistrationService.ListWorkloads.",
-      "type": "object",
-      "properties": {
-        "workloads": {
-          "description": "The list of workloads.",
-          "type": "array",
-          "items": {
-            "$ref": "Workload"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
-          "type": "string"
-        }
-      }
-    },
-    "WorkloadGroup": {
-      "id": "WorkloadGroup",
-      "description": "An individual WorkloadGroup. A logical collection of workloads that provide the same functionality, with a common set of core attributes, that power services in Service Directory and to which policies can be applied.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Immutable. The resource name for the workload group in the format `projects\/*\/locations\/*\/namespaces\/*\/workloadGroups\/*`.",
-          "type": "string"
-        },
-        "uid": {
-          "description": "Output only. A globally unique identifier (in UUID4 format) for this workload group.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "displayName": {
-          "description": "Optional. Friendly name. User modifiable.",
-          "type": "string"
-        },
-        "createTime": {
-          "description": "Output only. The timestamp when this workload group was created in Service Directory.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. The timestamp when the workload group was last updated in Service Directory.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "annotations": {
-          "description": "Optional. Blackbox annotations on the workload group.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "attributes": {
-          "description": "Optional. Attributes associated with this workload group. -- Attributes should stay visibility protected until we have user-visible attributes to share with the user.",
-          "$ref": "WorkloadGroupAttributes"
-        },
-        "workloads": {
-          "description": "Optional. List of workloads that are a part of this workload group.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "WorkloadGroupAttributes": {
-      "id": "WorkloadGroupAttributes",
-      "description": "Attributes associated with workload groups.",
-      "type": "object",
-      "properties": {
-        "managerType": {
-          "description": "Output only. The GCP resource\/product responsible for this workload group.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Default. Should not be used.",
-            "Resource managed by GKE Hub.",
-            "Resource managed by Arcus, Backend Service"
-          ],
-          "enum": [
-            "TYPE_UNSPECIFIED",
-            "GKE_HUB",
-            "BACKEND_SERVICE"
-          ]
-        },
-        "managedRegistration": {
-          "description": "Output only. TODO(b\/230323652) Update documentation for managed_registration field !",
-          "readOnly": true,
-          "type": "boolean"
-        }
-      }
-    },
-    "ListWorkloadGroupsResponse": {
-      "id": "ListWorkloadGroupsResponse",
-      "description": "The response message for RegistrationService.ListWorkloadGroups.",
-      "type": "object",
-      "properties": {
-        "workloadGroups": {
-          "description": "The list of workload groups.",
-          "type": "array",
-          "items": {
-            "$ref": "WorkloadGroup"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
-          "type": "string"
-        }
-      }
-    },
     "ServiceWorkload": {
       "id": "ServiceWorkload",
       "description": "An individual ServiceWorkload. A logical collection of workloads that provide the same functionality, with a common set of core attributes, that power services in Service Directory and to which policies can be applied.",
@@ -756,6 +547,13 @@
         },
         "components": {
           "description": "Optional. List of workloads (as schemeless URIs) that are part of this ServiceWorkload. Ex. [ \/\/compute.googleapis.com\/projects\/1234\/zones\/us-east1-c\/instances\/mig1, \/\/compute.googleapis.com\/projects\/1234\/zones\/us-east1-a\/instances\/mig2]",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "backendServices": {
+          "description": "Optional. List of backend services (as schemeless URIs) used as grouping constructs for this ServiceWorkload. Populated for service workloads that are auto-registered from Google Compute Engine. For service workloads auto-registed from Google Kubernetes Engine, this field is not populated. Example: [ \/\/compute.googleapis.com\/projects\/123\/zones\/us-east1-c\/backend_services\/bs1, \/\/compute.googleapis.com\/projects\/123\/regions\/us-east1\/backend_services\/bs2]",
           "type": "array",
           "items": {
             "type": "string"
@@ -965,7 +763,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
@@ -1616,7 +1414,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the IAM Policy for a resource (namespace or service only)."
+                  "description": "Gets the IAM Policy for a resource"
                 },
                 "setIamPolicy": {
                   "id": "servicedirectory.projects.locations.namespaces.setIamPolicy",
@@ -1644,7 +1442,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the IAM Policy for a resource (namespace or service only)."
+                  "description": "Sets the IAM Policy for a resource"
                 },
                 "testIamPermissions": {
                   "id": "servicedirectory.projects.locations.namespaces.testIamPermissions",
@@ -1896,7 +1694,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets the IAM Policy for a resource (namespace or service only)."
+                      "description": "Gets the IAM Policy for a resource"
                     },
                     "setIamPolicy": {
                       "id": "servicedirectory.projects.locations.namespaces.services.setIamPolicy",
@@ -1924,7 +1722,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the IAM Policy for a resource (namespace or service only)."
+                      "description": "Sets the IAM Policy for a resource"
                     },
                     "testIamPermissions": {
                       "id": "servicedirectory.projects.locations.namespaces.services.testIamPermissions",
@@ -2126,350 +1924,6 @@
                     }
                   }
                 },
-                "workloads": {
-                  "methods": {
-                    "create": {
-                      "id": "servicedirectory.projects.locations.namespaces.workloads.create",
-                      "path": "v1beta1/{+parent}/workloads",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloads",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The resource name of the namespace this workload will belong to.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "workloadId": {
-                          "description": "Required. The Resource ID must be 1-63 characters long, and comply with [RFC 1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt). Specifically, the name must be 1-63 characters long and match the regular expression `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "Workload"
-                      },
-                      "response": {
-                        "$ref": "Workload"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Creates a workload, and returns the new workload."
-                    },
-                    "list": {
-                      "id": "servicedirectory.projects.locations.namespaces.workloads.list",
-                      "path": "v1beta1/{+parent}/workloads",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloads",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The resource name of the namespace whose workloads you'd like to list.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "Optional. The maximum number of items to return.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "Optional. The next_page_token value returned from a previous List request, if any.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "Optional. The filter to list results by. General `filter` string syntax: ` ()` * `` can be any field name on the Workload proto. For example: `name`, `create_time`, `annotations.`, or `attributes.region` * `` can be `<`, `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:` means `HAS`, and is roughly the same as `=` * `` must be the same data type as field * `` can be `AND`, `OR`, `NOT` Examples of valid filters: * `annotations.owner` returns workloads that have a annotation with the key `owner`, this is the same as `annotations:owner` * `attributes.zone=us-west1-a` returns workloads that run in the gcp zone `us-west1-a` * `name>projects\/my-project\/locations\/us-east1\/namespaces\/my-namespace\/workloads\/workload-c` returns workloads that have names that are alphabetically later than the string, so \"workload-e\" is returned but \"workload-a\" is not * `annotations.owner!=sd AND annotations.foo=bar` returns workloads that have `owner` in annotation key but value is not `sd` AND have key\/value `foo=bar` * `doesnotexist.foo=bar` returns an empty list. Note that workload doesn't have a field called \"doesnotexist\". Since the filter does not match any workloads, it returns no results For more information about filtering, see [API Filtering](https:\/\/aip.dev\/160).",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "orderBy": {
-                          "description": "Optional. The order to list results by. General `order_by` string syntax: ` () (,)` * `` allows values: `name`, `display_name`, `create_time`, `update_time`, `attributes.region`, `attributes.zone` * `` ascending or descending order by ``. If this is left blank, `asc` is used Note that an empty `order_by` string results in default order, which is order by `name` in ascending order.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListWorkloadsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists all workloads."
-                    },
-                    "get": {
-                      "id": "servicedirectory.projects.locations.namespaces.workloads.get",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloads/{workloadsId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The name of the workload to get.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/workloads\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Workload"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets a workload."
-                    },
-                    "patch": {
-                      "id": "servicedirectory.projects.locations.namespaces.workloads.patch",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloads/{workloadsId}",
-                      "httpMethod": "PATCH",
-                      "parameters": {
-                        "name": {
-                          "description": "Immutable. The resource name for the workload in the format `projects\/*\/locations\/*\/namespaces\/*\/workloads\/*`.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/workloads\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "updateMask": {
-                          "description": "Required. List of fields to be updated in this request. Allowable fields: `display_name`, `annotations`.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        },
-                        "allowMissing": {
-                          "description": "If set to true, and the workload is not found, a new workload will be created. -- Will remain GOOGLE_INTERNAL visibility post-launch.",
-                          "location": "query",
-                          "type": "boolean"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "Workload"
-                      },
-                      "response": {
-                        "$ref": "Workload"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Updates a workload."
-                    },
-                    "delete": {
-                      "id": "servicedirectory.projects.locations.namespaces.workloads.delete",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloads/{workloadsId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The name of the workload to delete.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/workloads\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Empty"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes a workload."
-                    }
-                  }
-                },
-                "workloadGroups": {
-                  "methods": {
-                    "create": {
-                      "id": "servicedirectory.projects.locations.namespaces.workloadGroups.create",
-                      "path": "v1beta1/{+parent}/workloadGroups",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloadGroups",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The resource name of the namespace this workload group will belong to.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "workloadGroupId": {
-                          "description": "Required. The Resource ID must be 1-63 characters long, and comply with [RFC 1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt). Specifically, the name must be 1-63 characters long and match the regular expression `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "WorkloadGroup"
-                      },
-                      "response": {
-                        "$ref": "WorkloadGroup"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Creates a workload group, and returns the new workload group."
-                    },
-                    "list": {
-                      "id": "servicedirectory.projects.locations.namespaces.workloadGroups.list",
-                      "path": "v1beta1/{+parent}/workloadGroups",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloadGroups",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The resource name of the namespace whose workload groups you'd like to list.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "Optional. The maximum number of items to return.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "Optional. The next_page_token value returned from a previous List request, if any.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "Optional. The filter to list results by. General `filter` string syntax: ` ()` * `` can be any field name on the WorkloadGroup proto. For example: `name`, `create_time`, `annotations.`, or `workloads` * `` can be `<`, `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:` means `HAS`, and is roughly the same as `=` * `` must be the same data type as field * `` can be `AND`, `OR`, `NOT` Examples of valid filters: * `annotations.owner` returns workload groups that have an annotation with the key `owner`, this is the same as `annotations:owner` * `workloads:projects\/123\/locations\/us-east1\/namespaces\/my-ns\/workloads\/my-wl` returns workload groups that contain the specified workload * `name>projects\/my-project\/locations\/us-east1\/namespaces\/my-namespace\/workloadGroups\/workload-group-c` returns workloads that have names that are alphabetically later than the string, so \"workload-group-e\" is returned but \"workload-group-a\" is not * `annotations.owner!=sd AND annotations.foo=bar` returns workload groups that have `owner` in annotation key but value is not `sd` AND have key\/value `foo=bar` * `doesnotexist.foo=bar` returns an empty list. Note that workload group doesn't have a field called \"doesnotexist\". Since the filter does not match any workload groups, it returns no results For more information about filtering, see [API Filtering](https:\/\/aip.dev\/160).",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "orderBy": {
-                          "description": "Optional. The order to list results by. General `order_by` string syntax: ` () (,)` * `` allows values: `name`, `display_name`, `create_time`, `update_time` * `` ascending or descending order by ``. If this is left blank, `asc` is used Note that an empty `order_by` string results in default order, which is order by `name` in ascending order.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListWorkloadGroupsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists all workload groups."
-                    },
-                    "get": {
-                      "id": "servicedirectory.projects.locations.namespaces.workloadGroups.get",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloadGroups/{workloadGroupsId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The name of the workload group to get.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/workloadGroups\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "WorkloadGroup"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets a workload group."
-                    },
-                    "patch": {
-                      "id": "servicedirectory.projects.locations.namespaces.workloadGroups.patch",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloadGroups/{workloadGroupsId}",
-                      "httpMethod": "PATCH",
-                      "parameters": {
-                        "name": {
-                          "description": "Immutable. The resource name for the workload group in the format `projects\/*\/locations\/*\/namespaces\/*\/workloadGroups\/*`.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/workloadGroups\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "updateMask": {
-                          "description": "Required. List of fields to be updated in this request. Allowable fields: `display_name`, `annotations`. -- Internal integrations may update other workload_group fields",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        },
-                        "allowMissing": {
-                          "description": "If set to true, and the workload group is not found, a new workload group will be created. -- Will remain GOOGLE_INTERNAL visibility post-launch.",
-                          "location": "query",
-                          "type": "boolean"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "WorkloadGroup"
-                      },
-                      "response": {
-                        "$ref": "WorkloadGroup"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Updates a workload group."
-                    },
-                    "delete": {
-                      "id": "servicedirectory.projects.locations.namespaces.workloadGroups.delete",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/workloadGroups/{workloadGroupsId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The name of the workload group to delete.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/workloadGroups\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Empty"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes a workload group."
-                    }
-                  }
-                },
                 "serviceWorkloads": {
                   "methods": {
                     "create": {
@@ -2530,7 +1984,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Optional. The filter to list results by. General `filter` string syntax: ` ()` * `` can be any field name on the ServiceWorkload proto. For example: `name`, `create_time`, `annotations.`, or `workloads` * `` can be `<`, `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:` means `HAS`, and is roughly the same as `=` * `` must be the same data type as field * `` can be `AND`, `OR`, `NOT` Examples of valid filters: * `annotations.owner` returns service workloads that have an annotation with the key `owner`, this is the same as `annotations:owner` * `workloads:projects\/123\/locations\/us-east1\/namespaces\/my-ns\/workloads\/my-wl` returns service workloads that contain the specified workload * `name>projects\/my-project\/locations\/us-east1\/namespaces\/my-namespace\/serviceWorkloads\/service-workload-c` returns workloads that have names that are alphabetically later than the string, so \"service-workload-e\" is returned but \"service-workload-a\" is not * `annotations.owner!=sd AND annotations.foo=bar` returns service workloads that have `owner` in annotation key but value is not `sd` AND have key\/value `foo=bar` * `doesnotexist.foo=bar` returns an empty list. Note that service workload doesn't have a field called \"doesnotexist\". Since the filter does not match any service workloads, it returns no results For more information about filtering, see [API Filtering](https:\/\/aip.dev\/160).",
+                          "description": "Optional. The filter to list results by. General `filter` string syntax: ` ()` * `` can be any field name on the ServiceWorkload proto. For example: `name`, `create_time`, `annotations.`, or `components` * `` can be `<`, `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:` means `HAS`, and is roughly the same as `=` * `` must be the same data type as field * `` can be `AND`, `OR`, `NOT` Examples of valid filters: * `annotations.owner` returns service workloads that have an annotation with the key `owner`, this is the same as `annotations:owner` * `components:\/\/compute.googleapis.com\/projects\/1234\/zones\/us-east1-c\/instances\/mig1` returns service workloads that contain the specified component * `name>projects\/my-project\/locations\/us-east1\/namespaces\/my-namespace\/serviceWorkloads\/service-workload-c` returns workloads that have names that are alphabetically later than the string, so \"service-workload-e\" is returned but \"service-workload-a\" is not * `annotations.owner!=sd AND annotations.foo=bar` returns service workloads that have `owner` in annotation key but value is not `sd` AND have key\/value `foo=bar` * `doesnotexist.foo=bar` returns an empty list. Note that service workload doesn't have a field called \"doesnotexist\". Since the filter does not match any service workloads, it returns no results For more information about filtering, see [API Filtering](https:\/\/aip.dev\/160).",
                           "location": "query",
                           "type": "string"
                         },
@@ -2681,7 +2135,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets the IAM Policy for a resource (namespace or service only)."
+                      "description": "Gets the IAM Policy for a resource"
                     },
                     "setIamPolicy": {
                       "id": "servicedirectory.projects.locations.namespaces.serviceWorkloads.setIamPolicy",
@@ -2709,7 +2163,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the IAM Policy for a resource (namespace or service only)."
+                      "description": "Sets the IAM Policy for a resource"
                     },
                     "testIamPermissions": {
                       "id": "servicedirectory.projects.locations.namespaces.serviceWorkloads.testIamPermissions",
@@ -2912,6 +2366,90 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a registration policy."
+                },
+                "getIamPolicy": {
+                  "id": "servicedirectory.projects.locations.registrationPolicies.getIamPolicy",
+                  "path": "v1beta1/{+resource}:getIamPolicy",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/registrationPolicies/{registrationPoliciesId}:getIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrationPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "GetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the IAM Policy for a resource"
+                },
+                "setIamPolicy": {
+                  "id": "servicedirectory.projects.locations.registrationPolicies.setIamPolicy",
+                  "path": "v1beta1/{+resource}:setIamPolicy",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/registrationPolicies/{registrationPoliciesId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrationPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the IAM Policy for a resource"
+                },
+                "testIamPermissions": {
+                  "id": "servicedirectory.projects.locations.registrationPolicies.testIamPermissions",
+                  "path": "v1beta1/{+resource}:testIamPermissions",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/registrationPolicies/{registrationPoliciesId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrationPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Tests IAM permissions for a resource (namespace, service or service workload only)."
                 }
               }
             }

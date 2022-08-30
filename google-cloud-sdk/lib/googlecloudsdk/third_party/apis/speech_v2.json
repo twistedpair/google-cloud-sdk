@@ -1,0 +1,1153 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "speech:v2",
+  "name": "speech",
+  "canonicalName": "Speech",
+  "version": "v2",
+  "revision": "0",
+  "title": "Cloud Speech-to-Text API",
+  "description": "Converts audio to text by applying powerful neural network models.",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/speech-to-text/docs/quickstart-protocol",
+  "protocol": "rest",
+  "rootUrl": "https://speech.googleapis.com/",
+  "mtlsRootUrl": "https://speech.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://speech.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
+  "schemas": {
+    "ListOperationsResponse": {
+      "id": "ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "Recognizer": {
+      "id": "Recognizer",
+      "description": "A Recognizer message. Stores recognition configuration and metadata.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the Recognizer. Format: `projects\/{project}\/locations\/{location}\/recognizers\/{recognizer}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. System-assigned unique identifier for the Recognizer.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "User-settable, human-readable name for the Recognizer. Must be 63 characters or less.",
+          "type": "string"
+        },
+        "model": {
+          "description": "Required. Which model to use for recognition requests. Select the model best suited to your domain to get best results. Supported models: - `latest_long` Best for long form content like media or conversation. - `latest_short` Best for short form content like commands or single shot directed speech.",
+          "type": "string"
+        },
+        "languageCodes": {
+          "description": "Required. The language of the supplied audio as a [BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag. Supported languages: - `en-US` - `en-GB` - `fr-FR` If additional languages are provided, recognition result will contain recognition in the most likely language detected including the main language_code. The recognition result will include the language tag of the language detected in the audio. Note: This feature is only supported for Voice Command and Voice Search use cases and performance may vary for other use cases (e.g., phone call transcription). Note: When creating\/updated a Recognizer, these values are stored in normalized BCP-47 form. For example, \"en-us\" is stored as \"en-US\".",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "defaultRecognitionConfig": {
+          "description": "Default configuration to use for requests with this Recognizer. This is overwritten by inline configuration in the RecognizeRequest.config field.",
+          "$ref": "RecognitionConfig"
+        },
+        "annotations": {
+          "description": "Allows storing small amounts of arbitrary data.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "state": {
+          "description": "Output only. The Recognizer lifecycle state.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value is used if the state is omitted.",
+            "The Recognizer is active and ready for use.",
+            "This Recognizer has been deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "DELETED"
+          ]
+        },
+        "createTime": {
+          "description": "Output only. Creation time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The most recent time this Recognizer was modified.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deleteTime": {
+          "description": "Output only. The time at which this Recognizer was requested for deletion.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "expireTime": {
+          "description": "Output only. The time at which this Recognizer will be purged.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "etag": {
+          "description": "Output only. This checksum is computed by the server based on the value of other fields. This may be sent on update, undelete, and delete requests to ensure the client has an up-to-date value before proceeding.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "reconciling": {
+          "description": "Output only. Whether, or not, this Recognizer matches user's intent. Eg. whether, or not, this recognizer is in the process of being updated.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "kmsKeyName": {
+          "description": "Output only. The [KMS key name](https:\/\/cloud.google.com\/kms\/docs\/resource-hierarchy#keys) with which the Recognizer is encrypted. The expected format is `projects\/{project}\/locations\/{location}\/keyRings\/{key_ring}\/cryptoKeys\/{crypto_key}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "kmsKeyVersionName": {
+          "description": "Output only. The [KMS key version name](https:\/\/cloud.google.com\/kms\/docs\/resource-hierarchy#key_versions) with which the Recognizer is encrypted. The expected format is `projects\/{project}\/locations\/{location}\/keyRings\/{key_ring}\/cryptoKeys\/{crypto_key}\/cryptoKeyVersions\/{crypto_key_version}`.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "RecognitionConfig": {
+      "id": "RecognitionConfig",
+      "description": "Provides information to the Recognizer that specifies how to process the recognition request.",
+      "type": "object",
+      "properties": {
+        "audioMetadata": {
+          "description": "Audio metadata that describes the audio being sent for recognition.",
+          "$ref": "AudioMetadata"
+        },
+        "autoDecodingConfig": {
+          "description": "Automatically detect decoding parameters. Preferred for supported formats.",
+          "$ref": "AutoDetectDecodingConfig"
+        },
+        "explicitDecodingConfig": {
+          "description": "Explicitly specified decoding parameters. Required if using headerless PCM audio (linear16, mulaw, alaw).",
+          "$ref": "ExplicitDecodingConfig"
+        },
+        "features": {
+          "description": "Speech recognition features to enable.",
+          "$ref": "RecognitionFeatures"
+        }
+      }
+    },
+    "AudioMetadata": {
+      "id": "AudioMetadata",
+      "description": "Provides the metadata required to process the audio.",
+      "type": "object",
+      "properties": {
+        "encoding": {
+          "description": "Required. The encoding of the audio data sent in the recognition request. All encodings support only 1 channel (mono) audio, unless the `audio_channel_count` and `enable_separate_recognition_per_channel` fields are set. For best results, the audio source should be captured and transmitted using a lossless encoding (`flac` or `linear16`). The accuracy of the speech recognition can be reduced if lossy codecs are used to capture or transmit audio, particularly if background noise is present. Lossy codecs include `mulaw`, `amr`, `amr-wb`, `ogg-opus`, `speex-with-header-byte`, `mp3`, and `webm-opus`. The `FLAC` and `WAV` audio file formats include a header that describes the included audio content. You can request recognition for `WAV` files that contain either `linear16` or `mulaw` encoded audio. If you send `FLAC` or `WAV` audio file format in your request, you do not need to specify an [encoding]; the audio encoding format is determined from the file header. If you specify an [encoding] when you send `FLAC` or `WAV` audio, the encoding configuration must match the encoding described in the audio header; otherwise the request returns an INVALID_ARGUMENT error code. Supported formats: - `linear16` Uncompressed 16-bit signed little-endian samples (Linear PCM).",
+          "type": "string"
+        },
+        "sampleRateHertz": {
+          "description": "Sample rate in Hertz of the audio data sent in all RecognitionAudio messages. Valid values are: 8000-48000. 16000 is optimal. For best results, set the sampling rate of the audio source to 16000 Hz. If that's not possible, use the native sample rate of the audio source (instead of re-sampling). This field is optional for FLAC and WAV audio files, but is required for all other audio formats.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "audioChannelCount": {
+          "description": "Number of channels present in the Audio. If empty, Cloud Speech will determine the correct value according to the encoding supplied.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "AutoDetectDecodingConfig": {
+      "id": "AutoDetectDecodingConfig",
+      "description": "Automatically detected decoding parameters. Supported for the following formats: * wav-linear16: 16-bit signed little-endian PCM samples in a WAV container. * wav-mulaw: 8-bit companded mulaw samples in a WAV container. * wav-alaw: 8-bit companded alaw samples in a WAV container. * amr: Headerless AMR frames. * amrwb: Headerless AMR-WB frames. * rfc4867.5-amr: AMR frames with an rfc4867.5 header. * rfc4867.5-amrwb: AMR-WB frames with an rfc4867.5 header. * flac: FLAC frames in the \"native FLAC\" container format. * mp3: MPEG audio frames with optional (ignored) ID3 metadata. * ogg-opus: Opus audio frames in an Ogg container. * webm-opus: Opus audio frames in a WebM container.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ExplicitDecodingConfig": {
+      "id": "ExplicitDecodingConfig",
+      "description": "Explicitly specified decoding parameters.",
+      "type": "object",
+      "properties": {
+        "encoding": {
+          "description": "Required. Allowed values are: * linear16: Headerless 16-bit signed little-endian PCM samples. * mulaw: Headerless 8-bit companded mulaw samples. * alaw: Headerless 8-bit companded alaw samples. * wav-linear16: 16-bit signed little-endian PCM samples in a WAV container. * wav-mulaw: 8-bit companded mulaw samples in a WAV container. * wav-alaw: 8-bit companded alaw samples in a WAV container. * amr: Headerless AMR frames. * amrwb: Headerless AMR-WB frames. * rfc4867.5-amr: AMR frames with an rfc4867.5 header. * rfc4867.5-amrwb: AMR-WB frames with an rfc4867.5 header. * flac: FLAC frames in the \"native FLAC\" container format. * mp3: MPEG audio frames with optional (ignored) ID3 metadata. * ogg-opus: Opus audio frames in an Ogg container. * webm-opus: Opus audio frames in a WebM container.",
+          "type": "string"
+        },
+        "sampleRateHertz": {
+          "description": "Required. Sample rate in Hertz of the audio data sent for recognition. Valid values are: 8000-48000. 16000 is optimal. For best results, set the sampling rate of the audio source to 16000 Hz. If that's not possible, use the native sample rate of the audio source (instead of re-sampling).",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "RecognitionFeatures": {
+      "id": "RecognitionFeatures",
+      "description": "Available recognition features.",
+      "type": "object",
+      "properties": {
+        "profanityFilter": {
+          "description": "If set to `true`, the server will attempt to filter out profanities, replacing all but the initial character in each filtered word with asterisks, e.g. \"f***\". If set to `false` or omitted, profanities won't be filtered out.",
+          "type": "boolean"
+        },
+        "enableWordTimeOffsets": {
+          "description": "If `true`, the top result includes a list of words and the start and end time offsets (timestamps) for those words. If `false`, no word-level time offset information is returned. The default is `false`.",
+          "type": "boolean"
+        },
+        "enableWordConfidence": {
+          "description": "If `true`, the top result includes a list of words and the confidence for those words. If `false`, no word-level confidence information is returned. The default is `false`.",
+          "type": "boolean"
+        },
+        "enableAutomaticPunctuation": {
+          "description": "If `true`, adds punctuation to recognition result hypotheses. This feature is only available in select languages. Setting this for requests in other languages has no effect at all. The default `false` value does not add punctuation to result hypotheses.",
+          "type": "boolean"
+        },
+        "enableSpokenPunctuation": {
+          "description": "The spoken punctuation behavior for the call. If `true`, replaces spoken punctuation with the corresponding symbols in the request. For example, \"how are you question mark\" becomes \"how are you?\". See https:\/\/cloud.google.com\/speech-to-text\/docs\/spoken-punctuation for support. If `false`, spoken punctuation is not replaced.",
+          "type": "boolean"
+        },
+        "enableSpokenEmojis": {
+          "description": "The spoken emoji behavior for the call. If `true`, adds spoken emoji formatting for the request. This will replace spoken emojis with the corresponding Unicode symbols in the final transcript. If `false`, spoken emojis are not replaced.",
+          "type": "boolean"
+        },
+        "enableSeparateRecognitionPerChannel": {
+          "description": "Whether, or not, to perform a separate recognition per each of the channels present in the provided audio. If disabled only recognizes the first channel of audio.",
+          "type": "boolean"
+        },
+        "diarizationConfig": {
+          "description": "Config to enable speaker diarization and set additional parameters to make diarization better suited for your application. Note: When this is enabled, we send all the words from the beginning of the audio for the top alternative in every consecutive STREAMING responses. This is done in order to improve our speaker tags as our models learn to identify the speakers in the conversation over time. For non-streaming requests, the diarization results will be provided only in the top alternative of the FINAL SpeechRecognitionResult.",
+          "$ref": "SpeakerDiarizationConfig"
+        }
+      }
+    },
+    "SpeakerDiarizationConfig": {
+      "id": "SpeakerDiarizationConfig",
+      "description": "Config to enable speaker diarization.",
+      "type": "object",
+      "properties": {
+        "enableSpeakerDiarization": {
+          "description": "If `true`, enables speaker detection for each recognized word in the top alternative of the recognition result using a speaker_tag provided in the WordInfo.",
+          "type": "boolean"
+        },
+        "minSpeakerCount": {
+          "description": "Note: Set `min_speaker_count` = `max_speaker_count` to fix the number of speakers to be detected in the audio. Minimum number of speakers in the conversation. This range gives you more flexibility by allowing the system to automatically determine the correct number of speakers. If not set, the default value is 2.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxSpeakerCount": {
+          "description": "Maximum number of speakers in the conversation. This range gives you more flexibility by allowing the system to automatically determine the correct number of speakers. The maximum number of speakers that can be detected is 6. If not set, the default value is 6.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListRecognizersResponse": {
+      "id": "ListRecognizersResponse",
+      "description": "Response message for the ListRecognizers method.",
+      "type": "object",
+      "properties": {
+        "recognizers": {
+          "description": "The list of requested Recognizers.",
+          "type": "array",
+          "items": {
+            "$ref": "Recognizer"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as page_token to retrieve the next page. If this field is omitted, there are no subsequent pages. This token expires after 72 hours.",
+          "type": "string"
+        }
+      }
+    },
+    "UndeleteRecognizerRequest": {
+      "id": "UndeleteRecognizerRequest",
+      "description": "Request message for the UndeleteRecognizer method.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The name of the Recognizer to undelete. Format: `projects\/{project}\/locations\/{location}\/recognizers\/{recognizer}`",
+          "type": "string"
+        },
+        "validateOnly": {
+          "description": "If set, validate the request and preview the undeleted Recognizer, but do not actually undelete it.",
+          "type": "boolean"
+        },
+        "etag": {
+          "description": "This checksum is computed by the server based on the value of other fields. This may be sent on update, undelete, and delete requests to ensure the client has an up-to-date value before proceeding.",
+          "type": "string"
+        }
+      }
+    },
+    "RecognizeRequest": {
+      "id": "RecognizeRequest",
+      "description": "Request message for the Recognize method. Either `content` or `uri` must be supplied. Supplying both or neither returns INVALID_ARGUMENT. See [content limits](https:\/\/cloud.google.com\/speech-to-text\/quotas#content).",
+      "type": "object",
+      "properties": {
+        "config": {
+          "description": "Features and audio metadata to use for the Automatic Speech Recognition. Providing this field will override the default_recognition_config of the Recognizer resource.",
+          "$ref": "RecognitionConfig"
+        },
+        "configMask": {
+          "description": "The list of fields in config that override the values in the default_recognition_config of the recognizer during this recognition request. If no mask is provided, all non-default valued fields in config override the values in the recognizer for this recognition request. If a mask is provided, only the fields listed in the mask override the config in the recognizer for this recognition request. If a wildcard (`*`) is provided, config completely overrides and replaces the config in the recognizer for this recognition request.",
+          "type": "string",
+          "format": "google-fieldmask"
+        },
+        "content": {
+          "description": "The audio data bytes encoded as specified in RecognitionConfig. Note: as with all bytes fields, proto buffers use a pure binary representation, whereas JSON representations use base64.",
+          "type": "string",
+          "format": "byte"
+        },
+        "uri": {
+          "description": "URI that points to a file that contains audio data bytes as specified in RecognitionConfig. The file must not be compressed (for example, gzip). Currently, only Google Cloud Storage URIs are supported, which must be specified in the following format: `gs:\/\/bucket_name\/object_name` (other URI formats return INVALID_ARGUMENT). For more information, see [Request URIs](https:\/\/cloud.google.com\/storage\/docs\/reference-uris).",
+          "type": "string"
+        }
+      }
+    },
+    "RecognizeResponse": {
+      "id": "RecognizeResponse",
+      "description": "Response message for the Recognize method.",
+      "type": "object",
+      "properties": {
+        "results": {
+          "description": "Sequential list of transcription results corresponding to sequential portions of audio.",
+          "type": "array",
+          "items": {
+            "$ref": "SpeechRecognitionResult"
+          }
+        },
+        "metadata": {
+          "description": "Metadata about the recognition.",
+          "$ref": "RecognitionResponseMetadata"
+        }
+      }
+    },
+    "SpeechRecognitionResult": {
+      "id": "SpeechRecognitionResult",
+      "description": "A speech recognition result corresponding to a portion of the audio.",
+      "type": "object",
+      "properties": {
+        "alternatives": {
+          "description": "May contain one or more recognition hypotheses. These alternatives are ordered in terms of accuracy, with the top (first) alternative being the most probable, as ranked by the recognizer.",
+          "type": "array",
+          "items": {
+            "$ref": "SpeechRecognitionAlternative"
+          }
+        },
+        "channelTag": {
+          "description": "For multi-channel audio, this is the channel number corresponding to the recognized result for the audio from that channel. For audio_channel_count = `N`, its output values can range from `1` to `N`.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "resultEndOffset": {
+          "description": "Time offset of the end of this result relative to the beginning of the audio.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "languageCode": {
+          "description": "Output only. The [BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag of the language in this result. This language code was detected to have the most likelihood of being spoken in the audio.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "SpeechRecognitionAlternative": {
+      "id": "SpeechRecognitionAlternative",
+      "description": "Alternative hypotheses (a.k.a. n-best list).",
+      "type": "object",
+      "properties": {
+        "transcript": {
+          "description": "Transcript text representing the words that the user spoke.",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "The confidence estimate between 0.0 and 1.0. A higher number indicates an estimated greater likelihood that the recognized words are correct. This field is set only for the top alternative of a non-streaming result or, of a streaming result where is_final is set to `true`. This field is not guaranteed to be accurate and users should not rely on it to be always provided. The default of 0.0 is a sentinel value indicating `confidence` was not set.",
+          "type": "number",
+          "format": "float"
+        },
+        "words": {
+          "description": "A list of word-specific information for each recognized word. Note: When enable_speaker_diarization is true, you will see all the words from the beginning of the audio.",
+          "type": "array",
+          "items": {
+            "$ref": "WordInfo"
+          }
+        }
+      }
+    },
+    "WordInfo": {
+      "id": "WordInfo",
+      "description": "Word-specific information for recognized words.",
+      "type": "object",
+      "properties": {
+        "startOffset": {
+          "description": "Time offset relative to the beginning of the audio, and corresponding to the start of the spoken word. This field is only set if enable_word_time_offsets is `true` and only in the top hypothesis. This is an experimental feature and the accuracy of the time offset can vary.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "endOffset": {
+          "description": "Time offset relative to the beginning of the audio, and corresponding to the end of the spoken word. This field is only set if enable_word_time_offsets is `true` and only in the top hypothesis. This is an experimental feature and the accuracy of the time offset can vary.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "word": {
+          "description": "The word corresponding to this set of information.",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "The confidence estimate between 0.0 and 1.0. A higher number indicates an estimated greater likelihood that the recognized words are correct. This field is set only for the top alternative of a non-streaming result or, of a streaming result where is_final is set to `true`. This field is not guaranteed to be accurate and users should not rely on it to be always provided. The default of 0.0 is a sentinel value indicating `confidence` was not set.",
+          "type": "number",
+          "format": "float"
+        },
+        "speakerLabel": {
+          "description": "A distinct label is assigned for every speaker within the audio. This field specifies which one of those speakers was detected to have spoken this word. `speaker_label` is set if enable_speaker_diarization is `true` and only in the top alternative.",
+          "type": "string"
+        }
+      }
+    },
+    "RecognitionResponseMetadata": {
+      "id": "RecognitionResponseMetadata",
+      "description": "Metadata about the recognition request and response.",
+      "type": "object",
+      "properties": {
+        "totalBilledDuration": {
+          "description": "When available, billed audio seconds for the corresponding request.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "Config": {
+      "id": "Config",
+      "description": "Message representing the config for the Speech-to-Text API. This includes an optional [KMS key](https:\/\/cloud.google.com\/kms\/docs\/resource-hierarchy#keys) with which incoming data will be encrypted.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The name of the config resource. There is exactly one config resource per project per location. The expected format is `projects\/{project}\/locations\/{location}\/config`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "kmsKeyName": {
+          "description": "Optional. An optional [KMS key name](https:\/\/cloud.google.com\/kms\/docs\/resource-hierarchy#keys) that if present, will be used to encrypt Speech-to-Text resources at-rest. Updating this key will not encrypt existing resources using this key; only new resources will be encrypted using this key. The expected format is `projects\/{project}\/locations\/{location}\/keyRings\/{key_ring}\/cryptoKeys\/{crypto_key}`.",
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. The most recent time this resource was modified.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "resource": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "method": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "kmsKeyName": {
+          "description": "Output only. The [KMS key name](https:\/\/cloud.google.com\/kms\/docs\/resource-hierarchy#keys) with which the Operation is encrypted. The expected format is `projects\/{project}\/locations\/{location}\/keyRings\/{key_ring}\/cryptoKeys\/{crypto_key}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "kmsKeyVersionName": {
+          "description": "Output only. The [KMS key version name](https:\/\/cloud.google.com\/kms\/docs\/resource-hierarchy#key_versions) with which the Operation is encrypted. The expected format is `projects\/{project}\/locations\/{location}\/keyRings\/{key_ring}\/cryptoKeys\/{crypto_key}\/cryptoKeyVersions\/{crypto_key_version}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createRecognizerRequest": {
+          "description": "The CreateRecognizerRequest that spawned the Operation.",
+          "$ref": "CreateRecognizerRequest"
+        },
+        "updateRecognizerRequest": {
+          "description": "The UpdateRecognizerRequest that spawned the Operation.",
+          "$ref": "UpdateRecognizerRequest"
+        },
+        "deleteRecognizerRequest": {
+          "description": "The DeleteRecognizerRequest that spawned the Operation.",
+          "$ref": "DeleteRecognizerRequest"
+        },
+        "undeleteRecognizerRequest": {
+          "description": "The UndeleteRecognizerRequest that spawned the Operation.",
+          "$ref": "UndeleteRecognizerRequest"
+        },
+        "progressPercent": {
+          "description": "The percent progress of the Operation. Values can range from 0-100. If the value is 100, then the operation is finished execution.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "CreateRecognizerRequest": {
+      "id": "CreateRecognizerRequest",
+      "description": "Request message for the CreateRecognizer method.",
+      "type": "object",
+      "properties": {
+        "recognizer": {
+          "description": "Required. The Recognizer to create.",
+          "$ref": "Recognizer"
+        },
+        "validateOnly": {
+          "description": "If set, validate the request and preview the Recognizer, but do not actually create it.",
+          "type": "boolean"
+        },
+        "recognizerId": {
+          "description": "The ID to use for the Recognizer, which will become the final component of the Recognizer's resource name. This value should be 4-63 characters, and valid characters are \/a-z-\/.",
+          "type": "string"
+        },
+        "parent": {
+          "description": "Required. The project and location where this recognizer will be created. The expected format is `projects\/{project}\/locations\/{location}`.",
+          "type": "string"
+        }
+      }
+    },
+    "UpdateRecognizerRequest": {
+      "id": "UpdateRecognizerRequest",
+      "description": "Request message for the UpdateRecognizer method.",
+      "type": "object",
+      "properties": {
+        "recognizer": {
+          "description": "Required. The Recognizer to update. The Recognizer's `name` field is used to identify the Recognizer to update. Format: `projects\/{project}\/locations\/{location}\/recognizers\/{recognizer}`.",
+          "$ref": "Recognizer"
+        },
+        "updateMask": {
+          "description": "The list of fields to update. If empty, all fields are considered for update.",
+          "type": "string",
+          "format": "google-fieldmask"
+        },
+        "allowMissing": {
+          "description": "If set to true, and the Recognizer is not found, a new Recognizer will be created. In this situation, update_mask is ignored.",
+          "type": "boolean"
+        },
+        "validateOnly": {
+          "description": "If set, validate the request and preview the updated Recognizer, but do not actually update it.",
+          "type": "boolean"
+        }
+      }
+    },
+    "DeleteRecognizerRequest": {
+      "id": "DeleteRecognizerRequest",
+      "description": "Request message for the DeleteRecognizer method.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The name of the Recognizer to delete. Format: `projects\/{project}\/locations\/{location}\/recognizers\/{recognizer}`",
+          "type": "string"
+        },
+        "validateOnly": {
+          "description": "Dry run the deletion process.",
+          "type": "boolean"
+        },
+        "allowMissing": {
+          "description": "If set, validate the request and preview the deleted Recognizer, but do not actually delete it.",
+          "type": "boolean"
+        },
+        "etag": {
+          "description": "This checksum is computed by the server based on the value of other fields. This may be sent on update, undelete, and delete requests to ensure the client has an up-to-date value before proceeding.",
+          "type": "string"
+        }
+      }
+    },
+    "StreamingRecognitionResult": {
+      "id": "StreamingRecognitionResult",
+      "description": "A streaming speech recognition result corresponding to a portion of the audio that is currently being processed.",
+      "type": "object",
+      "properties": {
+        "alternatives": {
+          "description": "May contain one or more recognition hypotheses. These alternatives are ordered in terms of accuracy, with the top (first) alternative being the most probable, as ranked by the recognizer.",
+          "type": "array",
+          "items": {
+            "$ref": "SpeechRecognitionAlternative"
+          }
+        },
+        "isFinal": {
+          "description": "If `false`, this StreamingRecognitionResult represents an interim result that may change. If `true`, this is the final time the speech service will return this particular StreamingRecognitionResult, the recognizer will not return any further hypotheses for this portion of the transcript and corresponding audio.",
+          "type": "boolean"
+        },
+        "stability": {
+          "description": "An estimate of the likelihood that the recognizer will not change its guess about this interim result. Values range from 0.0 (completely unstable) to 1.0 (completely stable). This field is only provided for interim results (is_final=`false`). The default of 0.0 is a sentinel value indicating `stability` was not set.",
+          "type": "number",
+          "format": "float"
+        },
+        "resultEndOffset": {
+          "description": "Time offset of the end of this result relative to the beginning of the audio.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "channelTag": {
+          "description": "For multi-channel audio, this is the channel number corresponding to the recognized result for the audio from that channel. For audio_channel_count = `N`, its output values can range from `1` to `N`.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "languageCode": {
+          "description": "Output only. The [BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag of the language in this result. This language code was detected to have the most likelihood of being spoken in the audio.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "resources": {
+        "locations": {
+          "methods": {
+            "updateConfig": {
+              "id": "speech.projects.locations.updateConfig",
+              "path": "v2/{+name}",
+              "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/config",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Output only. The name of the config resource. There is exactly one config resource per project per location. The expected format is `projects\/{project}\/locations\/{location}\/config`.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/config$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "The list of fields to be updated.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "Config"
+              },
+              "response": {
+                "$ref": "Config"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Updates the Speech-to-Text config for a given project in a given location."
+            }
+          }
+          ,
+          "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "speech.projects.locations.operations.list",
+                  "path": "v2/{+name}/operations",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "speech.projects.locations.operations.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                }
+              }
+            },
+            "recognizers": {
+              "methods": {
+                "create": {
+                  "id": "speech.projects.locations.recognizers.create",
+                  "path": "v2/{+parent}/recognizers",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/recognizers",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location where this recognizer will be created. The expected format is `projects\/{project}\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "If set, validate the request and preview the Recognizer, but do not actually create it.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "recognizerId": {
+                      "description": "The ID to use for the Recognizer, which will become the final component of the Recognizer's resource name. This value should be 4-63 characters, and valid characters are \/a-z-\/.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Recognizer"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a Recognizer in the given project at the given location."
+                },
+                "list": {
+                  "id": "speech.projects.locations.recognizers.list",
+                  "path": "v2/{+parent}/recognizers",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/recognizers",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location of Recognizers to list. The expected format is `projects\/{project}\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of Recognizers to return. The service may return fewer than this value. If unspecified, at most 20 Recognizers will be returned. The maximum value is 20; values above 20 will be coerced to 20.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous ListRecognizers call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to ListRecognizers must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "showDeleted": {
+                      "description": "Whether, or not, to show resources that have been deleted.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListRecognizersResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists the Recognizers in the given project in the given region."
+                },
+                "get": {
+                  "id": "speech.projects.locations.recognizers.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/recognizers/{recognizersId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Recognizer to retrieve. The expected format is `projects\/{project}\/locations\/{location}\/recognizers\/{recognizer}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recognizers\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Recognizer"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns the requested Recognizer. Fails with NOT_FOUND if the requested recognizer doesn't exist."
+                },
+                "patch": {
+                  "id": "speech.projects.locations.recognizers.patch",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/recognizers/{recognizersId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of the Recognizer. Format: `projects\/{project}\/locations\/{location}\/recognizers\/{recognizer}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recognizers\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The list of fields to update. If empty, all fields are considered for update.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "allowMissing": {
+                      "description": "If set to true, and the Recognizer is not found, a new Recognizer will be created. In this situation, update_mask is ignored.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "validateOnly": {
+                      "description": "If set, validate the request and preview the updated Recognizer, but do not actually update it.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Recognizer"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the Recognizer."
+                },
+                "delete": {
+                  "id": "speech.projects.locations.recognizers.delete",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/recognizers/{recognizersId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Recognizer to delete. Format: `projects\/{project}\/locations\/{location}\/recognizers\/{recognizer}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recognizers\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Dry run the deletion process.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "allowMissing": {
+                      "description": "If set, validate the request and preview the deleted Recognizer, but do not actually delete it.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "etag": {
+                      "description": "This checksum is computed by the server based on the value of other fields. This may be sent on update, undelete, and delete requests to ensure the client has an up-to-date value before proceeding.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes the Recognizer."
+                },
+                "undelete": {
+                  "id": "speech.projects.locations.recognizers.undelete",
+                  "path": "v2/{+name}:undelete",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/recognizers/{recognizersId}:undelete",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Recognizer to undelete. Format: `projects\/{project}\/locations\/{location}\/recognizers\/{recognizer}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recognizers\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "UndeleteRecognizerRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Undeletes the Recognizer."
+                },
+                "recognize": {
+                  "id": "speech.projects.locations.recognizers.recognize",
+                  "path": "v2/{+recognizer}:recognize",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/recognizers/{recognizersId}:recognize",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "recognizer": {
+                      "description": "Required. The name of the Recognizer to use during recognition. The expected format is `projects\/{project}\/locations\/{location}\/recognizers\/{recognizer}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recognizers\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "recognizer"
+                  ],
+                  "request": {
+                    "$ref": "RecognizeRequest"
+                  },
+                  "response": {
+                    "$ref": "RecognizeResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Performs synchronous Speech recognition: receive results after all audio has been sent and processed."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

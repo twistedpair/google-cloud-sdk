@@ -1458,12 +1458,12 @@ class LogMetric(_messages.Message):
       LabelDescriptor must have an associated extractor expression in this
       map. The syntax of the extractor expression is the same as for the
       value_extractor field.The extracted value is converted to the type
-      defined in the label descriptor. If the either the extraction or the
-      type conversion fails, the label will have a default value. The default
-      value for a string label is an empty string, for an integer label its 0,
-      and for a boolean label its false.Note that there are upper bounds on
-      the maximum number of labels and the number of active time series that
-      are allowed in a project.
+      defined in the label descriptor. If either the extraction or the type
+      conversion fails, the label will have a default value. The default value
+      for a string label is an empty string, for an integer label its 0, and
+      for a boolean label its false.Note that there are upper bounds on the
+      maximum number of labels and the number of active time series that are
+      allowed in a project.
 
   Fields:
     bucketName: Optional. The resource name of the Log Bucket that owns the
@@ -1490,12 +1490,12 @@ class LogMetric(_messages.Message):
       LabelDescriptor must have an associated extractor expression in this
       map. The syntax of the extractor expression is the same as for the
       value_extractor field.The extracted value is converted to the type
-      defined in the label descriptor. If the either the extraction or the
-      type conversion fails, the label will have a default value. The default
-      value for a string label is an empty string, for an integer label its 0,
-      and for a boolean label its false.Note that there are upper bounds on
-      the maximum number of labels and the number of active time series that
-      are allowed in a project.
+      defined in the label descriptor. If either the extraction or the type
+      conversion fails, the label will have a default value. The default value
+      for a string label is an empty string, for an integer label its 0, and
+      for a boolean label its false.Note that there are upper bounds on the
+      maximum number of labels and the number of active time series that are
+      allowed in a project.
     metricDescriptor: Optional. The metric descriptor associated with the
       logs-based metric. If unspecified, it uses a default metric descriptor
       with a DELTA metric kind, INT64 value type, with no labels and a unit of
@@ -1526,9 +1526,9 @@ class LogMetric(_messages.Message):
     valueExtractor: Optional. A value_extractor is required when using a
       distribution logs-based metric to extract the values to record from a
       log entry. Two functions are supported for value extraction:
-      EXTRACT(field) or REGEXP_EXTRACT(field, regex). The argument are: 1.
+      EXTRACT(field) or REGEXP_EXTRACT(field, regex). The arguments are:
       field: The name of the log entry field from which the value is to be
-      extracted. 2. regex: A regular expression using the Google RE2 syntax
+      extracted. regex: A regular expression using the Google RE2 syntax
       (https://github.com/google/re2/wiki/Syntax) with a single capture group
       to extract data from the specified log entry field. The value of the
       field is converted to a string before applying the regex. It is an error
@@ -1560,12 +1560,12 @@ class LogMetric(_messages.Message):
     label value. Each label key specified in the LabelDescriptor must have an
     associated extractor expression in this map. The syntax of the extractor
     expression is the same as for the value_extractor field.The extracted
-    value is converted to the type defined in the label descriptor. If the
-    either the extraction or the type conversion fails, the label will have a
-    default value. The default value for a string label is an empty string,
-    for an integer label its 0, and for a boolean label its false.Note that
-    there are upper bounds on the maximum number of labels and the number of
-    active time series that are allowed in a project.
+    value is converted to the type defined in the label descriptor. If either
+    the extraction or the type conversion fails, the label will have a default
+    value. The default value for a string label is an empty string, for an
+    integer label its 0, and for a boolean label its false.Note that there are
+    upper bounds on the maximum number of labels and the number of active time
+    series that are allowed in a project.
 
     Messages:
       AdditionalProperty: An additional property for a LabelExtractorsValue
@@ -6562,7 +6562,7 @@ class TableFieldSchema(_messages.Message):
     name: Required. The field name corresponding to fields in the LogEntry.
     type: Required. The field data type. Possible values include: STRING
       INTEGER (or INT64) FLOAT (or FLOAT64) BOOLEAN (or BOOL) TIMESTAMP RECORD
-      (or STRUCT)Use of RECORD/STRUT indicates that the field contains a
+      (or STRUCT)Use of RECORD/STRUCT indicates that the field contains a
       nested schema.
   """
 

@@ -790,6 +790,11 @@
         "kmsKey": {
           "description": "Optional. The Cloud KMS key to use for encryption.",
           "type": "string"
+        },
+        "idleTtl": {
+          "description": "Optional. The duration to keep the session alive while it's idling. Passing this threshold will cause the session to be terminated. Minimum value is 30 minutes; maximum value is 14 days (see JSON representation of Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)).",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -928,26 +933,6 @@
           "description": "Output only. Contains cluster daemon metrics such as HDFS and YARN stats.Beta Feature: This report is available for testing purposes only. It may be changed before final release.",
           "readOnly": true,
           "$ref": "ClusterMetrics"
-        },
-        "driverLocation": {
-          "description": "Output only. The cluster driver location type.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "If unspecified, the default behavior applies: drivers run on the master.",
-            "Drivers run on driver pools."
-          ],
-          "enum": [
-            "UNSPECIFIED",
-            "DRIVER_POOL"
-          ]
-        },
-        "auxiliaryGceNodePoolConfigs": {
-          "description": "Input only. The Compute Engine configuration settings for cluster node pools.",
-          "type": "array",
-          "items": {
-            "$ref": "GceNodePool"
-          }
         }
       }
     },
@@ -1024,6 +1009,13 @@
           "type": "array",
           "items": {
             "$ref": "NodePoolConfig"
+          }
+        },
+        "auxiliaryGceNodePools": {
+          "description": "Optional. The Compute Engine configuration settings for cluster node pools.",
+          "type": "array",
+          "items": {
+            "$ref": "AuxiliaryGceNodePool"
           }
         },
         "dataprocMetricConfig": {
@@ -1236,12 +1228,14 @@
           "enumDescriptions": [
             "Preemptibility is unspecified, the system will choose the appropriate setting for each instance group.",
             "Instances are non-preemptible.This option is allowed for all instance groups and is the only valid value for Master and Worker instance groups.",
-            "Instances are preemptible.This option is allowed only for secondary worker groups."
+            "Instances are preemptible.This option is allowed only for secondary worker groups.",
+            "Instances are Spot VMsThis option is allowed only for secondary worker groups. See Spot VMs (https:\/\/cloud.google.com\/compute\/docs\/instances\/spot)."
           ],
           "enum": [
             "PREEMPTIBILITY_UNSPECIFIED",
             "NON_PREEMPTIBLE",
-            "PREEMPTIBLE"
+            "PREEMPTIBLE",
+            "SPOT"
           ]
         },
         "managedGroupConfig": {
@@ -1822,6 +1816,64 @@
         }
       }
     },
+    "AuxiliaryGceNodePool": {
+      "id": "AuxiliaryGceNodePool",
+      "description": "Dataproc Compute Engine node pool identification and configuration information.",
+      "type": "object",
+      "properties": {
+        "gceNodePool": {
+          "description": "Required. Dataproc Compute Engine node pool configuration.",
+          "$ref": "GceNodePool"
+        },
+        "gceNodePoolId": {
+          "description": "Optional. An optional Compute Engine node pool id. Generated if not specified.The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end with underscore or hyphen. Must consist of between 3 and 33 characters.",
+          "type": "string"
+        }
+      }
+    },
+    "GceNodePool": {
+      "id": "GceNodePool",
+      "description": "Dataproc Compute Engine node pool.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The Compute Engine node pool resource name (https:\/\/aip.dev\/122).",
+          "type": "string"
+        },
+        "roles": {
+          "description": "Required. Compute Engine node pool roles.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Required unspecified role.",
+              "Job drivers will run on the node pool.",
+              "Master nodes",
+              "Primary workers",
+              "Secondary workers"
+            ],
+            "enum": [
+              "ROLE_UNSPECIFIED",
+              "DRIVER",
+              "MASTER",
+              "PRIMARY_WORKER",
+              "SECONDARY_WORKER"
+            ]
+          }
+        },
+        "nodePoolConfig": {
+          "description": "Optional. The Compute Engine node pool instance group configuration.",
+          "$ref": "InstanceGroupConfig"
+        },
+        "labels": {
+          "description": "Optional. Compute Engine node pool labels. Label keys must consist of 1 to 63 characters and conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt). Label values can be empty. If specified, they must consist of 1 to 63 characters and conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt). The Compute Engine node pool can have no more than 32 labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "DataprocMetricConfig": {
       "id": "DataprocMetricConfig",
       "description": "Dataproc metric config.",
@@ -2037,49 +2089,6 @@
           "additionalProperties": {
             "type": "string",
             "format": "int64"
-          }
-        }
-      }
-    },
-    "GceNodePool": {
-      "id": "GceNodePool",
-      "description": "Dataproc Compute Engine node pool identification and configuration information.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Required. The Compute Engine node pool resource name (https:\/\/aip.dev\/122).",
-          "type": "string"
-        },
-        "roles": {
-          "description": "Required. Compute Engine node pool roles.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enumDescriptions": [
-              "Required unspecified role.",
-              "Job drivers will run on the node pool.",
-              "Master nodes",
-              "Primary workers",
-              "Secondary workers"
-            ],
-            "enum": [
-              "ROLE_UNSPECIFIED",
-              "DRIVER",
-              "MASTER",
-              "PRIMARY_WORKER",
-              "SECONDARY_WORKER"
-            ]
-          }
-        },
-        "nodePoolConfig": {
-          "description": "Optional. The Compute Engine node pool instance group configuration.",
-          "$ref": "InstanceGroupConfig"
-        },
-        "labels": {
-          "description": "Optional. Compute Engine node pool labels. Label keys must consist of 1 to 63 characters and conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt). Label values can be empty. If specified, they must consist of 1 to 63 characters and conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt). The Compute Engine node pool can have no more than 32 labels.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
           }
         }
       }
@@ -3577,7 +3586,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. members can have the following values: allUsers: A special identifier that represents anyone who is on the internet; with or without a Google account. allAuthenticatedUsers: A special identifier that represents anyone who is authenticated with a Google account or a service account. user:{emailid}: An email address that represents a specific Google account. For example, alice@example.com . serviceAccount:{emailid}: An email address that represents a service account. For example, my-other-app@appspot.gserviceaccount.com. group:{emailid}: An email address that represents a Google group. For example, admins@example.com. deleted:user:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a user that has been recently deleted. For example, alice@example.com?uid=123456789012345678901. If the user is recovered, this value reverts to user:{emailid} and the recovered user retains the role in the binding. deleted:serviceAccount:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901. If the service account is undeleted, this value reverts to serviceAccount:{emailid} and the undeleted service account retains the role in the binding. deleted:group:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, admins@example.com?uid=123456789012345678901. If the group is recovered, this value reverts to group:{emailid} and the recovered group retains the role in the binding. domain:{domain}: The G Suite domain (primary) that represents all the users of that domain. For example, google.com or example.com.",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. members can have the following values: allUsers: A special identifier that represents anyone who is on the internet; with or without a Google account. allAuthenticatedUsers: A special identifier that represents anyone who is authenticated with a Google account or a service account. user:{emailid}: An email address that represents a specific Google account. For example, alice@example.com . serviceAccount:{emailid}: An email address that represents a Google service account. For example, my-other-app@appspot.gserviceaccount.com. serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]: An identifier for a Kubernetes service account (https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]. group:{emailid}: An email address that represents a Google group. For example, admins@example.com. deleted:user:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a user that has been recently deleted. For example, alice@example.com?uid=123456789012345678901. If the user is recovered, this value reverts to user:{emailid} and the recovered user retains the role in the binding. deleted:serviceAccount:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901. If the service account is undeleted, this value reverts to serviceAccount:{emailid} and the undeleted service account retains the role in the binding. deleted:group:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, admins@example.com?uid=123456789012345678901. If the group is recovered, this value reverts to group:{emailid} and the recovered group retains the role in the binding. domain:{domain}: The G Suite domain (primary) that represents all the users of that domain. For example, google.com or example.com.",
           "type": "array",
           "items": {
             "type": "string"

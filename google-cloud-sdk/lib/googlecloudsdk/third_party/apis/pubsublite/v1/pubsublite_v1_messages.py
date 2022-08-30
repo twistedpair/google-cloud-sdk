@@ -192,6 +192,47 @@ class Empty(_messages.Message):
 
 
 
+class ExportConfig(_messages.Message):
+  r"""Configuration for a Pub/Sub Lite subscription that writes messages to a
+  destination. User subscriber clients must not connect to this subscription.
+
+  Enums:
+    DesiredStateValueValuesEnum: The desired state of this export.
+
+  Fields:
+    deadLetterTopic: Optional. The name of an optional Pub/Sub Lite topic to
+      publish messages that can not be exported to the destination. For
+      example, the message can not be published to the Pub/Sub service because
+      it does not satisfy the constraints documented at
+      https://cloud.google.com/pubsub/docs/publisher. Structured like:
+      projects/{project_number}/locations/{location}/topics/{topic_id}. Must
+      be within the same project and location as the subscription. The topic
+      may be changed or removed.
+    desiredState: The desired state of this export.
+    pubsubConfig: Messages are automatically written from the Pub/Sub Lite
+      topic associated with this subscription to a Pub/Sub topic.
+    statuses: Output only. The export statuses of each partition. This field
+      is output only.
+  """
+
+  class DesiredStateValueValuesEnum(_messages.Enum):
+    r"""The desired state of this export.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: Messages are being exported.
+      PAUSED: Exporting messages is suspended.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    PAUSED = 2
+
+  deadLetterTopic = _messages.StringField(1)
+  desiredState = _messages.EnumField('DesiredStateValueValuesEnum', 2)
+  pubsubConfig = _messages.MessageField('PubSubConfig', 3)
+  statuses = _messages.MessageField('PartitionStatus', 4, repeated=True)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -453,6 +494,35 @@ class PartitionCursor(_messages.Message):
 
   cursor = _messages.MessageField('Cursor', 1)
   partition = _messages.IntegerField(2)
+
+
+class PartitionStatus(_messages.Message):
+  r"""The export status of a partition.
+
+  Fields:
+    partition: The partition number.
+    status: If the export for a partition is healthy and the desired state is
+      `ACTIVE`, the status code will be `OK` (zero). If the desired state of
+      the export is `PAUSED`, the status code will be `CANCELLED`. If the
+      export has been suspended due to an error, the status will be populated
+      with an error code and details. The service will automatically retry
+      after a period of time, and will update the status code to `OK` if
+      export subsequently succeeds.
+  """
+
+  partition = _messages.IntegerField(1)
+  status = _messages.MessageField('Status', 2)
+
+
+class PubSubConfig(_messages.Message):
+  r"""Configuration for exporting to a Pub/Sub topic.
+
+  Fields:
+    topic: The name of the Pub/Sub topic. Structured like:
+      projects/{project_number}/topics/{topic_id}. The topic may be changed.
+  """
+
+  topic = _messages.StringField(1)
 
 
 class PubsubliteAdminProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1071,6 +1141,8 @@ class Subscription(_messages.Message):
 
   Fields:
     deliveryConfig: The settings for this subscription's message delivery.
+    exportConfig: If present, messages are automatically written from the
+      Pub/Sub Lite topic associated with this subscription to a destination.
     name: The name of the subscription. Structured like: projects/{project_num
       ber}/locations/{location}/subscriptions/{subscription_id}
     topic: The name of the topic this subscription is attached to. Structured
@@ -1078,8 +1150,9 @@ class Subscription(_messages.Message):
   """
 
   deliveryConfig = _messages.MessageField('DeliveryConfig', 1)
-  name = _messages.StringField(2)
-  topic = _messages.StringField(3)
+  exportConfig = _messages.MessageField('ExportConfig', 2)
+  name = _messages.StringField(3)
+  topic = _messages.StringField(4)
 
 
 class TimeTarget(_messages.Message):

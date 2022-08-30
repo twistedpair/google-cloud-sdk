@@ -1173,6 +1173,8 @@ apis:
       resources:
         speech:
           path: speech
+    v2:
+      discovery_doc: speech_v2.json
   sqladmin:
     v1beta4:
       discovery_doc: sqladmin_v1beta4.json
@@ -1360,6 +1362,9 @@ apis:
   workstations:
     v1alpha1:
       discovery_doc: workstations_v1alpha1.json
+      default: true
+    v1beta:
+      discovery_doc: workstations_v1beta.json
   securesourcemanager:
     v1:
       discovery_doc: securesourcemanager_v1.json

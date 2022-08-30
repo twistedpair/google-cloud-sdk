@@ -26,6 +26,8 @@ MAX_LRO_POLL_INTERVAL_MS = 10000
 # control flow in which we poll indefinitely.
 MAX_LRO_WAIT_MS = 43200000  # 12 hours
 
+ATTACHED = 'Attached'
+
 AWS = 'AWS'
 
 AZURE = 'Azure'
@@ -42,9 +44,17 @@ AWS_CLUSTER_KIND = 'AWS Cluster'
 
 AWS_NODEPOOL_KIND = 'AWS Node Pool'
 
+ATTACHED_CLUSTER_KIND = 'Attached Cluster'
+
 SYSTEM = 'SYSTEM'
 
 WORKLOAD = 'WORKLOAD'
+
+ATTACHED_CLUSTERS_FORMAT = """\
+  table(
+    name.basename(),
+    platformVersion:label=PLATFORM_VERSION,
+    state)"""
 
 AWS_CLUSTERS_FORMAT = """\
   table(

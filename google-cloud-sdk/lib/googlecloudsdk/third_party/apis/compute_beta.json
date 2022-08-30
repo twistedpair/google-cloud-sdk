@@ -4,7 +4,7 @@
   "id": "compute:beta",
   "name": "compute",
   "version": "beta",
-  "revision": "20220802",
+  "revision": "20220819",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -551,7 +551,7 @@
       "type": "object",
       "properties": {
         "locale": {
-          "description": "The locale used following the specification defined at http:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt. Examples are: \"en-US\", \"fr-CH\", \"es-MX\"",
+          "description": "The locale used following the specification defined at https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt. Examples are: \"en-US\", \"fr-CH\", \"es-MX\"",
           "type": "string"
         },
         "message": {
@@ -1035,7 +1035,7 @@
           }
         },
         "direction": {
-          "description": "Direction of traffic to which this firewall applies, either `INGRESS` or `EGRESS`. The default is `INGRESS`. For `INGRESS` traffic, you cannot specify the destinationRanges field, and for `EGRESS` traffic, you cannot specify the sourceRanges or sourceTags fields.",
+          "description": "Direction of traffic to which this firewall applies, either `INGRESS` or `EGRESS`. The default is `INGRESS`. For `EGRESS` traffic, you cannot specify the sourceTags fields.",
           "type": "string",
           "enumDescriptions": [
             "Indicates that firewall should apply to outgoing traffic.",
@@ -1595,7 +1595,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
@@ -4349,7 +4349,7 @@
           }
         },
         "interface": {
-          "description": "Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance.",
+          "description": "Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. For most machine types, the default is SCSI. Local SSDs can use either NVME or SCSI. In certain configurations, persistent disks can use NVMe. For more information, see About persistent disks.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -4386,6 +4386,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "forceAttach": {
+          "description": "[Input Only] Whether to force attach the regional disk even if it's currently attached to another instance. If you try to force attach a zonal disk to an instance, you will receive an error.",
+          "type": "boolean"
         },
         "locked": {
           "description": "[Output Only] Whether to indicate the attached disk is locked. The locked disk is not allowed to be detached from the instance, or to be used as the source of the snapshot creation, and the image creation. The instance with at least one locked attached disk is not allow to be used as source of machine image creation, instant snapshot creation, and not allowed to be deleted with --keep-disk parameter set to true for locked disks.",
@@ -13423,6 +13427,17 @@
         "autoRenew": {
           "description": "Specifies whether to enable automatic renewal for the commitment. The default value is false if not specified. The field can be updated until the day of the commitment expiration at 12:00am PST. If the field is set to true, the commitment will be automatically renewed for either one or three years according to the terms of the existing commitment.",
           "type": "boolean"
+        },
+        "mergeSourceCommitments": {
+          "description": "List of source commitments to be merged into a new commitment.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "splitSourceCommitment": {
+          "description": "Source commitment to be splitted into a new commitment.",
+          "type": "string"
         }
       }
     },
@@ -20625,6 +20640,9 @@
         "pscTargetService": {
           "description": "The target service url used to set up private service connection to a Google API or a PSC Producer Service Attachment. An example value is: \"asia-northeast3-cloudkms.googleapis.com\"",
           "type": "string"
+        },
+        "pscData": {
+          "$ref": "NetworkEndpointGroupPscData"
         }
       }
     },
@@ -20725,6 +20743,42 @@
         "urlMask": {
           "description": "A template to parse platform-specific fields from a request URL. URL mask allows for routing to multiple resources on the same serverless platform without having to create multiple Network Endpoint Groups and backend resources. The fields parsed by this template are platform-specific and are as follows: 1. API Gateway: The gateway ID 2. App Engine: The service and version 3. Cloud Functions: The function name 4. Cloud Run: The service and tag ",
           "type": "string"
+        }
+      }
+    },
+    "NetworkEndpointGroupPscData": {
+      "id": "NetworkEndpointGroupPscData",
+      "description": "All data that is specifically relevant to only network endpoint groups of type PRIVATE_SERVICE_CONNECT.",
+      "type": "object",
+      "properties": {
+        "consumerPscAddress": {
+          "description": "[Output Only] Address allocated from given subnetwork for PSC. This IP address acts as a VIP for a PSC NEG, allowing it to act as an endpoint in L7 PSC-XLB.",
+          "type": "string"
+        },
+        "pscConnectionId": {
+          "description": "[Output Only] The PSC connection id of the PSC Network Endpoint Group Consumer.",
+          "type": "string",
+          "format": "uint64"
+        },
+        "pscConnectionStatus": {
+          "description": "[Output Only] The connection status of the PSC Forwarding Rule.",
+          "type": "string",
+          "enumDescriptions": [
+            "The connection has been accepted by the producer.",
+            "The connection has been closed by the producer and will not serve traffic going forward.",
+            "The connection has been accepted by the producer, but the producer needs to take further action before the forwarding rule can serve traffic.",
+            "The connection is pending acceptance by the producer.",
+            "The connection has been rejected by the producer.",
+            ""
+          ],
+          "enum": [
+            "ACCEPTED",
+            "CLOSED",
+            "NEEDS_ATTENTION",
+            "PENDING",
+            "REJECTED",
+            "STATUS_UNSPECIFIED"
+          ]
         }
       }
     },
@@ -21476,7 +21530,7 @@
           "$ref": "NetworkRoutingConfig"
         },
         "mtu": {
-          "description": "Maximum Transmission Unit in bytes. The minimum value for this field is 1460 and the maximum value is 1500 bytes. If unspecified, defaults to 1460.",
+          "description": "Maximum Transmission Unit in bytes. The minimum value for this field is 1300 and the maximum value is 8896. The suggested value is 1500, which is the default MTU used on the Internet, or 8896 if you want to use Jumbo frames. If unspecified, the value defaults to 1460.",
           "type": "integer",
           "format": "int32"
         },
@@ -34372,7 +34426,7 @@
           "type": "string"
         },
         "defaultRouteAction": {
-          "description": "defaultRouteAction takes effect when none of the hostRules match. The load balancer performs advanced routing actions, such as URL rewrites and header transformations, before forwarding the request to the selected backend. If defaultRouteAction specifies any weightedBackendServices, defaultService must not be set. Conversely if defaultService is set, defaultRouteAction cannot contain any weightedBackendServices. Only one of defaultRouteAction or defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load balancers support only the urlRewrite action within defaultRouteAction. defaultRouteAction has no effect when the URL map is bound to a target gRPC proxy that has the validateForProxyless field set to true.",
+          "description": "defaultRouteAction takes effect when none of the hostRules match. The load balancer performs advanced routing actions, such as URL rewrites and header transformations, before forwarding the request to the selected backend. If defaultRouteAction specifies any weightedBackendServices, defaultService must not be set. Conversely if defaultService is set, defaultRouteAction cannot contain any weightedBackendServices. Only one of defaultRouteAction or defaultUrlRedirect must be set. URL maps for Classic external HTTP(S) load balancers only support the urlRewrite action within defaultRouteAction. defaultRouteAction has no effect when the URL map is bound to a target gRPC proxy that has the validateForProxyless field set to true.",
           "$ref": "HttpRouteAction"
         },
         "defaultUrlRedirect": {
@@ -34434,7 +34488,7 @@
           "type": "string"
         },
         "defaultRouteAction": {
-          "description": "defaultRouteAction takes effect when none of the pathRules or routeRules match. The load balancer performs advanced routing actions, such as URL rewrites and header transformations, before forwarding the request to the selected backend. If defaultRouteAction specifies any weightedBackendServices, defaultService must not be set. Conversely if defaultService is set, defaultRouteAction cannot contain any weightedBackendServices. Only one of defaultRouteAction or defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load balancers support only the urlRewrite action within a path matcher's defaultRouteAction.",
+          "description": "defaultRouteAction takes effect when none of the pathRules or routeRules match. The load balancer performs advanced routing actions, such as URL rewrites and header transformations, before forwarding the request to the selected backend. If defaultRouteAction specifies any weightedBackendServices, defaultService must not be set. Conversely if defaultService is set, defaultRouteAction cannot contain any weightedBackendServices. Only one of defaultRouteAction or defaultUrlRedirect must be set. URL maps for Classic external HTTP(S) load balancers only support the urlRewrite action within a path matcher's defaultRouteAction.",
           "$ref": "HttpRouteAction"
         },
         "defaultUrlRedirect": {
@@ -34783,7 +34837,7 @@
           "type": "string"
         },
         "routeAction": {
-          "description": "In response to a matching path, the load balancer performs advanced routing actions, such as URL rewrites and header transformations, before forwarding the request to the selected backend. If routeAction specifies any weightedBackendServices, service must not be set. Conversely if service is set, routeAction cannot contain any weightedBackendServices. Only one of routeAction or urlRedirect must be set. URL maps for external HTTP(S) load balancers support only the urlRewrite action within a path rule's routeAction.",
+          "description": "In response to a matching path, the load balancer performs advanced routing actions, such as URL rewrites and header transformations, before forwarding the request to the selected backend. If routeAction specifies any weightedBackendServices, service must not be set. Conversely if service is set, routeAction cannot contain any weightedBackendServices. Only one of routeAction or urlRedirect must be set. URL maps for Classic external HTTP(S) load balancers only support the urlRewrite action within a path rule's routeAction.",
           "$ref": "HttpRouteAction"
         },
         "urlRedirect": {
@@ -34825,7 +34879,7 @@
           "type": "string"
         },
         "routeAction": {
-          "description": "In response to a matching matchRule, the load balancer performs advanced routing actions, such as URL rewrites and header transformations, before forwarding the request to the selected backend. If routeAction specifies any weightedBackendServices, service must not be set. Conversely if service is set, routeAction cannot contain any weightedBackendServices. Only one of urlRedirect, service or routeAction.weightedBackendService must be set. UrlMaps for external HTTP(S) load balancers support only the urlRewrite action within a route rule's routeAction.",
+          "description": "In response to a matching matchRule, the load balancer performs advanced routing actions, such as URL rewrites and header transformations, before forwarding the request to the selected backend. If routeAction specifies any weightedBackendServices, service must not be set. Conversely if service is set, routeAction cannot contain any weightedBackendServices. Only one of urlRedirect, service or routeAction.weightedBackendService must be set. URL maps for Classic external HTTP(S) load balancers only support the urlRewrite action within a route rule's routeAction.",
           "$ref": "HttpRouteAction"
         },
         "urlRedirect": {

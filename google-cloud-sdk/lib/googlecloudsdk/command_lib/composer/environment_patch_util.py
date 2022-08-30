@@ -138,7 +138,10 @@ def ConstructPatch(is_composer_v1,
                    master_authorized_networks_enabled=None,
                    master_authorized_networks=None,
                    airflow_database_retention_days=None,
-                   release_track=base.ReleaseTrack.GA):
+                   release_track=base.ReleaseTrack.GA,
+                   triggerer_cpu=None,
+                   triggerer_memory_gb=None,
+                   triggerer_count=None):
   """Constructs an environment patch.
 
   Args:
@@ -216,6 +219,12 @@ def ConstructPatch(is_composer_v1,
       will be applied in case `0` or no integer is provided.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
       which Composer client library will be used.
+    triggerer_cpu: float or None, CPU allocated to Airflow triggerer. Can be
+        specified only in Airflow 2.2.x and greater.
+    triggerer_memory_gb: float or None, memory allocated to Airflow triggerer.
+        Can be specified only in Airflow 2.2.x and greater.
+    triggerer_count: int or None, number of triggerers in the Environment.
+        Can be specified only in Airflow 2.2.x and greater
 
   Returns:
     (str, Environment), the field mask and environment to use for update.
@@ -281,7 +290,8 @@ def ConstructPatch(is_composer_v1,
   if (scheduler_cpu or worker_cpu or web_server_cpu or scheduler_memory_gb or
       worker_memory_gb or web_server_memory_gb or scheduler_storage_gb or
       worker_storage_gb or web_server_storage_gb or min_workers or
-      max_workers or scheduler_count):
+      max_workers or scheduler_count or triggerer_cpu or triggerer_memory_gb or
+      triggerer_count is not None):
     if is_composer_v1:
       raise command_util.Error(
           'You cannot use Workloads Config flags introduced in Composer 2.X'
@@ -300,7 +310,10 @@ def ConstructPatch(is_composer_v1,
           worker_min_count=min_workers,
           worker_max_count=max_workers,
           scheduler_count=scheduler_count,
-          release_track=release_track)
+          release_track=release_track,
+          triggerer_cpu=triggerer_cpu,
+          triggerer_memory_gb=triggerer_memory_gb,
+          triggerer_count=triggerer_count)
   if maintenance_window_start and maintenance_window_end and maintenance_window_recurrence:
     return _ConstructMaintenanceWindowPatch(
         maintenance_window_start,
@@ -605,12 +618,12 @@ def _ConstructMasterAuthorizedNetworksTypePatch(enabled, networks,
       config=config)
 
 
-def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
-                               scheduler_memory_gb, worker_memory_gb,
-                               web_server_memory_gb, scheduler_storage_gb,
-                               worker_storage_gb, web_server_storage_gb,
-                               worker_min_count, worker_max_count,
-                               scheduler_count, release_track):
+def _ConstructAutoscalingPatch(
+    scheduler_cpu, worker_cpu, web_server_cpu, scheduler_memory_gb,
+    worker_memory_gb, web_server_memory_gb, scheduler_storage_gb,
+    worker_storage_gb, web_server_storage_gb, worker_min_count,
+    worker_max_count, scheduler_count, release_track, triggerer_cpu,
+    triggerer_memory_gb, triggerer_count):
   """Constructs an environment patch for Airflow web server machine type.
 
   Args:
@@ -640,34 +653,50 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
       be specified only in Composer 2.0.0.
     release_track: base.ReleaseTrack, the release track of command. It dictates
       which Composer client library is used.
-
+    triggerer_cpu: float or None, CPU allocated to Airflow triggerer. Can be
+        specified only in Airflow 2.2.x and greater.
+    triggerer_memory_gb: float or None, memory allocated to Airflow triggerer.
+        Can be specified only in Airflow 2.2.x and greater.
+    triggerer_count: int or None, number of triggerers in the Environment.
+      Can be specified only in Airflow 2.2.x and greater
   Returns:
     (str, Environment), the field mask and environment to use for update.
   """
   messages = api_util.GetMessagesModule(release_track=release_track)
+
+  workload_resources = dict(
+      scheduler=messages.SchedulerResource(
+          cpu=scheduler_cpu,
+          memoryGb=scheduler_memory_gb,
+          storageGb=scheduler_storage_gb,
+          count=scheduler_count),
+      webServer=messages.WebServerResource(
+          cpu=web_server_cpu,
+          memoryGb=web_server_memory_gb,
+          storageGb=web_server_storage_gb),
+      worker=messages.WorkerResource(
+          cpu=worker_cpu,
+          memoryGb=worker_memory_gb,
+          storageGb=worker_storage_gb,
+          minCount=worker_min_count,
+          maxCount=worker_max_count))
+  if release_track != base.ReleaseTrack.GA and (triggerer_count is not None or
+                                                triggerer_cpu or
+                                                triggerer_memory_gb):
+    workload_resources['triggerer'] = messages.TriggererResource(
+        cpu=triggerer_cpu,
+        memoryGb=triggerer_memory_gb,
+        count=triggerer_count)
+
   config = messages.EnvironmentConfig(
-      workloadsConfig=messages.WorkloadsConfig(
-          scheduler=messages.SchedulerResource(
-              cpu=scheduler_cpu,
-              memoryGb=scheduler_memory_gb,
-              storageGb=scheduler_storage_gb,
-              count=scheduler_count),
-          webServer=messages.WebServerResource(
-              cpu=web_server_cpu,
-              memoryGb=web_server_memory_gb,
-              storageGb=web_server_storage_gb),
-          worker=messages.WorkerResource(
-              cpu=worker_cpu,
-              memoryGb=worker_memory_gb,
-              storageGb=worker_storage_gb,
-              minCount=worker_min_count,
-              maxCount=worker_max_count)))
+      workloadsConfig=messages.WorkloadsConfig(**workload_resources))
   if all([
       scheduler_cpu, worker_cpu, web_server_cpu, scheduler_memory_gb,
       worker_memory_gb, web_server_memory_gb, scheduler_storage_gb,
       worker_storage_gb, web_server_storage_gb, worker_min_count,
       worker_max_count
-  ]):
+  ]) and (release_track == base.ReleaseTrack.GA or all(
+      [triggerer_count, triggerer_cpu, triggerer_memory_gb])):
     return 'config.workloads_config', messages.Environment(config=config)
   else:
     mask = []
@@ -695,6 +724,8 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
       mask.append('config.workloads_config.worker.max_count')
     if scheduler_count:
       mask.append('config.workloads_config.scheduler.count')
+    if triggerer_cpu or triggerer_memory_gb:
+      mask.append('config.workloads_config.triggerer')
     return ','.join(mask), messages.Environment(config=config)
 
 

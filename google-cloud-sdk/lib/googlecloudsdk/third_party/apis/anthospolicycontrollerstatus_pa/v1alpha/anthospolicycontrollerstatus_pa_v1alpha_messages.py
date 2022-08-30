@@ -203,6 +203,43 @@ class AnthospolicycontrollerstatusPaProjectsMembershipsListRequest(_messages.Mes
   parent = _messages.StringField(3, required=True)
 
 
+class ConstraintInfo(_messages.Message):
+  r"""A ConstraintInfo object.
+
+  Messages:
+    InfoValue: A InfoValue object.
+
+  Fields:
+    info: A InfoValue attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InfoValue(_messages.Message):
+    r"""A InfoValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a InfoValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type InfoValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InfoValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  info = _messages.MessageField('InfoValue', 1)
+
+
 class ConstraintRef(_messages.Message):
   r"""Constraint represents a single constraint. Base identifying resource.
 
@@ -411,14 +448,16 @@ class Membership(_messages.Message):
   resources on a member cluster.
 
   Fields:
+    featureStatus: The status of the policy controller feature.
     ref: The membership this data refers to.
     runtimeStatus: The status of the policy controller runtime configuration.
       If runtime_status is empty, then the server could not find any existing
       constraint or templates to report status.
   """
 
-  ref = _messages.MessageField('MembershipRef', 1)
-  runtimeStatus = _messages.MessageField('MembershipRuntimeStatus', 2)
+  featureStatus = _messages.MessageField('MembershipFeatureStatus', 1)
+  ref = _messages.MessageField('MembershipRef', 2)
+  runtimeStatus = _messages.MessageField('MembershipRuntimeStatus', 3)
 
 
 class MembershipConstraint(_messages.Message):
@@ -445,43 +484,20 @@ class MembershipConstraintAuditViolation(_messages.Message):
   r"""MembershipConstraintAuditViolation encodes info relevant to a violation
   of a single constraint on a single member cluster.
 
-  Enums:
-    EnforcementActionValueValuesEnum: The enforcement_action of the violation.
-
   Fields:
     auditTimestamp: The audit timestamp when this violation was observed on
       the membership.
     constraintRef: The constraint ref of the violated constraint.
-    enforcementAction: The enforcement_action of the violation.
     errorMessage: An error message detailing the violation.
     membershipRef: The membership this violation occurs on.
     resourceRef: The resource ref of the violating K8S object.
   """
 
-  class EnforcementActionValueValuesEnum(_messages.Enum):
-    r"""The enforcement_action of the violation.
-
-    Values:
-      ENFORCEMENT_ACTION_UNSPECIFIED: Unspecified state for an enforcement
-        action.
-      ENFORCEMENT_ACTION_DENY: The resource is denied admission to the
-        membership.
-      ENFORCEMENT_ACTION_DRYRUN: Allows testing constraints without enforcing
-        them.
-      ENFORCEMENT_ACTION_WARN: Provides immediate feedback on why a resource
-        violates a constraint.
-    """
-    ENFORCEMENT_ACTION_UNSPECIFIED = 0
-    ENFORCEMENT_ACTION_DENY = 1
-    ENFORCEMENT_ACTION_DRYRUN = 2
-    ENFORCEMENT_ACTION_WARN = 3
-
   auditTimestamp = _messages.StringField(1)
   constraintRef = _messages.MessageField('ConstraintRef', 2)
-  enforcementAction = _messages.EnumField('EnforcementActionValueValuesEnum', 3)
-  errorMessage = _messages.StringField(4)
-  membershipRef = _messages.MessageField('MembershipRef', 5)
-  resourceRef = _messages.MessageField('ResourceRef', 6)
+  errorMessage = _messages.StringField(3)
+  membershipRef = _messages.MessageField('MembershipRef', 4)
+  resourceRef = _messages.MessageField('ResourceRef', 5)
 
 
 class MembershipConstraintMetadata(_messages.Message):
@@ -489,12 +505,15 @@ class MembershipConstraintMetadata(_messages.Message):
   metadata.
 
   Fields:
+    constraintInfo: constraint bundle information from the metadata.annotation
+      field.
     creation: metadata.creation_timestamp from the constraint.
     generation: metadata.generation from the constraint.
   """
 
-  creation = _messages.StringField(1)
-  generation = _messages.IntegerField(2)
+  constraintInfo = _messages.MessageField('ConstraintInfo', 1)
+  creation = _messages.StringField(2)
+  generation = _messages.IntegerField(3)
 
 
 class MembershipConstraintSpec(_messages.Message):
@@ -673,6 +692,76 @@ class MembershipConstraintTemplateStatus(_messages.Message):
   """
 
   created = _messages.BooleanField(1)
+
+
+class MembershipFeatureStatus(_messages.Message):
+  r"""MembershipFeatureStatus contains aggregate data about the policy
+  controller feature on a cluster that is a member of a fleet.
+
+  Enums:
+    LifecycleStatusValueValuesEnum: The lifecycle status of the policy
+      controller feature on the membership.
+
+  Fields:
+    lifecycleStatus: The lifecycle status of the policy controller feature on
+      the membership.
+  """
+
+  class LifecycleStatusValueValuesEnum(_messages.Enum):
+    r"""The lifecycle status of the policy controller feature on the
+    membership.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: The lifecycle state is unspecified.
+      NOT_INSTALLED: Policy Controller (PC) does not exist on the given
+        cluster, and no k8s resources of any type that are associated with the
+        PC should exist there. The cluster does not possess a membership with
+        the Hub Feature controller.
+      INSTALLING: The Hub Feature controller possesses a Membership, however
+        Policy Controller is not fully installed on the cluster. In this state
+        the hub can be expected to be taking actions to install the PC on the
+        cluster.
+      ACTIVE: Policy Controller (PC) is fully installed on the cluster and in
+        an operational mode. In this state the Hub Feature controller will be
+        reconciling state with the PC, and the PC will be performing it's
+        operational tasks per that software. Entering a READY state requires
+        that the hub has confirmed the PC is installed and its pods are
+        operational with the version of the PC the Hub Feature controller
+        expects.
+      UPDATING: Policy Controller (PC) is fully installed, but in the process
+        of changing the configuration (including changing the version of PC
+        either up and down, or modifying the manifests of PC) of the resources
+        running on the cluster. The Hub Feature controller has a Membership,
+        is aware of the version the cluster should be running in, but has not
+        confirmed for itself that the PC is running with that version.
+      DECOMISSIONING: Policy Controller (PC) may have resources on the
+        cluster, but the Hub Feature controller wishes to remove the
+        Membership. The Membership still exists.
+      CLUSTER_ERROR: Policy Controller (PC) is not operational, and the Hub
+        Feature controller is unable to act to make it operational. Entering a
+        CLUSTER_ERROR state happens automatically when the PCH determines that
+        a PC installed on the cluster is non-operative or that the cluster
+        does not meet requirements set for the Hub Feature controller to
+        administer the cluster but has nevertheless been given an instruction
+        to do so (such as 'install').
+      HUB_ERROR: In this state, the PC may still be operational, and only the
+        Hub Feature controller is unable to act. The hub should not issue
+        instructions to change the PC state, or otherwise interfere with the
+        on-cluster resources. Entering a HUB_ERROR state happens automatically
+        when the Hub Feature controller determines the hub is in an unhealthy
+        state and it wishes to 'take hands off' to avoid corrupting the PC or
+        other data.
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLING = 2
+    ACTIVE = 3
+    UPDATING = 4
+    DECOMISSIONING = 5
+    CLUSTER_ERROR = 6
+    HUB_ERROR = 7
+
+  lifecycleStatus = _messages.EnumField('LifecycleStatusValueValuesEnum', 1)
 
 
 class MembershipRef(_messages.Message):

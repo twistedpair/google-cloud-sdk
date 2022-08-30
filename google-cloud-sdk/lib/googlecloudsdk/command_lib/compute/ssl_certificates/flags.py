@@ -73,36 +73,36 @@ class SslCertificatesCompleterBeta(completers.MultiResourceCompleter):
 
 def SslCertificateArgument(required=True,
                            plural=False,
-                           include_l7_internal_load_balancing=False,
+                           include_regional_ssl_certificates=True,
                            global_help_text=None):
   return compute_flags.ResourceArgument(
       resource_name='SSL certificate',
       completer=SslCertificatesCompleterBeta
-      if include_l7_internal_load_balancing else SslCertificatesCompleter,
+      if include_regional_ssl_certificates else SslCertificatesCompleter,
       plural=plural,
       required=required,
       global_collection='compute.sslCertificates',
       global_help_text=global_help_text,
       regional_collection='compute.regionSslCertificates'
-      if include_l7_internal_load_balancing else None,
+      if include_regional_ssl_certificates else None,
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
-      if include_l7_internal_load_balancing else None)
+      if include_regional_ssl_certificates else None)
 
 
 def SslCertificatesArgumentForOtherResource(
-    resource, required=True, include_l7_internal_load_balancing=False):
+    resource, required=True, include_regional_ssl_certificates=True):
   return compute_flags.ResourceArgument(
       name='--ssl-certificates',
       resource_name='ssl certificate',
       completer=SslCertificatesCompleterBeta
-      if include_l7_internal_load_balancing else SslCertificatesCompleter,
+      if include_regional_ssl_certificates else SslCertificatesCompleter,
       plural=True,
       required=required,
       global_collection='compute.sslCertificates',
       regional_collection='compute.regionSslCertificates'
-      if include_l7_internal_load_balancing else None,
+      if include_regional_ssl_certificates else None,
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
-      if include_l7_internal_load_balancing else None,
+      if include_regional_ssl_certificates else None,
       short_help=('A reference to SSL certificate resources that are used for '
                   'server-side authentication.'),
       detailed_help="""\

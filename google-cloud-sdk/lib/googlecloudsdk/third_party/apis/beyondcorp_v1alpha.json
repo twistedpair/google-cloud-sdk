@@ -1912,7 +1912,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
@@ -2021,6 +2021,58 @@
             "type": "string"
           }
         }
+      }
+    },
+    "Tunnelv1ProtoTunnelerInfo": {
+      "id": "Tunnelv1ProtoTunnelerInfo",
+      "description": "TunnelerInfo contains metadata about tunneler launched by connection manager.",
+      "type": "object",
+      "properties": {
+        "totalRetryCount": {
+          "description": "total_retry_count stores the total number of times the tunneler has been retried by tunManager.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "backoffRetryCount": {
+          "description": "backoff_retry_count stores the number of times the tunneler has been retried by tunManager for current backoff sequence. Gets reset to 0 if time difference between 2 consecutive retries exceeds backoffRetryResetTime.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "latestErr": {
+          "description": "latest_err stores the Error for the latest tunneler failure. Gets reset everytime the tunneler is retried by tunManager.",
+          "$ref": "Tunnelv1ProtoTunnelerError"
+        },
+        "latestRetryTime": {
+          "description": "latest_retry_time stores the time when the tunneler was last restarted.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "id": {
+          "description": "id is the unique id of a tunneler.",
+          "type": "string"
+        }
+      }
+    },
+    "Tunnelv1ProtoTunnelerError": {
+      "id": "Tunnelv1ProtoTunnelerError",
+      "description": "TunnelerError is an error proto for errors returned by the connection manager.",
+      "type": "object",
+      "properties": {
+        "retryable": {
+          "description": "retryable isn't used for now, but we may want to reuse it in the future.",
+          "type": "boolean"
+        },
+        "err": {
+          "description": "Original raw error",
+          "type": "string"
+        }
+      }
+    },
+    "CloudSecurityZerotrustApplinkLogagentProtoLogAgentDetails": {
+      "id": "CloudSecurityZerotrustApplinkLogagentProtoLogAgentDetails",
+      "description": "LogAgentDetails reflects the details of a log agent.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnectionOperationMetadata": {
@@ -2199,6 +2251,151 @@
         }
       }
     },
+    "GoogleCloudBeyondcorpAppconnectorsV1alphaRemoteAgentDetails": {
+      "id": "GoogleCloudBeyondcorpAppconnectorsV1alphaRemoteAgentDetails",
+      "description": "RemoteAgentDetails reflects the details of a remote agent.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudBeyondcorpAppconnectorsV1RemoteAgentDetails": {
+      "id": "GoogleCloudBeyondcorpAppconnectorsV1RemoteAgentDetails",
+      "description": "RemoteAgentDetails reflects the details of a remote agent.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudBeyondcorpAppconnectorsV1alphaContainerHealthDetails": {
+      "id": "GoogleCloudBeyondcorpAppconnectorsV1alphaContainerHealthDetails",
+      "description": "ContainerHealthDetails reflects the health details of a container.",
+      "type": "object",
+      "properties": {
+        "expectedConfigVersion": {
+          "description": "The version of the expected config.",
+          "type": "string"
+        },
+        "currentConfigVersion": {
+          "description": "The version of the current config.",
+          "type": "string"
+        },
+        "extendedStatus": {
+          "description": "The extended status. Such as ExitCode, StartedAt, FinishedAt, etc.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "errorMsg": {
+          "description": "The latest error message.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudBeyondcorpAppconnectorsV1ContainerHealthDetails": {
+      "id": "GoogleCloudBeyondcorpAppconnectorsV1ContainerHealthDetails",
+      "description": "ContainerHealthDetails reflects the health details of a container.",
+      "type": "object",
+      "properties": {
+        "expectedConfigVersion": {
+          "description": "The version of the expected config.",
+          "type": "string"
+        },
+        "currentConfigVersion": {
+          "description": "The version of the current config.",
+          "type": "string"
+        },
+        "extendedStatus": {
+          "description": "The extended status. Such as ExitCode, StartedAt, FinishedAt, etc.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "errorMsg": {
+          "description": "The latest error message.",
+          "type": "string"
+        }
+      }
+    },
+    "CloudSecurityZerotrustApplinkAppConnectorProtoConnectorDetails": {
+      "id": "CloudSecurityZerotrustApplinkAppConnectorProtoConnectorDetails",
+      "description": "ConnectorDetails reflects the details of a connector.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CloudSecurityZerotrustApplinkAppConnectorProtoConnectionConfig": {
+      "id": "CloudSecurityZerotrustApplinkAppConnectorProtoConnectionConfig",
+      "description": "ConnectionConfig represents a Connection Configuration object.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "name is the unique ID for each connection. TODO(b\/190732451) returns connection name from user-specified name in config. Now, name = ${application_name}:${application_endpoint}",
+          "type": "string"
+        },
+        "project": {
+          "description": "project represents the consumer project the connection belongs to.",
+          "type": "string"
+        },
+        "applicationName": {
+          "description": "application_name represents the given name of the application the connection is connecting with.",
+          "type": "string"
+        },
+        "applicationEndpoint": {
+          "description": "application_endpoint is the endpoint of the application the form of host:port. For example, \"localhost:80\".",
+          "type": "string"
+        },
+        "gateway": {
+          "description": "gateway lists all instances running a gateway in GCP. They all connect to a connector on the host.",
+          "type": "array",
+          "items": {
+            "$ref": "CloudSecurityZerotrustApplinkAppConnectorProtoGateway"
+          }
+        },
+        "tunnelsPerGateway": {
+          "description": "tunnels_per_gateway reflects the number of tunnels between a connector and a gateway.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "userPort": {
+          "description": "user_port specifies the reserved port on gateways for user connections.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "CloudSecurityZerotrustApplinkAppConnectorProtoGateway": {
+      "id": "CloudSecurityZerotrustApplinkAppConnectorProtoGateway",
+      "description": "Gateway represents a GCE VM Instance endpoint for use by IAP TCP.",
+      "type": "object",
+      "properties": {
+        "selfLink": {
+          "description": "self_link is the gateway URL in the form https:\/\/www.googleapis.com\/compute\/${version}\/projects\/${project}\/zones\/${zone}\/instances\/${instance}",
+          "type": "string"
+        },
+        "project": {
+          "description": "project is the tenant project the gateway belongs to. Different from the project in the connection, it is a BeyondCorpAPI internally created project to manage all the gateways. It is sharing the same network with the consumer project user owned. It is derived from the gateway URL. For example, project=${project} assuming a gateway URL. https:\/\/www.googleapis.com\/compute\/${version}\/projects\/${project}\/zones\/${zone}\/instances\/${instance}",
+          "type": "string"
+        },
+        "zone": {
+          "description": "zone represents the zone the instance belongs. It is derived from the gateway URL. For example, zone=${zone} assuming a gateway URL. https:\/\/www.googleapis.com\/compute\/${version}\/projects\/${project}\/zones\/${zone}\/instances\/${instance}",
+          "type": "string"
+        },
+        "name": {
+          "description": "name is the name of an instance running a gateway. It is the unique ID for a gateway. All gateways under the same connection have the same prefix. It is derived from the gateway URL. For example, name=${instance} assuming a gateway URL. https:\/\/www.googleapis.com\/compute\/${version}\/projects\/${project}\/zones\/${zone}\/instances\/${instance}",
+          "type": "string"
+        },
+        "interface": {
+          "description": "interface specifies the network interface of the gateway to connect to.",
+          "type": "string"
+        },
+        "port": {
+          "description": "port specifies the port of the gateway for tunnel connections from the connectors.",
+          "type": "integer",
+          "format": "uint32"
+        }
+      }
+    },
     "AppGatewayOperationMetadata": {
       "id": "AppGatewayOperationMetadata",
       "description": "Represents the metadata of the long-running operation.",
@@ -2323,94 +2520,6 @@
           "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have been cancelled successfully have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
           "readOnly": true,
           "type": "boolean"
-        }
-      }
-    },
-    "ConnectorOperationMetadata": {
-      "id": "ConnectorOperationMetadata",
-      "description": "Represents the metadata of the long-running operation.",
-      "type": "object",
-      "properties": {
-        "createTime": {
-          "description": "Output only. The time the operation was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Output only. The time the operation finished running.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "target": {
-          "description": "Output only. Server-defined resource path for the target of the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "verb": {
-          "description": "Output only. Name of the verb executed by the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "statusMessage": {
-          "description": "Output only. Human-readable status of the operation, if any.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "requestedCancellation": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
-          "readOnly": true,
-          "type": "boolean"
-        },
-        "apiVersion": {
-          "description": "Output only. API version used to start the operation.",
-          "readOnly": true,
-          "type": "string"
-        }
-      }
-    },
-    "ConnectionOperationMetadata": {
-      "id": "ConnectionOperationMetadata",
-      "description": "Represents the metadata of the long-running operation.",
-      "type": "object",
-      "properties": {
-        "createTime": {
-          "description": "Output only. The time the operation was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Output only. The time the operation finished running.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "target": {
-          "description": "Output only. Server-defined resource path for the target of the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "verb": {
-          "description": "Output only. Name of the verb executed by the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "statusMessage": {
-          "description": "Output only. Human-readable status of the operation, if any.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "requestedCancellation": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
-          "readOnly": true,
-          "type": "boolean"
-        },
-        "apiVersion": {
-          "description": "Output only. API version used to start the operation.",
-          "readOnly": true,
-          "type": "string"
         }
       }
     },
@@ -2590,18 +2699,92 @@
         }
       }
     },
-    "GoogleCloudBeyondcorpAppconnectorsV1alphaRemoteAgentDetails": {
-      "id": "GoogleCloudBeyondcorpAppconnectorsV1alphaRemoteAgentDetails",
-      "description": "RemoteAgentDetails reflects the details of a remote agent.",
+    "ConnectionOperationMetadata": {
+      "id": "ConnectionOperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
       "type": "object",
       "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        }
       }
     },
-    "GoogleCloudBeyondcorpAppconnectorsV1RemoteAgentDetails": {
-      "id": "GoogleCloudBeyondcorpAppconnectorsV1RemoteAgentDetails",
-      "description": "RemoteAgentDetails reflects the details of a remote agent.",
+    "ConnectorOperationMetadata": {
+      "id": "ConnectorOperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
       "type": "object",
       "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        }
       }
     },
     "RemoteAgentDetails": {
@@ -2609,58 +2792,6 @@
       "description": "RemoteAgentDetails reflects the details of a remote agent.",
       "type": "object",
       "properties": {
-      }
-    },
-    "GoogleCloudBeyondcorpAppconnectorsV1alphaContainerHealthDetails": {
-      "id": "GoogleCloudBeyondcorpAppconnectorsV1alphaContainerHealthDetails",
-      "description": "ContainerHealthDetails reflects the health details of a container.",
-      "type": "object",
-      "properties": {
-        "expectedConfigVersion": {
-          "description": "The version of the expected config.",
-          "type": "string"
-        },
-        "currentConfigVersion": {
-          "description": "The version of the current config.",
-          "type": "string"
-        },
-        "extendedStatus": {
-          "description": "The extended status. Such as ExitCode, StartedAt, FinishedAt, etc.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "errorMsg": {
-          "description": "The latest error message.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudBeyondcorpAppconnectorsV1ContainerHealthDetails": {
-      "id": "GoogleCloudBeyondcorpAppconnectorsV1ContainerHealthDetails",
-      "description": "ContainerHealthDetails reflects the health details of a container.",
-      "type": "object",
-      "properties": {
-        "expectedConfigVersion": {
-          "description": "The version of the expected config.",
-          "type": "string"
-        },
-        "currentConfigVersion": {
-          "description": "The version of the current config.",
-          "type": "string"
-        },
-        "extendedStatus": {
-          "description": "The extended status. Such as ExitCode, StartedAt, FinishedAt, etc.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "errorMsg": {
-          "description": "The latest error message.",
-          "type": "string"
-        }
       }
     },
     "ContainerHealthDetails": {
@@ -2687,137 +2818,6 @@
           "description": "The latest error message.",
           "type": "string"
         }
-      }
-    },
-    "CloudSecurityZerotrustApplinkAppConnectorProtoConnectorDetails": {
-      "id": "CloudSecurityZerotrustApplinkAppConnectorProtoConnectorDetails",
-      "description": "ConnectorDetails reflects the details of a connector.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "CloudSecurityZerotrustApplinkAppConnectorProtoConnectionConfig": {
-      "id": "CloudSecurityZerotrustApplinkAppConnectorProtoConnectionConfig",
-      "description": "ConnectionConfig represents a Connection Configuration object.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "name is the unique ID for each connection. TODO(b\/190732451) returns connection name from user-specified name in config. Now, name = ${application_name}:${application_endpoint}",
-          "type": "string"
-        },
-        "project": {
-          "description": "project represents the consumer project the connection belongs to.",
-          "type": "string"
-        },
-        "applicationName": {
-          "description": "application_name represents the given name of the application the connection is connecting with.",
-          "type": "string"
-        },
-        "applicationEndpoint": {
-          "description": "application_endpoint is the endpoint of the application the form of host:port. For example, \"localhost:80\".",
-          "type": "string"
-        },
-        "gateway": {
-          "description": "gateway lists all instances running a gateway in GCP. They all connect to a connector on the host.",
-          "type": "array",
-          "items": {
-            "$ref": "CloudSecurityZerotrustApplinkAppConnectorProtoGateway"
-          }
-        },
-        "tunnelsPerGateway": {
-          "description": "tunnels_per_gateway reflects the number of tunnels between a connector and a gateway.",
-          "type": "integer",
-          "format": "uint32"
-        },
-        "userPort": {
-          "description": "user_port specifies the reserved port on gateways for user connections.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "CloudSecurityZerotrustApplinkAppConnectorProtoGateway": {
-      "id": "CloudSecurityZerotrustApplinkAppConnectorProtoGateway",
-      "description": "Gateway represents a GCE VM Instance endpoint for use by IAP TCP.",
-      "type": "object",
-      "properties": {
-        "selfLink": {
-          "description": "self_link is the gateway URL in the form https:\/\/www.googleapis.com\/compute\/${version}\/projects\/${project}\/zones\/${zone}\/instances\/${instance}",
-          "type": "string"
-        },
-        "project": {
-          "description": "project is the tenant project the gateway belongs to. Different from the project in the connection, it is a BeyondCorpAPI internally created project to manage all the gateways. It is sharing the same network with the consumer project user owned. It is derived from the gateway URL. For example, project=${project} assuming a gateway URL. https:\/\/www.googleapis.com\/compute\/${version}\/projects\/${project}\/zones\/${zone}\/instances\/${instance}",
-          "type": "string"
-        },
-        "zone": {
-          "description": "zone represents the zone the instance belongs. It is derived from the gateway URL. For example, zone=${zone} assuming a gateway URL. https:\/\/www.googleapis.com\/compute\/${version}\/projects\/${project}\/zones\/${zone}\/instances\/${instance}",
-          "type": "string"
-        },
-        "name": {
-          "description": "name is the name of an instance running a gateway. It is the unique ID for a gateway. All gateways under the same connection have the same prefix. It is derived from the gateway URL. For example, name=${instance} assuming a gateway URL. https:\/\/www.googleapis.com\/compute\/${version}\/projects\/${project}\/zones\/${zone}\/instances\/${instance}",
-          "type": "string"
-        },
-        "interface": {
-          "description": "interface specifies the network interface of the gateway to connect to.",
-          "type": "string"
-        },
-        "port": {
-          "description": "port specifies the port of the gateway for tunnel connections from the connectors.",
-          "type": "integer",
-          "format": "uint32"
-        }
-      }
-    },
-    "Tunnelv1ProtoTunnelerInfo": {
-      "id": "Tunnelv1ProtoTunnelerInfo",
-      "description": "TunnelerInfo contains metadata about tunneler launched by connection manager.",
-      "type": "object",
-      "properties": {
-        "totalRetryCount": {
-          "description": "total_retry_count stores the total number of times the tunneler has been retried by tunManager.",
-          "type": "integer",
-          "format": "uint32"
-        },
-        "backoffRetryCount": {
-          "description": "backoff_retry_count stores the number of times the tunneler has been retried by tunManager for current backoff sequence. Gets reset to 0 if time difference between 2 consecutive retries exceeds backoffRetryResetTime.",
-          "type": "integer",
-          "format": "uint32"
-        },
-        "latestErr": {
-          "description": "latest_err stores the Error for the latest tunneler failure. Gets reset everytime the tunneler is retried by tunManager.",
-          "$ref": "Tunnelv1ProtoTunnelerError"
-        },
-        "latestRetryTime": {
-          "description": "latest_retry_time stores the time when the tunneler was last restarted.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "id": {
-          "description": "id is the unique id of a tunneler.",
-          "type": "string"
-        }
-      }
-    },
-    "Tunnelv1ProtoTunnelerError": {
-      "id": "Tunnelv1ProtoTunnelerError",
-      "description": "TunnelerError is an error proto for errors returned by the connection manager.",
-      "type": "object",
-      "properties": {
-        "retryable": {
-          "description": "retryable isn't used for now, but we may want to reuse it in the future.",
-          "type": "boolean"
-        },
-        "err": {
-          "description": "Original raw error",
-          "type": "string"
-        }
-      }
-    },
-    "CloudSecurityZerotrustApplinkLogagentProtoLogAgentDetails": {
-      "id": "CloudSecurityZerotrustApplinkLogagentProtoLogAgentDetails",
-      "description": "LogAgentDetails reflects the details of a log agent.",
-      "type": "object",
-      "properties": {
       }
     }
   },

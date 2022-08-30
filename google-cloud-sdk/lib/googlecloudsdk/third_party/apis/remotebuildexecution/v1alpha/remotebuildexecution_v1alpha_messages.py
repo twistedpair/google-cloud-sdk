@@ -1081,6 +1081,8 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         because of file not found.
       DOCKER_CREATE_INVALID_LAYERCHAIN_JSON: Docker failed to run because the
         layerchain json was invalid (see b/234782336).
+      INCOMPATIBLE_CUDA_VERSION: Docker failed to create OCI runtime because
+        of incompatible cuda version.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -1130,6 +1132,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     DOCKER_CREATE_RUNTIME_CANNOT_MOUNT_TO_PROC = 45
     DOCKER_START_RUNTIME_FILE_NOT_FOUND = 46
     DOCKER_CREATE_INVALID_LAYERCHAIN_JSON = 47
+    INCOMPATIBLE_CUDA_VERSION = 48
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

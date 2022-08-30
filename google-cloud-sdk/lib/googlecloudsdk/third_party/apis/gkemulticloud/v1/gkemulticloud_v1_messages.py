@@ -799,7 +799,10 @@ class GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestReques
       unique within the parent resource. The provided ID will be part of the
       AttachedCluster resource name formatted as
       `projects//locations//attachedClusters/`. Valid characters are `/a-z-/`.
-      Cannot be longer than 63 characters.
+      Cannot be longer than 63 characters. When generating an install manifest
+      for importing an existing Membership resource, the attached_cluster_id
+      field must be the Membership id. Membership names are formatted as
+      `resource name formatted as `projects//locations//memberships/`.
     parent: Required. The parent location where this AttachedCluster resource
       will be created. Location names are formatted as `projects//locations/`.
       See [Resource
@@ -1683,7 +1686,10 @@ class GoogleCloudGkemulticloudV1AwsProxyConfig(_messages.Message):
 
   Fields:
     secretArn: The ARN of the AWS Secret Manager secret that contains the
-      HTTP(S) proxy configuration.
+      HTTP(S) proxy configuration. The secret must be a JSON encoded proxy
+      configuration as described in
+      https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/how-
+      to/use-a-proxy#create_a_proxy_configuration_file
     secretVersion: The version string of the AWS Secret Manager secret that
       contains the HTTP(S) proxy configuration.
   """
@@ -2522,8 +2528,11 @@ class GoogleCloudGkemulticloudV1AzureProxyConfig(_messages.Message):
     resourceGroupId: The ARM ID the of the resource group containing proxy
       keyvault. Resource group ids are formatted as
       `/subscriptions//resourceGroups/`.
-    secretId: The URL the of the proxy setting secret with its version. Secret
-      ids are formatted as `https://.vault.azure.net/secrets//`.
+    secretId: The URL the of the proxy setting secret with its version. The
+      secret must be a JSON encoded proxy configuration as described in
+      https://cloud.google.com/anthos/clusters/docs/multi-cloud/azure/how-
+      to/use-a-proxy#create_a_proxy_configuration_file Secret ids are
+      formatted as `https://.vault.azure.net/secrets//`.
   """
 
   resourceGroupId = _messages.StringField(1)

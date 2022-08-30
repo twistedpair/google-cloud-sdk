@@ -284,52 +284,44 @@ def CheckServiceAccountPermission(unused_repo_ref, repo_args, request):
   Returns:
     Create repository request.
   """
-  if repo_args.kms_key:
-    # TODO(b/212736659): We try to check if the service account has permission
-    # to the kms key but if the user does not have permission to check IAM,
-    # we ignore it and continue with the repo creation. The eventual error,
-    # if any, should be descriptive enough.
-    try:
-      project_num = project_util.GetProjectNumber(GetProject(repo_args))
-      policy = ar_requests.GetCryptoKeyPolicy(repo_args.kms_key)
-    except apitools_exceptions.HttpForbiddenError:
-      return request
+  if not repo_args.kms_key:
+    return request
+  # Best effort to check if AR's service account has permission to use the key;
+  # ignore if the caller identity does not have enough permission to check.
+  try:
+    project_num = project_util.GetProjectNumber(GetProject(repo_args))
+    policy = ar_requests.GetCryptoKeyPolicy(repo_args.kms_key)
     service_account = _AR_SERVICE_ACCOUNT.format(project_num=project_num)
-    has_permission = False
     for binding in policy.bindings:
       if "serviceAccount:" + service_account in binding.members and (
           binding.role == "roles/cloudkms.cryptoKeyEncrypterDecrypter" or
           binding.role == "roles/owner"):
-        has_permission = True
-        break
-    if not has_permission:
-      console_io.PromptContinue(
-          prompt_string=(
-              "\nGrant the Artifact Registry Service Account "
-              "permission to encrypt/decrypt with the selected key [{key_name}]"
-              .format(key_name=repo_args.kms_key)),
-          cancel_on_no=True,
-          cancel_string=(
-              "The Artifact Registry Service Account needs permissions to "
-              "encrypt/decrypt on the selected key.\n"
-              "Learn more: https://cloud.google.com/artifact-registry/docs/cmek"
-          ))
-      try:
-        ar_requests.AddCryptoKeyPermission(repo_args.kms_key,
-                                           "serviceAccount:" + service_account)
+        return request
+    grant_permission = console_io.PromptContinue(
+        prompt_string=(
+            "\nGrant the Artifact Registry Service Account "
+            "permission to encrypt/decrypt with the selected key [{key_name}]"
+            .format(key_name=repo_args.kms_key)))
+    if not grant_permission:
+      return request
+    try:
+      ar_requests.AddCryptoKeyPermission(repo_args.kms_key,
+                                         "serviceAccount:" + service_account)
       # We have checked the existence of the key when checking IAM bindings
       # So all 400s should be because the service account is problematic.
       # We are moving the permission check to the backend fairly soon anyway.
-      except apitools_exceptions.HttpBadRequestError:
-        msg = (
-            "The Artifact Registry service account might not exist, manually "
-            "create the service account.\nLearn more: "
-            "https://cloud.google.com/artifact-registry/docs/cmek")
-        raise ar_exceptions.ArtifactRegistryError(msg)
+    except apitools_exceptions.HttpBadRequestError:
+      msg = (
+          "The Artifact Registry service account might not exist, manually "
+          "create the service account.\nLearn more: "
+          "https://cloud.google.com/artifact-registry/docs/cmek")
+      raise ar_exceptions.ArtifactRegistryError(msg)
 
-      log.status.Print(
-          "Added Cloud KMS CryptoKey Encrypter/Decrypter Role to [{key_name}]"
-          .format(key_name=repo_args.kms_key))
+    log.status.Print(
+        "Added Cloud KMS CryptoKey Encrypter/Decrypter Role to [{key_name}]"
+        .format(key_name=repo_args.kms_key))
+  except apitools_exceptions.HttpForbiddenError:
+    return request
   return request
 
 

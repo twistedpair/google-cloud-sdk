@@ -2578,14 +2578,12 @@
           "enumDescriptions": [
             "Default value.",
             "Gateway API support is disabled",
-            "This value is unused",
             "Gateway API support is enabled, experimental CRDs are installed",
             "Gateway API support is enabled, standard CRDs are installed"
           ],
           "enum": [
             "CHANNEL_UNSPECIFIED",
             "CHANNEL_DISABLED",
-            "CHANNEL_STABLE",
             "CHANNEL_EXPERIMENTAL",
             "CHANNEL_STANDARD"
           ]

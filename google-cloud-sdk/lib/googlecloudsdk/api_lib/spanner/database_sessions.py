@@ -34,12 +34,27 @@ def CheckResponse(response):
   return http_wrapper.CheckResponse(response)
 
 
-def Create(database_ref):
-  """Create a database session."""
-  client = apis.GetClientInstance('spanner', 'v1')
+def Create(database_ref, creator_role=None):
+  """Create a database session.
+
+  Args:
+    database_ref: String, The database in which the new session is created.
+    creator_role: String, The database role which created this session.
+
+  Returns:
+    Newly created session.
+  """
+  client = _GetClientInstance('spanner', 'v1', None)
   msgs = apis.GetMessagesModule('spanner', 'v1')
-  req = msgs.SpannerProjectsInstancesDatabasesSessionsCreateRequest(
-      database=database_ref.RelativeName())
+  if creator_role is None:
+    req = msgs.SpannerProjectsInstancesDatabasesSessionsCreateRequest(
+        database=database_ref.RelativeName())
+  else:
+    create_session_request = msgs.CreateSessionRequest(
+        session=msgs.Session(creatorRole=creator_role))
+    req = msgs.SpannerProjectsInstancesDatabasesSessionsCreateRequest(
+        createSessionRequest=create_session_request,
+        database=database_ref.RelativeName())
   return client.projects_instances_databases_sessions.Create(req)
 
 

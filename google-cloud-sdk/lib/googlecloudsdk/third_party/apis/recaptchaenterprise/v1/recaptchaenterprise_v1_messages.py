@@ -13,7 +13,7 @@ package = 'recaptchaenterprise'
 
 
 class GoogleCloudRecaptchaenterpriseV1AccountDefenderAssessment(_messages.Message):
-  r"""Account Defender risk assessment.
+  r"""Account defender risk assessment.
 
   Enums:
     LabelsValueListEntryValuesEnum:
@@ -29,14 +29,14 @@ class GoogleCloudRecaptchaenterpriseV1AccountDefenderAssessment(_messages.Messag
       ACCOUNT_DEFENDER_LABEL_UNSPECIFIED: Default unspecified type.
       PROFILE_MATCH: The request matches a known good profile for the user.
       SUSPICIOUS_LOGIN_ACTIVITY: The request is potentially a suspicious login
-        event and should be further verified either via multi-factor
+        event and must be further verified either through multi-factor
         authentication or another system.
       SUSPICIOUS_ACCOUNT_CREATION: The request matched a profile that
-        previously had suspicious account creation behavior. This could mean
-        this is a fake account.
+        previously had suspicious account creation behavior. This can mean
+        that this is a fake account.
       RELATED_ACCOUNTS_NUMBER_HIGH: The account in the request has a high
         number of related accounts. It does not necessarily imply that the
-        account is bad but could require investigating.
+        account is bad but can require further investigation.
     """
     ACCOUNT_DEFENDER_LABEL_UNSPECIFIED = 0
     PROFILE_MATCH = 1
@@ -75,8 +75,8 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
     annotation: Optional. The annotation that will be assigned to the Event.
       This field can be left empty to provide reasons that apply to an event
       without concluding whether the event is legitimate or fraudulent.
-    hashedAccountId: Optional. Optional unique stable hashed user identifier
-      to apply to the assessment. This is an alternative to setting the
+    hashedAccountId: Optional. Unique stable hashed user identifier to apply
+      to the assessment. This is an alternative to setting the
       hashed_account_id in CreateAssessment, for example when the account
       identifier is not yet known in the initial request. It is recommended
       that the identifier is hashed using hmac-sha256 with stable secret.
@@ -114,16 +114,25 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
 
     Values:
       REASON_UNSPECIFIED: Default unspecified reason.
-      CHARGEBACK: Indicates a chargeback issued for the transaction with no
-        other details. When possible, specify the type by using
+      CHARGEBACK: Indicates that the transaction had a chargeback issued with
+        no other details. When possible, specify the type by using
         CHARGEBACK_FRAUD or CHARGEBACK_DISPUTE instead.
-      CHARGEBACK_FRAUD: Indicates a chargeback related to an alleged
-        unauthorized transaction from the cardholder's perspective (for
-        example, the card number was stolen).
-      CHARGEBACK_DISPUTE: Indicates a chargeback related to the cardholder
-        having provided their card details but allegedly not being satisfied
-        with the purchase (for example, misrepresentation, attempted
-        cancellation).
+      CHARGEBACK_FRAUD: Indicates that the transaction had a chargeback issued
+        related to an alleged unauthorized transaction from the cardholder's
+        perspective (for example, the card number was stolen).
+      CHARGEBACK_DISPUTE: Indicates that the transaction had a chargeback
+        issued related to the cardholder having provided their card details
+        but allegedly not being satisfied with the purchase (for example,
+        misrepresentation, attempted cancellation).
+      REFUND: Indicates that the completed payment transaction was refunded by
+        the seller.
+      REFUND_FRAUD: Indicates that the completed payment transaction was
+        determined to be fraudulent by the seller, and was cancelled and
+        refunded as a result.
+      TRANSACTION_ACCEPTED: Indicates that the payment transaction was
+        accepted, and the user was charged.
+      TRANSACTION_DECLINED: Indicates that the payment transaction was
+        declined, for example due to invalid card details.
       PAYMENT_HEURISTICS: Indicates the transaction associated with the
         assessment is suspected of being fraudulent based on the payment
         method, billing details, shipping address or other transaction
@@ -142,12 +151,16 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
     CHARGEBACK = 1
     CHARGEBACK_FRAUD = 2
     CHARGEBACK_DISPUTE = 3
-    PAYMENT_HEURISTICS = 4
-    INITIATED_TWO_FACTOR = 5
-    PASSED_TWO_FACTOR = 6
-    FAILED_TWO_FACTOR = 7
-    CORRECT_PASSWORD = 8
-    INCORRECT_PASSWORD = 9
+    REFUND = 4
+    REFUND_FRAUD = 5
+    TRANSACTION_ACCEPTED = 6
+    TRANSACTION_DECLINED = 7
+    PAYMENT_HEURISTICS = 8
+    INITIATED_TWO_FACTOR = 9
+    PASSED_TWO_FACTOR = 10
+    FAILED_TWO_FACTOR = 11
+    CORRECT_PASSWORD = 12
+    INCORRECT_PASSWORD = 13
 
   annotation = _messages.EnumField('AnnotationValueValuesEnum', 1)
   hashedAccountId = _messages.BytesField(2)
@@ -162,14 +175,14 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
   r"""A recaptcha assessment resource.
 
   Fields:
-    accountDefenderAssessment: Assessment returned by Account Defender when a
+    accountDefenderAssessment: Assessment returned by account defender when a
       hashed_account_id is provided.
     event: The event being assessed.
     name: Output only. The resource name for the Assessment in the format
       "projects/{project}/assessments/{assessment}".
     privatePasswordLeakVerification: The private password leak verification
-      field contains the parameters used to check for leaks privately without
-      sharing user credentials.
+      field contains the parameters that are used to to check for leaks
+      privately without sharing user credentials.
     riskAnalysis: Output only. The risk analysis result for the event being
       assessed.
     tokenProperties: Output only. Properties of the provided event token.
@@ -213,9 +226,9 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
     expectedAction: Optional. The expected action for this type of event. This
       should be the same action provided at token generation time on client-
       side platforms already integrated with recaptcha enterprise.
-    hashedAccountId: Optional. Optional unique stable hashed user identifier
-      for the request. The identifier should ideally be hashed using sha256
-      with stable secret.
+    hashedAccountId: Optional. Unique stable hashed user identifier for the
+      request. The identifier must be hashed using hmac-sha256 with stable
+      secret.
     siteKey: Optional. The site key that was used to invoke reCAPTCHA on your
       site and generate the token.
     token: Optional. The user response token provided by the reCAPTCHA client-
@@ -306,16 +319,12 @@ class GoogleCloudRecaptchaenterpriseV1FirewallPolicy(_messages.Message):
   r"""An FirewallPolicy represents a single matching pattern and resulting
   actions to take.
 
-  Enums:
-    ProtectionValueValuesEnum: The reCAPTCHA protection mode set on the site
-      key owning this policy.
-
   Fields:
     actions: The actions that the caller should take regarding the user. There
       should be at most 1 terminal action. A terminal action is any action
       that forces a response, such as Allow, Block or Substitute. If it makes
       sense for it to happen multple times, such as SetHeader, the action is
-      non-terminal.
+      non-terminal. A maximum of 16 actions can be in a single policy.
     condition: A CEL (Common Expression Language) conditional expression that
       specifies if this policy applies to an incoming user request. If this
       condition evaluates to true and the requested path matched the path
@@ -323,7 +332,8 @@ class GoogleCloudRecaptchaenterpriseV1FirewallPolicy(_messages.Message):
       condition string is checked for CEL syntax correctness on creation. For
       more information, see the [CEL spec](https://github.com/google/cel-spec)
       and its [language definition](https://github.com/google/cel-
-      spec/blob/master/doc/langdef.md)
+      spec/blob/master/doc/langdef.md). A condition has a max length of 500
+      characters.
     description: A description of what this policy aims to achieve, for
       convenience purposes. The description can at most include 256 UTF-8
       characters.
@@ -331,32 +341,15 @@ class GoogleCloudRecaptchaenterpriseV1FirewallPolicy(_messages.Message):
       "projects/{project}/firewallpolicies/{firewallpolicy}".
     path: The path for which this policy applies, specified as a glob pattern.
       For more information on glob, see the [manual
-      page](https://man7.org/linux/man-pages/man7/glob.7.html).
-    protection: The reCAPTCHA protection mode set on the site key owning this
-      policy.
+      page](https://man7.org/linux/man-pages/man7/glob.7.html). A path has a
+      max length of 200 characters.
   """
-
-  class ProtectionValueValuesEnum(_messages.Enum):
-    r"""The reCAPTCHA protection mode set on the site key owning this policy.
-
-    Values:
-      PROTECTION_UNSPECIFIED: Default value that indicates this enum hasn't
-        been specified.
-      LITE: Lightweight server-side protection.
-      REDIRECT: Redirect incoming requests to reCAPTCHA Enterprise to
-        determine whether each request is potentially fraudulent or
-        legitimate.
-    """
-    PROTECTION_UNSPECIFIED = 0
-    LITE = 1
-    REDIRECT = 2
 
   actions = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallAction', 1, repeated=True)
   condition = _messages.StringField(2)
   description = _messages.StringField(3)
   name = _messages.StringField(4)
   path = _messages.StringField(5)
-  protection = _messages.EnumField('ProtectionValueValuesEnum', 6)
 
 
 class GoogleCloudRecaptchaenterpriseV1IOSKeySettings(_messages.Message):
@@ -508,8 +501,8 @@ class GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification(_messages.
 
   Fields:
     encryptedLeakMatchPrefixes: Output only. List of prefixes of the encrypted
-      potential password leaks that matched the given parameters. They should
-      be compared with the client-side decryption prefix of
+      potential password leaks that matched the given parameters. They must be
+      compared with the client-side decryption prefix of
       `reencrypted_user_credentials_hash`
     encryptedUserCredentialsHash: Optional. Encrypted Scrypt hash of the
       canonicalized username+password. It is re-encrypted by the server and
@@ -518,8 +511,8 @@ class GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification(_messages.
       the canonicalized username. It is used to look up password leaks
       associated with that hash prefix.
     reencryptedUserCredentialsHash: Output only. Corresponds to the re-
-      encryption of the `encrypted_user_credentials_hash` field. Used to match
-      potential password leaks within `encrypted_leak_match_prefixes`.
+      encryption of the `encrypted_user_credentials_hash` field. It is used to
+      match potential password leaks within `encrypted_leak_match_prefixes`.
   """
 
   encryptedLeakMatchPrefixes = _messages.BytesField(1, repeated=True)
@@ -546,7 +539,7 @@ class GoogleCloudRecaptchaenterpriseV1RelatedAccountGroupMembership(_messages.Me
   Fields:
     hashedAccountId: The unique stable hashed user identifier of the member.
       The identifier corresponds to a `hashed_account_id` provided in a
-      previous CreateAssessment or AnnotateAssessment call.
+      previous `CreateAssessment` or `AnnotateAssessment` call.
     name: Required. The resource name for this membership in the format `proje
       cts/{project}/relatedaccountgroups/{relatedaccountgroup}/memberships/{me
       mbership}`.
@@ -557,8 +550,8 @@ class GoogleCloudRecaptchaenterpriseV1RelatedAccountGroupMembership(_messages.Me
 
 
 class GoogleCloudRecaptchaenterpriseV1RetrieveLegacySecretKeyResponse(_messages.Message):
-  r"""Secret key used in legacy reCAPTCHA only. Should be used when
-  integrating with a 3rd party which is still using legacy reCAPTCHA.
+  r"""Secret key is used only in legacy reCAPTCHA. It must be used in a 3rd
+  party integration with legacy reCAPTCHA.
 
   Fields:
     legacySecretKey: The secret key (also known as shared secret) authorizes
@@ -704,12 +697,12 @@ class GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsReques
   Fields:
     hashedAccountId: Optional. The unique stable hashed user identifier we
       should search connections to. The identifier should correspond to a
-      `hashed_account_id` provided in a previous CreateAssessment or
-      AnnotateAssessment call.
+      `hashed_account_id` provided in a previous `CreateAssessment` or
+      `AnnotateAssessment` call.
     pageSize: Optional. The maximum number of groups to return. The service
-      may return fewer than this value. If unspecified, at most 50 groups will
-      be returned. The maximum value is 1000; values above 1000 will be
-      coerced to 1000.
+      might return fewer than this value. If unspecified, at most 50 groups
+      are returned. The maximum value is 1000; values above 1000 are coerced
+      to 1000.
     pageToken: Optional. A page token, received from a previous
       `SearchRelatedAccountGroupMemberships` call. Provide this to retrieve
       the subsequent page. When paginating, all other parameters provided to
@@ -1145,7 +1138,7 @@ class RecaptchaenterpriseProjectsKeysRetrieveLegacySecretKeyRequest(_messages.Me
   r"""A RecaptchaenterpriseProjectsKeysRetrieveLegacySecretKeyRequest object.
 
   Fields:
-    key: Required. The public key name linked to the requested secret key , in
+    key: Required. The public key name linked to the requested secret key in
       the format "projects/{project}/keys/{key}".
   """
 
@@ -1161,7 +1154,8 @@ class RecaptchaenterpriseProjectsRelatedaccountgroupmembershipsSearchRequest(_me
       t: A GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembership
       sRequest resource to be passed as the request body.
     project: Required. The name of the project to search related account group
-      memberships from, in the format "projects/{project}".
+      memberships from. Specify the project name in the following format:
+      "projects/{project}".
   """
 
   googleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsRequest = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsRequest', 1)
@@ -1173,9 +1167,9 @@ class RecaptchaenterpriseProjectsRelatedaccountgroupsListRequest(_messages.Messa
 
   Fields:
     pageSize: Optional. The maximum number of groups to return. The service
-      may return fewer than this value. If unspecified, at most 50 groups will
-      be returned. The maximum value is 1000; values above 1000 will be
-      coerced to 1000.
+      might return fewer than this value. If unspecified, at most 50 groups
+      are returned. The maximum value is 1000; values above 1000 are coerced
+      to 1000.
     pageToken: Optional. A page token, received from a previous
       `ListRelatedAccountGroups` call. Provide this to retrieve the subsequent
       page. When paginating, all other parameters provided to
@@ -1196,9 +1190,9 @@ class RecaptchaenterpriseProjectsRelatedaccountgroupsMembershipsListRequest(_mes
 
   Fields:
     pageSize: Optional. The maximum number of accounts to return. The service
-      may return fewer than this value. If unspecified, at most 50 accounts
-      will be returned. The maximum value is 1000; values above 1000 will be
-      coerced to 1000.
+      might return fewer than this value. If unspecified, at most 50 accounts
+      are returned. The maximum value is 1000; values above 1000 are coerced
+      to 1000.
     pageToken: Optional. A page token, received from a previous
       `ListRelatedAccountGroupMemberships` call. When paginating, all other
       parameters provided to `ListRelatedAccountGroupMemberships` must match

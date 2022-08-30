@@ -59,6 +59,13 @@ def EndpointAttributeConfig():
       name='endpoint', help_text='The name of the endpoint for the {resource}.')
 
 
+def RegistrationPolicyAttributeConfig():
+  """Gets registration policy resource attribute."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='registration_policy',
+      help_text='The name of the registrationPolicy for the {resource}.')
+
+
 def GetProjectResourceSpec():
   """Gets project resource spec."""
   return concepts.ResourceSpec(
@@ -105,6 +112,17 @@ def GetEndpointResourceSpec():
       endpointsId=EndpointAttributeConfig(),
       servicesId=ServiceAttributeConfig(),
       namespacesId=NamespaceAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=ProjectAttributeConfig())
+
+
+def GetRegistrationPolicyResourceSpec():
+  """Gets registration policy resource spec."""
+  return concepts.ResourceSpec(
+      'servicedirectory.projects.locations.registrationPolicies',
+      resource_name='registration_policy',
+      api_version='v1beta1',
+      registrationPoliciesId=RegistrationPolicyAttributeConfig(),
       locationsId=LocationAttributeConfig(),
       projectsId=ProjectAttributeConfig())
 
@@ -156,4 +174,14 @@ def AddEndpointResourceArg(parser, verb, positional=True):
       name,
       GetEndpointResourceSpec(),
       'The Service Directory endpoint {}'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddRegistrationPolicyResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for a Service Directory registration policy."""
+  name = 'registration_policy' if positional else '--registration_policy'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetRegistrationPolicyResourceSpec(),
+      'The Service Directory registration policy {}'.format(verb),
       required=True).AddToParser(parser)

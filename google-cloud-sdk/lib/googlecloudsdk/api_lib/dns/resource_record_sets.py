@@ -34,6 +34,10 @@ class ForwardingRuleWithoutHealthCheck(exceptions.Error):
   """Forwarding rules specified without enabling health check."""
 
 
+class HealthCheckWithoutForwardingRule(exceptions.Error):
+  """Health check enabled but no forwarding rules present."""
+
+
 class ForwardingRuleNotFound(exceptions.Error):
   """Either the forwarding rule doesn't exist, or multiple forwarding rules present with the same name - across different regions."""
 
@@ -127,7 +131,9 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
         'udp')
   load_balancer_target.project = project
   load_balancer_target.networkUrl = config.network
-  if not config.ports:
+  if config.allPorts:
+    load_balancer_target.port = '80'  # Any random port
+  elif not config.ports:
     load_balancer_target.port = config.portRange.split('-')[0]
   else:
     load_balancer_target.port = config.ports[0]
@@ -154,6 +160,8 @@ def CreateRecordSetFromArgs(args,
     ForwardingRuleNotFound: Either the forwarding rule doesn't exist, or
       multiple forwarding rules present with the same name - across different
       regions.
+    HealthCheckWithoutForwardingRule: Health check enabled but no forwarding
+      rules present.
 
   Returns:
     ResourceRecordSet, the record-set created from the given args.
@@ -174,6 +182,7 @@ def CreateRecordSetFromArgs(args,
   record_set.name = util.AppendTrailingDot(args.name)
   record_set.ttl = args.ttl
   record_set.type = args.type
+  includes_forwarding_rules = False
 
   if args.rrdatas:
     record_set.rrdatas = args.rrdatas
@@ -200,6 +209,8 @@ def CreateRecordSetFromArgs(args,
         raise ForwardingRuleWithoutHealthCheck(
             'Specifying a forwarding rule enables health checking. If this is intended, set --enable-health-checking.'
         )
+      if policy_item['forwarding_configs']:
+        includes_forwarding_rules = True
       targets = [
           GetLoadBalancerTarget(config, api_version, project)
           for config in policy_item['forwarding_configs']
@@ -238,6 +249,8 @@ def CreateRecordSetFromArgs(args,
         raise ForwardingRuleWithoutHealthCheck(
             'Specifying a forwarding rule enables health checking. If this is intended, set --enable-health-checking.'
         )
+      if policy_item['forwarding_configs']:
+        includes_forwarding_rules = True
       targets = [
           GetLoadBalancerTarget(config, api_version, project)
           for config in policy_item['forwarding_configs']
@@ -259,6 +272,7 @@ def CreateRecordSetFromArgs(args,
       raise ForwardingRuleWithoutHealthCheck(
           'Failover policy needs to have health checking enabled. Set --enable-health-checking.'
       )
+    includes_forwarding_rules = True
     record_set.routingPolicy = messages.RRSetRoutingPolicy(
         primaryBackup=messages.RRSetRoutingPolicyPrimaryBackupPolicy(
             primaryTargets=messages.RRSetRoutingPolicyHealthCheckTargets(
@@ -289,4 +303,11 @@ def CreateRecordSetFromArgs(args,
           record_set.routingPolicy.primaryBackup.backupGeoTargets.items.append(
               messages.RRSetRoutingPolicyGeoPolicyGeoPolicyItem(
                   location=policy_item['key'], rrdatas=policy_item['rrdatas']))
+  if not includes_forwarding_rules and hasattr(
+      args, 'enable_health_checking') and args.enable_health_checking:
+    raise HealthCheckWithoutForwardingRule(
+        '--enable-health-check is set, but no forwarding rules are provided. '
+        'Either remove the --enable-health-check flag, or provide the forwarding '
+        'rule names instead of ip addresses for the rules to be health checked.'
+    )
   return record_set

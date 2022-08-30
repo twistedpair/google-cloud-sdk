@@ -36,6 +36,14 @@ def AddDataFile(parser, positional=False, **kwargs):
       **kwargs)
 
 
+def AddOutFile(parser, positional=False, **kwargs):
+  parser.add_argument(
+      _ArgOrFlag('out-file', positional),
+      metavar='OUT-FILE-PATH',
+      help=('File path to which secret data is written.'),
+      **kwargs)
+
+
 def AddProject(parser, positional=False, **kwargs):
   concept_parsers.ConceptParser.ForResource(
       name=_ArgOrFlag('project', positional),

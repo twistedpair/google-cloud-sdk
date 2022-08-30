@@ -156,6 +156,22 @@ class AutoscalingPolicy(_messages.Message):
   workerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 6)
 
 
+class AuxiliaryGceNodePool(_messages.Message):
+  r"""Dataproc Compute Engine node pool identification and configuration
+  information.
+
+  Fields:
+    gceNodePool: Required. Dataproc Compute Engine node pool configuration.
+    gceNodePoolId: Optional. An optional Compute Engine node pool id.
+      Generated if not specified.The id must contain only letters (a-z, A-Z),
+      numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end
+      with underscore or hyphen. Must consist of between 3 and 33 characters.
+  """
+
+  gceNodePool = _messages.MessageField('GceNodePool', 1)
+  gceNodePoolId = _messages.StringField(2)
+
+
 class AuxiliaryServicesConfig(_messages.Message):
   r"""Auxiliary services configuration for a Cluster.
 
@@ -429,17 +445,22 @@ class Binding(_messages.Message):
       that represents anyone who is authenticated with a Google account or a
       service account. user:{emailid}: An email address that represents a
       specific Google account. For example, alice@example.com .
-      serviceAccount:{emailid}: An email address that represents a service
-      account. For example, my-other-app@appspot.gserviceaccount.com.
-      group:{emailid}: An email address that represents a Google group. For
-      example, admins@example.com. deleted:user:{emailid}?uid={uniqueid}: An
-      email address (plus unique identifier) representing a user that has been
-      recently deleted. For example,
-      alice@example.com?uid=123456789012345678901. If the user is recovered,
-      this value reverts to user:{emailid} and the recovered user retains the
-      role in the binding. deleted:serviceAccount:{emailid}?uid={uniqueid}: An
-      email address (plus unique identifier) representing a service account
-      that has been recently deleted. For example, my-other-
+      serviceAccount:{emailid}: An email address that represents a Google
+      service account. For example, my-other-app@appspot.gserviceaccount.com.
+      serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]: An
+      identifier for a Kubernetes service account
+      (https://cloud.google.com/kubernetes-engine/docs/how-to/kubernetes-
+      service-accounts). For example, my-project.svc.id.goog[my-namespace/my-
+      kubernetes-sa]. group:{emailid}: An email address that represents a
+      Google group. For example, admins@example.com.
+      deleted:user:{emailid}?uid={uniqueid}: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example, alice@example.com?uid=123456789012345678901. If the user is
+      recovered, this value reverts to user:{emailid} and the recovered user
+      retains the role in the binding.
+      deleted:serviceAccount:{emailid}?uid={uniqueid}: An email address (plus
+      unique identifier) representing a service account that has been recently
+      deleted. For example, my-other-
       app@appspot.gserviceaccount.com?uid=123456789012345678901. If the
       service account is undeleted, this value reverts to
       serviceAccount:{emailid} and the undeleted service account retains the
@@ -468,10 +489,6 @@ class Cluster(_messages.Message):
   r"""Describes the identifying information, config, and status of a Dataproc
   cluster
 
-  Enums:
-    DriverLocationValueValuesEnum: Output only. The cluster driver location
-      type.
-
   Messages:
     LabelsValue: Optional. The labels to associate with this cluster. Label
       keys must contain 1 to 63 characters, and must conform to RFC 1035
@@ -481,8 +498,6 @@ class Cluster(_messages.Message):
       be associated with a cluster.
 
   Fields:
-    auxiliaryGceNodePoolConfigs: Input only. The Compute Engine configuration
-      settings for cluster node pools.
     clusterName: Required. The cluster name, which must be unique within a
       project. The name must start with a lowercase letter, and can contain up
       to 51 lowercase letters, numbers, and hyphens. It cannot end with a
@@ -493,7 +508,6 @@ class Cluster(_messages.Message):
       Instances. Note that Dataproc may set default values, and values may
       change when clusters are updated.Exactly one of ClusterConfig or
       VirtualClusterConfig must be specified.
-    driverLocation: Output only. The cluster driver location type.
     labels: Optional. The labels to associate with this cluster. Label keys
       must contain 1 to 63 characters, and must conform to RFC 1035
       (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
@@ -516,17 +530,6 @@ class Cluster(_messages.Message):
       updated. Exactly one of config or virtual_cluster_config must be
       specified.
   """
-
-  class DriverLocationValueValuesEnum(_messages.Enum):
-    r"""Output only. The cluster driver location type.
-
-    Values:
-      UNSPECIFIED: If unspecified, the default behavior applies: drivers run
-        on the master.
-      DRIVER_POOL: Drivers run on driver pools.
-    """
-    UNSPECIFIED = 0
-    DRIVER_POOL = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -557,17 +560,15 @@ class Cluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  auxiliaryGceNodePoolConfigs = _messages.MessageField('GceNodePool', 1, repeated=True)
-  clusterName = _messages.StringField(2)
-  clusterUuid = _messages.StringField(3)
-  config = _messages.MessageField('ClusterConfig', 4)
-  driverLocation = _messages.EnumField('DriverLocationValueValuesEnum', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  metrics = _messages.MessageField('ClusterMetrics', 7)
-  projectId = _messages.StringField(8)
-  status = _messages.MessageField('ClusterStatus', 9)
-  statusHistory = _messages.MessageField('ClusterStatus', 10, repeated=True)
-  virtualClusterConfig = _messages.MessageField('VirtualClusterConfig', 11)
+  clusterName = _messages.StringField(1)
+  clusterUuid = _messages.StringField(2)
+  config = _messages.MessageField('ClusterConfig', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  metrics = _messages.MessageField('ClusterMetrics', 5)
+  projectId = _messages.StringField(6)
+  status = _messages.MessageField('ClusterStatus', 7)
+  statusHistory = _messages.MessageField('ClusterStatus', 8, repeated=True)
+  virtualClusterConfig = _messages.MessageField('VirtualClusterConfig', 9)
 
 
 class ClusterConfig(_messages.Message):
@@ -576,6 +577,8 @@ class ClusterConfig(_messages.Message):
   Fields:
     autoscalingConfig: Optional. Autoscaling config for the policy associated
       with the cluster. Cluster does not autoscale if this field is unset.
+    auxiliaryGceNodePools: Optional. The Compute Engine configuration settings
+      for cluster node pools.
     auxiliaryNodePoolConfigs: Optional. The config for a cluster auxiliary
       node pool.
     configBucket: Optional. A Cloud Storage bucket used to stage job
@@ -631,22 +634,23 @@ class ClusterConfig(_messages.Message):
   """
 
   autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
-  auxiliaryNodePoolConfigs = _messages.MessageField('NodePoolConfig', 2, repeated=True)
-  configBucket = _messages.StringField(3)
-  dataprocMetricConfig = _messages.MessageField('DataprocMetricConfig', 4)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 5)
-  endpointConfig = _messages.MessageField('EndpointConfig', 6)
-  gceClusterConfig = _messages.MessageField('GceClusterConfig', 7)
-  gkeClusterConfig = _messages.MessageField('GkeClusterConfig', 8)
-  initializationActions = _messages.MessageField('NodeInitializationAction', 9, repeated=True)
-  lifecycleConfig = _messages.MessageField('LifecycleConfig', 10)
-  masterConfig = _messages.MessageField('InstanceGroupConfig', 11)
-  metastoreConfig = _messages.MessageField('MetastoreConfig', 12)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 13)
-  securityConfig = _messages.MessageField('SecurityConfig', 14)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 15)
-  tempBucket = _messages.StringField(16)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 17)
+  auxiliaryGceNodePools = _messages.MessageField('AuxiliaryGceNodePool', 2, repeated=True)
+  auxiliaryNodePoolConfigs = _messages.MessageField('NodePoolConfig', 3, repeated=True)
+  configBucket = _messages.StringField(4)
+  dataprocMetricConfig = _messages.MessageField('DataprocMetricConfig', 5)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 6)
+  endpointConfig = _messages.MessageField('EndpointConfig', 7)
+  gceClusterConfig = _messages.MessageField('GceClusterConfig', 8)
+  gkeClusterConfig = _messages.MessageField('GkeClusterConfig', 9)
+  initializationActions = _messages.MessageField('NodeInitializationAction', 10, repeated=True)
+  lifecycleConfig = _messages.MessageField('LifecycleConfig', 11)
+  masterConfig = _messages.MessageField('InstanceGroupConfig', 12)
+  metastoreConfig = _messages.MessageField('MetastoreConfig', 13)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 14)
+  securityConfig = _messages.MessageField('SecurityConfig', 15)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 16)
+  tempBucket = _messages.StringField(17)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 18)
 
 
 class ClusterMetrics(_messages.Message):
@@ -2579,6 +2583,11 @@ class ExecutionConfig(_messages.Message):
       execution.
 
   Fields:
+    idleTtl: Optional. The duration to keep the session alive while it's
+      idling. Passing this threshold will cause the session to be terminated.
+      Minimum value is 30 minutes; maximum value is 14 days (see JSON
+      representation of Duration (https://developers.google.com/protocol-
+      buffers/docs/proto3#json)).
     kmsKey: Optional. The Cloud KMS key to use for encryption.
     networkTags: Optional. Tags used for network traffic control.
     networkUri: Optional. Network URI to connect workload to.
@@ -2601,12 +2610,13 @@ class ExecutionConfig(_messages.Message):
     STANDARD = 2
     HIGH = 3
 
-  kmsKey = _messages.StringField(1)
-  networkTags = _messages.StringField(2, repeated=True)
-  networkUri = _messages.StringField(3)
-  performanceTier = _messages.EnumField('PerformanceTierValueValuesEnum', 4)
-  serviceAccount = _messages.StringField(5)
-  subnetworkUri = _messages.StringField(6)
+  idleTtl = _messages.StringField(1)
+  kmsKey = _messages.StringField(2)
+  networkTags = _messages.StringField(3, repeated=True)
+  networkUri = _messages.StringField(4)
+  performanceTier = _messages.EnumField('PerformanceTierValueValuesEnum', 5)
+  serviceAccount = _messages.StringField(6)
+  subnetworkUri = _messages.StringField(7)
 
 
 class Expr(_messages.Message):
@@ -2793,8 +2803,7 @@ class GceClusterConfig(_messages.Message):
 
 
 class GceNodePool(_messages.Message):
-  r"""Dataproc Compute Engine node pool identification and configuration
-  information.
+  r"""Dataproc Compute Engine node pool.
 
   Enums:
     RolesValueListEntryValuesEnum:
@@ -2814,8 +2823,7 @@ class GceNodePool(_messages.Message):
       specified, they must consist of 1 to 63 characters and conform to RFC
       1035 (https://www.ietf.org/rfc/rfc1035.txt). The Compute Engine node
       pool can have no more than 32 labels.
-    name: Required. The Compute Engine node pool resource name
-      (https://aip.dev/122).
+    name: The Compute Engine node pool resource name (https://aip.dev/122).
     nodePoolConfig: Optional. The Compute Engine node pool instance group
       configuration.
     roles: Required. Compute Engine node pool roles.
@@ -3446,10 +3454,14 @@ class InstanceGroupConfig(_messages.Message):
         Worker instance groups.
       PREEMPTIBLE: Instances are preemptible.This option is allowed only for
         secondary worker groups.
+      SPOT: Instances are Spot VMsThis option is allowed only for secondary
+        worker groups. See Spot VMs
+        (https://cloud.google.com/compute/docs/instances/spot).
     """
     PREEMPTIBILITY_UNSPECIFIED = 0
     NON_PREEMPTIBLE = 1
     PREEMPTIBLE = 2
+    SPOT = 3
 
   accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   diskConfig = _messages.MessageField('DiskConfig', 2)

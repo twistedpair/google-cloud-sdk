@@ -1654,11 +1654,10 @@ class AttachedDisk(_messages.Message):
     ArchitectureValueValuesEnum: [Output Only] The architecture of the
       attached disk. Valid values are ARM64 or X86_64.
     InterfaceValueValuesEnum: Specifies the disk interface to use for
-      attaching this disk, which is either SCSI or NVME. The default is SCSI.
-      Persistent disks must always use SCSI and the request will fail if you
-      attempt to attach a persistent disk in any other format than SCSI. Local
-      SSDs can use either NVME or SCSI. For performance characteristics of
-      SCSI over NVMe, see Local SSD performance.
+      attaching this disk, which is either SCSI or NVME. For most machine
+      types, the default is SCSI. Local SSDs can use either NVME or SCSI. In
+      certain configurations, persistent disks can use NVMe. For more
+      information, see About persistent disks.
     ModeValueValuesEnum: The mode in which to attach this disk, either
       READ_WRITE or READ_ONLY. If not specified, the default is to attach the
       disk in READ_WRITE mode.
@@ -1715,11 +1714,10 @@ class AttachedDisk(_messages.Message):
       instance. This property is mutually exclusive with the source property;
       you can only define one or the other, but not both.
     interface: Specifies the disk interface to use for attaching this disk,
-      which is either SCSI or NVME. The default is SCSI. Persistent disks must
-      always use SCSI and the request will fail if you attempt to attach a
-      persistent disk in any other format than SCSI. Local SSDs can use either
-      NVME or SCSI. For performance characteristics of SCSI over NVMe, see
-      Local SSD performance.
+      which is either SCSI or NVME. For most machine types, the default is
+      SCSI. Local SSDs can use either NVME or SCSI. In certain configurations,
+      persistent disks can use NVMe. For more information, see About
+      persistent disks.
     kind: [Output Only] Type of the resource. Always compute#attachedDisk for
       attached disks.
     licenses: [Output Only] Any valid publicly visible licenses.
@@ -1771,10 +1769,9 @@ class AttachedDisk(_messages.Message):
 
   class InterfaceValueValuesEnum(_messages.Enum):
     r"""Specifies the disk interface to use for attaching this disk, which is
-    either SCSI or NVME. The default is SCSI. Persistent disks must always use
-    SCSI and the request will fail if you attempt to attach a persistent disk
-    in any other format than SCSI. Local SSDs can use either NVME or SCSI. For
-    performance characteristics of SCSI over NVMe, see Local SSD performance.
+    either SCSI or NVME. For most machine types, the default is SCSI. Local
+    SSDs can use either NVME or SCSI. In certain configurations, persistent
+    disks can use NVMe. For more information, see About persistent disks.
 
     Values:
       NVDIMM: <no description>
@@ -5829,8 +5826,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -8889,8 +8892,8 @@ class ComputeDisksStopGroupAsyncReplicationRequest(_messages.Message):
   r"""A ComputeDisksStopGroupAsyncReplicationRequest object.
 
   Fields:
-    disksStopGroupAsyncReplicationRequest: A
-      DisksStopGroupAsyncReplicationRequest resource to be passed as the
+    disksStopGroupAsyncReplicationResource: A
+      DisksStopGroupAsyncReplicationResource resource to be passed as the
       request body.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -8907,7 +8910,7 @@ class ComputeDisksStopGroupAsyncReplicationRequest(_messages.Message):
       primary or secondary disks in the consistency group.
   """
 
-  disksStopGroupAsyncReplicationRequest = _messages.MessageField('DisksStopGroupAsyncReplicationRequest', 1)
+  disksStopGroupAsyncReplicationResource = _messages.MessageField('DisksStopGroupAsyncReplicationResource', 1)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   zone = _messages.StringField(4, required=True)
@@ -22072,12 +22075,12 @@ class ComputeRegionDisksStopGroupAsyncReplicationRequest(_messages.Message):
   r"""A ComputeRegionDisksStopGroupAsyncReplicationRequest object.
 
   Fields:
+    disksStopGroupAsyncReplicationResource: A
+      DisksStopGroupAsyncReplicationResource resource to be passed as the
+      request body.
     project: Project ID for this request.
     region: The name of the region for this request. This must be the region
       of the primary or secondary disks in the consistency group.
-    regionDisksStopGroupAsyncReplicationRequest: A
-      RegionDisksStopGroupAsyncReplicationRequest resource to be passed as the
-      request body.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. For example,
@@ -22090,9 +22093,9 @@ class ComputeRegionDisksStopGroupAsyncReplicationRequest(_messages.Message):
       ( 00000000-0000-0000-0000-000000000000).
   """
 
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  regionDisksStopGroupAsyncReplicationRequest = _messages.MessageField('RegionDisksStopGroupAsyncReplicationRequest', 3)
+  disksStopGroupAsyncReplicationResource = _messages.MessageField('DisksStopGroupAsyncReplicationResource', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
 
 
@@ -24694,188 +24697,6 @@ class ComputeRegionNetworkFirewallPoliciesTestIamPermissionsRequest(_messages.Me
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
-class ComputeRegionNetworksDeleteRequest(_messages.Message):
-  r"""A ComputeRegionNetworksDeleteRequest object.
-
-  Fields:
-    network: Name of the network to delete.
-    project: Project ID for this request.
-    region: Name of the region scoping this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000).
-  """
-
-  network = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class ComputeRegionNetworksGetIamPolicyRequest(_messages.Message):
-  r"""A ComputeRegionNetworksGetIamPolicyRequest object.
-
-  Fields:
-    optionsRequestedPolicyVersion: Requested IAM Policy version.
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    resource: Name or id of the resource for this request.
-  """
-
-  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  resource = _messages.StringField(4, required=True)
-
-
-class ComputeRegionNetworksGetRequest(_messages.Message):
-  r"""A ComputeRegionNetworksGetRequest object.
-
-  Fields:
-    network: Name of the network to return.
-    project: Project ID for this request.
-    region: Name of the region scoping this request.
-  """
-
-  network = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-
-
-class ComputeRegionNetworksInsertRequest(_messages.Message):
-  r"""A ComputeRegionNetworksInsertRequest object.
-
-  Fields:
-    network: A Network resource to be passed as the request body.
-    project: Project ID for this request.
-    region: Name of the region scoping this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000).
-  """
-
-  network = _messages.MessageField('Network', 1)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class ComputeRegionNetworksListRequest(_messages.Message):
-  r"""A ComputeRegionNetworksListRequest object.
-
-  Fields:
-    filter: A filter expression that filters resources listed in the response.
-      Most Compute resources support two types of filter expressions:
-      expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
-      expression must specify the field name, an operator, and the value that
-      you want to use for filtering. The value must be a string, a number, or
-      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
-      or `:`. For example, if you are filtering Compute Engine instances, you
-      can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
-    maxResults: The maximum number of results per page that should be
-      returned. If the number of available results is larger than
-      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
-      to get the next page of results in subsequent list requests. Acceptable
-      values are `0` to `500`, inclusive. (Default: `500`)
-    orderBy: Sorts list results by a certain order. By default, results are
-      returned in alphanumerical order based on the resource name. You can
-      also sort results in descending order based on the creation timestamp
-      using `orderBy="creationTimestamp desc"`. This sorts results based on
-      the `creationTimestamp` field in reverse chronological order (newest
-      result first). Use this to sort resources like operations so that the
-      newest operation is returned first. Currently, only sorting by `name` or
-      `creationTimestamp desc` is supported.
-    pageToken: Specifies a page token to use. Set `pageToken` to the
-      `nextPageToken` returned by a previous list request to get the next page
-      of results.
-    project: Project ID for this request.
-    region: Name of the region scoping this request.
-    returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
-  """
-
-  filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
-  region = _messages.StringField(6, required=True)
-  returnPartialSuccess = _messages.BooleanField(7)
-
-
-class ComputeRegionNetworksSetIamPolicyRequest(_messages.Message):
-  r"""A ComputeRegionNetworksSetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
-      the request body.
-    resource: Name or id of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
-  resource = _messages.StringField(4, required=True)
-
-
-class ComputeRegionNetworksTestIamPermissionsRequest(_messages.Message):
-  r"""A ComputeRegionNetworksTestIamPermissionsRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    resource: Name or id of the resource for this request.
-    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
-      the request body.
-  """
-
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
-
-
 class ComputeRegionNotificationEndpointsAggregatedListRequest(_messages.Message):
   r"""A ComputeRegionNotificationEndpointsAggregatedListRequest object.
 
@@ -25214,6 +25035,25 @@ class ComputeRegionOperationsWaitRequest(_messages.Message):
   region = _messages.StringField(3, required=True)
 
 
+class ComputeRegionSecurityPoliciesAddRuleRequest(_messages.Message):
+  r"""A ComputeRegionSecurityPoliciesAddRuleRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    securityPolicy: Name of the security policy to update.
+    securityPolicyRule: A SecurityPolicyRule resource to be passed as the
+      request body.
+    validateOnly: If true, the request will not be committed.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  securityPolicy = _messages.StringField(3, required=True)
+  securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 4)
+  validateOnly = _messages.BooleanField(5)
+
+
 class ComputeRegionSecurityPoliciesDeleteRequest(_messages.Message):
   r"""A ComputeRegionSecurityPoliciesDeleteRequest object.
 
@@ -25251,6 +25091,23 @@ class ComputeRegionSecurityPoliciesGetRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
   securityPolicy = _messages.StringField(3, required=True)
+
+
+class ComputeRegionSecurityPoliciesGetRuleRequest(_messages.Message):
+  r"""A ComputeRegionSecurityPoliciesGetRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to get from the security policy.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    securityPolicy: Name of the security policy to which the queried rule
+      belongs.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  securityPolicy = _messages.StringField(4, required=True)
 
 
 class ComputeRegionSecurityPoliciesInsertRequest(_messages.Message):
@@ -25353,6 +25210,7 @@ class ComputeRegionSecurityPoliciesPatchRequest(_messages.Message):
   r"""A ComputeRegionSecurityPoliciesPatchRequest object.
 
   Fields:
+    paths: A string attribute.
     project: Project ID for this request.
     region: Name of the region scoping this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -25368,13 +25226,53 @@ class ComputeRegionSecurityPoliciesPatchRequest(_messages.Message):
     securityPolicy: Name of the security policy to update.
     securityPolicyResource: A SecurityPolicy resource to be passed as the
       request body.
+    updateMask: Indicates fields to be cleared as part of this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
+  paths = _messages.StringField(1, repeated=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  securityPolicy = _messages.StringField(5, required=True)
+  securityPolicyResource = _messages.MessageField('SecurityPolicy', 6)
+  updateMask = _messages.StringField(7)
+
+
+class ComputeRegionSecurityPoliciesPatchRuleRequest(_messages.Message):
+  r"""A ComputeRegionSecurityPoliciesPatchRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to patch.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    securityPolicy: Name of the security policy to update.
+    securityPolicyRule: A SecurityPolicyRule resource to be passed as the
+      request body.
+    validateOnly: If true, the request will not be committed.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
   securityPolicy = _messages.StringField(4, required=True)
-  securityPolicyResource = _messages.MessageField('SecurityPolicy', 5)
+  securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 5)
+  validateOnly = _messages.BooleanField(6)
+
+
+class ComputeRegionSecurityPoliciesRemoveRuleRequest(_messages.Message):
+  r"""A ComputeRegionSecurityPoliciesRemoveRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to remove from the security policy.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    securityPolicy: Name of the security policy to update.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  securityPolicy = _messages.StringField(4, required=True)
 
 
 class ComputeRegionSslCertificatesDeleteRequest(_messages.Message):
@@ -28022,6 +27920,7 @@ class ComputeSecurityPoliciesPatchRequest(_messages.Message):
   r"""A ComputeSecurityPoliciesPatchRequest object.
 
   Fields:
+    paths: A string attribute.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -28036,12 +27935,15 @@ class ComputeSecurityPoliciesPatchRequest(_messages.Message):
     securityPolicy: Name of the security policy to update.
     securityPolicyResource: A SecurityPolicy resource to be passed as the
       request body.
+    updateMask: Indicates fields to be cleared as part of this request.
   """
 
-  project = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  securityPolicy = _messages.StringField(3, required=True)
-  securityPolicyResource = _messages.MessageField('SecurityPolicy', 4)
+  paths = _messages.StringField(1, repeated=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  securityPolicy = _messages.StringField(4, required=True)
+  securityPolicyResource = _messages.MessageField('SecurityPolicy', 5)
+  updateMask = _messages.StringField(6)
 
 
 class ComputeSecurityPoliciesPatchRuleRequest(_messages.Message):
@@ -35005,8 +34907,10 @@ class DisksStopAsyncReplicationRequest(_messages.Message):
   asyncSecondaryDisk = _messages.StringField(1)
 
 
-class DisksStopGroupAsyncReplicationRequest(_messages.Message):
-  r"""A DisksStopGroupAsyncReplicationRequest object.
+class DisksStopGroupAsyncReplicationResource(_messages.Message):
+  r"""A transient resource used in compute.disks.stopGroupAsyncReplication and
+  compute.regionDisks.stopGroupAsyncReplication. It is only used to process
+  requests and is not persisted.
 
   Fields:
     resourcePolicy: The URL of the DiskConsistencyGroupPolicy for the group of
@@ -35760,9 +35664,7 @@ class Firewall(_messages.Message):
   Enums:
     DirectionValueValuesEnum: Direction of traffic to which this firewall
       applies, either `INGRESS` or `EGRESS`. The default is `INGRESS`. For
-      `INGRESS` traffic, you cannot specify the destinationRanges field, and
-      for `EGRESS` traffic, you cannot specify the sourceRanges or sourceTags
-      fields.
+      `EGRESS` traffic, you cannot specify the sourceTags fields.
 
   Messages:
     AllowedValueListEntry: A AllowedValueListEntry object.
@@ -35784,9 +35686,8 @@ class Firewall(_messages.Message):
       These ranges must be expressed in CIDR format. Both IPv4 and IPv6 are
       supported.
     direction: Direction of traffic to which this firewall applies, either
-      `INGRESS` or `EGRESS`. The default is `INGRESS`. For `INGRESS` traffic,
-      you cannot specify the destinationRanges field, and for `EGRESS`
-      traffic, you cannot specify the sourceRanges or sourceTags fields.
+      `INGRESS` or `EGRESS`. The default is `INGRESS`. For `EGRESS` traffic,
+      you cannot specify the sourceTags fields.
     disabled: Denotes whether the firewall rule is disabled. When set to true,
       the firewall rule is not enforced and the network behaves as if it did
       not exist. If this is unspecified, the firewall rule will be enabled.
@@ -35872,9 +35773,8 @@ class Firewall(_messages.Message):
 
   class DirectionValueValuesEnum(_messages.Enum):
     r"""Direction of traffic to which this firewall applies, either `INGRESS`
-    or `EGRESS`. The default is `INGRESS`. For `INGRESS` traffic, you cannot
-    specify the destinationRanges field, and for `EGRESS` traffic, you cannot
-    specify the sourceRanges or sourceTags fields.
+    or `EGRESS`. The default is `INGRESS`. For `EGRESS` traffic, you cannot
+    specify the sourceTags fields.
 
     Values:
       EGRESS: Indicates that firewall should apply to outgoing traffic.
@@ -41025,9 +40925,9 @@ class HttpRouteRule(_messages.Message):
       If routeAction specifies any weightedBackendServices, service must not
       be set. Conversely if service is set, routeAction cannot contain any
       weightedBackendServices. Only one of urlRedirect, service or
-      routeAction.weightedBackendService must be set. UrlMaps for external
-      HTTP(S) load balancers support only the urlRewrite action within a route
-      rule's routeAction.
+      routeAction.weightedBackendService must be set. URL maps for Classic
+      external HTTP(S) load balancers only support the urlRewrite action
+      within a route rule's routeAction.
     service: The full or partial URL of the backend service resource to which
       traffic is directed if this rule is matched. If routeAction is also
       specified, advanced routing actions, such as URL rewrites, take effect
@@ -43300,19 +43200,17 @@ class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
     ForceUpdateOnRepairValueValuesEnum: A bit indicating whether to forcefully
       apply the group's latest configuration when repairing a VM. Valid
       options are: - NO (default): If configuration updates are available,
-      they are not forcefully applied during repair. However, if you've set up
-      a proactive type of update policy, then configuration updates are
-      applied as usual. - YES: If configuration updates are available, they
-      are applied during repair.
+      they are not forcefully applied during repair. Instead, configuration
+      updates are applied according to the group's update policy. - YES: If
+      configuration updates are available, they are applied during repair.
 
   Fields:
     forceUpdateOnRepair: A bit indicating whether to forcefully apply the
       group's latest configuration when repairing a VM. Valid options are: -
       NO (default): If configuration updates are available, they are not
-      forcefully applied during repair. However, if you've set up a proactive
-      type of update policy, then configuration updates are applied as usual.
-      - YES: If configuration updates are available, they are applied during
-      repair.
+      forcefully applied during repair. Instead, configuration updates are
+      applied according to the group's update policy. - YES: If configuration
+      updates are available, they are applied during repair.
     metadataBasedReadinessSignal: The configuration for metadata based
       readiness signal sent by the instance during initialization when
       stopping / suspending an instance. The Instance Group Manager will wait
@@ -43330,9 +43228,9 @@ class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
     r"""A bit indicating whether to forcefully apply the group's latest
     configuration when repairing a VM. Valid options are: - NO (default): If
     configuration updates are available, they are not forcefully applied
-    during repair. However, if you've set up a proactive type of update
-    policy, then configuration updates are applied as usual. - YES: If
-    configuration updates are available, they are applied during repair.
+    during repair. Instead, configuration updates are applied according to the
+    group's update policy. - YES: If configuration updates are available, they
+    are applied during repair.
 
     Values:
       NO: <no description>
@@ -45492,6 +45390,8 @@ class InstanceManagedByIgmErrorInstanceActionDetails(_messages.Message):
       CREATING: The managed instance group is creating this instance. If the
         group fails to create this instance, it will try again until it is
         successful.
+      CREATING_ATOMICALLY: The managed instance group is creating this
+        instance atomically.
       CREATING_WITHOUT_RETRIES: The managed instance group is attempting to
         create this instance only once. If the group fails to create this
         instance, it does not try again and the group's targetSize value is
@@ -45519,17 +45419,18 @@ class InstanceManagedByIgmErrorInstanceActionDetails(_messages.Message):
     """
     ABANDONING = 0
     CREATING = 1
-    CREATING_WITHOUT_RETRIES = 2
-    DELETING = 3
-    NONE = 4
-    RECREATING = 5
-    REFRESHING = 6
-    RESTARTING = 7
-    RESUMING = 8
-    STARTING = 9
-    STOPPING = 10
-    SUSPENDING = 11
-    VERIFYING = 12
+    CREATING_ATOMICALLY = 2
+    CREATING_WITHOUT_RETRIES = 3
+    DELETING = 4
+    NONE = 5
+    RECREATING = 6
+    REFRESHING = 7
+    RESTARTING = 8
+    RESUMING = 9
+    STARTING = 10
+    STOPPING = 11
+    SUSPENDING = 12
+    VERIFYING = 13
 
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   instance = _messages.StringField(2)
@@ -50770,8 +50671,8 @@ class LocalizedMessage(_messages.Message):
 
   Fields:
     locale: The locale used following the specification defined at
-      http://www.rfc-editor.org/rfc/bcp/bcp47.txt. Examples are: "en-US", "fr-
-      CH", "es-MX"
+      https://www.rfc-editor.org/rfc/bcp/bcp47.txt. Examples are: "en-US",
+      "fr-CH", "es-MX"
     message: The localized error message in the above locale.
   """
 
@@ -51930,6 +51831,8 @@ class ManagedInstance(_messages.Message):
       CREATING: The managed instance group is creating this instance. If the
         group fails to create this instance, it will try again until it is
         successful.
+      CREATING_ATOMICALLY: The managed instance group is creating this
+        instance atomically.
       CREATING_WITHOUT_RETRIES: The managed instance group is attempting to
         create this instance only once. If the group fails to create this
         instance, it does not try again and the group's targetSize value is
@@ -51957,17 +51860,18 @@ class ManagedInstance(_messages.Message):
     """
     ABANDONING = 0
     CREATING = 1
-    CREATING_WITHOUT_RETRIES = 2
-    DELETING = 3
-    NONE = 4
-    RECREATING = 5
-    REFRESHING = 6
-    RESTARTING = 7
-    RESUMING = 8
-    STARTING = 9
-    STOPPING = 10
-    SUSPENDING = 11
-    VERIFYING = 12
+    CREATING_ATOMICALLY = 2
+    CREATING_WITHOUT_RETRIES = 3
+    DELETING = 4
+    NONE = 5
+    RECREATING = 6
+    REFRESHING = 7
+    RESTARTING = 8
+    RESUMING = 9
+    STARTING = 10
+    STOPPING = 11
+    SUSPENDING = 12
+    VERIFYING = 13
 
   class InstanceStatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the instance. This field is empty when the
@@ -52420,8 +52324,9 @@ class Network(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#network for
       networks.
     mtu: Maximum Transmission Unit in bytes. The minimum value for this field
-      is 1460 and the maximum value is 1500 bytes. If unspecified, defaults to
-      1460.
+      is 1300 and the maximum value is 8896. The suggested value is 1500,
+      which is the default MTU used on the Internet, or 8896 if you want to
+      use Jumbo frames. If unspecified, the value defaults to 1460.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -52978,6 +52883,7 @@ class NetworkEndpointGroup(_messages.Message):
       group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT,
       INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS,
       PRIVATE_SERVICE_CONNECT.
+    pscData: A NetworkEndpointGroupPscData attribute.
     pscTargetService: The target service url used to set up private service
       connection to a Google API or a PSC Producer Service Attachment. An
       example value is: "asia-northeast3-cloudkms.googleapis.com"
@@ -53080,15 +52986,16 @@ class NetworkEndpointGroup(_messages.Message):
   name = _messages.StringField(11)
   network = _messages.StringField(12)
   networkEndpointType = _messages.EnumField('NetworkEndpointTypeValueValuesEnum', 13)
-  pscTargetService = _messages.StringField(14)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  selfLinkWithId = _messages.StringField(17)
-  serverlessDeployment = _messages.MessageField('NetworkEndpointGroupServerlessDeployment', 18)
-  size = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  subnetwork = _messages.StringField(20)
-  type = _messages.EnumField('TypeValueValuesEnum', 21)
-  zone = _messages.StringField(22)
+  pscData = _messages.MessageField('NetworkEndpointGroupPscData', 14)
+  pscTargetService = _messages.StringField(15)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  selfLinkWithId = _messages.StringField(18)
+  serverlessDeployment = _messages.MessageField('NetworkEndpointGroupServerlessDeployment', 19)
+  size = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  subnetwork = _messages.StringField(21)
+  type = _messages.EnumField('TypeValueValuesEnum', 22)
+  zone = _messages.StringField(23)
 
 
 class NetworkEndpointGroupAggregatedList(_messages.Message):
@@ -53535,6 +53442,50 @@ class NetworkEndpointGroupList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class NetworkEndpointGroupPscData(_messages.Message):
+  r"""All data that is specifically relevant to only network endpoint groups
+  of type PRIVATE_SERVICE_CONNECT.
+
+  Enums:
+    PscConnectionStatusValueValuesEnum: [Output Only] The connection status of
+      the PSC Forwarding Rule.
+
+  Fields:
+    consumerPscAddress: [Output Only] Address allocated from given subnetwork
+      for PSC. This IP address acts as a VIP for a PSC NEG, allowing it to act
+      as an endpoint in L7 PSC-XLB.
+    pscConnectionId: [Output Only] The PSC connection id of the PSC Network
+      Endpoint Group Consumer.
+    pscConnectionStatus: [Output Only] The connection status of the PSC
+      Forwarding Rule.
+  """
+
+  class PscConnectionStatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The connection status of the PSC Forwarding Rule.
+
+    Values:
+      ACCEPTED: The connection has been accepted by the producer.
+      CLOSED: The connection has been closed by the producer and will not
+        serve traffic going forward.
+      NEEDS_ATTENTION: The connection has been accepted by the producer, but
+        the producer needs to take further action before the forwarding rule
+        can serve traffic.
+      PENDING: The connection is pending acceptance by the producer.
+      REJECTED: The connection has been rejected by the producer.
+      STATUS_UNSPECIFIED: <no description>
+    """
+    ACCEPTED = 0
+    CLOSED = 1
+    NEEDS_ATTENTION = 2
+    PENDING = 3
+    REJECTED = 4
+    STATUS_UNSPECIFIED = 5
+
+  consumerPscAddress = _messages.StringField(1)
+  pscConnectionId = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 3)
 
 
 class NetworkEndpointGroupServerlessDeployment(_messages.Message):
@@ -58957,9 +58908,9 @@ class PathMatcher(_messages.Message):
       specifies any weightedBackendServices, defaultService must not be set.
       Conversely if defaultService is set, defaultRouteAction cannot contain
       any weightedBackendServices. Only one of defaultRouteAction or
-      defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load
-      balancers support only the urlRewrite action within a path matcher's
-      defaultRouteAction.
+      defaultUrlRedirect must be set. URL maps for Classic external HTTP(S)
+      load balancers only support the urlRewrite action within a path
+      matcher's defaultRouteAction.
     defaultService: The full or partial URL to the BackendService resource.
       This URL is used if none of the pathRules or routeRules defined by this
       PathMatcher are matched. For example, the following are all valid URLs
@@ -59054,8 +59005,8 @@ class PathRule(_messages.Message):
       If routeAction specifies any weightedBackendServices, service must not
       be set. Conversely if service is set, routeAction cannot contain any
       weightedBackendServices. Only one of routeAction or urlRedirect must be
-      set. URL maps for external HTTP(S) load balancers support only the
-      urlRewrite action within a path rule's routeAction.
+      set. URL maps for Classic external HTTP(S) load balancers only support
+      the urlRewrite action within a path rule's routeAction.
     service: The full or partial URL of the backend service resource to which
       traffic is directed if this rule is matched. If routeAction is also
       specified, advanced routing actions, such as URL rewrites, take effect
@@ -61909,21 +61860,6 @@ class RegionDisksStopAsyncReplicationRequest(_messages.Message):
   """
 
   asyncSecondaryDisk = _messages.StringField(1)
-
-
-class RegionDisksStopGroupAsyncReplicationRequest(_messages.Message):
-  r"""A RegionDisksStopGroupAsyncReplicationRequest object.
-
-  Fields:
-    resourcePolicy: The URL of the DiskConsistencyGroupPolicy for the group of
-      disks to stop. This may be a full or partial URL, such as: -
-      https://www.googleapis.com/compute/v1/projects/project/regions/region
-      /resourcePolicies/resourcePolicy -
-      projects/project/regions/region/resourcePolicies/resourcePolicy -
-      regions/region/resourcePolicies/resourcePolicy
-  """
-
-  resourcePolicy = _messages.StringField(1)
 
 
 class RegionInstanceGroupList(_messages.Message):
@@ -67473,6 +67409,7 @@ class Scheduling(_messages.Message):
       default vCPUs of the current machine type.
     currentMemoryMb: Current amount of memory (in MB) available for VM. 0 or
       unset means default amount of memory of the current machine type.
+    dynamicResizeProperties: A SchedulingDynamicResizeProperties attribute.
     hostErrorTimeoutSeconds: Specify the time in seconds for host error
       detection, the value must be within the range of [90, 330] with the
       increment of 30, if unset, the default behavior of host error recovery
@@ -67572,19 +67509,49 @@ class Scheduling(_messages.Message):
   availabilityDomain = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   currentCpus = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   currentMemoryMb = _messages.IntegerField(4)
-  hostErrorTimeoutSeconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  instanceTerminationAction = _messages.EnumField('InstanceTerminationActionValueValuesEnum', 6)
-  latencyTolerant = _messages.BooleanField(7)
-  locationHint = _messages.StringField(8)
-  maintenanceFreezeDurationHours = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 10)
-  maxRunDuration = _messages.MessageField('Duration', 11)
-  minNodeCpus = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 13, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 14)
-  preemptible = _messages.BooleanField(15)
-  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 16)
-  terminationTime = _messages.StringField(17)
+  dynamicResizeProperties = _messages.MessageField('SchedulingDynamicResizeProperties', 5)
+  hostErrorTimeoutSeconds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  instanceTerminationAction = _messages.EnumField('InstanceTerminationActionValueValuesEnum', 7)
+  latencyTolerant = _messages.BooleanField(8)
+  locationHint = _messages.StringField(9)
+  maintenanceFreezeDurationHours = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 11)
+  maxRunDuration = _messages.MessageField('Duration', 12)
+  minNodeCpus = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 14, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 15)
+  preemptible = _messages.BooleanField(16)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 17)
+  terminationTime = _messages.StringField(18)
+
+
+class SchedulingDynamicResizeProperties(_messages.Message):
+  r"""Configuration for properties related to dynamic assignment of computing
+  resources to VM (CPU and RAM).
+
+  Enums:
+    HotStandbyStateValueValuesEnum: Current Hot Standby state of VM.
+
+  Fields:
+    enableHotStandby: Set to true if this VM is supporting HotStandby modes
+      (b/235044648).
+    hotStandbyState: Current Hot Standby state of VM.
+  """
+
+  class HotStandbyStateValueValuesEnum(_messages.Enum):
+    r"""Current Hot Standby state of VM.
+
+    Values:
+      ACTIVE: <no description>
+      HOTSTANDBY_STATE_UNSPECIFIED: <no description>
+      STANDBY: <no description>
+    """
+    ACTIVE = 0
+    HOTSTANDBY_STATE_UNSPECIFIED = 1
+    STANDBY = 2
+
+  enableHotStandby = _messages.BooleanField(1)
+  hotStandbyState = _messages.EnumField('HotStandbyStateValueValuesEnum', 2)
 
 
 class SchedulingNodeAffinity(_messages.Message):
@@ -77595,7 +77562,7 @@ class Uint128(_messages.Message):
 
 
 class UpcomingMaintenance(_messages.Message):
-  r"""Upcoming Maintenance notification information. TODO(b/196881882)
+  r"""Upcoming Maintenance notification information. TODO(b/242069500)
   Deprecate this proto once it's fully migrated to be under proto
   ResourceStatus.UpcomingMaintenance.
 
@@ -77702,10 +77669,11 @@ class UrlMap(_messages.Message):
       weightedBackendServices, defaultService must not be set. Conversely if
       defaultService is set, defaultRouteAction cannot contain any
       weightedBackendServices. Only one of defaultRouteAction or
-      defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load
-      balancers support only the urlRewrite action within defaultRouteAction.
-      defaultRouteAction has no effect when the URL map is bound to a target
-      gRPC proxy that has the validateForProxyless field set to true.
+      defaultUrlRedirect must be set. URL maps for Classic external HTTP(S)
+      load balancers only support the urlRewrite action within
+      defaultRouteAction. defaultRouteAction has no effect when the URL map is
+      bound to a target gRPC proxy that has the validateForProxyless field set
+      to true.
     defaultService: The full or partial URL of the defaultService resource to
       which traffic is directed if none of the hostRules match. If
       defaultRouteAction is also specified, advanced routing actions, such as

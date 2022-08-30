@@ -370,6 +370,10 @@
           "description": "A [Cloud SQL](https:\/\/cloud.google.com\/sql) instance URI.",
           "type": "string"
         },
+        "cloudFunction": {
+          "description": "A [Cloud function](https:\/\/cloud.google.com\/functions).",
+          "$ref": "CloudFunctionEndpoint"
+        },
         "network": {
           "description": "A Compute Engine network URI.",
           "type": "string"
@@ -390,6 +394,17 @@
         },
         "projectId": {
           "description": "Project ID where the endpoint is located. The Project ID can be derived from the URI if you provide a VM instance or network URI. The following are two cases where you must provide the project ID: 1. Only the IP address is specified, and the IP address is within a GCP project. 2. When you are using Shared VPC and the IP address that you provide is from the service project. In this case, the network that the IP address resides in is defined in the host project.",
+          "type": "string"
+        }
+      }
+    },
+    "CloudFunctionEndpoint": {
+      "id": "CloudFunctionEndpoint",
+      "description": "Wrapper for cloud function attributes.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "A [Cloud function](https:\/\/cloud.google.com\/functions) name.",
           "type": "string"
         }
       }
@@ -509,6 +524,7 @@
             "Initial state: packet originating from a VPC or on-premises network with internal source IP. If the source is a VPC network visible to the user, a NetworkInfo is populated with details of the network.",
             "Initial state: packet originating from a Google Kubernetes Engine cluster master. A GKEMasterInfo is populated with starting instance information.",
             "Initial state: packet originating from a Cloud SQL instance. A CloudSQLInstanceInfo is populated with starting instance information.",
+            "Initial state: packet originating from a Cloud function. A CloudFunctionInfo is populated with starting function information.",
             "Config checking state: verify ingress firewall rule.",
             "Config checking state: verify egress firewall rule.",
             "Config checking state: verify route.",
@@ -519,6 +535,7 @@
             "Forwarding state: arriving at a Compute Engine external load balancer.",
             "Forwarding state: arriving at a Cloud VPN gateway.",
             "Forwarding state: arriving at a Cloud VPN tunnel.",
+            "Forwarding state: arriving at a VPC connector.",
             "Transition state: packet header translated.",
             "Transition state: original connection is terminated and a new proxied connection is initiated.",
             "Final state: packet could be delivered.",
@@ -534,6 +551,7 @@
             "START_FROM_PRIVATE_NETWORK",
             "START_FROM_GKE_MASTER",
             "START_FROM_CLOUD_SQL_INSTANCE",
+            "START_FROM_CLOUD_FUNCTION",
             "APPLY_INGRESS_FIREWALL_RULE",
             "APPLY_EGRESS_FIREWALL_RULE",
             "APPLY_ROUTE",
@@ -544,6 +562,7 @@
             "ARRIVE_AT_EXTERNAL_LOAD_BALANCER",
             "ARRIVE_AT_VPN_GATEWAY",
             "ARRIVE_AT_VPN_TUNNEL",
+            "ARRIVE_AT_VPC_CONNECTOR",
             "NAT",
             "PROXY_CONNECTION",
             "DELIVER",
@@ -589,6 +608,10 @@
           "description": "Display information of a Compute Engine VPN tunnel.",
           "$ref": "VpnTunnelInfo"
         },
+        "vpcConnector": {
+          "description": "Display information of a VPC connector.",
+          "$ref": "VpcConnectorInfo"
+        },
         "deliver": {
           "description": "Display information of the final state \"deliver\" and reason.",
           "$ref": "DeliverInfo"
@@ -620,6 +643,10 @@
         "cloudSqlInstance": {
           "description": "Display information of a Cloud SQL instance.",
           "$ref": "CloudSQLInstanceInfo"
+        },
+        "cloudFunction": {
+          "description": "Display information of a Cloud function.",
+          "$ref": "CloudFunctionInfo"
         }
       }
     },
@@ -720,13 +747,15 @@
             "Unspecified type.",
             "Hierarchical firewall policy rule. For details, see [Hierarchical firewall policies overview](https:\/\/cloud.google.com\/vpc\/docs\/firewall-policies).",
             "VPC firewall rule. For details, see [VPC firewall rules overview](https:\/\/cloud.google.com\/vpc\/docs\/firewalls).",
-            "Implied VPC firewall rule. For details, see [Implied rules](https:\/\/cloud.google.com\/vpc\/docs\/firewalls#default_firewall_rules)."
+            "Implied VPC firewall rule. For details, see [Implied rules](https:\/\/cloud.google.com\/vpc\/docs\/firewalls#default_firewall_rules).",
+            "Implicit firewall rules that are managed by serverless VPC access to allow ingress access. They are not visible in the Google Cloud console. For details, see [VPC connector's implicit rules](https:\/\/cloud.google.com\/functions\/docs\/networking\/connecting-vpc#restrict-access)."
           ],
           "enum": [
             "FIREWALL_RULE_TYPE_UNSPECIFIED",
             "HIERARCHICAL_FIREWALL_POLICY_RULE",
             "VPC_FIREWALL_RULE",
-            "IMPLIED_VPC_FIREWALL_RULE"
+            "IMPLIED_VPC_FIREWALL_RULE",
+            "SERVERLESS_VPC_ACCESS_MANAGED_FIREWALL_RULE"
           ]
         }
       }
@@ -945,6 +974,25 @@
         }
       }
     },
+    "VpcConnectorInfo": {
+      "id": "VpcConnectorInfo",
+      "description": "For display only. Metadata associated with a VPC connector.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Name of a VPC connector.",
+          "type": "string"
+        },
+        "uri": {
+          "description": "URI of a VPC connector.",
+          "type": "string"
+        },
+        "location": {
+          "description": "Location in which the VPC connector is deployed.",
+          "type": "string"
+        }
+      }
+    },
     "DeliverInfo": {
       "id": "DeliverInfo",
       "description": "Details of the final state \"deliver\" and associated resource.",
@@ -1057,6 +1105,13 @@
         "resourceUri": {
           "description": "URI of the resource that caused the abort.",
           "type": "string"
+        },
+        "projectsMissingPermission": {
+          "description": "List of project IDs that the user has specified in the request but does not have permission to access network configs. Analysis is aborted in this case with the PERMISSION_DENIED cause.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1090,7 +1145,10 @@
             "Packet was dropped inside Google Kubernetes Engine Service.",
             "Packet was dropped inside Cloud SQL Service.",
             "Packet was dropped because there is no peering between the originating network and the Google Managed Services Network.",
-            "Packet was dropped because the Cloud SQL instance has neither a private nor a public IP address."
+            "Packet was dropped because the Cloud SQL instance has neither a private nor a public IP address.",
+            "Packet could be dropped because the Cloud function is not in an active status.",
+            "Packet could be dropped because no VPC connector is set.",
+            "Packet could be dropped because the VPC connector is not in a running state."
           ],
           "enum": [
             "CAUSE_UNSPECIFIED",
@@ -1114,7 +1172,10 @@
             "DROPPED_INSIDE_GKE_SERVICE",
             "DROPPED_INSIDE_CLOUD_SQL_SERVICE",
             "GOOGLE_MANAGED_SERVICE_NO_PEERING",
-            "CLOUD_SQL_INSTANCE_NO_IP_ADDRESS"
+            "CLOUD_SQL_INSTANCE_NO_IP_ADDRESS",
+            "CLOUD_FUNCTION_NOT_ACTIVE",
+            "VPC_CONNECTOR_NOT_SET",
+            "VPC_CONNECTOR_NOT_RUNNING"
           ]
         },
         "resourceUri": {
@@ -1295,6 +1356,30 @@
         }
       }
     },
+    "CloudFunctionInfo": {
+      "id": "CloudFunctionInfo",
+      "description": "For display only. Metadata associated with a Cloud function.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Name of a Cloud function.",
+          "type": "string"
+        },
+        "uri": {
+          "description": "URI of a Cloud function.",
+          "type": "string"
+        },
+        "location": {
+          "description": "Location in which the Cloud function is deployed.",
+          "type": "string"
+        },
+        "versionId": {
+          "description": "Latest successfully deployed version id of the Cloud function.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "RerunConnectivityTestRequest": {
       "id": "RerunConnectivityTestRequest",
       "description": "Request for the `RerunConnectivityTest` method.",
@@ -1359,7 +1444,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"

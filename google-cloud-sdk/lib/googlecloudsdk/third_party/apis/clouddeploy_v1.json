@@ -858,6 +858,11 @@
             "CLOUD_BUILD_UNAVAILABLE",
             "EXECUTION_FAILED"
           ]
+        },
+        "failureMessage": {
+          "description": "Output only. Additional information about the render failure, if available.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },

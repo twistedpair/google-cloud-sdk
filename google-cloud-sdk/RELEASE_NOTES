@@ -5,6 +5,111 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 400.0.0 (2022-08-30)
+
+### Breaking Changes
+
+*   **(Anthos Multi-Cloud)** Removed `aws/location` property of `gcloud container aws`. Use
+    `container_aws/location` to set the default Google Cloud location for
+    `gcloud container aws`.
+*   **(Anthos Multi-Cloud)** Removed `azure/location` property of `gcloud container azure`. Use
+    `container_azure/location` to set the default Google Cloud location for
+    `gcloud container azure`.
+
+
+### Anthos Multi-Cloud
+
+*   Added `--description` flag to `gcloud container aws clusters create` to
+    set the description field when creating AWS clusters.
+*   Added `--annotations` flag to `gcloud container aws clusters create` to
+    set the annotations field when creating AWS clusters.
+
+### App Engine
+
+* Use java17 as the default runtime for generated configuration.
+  This is a behavior change with the command `gcloud app deploy` when there is
+  no app.yaml configuration for Java projects (Maven, or Gradle, or simple jar).
+  Instead of using a java11 runtime target, the application will be deployed now
+  on a java17 runtime with a F2 instance class. If you want to stay on a java11
+  runtime, just create a simple app.yaml file with `runtime: java11` in it.
+
+### Artifact Registry
+
+*   Fixed issue where `gcloud artifacts repositories create` requires excessive
+     permission when a kms key is supplied.
+
+### BigQuery
+
+* Add support for specifying `vertex_ai_model_id` when in the BigQuery ML update model AI.
+* Add support for preserving embedded Ascii Control characters in CSV External tables.
+* Add support for serving_default signature when exporting BigQuery trained Tensorflow models.
+* Add support for reference file schema for AVRO, PARQUET, and ORC formats.
+* Add support for BigSpark routines.
+* Fix bug when api flag is used within a restricted network.
+* Add support `metadata_cache_mode` and `max_staleness` for Query Acceleration on BigLake tables.
+* Add support for BigSpark connections.
+
+### Cloud Asset Inventory
+
+* Added `gcloud beta asset query`.
+* Added `--read-time`, `--start-time`, `--end-time`, `--bigquery-dataset`, `--bigquery-table`, and `--write-disposition` flags to support point-in-time/range queries and export to BigQuery.
+
+### Cloud Run
+
+* Changed the link in `gcloud beta run jobs execute` output to the UI of
+the resulted execution instead of its logging UI.
+* Added elapsed time to `gcloud beta run jobs executions describe` output.
+  This is between execution creation timestamp and execution completion
+  timestamp.
+
+### Cloud Spanner
+
+* Added `--database-role` flag to `gcloud spanner databases` to support role-based access control in Cloud Spanner.
+* Added `gcloud beta spanner databases roles list` to list all roles in Cloud Spanner database.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.92.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Kubernetes Engine
+
+* Added `--logging-variant` flag to `gcloud container clusters create`, `gcloud container clusters update`,  `gcloud container node-pools create` and `gcloud container node-pools update` that allow users to set the logging variant used in the cluster or in the node pools. Selecting logging variant is available in clusters with version 1.24.2-gke.300+. `--logging_variant` is used to choose the desired logging agent that is deployed on GKE nodes. Valid options are `MAX_THROUGHPUT` and `DEFAULT`. For more details about configuring the logging agent to achieve desired throughput, see <http://cloud/stackdriver/docs/solutions/gke/managing-logs#throughput>.
+
+### Secret Manager
+
+*   Added `--update-annotations` flag to `gcloud secrets update` and
+`gcloud secrets beta update` to enable the addition of new annotations to secret versions.
+*   Added `--remove-annotations` flag to `gcloud secrets update` and
+`gcloud secrets beta update` to enable the removal of annotations to secret versions.
+*   Added `--clear-annotations` flag to `gcloud secrets update` and
+`gcloud secrets beta update` to enable the clearing of all annotations from a secret.
+*   Added `--set-annotations` flag to `gcloud secrets create` and
+`gcloud secrets beta create` to enable the setting of annotations on new secrets.
+*   Added `--out-file` flag to `gcloud secrets versions access` and `gcloud beta secrets versions access` to directly get the output in file.
+
+### Terraform
+
+* Added support for the following resources in CAI-based policies:
+  * `google_cloudfunctions2_function_iam_binding`
+  * `google_cloudfunctions2_function_iam_member`
+  * `google_cloudfunctions2_function_iam_policy`
+  * `google_gke_hub_membership_iam_binding`
+  * `google_gke_hub_membership_iam_member`
+  * `google_gke_hub_membership_iam_policy`
+* TF -> CAI resource conversion compiled against google provider version [4.33.0](https://github.com/hashicorp/terraform-provider-google/releases/tag/v4.33.0).
+* Fixed asset names for the following resources:
+  * `google_compute_backend_service_iam`
+  * `google_compute_instance_iam`
+  * `google_compute_region_backend_service_iam`
+  * `google_privateca_certificate_template_iam`
+* Added support for `organizations/unknown` in CAI-based policy match parameters.
+* Enabled support for non-Google Terraform resources in TF-based policies.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 399.0.0 (2022-08-23)
 
 ### AlloyDB

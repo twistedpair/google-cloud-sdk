@@ -122,7 +122,7 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new FirewallPolicy, specifying conditions at which reCAPTCHA actions can be executed.
+      r"""Creates a new FirewallPolicy, specifying conditions at which reCAPTCHA actions can be executed. A project may have a maximum of 1000 policies.
 
       Args:
         request: (RecaptchaenterpriseProjectsFirewallpoliciesCreateRequest) input message
@@ -456,7 +456,7 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
     )
 
     def RetrieveLegacySecretKey(self, request, global_params=None):
-      r"""Returns the secret key related to the specified public key. You should use the legacy secret key only if you are integrating with a 3rd party using the legacy reCAPTCHA instead of reCAPTCHA Enterprise.
+      r"""Returns the secret key related to the specified public key. You must use the legacy secret key only in a 3rd party integration with legacy reCAPTCHA.
 
       Args:
         request: (RecaptchaenterpriseProjectsKeysRetrieveLegacySecretKeyRequest) input message
@@ -530,7 +530,7 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Get the memberships in a group of related accounts.
+      r"""Get memberships in a group of related accounts.
 
       Args:
         request: (RecaptchaenterpriseProjectsRelatedaccountgroupsMembershipsListRequest) input message

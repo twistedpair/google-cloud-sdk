@@ -60,6 +60,26 @@ def ReadFileOrStdin(path, max_bytes=None, is_binary=True):
         'Failed to read file [{path}]: {e}'.format(path=path, e=e))
 
 
+def WriteBinaryFile(path, content):
+  """Writes the given binary contents to the file at given path.
+
+  Args:
+      path (str): The file path to write to.
+      content (str): The byte string to write.
+
+  Raises:
+      Error: If the file cannot be written.
+  """
+  if not path:
+    return None
+
+  try:
+    files.WriteBinaryFileContents(path, content, private=True)
+  except files.Error as e:
+    raise exceptions.BadFileException(
+        'Unable to write file [{path}]: {e}'.format(path=path, e=e))
+
+
 def _ParseUserManagedPolicy(user_managed_policy):
   """"Reads user managed replication policy file and returns its data.
 
@@ -243,3 +263,42 @@ def ApplyAliasUpdate(args, original_version_aliases):
         for (alias, version) in args.update_version_aliases.items()
     })
     return new_version_aliases
+
+
+def ApplyAnnotationsUpdate(args, original_annotations):
+  """Applies updates to the list of annotations on a secret.
+
+  Makes no alterations to the original annotations
+
+  Args:
+    args (argparse.Namespace): The collection of user-provided arguments.
+    original_annotations (list): annotations configured on the secret prior to
+      update.
+
+  Returns:
+      result (dict): dict of annotations pairs after update.
+  """
+  if args.IsSpecified('clear_annotations'):
+    return {}
+
+  annotations_dict = dict()
+  annotations_dict.update(
+      {pair.key: pair.value for pair in original_annotations})
+  if args.IsSpecified('remove_annotations'):
+    for annotation in args.remove_annotations:
+      del annotations_dict[annotation]
+    new_annotations = dict()
+    for annotation_pair in original_annotations:
+      if annotation_pair.key in annotations_dict:
+        new_annotations[annotation_pair.key] = annotation_pair.value
+    return new_annotations
+
+  elif args.IsSpecified('update_annotations'):
+    new_annotations = dict()
+    annotations_dict.update(
+        {pair.key: pair.value for pair in original_annotations})
+    new_annotations.update({
+        annotation: metadata
+        for (annotation, metadata) in args.update_annotations.items()
+    })
+    return new_annotations

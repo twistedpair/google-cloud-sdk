@@ -59,7 +59,7 @@ gatewaySecurityPolicy:
 gatewaySecurityPolicyRule:
   name: gateway security policy rule
   collection: networksecurity.projects.locations.gatewaySecurityPolicies.rules
-  request_id_field: ruleId
+  request_id_field: gatewaySecurityPolicyRuleId
   attributes:
   - *project
   - *location

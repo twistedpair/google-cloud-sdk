@@ -1230,6 +1230,10 @@
         "networkPerformanceConfig": {
           "description": "Network bandwidth tier configuration.",
           "$ref": "NetworkPerformanceConfig"
+        },
+        "podCidrOverprovisionConfig": {
+          "description": "Pod CIDR size overprovisioning config for the nodepool. Pod CIDR size per node depends on max_pods_per_node. By default, the value of max_pods_per_node is rounded off to next power of 2 and we then double that to get the size of pod CIDR block per node. Example: max_pods_per_node of 30 would result in 64 IPs (\/26). This config can disable the doubling of IPs (we still round off to next power of 2) Example: max_pods_per_node of 30 will result in 32 IPs (\/27) when overprovisioning is disabled.",
+          "$ref": "PodCIDROverprovisionConfig"
         }
       }
     },
@@ -1249,6 +1253,17 @@
             "TIER_UNSPECIFIED",
             "TIER_1"
           ]
+        }
+      }
+    },
+    "PodCIDROverprovisionConfig": {
+      "id": "PodCIDROverprovisionConfig",
+      "description": "Config for pod CIDR size overprovisioning.",
+      "type": "object",
+      "properties": {
+        "disable": {
+          "description": "Whether Pod CIDR overprovisioning is disabled. Note: Pod CIDR overprovisioning is enabled by default.",
+          "type": "boolean"
         }
       }
     },
@@ -1672,6 +1687,10 @@
         "useRoutes": {
           "description": "Whether routes will be used for pod IPs in the cluster. This is used in conjunction with use_ip_aliases. It cannot be true if use_ip_aliases is true. If both use_ip_aliases and use_routes are false, then the server picks the default IP allocation mode",
           "type": "boolean"
+        },
+        "podCidrOverprovisionConfig": {
+          "description": "Pod CIDR size overprovisioning config for the nodepool. Pod CIDR size per node depends on max_pods_per_node. By default, the value of max_pods_per_node is doubled and then rounded off to next power of 2 to get the size of pod CIDR block per node. Example: max_pods_per_node of 30 would result in 64 IPs (\/26). This config can disable the doubling of IPs (we still round off to next power of 2) Example: max_pods_per_node of 30 will result in 32 IPs (\/27) when overprovisioning is disabled.",
+          "$ref": "PodCIDROverprovisionConfig"
         }
       }
     },
@@ -2031,6 +2050,10 @@
         "serviceExternalIpsConfig": {
           "description": "ServiceExternalIPsConfig specifies if services with externalIPs field are blocked or not.",
           "$ref": "ServiceExternalIPsConfig"
+        },
+        "gatewayApiConfig": {
+          "description": "GatewayAPIConfig contains the desired config of Gateway API on this cluster.",
+          "$ref": "GatewayAPIConfig"
         }
       }
     },
@@ -2090,6 +2113,29 @@
         "enabled": {
           "description": "Whether Services with ExternalIPs field are allowed or not.",
           "type": "boolean"
+        }
+      }
+    },
+    "GatewayAPIConfig": {
+      "id": "GatewayAPIConfig",
+      "description": "GatewayAPIConfig contains the desired config of Gateway API on this cluster.",
+      "type": "object",
+      "properties": {
+        "channel": {
+          "description": "The Gateway API release channel to use for Gateway API.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "Gateway API support is disabled",
+            "Gateway API support is enabled, experimental CRDs are installed",
+            "Gateway API support is enabled, standard CRDs are installed"
+          ],
+          "enum": [
+            "CHANNEL_UNSPECIFIED",
+            "CHANNEL_DISABLED",
+            "CHANNEL_EXPERIMENTAL",
+            "CHANNEL_STANDARD"
+          ]
         }
       }
     },
@@ -3011,6 +3057,10 @@
         "desiredNodePoolAutoConfigNetworkTags": {
           "description": "The desired network tags that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters.",
           "$ref": "NetworkTags"
+        },
+        "desiredGatewayApiConfig": {
+          "description": "The desired config of Gateway API on this cluster.",
+          "$ref": "GatewayAPIConfig"
         },
         "etag": {
           "description": "The current etag of the cluster. If an etag is provided and does not match the current etag of the cluster, update will be blocked and an ABORTED error will be returned.",

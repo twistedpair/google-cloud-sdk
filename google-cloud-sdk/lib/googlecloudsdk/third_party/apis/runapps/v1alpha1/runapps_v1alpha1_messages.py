@@ -359,7 +359,7 @@ class Config(_messages.Message):
 
 
 class Deployment(_messages.Message):
-  r"""Message describing Deployment object Next tag: 13
+  r"""Message describing Deployment object Next tag: 14
 
   Messages:
     AnnotationsValue: Unstructured key value map that may be set by external
@@ -383,6 +383,11 @@ class Deployment(_messages.Message):
       scope of the deployment deletion.
     deleteTime: Output only. For a deleted resource, the deletion time. It is
       only populated as a response to a Delete request.
+    dryRun: The data used for dry run. When this dry run message is set, a dry
+      run deployment will be created. A dry run deployment will not deploy
+      live resources. It will generate change plans that include proposed
+      changes and drift changes. The results will be populated inside the dry
+      run message.
     etag: Output only. A system-generated fingerprint for this version of the
       resource. May be used to detect modification conflict during updates.
     labels: Labels as key value pairs
@@ -456,14 +461,15 @@ class Deployment(_messages.Message):
   createTime = _messages.StringField(4)
   deleteSelector = _messages.MessageField('Selector', 5)
   deleteTime = _messages.StringField(6)
-  etag = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  reconciling = _messages.BooleanField(10)
-  render = _messages.MessageField('Render', 11)
-  serviceAccount = _messages.StringField(12)
-  status = _messages.MessageField('DeploymentStatus', 13)
-  updateTime = _messages.StringField(14)
+  dryRun = _messages.MessageField('DryRun', 7)
+  etag = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  reconciling = _messages.BooleanField(11)
+  render = _messages.MessageField('Render', 12)
+  serviceAccount = _messages.StringField(13)
+  status = _messages.MessageField('DeploymentStatus', 14)
+  updateTime = _messages.StringField(15)
 
 
 class DeploymentOperationMetadata(_messages.Message):
@@ -501,6 +507,8 @@ class DeploymentStatus(_messages.Message):
     errorMessage: The error message associated with a failed deployment state,
       if applicable.
     jobDetails: Details of each deploy job.
+    resourceStatus: The state of resources that are being deployed. Order is
+      not guaranteed to be stable when deployment is in progress.
     state: The state associated with the deployment.
   """
 
@@ -520,7 +528,8 @@ class DeploymentStatus(_messages.Message):
 
   errorMessage = _messages.StringField(1)
   jobDetails = _messages.MessageField('JobDetails', 2, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  resourceStatus = _messages.MessageField('ResourceDeploymentStatus', 3, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class DomainConfig(_messages.Message):
@@ -534,6 +543,38 @@ class DomainConfig(_messages.Message):
 
   domain = _messages.StringField(1)
   routes = _messages.MessageField('Route', 2, repeated=True)
+
+
+class DryRun(_messages.Message):
+  r"""Message describing the dry run deployment options and outputs.
+
+  Fields:
+    applicationConfig: The Application Config to run the dry run on.
+    resourceChanges: Output only. Resulting changes as a result of the
+      provided dry run Application Config.
+    resourceDrift: Output only. Changes that were made externally since the
+      previous non-dry run deployment.
+    useParent: Indicates whether to use the parent application for dry run
+      execution.
+  """
+
+  applicationConfig = _messages.MessageField('Config', 1)
+  resourceChanges = _messages.MessageField('DryRunChanges', 2)
+  resourceDrift = _messages.MessageField('DryRunChanges', 3)
+  useParent = _messages.BooleanField(4)
+
+
+class DryRunChanges(_messages.Message):
+  r"""Message describing proposed changes from dry run.
+
+  Fields:
+    hasChanges: Whether there are changes.
+    textOutput: Formatted output of the changes. Same format as the terraform
+      plan output.
+  """
+
+  hasChanges = _messages.BooleanField(1)
+  textOutput = _messages.StringField(2)
 
 
 class Empty(_messages.Message):
@@ -975,29 +1016,32 @@ class ResourceComponentStatus(_messages.Message):
 
 
 class ResourceConfig(_messages.Message):
-  r"""Message for the Resource configuration.
+  r"""Message for the Resource configuration. Next tag: 8
 
   Fields:
+    latestDeployment: Output only. The deployment name for the most recent
+      deployment that has been triggered for a given resource. If a resource
+      was never deployed then this field will be empty.
     redis: Redis configuration.
     router: Router configuration.
     service: Cloud Run service configuration.
-    vpc: VPC configuration.
   """
 
-  redis = _messages.MessageField('RedisConfig', 1)
-  router = _messages.MessageField('RouterConfig', 2)
-  service = _messages.MessageField('CloudRunServiceConfig', 3)
-  vpc = _messages.MessageField('VPCConfig', 4)
+  latestDeployment = _messages.StringField(1)
+  redis = _messages.MessageField('RedisConfig', 2)
+  router = _messages.MessageField('RouterConfig', 3)
+  service = _messages.MessageField('CloudRunServiceConfig', 4)
 
 
 class ResourceDeploymentStatus(_messages.Message):
-  r"""Message decribing the status of a resource being deployed. Next tag: 4
+  r"""Message decribing the status of a resource being deployed. Next tag: 5
 
   Enums:
     OperationValueValuesEnum: Operation to be performed on the resource .
     StateValueValuesEnum: Current status of the resource.
 
   Fields:
+    errorMessage: The error details if the state is FAILED.
     name: Name of the resource.
     operation: Operation to be performed on the resource .
     state: Current status of the resource.
@@ -1024,15 +1068,20 @@ class ResourceDeploymentStatus(_messages.Message):
       NOT_STARTED: Resource queued for deployment.
       RUNNING: Deployment in progress.
       FINISHED: Deployment completed.
+      SUCCEEDED: Deployment completed successfully.
+      FAILED: Deployment completed with failure.
     """
     STATE_UNSPECIFIED = 0
     NOT_STARTED = 1
     RUNNING = 2
     FINISHED = 3
+    SUCCEEDED = 4
+    FAILED = 5
 
-  name = _messages.MessageField('TypedName', 1)
-  operation = _messages.EnumField('OperationValueValuesEnum', 2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  errorMessage = _messages.StringField(1)
+  name = _messages.MessageField('TypedName', 2)
+  operation = _messages.EnumField('OperationValueValuesEnum', 3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class ResourceStatus(_messages.Message):
@@ -1063,10 +1112,15 @@ class ResourceStatus(_messages.Message):
       STATE_UNSPECIFIED: The status of this resource is unspecified.
       ACTIVE: The resource is active.
       FAILED: Some of the components of the resource are not working.
-      MISSING: The key components are missing.
+      MISSING: The key components are missing after at least one successful
+        deployment. The user could have manually removed a resource that was
+        deployed.
       UPDATING: The resource is being deployed.
       NOT_READY: Some of the resource's child resources are not in ready
         state.
+      NOT_DEPLOYED: The resource is currently not deployed. This could happen
+        if the resource was added to the application config, but was not
+        deployed yet, or the resource was undeployed.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -1074,6 +1128,7 @@ class ResourceStatus(_messages.Message):
     MISSING = 3
     UPDATING = 4
     NOT_READY = 5
+    NOT_DEPLOYED = 6
 
   bindingStatus = _messages.MessageField('BindingStatus', 1, repeated=True)
   consoleLink = _messages.StringField(2)
@@ -1418,22 +1473,24 @@ class Selector(_messages.Message):
 
 
 class ServiceResourceBindingConfig(_messages.Message):
-  r"""Message for a binding between a Cloud Run service and a resource.
+  r"""Message for a resource binding, defined in config of the source
+  resource.
 
   Messages:
-    BindingConfigValue: Any configs associated with the binding. e.g. "db-
-      name-env-name": "SQL_NAME".
+    BindingConfigValue: Any configs associated with the binding. Supported
+      keys are resource type specific.
 
   Fields:
-    binding_config: Any configs associated with the binding. e.g. "db-name-
-      env-name": "SQL_NAME".
-    ref: Reference to another resource. Format: "/", e.g. "cloudsql/sql_db".
+    binding_config: Any configs associated with the binding. Supported keys
+      are resource type specific.
+    ref: Reference to a target resource that is being bound. Format: "/", e.g.
+      "cloudsql/sql_db"
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class BindingConfigValue(_messages.Message):
-    r"""Any configs associated with the binding. e.g. "db-name-env-name":
-    "SQL_NAME".
+    r"""Any configs associated with the binding. Supported keys are resource
+    type specific.
 
     Messages:
       AdditionalProperty: An additional property for a BindingConfigValue
@@ -1594,17 +1651,6 @@ class TypedName(_messages.Message):
 
   name = _messages.StringField(1)
   type = _messages.StringField(2)
-
-
-class VPCConfig(_messages.Message):
-  r"""Message for VPC configs.
-
-  Fields:
-    network: Network is an existing network name. If omitted, a new network
-      will be created for the application.
-  """
-
-  network = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

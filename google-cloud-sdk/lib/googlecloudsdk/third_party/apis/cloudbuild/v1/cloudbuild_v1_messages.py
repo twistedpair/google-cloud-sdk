@@ -1114,6 +1114,20 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CloudbuildGithubDotComWebhookReceiveRequest(_messages.Message):
+  r"""A CloudbuildGithubDotComWebhookReceiveRequest object.
+
+  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
+    webhookKey: For GitHub Enterprise webhooks, this key is used to associate
+      the webhook request with the GitHubEnterpriseConfig to use for
+      validation.
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
+  webhookKey = _messages.StringField(2)
+
+
 class CloudbuildGithubInstallationsInstallationsListRequest(_messages.Message):
   r"""A CloudbuildGithubInstallationsInstallationsListRequest object.
 
@@ -1689,9 +1703,8 @@ class CloudbuildProjectsLocationsBitbucketServerConfigsReposListRequest(_message
 
   Fields:
     pageSize: The maximum number of configs to return. The service may return
-      fewer than this value. If unspecified, at most 50 configs will be
-      returned. The maximum value is 1000; values above 1000 will be coerced
-      to 1000.
+      fewer than this value. The maximum value is 1000; values above 1000 will
+      be coerced to 1000.
     pageToken: A page token, received from a previous
       `ListBitbucketServerRepositoriesRequest` call. Provide this to retrieve
       the subsequent page. When paginating, all other parameters provided to

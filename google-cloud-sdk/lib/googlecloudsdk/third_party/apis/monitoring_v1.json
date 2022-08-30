@@ -878,6 +878,20 @@
           "items": {
             "$ref": "TableDataSet"
           }
+        },
+        "metricVisualization": {
+          "description": "Optional. Store rendering strategy",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state",
+            "Default text rendering",
+            "Horizontal bar rendering"
+          ],
+          "enum": [
+            "METRIC_VISUALIZATION_UNSPECIFIED",
+            "NUMBER",
+            "BAR"
+          ]
         }
       }
     },
@@ -1252,6 +1266,25 @@
         },
         "timeout": {
           "description": "An upper bound timeout for the query. Either a Prometheus duration string (https:\/\/prometheus.io\/docs\/prometheus\/latest\/querying\/basics\/#time-durations) or floating point seconds. This non-standard encoding must be used for compatibility with the open source API. Clients may still implement timeouts at the connection level while ignoring this field.",
+          "type": "string"
+        }
+      }
+    },
+    "ListLabelsRequest": {
+      "id": "ListLabelsRequest",
+      "description": "ListLabelsRequest holds all parameters of the Prometheus upstream API for returning a list of label names.",
+      "type": "object",
+      "properties": {
+        "start": {
+          "description": "The start time to evaluate the query for. Either floating point UNIX seconds or RFC3339 formatted timestamp.",
+          "type": "string"
+        },
+        "end": {
+          "description": "The end time to evaluate the query for. Either floating point UNIX seconds or RFC3339 formatted timestamp.",
+          "type": "string"
+        },
+        "match": {
+          "description": "A list of matchers encoded in the Prometheus label matcher format to constrain the values to series that satisfy them.",
           "type": "string"
         }
       }
@@ -1906,6 +1939,43 @@
                           ],
                           "description": "Evaluate a PromQL query with start, end time range."
                         },
+                        "labels": {
+                          "id": "monitoring.projects.location.prometheus.api.v1.labels",
+                          "path": "v1/{+name}/location/{location}/prometheus/api/v1/labels",
+                          "flatPath": "v1/projects/{projectsId}/location/{location}/prometheus/api/v1/labels",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "The workspace on which to execute the request. It is not part of the open source API but used as a request path prefix to distinguish different virtual Prometheus instances of Google Prometheus Engine. The format is: projects\/PROJECT_ID_OR_NUMBER.",
+                              "pattern": "^projects\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "location": {
+                              "description": "Location of the resource information. Has to be \"global\" now.",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name",
+                            "location"
+                          ],
+                          "request": {
+                            "$ref": "ListLabelsRequest"
+                          },
+                          "response": {
+                            "$ref": "HttpBody"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/monitoring",
+                            "https://www.googleapis.com/auth/monitoring.read"
+                          ],
+                          "description": "Lists labels for metrics."
+                        },
                         "series": {
                           "id": "monitoring.projects.location.prometheus.api.v1.series",
                           "path": "v1/{+name}/location/{location}/prometheus/api/v1/series",
@@ -2047,6 +2117,59 @@
                                 "https://www.googleapis.com/auth/monitoring.read"
                               ],
                               "description": "Lists possible values for a given label name."
+                            }
+                          }
+                        },
+                        "labels": {
+                          "methods": {
+                            "list": {
+                              "id": "monitoring.projects.location.prometheus.api.v1.labels.list",
+                              "path": "v1/{+name}/location/{location}/prometheus/api/v1/labels",
+                              "flatPath": "v1/projects/{projectsId}/location/{location}/prometheus/api/v1/labels",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "name": {
+                                  "description": "The workspace on which to execute the request. It is not part of the open source API but used as a request path prefix to distinguish different virtual Prometheus instances of Google Prometheus Engine. The format is: projects\/PROJECT_ID_OR_NUMBER.",
+                                  "pattern": "^projects\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "location": {
+                                  "description": "Location of the resource information. Has to be \"global\" now.",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "start": {
+                                  "description": "The start time to evaluate the query for. Either floating point UNIX seconds or RFC3339 formatted timestamp.",
+                                  "location": "query",
+                                  "type": "string"
+                                },
+                                "end": {
+                                  "description": "The end time to evaluate the query for. Either floating point UNIX seconds or RFC3339 formatted timestamp.",
+                                  "location": "query",
+                                  "type": "string"
+                                },
+                                "match": {
+                                  "description": "A list of matchers encoded in the Prometheus label matcher format to constrain the values to series that satisfy them.",
+                                  "location": "query",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name",
+                                "location"
+                              ],
+                              "response": {
+                                "$ref": "HttpBody"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform",
+                                "https://www.googleapis.com/auth/monitoring",
+                                "https://www.googleapis.com/auth/monitoring.read"
+                              ],
+                              "description": "Lists labels for metrics."
                             }
                           }
                         },

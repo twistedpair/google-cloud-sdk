@@ -333,6 +333,13 @@ class CrashDialogError(_messages.Message):
   crashPackage = _messages.StringField(1)
 
 
+class DetectedAppSplashScreen(_messages.Message):
+  r"""A notification that Robo detected a splash screen provided by app (vs.
+  Android OS splash screen).
+  """
+
+
+
 class DeviceOutOfMemory(_messages.Message):
   r"""A warning that device ran out of memory"""
 
@@ -2221,6 +2228,8 @@ class TestIssue(_messages.Message):
         crash apps).
       deviceOutOfMemory: Device running out of memory was detected
       logcatCollectionError: Problems detected while collecting logcat
+      detectedAppSplashScreen: Robo detected a splash screen provided by app
+        (vs. Android OS splash screen).
     """
     unspecifiedType = 0
     fatalException = 1
@@ -2253,6 +2262,7 @@ class TestIssue(_messages.Message):
     unityException = 28
     deviceOutOfMemory = 29
     logcatCollectionError = 30
+    detectedAppSplashScreen = 31
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   errorMessage = _messages.StringField(2)

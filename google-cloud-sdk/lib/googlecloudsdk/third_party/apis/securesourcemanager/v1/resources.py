@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://securesourcemanager.googleapis.com/v1/'
-DOCS_URL = ''
+DOCS_URL = 'https://docs.google.com/document/d/1RDDT2H8WccCLnE3mgcJCmk7KfEEVPaX7sS4T2_jTHHo/edit'
 
 
 class Collections(enum.Enum):

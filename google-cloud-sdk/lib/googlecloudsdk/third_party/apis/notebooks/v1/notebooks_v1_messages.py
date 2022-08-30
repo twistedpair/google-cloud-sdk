@@ -85,8 +85,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -1983,7 +1989,7 @@ class NotebooksProjectsLocationsRuntimesPatchRequest(_messages.Message):
       'latest' }], } } Currently, only the following fields can be updated: -
       software_config.kernels - software_config.post_startup_script -
       software_config.custom_gpu_driver_path - software_config.idle_shutdown -
-      software_config.idle_shutdown_timeout
+      software_config.idle_shutdown_timeout - software_config.disable_terminal
   """
 
   name = _messages.StringField(1, required=True)
@@ -2645,7 +2651,8 @@ class RuntimeAcceleratorConfig(_messages.Message):
 
     Values:
       ACCELERATOR_TYPE_UNSPECIFIED: Accelerator type is not specified.
-      NVIDIA_TESLA_K80: Accelerator type is Nvidia Tesla K80.
+      NVIDIA_TESLA_K80: b/241005111 K80 deprecation in Google Managed
+        Notebooks Accelerator type is Nvidia Tesla K80.
       NVIDIA_TESLA_P100: Accelerator type is Nvidia Tesla P100.
       NVIDIA_TESLA_V100: Accelerator type is Nvidia Tesla V100.
       NVIDIA_TESLA_P4: Accelerator type is Nvidia Tesla P4.
@@ -2808,6 +2815,8 @@ class RuntimeSoftwareConfig(_messages.Message):
     customGpuDriverPath: Specify a custom Cloud Storage path where the GPU
       driver is stored. If not specified, we'll automatically choose from
       official GPU drivers.
+    disableTerminal: Bool indicating whether JupyterLab terminal will be
+      available or not. Default: False
     enableHealthMonitoring: Verifies core internal services are running.
       Default: True
     idleShutdown: Runtime will automatically shutdown after
@@ -2844,15 +2853,16 @@ class RuntimeSoftwareConfig(_messages.Message):
     DOWNLOAD_AND_RUN_EVERY_START = 2
 
   customGpuDriverPath = _messages.StringField(1)
-  enableHealthMonitoring = _messages.BooleanField(2)
-  idleShutdown = _messages.BooleanField(3)
-  idleShutdownTimeout = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  installGpuDriver = _messages.BooleanField(5)
-  kernels = _messages.MessageField('ContainerImage', 6, repeated=True)
-  notebookUpgradeSchedule = _messages.StringField(7)
-  postStartupScript = _messages.StringField(8)
-  postStartupScriptBehavior = _messages.EnumField('PostStartupScriptBehaviorValueValuesEnum', 9)
-  upgradeable = _messages.BooleanField(10)
+  disableTerminal = _messages.BooleanField(2)
+  enableHealthMonitoring = _messages.BooleanField(3)
+  idleShutdown = _messages.BooleanField(4)
+  idleShutdownTimeout = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  installGpuDriver = _messages.BooleanField(6)
+  kernels = _messages.MessageField('ContainerImage', 7, repeated=True)
+  notebookUpgradeSchedule = _messages.StringField(8)
+  postStartupScript = _messages.StringField(9)
+  postStartupScriptBehavior = _messages.EnumField('PostStartupScriptBehaviorValueValuesEnum', 10)
+  upgradeable = _messages.BooleanField(11)
 
 
 class Schedule(_messages.Message):
@@ -3638,9 +3648,9 @@ class VirtualMachineConfig(_messages.Message):
       communications. Cannot be specified with subnetwork. If neither
       `network` nor `subnet` is specified, the "default" network of the
       project is used, if it exists. A full URL or partial URI. Examples: * `h
-      ttps://www.googleapis.com/compute/v1/projects/[project_id]/regions/globa
-      l/default` * `projects/[project_id]/regions/global/default` Runtimes are
-      managed resources inside Google Infrastructure. Runtimes support the
+      ttps://www.googleapis.com/compute/v1/projects/[project_id]/global/networ
+      ks/default` * `projects/[project_id]/global/networks/default` Runtimes
+      are managed resources inside Google Infrastructure. Runtimes support the
       following network configurations: * Google Managed Network (Network &
       subnet are empty) * Consumer Project VPC (network & subnet are
       required). Requires configuring Private Service Access. * Shared VPC

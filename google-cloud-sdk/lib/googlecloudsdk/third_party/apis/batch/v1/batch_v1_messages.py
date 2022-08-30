@@ -19,12 +19,15 @@ class Accelerator(_messages.Message):
 
   Fields:
     count: The number of accelerators of this type.
+    installGpuDrivers: When true, Batch will install the GPU drivers. This
+      field will be ignored if specified.
     type: The accelerator type. For example, "nvidia-tesla-t4". See `gcloud
       compute accelerator-types list`.
   """
 
   count = _messages.IntegerField(1)
-  type = _messages.StringField(2)
+  installGpuDrivers = _messages.BooleanField(2)
+  type = _messages.StringField(3)
 
 
 class ActionCondition(_messages.Message):
@@ -101,7 +104,8 @@ class AllocationPolicy(_messages.Message):
 
 
 class AttachedDisk(_messages.Message):
-  r"""A new or an existing persistent disk attached to a VM instance.
+  r"""A new or an existing persistent disk or a local ssd attached to a VM
+  instance.
 
   Fields:
     deviceName: Device name that the guest operating system will see. If not
@@ -573,8 +577,14 @@ class Binding(_messages.Message):
       identifier that represents anyone who is authenticated with a Google
       account or a service account. * `user:{emailid}`: An email address that
       represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      * `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -659,22 +669,30 @@ class Container(_messages.Message):
 
 
 class Disk(_messages.Message):
-  r"""A new persistent disk.
+  r"""A new persistent disk or a local ssd. A VM can only have one local SSD
+  setting but multiple local SSD partitions.
   https://cloud.google.com/compute/docs/disks#pdspecs.
+  https://cloud.google.com/compute/docs/disks#localssds.
 
   Fields:
+    diskInterface: Local SSDs are available through both "SCSI" and "NVMe"
+      interfaces. If not indicated, "NVMe" will be the default one for local
+      ssds. We only support "SCSI" for persistent disks now.
     image: Name of a public or custom image used as the data source.
     sizeGb: Disk size in GB. This field is ignored if `data_source` is `disk`
-      or `image`.
+      or `image`. If `type` is `local-ssd`, size_gb should be a multiple of
+      375GB, otherwise, the final size will be the next greater multiple of
+      375 GB.
     snapshot: Name of a snapshot used as the data source.
     type: Disk type as shown in `gcloud compute disk-types list` For example,
-      "pd-ssd", "pd-standard", "pd-balanced".
+      "pd-ssd", "pd-standard", "pd-balanced", "local-ssd".
   """
 
-  image = _messages.StringField(1)
-  sizeGb = _messages.IntegerField(2)
-  snapshot = _messages.StringField(3)
-  type = _messages.StringField(4)
+  diskInterface = _messages.StringField(1)
+  image = _messages.StringField(2)
+  sizeGb = _messages.IntegerField(3)
+  snapshot = _messages.StringField(4)
+  type = _messages.StringField(5)
 
 
 class Empty(_messages.Message):
@@ -1206,12 +1224,15 @@ class LocationPolicy(_messages.Message):
 
   Fields:
     allowedLocations: A list of allowed location names represented by internal
-      URLs, only the first region is supported now. for example, ["regions/us-
-      central1"] allow VMs in region us-central1, ["regions/us-central1",
-      "zones/us-central1-a"] only allow VMs in zone us-central1-a.
-      ["regions/us-central1", "zones/us-central1-a", "zones/us-central1-b",
-      "regions/us-west1", "zones/us-west1-a"] only allow VMs in zone us-
-      central1-a or zones/us-central1-b.
+      URLs. Each location can be a region or a zone. Only one region or
+      multiple zones in one region is supported now. For example,
+      ["regions/us-central1"] allow VMs in any zones in region us-central1.
+      ["zones/us-central1-a", "zones/us-central1-c"] only allow VMs in zones
+      us-central1-a and us-central1-c. All locations end up in different
+      regions would cause errors. For example, ["regions/us-central1",
+      "zones/us-central1-a", "zones/us-central1-b", "zones/us-west1-a"]
+      contains 2 regions "us-central1" and "us-west1". An error is expected in
+      this case.
   """
 
   allowedLocations = _messages.StringField(1, repeated=True)

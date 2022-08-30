@@ -1218,13 +1218,13 @@ class GkemulticloudV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GenerateAttachedClusterInstallManifest.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/generateAttachedClusterInstallManifest',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}:generateAttachedClusterInstallManifest',
         http_method='GET',
         method_id='gkemulticloud.projects.locations.generateAttachedClusterInstallManifest',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=['attachedClusterId', 'platformVersion'],
-        relative_path='v1/{+parent}/generateAttachedClusterInstallManifest',
+        relative_path='v1/{+parent}:generateAttachedClusterInstallManifest',
         request_field='',
         request_type_name='GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest',
         response_type_name='GoogleCloudGkemulticloudV1GenerateAttachedClusterInstallManifestResponse',
