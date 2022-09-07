@@ -842,18 +842,12 @@
           "enumDescriptions": [
             "Unspecified key algorithm.",
             "Specifies RSA with a 2048-bit modulus.",
-            "Specifies RSA with a 3072-bit modulus.",
-            "Specifies RSA with a 4096-bit modulus.",
-            "Specifies ECDSA with curve P256.",
-            "Specifies ECDSA with curve P384."
+            "Specifies ECDSA with curve P256."
           ],
           "enum": [
             "KEY_ALGORITHM_UNSPECIFIED",
             "RSA_2048",
-            "RSA_3072",
-            "RSA_4096",
-            "ECDSA_P256",
-            "ECDSA_P384"
+            "ECDSA_P256"
           ]
         }
       }
@@ -2056,40 +2050,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Creates a new CertificateIssuanceConfig in a given project and location."
-                },
-                "patch": {
-                  "id": "certificatemanager.projects.locations.certificateIssuanceConfigs.patch",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/certificateIssuanceConfigs/{certificateIssuanceConfigsId}",
-                  "httpMethod": "PATCH",
-                  "parameters": {
-                    "name": {
-                      "description": "A user-defined name of the certificate issuance config. CertificateIssuanceConfig names must be unique globally and match pattern `projects\/*\/locations\/*\/certificateIssuanceConfigs\/*`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateIssuanceConfigs\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "updateMask": {
-                      "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "CertificateIssuanceConfig"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Updates a CertificateIssuanceConfig."
                 },
                 "delete": {
                   "id": "certificatemanager.projects.locations.certificateIssuanceConfigs.delete",

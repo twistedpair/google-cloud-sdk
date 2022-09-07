@@ -716,6 +716,24 @@
             "EXPIRED"
           ]
         },
+        "allowFailure": {
+          "description": "Allow this build step to fail without failing the entire build. If false, the entire build will fail if this step fails. Otherwise, the build will succeed, but this step will still have a failure status. Error information will be reported in the failure_detail field.",
+          "type": "boolean"
+        },
+        "exitCode": {
+          "description": "Output only. Return code from running the step.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "allowExitCodes": {
+          "description": "Allow this build step to fail without failing the entire build if and only if the exit code is one of the specified codes. If allow_failure is also specified, this field will take precedence.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
         "script": {
           "description": "A shell script to be executed in the step. When script is provided, the user cannot specify the entrypoint or args.",
           "type": "string"
@@ -950,8 +968,8 @@
           "description": "Requested verifiability options.",
           "type": "string",
           "enumDescriptions": [
-            "Not a verifiable build. (default)",
-            "Verified build."
+            "Not a verifiable build (the default).",
+            "Build must be verified."
           ],
           "enum": [
             "NOT_VERIFIED",

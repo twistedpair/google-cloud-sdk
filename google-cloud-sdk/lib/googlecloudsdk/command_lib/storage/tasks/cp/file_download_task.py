@@ -30,7 +30,7 @@ import textwrap
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
-from googlecloudsdk.command_lib.storage import hash_util
+from googlecloudsdk.command_lib.storage import fast_crc32c_util
 from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
@@ -43,7 +43,6 @@ from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_download_task
 from googlecloudsdk.command_lib.storage.tasks.cp import finalize_sliced_download_task
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
-from googlecloudsdk.command_lib.util import crc32c
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import platforms
@@ -52,16 +51,16 @@ from googlecloudsdk.core.util import scaled_integer
 
 def _get_hash_check_warning_base():
   # Create the text in a function so that we can test it easily.
-  google_crc32c_install_steps = hash_util.get_google_crc32c_install_command()
+  install_command = fast_crc32c_util.get_google_crc32c_install_command()
   return textwrap.dedent(
       """\
       This download {{}} since the google-crc32c
       binary is not installed, and Python hash computation will likely
       throttle performance. You can change this by installing the binary
-      {crc32c_steps}or
+      {by_running_command}or
       modifying the "storage/check_hashes" config setting.""".format(
-          crc32c_steps='by running "{}" '.format(google_crc32c_install_steps)
-          if google_crc32c_install_steps else ''))
+          by_running_command='by running "{}" '.format(install_command)
+          if install_command else ''))
 
 
 _HASH_CHECK_WARNING_BASE = _get_hash_check_warning_base()
@@ -82,9 +81,9 @@ def _log_or_raise_crc32c_issues(resource):
     errors.Error: gcloud storage set to fail if performance-optimized digesters
       could not be created.
   """
-  if crc32c.IS_FAST_GOOGLE_CRC32C_AVAILABLE or not resource.crc32c_hash:
-    # If crc32c is available, hashing behavior will be standard.
+  if (not resource.crc32c_hash or fast_crc32c_util.is_fast_crc32c_available()):
     # If resource.crc32c not available, no hash will be verified.
+    # If a binary crc32c libary is available, hashing behavior will be standard.
     return
 
   check_hashes = properties.VALUES.storage.check_hashes.Get()

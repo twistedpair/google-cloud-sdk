@@ -233,7 +233,7 @@ class IapLightWeightWebsocket(object):
               "Connection closed while receiving data.")
         # Wait for websocket to be ready so we don't use too much cpu looping
         # forever.
-        self._wait_for_socket_to_ready(timeout=None)
+        self._wait_for_socket_to_ready(timeout=WEBSOCKET_RETRY_TIMEOUT_SECS)
         frame = self.recv()
         if frame.opcode == websocket_frame_utils.ABNF.OPCODE_CLOSE:
           close_args = self._get_close_args(frame.data)

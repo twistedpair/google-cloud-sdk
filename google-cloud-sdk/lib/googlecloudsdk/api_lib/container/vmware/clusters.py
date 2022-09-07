@@ -82,3 +82,51 @@ class ClustersClient(object):
         force=force,
     )
     return self._service.Delete(req)
+
+  def Create(self, resource_ref, admin_cluster_membership_ref, args):
+    """Creates an Anthos cluster on VMware."""
+    load_balancer = self.messages.VmwareLoadBalancerConfig(
+        vipConfig=self.messages.VmwareVipConfig(
+            controlPlaneVip=args.control_plane_vip,
+            ingressVip=args.ingress_vip,
+        ),)
+
+    if args.metal_lb_config_address_pools:
+      address_pools = []
+      for address_pool in args.metal_lb_config_address_pools:
+        address_pools.append(
+            self.messages.VmwareAddressPool(
+                pool=address_pool['pool'],
+                addresses=address_pool['addresses'],
+                avoidBuggyIps=address_pool.get('avoid_buggy_ips', False),
+                manualAssign=address_pool.get('manual_assign', False),
+            ),
+        )
+      load_balancer.metalLbConfig = self.messages.VmwareMetalLbConfig(
+          addressPools=address_pools)
+
+    if args.f5_config_address:
+      load_balancer.f5Config = self.messages.VmwareF5BigIpConfig(
+          address=args.f5_config_address,
+          partition=args.f5_config_partition,
+          snatPool=args.f5_config_snat_pool,
+      )
+
+    vmware_cluster = self.messages.VmwareCluster(
+        name=resource_ref.RelativeName(),
+        adminClusterMembership=admin_cluster_membership_ref.RelativeName(),
+        onPremVersion=args.version,
+        networkConfig=self.messages.VmwareNetworkConfig(
+            serviceAddressCidrBlocks=args.service_address_cidr_blocks,
+            podAddressCidrBlocks=args.pod_address_cidr_blocks,
+        ),
+        loadBalancer=load_balancer,
+    )
+
+    req = self.messages.GkeonpremProjectsLocationsVmwareClustersCreateRequest(
+        parent=resource_ref.Parent().RelativeName(),
+        validateOnly=args.validate_only,
+        vmwareCluster=vmware_cluster,
+        vmwareClusterId=resource_ref.Name(),
+    )
+    return self._service.Create(req)

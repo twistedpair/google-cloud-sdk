@@ -361,7 +361,7 @@
           "type": "boolean"
         },
         "initialUser": {
-          "description": "Input only. Initial user to setup during cluster creation. Required. If used in `RestoreCluster` this is ignored. We intend to deprecate this post private preview, once we have separate User resources.",
+          "description": "Input only. Initial user to setup during cluster creation. Required. If used in `RestoreCluster` this is ignored.",
           "$ref": "UserPassword"
         },
         "automatedBackupPolicy": {
@@ -744,7 +744,7 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "An Instance is a computing unit that an end customer can connect to. It's the main unit of computing resources in AlloyDB. NEXT ID: 21",
+      "description": "An Instance is a computing unit that an end customer can connect to. It's the main unit of computing resources in AlloyDB. NEXT ID: 22",
       "type": "object",
       "properties": {
         "name": {

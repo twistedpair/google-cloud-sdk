@@ -690,13 +690,6 @@
         "audioTopic": {
           "description": "Description of the content. Eg. \"Recordings of federal supreme court hearings from 2012\".",
           "type": "string"
-        },
-        "tags": {
-          "description": "A freeform field to tag this input sample with. This can be used for grouping the logs into separate buckets. This enables selective purging of data based on the tags, and also for training models in AutoML.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -837,10 +830,6 @@
           "description": "Required. The audio data to be recognized.",
           "$ref": "RecognitionAudio"
         },
-        "name": {
-          "description": "Use `model` field in RecognitionConfig instead.",
-          "type": "string"
-        },
         "outputConfig": {
           "description": "Optional. Specifies an optional destination for the recognition results.",
           "$ref": "TranscriptOutputConfig"
@@ -919,32 +908,6 @@
           "description": "The ID associated with the request. This is a unique ID specific only to the given request.",
           "type": "string",
           "format": "int64"
-        }
-      }
-    },
-    "SpeechOperationMetadata": {
-      "id": "SpeechOperationMetadata",
-      "description": "Describes the progress of a long-running call. It is included in the `metadata` field of the `Operation` returned by the `GetOperation` call of the `google::longrunning::Operations` service.",
-      "type": "object",
-      "properties": {
-        "progressPercent": {
-          "description": "Approximate percentage of progress, from AutoML Operation Metadata.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "startTime": {
-          "description": "Time when the request was received.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "lastUpdateTime": {
-          "description": "Time of the most recent processing update.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "worksOn": {
-          "description": "The resource being worked on.",
-          "type": "string"
         }
       }
     }

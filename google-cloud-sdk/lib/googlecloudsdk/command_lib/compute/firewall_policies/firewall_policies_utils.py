@@ -143,3 +143,33 @@ def BuildSecurityProfileGroupUrl(security_profile_group, optional_organization,
       org_id=organization,
       collection_name='securityProfileGroups',
       resource_name=security_profile_group)
+
+
+def BuildAddressGroupUrl(address_group, optional_organization,
+                         firewall_policy_client, firewall_policy_id):
+  """Returns partial URL reference of Address Group.
+
+  Args:
+    address_group: reference string provided by the user.
+    optional_organization: organization if provided.
+    firewall_policy_client: the organization firewall policy client.
+    firewall_policy_id: the short name or ID of the firewall policy to be
+      resolved.
+
+  Returns:
+    partial URL to Address Group.
+  """
+
+  # Probably a URL -> pass without change
+  if '/' in address_group:
+    return address_group
+  # Create partial URL
+  organization = GetFirewallPolicyOrganization(
+      firewall_policy_client=firewall_policy_client,
+      firewall_policy_id=firewall_policy_id,
+      optional_organization=optional_organization)
+  return reference_utils.BuildFullResourceUrlForOrgBasedResource(
+      base_uri='',  # Empty string for partial URLs
+      org_id=organization,
+      collection_name='addressGroups',
+      resource_name=address_group)

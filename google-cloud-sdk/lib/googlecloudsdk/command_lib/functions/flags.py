@@ -397,29 +397,7 @@ def AddRuntimeFlag(parser):
           Required when deploying a new function; optional when updating
           an existing function.
 
-          Choices:
-
-          - `nodejs10`: Node.js 10
-          - `nodejs12`: Node.js 12
-          - `nodejs14`: Node.js 14
-          - `nodejs16`: Node.js 16
-          - `php74`: PHP 7.4
-          - `php81`: PHP 8.1
-          - `python37`: Python 3.7
-          - `python38`: Python 3.8
-          - `python39`: Python 3.9
-          - `python310`: Python 3.10
-          - `go111`: Go 1.11
-          - `go113`: Go 1.13
-          - `go116`: Go 1.16
-          - `java11`: Java 11
-          - `java17`: Java 17
-          - `dotnet3`: .NET Framework 3
-          - `ruby26`: Ruby 2.6
-          - `ruby27`: Ruby 2.7
-          - `ruby30`: Ruby 3.0
-          - `nodejs6`: Node.js 6 (deprecated)
-          - `nodejs8`: Node.js 8 (deprecated)
+          For a list of available runtimes, run `gcloud functions runtimes list`.
           """)
 
 

@@ -5,7 +5,7 @@ project:
   - &project
     parameter_name: projectsId
     attribute_name: project
-    help: The project name.
+    help: Project name.
 
 instance:
   name: instance
@@ -15,7 +15,7 @@ instance:
   - &instance
     parameter_name: instancesId
     attribute_name: instance
-    help: The name of the Cloud Bigtable instance.
+    help: Name of the Cloud Bigtable instance.
   disable_auto_completers: false
 
 cluster:
@@ -27,7 +27,7 @@ cluster:
   - &cluster
     parameter_name: clustersId
     attribute_name: cluster
-    help: The name of the Cloud Bigtable cluster.
+    help: Name of the Cloud Bigtable cluster.
   disable_auto_completers: false
 
 table:
@@ -39,7 +39,7 @@ table:
   - &table
     parameter_name: tablesId
     attribute_name: table
-    help: The name of the Cloud Bigtable table.
+    help: Name of the Cloud Bigtable table.
   disable_auto_completers: false
 
 backup:
@@ -52,7 +52,7 @@ backup:
   - &backup
     parameter_name: backupsId
     attribute_name: backup
-    help: The name of the Cloud Bigtable backup.
+    help: Name of the Cloud Bigtable backup.
   disable_auto_completers: false
 
 operation:
@@ -62,7 +62,7 @@ operation:
   - &operation
     parameter_name: operationsId
     attribute_name: operation
-    help: The name of the Cloud Bigtable operation.
+    help: Name of the Cloud Bigtable operation.
   disable_auto_completers: false
 
 app_profile:
@@ -74,4 +74,4 @@ app_profile:
   - &appProfile
     parameter_name: appProfilesId
     attribute_name: app_profile
-    help: The name of the Cloud Bigtable app profile.
+    help: Name of the Cloud Bigtable app profile.

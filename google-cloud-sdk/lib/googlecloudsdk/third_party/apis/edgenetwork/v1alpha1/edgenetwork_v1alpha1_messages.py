@@ -1534,8 +1534,6 @@ class Route(_messages.Message):
     nextHopAddress: Required. An IP address to use as the next hop for this
       route. Must use the same protocol as |destination_cidr|.
     updateTime: Output only. The time when the route was last updated.
-    withdrawOnFailure: Optional. If true, when the route becomes disconnected
-      it should be automatically withdrawn.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1570,7 +1568,32 @@ class Route(_messages.Message):
   network = _messages.StringField(6)
   nextHopAddress = _messages.StringField(7)
   updateTime = _messages.StringField(8)
-  withdrawOnFailure = _messages.BooleanField(9)
+
+
+class RouteStatus(_messages.Message):
+  r"""RouteStatus contains fields corresponding to metrics related to the
+  custom northbound static routes advertised on the router.
+
+  Fields:
+    nextHop: Next hop for this route (IP address).
+    object: IP SLA tracking object that is monitoring the next hop IP address
+      validity and installation of static route in RIB (route information
+      base).
+    objectResolved: Whether the next hop is reachable or not.
+    prefix: Advertised prefix (CIDR format).
+    route: Name of the route (see Route.name).
+    routeInstalled: Whether the route is installed, as determined by the route
+      information base result (RIB result).
+    vrf: Name of the VRF of which this route is part.
+  """
+
+  nextHop = _messages.StringField(1)
+  object = _messages.StringField(2)
+  objectResolved = _messages.BooleanField(3)
+  prefix = _messages.StringField(4)
+  route = _messages.StringField(5)
+  routeInstalled = _messages.BooleanField(6)
+  vrf = _messages.StringField(7)
 
 
 class Router(_messages.Message):
@@ -1665,10 +1688,13 @@ class RouterStatus(_messages.Message):
     bgpPeerStatus: A list of BgpPeerStatus objects, describing all BGP peers
       related to this router.
     network: The canonical name of the network to which this router belongs.
+    staticRouteStatus: A list of RouteStatus, descsribing all the northbound
+      route advertisements related to this router.
   """
 
   bgpPeerStatus = _messages.MessageField('BgpPeerStatus', 1, repeated=True)
   network = _messages.StringField(2)
+  staticRouteStatus = _messages.MessageField('RouteStatus', 3, repeated=True)
 
 
 class StandardQueryParameters(_messages.Message):

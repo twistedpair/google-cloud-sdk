@@ -18,6 +18,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.container.fleet import api_util
 from googlecloudsdk.command_lib.container.fleet import resources
 from googlecloudsdk.command_lib.container.fleet.features import base
 from googlecloudsdk.core import exceptions
@@ -81,7 +82,7 @@ def ParseMembershipsFull(args):
     memberships: A list of membership resource name strings
   """
   memberships = []
-  all_memberships, _ = base.ListMembershipsFull()
+  all_memberships, _ = api_util.ListMembershipsFull()
 
   if not all_memberships:
     raise exceptions.Error('No Memberships available in the fleet.')

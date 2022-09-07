@@ -26,6 +26,21 @@ accelerator_type:
   type: googlecloudsdk.command_lib.util.hooks.types:LowerCaseType
   default: 'v2-8'
 
+topology:
+  api_field: node.acceleratorConfig.topology
+  arg_name: topology
+  required: false
+  help_text: |
+    Chip topology for TPU.
+  type: googlecloudsdk.command_lib.util.hooks.types:LowerCaseType
+
+type:
+  api_field: node.acceleratorConfig.type
+  arg_name: type
+  required: false
+  help_text: |
+    Type of TPU.
+
 description:
   api_field: node.description
   arg_name: description

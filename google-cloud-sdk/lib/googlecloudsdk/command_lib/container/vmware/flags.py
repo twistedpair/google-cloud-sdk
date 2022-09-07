@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -285,3 +286,135 @@ def AddAutoscaling(parser):
       type=int,
       help='Maximum number of replicas in the node pool',
   )
+
+
+def AddVersion(parser):
+  """Adds a flag to specify the Anthos cluster on VMware version.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--version',
+      help='Set the Anthos Cluster on VMware version for the user cluster resource',
+  )
+
+
+def AddServiceAddressCidrBlocks(parser):
+  """Adds a flag to specify the IPv4 address ranges used in the services in the cluster.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--service-address-cidr-blocks',
+      metavar='SERVICE_ADDRESS',
+      type=arg_parsers.ArgList(
+          min_length=1,
+          max_length=1,
+      ),
+      required=True,
+      help='Set the IPv4 address range for all services in the cluster.',
+  )
+
+
+def AddPodAddressCidrBlocks(parser):
+  """Adds a flag to specify the IPv4 address ranges used in the pods in the cluster.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--pod-address-cidr-blocks',
+      metavar='POD_ADDRESS',
+      type=arg_parsers.ArgList(
+          min_length=1,
+          max_length=1,
+      ),
+      required=True,
+      help='Set IPv4 address range for all pods in the cluster.',
+  )
+
+
+def _AddF5Config(lb_mutex_group):
+  """Adds flags for F5 Big IP load balancer.
+
+  Args:
+    lb_mutex_group: The mutex group to add the flags to.
+  """
+  f5_config_group = lb_mutex_group.add_argument_group('F5 Big IP Configuration')
+  f5_config_group.add_argument(
+      '--f5-config-address',
+      type=str,
+      required=True,
+      help='Set the F5 Big IP load balancer address.',
+  )
+  f5_config_group.add_argument(
+      '--f5-config-partition',
+      type=str,
+      required=True,
+      help='Set the F5 Big IP load balancer partition.',
+  )
+  f5_config_group.add_argument(
+      '--f5-config-snat-pool',
+      type=str,
+      help='Set the F5 Big IP load balancer pool name if using SNAT.',
+  )
+
+
+def _AddMetalLbConfig(lb_mutex_group):
+  """Adds flags for MetalLB load balancer.
+
+  Args:
+    lb_mutex_group: The mutex group to add the flags to.
+  """
+  metal_lb_config_group = lb_mutex_group.add_argument_group(
+      'MetalLB Configuration')
+  metal_lb_config_group.add_argument(
+      '--metal-lb-config-address-pools',
+      action='append',
+      required=True,
+      type=arg_parsers.ArgDict(
+          spec={
+              'pool': str,
+              'addresses': arg_parsers.ArgList(),
+              'avoid-buggy-ips': bool,
+              'manual-assign': bool,
+          },
+          required_keys=[
+              'pool',
+              'addresses',
+          ],
+      ),
+      help='Set the MetalLB typed load balancers configuration.',
+  )
+
+
+def AddLoadBalancerConfig(parser):
+  """Adds a command group to set the load balancer config.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+
+  lb_config_group = parser.add_argument_group(
+      help='Populate the Anthos on Vmware cluster load balancer configuration.',
+  )
+  lb_config_group.add_argument(
+      '--control-plane-vip',
+      required=True,
+      help='Set the VIP for the Kubernetes API of this cluster.',
+  )
+  lb_config_group.add_argument(
+      '--ingress-vip',
+      required=True,
+      help='Set the VIP for ingress traffic into this cluster.',
+  )
+
+  lb_mutex_group = lb_config_group.add_mutually_exclusive_group(
+      help='Populate one of the load balancers.',
+      required=True,
+  )
+
+  _AddMetalLbConfig(lb_mutex_group)
+  _AddF5Config(lb_mutex_group)

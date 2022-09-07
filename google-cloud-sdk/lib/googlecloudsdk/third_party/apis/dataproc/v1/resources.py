@@ -103,8 +103,22 @@ class Collections(enum.Enum):
   PROJECTS_REGIONS_CLUSTERS = (
       'projects.regions.clusters',
       'projects/{projectId}/regions/{region}/clusters/{clusterName}',
-      {},
+      {
+          '':
+              'projects/{projectId}/regions/{region}/clusters/{clusterName}',
+      },
       ['projectId', 'region', 'clusterName'],
+      True
+  )
+  PROJECTS_REGIONS_CLUSTERS_GCENODEPOOLS = (
+      'projects.regions.clusters.gceNodePools',
+      '{+name}',
+      {
+          '':
+              'projects/{projectId}/regions/{region}/clusters/{clusterName}/'
+              'gceNodePools/{gceNodePoolsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_REGIONS_JOBS = (

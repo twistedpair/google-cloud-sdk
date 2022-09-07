@@ -468,9 +468,7 @@ the CLOUDSDK_PYTHON environment variable to point to it.
       self.version = None
 
   def SupportedVersionMessage(self):
-    return 'Please use Python version {0}.{1}.x or {2}.{3} and up.'.format(
-        PythonVersion.MIN_SUPPORTED_PY2_VERSION[0],
-        PythonVersion.MIN_SUPPORTED_PY2_VERSION[1],
+    return 'Please use Python version {0}.{1} and up.'.format(
         PythonVersion.MIN_SUPPORTED_PY3_VERSION[0],
         PythonVersion.MIN_SUPPORTED_PY3_VERSION[1])
 
@@ -522,12 +520,11 @@ the CLOUDSDK_PYTHON environment variable to point to it.
       sys.stderr.write(PythonVersion.ENV_VAR_MESSAGE)
       return False
 
-    # Warn that 2.6 might not work.
-    if (self.version >= self.MIN_REQUIRED_PY2_VERSION and
-        self.version < self.MIN_SUPPORTED_PY2_VERSION):
+    # Warn that Python 2 is being deprecated.
+    if self.version[0] < 3:
       sys.stderr.write("""\
-WARNING:  Python 2.6.x is no longer officially supported by the Google Cloud SDK
-and may not function correctly.  {0}
+WARNING:  Python 2 will soon be deprecated by the Google Cloud SDK
+and may not function correctly. {0}
 {1}""".format(self.SupportedVersionMessage(),
               PythonVersion.ENV_VAR_MESSAGE))
 
@@ -536,7 +533,7 @@ and may not function correctly.  {0}
         self.version < self.MIN_SUPPORTED_PY3_VERSION):
       sys.stderr.write("""\
 WARNING:  Python 3.4.x is no longer officially supported by the Google Cloud SDK
-and may not function correctly.  {0}
+and may not function correctly. {0}
 {1}""".format(self.SupportedVersionMessage(),
               PythonVersion.ENV_VAR_MESSAGE))
 

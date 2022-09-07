@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 ATTACHED_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'description': 'description',
     'annotations': 'annotations',
+    'platform_version': 'platform_version'
 }
 
 AWS_CLUSTER_ARGS_TO_UPDATE_MASKS = {
@@ -62,6 +63,14 @@ AWS_CLUSTER_ARGS_TO_UPDATE_MASKS = {
         'control_plane.iam_instance_profile',
     'logging':
         'logging_config.component_config.enable_components',
+    'description':
+        'description',
+    'clear_description':
+        'description',
+    'annotations':
+        'annotations',
+    'clear_annotations':
+        'annotations'
 }
 
 AWS_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
@@ -90,6 +99,10 @@ AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'admin_users': 'authorization.admin_users',
     'ssh_public_key': 'control_plane.ssh_config.authorized_key',
     'logging': 'logging_config.component_config.enable_components',
+    'description': 'description',
+    'clear_description': 'description',
+    'annotations': 'annotations',
+    'clear_annotations': 'annotations'
 }
 
 AZURE_NODEPOOL_ARGS_TO_UPDATE_MASKS = {

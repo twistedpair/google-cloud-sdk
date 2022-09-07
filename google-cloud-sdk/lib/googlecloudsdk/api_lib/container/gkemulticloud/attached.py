@@ -28,14 +28,27 @@ class _AttachedClientBase(client.ClientBase):
   """Base class for Attached gkemulticloud API clients."""
 
   def _Cluster(self, cluster_ref, args):
+    cluster_type = self._messages.GoogleCloudGkemulticloudV1AttachedCluster
     kwargs = {
+        'annotations': self._Annotations(args, cluster_type),
         'platformVersion': attached_flags.GetPlatformVersion(args),
         'fleet': self._Fleet(args),
         'name': cluster_ref.attachedClustersId,
         'description': flags.GetDescription(args),
-        'annotations': flags.GetAnnotations(args),
+        'authority': self._Authority(args),
+        'distribution': attached_flags.GetDistribution(args)
     }
     return self._messages.GoogleCloudGkemulticloudV1AttachedCluster(
+        **kwargs) if any(kwargs.values()) else None
+
+  def _Authority(self, args):
+    kwargs = {
+        'issuerUrl': attached_flags.GetIssuerUrl(args),
+    }
+    oidc = attached_flags.GetOidcJwks(args)
+    if oidc:
+      kwargs['oidcJwks'] = oidc.encode(encoding='utf-8')
+    return self._messages.GoogleCloudGkemulticloudV1Authority(
         **kwargs) if any(kwargs.values()) else None
 
 

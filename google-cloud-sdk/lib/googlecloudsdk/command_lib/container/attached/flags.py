@@ -28,3 +28,55 @@ def AddPlatformVersion(parser, required=True):
 
 def GetPlatformVersion(args):
   return getattr(args, 'platform_version', None)
+
+
+def AddIssuerUrl(parser, required=False):
+  parser.add_argument(
+      '--issuer-url',
+      required=required,
+      help=('Issuer url of the cluster to attach.'))
+
+
+def GetIssuerUrl(args):
+  return getattr(args, 'issuer_url', None)
+
+
+def AddOidcJwks(parser):
+  parser.add_argument(
+      '--oidc-jwks',
+      help=('OIDC JWKS of the cluster to attach.'))
+
+
+def GetOidcJwks(args):
+  return getattr(args, 'oidc_jwks', None)
+
+
+def AddAuthority(parser):
+  """Adds Authority flags.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+
+  group = parser.add_group('Authority', required=True)
+  AddIssuerUrl(group, required=True)
+  AddOidcJwks(group)
+
+
+def AddDistribution(parser, required=False):
+  help_text = """
+Set the base platform type of the cluster to attach.
+
+Examples:
+
+  $ {command} --distribution=aks
+  $ {command} --distribution=eks
+"""
+  parser.add_argument(
+      '--distribution',
+      required=required,
+      help=help_text)
+
+
+def GetDistribution(args):
+  return getattr(args, 'distribution', None)

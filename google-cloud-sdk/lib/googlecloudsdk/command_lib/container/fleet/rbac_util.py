@@ -179,7 +179,7 @@ rules:
   resources: ["runtimeclasses"]
   verbs: ["get", "list", "watch"]
 - apiGroups: ["onprem.cluster.gke.io"]
-  resources: ["onpremadminclusters", "onpremnodepools", "onpremuserclusters", "validations", "onpremplatforms", "clusterstates"]
+  resources: ["onpremadminclusters", "onpremnodepools", "onpremuserclusters", "validations", "onpremplatforms", "onprembundles", "clusterstates"]
   verbs: ["get", "list", "watch"]
 - apiGroups: ["policy"]
   resources: ["poddisruptionbudgets", "podsecuritypolicies"]

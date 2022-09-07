@@ -411,6 +411,10 @@
         "channel": {
           "description": "Channel specifies the release channel of the pool.",
           "type": "string"
+        },
+        "hostOs": {
+          "description": "HostOS specifies the OS version of the image for the worker VMs.",
+          "type": "string"
         }
       }
     },

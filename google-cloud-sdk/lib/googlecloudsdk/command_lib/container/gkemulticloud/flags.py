@@ -154,7 +154,11 @@ def GetDescription(args):
 
 
 def AddClearDescription(parser):
-  """Adds the --clear-description flag."""
+  """Adds the --clear-description flag.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
   parser.add_argument(
       '--clear-description',
       action='store_true',
@@ -162,16 +166,53 @@ def AddClearDescription(parser):
       help='Clear the description for the cluster.')
 
 
-def AddAnnotations(parser):
+def AddDescriptionForUpdate(parser):
+  """Adds description related flags for update.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+  group = parser.add_group('Description', mutex=True)
+  AddDescription(group)
+  AddClearDescription(group)
+
+
+def AddAnnotations(parser, noun='cluster'):
   parser.add_argument(
       '--annotations',
       type=arg_parsers.ArgDict(min_length=1),
       metavar='ANNOTATION',
-      help='Annotations for the cluster.')
+      help='Annotations for the {}.'.format(noun))
+
+
+def AddClearAnnotations(parser, noun):
+  """Adds flag for clearing the annotations.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+    noun: The resource type to which the flag is applicable.
+  """
+  parser.add_argument(
+      '--clear-annotations',
+      action='store_true',
+      default=None,
+      help='Clear the annotations for the {}.'.format(noun))
 
 
 def GetAnnotations(args):
   return getattr(args, 'annotations', None) or {}
+
+
+def AddAnnotationsForUpdate(parser, noun):
+  """Adds annotations related flags for update.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+    noun: The resource type to which the flag is applicable.
+  """
+  group = parser.add_group('Annotations', mutex=True)
+  AddAnnotations(group, noun)
+  AddClearAnnotations(group, noun)
 
 
 def AddNodeVersion(parser, required=True):

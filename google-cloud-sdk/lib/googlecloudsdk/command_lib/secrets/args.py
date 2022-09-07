@@ -40,7 +40,8 @@ def AddOutFile(parser, positional=False, **kwargs):
   parser.add_argument(
       _ArgOrFlag('out-file', positional),
       metavar='OUT-FILE-PATH',
-      help=('File path to which secret data is written.'),
+      help=('File path to which secret data is written. If this flag is not '
+            'provided secret data will be written to stdout in UTF-8 format.'),
       **kwargs)
 
 

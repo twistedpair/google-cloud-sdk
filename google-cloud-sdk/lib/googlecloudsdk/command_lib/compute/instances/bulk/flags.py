@@ -283,7 +283,8 @@ def AddCommonBulkInsertArgs(parser,
                             support_visible_core_count=False,
                             support_max_run_duration=False,
                             support_enable_target_shape=False,
-                            add_zone_region_flags=True):
+                            add_zone_region_flags=True,
+                            support_confidential_compute_type=False):
   """Register parser args common to all tracks."""
   metadata_utils.AddMetadataArgs(parser)
   AddDiskArgsForBulk(parser)
@@ -377,7 +378,8 @@ def AddCommonBulkInsertArgs(parser,
 
   instances_flags.AddMinCpuPlatformArgs(parser, release_track)
   instances_flags.AddPublicDnsArgs(parser, instance=True)
-  instances_flags.AddConfidentialComputeArgs(parser)
+  instances_flags.AddConfidentialComputeArgs(parser,
+                                             support_confidential_compute_type)
   instances_flags.AddPostKeyRevocationActionTypeArgs(parser)
   AddBulkCreateArgs(parser, add_zone_region_flags)
 

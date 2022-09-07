@@ -723,7 +723,8 @@ def GetNetworkInterfacesAlpha(args, client, holder, project, location, scope,
       'network_tier', 'no_address', 'no_public_dns', 'no_public_ptr',
       'no_public_ptr_domain', 'private_network_ip', 'public_dns', 'public_ptr',
       'public_ptr_domain', 'stack_type', 'subnet', 'ipv6_address',
-      'ipv6_prefix_length'
+      'ipv6_prefix_length', 'internal_ipv6_address',
+      'internal_ipv6_prefix_length'
   ])
   if (skip_defaults and
       not instance_utils.IsAnySpecified(args, *network_interface_args)):
@@ -751,7 +752,11 @@ def GetNetworkInterfacesAlpha(args, client, holder, project, location, scope,
           ipv6_network_tier=getattr(args, 'ipv6_network_tier', None),
           ipv6_public_ptr_domain=getattr(args, 'ipv6_public_ptr_domain', None),
           ipv6_address=getattr(args, 'ipv6_address', None),
-          ipv6_prefix_length=getattr(args, 'ipv6_prefix_length', None)),
+          ipv6_prefix_length=getattr(args, 'ipv6_prefix_length', None),
+          internal_ipv6_address=getattr(args, 'internal_ipv6_address', None),
+          internal_ipv6_prefix_length=getattr(args,
+                                              'internal_ipv6_prefix_length',
+                                              None))
   ]
 
 
@@ -779,7 +784,9 @@ def CreateNetworkInterfaceMessage(resources,
                                   ipv6_public_ptr_domain=None,
                                   queue_count=None,
                                   ipv6_address=None,
-                                  ipv6_prefix_length=None):
+                                  ipv6_prefix_length=None,
+                                  internal_ipv6_address=None,
+                                  internal_ipv6_prefix_length=None):
   """Returns a new NetworkInterface message."""
   # TODO(b/30460572): instance reference should have zone name, not zone URI.
   if scope == compute_scopes.ScopeEnum.ZONE:
@@ -813,13 +820,13 @@ def CreateNetworkInterfaceMessage(resources,
     network_interface.network = network_ref.SelfLink()
 
   if private_network_ip is not None:
-    # Try interpreting the address as IPv4 or IPv6.
+    # Try interpreting the address as IP address.
     try:
       # ipaddress only allows unicode input
       ipaddress.ip_address(six.text_type(private_network_ip))
       network_interface.networkIP = private_network_ip
     except ValueError:
-      # ipaddress could not resolve as an IPv4 or IPv6 address.
+      # ipaddress could not resolve as an IP address.
       network_interface.networkIP = instances_flags.GetAddressRef(
           resources, private_network_ip, region).SelfLink()
 
@@ -883,11 +890,33 @@ def CreateNetworkInterfaceMessage(resources,
     ipv6_access_config.publicPtrDomainName = ipv6_public_ptr_domain
 
   if ipv6_address:
-    ipv6_access_config.externalIpv6 = ipv6_address
+    # Try interpreting the address as IPv6.
+    try:
+      # ipaddress only allows unicode input
+      ipaddress.ip_address(six.text_type(ipv6_address))
+      ipv6_access_config.externalIpv6 = ipv6_address
+    except ValueError:
+      # ipaddress could not resolve as an IPv6 address.
+      ipv6_access_config.externalIpv6 = instances_flags.GetAddressRef(
+          resources, ipv6_address, region).SelfLink()
     if ipv6_prefix_length:
       ipv6_access_config.externalIpv6PrefixLength = ipv6_prefix_length
     else:
       ipv6_access_config.externalIpv6PrefixLength = 96
+
+  if internal_ipv6_address:
+    # Try interpreting the address as IPv6.
+    try:
+      # ipaddress only allows unicode input
+      ipaddress.ip_address(six.text_type(internal_ipv6_address))
+      network_interface.ipv6Address = internal_ipv6_address
+    except ValueError:
+      # ipaddress could not resolve as an IPv6 address.
+      network_interface.ipv6Address = instances_flags.GetAddressRef(
+          resources, internal_ipv6_address, region).SelfLink()
+
+  if internal_ipv6_prefix_length:
+    network_interface.internalIpv6PrefixLength = internal_ipv6_prefix_length
 
   return network_interface
 
@@ -1064,13 +1093,11 @@ def BuildShieldedInstanceConfigMessage(messages, args):
     return None
 
 
-def BuildConfidentialInstanceConfigMessage(messages, args):
+def BuildConfidentialInstanceConfigMessage(
+    messages, args, support_confidential_compute_type=False):
   """Builds a confidential instance configuration message."""
-  if args.IsSpecified('confidential_compute'):
-    return instance_utils.CreateConfidentialInstanceMessage(
-        messages, args.confidential_compute)
-  else:
-    return None
+  return instance_utils.CreateConfidentialInstanceMessage(
+      messages, args, support_confidential_compute_type)
 
 
 def GetImageUri(args,

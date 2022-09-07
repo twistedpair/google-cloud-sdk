@@ -40,7 +40,8 @@ class Collections(enum.Enum):
       '{+name}',
       {
           '':
-              'projects/{projectsId}/fleetConstraints/{fleetConstraintsId}',
+              'projects/{projectsId}/fleetConstraints/{fleetConstraintsId}/'
+              '{fleetConstraintsId1}',
       },
       ['name'],
       True
@@ -51,7 +52,8 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/membershipConstraintTemplates/'
-              '{membershipConstraintTemplatesId}',
+              '{membershipConstraintTemplatesId}/'
+              '{membershipConstraintTemplatesId1}',
       },
       ['name'],
       True
@@ -62,7 +64,8 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/membershipConstraints/'
-              '{membershipConstraintsId}',
+              '{membershipConstraintsId}/{membershipConstraintsId1}/'
+              '{membershipConstraintsId2}',
       },
       ['name'],
       True

@@ -40,33 +40,34 @@ def add_precondition_flags(parser):
 
 def add_object_metadata_flags(parser, allow_patch=False):
   """Add flags that allow setting object metadata."""
-  parser.add_argument(
+  metadata_group = parser.add_group(category='OBJECT METADATA')
+  metadata_group.add_argument(
       '--cache-control',
       help='How caches should handle requests and responses.')
-  parser.add_argument(
+  metadata_group.add_argument(
       '--content-disposition',
       help='How content should be displayed.')
-  parser.add_argument(
+  metadata_group.add_argument(
       '--content-encoding', help='How content is encoded (e.g. ``gzip\'\').')
-  parser.add_argument(
+  metadata_group.add_argument(
       '--content-md5',
       metavar='MD5_DIGEST',
       help=('Manually specified MD5 hash digest for the contents of an uploaded'
             ' file. This flag cannot be used when uploading multiple files. The'
             ' custom digest is used by the cloud provider for validation.'))
-  parser.add_argument(
+  metadata_group.add_argument(
       '--content-language',
       help='Content\'s language (e.g. ``en\'\' signifies "English").')
-  parser.add_argument(
+  metadata_group.add_argument(
       '--content-type',
       help='Type of data contained in the object (e.g. ``text/html\'\').')
-  parser.add_argument(
+  metadata_group.add_argument(
       '--custom-time',
       type=arg_parsers.Datetime.Parse,
       help='Custom time for Google Cloud Storage objects in RFC 3339 format.')
 
   # TODO(b/238631069): Refactor to make use of command_lib/util/args/map_util.py
-  custom_metadata_group = parser.add_mutually_exclusive_group()
+  custom_metadata_group = metadata_group.add_mutually_exclusive_group()
   custom_metadata_group.add_argument(
       '--custom-metadata',
       metavar='CUSTOM_METADATA_KEYS_AND_VALUES',
@@ -109,31 +110,31 @@ def add_object_metadata_flags(parser, allow_patch=False):
           ' preserved.'))
 
   if allow_patch:
-    parser.add_argument(
+    metadata_group.add_argument(
         '--clear-cache-control',
         action='store_true',
         help='Clears object cache control.')
-    parser.add_argument(
+    metadata_group.add_argument(
         '--clear-content-disposition',
         action='store_true',
         help='Clears object content disposition.')
-    parser.add_argument(
+    metadata_group.add_argument(
         '--clear-content-encoding',
         action='store_true',
         help='Clears content encoding.')
-    parser.add_argument(
+    metadata_group.add_argument(
         '--clear-content-md5',
         action='store_true',
         help='Clears object content MD5.')
-    parser.add_argument(
+    metadata_group.add_argument(
         '--clear-content-language',
         action='store_true',
         help='Clears object content language.')
-    parser.add_argument(
+    metadata_group.add_argument(
         '--clear-content-type',
         action='store_true',
         help='Clears object content type.')
-    parser.add_argument(
+    metadata_group.add_argument(
         '--clear-custom-time',
         action='store_true',
         help='Clears object custom time.')
@@ -154,7 +155,8 @@ def add_encryption_flags(parser,
         write operations for read-only commands.
     hidden (bool): Hides encryption flags if true.
   """
-  parser.add_argument(
+  encryption_group = parser.add_group(category='ENCRYPTION', hidden=hidden)
+  encryption_group.add_argument(
       '--encryption-key',
       # Flag is hidden for read-only commands and not omitted for parity
       # reasons: gsutil allows supplying decryption keys through the encryption
@@ -171,18 +173,18 @@ def add_encryption_flags(parser,
           ' when copying or moving encryted data to a new location. Using this'
           ' flag in an `objects update` command triggers a rewrite of target'
           ' objects.'))
-  parser.add_argument(
+  encryption_group.add_argument(
       '--decryption-keys',
       type=arg_parsers.ArgList(),
       metavar='DECRYPTION_KEY',
       hidden=hidden,
-      help=('A comma separated list of customer-supplied encryption keys'
+      help=('A comma-separated list of customer-supplied encryption keys'
             ' (RFC 4648 section 4 base64-encoded AES256 strings) that will'
             ' be used to decrypt Google Cloud Storage objects. Data encrypted'
             ' with a customer-managed encryption key (CMEK) is decrypted'
             ' automatically, so CMEKs do not need to be listed here.'))
   if allow_patch:
-    parser.add_argument(
+    encryption_group.add_argument(
         '--clear-encryption-key',
         action='store_true',
         hidden=hidden or command_only_reads_data,

@@ -815,12 +815,12 @@
       "type": "object",
       "properties": {
         "minReplicaCount": {
-          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If the requested value is too large, the deployment will error.",
+          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If provided, this value must be in the range of [1, 1000].",
           "type": "integer",
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number. If provided, this value must be in the range of [1, 1000].",
           "type": "integer",
           "format": "int32"
         }
@@ -3213,7 +3213,7 @@
           "type": "string"
         },
         "statsAnomaliesBaseDirectory": {
-          "description": "Add Google Cloud Storage location for batch prediction model monitoring to dump statistics and anomalies. If not provided, a folder will be created in customer project to hold statistics and anomalies.",
+          "description": "A Google Cloud Storage location for batch prediction model monitoring to dump statistics and anomalies. If not provided, a folder will be created in customer project to hold statistics and anomalies.",
           "$ref": "GoogleCloudAiplatformV1alpha1GcsDestination"
         }
       }
@@ -5744,6 +5744,24 @@
             "PIPELINE_FAILURE_POLICY_FAIL_SLOW",
             "PIPELINE_FAILURE_POLICY_FAIL_FAST"
           ]
+        },
+        "inputArtifacts": {
+          "description": "The runtime artifacts of the PipelineJob. The key will be the input artifact name and the value would be one of the InputArtifact.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfigInputArtifact"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfigInputArtifact": {
+      "id": "GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfigInputArtifact",
+      "description": "The type of an input artifact.",
+      "type": "object",
+      "properties": {
+        "artifactId": {
+          "description": "Artifact resource id from MLMD. Which is the last portion of an artifact resource name(projects\/{project}\/locations\/{location}\/metadataStores\/default\/artifacts\/{artifact_id}). The artifact must stay within the same project, location and default metadatastore as the pipeline.",
+          "type": "string"
         }
       }
     },
@@ -7626,12 +7644,12 @@
       "type": "object",
       "properties": {
         "minReplicaCount": {
-          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If the requested value is too large, the deployment will error.",
+          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If provided, this value must be in the range of [1, 1000].",
           "type": "integer",
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number. If provided, this value must be in the range of [1, 1000].",
           "type": "integer",
           "format": "int32"
         }
@@ -8962,7 +8980,8 @@
             "The entry is in a labeling job and being labeled.",
             "The entry is labeled and the annotations are being collected and exported.",
             "The entry is labeled and the annotations are exported.",
-            "The entry failed."
+            "The entry failed.",
+            "The entry processing is cancelled."
           ],
           "enum": [
             "HUMAN_IN_THE_LOOP_ENTRY_STATE_UNSPECIFIED",
@@ -8971,7 +8990,8 @@
             "LABELING",
             "FINISHING",
             "FINISHED",
-            "FAILED"
+            "FAILED",
+            "CANCELLED"
           ]
         },
         "exportedFiles": {
@@ -10770,12 +10790,12 @@
       "type": "object",
       "properties": {
         "minReplicaCount": {
-          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If the requested value is too large, the deployment will error.",
+          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If provided, this value must be in the range of [1, 1000].",
           "type": "integer",
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number. If provided, this value must be in the range of [1, 1000].",
           "type": "integer",
           "format": "int32"
         }
@@ -12535,6 +12555,1812 @@
       "description": "Response message for JobService.WaitEdgeDeploymentJob.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecasting": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecasting",
+      "description": "A TrainingJob that trains and uploads an AutoML Forecasting Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputs"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputs": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputs",
+      "type": "object",
+      "properties": {
+        "targetColumn": {
+          "description": "The name of the column that the Model is to predict values for. This column must be unavailable at forecast.",
+          "type": "string"
+        },
+        "timeSeriesIdentifierColumn": {
+          "description": "The name of the column that identifies the time series.",
+          "type": "string"
+        },
+        "timeColumn": {
+          "description": "The name of the column that identifies time order in the time series. This column must be available at forecast.",
+          "type": "string"
+        },
+        "transformations": {
+          "description": "Each transformation will apply transform function to given input column. And the result will be used for training. When creating transformation for BigQuery Struct column, the column should be flattened using \".\" as the delimiter.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation"
+          }
+        },
+        "optimizationObjective": {
+          "description": "Objective function the model is optimizing towards. The training process creates a model that optimizes the value of the objective function over the validation set. The supported optimization objectives: * \"minimize-rmse\" (default) - Minimize root-mean-squared error (RMSE). * \"minimize-mae\" - Minimize mean-absolute error (MAE). * \"minimize-rmsle\" - Minimize root-mean-squared log error (RMSLE). * \"minimize-rmspe\" - Minimize root-mean-squared percentage error (RMSPE). * \"minimize-wape-mae\" - Minimize the combination of weighted absolute percentage error (WAPE) and mean-absolute-error (MAE). * \"minimize-quantile-loss\" - Minimize the quantile loss at the quantiles defined in `quantiles`. * \"minimize-mape\" - Minimize the mean absolute percentage error.",
+          "type": "string"
+        },
+        "trainBudgetMilliNodeHours": {
+          "description": "Required. The train budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The training cost of the model will not exceed this budget. The final cost will be attempted to be close to the budget, though may end up being (even) noticeably smaller - at the backend's discretion. This especially may happen when further model training ceases to provide any improvements. If the budget is set to a value known to be insufficient to train a model for the given dataset, the training won't be attempted and will error. The train budget must be between 1,000 and 72,000 milli node hours, inclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "weightColumn": {
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
+          "type": "string"
+        },
+        "timeSeriesAttributeColumns": {
+          "description": "Column names that should be used as attribute columns. The value of these columns does not vary as a function of time. For example, store ID or item color.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unavailableAtForecastColumns": {
+          "description": "Names of columns that are unavailable when a forecast is requested. This column contains information for the given entity (identified by the time_series_identifier_column) that is unknown before the forecast For example, actual weather on a given day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "availableAtForecastColumns": {
+          "description": "Names of columns that are available and provided when a forecast is requested. These columns contain information for the given entity (identified by the time_series_identifier_column column) that is known at forecast. For example, predicted weather for a specific day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dataGranularity": {
+          "description": "Expected difference in time granularity between rows in the data.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity"
+        },
+        "forecastHorizon": {
+          "description": "The amount of time into the future for which forecasted values for the target are returned. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "contextWindow": {
+          "description": "The amount of time into the past training and prediction data is used for model training and prediction respectively. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "exportEvaluatedDataItemsConfig": {
+          "description": "Configuration for exporting test set predictions to a BigQuery table. If this configuration is absent, then the export is not performed.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig"
+        },
+        "quantiles": {
+          "description": "Quantiles to use for minimize-quantile-loss `optimization_objective`. Up to 5 quantiles are allowed of values between 0 and 1, exclusive. Required if the value of optimization_objective is minimize-quantile-loss. Represents the percent quantiles to use for that objective. Quantiles must be unique.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "hierarchyConfig": {
+          "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionHierarchyConfig"
+        },
+        "windowConfig": {
+          "description": "Config containing strategy for generating sliding windows.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionWindowConfig"
+        },
+        "holidayRegions": {
+          "description": "The geographical region based on which the holiday effect is applied in modeling by adding holiday categorical array feature that include all holidays matching the date. This option only allowed when data_granularity is day. By default, holiday effect modeling is disabled. To turn it on, specify the holiday region using this option.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "validationOptions": {
+          "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
+          "type": "string"
+        },
+        "additionalExperiments": {
+          "description": "Additional experiment flags for the time series forcasting training.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation",
+      "type": "object",
+      "properties": {
+        "auto": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationAutoTransformation"
+        },
+        "numeric": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericTransformation"
+        },
+        "categorical": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalTransformation"
+        },
+        "timestamp": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTimestampTransformation"
+        },
+        "text": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextTransformation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationAutoTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationAutoTransformation",
+      "description": "Training pipeline will infer the proper transformation based on the statistic of dataset.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The value converted to float32. * The z_score of the value. * log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value. * z_score of log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value. * A boolean value that indicates whether the value is valid.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The categorical string as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index. * Categories that appear less than 5 times in the training dataset are treated as the \"unknown\" category. The \"unknown\" category gets its own special lookup index and resulting embedding.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTimestampTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTimestampTransformation",
+      "description": "Training pipeline will perform following transformation functions. * Apply the transformation functions for Numerical columns. * Determine the year, month, day,and weekday. Treat each value from the timestamp as a Categorical column. * Invalid numerical values (for example, values that fall outside of a typical timestamp range, or are extreme values) receive no special treatment and are not removed.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "timeFormat": {
+          "description": "The format in which that time field is expressed. The time_format must either be one of: * `unix-seconds` * `unix-milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for respectively number of seconds, milliseconds, microseconds and nanoseconds since start of the Unix epoch); or be written in `strftime` syntax. If time_format is not set, then the default format is RFC 3339 `date-time` format, where `time-offset` = `\"Z\"` (e.g. 1985-04-12T23:20:50.52Z)",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The text as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity",
+      "description": "A duration of time expressed in time granularity units.",
+      "type": "object",
+      "properties": {
+        "unit": {
+          "description": "The time granularity unit of this time period. The supported units are: * \"minute\" * \"hour\" * \"day\" * \"week\" * \"month\" * \"year\"",
+          "type": "string"
+        },
+        "quantity": {
+          "description": "The number of granularity_units between data points in the training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15, or 30. For all other values of `granularity_unit`, must be 1.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig",
+      "description": "Configuration for exporting test set predictions to a BigQuery table.",
+      "type": "object",
+      "properties": {
+        "destinationBigqueryUri": {
+          "description": "URI of desired destination BigQuery table. Expected format: `bq:\/\/{project_id}:{dataset_id}:{table}` If not specified, then results are exported to the following auto-created BigQuery table: `{project_id}:export_evaluated_examples_{model_name}_{yyyy_MM_dd'T'HH_mm_ss_SSS'Z'}.evaluated_examples`",
+          "type": "string"
+        },
+        "overrideExistingTable": {
+          "description": "If true and an export destination is specified, then the contents of the destination are overwritten. Otherwise, if the export destination already exists, then the export operation fails.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionHierarchyConfig": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionHierarchyConfig",
+      "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+      "type": "object",
+      "properties": {
+        "groupColumns": {
+          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. \u2018region\u2019 for a hierarchy of stores or \u2018department\u2019 for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. (\u2018blue\u2019, \u2018large\u2019) for \u2018color\u2019 and \u2018size\u2019, up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "groupTotalWeight": {
+          "description": "The weight of the loss for predictions aggregated over time series in the same group.",
+          "type": "number",
+          "format": "double"
+        },
+        "temporalTotalWeight": {
+          "description": "The weight of the loss for predictions aggregated over the horizon for a single time series.",
+          "type": "number",
+          "format": "double"
+        },
+        "groupTemporalTotalWeight": {
+          "description": "The weight of the loss for predictions aggregated over both the horizon and time series in the same hierarchy group.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionWindowConfig": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionWindowConfig",
+      "description": "Config that contains the strategy used to generate sliding windows in time series training. A window is a series of rows that comprise the context up to the time of prediction, and the horizon following. The corresponding row for each window marks the start of the forecast horizon. Each window is used as an input example for training\/evaluation.",
+      "type": "object",
+      "properties": {
+        "column": {
+          "description": "Name of the column that should be used to generate sliding windows. The column should contain either booleans or string booleans; if the value of the row is True, generate a sliding window with the horizon starting at that row. The column will not be used as a feature in training.",
+          "type": "string"
+        },
+        "strideLength": {
+          "description": "Stride length used to generate input examples. Within one time series, every {$STRIDE_LENGTH} rows will be used to generate a sliding window.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxCount": {
+          "description": "Maximum number of windows that should be generated across all time series.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingMetadata": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingMetadata",
+      "description": "Model metadata specific to AutoML Forecasting.",
+      "type": "object",
+      "properties": {
+        "trainCostMilliNodeHours": {
+          "description": "Output only. The actual training cost of the model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed the train budget.",
+          "type": "string",
+          "format": "int64"
+        },
+        "evaluatedDataItemsBigqueryUri": {
+          "description": "BigQuery destination uri for exported evaluated examples.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageClassification": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageClassification",
+      "description": "A TrainingJob that trains and uploads an AutoML Image Classification Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageClassificationInputs"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageClassificationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageClassificationInputs": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageClassificationInputs",
+      "type": "object",
+      "properties": {
+        "modelType": {
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "A Model best tailored to be used within Google Cloud, and which cannot be exported. Default.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as TensorFlow or Core ML model and used on a mobile or edge device afterwards. Expected to have low latency, but may have lower prediction quality than other mobile models.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as TensorFlow or Core ML model and used on a mobile or edge device with afterwards.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as TensorFlow or Core ML model and used on a mobile or edge device afterwards. Expected to have a higher latency, but should also have a higher prediction quality than other mobile models."
+          ],
+          "enum": [
+            "MODEL_TYPE_UNSPECIFIED",
+            "CLOUD",
+            "MOBILE_TF_LOW_LATENCY_1",
+            "MOBILE_TF_VERSATILE_1",
+            "MOBILE_TF_HIGH_ACCURACY_1"
+          ]
+        },
+        "baseModelId": {
+          "description": "The ID of the `base` model. If it is specified, the new model will be trained based on the `base` model. Otherwise, the new model will be trained from scratch. The `base` model must be in the same Project and Location as the new Model to train, and have the same modelType.",
+          "type": "string"
+        },
+        "budgetMilliNodeHours": {
+          "description": "The training budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The actual metadata.costMilliNodeHours will be equal or less than this value. If further model training ceases to provide any improvements, it will stop without using the full budget and the metadata.successfulStopReason will be `model-converged`. Note, node_hour = actual_hour * number_of_nodes_involved. For modelType `cloud`(default), the budget must be between 8,000 and 800,000 milli node hours, inclusive. The default value is 192,000 which represents one day in wall time, considering 8 nodes are used. For model types `mobile-tf-low-latency-1`, `mobile-tf-versatile-1`, `mobile-tf-high-accuracy-1`, the training budget must be between 1,000 and 100,000 milli node hours, inclusive. The default value is 24,000 which represents one day in wall time on a single node that is used.",
+          "type": "string",
+          "format": "int64"
+        },
+        "disableEarlyStopping": {
+          "description": "Use the entire training budget. This disables the early stopping feature. When false the early stopping feature is enabled, which means that AutoML Image Classification might stop training before the entire training budget has been used.",
+          "type": "boolean"
+        },
+        "multiLabel": {
+          "description": "If false, a single-label (multi-class) Model will be trained (i.e. assuming that for each image just up to one annotation may be applicable). If true, a multi-label Model will be trained (i.e. assuming that for each image multiple annotations may be applicable).",
+          "type": "boolean"
+        },
+        "uptrainBaseModelId": {
+          "description": "The ID of `base` model for upTraining. If it is specified, the new model will be upTrained based on the `base` model for upTraining. Otherwise, the new model will be trained from scratch. The `base` model for upTraining must be in the same Project and Location as the new Model to train, and have the same modelType.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageClassificationMetadata": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageClassificationMetadata",
+      "type": "object",
+      "properties": {
+        "costMilliNodeHours": {
+          "description": "The actual training cost of creating this model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed inputs.budgetMilliNodeHours.",
+          "type": "string",
+          "format": "int64"
+        },
+        "successfulStopReason": {
+          "description": "For successful job completions, this is the reason why the job has finished.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "The inputs.budgetMilliNodeHours had been reached.",
+            "Further training of the Model ceased to increase its quality, since it already has converged."
+          ],
+          "enum": [
+            "SUCCESSFUL_STOP_REASON_UNSPECIFIED",
+            "BUDGET_REACHED",
+            "MODEL_CONVERGED"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageObjectDetection": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageObjectDetection",
+      "description": "A TrainingJob that trains and uploads an AutoML Image Object Detection Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageObjectDetectionInputs"
+        },
+        "metadata": {
+          "description": "The metadata information",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageObjectDetectionMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageObjectDetectionInputs": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageObjectDetectionInputs",
+      "type": "object",
+      "properties": {
+        "modelType": {
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to have a higher latency, but should also have a higher prediction quality than other cloud models.",
+            "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to have a low latency, but may have lower prediction quality than other cloud models.",
+            "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have low latency, but may have lower prediction quality than other mobile models.",
+            "A model that, in addition to being available within Google Cloud can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) and used on a mobile or edge device with TensorFlow afterwards. Expected to have a higher latency, but should also have a higher prediction quality than other mobile models.",
+            "A model best tailored to be used within Google Cloud, and which cannot be exported. Expected to best support predictions in streaming with lower latency and lower prediction quality than other cloud models."
+          ],
+          "enum": [
+            "MODEL_TYPE_UNSPECIFIED",
+            "CLOUD_HIGH_ACCURACY_1",
+            "CLOUD_LOW_LATENCY_1",
+            "MOBILE_TF_LOW_LATENCY_1",
+            "MOBILE_TF_VERSATILE_1",
+            "MOBILE_TF_HIGH_ACCURACY_1",
+            "CLOUD_STREAMING_1"
+          ]
+        },
+        "budgetMilliNodeHours": {
+          "description": "The training budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The actual metadata.costMilliNodeHours will be equal or less than this value. If further model training ceases to provide any improvements, it will stop without using the full budget and the metadata.successfulStopReason will be `model-converged`. Note, node_hour = actual_hour * number_of_nodes_involved. For modelType `cloud`(default), the budget must be between 20,000 and 900,000 milli node hours, inclusive. The default value is 216,000 which represents one day in wall time, considering 9 nodes are used. For model types `mobile-tf-low-latency-1`, `mobile-tf-versatile-1`, `mobile-tf-high-accuracy-1` the training budget must be between 1,000 and 100,000 milli node hours, inclusive. The default value is 24,000 which represents one day in wall time on a single node that is used.",
+          "type": "string",
+          "format": "int64"
+        },
+        "disableEarlyStopping": {
+          "description": "Use the entire training budget. This disables the early stopping feature. When false the early stopping feature is enabled, which means that AutoML Image Object Detection might stop training before the entire training budget has been used.",
+          "type": "boolean"
+        },
+        "uptrainBaseModelId": {
+          "description": "The ID of `base` model for upTraining. If it is specified, the new model will be upTrained based on the `base` model for upTraining. Otherwise, the new model will be trained from scratch. The `base` model for upTraining must be in the same Project and Location as the new Model to train, and have the same modelType.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageObjectDetectionMetadata": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageObjectDetectionMetadata",
+      "type": "object",
+      "properties": {
+        "costMilliNodeHours": {
+          "description": "The actual training cost of creating this model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed inputs.budgetMilliNodeHours.",
+          "type": "string",
+          "format": "int64"
+        },
+        "successfulStopReason": {
+          "description": "For successful job completions, this is the reason why the job has finished.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "The inputs.budgetMilliNodeHours had been reached.",
+            "Further training of the Model ceased to increase its quality, since it already has converged."
+          ],
+          "enum": [
+            "SUCCESSFUL_STOP_REASON_UNSPECIFIED",
+            "BUDGET_REACHED",
+            "MODEL_CONVERGED"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageSegmentation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageSegmentation",
+      "description": "A TrainingJob that trains and uploads an AutoML Image Segmentation Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageSegmentationInputs"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageSegmentationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageSegmentationInputs": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageSegmentationInputs",
+      "type": "object",
+      "properties": {
+        "modelType": {
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "A model to be used via prediction calls to uCAIP API. Expected to have a higher latency, but should also have a higher prediction quality than other models.",
+            "A model to be used via prediction calls to uCAIP API. Expected to have a lower latency but relatively lower prediction quality.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as TensorFlow model and used on a mobile or edge device afterwards. Expected to have low latency, but may have lower prediction quality than other mobile models."
+          ],
+          "enum": [
+            "MODEL_TYPE_UNSPECIFIED",
+            "CLOUD_HIGH_ACCURACY_1",
+            "CLOUD_LOW_ACCURACY_1",
+            "MOBILE_TF_LOW_LATENCY_1"
+          ]
+        },
+        "budgetMilliNodeHours": {
+          "description": "The training budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The actual metadata.costMilliNodeHours will be equal or less than this value. If further model training ceases to provide any improvements, it will stop without using the full budget and the metadata.successfulStopReason will be `model-converged`. Note, node_hour = actual_hour * number_of_nodes_involved. Or actaul_wall_clock_hours = train_budget_milli_node_hours \/ (number_of_nodes_involved * 1000) For modelType `cloud-high-accuracy-1`(default), the budget must be between 20,000 and 2,000,000 milli node hours, inclusive. The default value is 192,000 which represents one day in wall time (1000 milli * 24 hours * 8 nodes).",
+          "type": "string",
+          "format": "int64"
+        },
+        "baseModelId": {
+          "description": "The ID of the `base` model. If it is specified, the new model will be trained based on the `base` model. Otherwise, the new model will be trained from scratch. The `base` model must be in the same Project and Location as the new Model to train, and have the same modelType.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageSegmentationMetadata": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageSegmentationMetadata",
+      "type": "object",
+      "properties": {
+        "costMilliNodeHours": {
+          "description": "The actual training cost of creating this model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed inputs.budgetMilliNodeHours.",
+          "type": "string",
+          "format": "int64"
+        },
+        "successfulStopReason": {
+          "description": "For successful job completions, this is the reason why the job has finished.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "The inputs.budgetMilliNodeHours had been reached.",
+            "Further training of the Model ceased to increase its quality, since it already has converged."
+          ],
+          "enum": [
+            "SUCCESSFUL_STOP_REASON_UNSPECIFIED",
+            "BUDGET_REACHED",
+            "MODEL_CONVERGED"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTables": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTables",
+      "description": "A TrainingJob that trains and uploads an AutoML Tables Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputs"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputs": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputs",
+      "type": "object",
+      "properties": {
+        "optimizationObjectiveRecallValue": {
+          "description": "Required when optimization_objective is \"maximize-precision-at-recall\". Must be between 0 and 1, inclusive.",
+          "type": "number",
+          "format": "float"
+        },
+        "optimizationObjectivePrecisionValue": {
+          "description": "Required when optimization_objective is \"maximize-recall-at-precision\". Must be between 0 and 1, inclusive.",
+          "type": "number",
+          "format": "float"
+        },
+        "predictionType": {
+          "description": "The type of prediction the Model is to produce. \"classification\" - Predict one out of multiple target values is picked for each row. \"regression\" - Predict a value based on its relation to other values. This type is available only to columns that contain semantically numeric values, i.e. integers or floating point number, even if stored as e.g. strings.",
+          "type": "string"
+        },
+        "targetColumn": {
+          "description": "The column name of the target column that the model is to predict.",
+          "type": "string"
+        },
+        "transformations": {
+          "description": "Each transformation will apply transform function to given input column. And the result will be used for training. When creating transformation for BigQuery Struct column, the column should be flattened using \".\" as the delimiter.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformation"
+          }
+        },
+        "optimizationObjective": {
+          "description": "Objective function the model is optimizing towards. The training process creates a model that maximizes\/minimizes the value of the objective function over the validation set. The supported optimization objectives depend on the prediction type. If the field is not set, a default objective function is used. classification (binary): \"maximize-au-roc\" (default) - Maximize the area under the receiver operating characteristic (ROC) curve. \"minimize-log-loss\" - Minimize log loss. \"maximize-au-prc\" - Maximize the area under the precision-recall curve. \"maximize-precision-at-recall\" - Maximize precision for a specified recall value. \"maximize-recall-at-precision\" - Maximize recall for a specified precision value. classification (multi-class): \"minimize-log-loss\" (default) - Minimize log loss. regression: \"minimize-rmse\" (default) - Minimize root-mean-squared error (RMSE). \"minimize-mae\" - Minimize mean-absolute error (MAE). \"minimize-rmsle\" - Minimize root-mean-squared log error (RMSLE).",
+          "type": "string"
+        },
+        "trainBudgetMilliNodeHours": {
+          "description": "Required. The train budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The training cost of the model will not exceed this budget. The final cost will be attempted to be close to the budget, though may end up being (even) noticeably smaller - at the backend's discretion. This especially may happen when further model training ceases to provide any improvements. If the budget is set to a value known to be insufficient to train a model for the given dataset, the training won't be attempted and will error. The train budget must be between 1,000 and 72,000 milli node hours, inclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "disableEarlyStopping": {
+          "description": "Use the entire training budget. This disables the early stopping feature. By default, the early stopping feature is enabled, which means that AutoML Tables might stop training before the entire training budget has been used.",
+          "type": "boolean"
+        },
+        "weightColumnName": {
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1.",
+          "type": "string"
+        },
+        "exportEvaluatedDataItemsConfig": {
+          "description": "Configuration for exporting test set predictions to a BigQuery table. If this configuration is absent, then the export is not performed.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig"
+        },
+        "additionalExperiments": {
+          "description": "Additional experiment flags for the Tables training pipeline.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformation",
+      "type": "object",
+      "properties": {
+        "auto": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationAutoTransformation"
+        },
+        "numeric": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationNumericTransformation"
+        },
+        "categorical": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationCategoricalTransformation"
+        },
+        "timestamp": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTimestampTransformation"
+        },
+        "text": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTextTransformation"
+        },
+        "repeatedNumeric": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationNumericArrayTransformation"
+        },
+        "repeatedCategorical": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationCategoricalArrayTransformation"
+        },
+        "repeatedText": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTextArrayTransformation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationAutoTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationAutoTransformation",
+      "description": "Training pipeline will infer the proper transformation based on the statistic of dataset.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationNumericTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationNumericTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The value converted to float32. * The z_score of the value. * log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value. * z_score of log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value. * A boolean value that indicates whether the value is valid.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "invalidValuesAllowed": {
+          "description": "If invalid values is allowed, the training pipeline will create a boolean feature that indicated whether the value is valid. Otherwise, the training pipeline will discard the input row from trainining data.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationCategoricalTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationCategoricalTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The categorical string as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index. * Categories that appear less than 5 times in the training dataset are treated as the \"unknown\" category. The \"unknown\" category gets its own special lookup index and resulting embedding.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTimestampTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTimestampTransformation",
+      "description": "Training pipeline will perform following transformation functions. * Apply the transformation functions for Numerical columns. * Determine the year, month, day,and weekday. Treat each value from the * timestamp as a Categorical column. * Invalid numerical values (for example, values that fall outside of a typical timestamp range, or are extreme values) receive no special treatment and are not removed.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "timeFormat": {
+          "description": "The format in which that time field is expressed. The time_format must either be one of: * `unix-seconds` * `unix-milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for respectively number of seconds, milliseconds, microseconds and nanoseconds since start of the Unix epoch); or be written in `strftime` syntax. If time_format is not set, then the default format is RFC 3339 `date-time` format, where `time-offset` = `\"Z\"` (e.g. 1985-04-12T23:20:50.52Z)",
+          "type": "string"
+        },
+        "invalidValuesAllowed": {
+          "description": "If invalid values is allowed, the training pipeline will create a boolean feature that indicated whether the value is valid. Otherwise, the training pipeline will discard the input row from trainining data.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTextTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTextTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The text as is--no change to case, punctuation, spelling, tense, and so on. * Tokenize text to words. Convert each words to a dictionary lookup index and generate an embedding for each index. Combine the embedding of all elements into a single embedding using the mean. * Tokenization is based on unicode script boundaries. * Missing values get their own lookup index and resulting embedding. * Stop-words receive no special treatment and are not removed.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationNumericArrayTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationNumericArrayTransformation",
+      "description": "Treats the column as numerical array and performs following transformation functions. * All transformations for Numerical types applied to the average of the all elements. * The average of empty arrays is treated as zero.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "invalidValuesAllowed": {
+          "description": "If invalid values is allowed, the training pipeline will create a boolean feature that indicated whether the value is valid. Otherwise, the training pipeline will discard the input row from trainining data.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationCategoricalArrayTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationCategoricalArrayTransformation",
+      "description": "Treats the column as categorical array and performs following transformation functions. * For each element in the array, convert the category name to a dictionary lookup index and generate an embedding for each index. Combine the embedding of all elements into a single embedding using the mean. * Empty arrays treated as an embedding of zeroes.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTextArrayTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTextArrayTransformation",
+      "description": "Treats the column as text array and performs following transformation functions. * Concatenate all text values in the array into a single text value using a space (\" \") as a delimiter, and then treat the result as a single text value. Apply the transformations for Text columns. * Empty arrays treated as an empty text.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesMetadata": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTablesMetadata",
+      "description": "Model metadata specific to AutoML Tables.",
+      "type": "object",
+      "properties": {
+        "trainCostMilliNodeHours": {
+          "description": "Output only. The actual training cost of the model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed the train budget.",
+          "type": "string",
+          "format": "int64"
+        },
+        "evaluatedDataItemsBigqueryUri": {
+          "description": "BigQuery destination uri for exported evaluated examples.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTextClassification": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTextClassification",
+      "description": "A TrainingJob that trains and uploads an AutoML Text Classification Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTextClassificationInputs"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTextClassificationInputs": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTextClassificationInputs",
+      "type": "object",
+      "properties": {
+        "multiLabel": {
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTextExtraction": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTextExtraction",
+      "description": "A TrainingJob that trains and uploads an AutoML Text Extraction Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTextExtractionInputs"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTextExtractionInputs": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTextExtractionInputs",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTextSentiment": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTextSentiment",
+      "description": "A TrainingJob that trains and uploads an AutoML Text Sentiment Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTextSentimentInputs"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTextSentimentInputs": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlTextSentimentInputs",
+      "type": "object",
+      "properties": {
+        "sentimentMax": {
+          "description": "A sentiment is expressed as an integer ordinal, where higher value means a more positive sentiment. The range of sentiments that will be used is between 0 and sentimentMax (inclusive on both ends), and all the values in the range must be represented in the dataset before a model can be created. Only the Annotations with this sentimentMax will be used for training. sentimentMax value must be between 1 and 10 (inclusive).",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlVideoActionRecognition": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlVideoActionRecognition",
+      "description": "A TrainingJob that trains and uploads an AutoML Video Action Recognition Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlVideoActionRecognitionInputs"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlVideoActionRecognitionInputs": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlVideoActionRecognitionInputs",
+      "type": "object",
+      "properties": {
+        "modelType": {
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "A model best tailored to be used within Google Cloud, and which c annot be exported. Default.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as a TensorFlow or TensorFlow Lite model and used on a mobile or edge device afterwards.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) to a Jetson device afterwards.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as a TensorFlow or TensorFlow Lite model and used on a Coral device afterwards."
+          ],
+          "enum": [
+            "MODEL_TYPE_UNSPECIFIED",
+            "CLOUD",
+            "MOBILE_VERSATILE_1",
+            "MOBILE_JETSON_VERSATILE_1",
+            "MOBILE_CORAL_VERSATILE_1"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlVideoClassification": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlVideoClassification",
+      "description": "A TrainingJob that trains and uploads an AutoML Video Classification Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlVideoClassificationInputs"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlVideoClassificationInputs": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlVideoClassificationInputs",
+      "type": "object",
+      "properties": {
+        "modelType": {
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "A model best tailored to be used within Google Cloud, and which cannot be exported. Default.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as a TensorFlow or TensorFlow Lite model and used on a mobile or edge device afterwards.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) to a Jetson device afterwards."
+          ],
+          "enum": [
+            "MODEL_TYPE_UNSPECIFIED",
+            "CLOUD",
+            "MOBILE_VERSATILE_1",
+            "MOBILE_JETSON_VERSATILE_1"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlVideoObjectTracking": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlVideoObjectTracking",
+      "description": "A TrainingJob that trains and uploads an AutoML Video ObjectTracking Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlVideoObjectTrackingInputs"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlVideoObjectTrackingInputs": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlVideoObjectTrackingInputs",
+      "type": "object",
+      "properties": {
+        "modelType": {
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "A model best tailored to be used within Google Cloud, and which c annot be exported. Default.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as a TensorFlow or TensorFlow Lite model and used on a mobile or edge device afterwards.",
+            "A versatile model that is meant to be exported (see ModelService.ExportModel) and used on a Google Coral device.",
+            "A model that trades off quality for low latency, to be exported (see ModelService.ExportModel) and used on a Google Coral device.",
+            "A versatile model that is meant to be exported (see ModelService.ExportModel) and used on an NVIDIA Jetson device.",
+            "A model that trades off quality for low latency, to be exported (see ModelService.ExportModel) and used on an NVIDIA Jetson device."
+          ],
+          "enum": [
+            "MODEL_TYPE_UNSPECIFIED",
+            "CLOUD",
+            "MOBILE_VERSATILE_1",
+            "MOBILE_CORAL_VERSATILE_1",
+            "MOBILE_CORAL_LOW_LATENCY_1",
+            "MOBILE_JETSON_VERSATILE_1",
+            "MOBILE_JETSON_LOW_LATENCY_1"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionCustomTask": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionCustomTask",
+      "description": "A TrainingJob that trains a custom code Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this CustomTask.",
+          "$ref": "GoogleCloudAiplatformUiCustomJobSpec"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionCustomJobMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiCustomJobSpec": {
+      "id": "GoogleCloudAiplatformUiCustomJobSpec",
+      "description": "Represents the spec of a CustomJob.",
+      "type": "object",
+      "properties": {
+        "workerPoolSpecs": {
+          "description": "Required. The spec of the worker pools including machine type and Docker image. All worker pools except the first one are optional and can be skipped by providing an empty value.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiWorkerPoolSpec"
+          }
+        },
+        "scheduling": {
+          "description": "Scheduling options for a CustomJob.",
+          "$ref": "GoogleCloudAiplatformUiScheduling"
+        },
+        "serviceAccount": {
+          "description": "Specifies the service account for workload run-as account. Users submitting jobs must have act-as permission on this run-as account. If unspecified, the [Vertex AI Custom Code Service Agent](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/access-control#service-agents) for the CustomJob's project is used.",
+          "type": "string"
+        },
+        "network": {
+          "description": "Optional. The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. To specify this field, you must have already [configured VPC Network Peering for Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/vpc-peering). If this field is left unspecified, the job is not peered with any network.",
+          "type": "string"
+        },
+        "reservedIpRanges": {
+          "description": "Optional. A list of names for the reserved ip ranges under the VPC network that can be used for this job. If set, we will deploy the job within the provided ip ranges. Otherwise, the job will be deployed to any ip ranges under the provided VPC network. Example: ['vertex-ai-ip-range'].",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "baseOutputDirectory": {
+          "description": "The Cloud Storage location to store the output of this CustomJob or HyperparameterTuningJob. For HyperparameterTuningJob, the baseOutputDirectory of each child CustomJob backing a Trial is set to a subdirectory of name id under its parent HyperparameterTuningJob's baseOutputDirectory. The following Vertex AI environment variables will be passed to containers or python modules when this field is set: For CustomJob: * AIP_MODEL_DIR = `\/model\/` * AIP_CHECKPOINT_DIR = `\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/logs\/` For CustomJob backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `\/\/model\/` * AIP_CHECKPOINT_DIR = `\/\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/\/logs\/`",
+          "$ref": "GoogleCloudAiplatformUiGcsDestination"
+        },
+        "tensorboard": {
+          "description": "Optional. The name of a Vertex AI Tensorboard resource to which this CustomJob will upload Tensorboard logs. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}`",
+          "type": "string"
+        },
+        "enableWebAccess": {
+          "description": "Optional. Whether you want Vertex AI to enable [interactive shell access](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) to training containers. If set to `true`, you can access interactive shells at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiWorkerPoolSpec": {
+      "id": "GoogleCloudAiplatformUiWorkerPoolSpec",
+      "description": "Represents the spec of a worker pool in a job.",
+      "type": "object",
+      "properties": {
+        "containerSpec": {
+          "description": "The custom container task.",
+          "$ref": "GoogleCloudAiplatformUiContainerSpec"
+        },
+        "pythonPackageSpec": {
+          "description": "The Python packaged task.",
+          "$ref": "GoogleCloudAiplatformUiPythonPackageSpec"
+        },
+        "machineSpec": {
+          "description": "Optional. Immutable. The specification of a single machine.",
+          "$ref": "GoogleCloudAiplatformUiMachineSpec"
+        },
+        "replicaCount": {
+          "description": "Optional. The number of worker replicas to use for this worker pool.",
+          "type": "string",
+          "format": "int64"
+        },
+        "nfsMounts": {
+          "description": "Optional. List of NFS mount spec.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiNfsMount"
+          }
+        },
+        "diskSpec": {
+          "description": "Disk spec.",
+          "$ref": "GoogleCloudAiplatformUiDiskSpec"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiContainerSpec": {
+      "id": "GoogleCloudAiplatformUiContainerSpec",
+      "description": "The spec of a Container.",
+      "type": "object",
+      "properties": {
+        "imageUri": {
+          "description": "Required. The URI of a container image in the Container Registry that is to be run on each worker replica.",
+          "type": "string"
+        },
+        "command": {
+          "description": "The command to be invoked when the container is started. It overrides the entrypoint instruction in Dockerfile when provided.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "args": {
+          "description": "The arguments to be passed when starting the container.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "env": {
+          "description": "Environment variables to be passed to the container. Maximum limit is 100.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiEnvVar"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiEnvVar": {
+      "id": "GoogleCloudAiplatformUiEnvVar",
+      "description": "Represents an environment variable present in a Container or Python Module.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Name of the environment variable. Must be a valid C identifier.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Required. Variables that reference a $(VAR_NAME) are expanded using the previous defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references will never be expanded, regardless of whether the variable exists or not.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiPythonPackageSpec": {
+      "id": "GoogleCloudAiplatformUiPythonPackageSpec",
+      "description": "The spec of a Python packaged code.",
+      "type": "object",
+      "properties": {
+        "executorImageUri": {
+          "description": "Required. The URI of a container image in Artifact Registry that will run the provided Python package. Vertex AI provides a wide range of executor images with pre-installed packages to meet users' various use cases. See the list of [pre-built containers for training](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/pre-built-containers). You must use an image from this list.",
+          "type": "string"
+        },
+        "packageUris": {
+          "description": "Required. The Google Cloud Storage location of the Python package files which are the training program and its dependent packages. The maximum number of package URIs is 100.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pythonModule": {
+          "description": "Required. The Python module name to run after installing the packages.",
+          "type": "string"
+        },
+        "args": {
+          "description": "Command line arguments to be passed to the Python task.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "env": {
+          "description": "Environment variables to be passed to the python module. Maximum limit is 100.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiEnvVar"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiNfsMount": {
+      "id": "GoogleCloudAiplatformUiNfsMount",
+      "description": "Represents a mount configuration for Network File System (NFS) to mount.",
+      "type": "object",
+      "properties": {
+        "server": {
+          "description": "Required. IP address of the NFS server.",
+          "type": "string"
+        },
+        "path": {
+          "description": "Required. Source path exported from NFS server. Has to start with '\/', and combined with the ip address, it indicates the source mount path in the form of `server:path`",
+          "type": "string"
+        },
+        "mountPoint": {
+          "description": "Required. Destination mount path. The NFS will be mounted for the user under \/mnt\/nfs\/",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiDiskSpec": {
+      "id": "GoogleCloudAiplatformUiDiskSpec",
+      "description": "Represents the spec of disk options.",
+      "type": "object",
+      "properties": {
+        "bootDiskType": {
+          "description": "Type of the boot disk (default is \"pd-ssd\"). Valid values: \"pd-ssd\" (Persistent Disk Solid State Drive) or \"pd-standard\" (Persistent Disk Hard Disk Drive).",
+          "type": "string"
+        },
+        "bootDiskSizeGb": {
+          "description": "Size in GB of the boot disk (default is 100GB).",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiScheduling": {
+      "id": "GoogleCloudAiplatformUiScheduling",
+      "description": "All parameters related to queuing and scheduling of custom jobs.",
+      "type": "object",
+      "properties": {
+        "timeout": {
+          "description": "The maximum job running time. The default is 7 days.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "restartJobOnWorkerRestart": {
+          "description": "Restarts the entire CustomJob if a worker gets restarted. This feature can be used by distributed training jobs that are not resilient to workers leaving and joining a job.",
+          "type": "boolean"
+        },
+        "strategy": {
+          "description": "Optional. This determines which type of scheduling strategy to use.",
+          "type": "string",
+          "enumDescriptions": [
+            "Strategy will default to ON_DEMAND.",
+            "Regular on-demand provisioning strategy.",
+            "Low cost by making potential use of spot resources."
+          ],
+          "enum": [
+            "STRATEGY_UNSPECIFIED",
+            "ON_DEMAND",
+            "LOW_COST"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionCustomJobMetadata": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionCustomJobMetadata",
+      "type": "object",
+      "properties": {
+        "backingCustomJob": {
+          "description": "The resource name of the CustomJob that has been created to carry out this custom task.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionHyperparameterTuningTask": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionHyperparameterTuningTask",
+      "description": "A TrainingJob that tunes Hypererparameters of a custom code Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this HyperparameterTuningTask.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionHyperparameterTuningJobSpec"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionHyperparameterTuningJobMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionHyperparameterTuningJobSpec": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionHyperparameterTuningJobSpec",
+      "type": "object",
+      "properties": {
+        "studySpec": {
+          "description": "Study configuration of the HyperparameterTuningJob.",
+          "$ref": "GoogleCloudAiplatformUiStudySpec"
+        },
+        "trialJobSpec": {
+          "description": "The spec of a trial job. The same spec applies to the CustomJobs created in all the trials.",
+          "$ref": "GoogleCloudAiplatformUiCustomJobSpec"
+        },
+        "maxTrialCount": {
+          "description": "The desired total number of Trials.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "parallelTrialCount": {
+          "description": "The desired number of Trials to run in parallel.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxFailedTrialCount": {
+          "description": "The number of failed Trials that need to be seen before failing the HyperparameterTuningJob. If set to 0, Vertex AI decides how many Trials must fail before the whole job fails.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiStudySpec": {
+      "id": "GoogleCloudAiplatformUiStudySpec",
+      "description": "Represents specification of a Study.",
+      "type": "object",
+      "properties": {
+        "decayCurveStoppingSpec": {
+          "description": "The automated early stopping spec using decay curve rule.",
+          "$ref": "GoogleCloudAiplatformUiStudySpecDecayCurveAutomatedStoppingSpec"
+        },
+        "medianAutomatedStoppingSpec": {
+          "description": "The automated early stopping spec using median rule.",
+          "$ref": "GoogleCloudAiplatformUiStudySpecMedianAutomatedStoppingSpec"
+        },
+        "convexStopConfig": {
+          "description": "Deprecated. The automated early stopping using convex stopping rule.",
+          "$ref": "GoogleCloudAiplatformUiStudySpecConvexStopConfig"
+        },
+        "metrics": {
+          "description": "Required. Metric specs for the Study.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiStudySpecMetricSpec"
+          }
+        },
+        "parameters": {
+          "description": "Required. The set of parameters to tune.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiStudySpecParameterSpec"
+          }
+        },
+        "algorithm": {
+          "description": "The search algorithm specified for the Study.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default algorithm used by Vertex AI for [hyperparameter tuning](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/hyperparameter-tuning-overview) and [Vertex AI Vizier](https:\/\/cloud.google.com\/vertex-ai\/docs\/vizier).",
+            "Simple grid search within the feasible space. To use grid search, all parameters must be `INTEGER`, `CATEGORICAL`, or `DISCRETE`.",
+            "Simple random search within the feasible space."
+          ],
+          "enum": [
+            "ALGORITHM_UNSPECIFIED",
+            "GRID_SEARCH",
+            "RANDOM_SEARCH"
+          ]
+        },
+        "observationNoise": {
+          "description": "The observation noise level of the study. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default noise level chosen by Vertex AI.",
+            "Vertex AI assumes that the objective function is (nearly) perfectly reproducible, and will never repeat the same Trial parameters.",
+            "Vertex AI will estimate the amount of noise in metric evaluations, it may repeat the same Trial parameters more than once."
+          ],
+          "enum": [
+            "OBSERVATION_NOISE_UNSPECIFIED",
+            "LOW",
+            "HIGH"
+          ]
+        },
+        "measurementSelectionType": {
+          "description": "Describe which measurement selection type will be used",
+          "type": "string",
+          "enumDescriptions": [
+            "Will be treated as LAST_MEASUREMENT.",
+            "Use the last measurement reported.",
+            "Use the best measurement reported."
+          ],
+          "enum": [
+            "MEASUREMENT_SELECTION_TYPE_UNSPECIFIED",
+            "LAST_MEASUREMENT",
+            "BEST_MEASUREMENT"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiStudySpecDecayCurveAutomatedStoppingSpec": {
+      "id": "GoogleCloudAiplatformUiStudySpecDecayCurveAutomatedStoppingSpec",
+      "description": "The decay curve automated stopping rule builds a Gaussian Process Regressor to predict the final objective value of a Trial based on the already completed Trials and the intermediate measurements of the current Trial. Early stopping is requested for the current Trial if there is very low probability to exceed the optimal value found so far.",
+      "type": "object",
+      "properties": {
+        "useElapsedDuration": {
+          "description": "True if Measurement.elapsed_duration is used as the x-axis of each Trials Decay Curve. Otherwise, Measurement.step_count will be used as the x-axis.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiStudySpecMedianAutomatedStoppingSpec": {
+      "id": "GoogleCloudAiplatformUiStudySpecMedianAutomatedStoppingSpec",
+      "description": "The median automated stopping rule stops a pending Trial if the Trial's best objective_value is strictly below the median 'performance' of all completed Trials reported up to the Trial's last measurement. Currently, 'performance' refers to the running average of the objective values reported by the Trial in each measurement.",
+      "type": "object",
+      "properties": {
+        "useElapsedDuration": {
+          "description": "True if median automated stopping rule applies on Measurement.elapsed_duration. It means that elapsed_duration field of latest measurement of current Trial is used to compute median objective value for each completed Trials.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiStudySpecConvexStopConfig": {
+      "id": "GoogleCloudAiplatformUiStudySpecConvexStopConfig",
+      "description": "Configuration for ConvexStopPolicy.",
+      "type": "object",
+      "properties": {
+        "maxNumSteps": {
+          "description": "Steps used in predicting the final objective for early stopped trials. In general, it's set to be the same as the defined steps in training \/ tuning. When use_steps is false, this field is set to the maximum elapsed seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "minNumSteps": {
+          "description": "Minimum number of steps for a trial to complete. Trials which do not have a measurement with num_steps > min_num_steps won't be considered for early stopping. It's ok to set it to 0, and a trial can be early stopped at any stage. By default, min_num_steps is set to be one-tenth of the max_num_steps. When use_steps is false, this field is set to the minimum elapsed seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "autoregressiveOrder": {
+          "description": "The number of Trial measurements used in autoregressive model for value prediction. A trial won't be considered early stopping if has fewer measurement points.",
+          "type": "string",
+          "format": "int64"
+        },
+        "learningRateParameterName": {
+          "description": "The hyper-parameter name used in the tuning job that stands for learning rate. Leave it blank if learning rate is not in a parameter in tuning. The learning_rate is used to estimate the objective value of the ongoing trial.",
+          "type": "string"
+        },
+        "useSeconds": {
+          "description": "This bool determines whether or not the rule is applied based on elapsed_secs or steps. If use_seconds==false, the early stopping decision is made according to the predicted objective values according to the target steps. If use_seconds==true, elapsed_secs is used instead of steps. Also, in this case, the parameters max_num_steps and min_num_steps are overloaded to contain max_elapsed_seconds and min_elapsed_seconds.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiStudySpecMetricSpec": {
+      "id": "GoogleCloudAiplatformUiStudySpecMetricSpec",
+      "description": "Represents a metric to optimize.",
+      "type": "object",
+      "properties": {
+        "metricId": {
+          "description": "Required. The ID of the metric. Must not contain whitespaces and must be unique amongst all MetricSpecs.",
+          "type": "string"
+        },
+        "goal": {
+          "description": "Required. The optimization goal of the metric.",
+          "type": "string",
+          "enumDescriptions": [
+            "Goal Type will default to maximize.",
+            "Maximize the goal metric.",
+            "Minimize the goal metric."
+          ],
+          "enum": [
+            "GOAL_TYPE_UNSPECIFIED",
+            "MAXIMIZE",
+            "MINIMIZE"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiStudySpecParameterSpec": {
+      "id": "GoogleCloudAiplatformUiStudySpecParameterSpec",
+      "description": "Represents a single parameter to optimize.",
+      "type": "object",
+      "properties": {
+        "doubleValueSpec": {
+          "description": "The value spec for a 'DOUBLE' parameter.",
+          "$ref": "GoogleCloudAiplatformUiStudySpecParameterSpecDoubleValueSpec"
+        },
+        "integerValueSpec": {
+          "description": "The value spec for an 'INTEGER' parameter.",
+          "$ref": "GoogleCloudAiplatformUiStudySpecParameterSpecIntegerValueSpec"
+        },
+        "categoricalValueSpec": {
+          "description": "The value spec for a 'CATEGORICAL' parameter.",
+          "$ref": "GoogleCloudAiplatformUiStudySpecParameterSpecCategoricalValueSpec"
+        },
+        "discreteValueSpec": {
+          "description": "The value spec for a 'DISCRETE' parameter.",
+          "$ref": "GoogleCloudAiplatformUiStudySpecParameterSpecDiscreteValueSpec"
+        },
+        "parameterId": {
+          "description": "Required. The ID of the parameter. Must not contain whitespaces and must be unique amongst all ParameterSpecs.",
+          "type": "string"
+        },
+        "scaleType": {
+          "description": "How the parameter should be scaled. Leave unset for `CATEGORICAL` parameters.",
+          "type": "string",
+          "enumDescriptions": [
+            "By default, no scaling is applied.",
+            "Scales the feasible space to (0, 1) linearly.",
+            "Scales the feasible space logarithmically to (0, 1). The entire feasible space must be strictly positive.",
+            "Scales the feasible space \"reverse\" logarithmically to (0, 1). The result is that values close to the top of the feasible space are spread out more than points near the bottom. The entire feasible space must be strictly positive."
+          ],
+          "enum": [
+            "SCALE_TYPE_UNSPECIFIED",
+            "UNIT_LINEAR_SCALE",
+            "UNIT_LOG_SCALE",
+            "UNIT_REVERSE_LOG_SCALE"
+          ]
+        },
+        "conditionalParameterSpecs": {
+          "description": "A conditional parameter node is active if the parameter's value matches the conditional node's parent_value_condition. If two items in conditional_parameter_specs have the same name, they must have disjoint parent_value_condition.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiStudySpecParameterSpecConditionalParameterSpec"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiStudySpecParameterSpecDoubleValueSpec": {
+      "id": "GoogleCloudAiplatformUiStudySpecParameterSpecDoubleValueSpec",
+      "description": "Value specification for a parameter in `DOUBLE` type.",
+      "type": "object",
+      "properties": {
+        "minValue": {
+          "description": "Required. Inclusive minimum value of the parameter.",
+          "type": "number",
+          "format": "double"
+        },
+        "maxValue": {
+          "description": "Required. Inclusive maximum value of the parameter.",
+          "type": "number",
+          "format": "double"
+        },
+        "defaultValue": {
+          "description": "A default value for a `DOUBLE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiStudySpecParameterSpecIntegerValueSpec": {
+      "id": "GoogleCloudAiplatformUiStudySpecParameterSpecIntegerValueSpec",
+      "description": "Value specification for a parameter in `INTEGER` type.",
+      "type": "object",
+      "properties": {
+        "minValue": {
+          "description": "Required. Inclusive minimum value of the parameter.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxValue": {
+          "description": "Required. Inclusive maximum value of the parameter.",
+          "type": "string",
+          "format": "int64"
+        },
+        "defaultValue": {
+          "description": "A default value for an `INTEGER` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiStudySpecParameterSpecCategoricalValueSpec": {
+      "id": "GoogleCloudAiplatformUiStudySpecParameterSpecCategoricalValueSpec",
+      "description": "Value specification for a parameter in `CATEGORICAL` type.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "Required. The list of possible categories.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "defaultValue": {
+          "description": "A default value for a `CATEGORICAL` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiStudySpecParameterSpecDiscreteValueSpec": {
+      "id": "GoogleCloudAiplatformUiStudySpecParameterSpecDiscreteValueSpec",
+      "description": "Value specification for a parameter in `DISCRETE` type.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "Required. A list of possible values. The list should be in increasing order and at least 1e-10 apart. For instance, this parameter might have possible settings of 1.5, 2.5, and 4.0. This list should not contain more than 1,000 values.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "defaultValue": {
+          "description": "A default value for a `DISCRETE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. It automatically rounds to the nearest feasible discrete point. Currently only supported by the Vertex AI Vizier service. Not supported by HyperparameterTuningJob or TrainingPipeline.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiStudySpecParameterSpecConditionalParameterSpec": {
+      "id": "GoogleCloudAiplatformUiStudySpecParameterSpecConditionalParameterSpec",
+      "description": "Represents a parameter spec with condition from its parent parameter.",
+      "type": "object",
+      "properties": {
+        "parentDiscreteValues": {
+          "description": "The spec for matching values from a parent parameter of `DISCRETE` type.",
+          "$ref": "GoogleCloudAiplatformUiStudySpecParameterSpecConditionalParameterSpecDiscreteValueCondition"
+        },
+        "parentIntValues": {
+          "description": "The spec for matching values from a parent parameter of `INTEGER` type.",
+          "$ref": "GoogleCloudAiplatformUiStudySpecParameterSpecConditionalParameterSpecIntValueCondition"
+        },
+        "parentCategoricalValues": {
+          "description": "The spec for matching values from a parent parameter of `CATEGORICAL` type.",
+          "$ref": "GoogleCloudAiplatformUiStudySpecParameterSpecConditionalParameterSpecCategoricalValueCondition"
+        },
+        "parameterSpec": {
+          "description": "Required. The spec for a conditional parameter.",
+          "$ref": "GoogleCloudAiplatformUiStudySpecParameterSpec"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiStudySpecParameterSpecConditionalParameterSpecDiscreteValueCondition": {
+      "id": "GoogleCloudAiplatformUiStudySpecParameterSpecConditionalParameterSpecDiscreteValueCondition",
+      "description": "Represents the spec to match discrete values from parent parameter.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "Required. Matches values of the parent parameter of 'DISCRETE' type. All values must exist in `discrete_value_spec` of parent parameter. The Epsilon of the value matching is 1e-10.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiStudySpecParameterSpecConditionalParameterSpecIntValueCondition": {
+      "id": "GoogleCloudAiplatformUiStudySpecParameterSpecConditionalParameterSpecIntValueCondition",
+      "description": "Represents the spec to match integer values from parent parameter.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "Required. Matches values of the parent parameter of 'INTEGER' type. All values must lie in `integer_value_spec` of parent parameter.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiStudySpecParameterSpecConditionalParameterSpecCategoricalValueCondition": {
+      "id": "GoogleCloudAiplatformUiStudySpecParameterSpecConditionalParameterSpecCategoricalValueCondition",
+      "description": "Represents the spec to match categorical values from parent parameter.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "Required. Matches values of the parent parameter of 'CATEGORICAL' type. All values must exist in `categorical_value_spec` of parent parameter.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionHyperparameterTuningJobMetadata": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionHyperparameterTuningJobMetadata",
+      "type": "object",
+      "properties": {
+        "backingHyperparameterTuningJob": {
+          "description": "The resource name of the HyperparameterTuningJob that has been created to carry out this HyperparameterTuning task.",
+          "type": "string"
+        },
+        "bestTrialBackingCustomJob": {
+          "description": "The resource name of the CustomJob that has been created to run the best Trial of this HyperparameterTuning task.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecasting": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecasting",
+      "description": "A TrainingJob that trains and uploads an AutoML Forecasting Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputs"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputs": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputs",
+      "type": "object",
+      "properties": {
+        "targetColumn": {
+          "description": "The name of the column that the Model is to predict values for. This column must be unavailable at forecast.",
+          "type": "string"
+        },
+        "timeSeriesIdentifierColumn": {
+          "description": "The name of the column that identifies the time series.",
+          "type": "string"
+        },
+        "timeColumn": {
+          "description": "The name of the column that identifies time order in the time series. This column must be available at forecast.",
+          "type": "string"
+        },
+        "transformations": {
+          "description": "Each transformation will apply transform function to given input column. And the result will be used for training. When creating transformation for BigQuery Struct column, the column should be flattened using \".\" as the delimiter.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformation"
+          }
+        },
+        "optimizationObjective": {
+          "description": "Objective function the model is optimizing towards. The training process creates a model that optimizes the value of the objective function over the validation set. The supported optimization objectives: * \"minimize-rmse\" (default) - Minimize root-mean-squared error (RMSE). * \"minimize-mae\" - Minimize mean-absolute error (MAE). * \"minimize-rmsle\" - Minimize root-mean-squared log error (RMSLE). * \"minimize-rmspe\" - Minimize root-mean-squared percentage error (RMSPE). * \"minimize-wape-mae\" - Minimize the combination of weighted absolute percentage error (WAPE) and mean-absolute-error (MAE). * \"minimize-quantile-loss\" - Minimize the quantile loss at the quantiles defined in `quantiles`. * \"minimize-mape\" - Minimize the mean absolute percentage error.",
+          "type": "string"
+        },
+        "trainBudgetMilliNodeHours": {
+          "description": "Required. The train budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The training cost of the model will not exceed this budget. The final cost will be attempted to be close to the budget, though may end up being (even) noticeably smaller - at the backend's discretion. This especially may happen when further model training ceases to provide any improvements. If the budget is set to a value known to be insufficient to train a model for the given dataset, the training won't be attempted and will error. The train budget must be between 1,000 and 72,000 milli node hours, inclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "weightColumn": {
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
+          "type": "string"
+        },
+        "timeSeriesAttributeColumns": {
+          "description": "Column names that should be used as attribute columns. The value of these columns does not vary as a function of time. For example, store ID or item color.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unavailableAtForecastColumns": {
+          "description": "Names of columns that are unavailable when a forecast is requested. This column contains information for the given entity (identified by the time_series_identifier_column) that is unknown before the forecast For example, actual weather on a given day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "availableAtForecastColumns": {
+          "description": "Names of columns that are available and provided when a forecast is requested. These columns contain information for the given entity (identified by the time_series_identifier_column column) that is known at forecast. For example, predicted weather for a specific day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dataGranularity": {
+          "description": "Expected difference in time granularity between rows in the data.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsGranularity"
+        },
+        "forecastHorizon": {
+          "description": "The amount of time into the future for which forecasted values for the target are returned. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "contextWindow": {
+          "description": "The amount of time into the past training and prediction data is used for model training and prediction respectively. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "holidayRegions": {
+          "description": "The geographical region based on which the holiday effect is applied in modeling by adding holiday categorical array feature that include all holidays matching the date. This option only allowed when data_granularity is day. By default, holiday effect modeling is disabled. To turn it on, specify the holiday region using this option.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exportEvaluatedDataItemsConfig": {
+          "description": "Configuration for exporting test set predictions to a BigQuery table. If this configuration is absent, then the export is not performed.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig"
+        },
+        "windowConfig": {
+          "description": "Config containing strategy for generating sliding windows.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionWindowConfig"
+        },
+        "quantiles": {
+          "description": "Quantiles to use for minimize-quantile-loss `optimization_objective`. Up to 5 quantiles are allowed of values between 0 and 1, exclusive. Required if the value of optimization_objective is minimize-quantile-loss. Represents the percent quantiles to use for that objective. Quantiles must be unique.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "validationOptions": {
+          "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
+          "type": "string"
+        },
+        "additionalExperiments": {
+          "description": "Additional experiment flags for the time series forcasting training.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hierarchyConfig": {
+          "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionHierarchyConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformation",
+      "type": "object",
+      "properties": {
+        "auto": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationAutoTransformation"
+        },
+        "numeric": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationNumericTransformation"
+        },
+        "categorical": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationCategoricalTransformation"
+        },
+        "timestamp": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTimestampTransformation"
+        },
+        "text": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTextTransformation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationAutoTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationAutoTransformation",
+      "description": "Training pipeline will infer the proper transformation based on the statistic of dataset.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationNumericTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationNumericTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The value converted to float32. * The z_score of the value. * log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value. * z_score of log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationCategoricalTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationCategoricalTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The categorical string as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index. * Categories that appear less than 5 times in the training dataset are treated as the \"unknown\" category. The \"unknown\" category gets its own special lookup index and resulting embedding.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTimestampTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTimestampTransformation",
+      "description": "Training pipeline will perform following transformation functions. * Apply the transformation functions for Numerical columns. * Determine the year, month, day,and weekday. Treat each value from the timestamp as a Categorical column. * Invalid numerical values (for example, values that fall outside of a typical timestamp range, or are extreme values) receive no special treatment and are not removed.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "timeFormat": {
+          "description": "The format in which that time field is expressed. The time_format must either be one of: * `unix-seconds` * `unix-milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for respectively number of seconds, milliseconds, microseconds and nanoseconds since start of the Unix epoch); or be written in `strftime` syntax. If time_format is not set, then the default format is RFC 3339 `date-time` format, where `time-offset` = `\"Z\"` (e.g. 1985-04-12T23:20:50.52Z)",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTextTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsTransformationTextTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The text as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsGranularity": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingInputsGranularity",
+      "description": "A duration of time expressed in time granularity units.",
+      "type": "object",
+      "properties": {
+        "unit": {
+          "description": "The time granularity unit of this time period. The supported units are: * \"minute\" * \"hour\" * \"day\" * \"week\" * \"month\" * \"year\"",
+          "type": "string"
+        },
+        "quantity": {
+          "description": "The number of granularity_units between data points in the training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15, or 30. For all other values of `granularity_unit`, must be 1.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata",
+      "description": "Model metadata specific to Seq2Seq Plus Forecasting.",
+      "type": "object",
+      "properties": {
+        "trainCostMilliNodeHours": {
+          "description": "Output only. The actual training cost of the model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed the train budget.",
+          "type": "string",
+          "format": "int64"
+        },
+        "evaluatedDataItemsBigqueryUri": {
+          "description": "BigQuery destination uri for exported evaluated examples.",
+          "type": "string"
+        }
       }
     },
     "GoogleCloudAiplatformUiSchemaImageBoundingBoxAnnotation": {
@@ -15556,12 +17382,12 @@
       "type": "object",
       "properties": {
         "minReplicaCount": {
-          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If the requested value is too large, the deployment will error.",
+          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If provided, this value must be in the range of [1, 1000].",
           "type": "integer",
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number. If provided, this value must be in the range of [1, 1000].",
           "type": "integer",
           "format": "int32"
         }
@@ -20980,12 +22806,12 @@
       "type": "object",
       "properties": {
         "minReplicaCount": {
-          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If the requested value is too large, the deployment will error.",
+          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If provided, this value must be in the range of [1, 1000].",
           "type": "integer",
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number. If provided, this value must be in the range of [1, 1000].",
           "type": "integer",
           "format": "int32"
         }

@@ -946,9 +946,9 @@ class BigtableadminProjectsInstancesTablesPatchRequest(_messages.Message):
       be updated. This mask is relative to the `table` field, not to the
       request message. The wildcard (*) path is currently not supported.
       Currently UpdateTable is only supported for the following fields: *
-      `change_stream_config` * `change_stream_config.retention_period` If
-      `column_families` is set in `update_mask`, it will return an
-      UNIMPLEMENTED error.
+      `change_stream_config` * `change_stream_config.retention_period` *
+      `deletion_protection` If `column_families` is set in `update_mask`, it
+      will return an UNIMPLEMENTED error.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1081,9 +1081,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -2748,8 +2750,11 @@ class Table(_messages.Message):
       `FULL`
     columnFamilies: The column families configured for this table, mapped by
       column family ID. Views: `SCHEMA_VIEW`, `FULL`
-    deletionProtection: Set to true to make the table protected from being
-      deleted.
+    deletionProtection: Set to true to make the table protected against data
+      loss. i.e. deleting the following resources through Admin APIs are
+      prohibited: - The table. - The column families in the table. - The
+      instance containing the table. Note one can still delete the data stored
+      in the table through Data APIs.
     granularity: Immutable. The granularity (i.e. `MILLIS`) at which
       timestamps are stored in this table. Timestamps not matching the
       granularity will be rejected. If unspecified at creation time, the value

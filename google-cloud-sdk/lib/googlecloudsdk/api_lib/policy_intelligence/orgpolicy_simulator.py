@@ -85,6 +85,19 @@ class OrgPolicySimulatorApi(object):
                           policies=None):
     pass
 
+  @abc.abstractmethod
+  def GetOrgPolicyPolicyOverlay(
+      self,
+      policy=None,
+      policy_parent=None):
+    pass
+
+  @abc.abstractmethod
+  def GetOrgPolicyCustomConstraintOverlay(self,
+                                          custom_constraint=None,
+                                          custom_constraint_parent=None):
+    pass
+
 
 class OrgPolicySimulatorApiAlpha(OrgPolicySimulatorApi):
   """Base Class for OrgPolicy Policy Simulator API Alpha."""
@@ -115,3 +128,17 @@ class OrgPolicySimulatorApiAlpha(OrgPolicySimulatorApi):
     return self.messages.GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlay(
         customConstraints=custom_constraints,
         policies=policies)
+
+  def GetOrgPolicyPolicyOverlay(self,
+                                policy=None,
+                                policy_parent=None):
+    return self.messages.GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlayPolicyOverlay(
+        policy=policy,
+        policyParent=policy_parent)
+
+  def GetOrgPolicyCustomConstraintOverlay(self,
+                                          custom_constraint=None,
+                                          custom_constraint_parent=None):
+    return self.messages.GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlayCustomConstraintOverlay(
+        customConstraint=custom_constraint,
+        customConstraintParent=custom_constraint_parent)

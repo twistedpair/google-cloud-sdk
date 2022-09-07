@@ -18,6 +18,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.container.gkemulticloud import client
+from googlecloudsdk.command_lib.container.attached import flags as attached_flags
 
 
 class LocationsClient(client.ClientBase):
@@ -38,3 +39,18 @@ class LocationsClient(client.ClientBase):
     req = self._messages.GkemulticloudProjectsLocationsGetAzureServerConfigRequest(
         name=location_ref.RelativeName() + '/azureServerConfig')
     return self._service.GetAzureServerConfig(req)
+
+  def GetAttachedServerConfig(self, location_ref):
+    """Gets server config for Anthos Attached Clusters."""
+    req = self._messages.GkemulticloudProjectsLocationsGetAttachedServerConfigRequest(
+        name=location_ref.RelativeName() + '/attachedServerConfig')
+    return self._service.GetAttachedServerConfig(req)
+
+  def GenerateInstallManifest(self, cluster_ref, args):
+    """Generates an Attached cluster install manifest."""
+    req = self._messages.GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest(
+        parent=cluster_ref.Parent().RelativeName(),
+        attachedClusterId=cluster_ref.attachedClustersId,
+        platformVersion=attached_flags.GetPlatformVersion(args)
+        )
+    return self._service.GenerateAttachedClusterInstallManifest(req)

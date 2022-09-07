@@ -86,7 +86,7 @@ def _GetResourceGroupsFromConfigController(
         continue
       try:
         utils.KubeconfigForCluster(project, cluster[1], cluster[0])
-        cc_rg = _GetResourceGroups(cluster[0], 'Config Controller', name,
+        cc_rg = _GetResourceGroups(cluster[0], name,
                                    namespace)
         if cc_rg:
           resource_groups.extend(cc_rg)
@@ -122,7 +122,7 @@ def _GetResourceGroupsFromMemberships(
       continue
     try:
       utils.KubeconfigForMembership(project, member)
-      member_rg = _GetResourceGroups(member, 'Membership', name, namespace)
+      member_rg = _GetResourceGroups(member, name, namespace)
       if member_rg:
         resource_groups.extend(member_rg)
     except exceptions.ConfigSyncError as err:
@@ -130,13 +130,11 @@ def _GetResourceGroupsFromMemberships(
   return resource_groups
 
 
-def _GetResourceGroups(cluster_name, cluster_type, name, namespace):
+def _GetResourceGroups(cluster_name, name, namespace):
   """List all the ResourceGroup CRs from the given cluster.
 
   Args:
     cluster_name: The membership name or cluster name of the current cluster.
-    cluster_type: The type of the current cluster. It is either a Fleet-cluster
-      or a Config-controller cluster.
     name: The name of the desired ResourceGroup.
     namespace: The namespace of the desired ResourceGroup.
 
@@ -146,7 +144,7 @@ def _GetResourceGroups(cluster_name, cluster_type, name, namespace):
   Raises:
     Error: errors that happen when listing the CRs from the cluster.
   """
-  utils.GetConfigManagement(cluster_name, cluster_type)
+  utils.GetConfigManagement(cluster_name)
   if not namespace:
     params = ['--all-namespaces']
   else:

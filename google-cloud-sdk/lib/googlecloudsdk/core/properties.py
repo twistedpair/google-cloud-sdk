@@ -1169,6 +1169,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.iam = self._Add('iam', command='gcloud iam')
     self.iap = self._Add('iap', command='gcloud iap')
     self.ids = self._Add('ids', command='gcloud ids')
+    self.krmapihosting = self._Add('krmapihosting',
+                                   command='gcloud anthos config controller')
     self.kubernetespolicy = self._Add('kubernetespolicy', hidden=True)
     self.language = self._Add('language', command='gcloud ml language')
     self.lifesciences = self._Add('lifesciences', command='gcloud lifesciences')

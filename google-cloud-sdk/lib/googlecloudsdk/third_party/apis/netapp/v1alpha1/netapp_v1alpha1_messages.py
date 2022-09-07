@@ -53,7 +53,7 @@ class ActiveDirectory(_messages.Message):
     r"""Output only. The state of the AD.
 
     Values:
-      ACTIVE_DIRECTORY_STATE_UNSPECIFIED: Unspecified state
+      STATE_UNSPECIFIED: Unspecified state
       CREATING: Creating
       READY: Ready
       UPDATING: Updating
@@ -61,7 +61,7 @@ class ActiveDirectory(_messages.Message):
       DELETING: Deleting
       ERROR: Error
     """
-    ACTIVE_DIRECTORY_STATE_UNSPECIFIED = 0
+    STATE_UNSPECIFIED = 0
     CREATING = 1
     READY = 2
     UPDATING = 3
@@ -314,7 +314,7 @@ class MonthlySchedule(_messages.Message):
 
   Fields:
     daysOfMonth: Set the day or days of the month to make a snapshot (1-31).
-      Accepts a repeated number of days. Defaults to '1'.
+      Accepts a comma separated number of days. Defaults to '1'.
     hour: Set the hour to start the snapshot (0-23), defaults to midnight (0).
     minute: Set the minute of the hour to start the snapshot (0-59), defaults
       to the top of the hour (0).
@@ -322,7 +322,7 @@ class MonthlySchedule(_messages.Message):
       schedule
   """
 
-  daysOfMonth = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.UINT32)
+  daysOfMonth = _messages.StringField(1)
   hour = _messages.FloatField(2)
   minute = _messages.FloatField(3)
   snapshotsToKeep = _messages.FloatField(4)
@@ -367,11 +367,13 @@ class NetappProjectsLocationsActivedirectoriesCreateRequest(_messages.Message):
   Fields:
     activeDirectory: A ActiveDirectory resource to be passed as the request
       body.
+    name: A string attribute.
     parent: Required. Value for parent.
   """
 
   activeDirectory = _messages.MessageField('ActiveDirectory', 1)
-  parent = _messages.StringField(2, required=True)
+  name = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class NetappProjectsLocationsActivedirectoriesDeleteRequest(_messages.Message):
@@ -903,17 +905,17 @@ class SimpleExportPolicyRule(_messages.Message):
   options.
 
   Enums:
-    AccessValueValuesEnum: Access type (ReadWrite, ReadOnly, None)
+    AccessTypeValueValuesEnum: Access type (ReadWrite, ReadOnly, None)
 
   Fields:
-    access: Access type (ReadWrite, ReadOnly, None)
+    accessType: Access type (ReadWrite, ReadOnly, None)
     allowedClients: List of allowed clients IP addresses
     hasRootAccess: Whether Unix root access will be granted.
     nfsV3: NFS V3 protocol
     nfsV4: NFS V4 protocol
   """
 
-  class AccessValueValuesEnum(_messages.Enum):
+  class AccessTypeValueValuesEnum(_messages.Enum):
     r"""Access type (ReadWrite, ReadOnly, None)
 
     Values:
@@ -927,7 +929,7 @@ class SimpleExportPolicyRule(_messages.Message):
     READ_WRITE = 2
     READ_NONE = 3
 
-  access = _messages.EnumField('AccessValueValuesEnum', 1)
+  accessType = _messages.EnumField('AccessTypeValueValuesEnum', 1)
   allowedClients = _messages.StringField(2)
   hasRootAccess = _messages.StringField(3)
   nfsV3 = _messages.BooleanField(4)
@@ -959,13 +961,13 @@ class Snapshot(_messages.Message):
     r"""Output only. The snapshot state.
 
     Values:
-      SNAPSHOT_STATE_UNSPECIFIED: Unspecified Snapshot State
+      STATE_UNSPECIFIED: Unspecified Snapshot State
       READY: Ready
       CREATING: Creating
       DELETING: Deleting
       UPDATING: Updating
     """
-    SNAPSHOT_STATE_UNSPECIFIED = 0
+    STATE_UNSPECIFIED = 0
     READY = 1
     CREATING = 2
     DELETING = 3
@@ -1181,13 +1183,13 @@ class StoragePool(_messages.Message):
     r"""Output only. State of the storage pool
 
     Values:
-      STORAGE_POOL_STATE_UNSPECIFIED: Unspecified Storage Pool State
+      STATE_UNSPECIFIED: Unspecified Storage Pool State
       READY: Ready
       CREATING: Creating
       DELETING: Deleting
       UPDATING: Updating
     """
-    STORAGE_POOL_STATE_UNSPECIFIED = 0
+    STATE_UNSPECIFIED = 0
     READY = 1
     CREATING = 2
     DELETING = 3
@@ -1235,7 +1237,9 @@ class Volume(_messages.Message):
 
   Enums:
     ProtocolsValueListEntryValuesEnum:
+    SecurityStyleValueValuesEnum: Security Style of the Volume
     ServiceLevelValueValuesEnum: Output only. Service level of the volume
+    SmbSettingsValueValuesEnum:
     StateValueValuesEnum: Output only. State of the volume
 
   Messages:
@@ -1246,21 +1250,34 @@ class Volume(_messages.Message):
     createTime: Output only. Create time of the volume
     description: Description of the volume
     exportPolicy: Export policy of the volume
+    kerberosEnabled: Flag indicating if the volume is a kerberos volume or
+      not, export policy rules control kerberos security modes (krb5, krb5i,
+      krb5p).
     labels: Labels as key value pairs
+    ldapEnabled: Flag indicating if the volume is NFS LDAP enabled or not.
     mountOptions: Output only. Mount options of this volume
     name: Required. Name of the volume
     network: Required. VPC Network name
     protocols: Required. Protocols required for the volume
     psaRange: Name of the Private Service Access allocated range. This is
       optional. If not provided, any available range will be chosen.
+    securityStyle: Security Style of the Volume
     serviceLevel: Output only. Service level of the volume
     shareName: Required. Share name of the volume
+    smbSettings: A SmbSettingsValueValuesEnum attribute.
+    snapReserve: Snap_reserve specifies percentage of volume storage reserved
+      for snapshot storage. Default is 0 percent.
+    snapshotDirectory: Snapshot_directory if enabled (true) the volume will
+      contain a read-only .snapshot directory which provides access to each of
+      the volume's snapshots.
     snapshotPolicy: SnapshotPolicy for a volume.
     state: Output only. State of the volume
     stateDetails: Output only. State details of the volume
     storagePoolName: Required. Storage Pool name of the volume
     unixPermissions: Default unix style permission (e.g. 777) the mount point
       will be created with. Applicable for NFS protocol types only.
+    usedGib: Output only. Used capacity in GIB of the volume. This is not
+      realtime usage, periodically computed by SDE.
     volumeId: Required. Unique Id of the volume
   """
 
@@ -1278,6 +1295,18 @@ class Volume(_messages.Message):
     NFSV4 = 2
     SMB = 3
 
+  class SecurityStyleValueValuesEnum(_messages.Enum):
+    r"""Security Style of the Volume
+
+    Values:
+      SECURITY_STYLE_UNSPECIFIED: <no description>
+      NTFS: <no description>
+      UNIX: <no description>
+    """
+    SECURITY_STYLE_UNSPECIFIED = 0
+    NTFS = 1
+    UNIX = 2
+
   class ServiceLevelValueValuesEnum(_messages.Enum):
     r"""Output only. Service level of the volume
 
@@ -1290,11 +1319,35 @@ class Volume(_messages.Message):
     PREMIUM = 1
     EXTREME = 2
 
+  class SmbSettingsValueValuesEnum(_messages.Enum):
+    r"""SmbSettingsValueValuesEnum enum type.
+
+    Values:
+      SMB_SETTINGS_UNSPECIFIED: <no description>
+      ENCRYPT_DATA: <no description>
+      BROWSABLE: <no description>
+      CHANGE_NOTIFY: <no description>
+      NON_BROWSABLE: <no description>
+      OPLOCKS: <no description>
+      SHOW_SNAPSHOT: <no description>
+      SHOW_PREVIOUS_VERSIONS: <no description>
+      ACCESS_BASED_ENUMERATION: <no description>
+    """
+    SMB_SETTINGS_UNSPECIFIED = 0
+    ENCRYPT_DATA = 1
+    BROWSABLE = 2
+    CHANGE_NOTIFY = 3
+    NON_BROWSABLE = 4
+    OPLOCKS = 5
+    SHOW_SNAPSHOT = 6
+    SHOW_PREVIOUS_VERSIONS = 7
+    ACCESS_BASED_ENUMERATION = 8
+
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the volume
 
     Values:
-      VOLUME_STATE_UNSPECIFIED: Unspecified Volume State
+      STATE_UNSPECIFIED: Unspecified Volume State
       READY: Ready
       CREATING: Creating
       DELETING: Deleting
@@ -1302,7 +1355,7 @@ class Volume(_messages.Message):
       RESTORING: Restoring
       DISABLED: Disabled
     """
-    VOLUME_STATE_UNSPECIFIED = 0
+    STATE_UNSPECIFIED = 0
     READY = 1
     CREATING = 2
     DELETING = 3
@@ -1338,32 +1391,36 @@ class Volume(_messages.Message):
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   exportPolicy = _messages.MessageField('ExportPolicy', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  mountOptions = _messages.MessageField('MountOption', 6, repeated=True)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 9, repeated=True)
-  psaRange = _messages.StringField(10)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 11)
-  shareName = _messages.StringField(12)
-  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  stateDetails = _messages.StringField(15)
-  storagePoolName = _messages.StringField(16)
-  unixPermissions = _messages.StringField(17)
-  volumeId = _messages.StringField(18)
+  kerberosEnabled = _messages.BooleanField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  ldapEnabled = _messages.BooleanField(7)
+  mountOptions = _messages.MessageField('MountOption', 8, repeated=True)
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 11, repeated=True)
+  psaRange = _messages.StringField(12)
+  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 13)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 14)
+  shareName = _messages.StringField(15)
+  smbSettings = _messages.EnumField('SmbSettingsValueValuesEnum', 16)
+  snapReserve = _messages.FloatField(17)
+  snapshotDirectory = _messages.BooleanField(18)
+  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  stateDetails = _messages.StringField(21)
+  storagePoolName = _messages.StringField(22)
+  unixPermissions = _messages.StringField(23)
+  usedGib = _messages.IntegerField(24)
+  volumeId = _messages.StringField(25)
 
 
 class WeeklySchedule(_messages.Message):
   r"""Make a snapshot every week e.g. at Monday 04:00, Wednesday 05:20, Sunday
   23:50
 
-  Enums:
-    DayValueListEntryValuesEnum:
-
   Fields:
-    day: Set the day or days of the week to make a snapshot. Accepts a
-      repeated days of the week. Defaults to 'Sunday'.
+    day: Set the day or days of the week to make a snapshot. Accepts a comma
+      separated days of the week. Defaults to 'Sunday'.
     hour: Set the hour to start the snapshot (0-23), defaults to midnight (0).
     minute: Set the minute of the hour to start the snapshot (0-59), defaults
       to the top of the hour (0).
@@ -1371,29 +1428,7 @@ class WeeklySchedule(_messages.Message):
       schedule
   """
 
-  class DayValueListEntryValuesEnum(_messages.Enum):
-    r"""DayValueListEntryValuesEnum enum type.
-
-    Values:
-      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
-      MONDAY: Monday
-      TUESDAY: Tuesday
-      WEDNESDAY: Wednesday
-      THURSDAY: Thursday
-      FRIDAY: Friday
-      SATURDAY: Saturday
-      SUNDAY: Sunday
-    """
-    DAY_OF_WEEK_UNSPECIFIED = 0
-    MONDAY = 1
-    TUESDAY = 2
-    WEDNESDAY = 3
-    THURSDAY = 4
-    FRIDAY = 5
-    SATURDAY = 6
-    SUNDAY = 7
-
-  day = _messages.EnumField('DayValueListEntryValuesEnum', 1, repeated=True)
+  day = _messages.StringField(1)
   hour = _messages.FloatField(2)
   minute = _messages.FloatField(3)
   snapshotsToKeep = _messages.FloatField(4)

@@ -334,12 +334,37 @@ def CreateShieldedInstanceIntegrityPolicyMessage(messages,
   return shielded_instance_integrity_policy
 
 
-def CreateConfidentialInstanceMessage(messages, enable_confidential_compute):
+def CreateConfidentialInstanceMessage(messages, args,
+                                      support_confidential_compute_type):
   """Create confidentialInstanceConfig message for VM."""
-  confidential_instance_config = messages.ConfidentialInstanceConfig(
-      enableConfidentialCompute=enable_confidential_compute)
+  confidential_instance_config_msg = None
+  enable_confidential_compute = None
+  confidential_instance_type = None
 
-  return confidential_instance_config
+  if (hasattr(args, 'confidential_compute') and
+      args.IsSpecified('confidential_compute') and
+      isinstance(args.confidential_compute, bool)):
+    enable_confidential_compute = args.confidential_compute
+
+  if (support_confidential_compute_type and
+      hasattr(args, 'confidential_compute_type') and
+      args.IsSpecified('confidential_compute_type') and
+      isinstance(args.confidential_compute_type, six.string_types)):
+    confidential_instance_type = (
+        messages.ConfidentialInstanceConfig
+        .ConfidentialInstanceTypeValueValuesEnum(
+            args.confidential_compute_type))
+
+  if confidential_instance_type is None:
+    if enable_confidential_compute is not None:
+      confidential_instance_config_msg = messages.ConfidentialInstanceConfig(
+          enableConfidentialCompute=enable_confidential_compute)
+  else:
+    confidential_instance_config_msg = messages.ConfidentialInstanceConfig(
+        enableConfidentialCompute=enable_confidential_compute,
+        confidentialInstanceType=confidential_instance_type)
+
+  return confidential_instance_config_msg
 
 
 def CreateAdvancedMachineFeaturesMessage(messages,

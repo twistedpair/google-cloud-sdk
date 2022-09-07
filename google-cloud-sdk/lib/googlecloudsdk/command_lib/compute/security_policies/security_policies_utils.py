@@ -106,6 +106,11 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
           messages.SecurityPolicyAdvancedOptionsConfig
           .JsonParsingValueValuesEnum(
               parsed_security_policy['advancedOptionsConfig']['jsonParsing']))
+    if 'jsonCustomConfig' in parsed_security_policy['advancedOptionsConfig']:
+      security_policy.advancedOptionsConfig.jsonCustomConfig = (
+          messages.SecurityPolicyAdvancedOptionsConfigJsonCustomConfig(
+              contentTypes=parsed_security_policy['advancedOptionsConfig']
+              ['jsonCustomConfig'].get('contentTypes', [])))
     if 'logLevel' in parsed_security_policy['advancedOptionsConfig']:
       security_policy.advancedOptionsConfig.logLevel = (
           messages.SecurityPolicyAdvancedOptionsConfig.LogLevelValueValuesEnum(
@@ -340,6 +345,11 @@ def CreateAdvancedOptionsConfig(client, args, existing_advanced_options_config):
     advanced_options_config.jsonParsing = (
         messages.SecurityPolicyAdvancedOptionsConfig.JsonParsingValueValuesEnum(
             args.json_parsing))
+
+  if args.IsSpecified('json_custom_content_types'):
+    advanced_options_config.jsonCustomConfig = (
+        messages.SecurityPolicyAdvancedOptionsConfigJsonCustomConfig(
+            contentTypes=args.json_custom_content_types))
 
   if args.IsSpecified('log_level'):
     advanced_options_config.logLevel = (

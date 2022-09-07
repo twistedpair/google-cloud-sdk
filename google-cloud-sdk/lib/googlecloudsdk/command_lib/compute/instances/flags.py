@@ -2586,19 +2586,33 @@ def AddShieldedInstanceIntegrityPolicyArgs(parser):
       help=help_text)
 
 
-def AddConfidentialComputeArgs(parser):
+def AddConfidentialComputeArgs(parser, support_confidential_compute_type=False):
   """Adds flags for confidential compute for instance."""
-  help_text = """\
-  The instance boots with Confidential Computing enabled. Confidential
-  Computing is based on Secure Encrypted Virtualization (SEV), an AMD
-  virtualization feature for running confidential instances.
-  """
   parser.add_argument(
       '--confidential-compute',
       dest='confidential_compute',
       action='store_true',
       default=None,
-      help=help_text)
+      help="""\
+      The instance boots with Confidential Computing enabled. Confidential
+      Computing is based on Secure Encrypted Virtualization (SEV), an AMD
+      virtualization feature for running confidential instances.
+      """)
+  if support_confidential_compute_type:
+    parser.add_argument(
+        '--confidential-compute-type',
+        dest='confidential_compute_type',
+        choices={
+            'SEV': 'Secure Encrypted Virtualization',
+            'SEV_SNP': 'Secure Encrypted Virtualization - Secure Nested Paging '
+        },
+        hidden=True,
+        help="""\
+        The instance boots with Confidential Computing enabled. Confidential
+        Computing can be based on Secure Encrypted Virtualization (SEV) or Secure
+        Encrypted Virtualization - Secure Nested Paging (SEV-SNP), both of which
+        are AMD virtualization features for running confidential instances.
+        """)
 
 
 def AddHostnameArg(parser):
@@ -3224,6 +3238,31 @@ def AddIPv6PrefixLengthArgs(parser):
       Prefix Length of the External IPv6 address range, should be used together
       with --ipv6-address. Currently only /96 is supported and the default value
       is 96.
+    """)
+
+
+def AddInternalIPv6AddressArgs(parser):
+  parser.add_argument(
+      '--internal-ipv6-address',
+      type=NonEmptyString('--ipv6-address'),
+      help="""
+      Assigns the given internal IPv6 address or range to the instance that is
+      created. The address must be the first IP in the range or a IP range with
+      /96. This option can only be used when creating a single instance.
+    """)
+
+
+def AddInternalIPv6PrefixLengthArgs(parser):
+  parser.add_argument(
+      '--internal-ipv6-prefix-length',
+      type=int,
+      help="""
+      Optional field that indicates the prefix length of the internal IPv6
+      address range, should be used together with
+      `--internal-ipv6-address=fd20::`. Currently only /96 is supported and the
+      default value is 96. If not set, the prefix length from
+      `--internal-ipv6-address=fd20::/96` will be used or assigned a default
+      value of 96.
     """)
 
 

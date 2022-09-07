@@ -515,6 +515,10 @@
           "description": "This checksum is computed by the server based on the value of cluster fields, and may be sent on update requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
         },
+        "fleet": {
+          "description": "Fleet information for the cluster.",
+          "$ref": "Fleet"
+        },
         "managedConfig": {
           "description": "ManagedConfig configuration for the cluster.",
           "$ref": "ManagedConfig"
@@ -596,7 +600,7 @@
           "type": "string"
         },
         "minCpuPlatform": {
-          "description": "Minimum CPU platform to be used by this instance. The instance may be scheduled on the specified or newer CPU platform. Applicable values are the friendly names of CPU platforms, such as `minCpuPlatform: \"Intel Haswell\"` or `minCpuPlatform: \"Intel Sandy Bridge\"`. For more platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform)",
+          "description": "Minimum CPU platform to be used by this instance. The instance may be scheduled on the specified or newer CPU platform. Applicable values are the friendly names of CPU platforms, such as `minCpuPlatform: \"Intel Haswell\"` or `minCpuPlatform: \"Intel Sandy Bridge\"`. For more platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform).",
           "type": "string"
         },
         "workloadMetadataConfig": {
@@ -907,7 +911,7 @@
           ]
         },
         "key": {
-          "description": "Corresponds to the label key of a reservation resource. To target a SPECIFIC_RESERVATION by name, specify \"googleapis.com\/reservation-name\" as the key and specify the name of your reservation as its value.",
+          "description": "Corresponds to the label key of a reservation resource. To target a SPECIFIC_RESERVATION by name, specify \"compute.googleapis.com\/reservation-name\" as the key and specify the name of your reservation as its value.",
           "type": "string"
         },
         "values": {
@@ -1879,6 +1883,10 @@
             "TYPE_UNSPECIFIED",
             "COMPACT"
           ]
+        },
+        "tpuTopology": {
+          "description": "TPU placement topology for pod slice node pool. https:\/\/cloud.google.com\/tpu\/docs\/types-topologies#tpu_topologies",
+          "type": "string"
         }
       }
     },
@@ -2376,7 +2384,7 @@
           "$ref": "NodeManagement"
         },
         "minCpuPlatform": {
-          "description": "Deprecated. Minimum CPU platform to be used for NAP created node pools. The instance may be scheduled on the specified or newer CPU platform. Applicable values are the friendly names of CPU platforms, such as minCpuPlatform: Intel Haswell or minCpuPlatform: Intel Sandy Bridge. For more information, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform) This field is deprecated, min_cpu_platform should be specified using https:\/\/cloud.google.com\/requested-min-cpu-platform label selector on the pod. To unset the min cpu platform field pass \"automatic\" as field value.",
+          "description": "Deprecated. Minimum CPU platform to be used for NAP created node pools. The instance may be scheduled on the specified or newer CPU platform. Applicable values are the friendly names of CPU platforms, such as minCpuPlatform: Intel Haswell or minCpuPlatform: Intel Sandy Bridge. For more information, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform). This field is deprecated, min_cpu_platform should be specified using https:\/\/cloud.google.com\/requested-min-cpu-platform label selector on the pod. To unset the min cpu platform field pass \"automatic\" as field value.",
           "type": "string"
         },
         "diskSizeGb": {
@@ -3352,6 +3360,25 @@
         }
       }
     },
+    "Fleet": {
+      "id": "Fleet",
+      "description": "Fleet is the fleet configuration for the cluster.",
+      "type": "object",
+      "properties": {
+        "project": {
+          "description": "The Fleet host project(project ID or project number) where this cluster will be registered to. This field cannot be changed after the cluster has been registered.",
+          "type": "string"
+        },
+        "membership": {
+          "description": "The full resource name of the registered fleet membership of the cluster, in the format `\/\/gkehub.googleapis.com\/projects\/*\/locations\/*\/memberships\/*`.",
+          "type": "string"
+        },
+        "preRegistered": {
+          "description": "Whether the cluster has been previously registered. Setting `pre_registered` as true will port the existing `membership` and `project` back to the cluster. Specifing `pre_registered` is only applicable during UPDATE but not CREATE. If `pre_registered` is set to true, `membership` must be specified. Once set, `pre_registered` cannot be modified.",
+          "type": "boolean"
+        }
+      }
+    },
     "ManagedConfig": {
       "id": "ManagedConfig",
       "description": "ManagedConfig is used for enforcing set of cluster configurations that are conforming to strandards.",
@@ -3937,6 +3964,10 @@
         "desiredNodePoolLoggingConfig": {
           "description": "The desired node pool logging configuration defaults for the cluster.",
           "$ref": "NodePoolLoggingConfig"
+        },
+        "desiredFleet": {
+          "description": "The desired fleet configuration for the cluster.",
+          "$ref": "Fleet"
         },
         "desiredManagedConfig": {
           "description": "The desired managed config for the cluster.",

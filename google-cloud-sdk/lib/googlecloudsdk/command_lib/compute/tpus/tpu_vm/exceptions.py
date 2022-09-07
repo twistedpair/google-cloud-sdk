@@ -61,5 +61,5 @@ class TPUInMaintenanceEvent(exceptions.Error):
 
   def __init__(self):
     super(TPUInMaintenanceEvent, self).__init__(
-        'This TPU is going through a maintenance event, and is currently unavailable. Please try again later.'
+        'This TPU is going through a maintenance event, and is currently unavailable. For more information, see https://cloud.google.com/tpu/docs/maintenance-events.'
     )

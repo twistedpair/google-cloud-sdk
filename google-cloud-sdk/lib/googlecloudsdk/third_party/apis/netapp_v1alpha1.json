@@ -284,7 +284,7 @@
             "Updating"
           ],
           "enum": [
-            "STORAGE_POOL_STATE_UNSPECIFIED",
+            "STATE_UNSPECIFIED",
             "READY",
             "CREATING",
             "DELETING",
@@ -367,7 +367,7 @@
             "Disabled"
           ],
           "enum": [
-            "VOLUME_STATE_UNSPECIFIED",
+            "STATE_UNSPECIFIED",
             "READY",
             "CREATING",
             "DELETING",
@@ -446,6 +446,31 @@
             ]
           }
         },
+        "smbSettings": {
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "enum": [
+            "SMB_SETTINGS_UNSPECIFIED",
+            "ENCRYPT_DATA",
+            "BROWSABLE",
+            "CHANGE_NOTIFY",
+            "NON_BROWSABLE",
+            "OPLOCKS",
+            "SHOW_SNAPSHOT",
+            "SHOW_PREVIOUS_VERSIONS",
+            "ACCESS_BASED_ENUMERATION"
+          ]
+        },
         "mountOptions": {
           "description": "Output only. Mount options of this volume",
           "readOnly": true,
@@ -472,6 +497,43 @@
         "snapshotPolicy": {
           "description": "SnapshotPolicy for a volume.",
           "$ref": "SnapshotPolicy"
+        },
+        "snapReserve": {
+          "description": "Snap_reserve specifies percentage of volume storage reserved for snapshot storage. Default is 0 percent.",
+          "type": "number",
+          "format": "double"
+        },
+        "snapshotDirectory": {
+          "description": "Snapshot_directory if enabled (true) the volume will contain a read-only .snapshot directory which provides access to each of the volume's snapshots.",
+          "type": "boolean"
+        },
+        "usedGib": {
+          "description": "Output only. Used capacity in GIB of the volume. This is not realtime usage, periodically computed by SDE.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "securityStyle": {
+          "description": "Security Style of the Volume",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "",
+            ""
+          ],
+          "enum": [
+            "SECURITY_STYLE_UNSPECIFIED",
+            "NTFS",
+            "UNIX"
+          ]
+        },
+        "kerberosEnabled": {
+          "description": "Flag indicating if the volume is a kerberos volume or not, export policy rules control kerberos security modes (krb5, krb5i, krb5p).",
+          "type": "boolean"
+        },
+        "ldapEnabled": {
+          "description": "Flag indicating if the volume is NFS LDAP enabled or not.",
+          "type": "boolean"
         }
       }
     },
@@ -502,7 +564,7 @@
           "description": "Whether Unix root access will be granted.",
           "type": "string"
         },
-        "access": {
+        "accessType": {
           "description": "Access type (ReadWrite, ReadOnly, None)",
           "type": "string",
           "enumDescriptions": [
@@ -650,31 +712,8 @@
           "format": "double"
         },
         "day": {
-          "description": "Set the day or days of the week to make a snapshot. Accepts a repeated days of the week. Defaults to 'Sunday'.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enumDescriptions": [
-              "The day of the week is unspecified.",
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-              "Saturday",
-              "Sunday"
-            ],
-            "enum": [
-              "DAY_OF_WEEK_UNSPECIFIED",
-              "MONDAY",
-              "TUESDAY",
-              "WEDNESDAY",
-              "THURSDAY",
-              "FRIDAY",
-              "SATURDAY",
-              "SUNDAY"
-            ]
-          }
+          "description": "Set the day or days of the week to make a snapshot. Accepts a comma separated days of the week. Defaults to 'Sunday'.",
+          "type": "string"
         }
       }
     },
@@ -699,12 +738,8 @@
           "format": "double"
         },
         "daysOfMonth": {
-          "description": "Set the day or days of the month to make a snapshot (1-31). Accepts a repeated number of days. Defaults to '1'.",
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "format": "uint32"
-          }
+          "description": "Set the day or days of the month to make a snapshot (1-31). Accepts a comma separated number of days. Defaults to '1'.",
+          "type": "string"
         }
       }
     },
@@ -769,7 +804,7 @@
             "Updating"
           ],
           "enum": [
-            "SNAPSHOT_STATE_UNSPECIFIED",
+            "STATE_UNSPECIFIED",
             "READY",
             "CREATING",
             "DELETING",
@@ -854,7 +889,7 @@
             "Error"
           ],
           "enum": [
-            "ACTIVE_DIRECTORY_STATE_UNSPECIFIED",
+            "STATE_UNSPECIFIED",
             "CREATING",
             "READY",
             "UPDATING",
@@ -1849,6 +1884,10 @@
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
+                      "type": "string"
+                    },
+                    "name": {
+                      "location": "query",
                       "type": "string"
                     }
                   },

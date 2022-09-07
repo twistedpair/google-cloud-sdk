@@ -1737,6 +1737,7 @@ class JobConfigurationLoad(_messages.Message):
     clustering: [Beta] Clustering specification for the destination table.
       Must be specified with time-based partitioning, data in the table will
       be first partitioned and subsequently clustered.
+    connectionProperties: Connection properties.
     createDisposition: [Optional] Specifies whether the job is allowed to
       create new tables. The following values are supported: CREATE_IF_NEEDED:
       If the table does not exist, BigQuery creates the table. CREATE_NEVER:
@@ -1884,34 +1885,35 @@ class JobConfigurationLoad(_messages.Message):
   allowQuotedNewlines = _messages.BooleanField(2)
   autodetect = _messages.BooleanField(3)
   clustering = _messages.MessageField('Clustering', 4)
-  createDisposition = _messages.StringField(5)
-  decimalTargetTypes = _messages.StringField(6, repeated=True)
-  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 7)
-  destinationTable = _messages.MessageField('TableReference', 8)
-  destinationTableProperties = _messages.MessageField('DestinationTableProperties', 9)
-  encoding = _messages.StringField(10)
-  fieldDelimiter = _messages.StringField(11)
-  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 12)
-  ignoreUnknownValues = _messages.BooleanField(13)
-  jsonExtension = _messages.StringField(14)
-  maxBadRecords = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  nullMarker = _messages.StringField(16)
-  parquetOptions = _messages.MessageField('ParquetOptions', 17)
-  preserveAsciiControlCharacters = _messages.BooleanField(18)
-  projectionFields = _messages.StringField(19, repeated=True)
-  quote = _messages.StringField(20, default='"')
-  rangePartitioning = _messages.MessageField('RangePartitioning', 21)
-  referenceFileSchemaUri = _messages.StringField(22)
-  schema = _messages.MessageField('TableSchema', 23)
-  schemaInline = _messages.StringField(24)
-  schemaInlineFormat = _messages.StringField(25)
-  schemaUpdateOptions = _messages.StringField(26, repeated=True)
-  skipLeadingRows = _messages.IntegerField(27, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(28)
-  sourceUris = _messages.StringField(29, repeated=True)
-  timePartitioning = _messages.MessageField('TimePartitioning', 30)
-  useAvroLogicalTypes = _messages.BooleanField(31)
-  writeDisposition = _messages.StringField(32)
+  connectionProperties = _messages.MessageField('ConnectionProperty', 5, repeated=True)
+  createDisposition = _messages.StringField(6)
+  decimalTargetTypes = _messages.StringField(7, repeated=True)
+  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 8)
+  destinationTable = _messages.MessageField('TableReference', 9)
+  destinationTableProperties = _messages.MessageField('DestinationTableProperties', 10)
+  encoding = _messages.StringField(11)
+  fieldDelimiter = _messages.StringField(12)
+  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 13)
+  ignoreUnknownValues = _messages.BooleanField(14)
+  jsonExtension = _messages.StringField(15)
+  maxBadRecords = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  nullMarker = _messages.StringField(17)
+  parquetOptions = _messages.MessageField('ParquetOptions', 18)
+  preserveAsciiControlCharacters = _messages.BooleanField(19)
+  projectionFields = _messages.StringField(20, repeated=True)
+  quote = _messages.StringField(21, default='"')
+  rangePartitioning = _messages.MessageField('RangePartitioning', 22)
+  referenceFileSchemaUri = _messages.StringField(23)
+  schema = _messages.MessageField('TableSchema', 24)
+  schemaInline = _messages.StringField(25)
+  schemaInlineFormat = _messages.StringField(26)
+  schemaUpdateOptions = _messages.StringField(27, repeated=True)
+  skipLeadingRows = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  sourceFormat = _messages.StringField(29)
+  sourceUris = _messages.StringField(30, repeated=True)
+  timePartitioning = _messages.MessageField('TimePartitioning', 31)
+  useAvroLogicalTypes = _messages.BooleanField(32)
+  writeDisposition = _messages.StringField(33)
 
 
 class JobConfigurationQuery(_messages.Message):
@@ -2311,6 +2313,7 @@ class JobStatistics2(_messages.Message):
     schema: [Output-only] The schema of the results. Present only for
       successful dry run of non-legacy SQL queries.
     searchStatistics: [Output-only] Search query specific statistics.
+    sparkStatistics: [Output-only] Statistics of a Spark procedure job.
     statementType: The type of query statement, if valid. Possible values (new
       values might be added in the future): "SELECT": SELECT query. "INSERT":
       INSERT query; see
@@ -2382,14 +2385,15 @@ class JobStatistics2(_messages.Message):
   reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 21, repeated=True)
   schema = _messages.MessageField('TableSchema', 22)
   searchStatistics = _messages.MessageField('SearchStatistics', 23)
-  statementType = _messages.StringField(24)
-  timeline = _messages.MessageField('QueryTimelineSample', 25, repeated=True)
-  totalBytesBilled = _messages.IntegerField(26)
-  totalBytesProcessed = _messages.IntegerField(27)
-  totalBytesProcessedAccuracy = _messages.StringField(28)
-  totalPartitionsProcessed = _messages.IntegerField(29)
-  totalSlotMs = _messages.IntegerField(30)
-  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 31, repeated=True)
+  sparkStatistics = _messages.MessageField('SparkStatistics', 24)
+  statementType = _messages.StringField(25)
+  timeline = _messages.MessageField('QueryTimelineSample', 26, repeated=True)
+  totalBytesBilled = _messages.IntegerField(27)
+  totalBytesProcessed = _messages.IntegerField(28)
+  totalBytesProcessedAccuracy = _messages.StringField(29)
+  totalPartitionsProcessed = _messages.IntegerField(30)
+  totalSlotMs = _messages.IntegerField(31)
+  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 32, repeated=True)
 
 
 class JobStatistics3(_messages.Message):
@@ -3111,6 +3115,64 @@ class SnapshotDefinition(_messages.Message):
 
   baseTableReference = _messages.MessageField('TableReference', 1)
   snapshotTime = _message_types.DateTimeField(2)
+
+
+class SparkLoggingInfo(_messages.Message):
+  r"""A SparkLoggingInfo object.
+
+  Fields:
+    project_id: [Output-only] Project ID used for logging
+    resource_type: [Output-only] Resource type used for logging
+  """
+
+  project_id = _messages.StringField(1)
+  resource_type = _messages.StringField(2)
+
+
+class SparkStatistics(_messages.Message):
+  r"""A SparkStatistics object.
+
+  Messages:
+    EndpointsValue: [Output-only] Endpoints generated for the Spark job.
+
+  Fields:
+    endpoints: [Output-only] Endpoints generated for the Spark job.
+    logging_info: [Output-only] Logging info is used to generate a link to
+      Cloud Logging.
+    spark_job_id: [Output-only] Spark job id if a Spark job is created
+      successfully.
+    spark_job_location: [Output-only] Location where the Spark job is
+      executed.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EndpointsValue(_messages.Message):
+    r"""[Output-only] Endpoints generated for the Spark job.
+
+    Messages:
+      AdditionalProperty: An additional property for a EndpointsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type EndpointsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EndpointsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  endpoints = _messages.MessageField('EndpointsValue', 1)
+  logging_info = _messages.MessageField('SparkLoggingInfo', 2)
+  spark_job_id = _messages.StringField(3)
+  spark_job_location = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

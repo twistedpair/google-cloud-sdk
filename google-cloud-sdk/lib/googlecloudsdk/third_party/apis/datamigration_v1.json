@@ -474,13 +474,15 @@
             "The database provider is unknown.",
             "CloudSQL runs the database.",
             "RDS runs the database.",
-            "Amazon Aurora."
+            "Amazon Aurora.",
+            "AlloyDB."
           ],
           "enum": [
             "DATABASE_PROVIDER_UNSPECIFIED",
             "CLOUDSQL",
             "RDS",
-            "AURORA"
+            "AURORA",
+            "ALLOYDB"
           ]
         },
         "engine": {
@@ -699,6 +701,10 @@
           "description": "A CloudSQL database connection profile.",
           "$ref": "CloudSqlConnectionProfile"
         },
+        "alloydb": {
+          "description": "An AlloyDB cluster connection profile.",
+          "$ref": "AlloyDbConnectionProfile"
+        },
         "error": {
           "description": "Output only. The error details in case of state FAILED.",
           "readOnly": true,
@@ -711,13 +717,15 @@
             "The database provider is unknown.",
             "CloudSQL runs the database.",
             "RDS runs the database.",
-            "Amazon Aurora."
+            "Amazon Aurora.",
+            "AlloyDB."
           ],
           "enum": [
             "DATABASE_PROVIDER_UNSPECIFIED",
             "CLOUDSQL",
             "RDS",
-            "AURORA"
+            "AURORA",
+            "ALLOYDB"
           ]
         }
       }
@@ -827,6 +835,21 @@
         "cloudSqlId": {
           "description": "If the source is a Cloud SQL database, use this field to provide the Cloud SQL instance ID of the source.",
           "type": "string"
+        },
+        "networkArchitecture": {
+          "description": "Output only. If the source is a Cloud SQL database, this field indicates the network architecture it's associated with.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "Instance is in Cloud SQL's old producer network architecture.",
+            "Instance is in Cloud SQL's new producer network architecture."
+          ],
+          "enum": [
+            "NETWORK_ARCHITECTURE_UNSPECIFIED",
+            "NETWORK_ARCHITECTURE_OLD_CSQL_PRODUCER",
+            "NETWORK_ARCHITECTURE_NEW_CSQL_PRODUCER"
+          ]
         }
       }
     },
@@ -1031,6 +1054,112 @@
         }
       }
     },
+    "AlloyDbConnectionProfile": {
+      "id": "AlloyDbConnectionProfile",
+      "description": "Specifies required connection parameters, and the parameters required to create an AlloyDB destination cluster.",
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "description": "Required. The AlloyDB cluster ID that this connection profile is associated with.",
+          "type": "string"
+        },
+        "settings": {
+          "description": "Immutable. Metadata used to create the destination AlloyDB cluster.",
+          "$ref": "AlloyDbSettings"
+        }
+      }
+    },
+    "AlloyDbSettings": {
+      "id": "AlloyDbSettings",
+      "description": "Settings for creating an AlloyDB cluster.",
+      "type": "object",
+      "properties": {
+        "initialUser": {
+          "description": "Required. Input only. Initial user to setup during cluster creation. Required.",
+          "$ref": "UserPassword"
+        },
+        "vpcNetwork": {
+          "description": "Required. The resource link for the VPC network in which cluster resources are created and from which they are accessible via Private IP. The network must belong to the same project as the cluster. It is specified in the form: \"projects\/{project_number}\/global\/networks\/{network_id}\". This is required to create a cluster.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Labels for the AlloyDB cluster created by DMS. An object containing a list of 'key', 'value' pairs.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "primaryInstanceSettings": {
+          "$ref": "PrimaryInstanceSettings"
+        }
+      }
+    },
+    "UserPassword": {
+      "id": "UserPassword",
+      "description": "The username\/password for a database user. Used for specifying initial users at cluster creation time.",
+      "type": "object",
+      "properties": {
+        "user": {
+          "description": "The database username.",
+          "type": "string"
+        },
+        "password": {
+          "description": "The initial password for the user.",
+          "type": "string"
+        },
+        "passwordSet": {
+          "description": "Output only. Indicates if the initial_user.password field has been set.",
+          "readOnly": true,
+          "type": "boolean"
+        }
+      }
+    },
+    "PrimaryInstanceSettings": {
+      "id": "PrimaryInstanceSettings",
+      "description": "Settings for the cluster's primary instance",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Required. The ID of the AlloyDB primary instance. The ID must satisfy the regex expression \"[a-z0-9-]+\".",
+          "type": "string"
+        },
+        "machineConfig": {
+          "description": "Configuration for the machines that host the underlying database engine.",
+          "$ref": "MachineConfig"
+        },
+        "databaseFlags": {
+          "description": "Database flags to pass to AlloyDB when DMS is creating the AlloyDB cluster and instances. See the AlloyDB documentation for how these can be used.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "labels": {
+          "description": "Labels for the AlloyDB primary instance created by DMS. An object containing a list of 'key', 'value' pairs.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "privateIp": {
+          "description": "Output only. The private IP address for the Instance. This is the connection endpoint for an end-user application.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "MachineConfig": {
+      "id": "MachineConfig",
+      "description": "MachineConfig describes the configuration of a machine.",
+      "type": "object",
+      "properties": {
+        "cpuCount": {
+          "description": "The number of CPU's in the VM instance.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -1140,7 +1269,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"

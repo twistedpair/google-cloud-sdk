@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.util import completers
@@ -182,6 +183,19 @@ def AddAdvancedOptions(parser, required=False):
       required=required,
       help=('The JSON parsing behavior for this rule. '
             'Must be one of the following values: [DISABLED, STANDARD].'))
+
+  parser.add_argument(
+      '--json-custom-content-types',
+      type=arg_parsers.ArgList(),
+      metavar='CONTENT_TYPE',
+      help="""\
+      A comma-separated list of custom Content-Type header values to apply JSON
+      parsing for preconfigured WAF rules. Only applicable when JSON parsing is
+      enabled, like ``--json-parsing=STANDARD''. When configuring a Content-Type
+      header value, only the type/subtype needs to be specified, and the
+      parameters should be excluded.
+      """)
+
   parser.add_argument(
       '--log-level',
       choices=['NORMAL', 'VERBOSE'],

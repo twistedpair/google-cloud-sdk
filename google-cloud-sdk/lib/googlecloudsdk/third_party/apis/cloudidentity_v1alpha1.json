@@ -103,9 +103,6 @@
   "auth": {
     "oauth2": {
       "scopes": {
-        "https://www.googleapis.com/auth/cloud-identity": {
-          "description": "Private Service: https:\/\/www.googleapis.com\/auth\/cloud-identity"
-        },
         "https://www.googleapis.com/auth/cloud-identity.groups": {
           "description": "See, change, create, and delete any of the Cloud Identity Groups that you can access, including the members of each group"
         },
@@ -2232,7 +2229,6 @@
             "$ref": "Operation"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.groups",
             "https://www.googleapis.com/auth/cloud-platform"
           ],
@@ -2259,7 +2255,6 @@
             "$ref": "Group"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.groups",
             "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
             "https://www.googleapis.com/auth/cloud-platform"
@@ -2296,7 +2291,6 @@
             "$ref": "Operation"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.groups",
             "https://www.googleapis.com/auth/cloud-platform"
           ],
@@ -2323,7 +2317,6 @@
             "$ref": "Operation"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.groups",
             "https://www.googleapis.com/auth/cloud-platform"
           ],
@@ -2352,7 +2345,6 @@
             "$ref": "LookupGroupNameResponse"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.groups",
             "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
             "https://www.googleapis.com/auth/cloud-platform"
@@ -2403,7 +2395,6 @@
             "$ref": "SearchGroupsResponse"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.groups",
             "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
             "https://www.googleapis.com/auth/cloud-platform"
@@ -2454,7 +2445,6 @@
             "$ref": "ListGroupsResponse"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.groups",
             "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
             "https://www.googleapis.com/auth/cloud-platform"
@@ -2490,7 +2480,6 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
@@ -2517,7 +2506,6 @@
                 "$ref": "Membership"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -2554,7 +2542,6 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
@@ -2581,7 +2568,6 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
@@ -2618,7 +2604,6 @@
                 "$ref": "LookupMembershipNameResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -2672,7 +2657,6 @@
                 "$ref": "ListMembershipsResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -2703,7 +2687,6 @@
                 "$ref": "ModifyMembershipRolesResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
@@ -2741,7 +2724,6 @@
                 "$ref": "SearchTransitiveMembershipsResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -2785,7 +2767,6 @@
                 "$ref": "SearchTransitiveGroupsResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -2818,7 +2799,6 @@
                 "$ref": "CheckTransitiveMembershipResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -2851,7 +2831,6 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
                 "https://www.googleapis.com/auth/cloud-platform"

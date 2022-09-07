@@ -1643,6 +1643,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message
   Fields:
     autoscale: The autoscale policy to apply on a pool.
     channel: Channel specifies the release channel of the pool.
+    hostOs: HostOS specifies the OS version of the image for the worker VMs.
     name: WorkerPool resource name formatted as:
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]/workerpools/[POOL_ID]`.
       name should not be populated when creating a worker pool since it is
@@ -1681,10 +1682,11 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message
 
   autoscale = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaAutoscale', 1)
   channel = _messages.StringField(2)
-  name = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  workerConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig', 5)
-  workerCount = _messages.IntegerField(6)
+  hostOs = _messages.StringField(3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  workerConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig', 6)
+  workerCount = _messages.IntegerField(7)
 
 
 class GoogleDevtoolsRemoteworkersV1test2AdminTemp(_messages.Message):

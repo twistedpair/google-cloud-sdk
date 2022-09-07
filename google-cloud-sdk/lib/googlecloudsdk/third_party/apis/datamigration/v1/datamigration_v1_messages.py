@@ -14,6 +14,73 @@ from apitools.base.py import extra_types
 package = 'datamigration'
 
 
+class AlloyDbConnectionProfile(_messages.Message):
+  r"""Specifies required connection parameters, and the parameters required to
+  create an AlloyDB destination cluster.
+
+  Fields:
+    clusterId: Required. The AlloyDB cluster ID that this connection profile
+      is associated with.
+    settings: Immutable. Metadata used to create the destination AlloyDB
+      cluster.
+  """
+
+  clusterId = _messages.StringField(1)
+  settings = _messages.MessageField('AlloyDbSettings', 2)
+
+
+class AlloyDbSettings(_messages.Message):
+  r"""Settings for creating an AlloyDB cluster.
+
+  Messages:
+    LabelsValue: Labels for the AlloyDB cluster created by DMS. An object
+      containing a list of 'key', 'value' pairs.
+
+  Fields:
+    initialUser: Required. Input only. Initial user to setup during cluster
+      creation. Required.
+    labels: Labels for the AlloyDB cluster created by DMS. An object
+      containing a list of 'key', 'value' pairs.
+    primaryInstanceSettings: A PrimaryInstanceSettings attribute.
+    vpcNetwork: Required. The resource link for the VPC network in which
+      cluster resources are created and from which they are accessible via
+      Private IP. The network must belong to the same project as the cluster.
+      It is specified in the form:
+      "projects/{project_number}/global/networks/{network_id}". This is
+      required to create a cluster.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels for the AlloyDB cluster created by DMS. An object containing a
+    list of 'key', 'value' pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  initialUser = _messages.MessageField('UserPassword', 1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  primaryInstanceSettings = _messages.MessageField('PrimaryInstanceSettings', 3)
+  vpcNetwork = _messages.StringField(4)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -95,9 +162,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -366,6 +435,7 @@ class ConnectionProfile(_messages.Message):
       "mass": "1.3kg", "count": "3" }`.
 
   Fields:
+    alloydb: An AlloyDB cluster connection profile.
     cloudsql: A CloudSQL database connection profile.
     createTime: Output only. The timestamp when the resource was created. A
       timestamp in RFC3339 UTC "Zulu" format, accurate to nanoseconds.
@@ -396,11 +466,13 @@ class ConnectionProfile(_messages.Message):
       CLOUDSQL: CloudSQL runs the database.
       RDS: RDS runs the database.
       AURORA: Amazon Aurora.
+      ALLOYDB: AlloyDB.
     """
     DATABASE_PROVIDER_UNSPECIFIED = 0
     CLOUDSQL = 1
     RDS = 2
     AURORA = 3
+    ALLOYDB = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The current connection profile state (e.g. DRAFT, READY, or FAILED).
@@ -451,17 +523,18 @@ class ConnectionProfile(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  cloudsql = _messages.MessageField('CloudSqlConnectionProfile', 1)
-  createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  error = _messages.MessageField('Status', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  mysql = _messages.MessageField('MySqlConnectionProfile', 6)
-  name = _messages.StringField(7)
-  postgresql = _messages.MessageField('PostgreSqlConnectionProfile', 8)
-  provider = _messages.EnumField('ProviderValueValuesEnum', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  alloydb = _messages.MessageField('AlloyDbConnectionProfile', 1)
+  cloudsql = _messages.MessageField('CloudSqlConnectionProfile', 2)
+  createTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  error = _messages.MessageField('Status', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  mysql = _messages.MessageField('MySqlConnectionProfile', 7)
+  name = _messages.StringField(8)
+  postgresql = _messages.MessageField('PostgreSqlConnectionProfile', 9)
+  provider = _messages.EnumField('ProviderValueValuesEnum', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class DatabaseType(_messages.Message):
@@ -497,11 +570,13 @@ class DatabaseType(_messages.Message):
       CLOUDSQL: CloudSQL runs the database.
       RDS: RDS runs the database.
       AURORA: Amazon Aurora.
+      ALLOYDB: AlloyDB.
     """
     DATABASE_PROVIDER_UNSPECIFIED = 0
     CLOUDSQL = 1
     RDS = 2
     AURORA = 3
+    ALLOYDB = 4
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   provider = _messages.EnumField('ProviderValueValuesEnum', 2)
@@ -1261,6 +1336,16 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class MachineConfig(_messages.Message):
+  r"""MachineConfig describes the configuration of a machine.
+
+  Fields:
+    cpuCount: The number of CPU's in the VM instance.
+  """
+
+  cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class MigrationJob(_messages.Message):
   r"""Represents a Database Migration Service migration job object.
 
@@ -1745,10 +1830,17 @@ class PostgreSqlConnectionProfile(_messages.Message):
   r"""Specifies connection parameters required specifically for PostgreSQL
   databases.
 
+  Enums:
+    NetworkArchitectureValueValuesEnum: Output only. If the source is a Cloud
+      SQL database, this field indicates the network architecture it's
+      associated with.
+
   Fields:
     cloudSqlId: If the source is a Cloud SQL database, use this field to
       provide the Cloud SQL instance ID of the source.
     host: Required. The IP or hostname of the source PostgreSQL database.
+    networkArchitecture: Output only. If the source is a Cloud SQL database,
+      this field indicates the network architecture it's associated with.
     password: Required. Input only. The password for the user that Database
       Migration Service will be using to connect to the database. This field
       is not returned on request, and the value is encrypted when stored in
@@ -1763,13 +1855,112 @@ class PostgreSqlConnectionProfile(_messages.Message):
       Database Migration Service.
   """
 
+  class NetworkArchitectureValueValuesEnum(_messages.Enum):
+    r"""Output only. If the source is a Cloud SQL database, this field
+    indicates the network architecture it's associated with.
+
+    Values:
+      NETWORK_ARCHITECTURE_UNSPECIFIED: <no description>
+      NETWORK_ARCHITECTURE_OLD_CSQL_PRODUCER: Instance is in Cloud SQL's old
+        producer network architecture.
+      NETWORK_ARCHITECTURE_NEW_CSQL_PRODUCER: Instance is in Cloud SQL's new
+        producer network architecture.
+    """
+    NETWORK_ARCHITECTURE_UNSPECIFIED = 0
+    NETWORK_ARCHITECTURE_OLD_CSQL_PRODUCER = 1
+    NETWORK_ARCHITECTURE_NEW_CSQL_PRODUCER = 2
+
   cloudSqlId = _messages.StringField(1)
   host = _messages.StringField(2)
-  password = _messages.StringField(3)
-  passwordSet = _messages.BooleanField(4)
-  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  ssl = _messages.MessageField('SslConfig', 6)
-  username = _messages.StringField(7)
+  networkArchitecture = _messages.EnumField('NetworkArchitectureValueValuesEnum', 3)
+  password = _messages.StringField(4)
+  passwordSet = _messages.BooleanField(5)
+  port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  ssl = _messages.MessageField('SslConfig', 7)
+  username = _messages.StringField(8)
+
+
+class PrimaryInstanceSettings(_messages.Message):
+  r"""Settings for the cluster's primary instance
+
+  Messages:
+    DatabaseFlagsValue: Database flags to pass to AlloyDB when DMS is creating
+      the AlloyDB cluster and instances. See the AlloyDB documentation for how
+      these can be used.
+    LabelsValue: Labels for the AlloyDB primary instance created by DMS. An
+      object containing a list of 'key', 'value' pairs.
+
+  Fields:
+    databaseFlags: Database flags to pass to AlloyDB when DMS is creating the
+      AlloyDB cluster and instances. See the AlloyDB documentation for how
+      these can be used.
+    id: Required. The ID of the AlloyDB primary instance. The ID must satisfy
+      the regex expression "[a-z0-9-]+".
+    labels: Labels for the AlloyDB primary instance created by DMS. An object
+      containing a list of 'key', 'value' pairs.
+    machineConfig: Configuration for the machines that host the underlying
+      database engine.
+    privateIp: Output only. The private IP address for the Instance. This is
+      the connection endpoint for an end-user application.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DatabaseFlagsValue(_messages.Message):
+    r"""Database flags to pass to AlloyDB when DMS is creating the AlloyDB
+    cluster and instances. See the AlloyDB documentation for how these can be
+    used.
+
+    Messages:
+      AdditionalProperty: An additional property for a DatabaseFlagsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type DatabaseFlagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DatabaseFlagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels for the AlloyDB primary instance created by DMS. An object
+    containing a list of 'key', 'value' pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 1)
+  id = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  machineConfig = _messages.MessageField('MachineConfig', 4)
+  privateIp = _messages.StringField(5)
 
 
 class PromoteMigrationJobRequest(_messages.Message):
@@ -2070,6 +2261,22 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class UserPassword(_messages.Message):
+  r"""The username/password for a database user. Used for specifying initial
+  users at cluster creation time.
+
+  Fields:
+    password: The initial password for the user.
+    passwordSet: Output only. Indicates if the initial_user.password field has
+      been set.
+    user: The database username.
+  """
+
+  password = _messages.StringField(1)
+  passwordSet = _messages.BooleanField(2)
+  user = _messages.StringField(3)
 
 
 class VerifyMigrationJobRequest(_messages.Message):

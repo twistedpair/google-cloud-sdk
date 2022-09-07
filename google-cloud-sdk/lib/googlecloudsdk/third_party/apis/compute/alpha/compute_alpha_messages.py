@@ -704,13 +704,12 @@ class Address(_messages.Message):
       regional external IP addresses used by Cloud NAT when allocating
       addresses using automatic NAT IP address allocation. -
       IPSEC_INTERCONNECT for addresses created from a private IP range that
-      are reserved for a VLAN attachment in an *IPsec-encrypted Cloud
-      Interconnect* configuration. These addresses are regional resources. Not
-      currently available publicly. - `SHARED_LOADBALANCER_VIP` for an
-      internal IP address that is assigned to multiple internal forwarding
-      rules. - `PRIVATE_SERVICE_CONNECT` for a private network address that is
-      used to configure Private Service Connect. Only global internal
-      addresses can use this purpose.
+      are reserved for a VLAN attachment in an *HA VPN over Cloud
+      Interconnect* configuration. These addresses are regional resources. -
+      `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
+      multiple internal forwarding rules. - `PRIVATE_SERVICE_CONNECT` for a
+      private network address that is used to configure Private Service
+      Connect. Only global internal addresses can use this purpose.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
       is currently in the process of being reserved. A RESERVED address is
@@ -776,12 +775,12 @@ class Address(_messages.Message):
       external IP addresses used by Cloud NAT when allocating addresses using
       automatic NAT IP address allocation. - IPSEC_INTERCONNECT for addresses
       created from a private IP range that are reserved for a VLAN attachment
-      in an *IPsec-encrypted Cloud Interconnect* configuration. These
-      addresses are regional resources. Not currently available publicly. -
-      `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
-      multiple internal forwarding rules. - `PRIVATE_SERVICE_CONNECT` for a
-      private network address that is used to configure Private Service
-      Connect. Only global internal addresses can use this purpose.
+      in an *HA VPN over Cloud Interconnect* configuration. These addresses
+      are regional resources. - `SHARED_LOADBALANCER_VIP` for an internal IP
+      address that is assigned to multiple internal forwarding rules. -
+      `PRIVATE_SERVICE_CONNECT` for a private network address that is used to
+      configure Private Service Connect. Only global internal addresses can
+      use this purpose.
     region: [Output Only] The URL of the region where a regional address
       resides. For regional addresses, you must specify the region as a path
       parameter in the HTTP request URL. *This field is not applicable to
@@ -875,25 +874,24 @@ class Address(_messages.Message):
     access allocated ranges. - NAT_AUTO for the regional external IP addresses
     used by Cloud NAT when allocating addresses using automatic NAT IP address
     allocation. - IPSEC_INTERCONNECT for addresses created from a private IP
-    range that are reserved for a VLAN attachment in an *IPsec-encrypted Cloud
-    Interconnect* configuration. These addresses are regional resources. Not
-    currently available publicly. - `SHARED_LOADBALANCER_VIP` for an internal
-    IP address that is assigned to multiple internal forwarding rules. -
-    `PRIVATE_SERVICE_CONNECT` for a private network address that is used to
-    configure Private Service Connect. Only global internal addresses can use
-    this purpose.
+    range that are reserved for a VLAN attachment in an *HA VPN over Cloud
+    Interconnect* configuration. These addresses are regional resources. -
+    `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
+    multiple internal forwarding rules. - `PRIVATE_SERVICE_CONNECT` for a
+    private network address that is used to configure Private Service Connect.
+    Only global internal addresses can use this purpose.
 
     Values:
       DNS_RESOLVER: DNS resolver address in the subnetwork.
       GCE_ENDPOINT: VM internal/alias IP, Internal LB service IP, etc.
       IPSEC_INTERCONNECT: A regional internal IP address range reserved for
-        the VLAN attachment that is used in IPsec-encrypted Cloud
-        Interconnect. This regional internal IP address range must not overlap
-        with any IP address range of subnet/route in the VPC network and its
-        peering networks. After the VLAN attachment is created with the
-        reserved IP address range, when creating a new VPN gateway, its
-        interface IP address is allocated from the associated VLAN
-        attachment's IP address range.
+        the VLAN attachment that is used in HA VPN over Cloud Interconnect.
+        This regional internal IP address range must not overlap with any IP
+        address range of subnet/route in the VPC network and its peering
+        networks. After the VLAN attachment is created with the reserved IP
+        address range, when creating a new VPN gateway, its interface IP
+        address is allocated from the associated VLAN attachment's IP address
+        range.
       NAT_AUTO: External IP automatically reserved for Cloud NAT.
       PRIVATE_SERVICE_CONNECT: A private network IP address that can be used
         to configure Private Service Connect. This purpose can be specified
@@ -5373,18 +5371,54 @@ class BackendServiceLogConfig(_messages.Message):
   r"""The available logging options for the load balancer traffic served by
   this backend service.
 
+  Enums:
+    OptionalValueValuesEnum: This field can only be specified if logging is
+      enabled for this backend service. Configures whether all, none or a
+      subset of optional fields should be added to the reported logs. One of
+      [INCLUDE_ALL_OPTIONAL, EXCLUDE_ALL_OPTIONAL, CUSTOM]. Default is
+      EXCLUDE_ALL_OPTIONAL.
+
   Fields:
-    enable: This field denotes whether to enable logging for the load balancer
-      traffic served by this backend service.
+    enable: Denotes whether to enable logging for the load balancer traffic
+      served by this backend service. The default value is false.
+    optional: This field can only be specified if logging is enabled for this
+      backend service. Configures whether all, none or a subset of optional
+      fields should be added to the reported logs. One of
+      [INCLUDE_ALL_OPTIONAL, EXCLUDE_ALL_OPTIONAL, CUSTOM]. Default is
+      EXCLUDE_ALL_OPTIONAL.
+    optionalFields: This field can only be specified if logging is enabled for
+      this backend service and "logConfig.optional" was set to CUSTOM.
+      Contains a list of optional fields you want to include in the logs. For
+      example: serverInstance, serverGkeDetails.cluster,
+      serverGkeDetails.pod.podNamespace
     sampleRate: This field can only be specified if logging is enabled for
       this backend service. The value of the field must be in [0, 1]. This
       configures the sampling rate of requests to the load balancer where 1.0
       means all logged requests are reported and 0.0 means no logged requests
-      are reported. The default value is 0.0.
+      are reported. The default value is 1.0.
   """
 
+  class OptionalValueValuesEnum(_messages.Enum):
+    r"""This field can only be specified if logging is enabled for this
+    backend service. Configures whether all, none or a subset of optional
+    fields should be added to the reported logs. One of [INCLUDE_ALL_OPTIONAL,
+    EXCLUDE_ALL_OPTIONAL, CUSTOM]. Default is EXCLUDE_ALL_OPTIONAL.
+
+    Values:
+      CUSTOM: A subset of optional fields.
+      EXCLUDE_ALL_OPTIONAL: None optional fields.
+      INCLUDE_ALL_OPTIONAL: All optional fields.
+      UNSPECIFIED_OPTIONAL_MODE: <no description>
+    """
+    CUSTOM = 0
+    EXCLUDE_ALL_OPTIONAL = 1
+    INCLUDE_ALL_OPTIONAL = 2
+    UNSPECIFIED_OPTIONAL_MODE = 3
+
   enable = _messages.BooleanField(1)
-  sampleRate = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  optional = _messages.EnumField('OptionalValueValuesEnum', 2)
+  optionalFields = _messages.StringField(3, repeated=True)
+  sampleRate = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class BackendServiceReference(_messages.Message):
@@ -5824,9 +5858,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -42867,6 +42903,8 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
       group that are scheduled to be deleted or are currently being deleted.
     none: [Output Only] The number of instances in the managed instance group
       that are running and have no scheduled actions.
+    queuing: [Output Only] The number of instances that the managed instance
+      group is currently queuing.
     recreating: [Output Only] The number of instances in the managed instance
       group that are scheduled to be recreated or are currently being being
       recreated. Recreating an instance deletes the existing root persistent
@@ -42899,14 +42937,15 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
   creatingWithoutRetries = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   deleting = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   none = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  recreating = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  refreshing = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  restarting = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  resuming = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  starting = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  stopping = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  suspending = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  verifying = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  queuing = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  recreating = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  refreshing = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  restarting = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  resuming = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  starting = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  stopping = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  suspending = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  verifying = _messages.IntegerField(15, variant=_messages.Variant.INT32)
 
 
 class InstanceGroupManagerAggregatedList(_messages.Message):
@@ -45400,6 +45439,7 @@ class InstanceManagedByIgmErrorInstanceActionDetails(_messages.Message):
         instance.
       NONE: The managed instance group has not scheduled any actions for this
         instance.
+      QUEUING: The managed instance group is queuing this instance.
       RECREATING: The managed instance group is recreating this instance.
       REFRESHING: The managed instance group is applying configuration changes
         to the instance without stopping it. For example, the group can update
@@ -45423,14 +45463,15 @@ class InstanceManagedByIgmErrorInstanceActionDetails(_messages.Message):
     CREATING_WITHOUT_RETRIES = 3
     DELETING = 4
     NONE = 5
-    RECREATING = 6
-    REFRESHING = 7
-    RESTARTING = 8
-    RESUMING = 9
-    STARTING = 10
-    STOPPING = 11
-    SUSPENDING = 12
-    VERIFYING = 13
+    QUEUING = 6
+    RECREATING = 7
+    REFRESHING = 8
+    RESTARTING = 9
+    RESUMING = 10
+    STARTING = 11
+    STOPPING = 12
+    SUSPENDING = 13
+    VERIFYING = 14
 
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   instance = _messages.StringField(2)
@@ -47474,9 +47515,8 @@ class InterconnectAttachment(_messages.Message):
       The VLAN attachment carries only encrypted traffic that is encrypted by
       an IPsec device, such as an HA VPN gateway or third-party IPsec VPN. VMs
       cannot directly send traffic to, or receive traffic from, such a VLAN
-      attachment. To use *IPsec-encrypted Cloud Interconnect*, the VLAN
-      attachment must be created with this option. Not currently available
-      publicly.
+      attachment. To use *HA VPN over Cloud Interconnect*, the VLAN attachment
+      must be created with this option.
     OperationalStatusValueValuesEnum: [Output Only] The current status of
       whether or not this interconnect attachment is functional, which can
       take one of the following values: - OS_ACTIVE: The attachment has been
@@ -47575,8 +47615,8 @@ class InterconnectAttachment(_messages.Message):
       carries only encrypted traffic that is encrypted by an IPsec device,
       such as an HA VPN gateway or third-party IPsec VPN. VMs cannot directly
       send traffic to, or receive traffic from, such a VLAN attachment. To use
-      *IPsec-encrypted Cloud Interconnect*, the VLAN attachment must be
-      created with this option. Not currently available publicly.
+      *HA VPN over Cloud Interconnect*, the VLAN attachment must be created
+      with this option.
     googleReferenceId: [Output Only] Google reference ID, to be used when
       raising support tickets with Google or otherwise to debug backend
       connectivity issues. [Deprecated] This field is not used.
@@ -47763,16 +47803,15 @@ class InterconnectAttachment(_messages.Message):
     from, such a VLAN attachment. - IPSEC - The VLAN attachment carries only
     encrypted traffic that is encrypted by an IPsec device, such as an HA VPN
     gateway or third-party IPsec VPN. VMs cannot directly send traffic to, or
-    receive traffic from, such a VLAN attachment. To use *IPsec-encrypted
-    Cloud Interconnect*, the VLAN attachment must be created with this option.
-    Not currently available publicly.
+    receive traffic from, such a VLAN attachment. To use *HA VPN over Cloud
+    Interconnect*, the VLAN attachment must be created with this option.
 
     Values:
       IPSEC: The interconnect attachment will carry only encrypted traffic
         that is encrypted by an IPsec device such as HA VPN gateway; VMs
         cannot directly send traffic to or receive traffic from such an
-        interconnect attachment. To use IPsec-encrypted Cloud Interconnect,
-        the interconnect attachment must be created with this option.
+        interconnect attachment. To use HA VPN over Cloud Interconnect, the
+        interconnect attachment must be created with this option.
       NONE: This is the default value, which means the Interconnect Attachment
         will carry unencrypted traffic. VMs will be able to send traffic to or
         receive traffic from such interconnect attachment.
@@ -51792,6 +51831,8 @@ class ManagedInstance(_messages.Message):
       }.
     lastAttempt: [Output Only] Information about the last attempt to create or
       delete the instance.
+    name: [Output Only] The name of the instance. The name will always exist
+      even if the instance has not yet been created.
     preservedStateFromConfig: [Output Only] Preserved state applied from per-
       instance config for this instance.
     preservedStateFromPolicy: [Output Only] Preserved state generated based on
@@ -51841,6 +51882,7 @@ class ManagedInstance(_messages.Message):
         instance.
       NONE: The managed instance group has not scheduled any actions for this
         instance.
+      QUEUING: The managed instance group is queuing this instance.
       RECREATING: The managed instance group is recreating this instance.
       REFRESHING: The managed instance group is applying configuration changes
         to the instance without stopping it. For example, the group can update
@@ -51864,14 +51906,15 @@ class ManagedInstance(_messages.Message):
     CREATING_WITHOUT_RETRIES = 3
     DELETING = 4
     NONE = 5
-    RECREATING = 6
-    REFRESHING = 7
-    RESTARTING = 8
-    RESUMING = 9
-    STARTING = 10
-    STOPPING = 11
-    SUSPENDING = 12
-    VERIFYING = 13
+    QUEUING = 6
+    RECREATING = 7
+    REFRESHING = 8
+    RESTARTING = 9
+    RESUMING = 10
+    STARTING = 11
+    STOPPING = 12
+    SUSPENDING = 13
+    VERIFYING = 14
 
   class InstanceStatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the instance. This field is empty when the
@@ -51932,11 +51975,12 @@ class ManagedInstance(_messages.Message):
   instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 6)
   instanceTemplate = _messages.StringField(7)
   lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 8)
-  preservedStateFromConfig = _messages.MessageField('PreservedState', 9)
-  preservedStateFromPolicy = _messages.MessageField('PreservedState', 10)
-  tag = _messages.StringField(11)
-  targetStatus = _messages.EnumField('TargetStatusValueValuesEnum', 12)
-  version = _messages.MessageField('ManagedInstanceVersion', 13)
+  name = _messages.StringField(9)
+  preservedStateFromConfig = _messages.MessageField('PreservedState', 10)
+  preservedStateFromPolicy = _messages.MessageField('PreservedState', 11)
+  tag = _messages.StringField(12)
+  targetStatus = _messages.EnumField('TargetStatusValueValuesEnum', 13)
+  version = _messages.MessageField('ManagedInstanceVersion', 14)
 
 
 class ManagedInstanceAllInstancesConfig(_messages.Message):
@@ -65540,8 +65584,7 @@ class Router(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     encryptedInterconnectRouter: Indicates if a router is dedicated for use
-      with encrypted VLAN attachments (interconnectAttachments). Not currently
-      available publicly.
+      with encrypted VLAN attachments (interconnectAttachments).
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     interfaces: Router interfaces. Each interface requires either one linked
@@ -79541,19 +79584,18 @@ class VpnGatewayVpnGatewayInterface(_messages.Message):
       with the VPN gateway.
     interconnectAttachment: URL of the VLAN attachment
       (interconnectAttachment) resource for this VPN gateway interface. When
-      the value of this field is present, the VPN gateway is used for IPsec-
-      encrypted Cloud Interconnect; all egress or ingress traffic for this VPN
+      the value of this field is present, the VPN gateway is used for HA VPN
+      over Cloud Interconnect; all egress or ingress traffic for this VPN
       gateway interface goes through the specified VLAN attachment resource.
-      Not currently available publicly.
     ipAddress: [Output Only] IP address for this VPN interface associated with
       the VPN gateway. The IP address could be either a regional external IP
       address or a regional internal IP address. The two IP addresses for a
       VPN gateway must be all regional external or regional internal IP
       addresses. There cannot be a mix of regional external IP addresses and
-      regional internal IP addresses. For IPsec-encrypted Cloud Interconnect,
-      the IP addresses for both interfaces could either be regional internal
-      IP addresses or regional external IP addresses. For regular (non IPsec-
-      encrypted Cloud Interconnect) HA VPN tunnels, the IP address must be a
+      regional internal IP addresses. For HA VPN over Cloud Interconnect, the
+      IP addresses for both interfaces could either be regional internal IP
+      addresses or regional external IP addresses. For regular (non HA VPN
+      over Cloud Interconnect) HA VPN tunnels, the IP address must be a
       regional external IP address.
   """
 

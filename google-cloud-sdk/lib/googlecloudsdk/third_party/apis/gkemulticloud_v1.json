@@ -225,6 +225,10 @@
           "description": "Required. The platform version for the cluster (e.g. `1.19.0-gke.1000`). You can list all supported versions on a given Google Cloud region by calling GetAttachedServerConfig.",
           "type": "string"
         },
+        "distribution": {
+          "description": "Required. The Kubernetes distribution of the underlying attached cluster. Supported values: [\"eks\", \"aks\"].",
+          "type": "string"
+        },
         "fleet": {
           "description": "Required. Fleet configuration.",
           "$ref": "GoogleCloudGkemulticloudV1Fleet"
@@ -306,6 +310,10 @@
           "items": {
             "$ref": "GoogleCloudGkemulticloudV1AttachedClusterError"
           }
+        },
+        "authorization": {
+          "description": "Optional. Configuration related to the cluster RBAC settings.",
+          "$ref": "GoogleCloudGkemulticloudV1AttachedClustersAuthorization"
         }
       }
     },
@@ -319,7 +327,7 @@
           "type": "string"
         },
         "oidcJwks": {
-          "description": "OIDC verification keys in JWKS format (RFC 7517). It contains a list of OIDC verification keys that can be used to verify OIDC JWTs. This is useful for cluster that doesn't have a publicly available discovery endpoint. When provided, it will be directly used to verify the OIDC JWT asserted by the IDP.",
+          "description": "Optional. OIDC verification keys in JWKS format (RFC 7517). It contains a list of OIDC verification keys that can be used to verify OIDC JWTs. This is useful for cluster that doesn't have a publicly available discovery endpoint. When provided, it will be directly used to verify the OIDC JWT asserted by the IDP.",
           "type": "string",
           "format": "byte"
         }
@@ -406,6 +414,54 @@
         }
       }
     },
+    "GoogleCloudGkemulticloudV1AttachedClustersAuthorization": {
+      "id": "GoogleCloudGkemulticloudV1AttachedClustersAuthorization",
+      "description": "Configuration related to the cluster RBAC settings.",
+      "type": "object",
+      "properties": {
+        "adminUsers": {
+          "description": "Required. Users that can perform operations as a cluster admin. A managed ClusterRoleBinding will be created to grant the `cluster-admin` ClusterRole to the users. Up to ten admin users can be provided. For more info on RBAC, see https:\/\/kubernetes.io\/docs\/reference\/access-authn-authz\/rbac\/#user-facing-roles",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudGkemulticloudV1AttachedClusterUser"
+          }
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1AttachedClusterUser": {
+      "id": "GoogleCloudGkemulticloudV1AttachedClusterUser",
+      "description": "Identities of a user-type subject for Attached clusters.",
+      "type": "object",
+      "properties": {
+        "username": {
+          "description": "Required. The name of the user, e.g. `my-gcp-id@gmail.com`.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1ImportAttachedClusterRequest": {
+      "id": "GoogleCloudGkemulticloudV1ImportAttachedClusterRequest",
+      "description": "Request message for `AttachedClusters.ImportAttachedCluster` method.",
+      "type": "object",
+      "properties": {
+        "validateOnly": {
+          "description": "If set, only validate the request, but do not actually import the cluster.",
+          "type": "boolean"
+        },
+        "fleetMembership": {
+          "description": "Required. The name of the fleet membership resource to import.",
+          "type": "string"
+        },
+        "platformVersion": {
+          "description": "Required. The platform version for the cluster (e.g. `1.19.0-gke.1000`). You can list all supported versions on a given Google Cloud region by calling GetAttachedServerConfig.",
+          "type": "string"
+        },
+        "distribution": {
+          "description": "Required. The Kubernetes distribution of the underlying attached cluster. Supported values: [\"eks\", \"aks\"].",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudGkemulticloudV1ListAttachedClustersResponse": {
       "id": "GoogleCloudGkemulticloudV1ListAttachedClustersResponse",
       "description": "Response message for `AttachedClusters.ListAttachedClusters` method.",
@@ -420,6 +476,35 @@
         },
         "nextPageToken": {
           "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1AttachedServerConfig": {
+      "id": "GoogleCloudGkemulticloudV1AttachedServerConfig",
+      "description": "AttachedServerConfig provides information about supported Kubernetes versions",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the config.",
+          "type": "string"
+        },
+        "validVersions": {
+          "description": "List of valid platform versions.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudGkemulticloudV1AttachedPlatformVersionInfo"
+          }
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1AttachedPlatformVersionInfo": {
+      "id": "GoogleCloudGkemulticloudV1AttachedPlatformVersionInfo",
+      "description": "Information about a supported Attached Clusters platform version.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Platform version name.",
           "type": "string"
         }
       }
@@ -2023,6 +2108,31 @@
       "resources": {
         "locations": {
           "methods": {
+            "getAttachedServerConfig": {
+              "id": "gkemulticloud.projects.locations.getAttachedServerConfig",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/attachedServerConfig",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the AttachedServerConfig resource to describe. `AttachedServerConfig` names are formatted as `projects\/\/locations\/\/attachedServerConfig`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/attachedServerConfig$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudGkemulticloudV1AttachedServerConfig"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Returns information, such as supported Kubernetes versions, on a given Google Cloud location."
+            },
             "generateAttachedClusterInstallManifest": {
               "id": "gkemulticloud.projects.locations.generateAttachedClusterInstallManifest",
               "path": "v1/{+parent}:generateAttachedClusterInstallManifest",
@@ -2312,6 +2422,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Updates an AttachedCluster."
+                },
+                "import": {
+                  "id": "gkemulticloud.projects.locations.attachedClusters.import",
+                  "path": "v1/{+parent}/attachedClusters:import",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/attachedClusters:import",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent location where this AttachedCluster resource will be created. Location names are formatted as `projects\/\/locations\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudGkemulticloudV1ImportAttachedClusterRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Imports creates a new AttachedCluster resource by importing an existing Fleet Membership resource. Attached Clusters created before the introduction of the Anthos Multi-Cloud API can be imported through this method. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation."
                 },
                 "get": {
                   "id": "gkemulticloud.projects.locations.attachedClusters.get",

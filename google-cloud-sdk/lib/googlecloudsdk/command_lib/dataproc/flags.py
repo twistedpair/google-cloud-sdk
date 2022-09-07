@@ -447,6 +447,34 @@ def AddSessionResourceArg(parser, verb, api_version):
       required=True).AddToParser(parser)
 
 
+def AddGceNodePoolResourceArg(parser, verb, api_version):
+  """Adds GCE node pool resource argument to parser."""
+
+  def GceNodePoolConfig():
+    return concepts.ResourceParameterAttributeConfig(
+        name='gce_node_pool',
+        help_text='GCE node pool ID.',
+    )
+
+  def GetGceNodePoolResourceSpec(api_version):
+    return concepts.ResourceSpec(
+        'dataproc.projects.regions.clusters.gceNodePools',
+        api_version=api_version,
+        resource_name='gce_node_pool',
+        disable_auto_completers=True,
+        projectId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+        region=_RegionAttributeConfig(),
+        clusterName=ClusterConfig(),
+        gceNodePoolsId=GceNodePoolConfig(),
+    )
+
+  concept_parsers.ConceptParser.ForResource(
+      'gce_node_pool',
+      GetGceNodePoolResourceSpec(api_version),
+      'ID of the GCE node pool to {0}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
 def OperationConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='operation',
@@ -751,3 +779,32 @@ def ProjectGcsObjectsAccessBoundary(project):
       }
   }
   return six.text_type(json.dumps(access_boundary))
+
+
+def AddSizeFlag(parser):
+  """Adds the size field for resizing GCE node pools.
+
+  Args:
+    parser: The argparse parser for the command.
+  """
+  parser.add_argument(
+      '--size',
+      help=('New size for a given GCE node pool.'),
+      type=int,
+      hidden=True,
+      required=True)
+
+
+def AddGracefulDecommissionTimeoutFlag(parser):
+  """Adds a graceful decommission timeout for resizing a GCE node pool.
+
+  Args:
+    parser: The argparse parser for the command.
+  """
+  parser.add_argument(
+      '--graceful-decommission-timeout',
+      help=(
+          'Graceful decommission timeout for a given GCE node pool scale down resize.'
+      ),
+      hidden=True,
+      required=False)

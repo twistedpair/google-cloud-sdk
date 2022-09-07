@@ -343,7 +343,7 @@ def AddEncryption(parser):
       `IPSEC` - The interconnect attachment carries only traffic that is encrypted
       by an IPsec device; for example, an HA VPN gateway or third-party
       IPsec VPN. VMs cannot directly send traffic to or receive traffic from such
-      an interconnect attachment. To use IPsec-encrypted Cloud Interconnect,
+      an interconnect attachment. To use HA VPN over Cloud Interconnect,
       you must create the interconnect attachment with this option.
 
       """)

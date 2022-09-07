@@ -34,6 +34,7 @@ from googlecloudsdk.core.util import files
 
 _KUBECONFIGENV = 'KUBECONFIG'
 _DEFAULTKUBECONFIG = 'config_sync'
+_KUBECTL_TIMEOUT = 20
 
 
 def GetObjectKey(obj):
@@ -66,13 +67,11 @@ def MembershipMatched(membership, target_membership):
     return False
 
 
-def GetConfigManagement(membership, cluster_type):
+def GetConfigManagement(membership):
   """Get ConfigManagement to check if multi-repo is enabled.
 
   Args:
     membership: The membership name or cluster name of the current cluster.
-    cluster_type: The type of the current cluster. It is either a Fleet-cluster
-      or a Config-controller cluster.
 
   Raises:
     Error: errors that happen when getting the object from the cluster.
@@ -80,22 +79,23 @@ def GetConfigManagement(membership, cluster_type):
   config_management = None
   err = None
   timed_out = True
-  with Timeout(5):
+  with Timeout(_KUBECTL_TIMEOUT):
     config_management, err = RunKubectl([
         'get', 'configmanagements.configmanagement.gke.io/config-management',
         '-o', 'json'
     ])
     timed_out = False
-  if timed_out and cluster_type != 'Config Controller':
-    raise exceptions.ConfigSyncError(
-        'Timed out getting ConfigManagement object. ' +
-        'Make sure you have setup Connect Gateway for ' + membership +
-        ' following the instruction from ' +
-        'https://cloud.google.com/anthos/multicluster-management/gateway/setup'
-    )
   if timed_out:
-    raise exceptions.ConfigSyncError(
-        'Timed out getting ConfigManagement object from ' + membership)
+    if IsConnectGatewayContext():
+      raise exceptions.ConfigSyncError(
+          'Timed out getting ConfigManagement object. ' +
+          'Make sure you have setup Connect Gateway for ' + membership +
+          ' following the instruction from ' +
+          'https://cloud.google.com/anthos/multicluster-management/gateway/setup'
+      )
+    else:
+      raise exceptions.ConfigSyncError(
+          'Timed out getting ConfigManagement object from ' + membership)
 
   if err:
     raise exceptions.ConfigSyncError(
@@ -108,10 +108,9 @@ def GetConfigManagement(membership, cluster_type):
         'Legacy mode is used in {}. '.format(membership) +
         'Please enable the multi-repo feature to use this command.')
   if 'status' not in config_management_obj:
-    log.status.Print(
-        'The ConfigManagement object is not reconciled in {}. '.format(
-            membership) +
-        'Please check if the Config Management is running on it.')
+    log.status.Print('The ConfigManagement object is not reconciled in {}. '
+                     .format(membership) +
+                     'Please check if the Config Management is running on it.')
   errors = config_management_obj.get('status', {}).get('errors')
   if errors:
     log.status.Print(
@@ -403,3 +402,29 @@ def GetActuationCondition(resource_status):
         'message': 'Resource pending {}'.format(strategy),
     }
   return None
+
+
+def IsConnectGatewayContext():
+  """Checks to see if the current kubeconfig context points to a Connect Gateway cluster.
+
+  Returns:
+    Boolean indicating if the cluster is using Connect Gateway or not.
+  """
+  # Get the current context name
+  args = ['config', 'current-context']
+  context, err = RunKubectl(args)
+  if err:
+    raise exceptions.ConfigSyncError('Error getting kubeconfig context')
+
+  # Get the server address linked to the current context
+  json_path = 'jsonpath={{.clusters[?(@.name=="{ctx}")].cluster.server}}'.format(
+      ctx=context.strip())
+  args = ['config', 'view', '-o', json_path]
+  cgw, err = RunKubectl(args)
+  if err:
+    raise exceptions.ConfigSyncError(
+        'Error getting kubeconfig context server address')
+
+  # Determine if the server url contains connectgateway in its address,
+  # eg. https://connectgateway.googleapis.com
+  return 'connectgateway' in cgw

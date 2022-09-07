@@ -37,6 +37,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
@@ -502,3 +503,29 @@ def GetAutomatedBackupKmsFlagOverrides():
       'kms-location': '--automated-backup-encryption-key-location',
       'kms-project': '--automated-backup-encryption-key-project'
   }
+
+
+def GetInstanceViewFlagMapper(alloydb_messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--view',
+      alloydb_messages.AlloydbProjectsLocationsClustersInstancesGetRequest
+      .ViewValueValuesEnum,
+      required=False,
+      custom_mappings={
+          'INSTANCE_VIEW_BASIC':
+              'basic',
+          'INSTANCE_VIEW_FULL':
+              'full',
+      },
+      help_str='View of the instance to return.')
+
+
+def AddView(parser, alloydb_messages):
+  """Adds a view flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+    alloydb_messages: Message module.
+  """
+  GetInstanceViewFlagMapper(alloydb_messages).choice_arg.AddToParser(
+      parser)

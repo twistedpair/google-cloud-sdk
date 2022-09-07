@@ -2623,6 +2623,7 @@ class VlanAttachment(_messages.Message):
   r"""VLAN attachment details.
 
   Fields:
+    id: Immutable. The identifier of the attachment within vrf.
     pairingKey: Input only. Pairing key.
     peerIp: The peer IP of the attachment.
     peerVlanId: The peer vlan ID of the attachment.
@@ -2631,17 +2632,20 @@ class VlanAttachment(_messages.Message):
     routerIp: The router IP of the attachment.
   """
 
-  pairingKey = _messages.StringField(1)
-  peerIp = _messages.StringField(2)
-  peerVlanId = _messages.IntegerField(3)
-  qosPolicy = _messages.MessageField('QosPolicy', 4)
-  routerIp = _messages.StringField(5)
+  id = _messages.StringField(1)
+  pairingKey = _messages.StringField(2)
+  peerIp = _messages.StringField(3)
+  peerVlanId = _messages.IntegerField(4)
+  qosPolicy = _messages.MessageField('QosPolicy', 5)
+  routerIp = _messages.StringField(6)
 
 
 class Volume(_messages.Message):
   r"""A storage volume.
 
   Enums:
+    PerformanceTierValueValuesEnum: Immutable. Performance tier of the Volume.
+      Default is SHARED.
     ProtocolValueValuesEnum: Output only. Storage protocol for the Volume.
     SnapshotAutoDeleteBehaviorValueValuesEnum: The behavior to use when
       snapshot reserved space is full.
@@ -2671,7 +2675,11 @@ class Volume(_messages.Message):
       schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. Format:
       `projects/{project}/locations/{location}/volumes/{volume}`
+    notes: Input only. User-specified notes for new Volume. Used to provision
+      Volumes that require manual intervention.
     originallyRequestedSizeGib: Originally requested size, in GiB.
+    performanceTier: Immutable. Performance tier of the Volume. Default is
+      SHARED.
     pod: Immutable. Pod name.
     protocol: Output only. Storage protocol for the Volume.
     remainingSpaceGib: The space remaining in the storage volume for new LUNs,
@@ -2687,6 +2695,18 @@ class Volume(_messages.Message):
     state: The state of this storage volume.
     storageType: The storage type for this volume.
   """
+
+  class PerformanceTierValueValuesEnum(_messages.Enum):
+    r"""Immutable. Performance tier of the Volume. Default is SHARED.
+
+    Values:
+      VOLUME_PERFORMANCE_TIER_UNSPECIFIED: Value is not specified.
+      VOLUME_PERFORMANCE_TIER_SHARED: Regular volumes, shared aggregates.
+      VOLUME_PERFORMANCE_TIER_DEDICATED: Dedicated (assigned) aggregates.
+    """
+    VOLUME_PERFORMANCE_TIER_UNSPECIFIED = 0
+    VOLUME_PERFORMANCE_TIER_SHARED = 1
+    VOLUME_PERFORMANCE_TIER_DEDICATED = 2
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""Output only. Storage protocol for the Volume.
@@ -2774,23 +2794,27 @@ class Volume(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   maxSizeGib = _messages.IntegerField(7)
   name = _messages.StringField(8)
-  originallyRequestedSizeGib = _messages.IntegerField(9)
-  pod = _messages.StringField(10)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 11)
-  remainingSpaceGib = _messages.IntegerField(12)
-  requestedSizeGib = _messages.IntegerField(13)
-  snapshotAutoDeleteBehavior = _messages.EnumField('SnapshotAutoDeleteBehaviorValueValuesEnum', 14)
-  snapshotEnabled = _messages.BooleanField(15)
-  snapshotReservationDetail = _messages.MessageField('SnapshotReservationDetail', 16)
-  snapshotSchedulePolicy = _messages.StringField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 19)
+  notes = _messages.StringField(9)
+  originallyRequestedSizeGib = _messages.IntegerField(10)
+  performanceTier = _messages.EnumField('PerformanceTierValueValuesEnum', 11)
+  pod = _messages.StringField(12)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 13)
+  remainingSpaceGib = _messages.IntegerField(14)
+  requestedSizeGib = _messages.IntegerField(15)
+  snapshotAutoDeleteBehavior = _messages.EnumField('SnapshotAutoDeleteBehaviorValueValuesEnum', 16)
+  snapshotEnabled = _messages.BooleanField(17)
+  snapshotReservationDetail = _messages.MessageField('SnapshotReservationDetail', 18)
+  snapshotSchedulePolicy = _messages.StringField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 21)
 
 
 class VolumeConfig(_messages.Message):
   r"""Configuration parameters for a new volume.
 
   Enums:
+    PerformanceTierValueValuesEnum: Performance tier of the Volume. Default is
+      SHARED.
     ProtocolValueValuesEnum: Volume protocol.
     TypeValueValuesEnum: The type of this Volume.
 
@@ -2805,6 +2829,7 @@ class VolumeConfig(_messages.Message):
       is PROTOCOL_FC.
     name: Output only. The name of the volume config.
     nfsExports: NFS exports. Set only when protocol is PROTOCOL_NFS.
+    performanceTier: Performance tier of the Volume. Default is SHARED.
     protocol: Volume protocol.
     sizeGb: The requested size of this volume, in GB.
     snapshotsEnabled: Whether snapshots should be enabled.
@@ -2812,6 +2837,18 @@ class VolumeConfig(_messages.Message):
     userNote: User note field, it can be used by customers to add additional
       information for the BMS Ops team .
   """
+
+  class PerformanceTierValueValuesEnum(_messages.Enum):
+    r"""Performance tier of the Volume. Default is SHARED.
+
+    Values:
+      VOLUME_PERFORMANCE_TIER_UNSPECIFIED: Value is not specified.
+      VOLUME_PERFORMANCE_TIER_SHARED: Regular volumes, shared aggregates.
+      VOLUME_PERFORMANCE_TIER_DEDICATED: Dedicated (assigned) aggregates.
+    """
+    VOLUME_PERFORMANCE_TIER_UNSPECIFIED = 0
+    VOLUME_PERFORMANCE_TIER_SHARED = 1
+    VOLUME_PERFORMANCE_TIER_DEDICATED = 2
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""Volume protocol.
@@ -2843,11 +2880,12 @@ class VolumeConfig(_messages.Message):
   machineIds = _messages.StringField(4, repeated=True)
   name = _messages.StringField(5)
   nfsExports = _messages.MessageField('NfsExport', 6, repeated=True)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 7)
-  sizeGb = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  snapshotsEnabled = _messages.BooleanField(9)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
-  userNote = _messages.StringField(11)
+  performanceTier = _messages.EnumField('PerformanceTierValueValuesEnum', 7)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 8)
+  sizeGb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  snapshotsEnabled = _messages.BooleanField(10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  userNote = _messages.StringField(12)
 
 
 class VolumeLunRange(_messages.Message):

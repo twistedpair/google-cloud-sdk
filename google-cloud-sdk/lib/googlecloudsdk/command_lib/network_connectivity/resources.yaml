@@ -102,3 +102,28 @@ policyBasedRoute:
     parameter_name: policyBasedRoutesId
     attribute_name: policy_based_route
     help: Id of the policy based route.
+
+routeTable:
+  name: route table
+  collection: networkconnectivity.projects.locations.global.hubs.routeTables
+  request_id_field: routeTablesId
+  attributes:
+  - *project
+  - *hub
+  - &routeTable
+    parameter_name: routeTablesId
+    attribute_name: route_table
+    help: Id of the route table.
+
+route:
+  name: route
+  collection: networkconnectivity.projects.locations.global.hubs.routeTables.routes
+  request_id_field: routesId
+  attributes:
+  - *project
+  - *hub
+  - *routeTable
+  - &route
+    parameter_name: routesId
+    attribute_name: route
+    help: Id of the route.

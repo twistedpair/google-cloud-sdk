@@ -86,7 +86,8 @@ def ClearSingleEndpointAttr(patch_request, endpoint_type, endpoint_name):
   test = patch_request.connectivityTest
   endpoint = getattr(test, endpoint_type)
   endpoint_fields = {
-      "instance", "ipAddress", "gkeMasterCluster", "cloudSqlInstance"
+      "instance", "ipAddress", "gkeMasterCluster", "cloudSqlInstance",
+      "cloudFunction"
   }
   non_empty_endpoint_fields = 0
   for field in endpoint_fields:
@@ -103,6 +104,8 @@ def ClearSingleEndpointAttr(patch_request, endpoint_type, endpoint_name):
     endpoints = [
         "instance", "ip-address", "gke-master-cluster", "cloud-sql-instance"
     ]
+    if endpoint_type == "source":
+      endpoints.append("cloud-function")
     raise InvalidInputError(
         GetClearSingleEndpointAttrErrorMsg(endpoints, endpoint_type))
 
@@ -114,6 +117,7 @@ def ClearEndpointAttrs(unused_ref, args, patch_request):
       ("clear_source_ip_address", "source", "ipAddress"),
       ("clear_source_gke_master_cluster", "source", "gkeMasterCluster"),
       ("clear_source_cloud_sql_instance", "source", "cloudSqlInstance"),
+      ("clear_source_cloud_function", "source", "cloudFunction"),
       ("clear_destination_instance", "destination", "instance"),
       ("clear_destination_ip_address", "destination", "ipAddress"),
       ("clear_destination_gke_master_cluster", "destination",

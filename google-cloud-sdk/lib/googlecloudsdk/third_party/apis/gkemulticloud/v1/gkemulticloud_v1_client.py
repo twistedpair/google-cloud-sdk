@@ -142,6 +142,33 @@ class GkemulticloudV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Import(self, request, global_params=None):
+      r"""Imports creates a new AttachedCluster resource by importing an existing Fleet Membership resource. Attached Clusters created before the introduction of the Anthos Multi-Cloud API can be imported through this method. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
+
+      Args:
+        request: (GkemulticloudProjectsLocationsAttachedClustersImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/attachedClusters:import',
+        http_method='POST',
+        method_id='gkemulticloud.projects.locations.attachedClusters.import',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/attachedClusters:import',
+        request_field='googleCloudGkemulticloudV1ImportAttachedClusterRequest',
+        request_type_name='GkemulticloudProjectsLocationsAttachedClustersImportRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists all AttachedCluster resources on a given Google Cloud project and region.
 
@@ -1228,6 +1255,33 @@ class GkemulticloudV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest',
         response_type_name='GoogleCloudGkemulticloudV1GenerateAttachedClusterInstallManifestResponse',
+        supports_download=False,
+    )
+
+    def GetAttachedServerConfig(self, request, global_params=None):
+      r"""Returns information, such as supported Kubernetes versions, on a given Google Cloud location.
+
+      Args:
+        request: (GkemulticloudProjectsLocationsGetAttachedServerConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudGkemulticloudV1AttachedServerConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetAttachedServerConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAttachedServerConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/attachedServerConfig',
+        http_method='GET',
+        method_id='gkemulticloud.projects.locations.getAttachedServerConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='GkemulticloudProjectsLocationsGetAttachedServerConfigRequest',
+        response_type_name='GoogleCloudGkemulticloudV1AttachedServerConfig',
         supports_download=False,
     )
 

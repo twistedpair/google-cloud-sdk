@@ -88,6 +88,24 @@ class GkemulticloudProjectsLocationsAttachedClustersGetRequest(_messages.Message
   name = _messages.StringField(1, required=True)
 
 
+class GkemulticloudProjectsLocationsAttachedClustersImportRequest(_messages.Message):
+  r"""A GkemulticloudProjectsLocationsAttachedClustersImportRequest object.
+
+  Fields:
+    googleCloudGkemulticloudV1ImportAttachedClusterRequest: A
+      GoogleCloudGkemulticloudV1ImportAttachedClusterRequest resource to be
+      passed as the request body.
+    parent: Required. The parent location where this AttachedCluster resource
+      will be created. Location names are formatted as `projects//locations/`.
+      See [Resource
+      Names](https://cloud.google.com/apis/design/resource_names) for more
+      details on Google Cloud resource names.
+  """
+
+  googleCloudGkemulticloudV1ImportAttachedClusterRequest = _messages.MessageField('GoogleCloudGkemulticloudV1ImportAttachedClusterRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class GkemulticloudProjectsLocationsAttachedClustersListRequest(_messages.Message):
   r"""A GkemulticloudProjectsLocationsAttachedClustersListRequest object.
 
@@ -818,6 +836,20 @@ class GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestReques
   platformVersion = _messages.StringField(3)
 
 
+class GkemulticloudProjectsLocationsGetAttachedServerConfigRequest(_messages.Message):
+  r"""A GkemulticloudProjectsLocationsGetAttachedServerConfigRequest object.
+
+  Fields:
+    name: Required. The name of the AttachedServerConfig resource to describe.
+      `AttachedServerConfig` names are formatted as
+      `projects//locations//attachedServerConfig`. See [Resource
+      Names](https://cloud.google.com/apis/design/resource_names) for more
+      details on Google Cloud resource names.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class GkemulticloudProjectsLocationsGetAwsServerConfigRequest(_messages.Message):
   r"""A GkemulticloudProjectsLocationsGetAwsServerConfigRequest object.
 
@@ -920,9 +952,13 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
       alphanumerics, with dashes (-), underscores (_), dots (.), and
       alphanumerics between.
     authority: Authority configuration.
+    authorization: Optional. Configuration related to the cluster RBAC
+      settings.
     createTime: Output only. The time at which this cluster was registered.
     description: Optional. A human readable description of this cluster.
       Cannot be longer than 255 UTF-8 encoded bytes.
+    distribution: Required. The Kubernetes distribution of the underlying
+      attached cluster. Supported values: ["eks", "aks"].
     errors: Output only. A set of errors found in the cluster.
     etag: Allows clients to perform consistent read-modify-writes through
       optimistic concurrency control. Can be sent on update and delete
@@ -1004,20 +1040,22 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   authority = _messages.MessageField('GoogleCloudGkemulticloudV1Authority', 2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClusterError', 5, repeated=True)
-  etag = _messages.StringField(6)
-  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 7)
-  kubernetesVersion = _messages.StringField(8)
-  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 9)
-  name = _messages.StringField(10)
-  platformVersion = _messages.StringField(11)
-  reconciling = _messages.BooleanField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 16)
+  authorization = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClustersAuthorization', 3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  distribution = _messages.StringField(6)
+  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClusterError', 7, repeated=True)
+  etag = _messages.StringField(8)
+  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 9)
+  kubernetesVersion = _messages.StringField(10)
+  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 11)
+  name = _messages.StringField(12)
+  platformVersion = _messages.StringField(13)
+  reconciling = _messages.BooleanField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 18)
 
 
 class GoogleCloudGkemulticloudV1AttachedClusterError(_messages.Message):
@@ -1030,17 +1068,65 @@ class GoogleCloudGkemulticloudV1AttachedClusterError(_messages.Message):
   message = _messages.StringField(1)
 
 
+class GoogleCloudGkemulticloudV1AttachedClusterUser(_messages.Message):
+  r"""Identities of a user-type subject for Attached clusters.
+
+  Fields:
+    username: Required. The name of the user, e.g. `my-gcp-id@gmail.com`.
+  """
+
+  username = _messages.StringField(1)
+
+
+class GoogleCloudGkemulticloudV1AttachedClustersAuthorization(_messages.Message):
+  r"""Configuration related to the cluster RBAC settings.
+
+  Fields:
+    adminUsers: Required. Users that can perform operations as a cluster
+      admin. A managed ClusterRoleBinding will be created to grant the
+      `cluster-admin` ClusterRole to the users. Up to ten admin users can be
+      provided. For more info on RBAC, see
+      https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-
+      facing-roles
+  """
+
+  adminUsers = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClusterUser', 1, repeated=True)
+
+
+class GoogleCloudGkemulticloudV1AttachedPlatformVersionInfo(_messages.Message):
+  r"""Information about a supported Attached Clusters platform version.
+
+  Fields:
+    version: Platform version name.
+  """
+
+  version = _messages.StringField(1)
+
+
+class GoogleCloudGkemulticloudV1AttachedServerConfig(_messages.Message):
+  r"""AttachedServerConfig provides information about supported Kubernetes
+  versions
+
+  Fields:
+    name: The resource name of the config.
+    validVersions: List of valid platform versions.
+  """
+
+  name = _messages.StringField(1)
+  validVersions = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedPlatformVersionInfo', 2, repeated=True)
+
+
 class GoogleCloudGkemulticloudV1Authority(_messages.Message):
   r"""OIDC discovery information of the target cluster.
 
   Fields:
     issuerUrl: A JSON Web Token (JWT) issuer URI. `issuer` must start with
       `https://`.
-    oidcJwks: OIDC verification keys in JWKS format (RFC 7517). It contains a
-      list of OIDC verification keys that can be used to verify OIDC JWTs.
-      This is useful for cluster that doesn't have a publicly available
-      discovery endpoint. When provided, it will be directly used to verify
-      the OIDC JWT asserted by the IDP.
+    oidcJwks: Optional. OIDC verification keys in JWKS format (RFC 7517). It
+      contains a list of OIDC verification keys that can be used to verify
+      OIDC JWTs. This is useful for cluster that doesn't have a publicly
+      available discovery endpoint. When provided, it will be directly used to
+      verify the OIDC JWT asserted by the IDP.
   """
 
   issuerUrl = _messages.StringField(1)
@@ -2622,6 +2708,27 @@ class GoogleCloudGkemulticloudV1GenerateAzureAccessTokenResponse(_messages.Messa
 
   accessToken = _messages.StringField(1)
   expirationTime = _messages.StringField(2)
+
+
+class GoogleCloudGkemulticloudV1ImportAttachedClusterRequest(_messages.Message):
+  r"""Request message for `AttachedClusters.ImportAttachedCluster` method.
+
+  Fields:
+    distribution: Required. The Kubernetes distribution of the underlying
+      attached cluster. Supported values: ["eks", "aks"].
+    fleetMembership: Required. The name of the fleet membership resource to
+      import.
+    platformVersion: Required. The platform version for the cluster (e.g.
+      `1.19.0-gke.1000`). You can list all supported versions on a given
+      Google Cloud region by calling GetAttachedServerConfig.
+    validateOnly: If set, only validate the request, but do not actually
+      import the cluster.
+  """
+
+  distribution = _messages.StringField(1)
+  fleetMembership = _messages.StringField(2)
+  platformVersion = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class GoogleCloudGkemulticloudV1Jwk(_messages.Message):

@@ -19,10 +19,25 @@ from __future__ import unicode_literals
 
 import argparse
 
+from googlecloudsdk.command_lib.container.fleet import api_util
 from googlecloudsdk.command_lib.container.fleet import resources
 from googlecloudsdk.command_lib.container.fleet.features import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.console import console_io
+
+
+ENFORCEMENT_ACTION_LABEL_MAP = {
+    'ENFORCEMENT_ACTION_UNSPECIFIED': 'UNSPECIFIED',
+    'ENFORCEMENT_ACTION_DENY': 'DENY',
+    'ENFORCEMENT_ACTION_DRYRUN': 'DRYRUN',
+    'ENFORCEMENT_ACTION_WARN': 'WARN'
+}
+
+
+def get_enforcement_action_label(enforcement_action):
+  if enforcement_action in ENFORCEMENT_ACTION_LABEL_MAP:
+    return ENFORCEMENT_ACTION_LABEL_MAP[enforcement_action]
+  return ENFORCEMENT_ACTION_LABEL_MAP['ENFORCEMENT_ACTION_UNSPECIFIED']
 
 
 def select_memberships(args):
@@ -72,7 +87,7 @@ def select_memberships_full(args):
     memberships: A list of membership name strings
   """
   memberships = []
-  all_memberships, _ = base.ListMembershipsFull()
+  all_memberships, _ = api_util.ListMembershipsFull()
   if not all_memberships:
     raise exceptions.Error('A membership is required for this command.')
 

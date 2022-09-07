@@ -19,8 +19,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.core import properties
 
 _DETAILED_SOURCE_SNAPSHOT_HELP = """\
       Source snapshot used to create the disks. It is safe to
@@ -158,6 +160,30 @@ def AddMultiWriterFlag(parser):
       see
       https://cloud.google.com/compute/docs/disks/sharing-disks-between-vms.
       """)
+
+
+def AddStopGroupAsyncReplicationArgs(parser):
+  """Adds stop group async replication specific arguments to parser."""
+  parser.add_argument(
+      'DISK_CONSISTENCY_GROUP_POLICY',
+      help='URL of the disk consistency group resource policy. The resource'
+           'policy is always in the region of the primary disks.'
+  )
+
+  help_text = '{0} of the consistency group\'s primary or secondary disks. {1}'
+  scope_parser = parser.add_mutually_exclusive_group()
+  scope_parser.add_argument(
+      '--zone',
+      completer=compute_completers.ZonesCompleter,
+      action=actions.StoreProperty(properties.VALUES.compute.zone),
+      help=help_text.format('Zone', compute_flags.ZONE_PROPERTY_EXPLANATION))
+  scope_parser.add_argument(
+      '--region',
+      completer=compute_completers.RegionsCompleter,
+      action=actions.StoreProperty(properties.VALUES.compute.region),
+      help=help_text.format(
+          'Region',
+          compute_flags.REGION_PROPERTY_EXPLANATION))
 
 
 def AddProvisionedIopsFlag(parser, arg_parsers, constants):

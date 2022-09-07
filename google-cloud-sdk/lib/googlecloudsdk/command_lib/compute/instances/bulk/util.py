@@ -41,7 +41,7 @@ class SupportedFeatures:
                support_local_ssd_size, support_secure_tags,
                support_host_error_timeout_seconds, support_numa_node_count,
                support_visible_core_count, support_max_run_duration,
-               support_enable_target_shape):
+               support_enable_target_shape, support_confidential_compute_type):
     self.support_rsa_encrypted = support_rsa_encrypted
     self.support_secure_tags = support_secure_tags
     self.support_erase_vss = support_erase_vss
@@ -62,6 +62,7 @@ class SupportedFeatures:
     self.support_visible_core_count = support_visible_core_count
     self.support_max_run_duration = support_max_run_duration
     self.support_enable_target_shape = support_enable_target_shape
+    self.support_confidential_compute_type = support_confidential_compute_type
 
 
 def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
@@ -170,7 +171,10 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
   if supported_features.support_confidential_compute:
     confidential_instance_config = (
         create_utils.BuildConfidentialInstanceConfigMessage(
-            messages=compute_client.messages, args=args))
+            messages=compute_client.messages,
+            args=args,
+            support_confidential_compute_type=supported_features
+            .support_confidential_compute_type))
 
     confidential_vm = (
         args.IsSpecified('confidential_compute') and args.confidential_compute)

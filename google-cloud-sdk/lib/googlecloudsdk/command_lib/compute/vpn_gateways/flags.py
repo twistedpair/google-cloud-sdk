@@ -115,7 +115,7 @@ def GetInterconnectAttachmentsFlag():
       help="""\
       Names of interconnect attachments (VLAN attachments) associated with the
       VPN gateway interfaces. You must specify this field when using a VPN gateway
-      for IPsec-encrypted Cloud Interconnect. Otherwise, this field is optional.
+      for HA VPN over Cloud Interconnect. Otherwise, this field is optional.
 
       For example,
       `--interconnect-attachments attachment-a-zone1,attachment-a-zone2`

@@ -443,10 +443,12 @@ class Binding(_messages.Message):
       identifier that represents anyone who is on the internet; with or
       without a Google account. allAuthenticatedUsers: A special identifier
       that represents anyone who is authenticated with a Google account or a
-      service account. user:{emailid}: An email address that represents a
-      specific Google account. For example, alice@example.com .
-      serviceAccount:{emailid}: An email address that represents a Google
-      service account. For example, my-other-app@appspot.gserviceaccount.com.
+      service account. Does not include identities that come from external
+      identity providers (IdPs) through identity federation. user:{emailid}:
+      An email address that represents a specific Google account. For example,
+      alice@example.com . serviceAccount:{emailid}: An email address that
+      represents a Google service account. For example, my-other-
+      app@appspot.gserviceaccount.com.
       serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]: An
       identifier for a Kubernetes service account
       (https://cloud.google.com/kubernetes-engine/docs/how-to/kubernetes-
@@ -1679,6 +1681,108 @@ class DataprocProjectsRegionsClustersDiagnoseRequest(_messages.Message):
   region = _messages.StringField(4, required=True)
 
 
+class DataprocProjectsRegionsClustersGceNodePoolsCreateRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersGceNodePoolsCreateRequest object.
+
+  Fields:
+    gceNodePool: A GceNodePool resource to be passed as the request body.
+    gceNodePoolId: Optional. An optional Compute Engine node pool id.
+      Generated if not specified.The id must contain only letters (a-z, A-Z),
+      numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end
+      with underscore or hyphen. Must consist of between 3 and 33 characters.
+    parent: Required. The parent resource where this Compute Engine node pool
+      will be created. Format:
+      projects/{project}/regions/{region}/clusters/{cluster}
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two CreateGceNodePoolRequest (https://cloud.google.com/d
+      ataproc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.datapro
+      c.v1.CreateGceNodePoolRequest)s with the same id, then the second
+      request will be ignored and the first google.longrunning.Operation
+      created and stored in the backend is returned.It is recommended to
+      always set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The ID
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  gceNodePool = _messages.MessageField('GceNodePool', 1)
+  gceNodePoolId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class DataprocProjectsRegionsClustersGceNodePoolsDeleteRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersGceNodePoolsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the Compute Engine node pool to delete.
+      Format: projects/{project}/regions/{region}/clusters/{cluster}/gceNodePo
+      ols/{gceNodePool}
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two DeleteGceNodePoolRequest (https://cloud.google.com/d
+      ataproc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.datapro
+      c.v1.DeleteGceNodePoolRequest)s with the same id, then the second
+      request will be ignored and the first google.longrunning.Operation
+      created and stored in the backend is returned.It is recommended to
+      always set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The ID
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class DataprocProjectsRegionsClustersGceNodePoolsGetRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersGceNodePoolsGetRequest object.
+
+  Fields:
+    name: Required. The name of the Compute Engine node pool to retrieve.
+      Format: projects/{project}/regions/{region}/clusters/{cluster}/gceNodePo
+      ols/{gceNodePool}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsRegionsClustersGceNodePoolsListRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersGceNodePoolsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of node pools to return. The service may
+      return fewer than this value. If unspecified, at most 50 node pools will
+      be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: A page token, received from a previous ListGceNodePools call.
+      Provide this to retrieve the subsequent page.When paginating, all other
+      parameters provided to ListGceNodePools must match the call that
+      provided the page token.
+    parent: Required. The parent, which owns this collection of Compute Engine
+      node pools. Format:
+      projects/{project}/regions/{region}/clusters/{cluster}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DataprocProjectsRegionsClustersGceNodePoolsResizeRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersGceNodePoolsResizeRequest object.
+
+  Fields:
+    name: Required. The name of the Compute Engine node pool to resize.
+      Format: projects/{project}/regions/{region}/clusters/{cluster}/gceNodePo
+      ols/{gceNodePool}
+    resizeGceNodePoolRequest: A ResizeGceNodePoolRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resizeGceNodePoolRequest = _messages.MessageField('ResizeGceNodePoolRequest', 2)
+
+
 class DataprocProjectsRegionsClustersGetClusterAsTemplateRequest(_messages.Message):
   r"""A DataprocProjectsRegionsClustersGetClusterAsTemplateRequest object.
 
@@ -2880,6 +2984,78 @@ class GceNodePool(_messages.Message):
   roles = _messages.EnumField('RolesValueListEntryValuesEnum', 4, repeated=True)
 
 
+class GceNodePoolOperationMetadata(_messages.Message):
+  r"""Metadata describing the Compute Engine node pool operation.
+
+  Enums:
+    OperationTypeValueValuesEnum: The operation type.
+
+  Messages:
+    LabelsValue: Output only. Labels associated with the operation
+
+  Fields:
+    clusterUuid: Output only. Cluster UUID associated with the Compute Engine
+      node pool operation.
+    description: Output only. Short description of operation.
+    gceNodePoolId: Output only. Compute Engine node pool ID for the operation.
+    labels: Output only. Labels associated with the operation
+    operationType: The operation type.
+    status: Output only. Current operation status.
+    statusHistory: Output only. The previous operation status.
+    warnings: Output only. Errors encountered during operation execution.
+  """
+
+  class OperationTypeValueValuesEnum(_messages.Enum):
+    r"""The operation type.
+
+    Values:
+      GCE_NODE_POOL_OPERATION_TYPE_UNSPECIFIED: Compute Engine node pool
+        operation type is unknown.
+      CREATE: Create Compute Engine node pool operation type.
+      UPDATE: Update Compute Engine node pool operation type.
+      DELETE: Delete Compute Engine node pool operation type.
+      RESIZE: Resize Compute Engine node pool operation type.
+    """
+    GCE_NODE_POOL_OPERATION_TYPE_UNSPECIFIED = 0
+    CREATE = 1
+    UPDATE = 2
+    DELETE = 3
+    RESIZE = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Output only. Labels associated with the operation
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clusterUuid = _messages.StringField(1)
+  description = _messages.StringField(2)
+  gceNodePoolId = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
+  status = _messages.MessageField('ClusterOperationStatus', 6)
+  statusHistory = _messages.MessageField('ClusterOperationStatus', 7, repeated=True)
+  warnings = _messages.StringField(8, repeated=True)
+
+
 class GetIamPolicyRequest(_messages.Message):
   r"""Request message for GetIamPolicy method.
 
@@ -3598,6 +3774,7 @@ class Job(_messages.Message):
       status information may be contained in the type_job and
       yarn_applications fields.
     statusHistory: Output only. The previous job status.
+    trinoJob: Optional. Job is a Trino job.
     yarnApplications: Output only. The collection of YARN applications spun up
       by this job.Beta Feature: This report is available for testing purposes
       only. It may be changed before final release.
@@ -3652,7 +3829,8 @@ class Job(_messages.Message):
   sparkSqlJob = _messages.MessageField('SparkSqlJob', 18)
   status = _messages.MessageField('JobStatus', 19)
   statusHistory = _messages.MessageField('JobStatus', 20, repeated=True)
-  yarnApplications = _messages.MessageField('YarnApplication', 21, repeated=True)
+  trinoJob = _messages.MessageField('TrinoJob', 21)
+  yarnApplications = _messages.MessageField('YarnApplication', 22, repeated=True)
 
 
 class JobMetadata(_messages.Message):
@@ -4101,6 +4279,19 @@ class ListClustersResponse(_messages.Message):
   """
 
   clusters = _messages.MessageField('Cluster', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListGceNodePoolsResponse(_messages.Message):
+  r"""A response to list the Compute Engine node pools in a given cluster.
+
+  Fields:
+    gceNodePools: The node pools from the specified cluster.
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  gceNodePools = _messages.MessageField('GceNodePool', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -4650,6 +4841,7 @@ class OrderedJob(_messages.Message):
       other steps.The id must contain only letters (a-z, A-Z), numbers (0-9),
       underscores (_), and hyphens (-). Cannot begin or end with underscore or
       hyphen. Must consist of between 3 and 50 characters.
+    trinoJob: Optional. Job is a Trino job.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -4693,6 +4885,7 @@ class OrderedJob(_messages.Message):
   sparkRJob = _messages.MessageField('SparkRJob', 10)
   sparkSqlJob = _messages.MessageField('SparkSqlJob', 11)
   stepId = _messages.StringField(12)
+  trinoJob = _messages.MessageField('TrinoJob', 13)
 
 
 class ParameterValidation(_messages.Message):
@@ -5156,6 +5349,40 @@ class ReservationAffinity(_messages.Message):
   values = _messages.StringField(3, repeated=True)
 
 
+class ResizeGceNodePoolRequest(_messages.Message):
+  r"""A request to resize a Compute Engine node pool.
+
+  Fields:
+    gracefulDecommissionTimeout: Optional. Timeout for graceful YARN
+      decomissioning. Graceful decommissioning allows removing nodes from the
+      Compute Engine timeout without interrupting jobs in progress. Timeout
+      specifies how long to wait for jobs in progress to finish before
+      forcefully removing nodes (and potentially interrupting jobs). Default
+      timeout is 0 (for forceful decommission), and the maximum allowed
+      timeout is 1 day. (see JSON representation of Duration
+      (https://developers.google.com/protocol-buffers/docs/proto3#json)).Only
+      supported on Dataproc image versions 1.2 and higher.
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two ResizeGceNodePoolRequest (https://cloud.google.com/d
+      ataproc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.datapro
+      c.v1.ResizeGceNodePoolRequest)s with the same id, then the second
+      request will be ignored and the first google.longrunning.Operation
+      created and stored in the backend is returned.It is recommended to
+      always set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The ID
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+    size: Required. The number of running instances that the node pool should
+      maintain at any given time. The group automatically adds or removes
+      instances to maintain the number of instances specified by this
+      parameter.
+  """
+
+  gracefulDecommissionTimeout = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  size = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class RuntimeConfig(_messages.Message):
   r"""Runtime configuration for a workload.
 
@@ -5213,6 +5440,8 @@ class RuntimeInfo(_messages.Message):
       interfaces and APIs) to their URIs.
 
   Fields:
+    approximateUsage: Output only. Approximate workload resource usage
+      calculated after workload finishes.
     diagnosticOutputUri: Output only. A URI pointing to the location of the
       diagnostics tarball.
     endpoints: Output only. Map of remote access endpoints (such as web
@@ -5248,10 +5477,11 @@ class RuntimeInfo(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  diagnosticOutputUri = _messages.StringField(1)
-  endpoints = _messages.MessageField('EndpointsValue', 2)
-  outputUri = _messages.StringField(3)
-  publicKeys = _messages.MessageField('PublicKeys', 4)
+  approximateUsage = _messages.MessageField('UsageMetrics', 1)
+  diagnosticOutputUri = _messages.StringField(2)
+  endpoints = _messages.MessageField('EndpointsValue', 3)
+  outputUri = _messages.StringField(4)
+  publicKeys = _messages.MessageField('PublicKeys', 5)
 
 
 class SecurityConfig(_messages.Message):
@@ -5563,6 +5793,7 @@ class SoftwareConfig(_messages.Message):
       JUPYTER: The Jupyter Notebook.
       KERBEROS: The Kerberos security feature.
       PRESTO: The Presto query engine.
+      TRINO: The Trino query engine.
       RANGER: The Ranger service.
       SOLR: The Solr service.
       ZEPPELIN: The Zeppelin notebook.
@@ -5580,12 +5811,13 @@ class SoftwareConfig(_messages.Message):
     JUPYTER = 7
     KERBEROS = 8
     PRESTO = 9
-    RANGER = 10
-    SOLR = 11
-    ZEPPELIN = 12
-    ZOOKEEPER = 13
-    DASK = 14
-    GPU_DRIVER = 15
+    TRINO = 10
+    RANGER = 11
+    SOLR = 12
+    ZEPPELIN = 13
+    ZOOKEEPER = 14
+    DASK = 15
+    GPU_DRIVER = 16
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
@@ -6319,6 +6551,79 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class TrinoJob(_messages.Message):
+  r"""A Dataproc job for running Trino (https://trino.io/) queries. IMPORTANT:
+  The Dataproc Trino Optional Component
+  (https://cloud.google.com/dataproc/docs/concepts/components/trino) must be
+  enabled when the cluster is created to submit a Trino job to the cluster.
+
+  Messages:
+    PropertiesValue: Optional. A mapping of property names to values. Used to
+      set Trino session properties (https://trino.io/docs/current/sql/set-
+      session.html) Equivalent to using the --session flag in the Trino CLI
+
+  Fields:
+    clientTags: Optional. Trino client tags to attach to this query
+    continueOnFailure: Optional. Whether to continue executing queries if a
+      query fails. The default value is false. Setting to true can be useful
+      when executing independent parallel queries.
+    loggingConfig: Optional. The runtime log config for job execution.
+    outputFormat: Optional. The format in which query output will be
+      displayed. See the Trino documentation for supported output formats
+    properties: Optional. A mapping of property names to values. Used to set
+      Trino session properties (https://trino.io/docs/current/sql/set-
+      session.html) Equivalent to using the --session flag in the Trino CLI
+    queryFileUri: The HCFS URI of the script that contains SQL queries.
+    queryList: A list of queries.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PropertiesValue(_messages.Message):
+    r"""Optional. A mapping of property names to values. Used to set Trino
+    session properties (https://trino.io/docs/current/sql/set-session.html)
+    Equivalent to using the --session flag in the Trino CLI
+
+    Messages:
+      AdditionalProperty: An additional property for a PropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type PropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clientTags = _messages.StringField(1, repeated=True)
+  continueOnFailure = _messages.BooleanField(2)
+  loggingConfig = _messages.MessageField('LoggingConfig', 3)
+  outputFormat = _messages.StringField(4)
+  properties = _messages.MessageField('PropertiesValue', 5)
+  queryFileUri = _messages.StringField(6)
+  queryList = _messages.MessageField('QueryList', 7)
+
+
+class UsageMetrics(_messages.Message):
+  r"""Usage Metrics represents the usage consumed by resource.
+
+  Fields:
+    milliDcuSeconds: Optional. DCU usage in milliDCU*seconds.
+    shuffleStorageGbSeconds: Optional. Shuffle storage usage in GB*Seconds
+  """
+
+  milliDcuSeconds = _messages.IntegerField(1)
+  shuffleStorageGbSeconds = _messages.IntegerField(2)
 
 
 class ValueValidation(_messages.Message):

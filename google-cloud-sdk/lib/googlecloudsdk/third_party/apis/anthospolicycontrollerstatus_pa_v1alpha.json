@@ -751,7 +751,8 @@
             "Policy Controller (PC) is fully installed, but in the process of changing the configuration (including changing the version of PC either up and down, or modifying the manifests of PC) of the resources running on the cluster. The Hub Feature controller has a Membership, is aware of the version the cluster should be running in, but has not confirmed for itself that the PC is running with that version.",
             "Policy Controller (PC) may have resources on the cluster, but the Hub Feature controller wishes to remove the Membership. The Membership still exists.",
             "Policy Controller (PC) is not operational, and the Hub Feature controller is unable to act to make it operational. Entering a CLUSTER_ERROR state happens automatically when the PCH determines that a PC installed on the cluster is non-operative or that the cluster does not meet requirements set for the Hub Feature controller to administer the cluster but has nevertheless been given an instruction to do so (such as \u2018install\u2019).",
-            "In this state, the PC may still be operational, and only the Hub Feature controller is unable to act. The hub should not issue instructions to change the PC state, or otherwise interfere with the on-cluster resources. Entering a HUB_ERROR state happens automatically when the Hub Feature controller determines the hub is in an unhealthy state and it wishes to \u2018take hands off\u2019 to avoid corrupting the PC or other data."
+            "In this state, the PC may still be operational, and only the Hub Feature controller is unable to act. The hub should not issue instructions to change the PC state, or otherwise interfere with the on-cluster resources. Entering a HUB_ERROR state happens automatically when the Hub Feature controller determines the hub is in an unhealthy state and it wishes to \u2018take hands off\u2019 to avoid corrupting the PC or other data.",
+            "Policy Controller (PC) is installed but suspended. This means that the policies are not enforced, but violations are still recorded (through audit)."
           ],
           "enum": [
             "LIFECYCLE_STATE_UNSPECIFIED",
@@ -761,7 +762,8 @@
             "UPDATING",
             "DECOMISSIONING",
             "CLUSTER_ERROR",
-            "HUB_ERROR"
+            "HUB_ERROR",
+            "SUSPENDED"
           ]
         }
       }
@@ -779,7 +781,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the fleet constraint template to retrieve. Format: projects\/{project_id}\/fleetConstraintTemplate\/{constraint_template_name}.",
+                  "description": "Required. The name of the fleet constraint template to retrieve. Format: projects\/{project_id}\/fleetConstraintTemplates\/{constraint_template_name}.",
                   "pattern": "^projects\/[^\/]+\/fleetConstraintTemplates\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -840,12 +842,12 @@
             "get": {
               "id": "anthospolicycontrollerstatus_pa.projects.membershipConstraintTemplates.get",
               "path": "v1alpha/{+name}",
-              "flatPath": "v1alpha/projects/{projectsId}/membershipConstraintTemplates/{membershipConstraintTemplatesId}",
+              "flatPath": "v1alpha/projects/{projectsId}/membershipConstraintTemplates/{membershipConstraintTemplatesId}/{membershipConstraintTemplatesId1}",
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the membership constraint template to retrieve. Format: projects\/{project_id}\/membershipConstraintTemplate\/{constraint_template_name}\/{membership_id}.",
-                  "pattern": "^projects\/[^\/]+\/membershipConstraintTemplates\/[^\/]+$",
+                  "description": "Required. The name of the membership constraint template to retrieve. Format: projects\/{project_id}\/membershipConstraintTemplates\/{constraint_template_name}\/{membership_id}.",
+                  "pattern": "^projects\/[^\/]+\/membershipConstraintTemplates\/[^\/]+\/[^\/]+$",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -905,12 +907,12 @@
             "get": {
               "id": "anthospolicycontrollerstatus_pa.projects.fleetConstraints.get",
               "path": "v1alpha/{+name}",
-              "flatPath": "v1alpha/projects/{projectsId}/fleetConstraints/{fleetConstraintsId}",
+              "flatPath": "v1alpha/projects/{projectsId}/fleetConstraints/{fleetConstraintsId}/{fleetConstraintsId1}",
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the fleet constraint to retrieve. Format: projects\/{project_id}\/fleetConstraint\/{constraint_template_name}\/{constraint_name}.",
-                  "pattern": "^projects\/[^\/]+\/fleetConstraints\/[^\/]+$",
+                  "description": "Required. The name of the fleet constraint to retrieve. Format: projects\/{project_id}\/fleetConstraints\/{constraint_template_name}\/{constraint_name}.",
+                  "pattern": "^projects\/[^\/]+\/fleetConstraints\/[^\/]+\/[^\/]+$",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -970,12 +972,12 @@
             "get": {
               "id": "anthospolicycontrollerstatus_pa.projects.membershipConstraints.get",
               "path": "v1alpha/{+name}",
-              "flatPath": "v1alpha/projects/{projectsId}/membershipConstraints/{membershipConstraintsId}",
+              "flatPath": "v1alpha/projects/{projectsId}/membershipConstraints/{membershipConstraintsId}/{membershipConstraintsId1}/{membershipConstraintsId2}",
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the membership constraint to retrieve. Format: projects\/{project_id}\/membershipConstraint\/{constraint_template_name}\/{constraint_name}\/{membership_id}.",
-                  "pattern": "^projects\/[^\/]+\/membershipConstraints\/[^\/]+$",
+                  "description": "Required. The name of the membership constraint to retrieve. Format: projects\/{project_id}\/membershipConstraints\/{constraint_template_name}\/{constraint_name}\/{membership_id}.",
+                  "pattern": "^projects\/[^\/]+\/membershipConstraints\/[^\/]+\/[^\/]+\/[^\/]+$",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -990,7 +992,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Retrieves status for a single constraints a a single member cluster."
+              "description": "Retrieves status for a single constraint on a single member cluster."
             },
             "list": {
               "id": "anthospolicycontrollerstatus_pa.projects.membershipConstraints.list",

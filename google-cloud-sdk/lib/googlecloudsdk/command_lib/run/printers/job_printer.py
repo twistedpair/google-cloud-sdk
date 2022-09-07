@@ -194,6 +194,10 @@ class ExecutionPrinter(cp.CustomPrinterBase):
     if record.status.completionTime is not None and record.creation_timestamp is not None:
       lines.append('Elapsed time: ' + ExecutionPrinter._elapsedTime(
           record.creation_timestamp, record.status.completionTime))
+    if record.status.logUri is not None:
+      # adding a blank line before Log URI
+      lines.append(' ')
+      lines.append('Log URI: {}'.format(record.status.logUri))
     return cp.Lines(lines)
 
   @staticmethod
@@ -214,13 +218,30 @@ class ExecutionPrinter(cp.CustomPrinterBase):
           _PluralizedWord('second', seconds))
     return _PluralizedWord('second', seconds)
 
+  @staticmethod
+  def _formatOutput(record):
+    output = []
+    header = k8s_util.BuildHeader(record)
+    status = ExecutionPrinter.TransformStatus(record)
+    labels = k8s_util.GetLabels(record.labels)
+    spec = ExecutionPrinter.TransformSpec(record)
+    ready_message = k8s_util.FormatReadyMessage(record)
+    if header:
+      output.append(header)
+    if status:
+      output.append(status)
+    output.append(' ')
+    if labels:
+      output.append(labels)
+      output.append(' ')
+    if spec:
+      output.append(spec)
+    if ready_message:
+      output.append(ready_message)
+
+    return output
+
   def Transform(self, record):
     """Transform a job into the output structure of marker classes."""
-    fmt = cp.Lines([
-        k8s_util.BuildHeader(record),
-        self.TransformStatus(record), ' ',
-        k8s_util.GetLabels(record.labels), ' ',
-        self.TransformSpec(record),
-        k8s_util.FormatReadyMessage(record)
-    ])
+    fmt = cp.Lines(self._formatOutput(record))
     return fmt

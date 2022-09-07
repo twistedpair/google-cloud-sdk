@@ -112,9 +112,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -164,11 +166,11 @@ class CDNPolicy(_messages.Message):
       requests. The default value is DISABLED, which means all content is
       public, and does not authorize access. You must also set a
       signed_request_keyset to enable signed requests. When set to
-      REQUIRE_SIGNATURES, all matching requests will have their signature
-      validated. Requests that aren't signed with the corresponding private
-      key, or that are otherwise invalid (such as expired or do not match the
-      signature, IP address, or header) are rejected with a HTTP 403. If
-      logging is turned on, then invalid requests are also logged.
+      REQUIRE_SIGNATURES or REQUIRE_TOKENS, all matching requests get their
+      signature validated. Requests that aren't signed with the corresponding
+      private key, or that are otherwise invalid (such as expired or do not
+      match the signature, IP address, or header) are rejected with a HTTP
+      403. If logging is turned on, then invalid requests are also logged.
 
   Messages:
     NegativeCachingPolicyValue: Optional. Sets a cache TTL for the specified
@@ -261,12 +263,12 @@ class CDNPolicy(_messages.Message):
     signedRequestMode: Optional. Whether to enforce signed requests. The
       default value is DISABLED, which means all content is public, and does
       not authorize access. You must also set a signed_request_keyset to
-      enable signed requests. When set to REQUIRE_SIGNATURES, all matching
-      requests will have their signature validated. Requests that aren't
-      signed with the corresponding private key, or that are otherwise invalid
-      (such as expired or do not match the signature, IP address, or header)
-      are rejected with a HTTP 403. If logging is turned on, then invalid
-      requests are also logged.
+      enable signed requests. When set to REQUIRE_SIGNATURES or
+      REQUIRE_TOKENS, all matching requests get their signature validated.
+      Requests that aren't signed with the corresponding private key, or that
+      are otherwise invalid (such as expired or do not match the signature, IP
+      address, or header) are rejected with a HTTP 403. If logging is turned
+      on, then invalid requests are also logged.
     signedTokenOptions: Optional. Additional options for signed tokens.
       `signed_token_options` may only be specified when `signed_request_mode`
       is `REQUIRE_TOKENS`.
@@ -311,11 +313,12 @@ class CDNPolicy(_messages.Message):
     r"""Optional. Whether to enforce signed requests. The default value is
     DISABLED, which means all content is public, and does not authorize
     access. You must also set a signed_request_keyset to enable signed
-    requests. When set to REQUIRE_SIGNATURES, all matching requests will have
-    their signature validated. Requests that aren't signed with the
-    corresponding private key, or that are otherwise invalid (such as expired
-    or do not match the signature, IP address, or header) are rejected with a
-    HTTP 403. If logging is turned on, then invalid requests are also logged.
+    requests. When set to REQUIRE_SIGNATURES or REQUIRE_TOKENS, all matching
+    requests get their signature validated. Requests that aren't signed with
+    the corresponding private key, or that are otherwise invalid (such as
+    expired or do not match the signature, IP address, or header) are rejected
+    with a HTTP 403. If logging is turned on, then invalid requests are also
+    logged.
 
     Values:
       SIGNED_REQUEST_MODE_UNSPECIFIED: Unspecified value. Defaults to
@@ -324,11 +327,11 @@ class CDNPolicy(_messages.Message):
       REQUIRE_SIGNATURES: Enforce signed requests using query parameter, path
         component, or cookie signatures. All requests must have a valid
         signature. Requests that are missing the signature (URL or cookie-
-        based) will be rejected as if the signature was invalid.
+        based) are rejected as if the signature was invalid.
       REQUIRE_TOKENS: Enforce signed requests using signed tokens. All
         requests must have a valid signed token. Requests that are missing a
-        signed token (URL or cookie-based) will be rejected as if the signed
-        token was invalid.
+        signed token (URL or cookie-based) are rejected as if the signed token
+        was invalid.
     """
     SIGNED_REQUEST_MODE_UNSPECIFIED = 0
     DISABLED = 1
@@ -484,19 +487,19 @@ class CDNPolicyCacheKeyPolicy(_messages.Message):
       The cookie name and cookie value of each cookie named is used as part of
       the cache key. The following limitations apply: - Must be valid RFC 6265
       "cookie-name" tokens - Are case sensitive - Cannot start with "Edge-
-      Cache-" (case insensitive) Specifying several cookies, and / or cookies
-      that have a large range of values (such as per-user) dramatically
-      impacts the cache hit rate, and may result in a higher eviction rate and
-      reduced performance. You may specify up to three cookie names.
+      Cache-" (case insensitive) Specifying several cookies or cookies that
+      have a large range of values, such as per-user, dramatically impacts the
+      cache hit rate, and may result in a higher eviction rate and reduced
+      performance. You may specify up to three cookie names.
     includedHeaderNames: Optional. Names of HTTP request headers to include in
       cache keys. The value of the header field is used as part of the cache
       key. The following limitations apply: - Header names must be valid HTTP
       RFC 7230 header field values. - Header field names are case insensitive
       - You may specify up to five header names. - To include the HTTP method,
       use `:method` Refer to the documentation for the allowed list of header
-      names. Specifying several headers, and / or headers that have a large
-      range of values (such as per-user) dramatically impacts the cache hit
-      rate, and may result in a higher eviction rate and reduced performance.
+      names. Specifying several headers or headers that have a large range of
+      values, such as per-user, dramatically impacts the cache hit rate, and
+      may result in a higher eviction rate and reduced performance.
     includedQueryParameters: Optional. Names of query string parameters to
       include in cache keys. All other parameters are excluded. Either specify
       included_query_parameters or excluded_query_parameters, not both. `&`
@@ -623,20 +626,18 @@ class EdgeCacheKeyset(_messages.Message):
       private key. Ensure that the private key is kept secret, and that only
       authorized users can add public keys to a keyset. You can rotate keys by
       appending (pushing) a new key to the list of public keys, and removing
-      any superseded keys. You must specify at least one of `public_keys` and
-      validation_shared_keys. You may specify both `public_keys` and
-      `validation_shared_keys`. The keys in `public_keys` are checked first.
-      You may specify at most 1 Google-managed public key. If you specify
-      `public_keys`, you must specify at least one key and may specify up to
-      three keys.
+      any superseded keys. You must specify `public_keys` or
+      validation_shared_keys (or both). The keys in `public_keys` are checked
+      first. You may specify no more than one Google-managed public key. If
+      you specify `public_keys`, you must specify at least one key and may
+      specify up to three keys.
     updateTime: Output only. Update timestamp in RFC3339 text format.
     validationSharedKeys: Optional. An ordered list of shared keys to use for
       validating signed requests. Shared keys are secret. Ensure that only
       authorized users can add `validation_shared_keys` to a keyset. You can
       rotate keys by appending (pushing) a new key to the list of
       `validation_shared_keys` and removing any superseded keys. You must
-      specify at least one of public_keys and `validation_shared_keys`. You
-      may specify both `public_keys` and `validation_shared_keys`. The keys in
+      specify public_keys or `validation_shared_keys` (or both). The keys in
       `public_keys` are checked first. If you specify
       `validation_shared_keys`, you must specify at least one key and may have
       up to three keys.
@@ -727,10 +728,11 @@ class EdgeCacheOrigin(_messages.Message):
       **IPv4**: `35.218.1.1` - **IPv6**: `2607:f8b0:4012:809::200e` - **Google
       Cloud Storage**: `gs://bucketname` or
       `bucketname.storage.googleapis.com` The following limitations apply to
-      fully-qualified domain names: * They must be resolvable via public DNS.
-      * They must not contain a protocol (such as `https://`). * They must not
-      contain any slashes. When providing an IP address, it must be publicly
-      routable. IPv6 addresses must not be enclosed in square brackets.
+      fully-qualified domain names: * They must be resolvable through public
+      DNS. * They must not contain a protocol (such as `https://`). * They
+      must not contain any slashes. When providing an IP address, it must be
+      publicly routable. IPv6 addresses must not be enclosed in square
+      brackets.
     port: Optional. The port to connect to the origin on. Defaults to port
       **443** for HTTP2 and HTTPS protocols, and port **80** for HTTP.
     protocol: Optional. The protocol to use to connect to the configured
@@ -787,10 +789,10 @@ class EdgeCacheOrigin(_messages.Message):
         502, 503 or 504.
       RETRIABLE_4XX: Retry for retriable 4xx response codes, which include
         HTTP 409 (Conflict) and HTTP 429 (Too Many Requests).
-      NOT_FOUND: Retry if the origin returns a HTTP 404 (Not Found). This can
+      NOT_FOUND: Retry if the origin returns an HTTP 404 (Not Found). This can
         be useful when generating video content, and the segment is not
         available yet.
-      FORBIDDEN: Retry if the origin returns a HTTP 403 (Forbidden). This can
+      FORBIDDEN: Retry if the origin returns an HTTP 403 (Forbidden). This can
         be useful for origins that return 403 (instead of 404) for missing
         content for security reasons.
     """
@@ -891,8 +893,8 @@ class EdgeCacheService(_messages.Message):
       this service. Clients who connect over HTTP (port 80) receive an HTTP
       301 response to the same URL over HTTPS (port 443). You must have at
       least one edge_ssl_certificates specified to enable this.
-    routing: Required. Defines how requests are routed, modified, cached and /
-      or which origin content is filled from.
+    routing: Required. Defines how requests are routed, modified, cached, and
+      which origin content is filled from.
     updateTime: Output only. Update timestamp in RFC3339 text format.
   """
 
@@ -1109,14 +1111,10 @@ class ExtensionChain(_messages.Message):
   extensions, to be injected in the request processing path.
 
   Messages:
-    AnnotationsValue: Optional. Unstructured key-value map holding arbitrary
-      metadata.
     LabelsValue: Optional. Set of label tags associated with the
       ExtensionChain resource.
 
   Fields:
-    annotations: Optional. Unstructured key-value map holding arbitrary
-      metadata.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
     httpExtensions: List of Extension resources that can process http
@@ -1128,31 +1126,6 @@ class ExtensionChain(_messages.Message):
       `.
     updateTime: Output only. The timestamp when the resource was updated.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AnnotationsValue(_messages.Message):
-    r"""Optional. Unstructured key-value map holding arbitrary metadata.
-
-    Messages:
-      AdditionalProperty: An additional property for a AnnotationsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AnnotationsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AnnotationsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1179,13 +1152,12 @@ class ExtensionChain(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  httpExtensions = _messages.MessageField('ExtensionChainExtension', 4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  httpExtensions = _messages.MessageField('ExtensionChainExtension', 3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class ExtensionChainExtension(_messages.Message):
@@ -1215,15 +1187,27 @@ class Gateway(_messages.Message):
       resource.
 
   Fields:
+    addresses: Optional. Zero or one IPv4-address on which the Gateway will
+      receive the traffic. When no address is provided, an IP from the
+      subnetwork is allocated This field only applies to gateways of type
+      'SECURE_WEB_GATEWAY'. Gateways of type 'OPEN_MESH' listen on 0.0.0.0.
     authorizationPolicy: Optional. A fully-qualified AuthorizationPolicy URL
       reference. Specifies how traffic is authorized. If empty, authorization
       checks are disabled.
+    certificateUrls: Optional. A fully-qualified Certificates URL reference.
+      The proxy presents a Certificate (selected based on SNI) when
+      establishing a TLS connection. This feature only applies to gateways of
+      type 'SECURE_WEB_GATEWAY'.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
     labels: Optional. Set of label tags associated with the Gateway resource.
     name: Required. Name of the Gateway resource. It matches pattern
       `projects/*/locations/*/gateways/`.
+    network: Optional. The relative resource name identifying the VPC network
+      that is using this configuration. For example:
+      `projects/*/global/networks/network-1`. Currently, this field is
+      specific to gateways of type 'SECURE_WEB_GATEWAY'.
     ports: Required. One or more port numbers (1-65535), on which the Gateway
       will receive traffic. The proxy binds to the specified ports. Gateways
       of type 'SECURE_WEB_GATEWAY' are limited to 1 port. Gateways of type
@@ -1234,10 +1218,18 @@ class Gateway(_messages.Message):
       single coniguration to the proxy/load balancer. Max length 64
       characters. Scope should start with a letter and can only have letters,
       numbers, hyphens.
+    securityPolicy: Optional. A fully-qualified SecurityPolicy URL reference.
+      Defines how a server should apply security policy to inbound (VM to
+      Proxy) initiated connections. This policy is specific to gateways of
+      type 'SECURE_WEB_GATEWAY'.
     selfLink: Output only. Server-defined URL of this resource
     serverTlsPolicy: Optional. A fully-qualified ServerTLSPolicy URL
       reference. Specifies how TLS traffic is terminated. If empty, TLS
       termination is disabled.
+    subnetwork: Optional. The relative resource name identifying the
+      subnetwork in which this SWG is allocated. For example:
+      `projects/*/regions/us-central1/subnetworks/network-1` Currently, this
+      field is specific to gateways of type 'SECURE_WEB_GATEWAY".
     type: Immutable. The type of the customer managed gateway. This field is
       required. If unspecified, an error is returned.
     updateTime: Output only. The timestamp when the resource was updated.
@@ -1283,17 +1275,22 @@ class Gateway(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  authorizationPolicy = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  ports = _messages.IntegerField(6, repeated=True, variant=_messages.Variant.INT32)
-  scope = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  serverTlsPolicy = _messages.StringField(9)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  addresses = _messages.StringField(1, repeated=True)
+  authorizationPolicy = _messages.StringField(2)
+  certificateUrls = _messages.StringField(3, repeated=True)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  ports = _messages.IntegerField(9, repeated=True, variant=_messages.Variant.INT32)
+  scope = _messages.StringField(10)
+  securityPolicy = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  serverTlsPolicy = _messages.StringField(13)
+  subnetwork = _messages.StringField(14)
+  type = _messages.EnumField('TypeValueValuesEnum', 15)
+  updateTime = _messages.StringField(16)
 
 
 class GrpcRoute(_messages.Message):
@@ -2362,9 +2359,9 @@ class InvalidateCacheRequest(_messages.Message):
       a cache tag representing the HTTP status code of the response, the MIME
       content-type, and the origin. Multiple cache tags in the same
       revalidation request are treated as Boolean `OR` - for example, `tag1 OR
-      tag2 OR tag3`. If a host and / or path are also specified, these are
-      treated as Boolean `AND` with any tags. Up to 10 tags may be specified
-      in a single invalidation request.
+      tag2 OR tag3`. If a host and path are also specified, these are treated
+      as Boolean `AND` with any tags. Up to 10 tags may be specified in a
+      single invalidation request.
     host: The hostname to invalidate against. You can specify an exact or
       wildcard host based on the host component. For example,
       `video.example.com` or `*.example.com`.
@@ -2785,9 +2782,9 @@ class MatchRule(_messages.Message):
       path of the request must exactly match the value specified in
       `full_path_match` after removing any query parameters and anchor that
       may be part of the original URL. `full_path_match` must begin with a
-      `/`. The value must be between 1 and 1024 characters, (inclusive).
-      Exactly one of prefix_match, `full_path_match`, or path_template_match
-      must be specified.
+      `/`. The value must be between 1 and 1024 characters, (inclusive). One
+      of prefix_match, `full_path_match`, or path_template_match must be
+      specified.
     headerMatches: Optional. Specifies a list of HeaderMatch criteria, all of
       which must match corresponding headers in the request. You may specify
       up to 3 headers to match on.
@@ -2799,13 +2796,13 @@ class MatchRule(_messages.Message):
       that may be part of the original URL. `path_template_match` must be
       between 1 and 255 characters (inclusive). The pattern specified by
       `path_template_match` may have at most 5 wildcard operators and at most
-      5 variable captures in total. Exactly one of prefix_match,
-      full_path_match, or `path_template_match` must be specified.
+      5 variable captures in total. One of prefix_match, full_path_match, or
+      `path_template_match` must be specified.
     prefixMatch: Optional. For satisfying the `MatchRule` condition, the
       request's path must begin with the specified `prefix_match`.
       `prefix_match` must begin with a `/`. The value must be between 1 and
-      1024 characters (inclusive). Exactly one of `prefix_match`,
-      full_path_match, or path_template_match must be specified.
+      1024 characters (inclusive). One of `prefix_match`, full_path_match, or
+      path_template_match must be specified.
     queryParameterMatches: Optional. Specifies a list of QueryParameterMatcher
       criteria, all of which must match corresponding query parameters in the
       request. You may specify up to 5 query parameters to match on.
@@ -5565,12 +5562,11 @@ class PublicKey(_messages.Message):
       means the first character must be a letter, and all following characters
       must be a dash, underscore, letter or digit.
     managed: Optional. Set to true to have the CDN automatically manage this
-      public key value. Exactly one of value or managed may be specified.
+      public key value. Either `value` or `managed` must be specified.
     value: Optional. The base64-encoded value of the Ed25519 public key. The
       base64 encoding can be padded (44 bytes) or unpadded (43 bytes).
       Representations or encodings of the public key other than this are
-      rejected with an error. Exactly one of value or managed must be
-      specified.
+      rejected with an error. Either `value` or `managed` must be specified.
   """
 
   id = _messages.StringField(1)
@@ -5592,7 +5588,7 @@ class QueryParameterMatcher(_messages.Message):
       fails. The name must be specified and be between 1 and 32 characters
       long (inclusive).
     presentMatch: Optional. Specifies that the QueryParameterMatcher matches
-      if the request contains the query parameter. The match can success as
+      if the request contains the query parameter. The match can succeed as
       long as the request contains the query parameter, regardless of whether
       the parameter has a value or not. Only one of `present_match` or
       exact_match must be set.
@@ -5615,7 +5611,7 @@ class RouteAction(_messages.Message):
     urlRewrite: Optional. The URL rewrite configuration for requests that
       match this route.
     wasmAction: Optional. Reference to a WasmAction resource in the format:
-      projects/{project}/locations/{location}/wasmActions/{wasm_action}
+      `projects/{project}/locations/{location}/wasmActions/{wasm_action}`
   """
 
   cdnPolicy = _messages.MessageField('CDNPolicy', 1)
@@ -5669,7 +5665,7 @@ class RouteRule(_messages.Message):
 
 
 class Routing(_messages.Message):
-  r"""Defines how requests are routed, modified, cached and / or which origin
+  r"""Defines how requests are routed, modified, cached, and which origin
   content is filled from.
 
   Fields:
@@ -6177,7 +6173,7 @@ class Timeout(_messages.Message):
 
   Fields:
     connectTimeout: Optional. The maximum duration to wait for a single origin
-      connection to be established, including DNS lookup, TLS handshake and
+      connection to be established, including DNS lookup, TLS handshake, and
       TCP/QUIC connection establishment. Defaults to 5 seconds. The timeout
       must be a value between 1s and 15s. The `connect_timeout` capped by the
       deadline set by the request's max_attempts_timeout. The last connection
@@ -6427,14 +6423,10 @@ class WasmAction(_messages.Message):
   created, a WasmAction cannot change its reference to a WasmPlugin.
 
   Messages:
-    AnnotationsValue: Optional. Unstructured key-value map holding arbitrary
-      metadata.
     LabelsValue: Optional. Set of label tags associated with the WasmAction
       resource.
 
   Fields:
-    annotations: Optional. Unstructured key-value map holding arbitrary
-      metadata.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
     labels: Optional. Set of label tags associated with the WasmAction
@@ -6446,31 +6438,6 @@ class WasmAction(_messages.Message):
       resource to execute in format:
       projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AnnotationsValue(_messages.Message):
-    r"""Optional. Unstructured key-value map holding arbitrary metadata.
-
-    Messages:
-      AdditionalProperty: An additional property for a AnnotationsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AnnotationsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AnnotationsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -6496,13 +6463,12 @@ class WasmAction(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
-  wasmPlugin = _messages.StringField(7)
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+  wasmPlugin = _messages.StringField(6)
 
 
 class WasmPlugin(_messages.Message):
@@ -6510,14 +6476,10 @@ class WasmPlugin(_messages.Message):
   provided Wasm module.
 
   Messages:
-    AnnotationsValue: Optional. Unstructured key-value map holding arbitrary
-      metadata.
     LabelsValue: Optional. Set of label tags associated with the WasmPlugin
       resource.
 
   Fields:
-    annotations: Optional. Unstructured key-value map holding arbitrary
-      metadata.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
     labels: Optional. Set of label tags associated with the WasmPlugin
@@ -6538,31 +6500,6 @@ class WasmPlugin(_messages.Message):
       `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}`.
     updateTime: Output only. The timestamp when the resource was updated.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AnnotationsValue(_messages.Message):
-    r"""Optional. Unstructured key-value map holding arbitrary metadata.
-
-    Messages:
-      AdditionalProperty: An additional property for a AnnotationsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AnnotationsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AnnotationsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -6588,15 +6525,14 @@ class WasmPlugin(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  logConfig = _messages.MessageField('WasmPluginLogConfig', 5)
-  mainVersionDetails = _messages.MessageField('WasmPluginVersionDetails', 6)
-  mainVersionId = _messages.StringField(7)
-  name = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  logConfig = _messages.MessageField('WasmPluginLogConfig', 4)
+  mainVersionDetails = _messages.MessageField('WasmPluginVersionDetails', 5)
+  mainVersionId = _messages.StringField(6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class WasmPluginLogConfig(_messages.Message):
@@ -6621,14 +6557,10 @@ class WasmPluginVersion(_messages.Message):
   r"""A single immutable version of a WasmPlugin (code + runtime config).
 
   Messages:
-    AnnotationsValue: Optional. Unstructured key-value map holding arbitrary
-      metadata.
     LabelsValue: Optional. Set of label tags associated with the
       WasmPluginVersion resource.
 
   Fields:
-    annotations: Optional. Unstructured key-value map holding arbitrary
-      metadata.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
     imageDigest: Output only. The resolved digest for the image specified in
@@ -6651,31 +6583,6 @@ class WasmPluginVersion(_messages.Message):
       proxy_on_configure Proxy-Wasm ABI.
     updateTime: Output only. The timestamp when the resource was updated.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AnnotationsValue(_messages.Message):
-    r"""Optional. Unstructured key-value map holding arbitrary metadata.
-
-    Messages:
-      AdditionalProperty: An additional property for a AnnotationsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AnnotationsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AnnotationsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -6702,15 +6609,14 @@ class WasmPluginVersion(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  imageDigest = _messages.StringField(4)
-  imageUri = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  proxyWasmPluginConfig = _messages.BytesField(8)
-  updateTime = _messages.StringField(9)
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  imageDigest = _messages.StringField(3)
+  imageUri = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  proxyWasmPluginConfig = _messages.BytesField(7)
+  updateTime = _messages.StringField(8)
 
 
 class WasmPluginVersionDetails(_messages.Message):

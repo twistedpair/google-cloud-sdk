@@ -1075,6 +1075,13 @@
           "items": {
             "$ref": "BgpPeerStatus"
           }
+        },
+        "staticRouteStatus": {
+          "description": "A list of RouteStatus, descsribing all the northbound route advertisements related to this router.",
+          "type": "array",
+          "items": {
+            "$ref": "RouteStatus"
+          }
         }
       }
     },
@@ -1165,6 +1172,41 @@
         }
       }
     },
+    "RouteStatus": {
+      "id": "RouteStatus",
+      "description": "RouteStatus contains fields corresponding to metrics related to the custom northbound static routes advertised on the router.",
+      "type": "object",
+      "properties": {
+        "vrf": {
+          "description": "Name of the VRF of which this route is part.",
+          "type": "string"
+        },
+        "prefix": {
+          "description": "Advertised prefix (CIDR format).",
+          "type": "string"
+        },
+        "nextHop": {
+          "description": "Next hop for this route (IP address).",
+          "type": "string"
+        },
+        "object": {
+          "description": "IP SLA tracking object that is monitoring the next hop IP address validity and installation of static route in RIB (route information base).",
+          "type": "string"
+        },
+        "objectResolved": {
+          "description": "Whether the next hop is reachable or not.",
+          "type": "boolean"
+        },
+        "routeInstalled": {
+          "description": "Whether the route is installed, as determined by the route information base result (RIB result).",
+          "type": "boolean"
+        },
+        "route": {
+          "description": "Name of the route (see Route.name).",
+          "type": "string"
+        }
+      }
+    },
     "Route": {
       "id": "Route",
       "description": "Message describing a Route object",
@@ -1208,10 +1250,6 @@
         "nextHopAddress": {
           "description": "Required. An IP address to use as the next hop for this route. Must use the same protocol as |destination_cidr|.",
           "type": "string"
-        },
-        "withdrawOnFailure": {
-          "description": "Optional. If true, when the route becomes disconnected it should be automatically withdrawn.",
-          "type": "boolean"
         }
       }
     },

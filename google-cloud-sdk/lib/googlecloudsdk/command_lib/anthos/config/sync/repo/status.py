@@ -344,7 +344,7 @@ def _AppendReposFromCluster(membership, repos_cross_clusters, cluster_type,
   Raises:
     Error: errors that happen when listing the CRs from the cluster.
   """
-  utils.GetConfigManagement(membership, cluster_type)
+  utils.GetConfigManagement(membership)
 
   params = []
   if not namespaces or '*' in namespaces:
@@ -406,7 +406,7 @@ def _AppendReposAndResourceGroups(membership, repos_cross_clusters,
   Raises:
     Error: errors that happen when listing the CRs from the cluster.
   """
-  utils.GetConfigManagement(membership, cluster_type)
+  utils.GetConfigManagement(membership)
   params = []
   if not namespace:
     params = ['--all-namespaces']
@@ -456,7 +456,11 @@ def _AppendReposAndResourceGroups(membership, repos_cross_clusters,
 class DetailedStatus:
   """DetailedStatus represent a detailed status for a repo."""
 
-  def __init__(self, source='', commit='', status='', errors=None,
+  def __init__(self,
+               source='',
+               commit='',
+               status='',
+               errors=None,
                clusters=None):
     self.source = source
     self.commit = commit
@@ -471,8 +475,15 @@ class DetailedStatus:
 class ManagedResource:
   """ManagedResource represent a managed resource across multiple clusters."""
 
-  def __init__(self, group='', kind='', namespace='', name='', source_hash='',
-               status='', conditions=None, clusters=None):
+  def __init__(self,
+               group='',
+               kind='',
+               namespace='',
+               name='',
+               source_hash='',
+               status='',
+               conditions=None,
+               clusters=None):
     if not conditions:
       self.conditions = None
     else:
@@ -634,7 +645,10 @@ def _Describe(status_filter, repos_cross_clusters):
       for resource in resources:
         describe_result.AppendManagedResources(resource, cluster, status_filter)
       status_result = DetailedStatus(
-          source=source_key, commit=commit, status=status, errors=errors,
+          source=source_key,
+          commit=commit,
+          status=status,
+          errors=errors,
           clusters=[cluster])
       describe_result.AppendDetailedStatus(status_result)
   return describe_result

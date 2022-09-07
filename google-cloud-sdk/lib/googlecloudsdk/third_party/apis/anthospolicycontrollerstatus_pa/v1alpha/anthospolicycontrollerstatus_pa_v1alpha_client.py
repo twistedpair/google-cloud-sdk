@@ -135,7 +135,7 @@ class AnthospolicycontrollerstatusPaV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/fleetConstraints/{fleetConstraintsId}',
+        flat_path='v1alpha/projects/{projectsId}/fleetConstraints/{fleetConstraintsId}/{fleetConstraintsId1}',
         http_method='GET',
         method_id='anthospolicycontrollerstatus_pa.projects.fleetConstraints.get',
         ordered_params=['name'],
@@ -236,7 +236,7 @@ class AnthospolicycontrollerstatusPaV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/membershipConstraintTemplates/{membershipConstraintTemplatesId}',
+        flat_path='v1alpha/projects/{projectsId}/membershipConstraintTemplates/{membershipConstraintTemplatesId}/{membershipConstraintTemplatesId1}',
         http_method='GET',
         method_id='anthospolicycontrollerstatus_pa.projects.membershipConstraintTemplates.get',
         ordered_params=['name'],
@@ -287,7 +287,7 @@ class AnthospolicycontrollerstatusPaV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Retrieves status for a single constraints a a single member cluster.
+      r"""Retrieves status for a single constraint on a single member cluster.
 
       Args:
         request: (AnthospolicycontrollerstatusPaProjectsMembershipConstraintsGetRequest) input message
@@ -300,7 +300,7 @@ class AnthospolicycontrollerstatusPaV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/membershipConstraints/{membershipConstraintsId}',
+        flat_path='v1alpha/projects/{projectsId}/membershipConstraints/{membershipConstraintsId}/{membershipConstraintsId1}/{membershipConstraintsId2}',
         http_method='GET',
         method_id='anthospolicycontrollerstatus_pa.projects.membershipConstraints.get',
         ordered_params=['name'],

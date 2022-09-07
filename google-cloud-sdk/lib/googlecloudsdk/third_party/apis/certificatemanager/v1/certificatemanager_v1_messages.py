@@ -222,17 +222,11 @@ class CertificateIssuanceConfig(_messages.Message):
     Values:
       KEY_ALGORITHM_UNSPECIFIED: Unspecified key algorithm.
       RSA_2048: Specifies RSA with a 2048-bit modulus.
-      RSA_3072: Specifies RSA with a 3072-bit modulus.
-      RSA_4096: Specifies RSA with a 4096-bit modulus.
       ECDSA_P256: Specifies ECDSA with curve P256.
-      ECDSA_P384: Specifies ECDSA with curve P384.
     """
     KEY_ALGORITHM_UNSPECIFIED = 0
     RSA_2048 = 1
-    RSA_3072 = 2
-    RSA_4096 = 3
-    ECDSA_P256 = 4
-    ECDSA_P384 = 5
+    ECDSA_P256 = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -483,27 +477,6 @@ class CertificatemanagerProjectsLocationsCertificateIssuanceConfigsListRequest(_
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
-
-
-class CertificatemanagerProjectsLocationsCertificateIssuanceConfigsPatchRequest(_messages.Message):
-  r"""A
-  CertificatemanagerProjectsLocationsCertificateIssuanceConfigsPatchRequest
-  object.
-
-  Fields:
-    certificateIssuanceConfig: A CertificateIssuanceConfig resource to be
-      passed as the request body.
-    name: A user-defined name of the certificate issuance config.
-      CertificateIssuanceConfig names must be unique globally and match
-      pattern `projects/*/locations/*/certificateIssuanceConfigs/*`.
-    updateMask: Required. The update mask applies to the resource. For the
-      `FieldMask` definition, see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask.
-  """
-
-  certificateIssuanceConfig = _messages.MessageField('CertificateIssuanceConfig', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
 
 
 class CertificatemanagerProjectsLocationsCertificateMapsCertificateMapEntriesCreateRequest(_messages.Message):

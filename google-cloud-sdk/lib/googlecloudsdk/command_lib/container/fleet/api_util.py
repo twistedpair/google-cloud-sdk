@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Utils for GKE Hub commands."""
+"""Util functions using GKEHub API for fleet commands."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -24,7 +24,8 @@ import re
 from googlecloudsdk.api_lib.container.fleet import gkehub_api_util
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import base as calliope_base
+from googlecloudsdk.command_lib.container.fleet import base as hub_base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
 
@@ -81,12 +82,12 @@ def UpdateMembership(name,
 
   Args:
     name: The full resource name of the membership to update, e.g.
-    projects/foo/locations/global/memberships/name.
+      projects/foo/locations/global/memberships/name.
     membership: Membership resource that needs to be updated.
     update_mask: Field names of membership resource to be updated.
     release_track: The release_track used in the gcloud command.
-    external_id: the unique id associated with the cluster,
-      or None if it is not available.
+    external_id: the unique id associated with the cluster, or None if it is not
+      available.
     issuer_url: The discovery URL for the cluster's service account token
       issuer.
     oidc_jwks: The JSON Web Key Set string containing public keys for validating
@@ -167,10 +168,10 @@ def CreateMembership(project,
     location: the location for the membership
     gke_cluster_self_link: the selfLink for the cluster if it is a GKE cluster,
       or None if it is not
-    external_id: the unique id associated with the cluster,
-      or None if it is not available.
-    release_track: the release_track used in the gcloud command,
-      or None if it is not available.
+    external_id: the unique id associated with the cluster, or None if it is not
+      available.
+    release_track: the release_track used in the gcloud command, or None if it
+      is not available.
     issuer_url: the discovery URL for the cluster's service account token
       issuer. Set to None to skip enabling Workload Identity.
     oidc_jwks: the JSON Web Key Set containing public keys for validating
@@ -230,8 +231,8 @@ def GetMembership(name, release_track=None):
   Args:
     name: the full resource name of the membership to get, e.g.,
       projects/foo/locations/global/memberships/name.
-    release_track: the release_track used in the gcloud command,
-      or None if it is not available.
+    release_track: the release_track used in the gcloud command, or None if it
+      is not available.
 
   Returns:
     a Membership resource
@@ -252,8 +253,9 @@ def ProjectForClusterUUID(uuid, projects, release_track=None):
   Args:
     uuid: the UUID of the cluster.
     projects: sequence of project IDs to consider.
-    release_track: the release_track used in the gcloud command,
-      or None if it is not available.
+    release_track: the release_track used in the gcloud command, or None if it
+      is not available.
+
   Returns:
     a project ID.
 
@@ -303,8 +305,9 @@ def DeleteMembership(name, release_track=None):
   Args:
     name: the full resource name of the membership to delete, e.g.,
       projects/foo/locations/global/memberships/name.
-    release_track: the release_track used in the gcloud command,
-      or None if it is not available.
+    release_track: the release_track used in the gcloud command, or None if it
+      is not available.
+
   Raises:
     apitools.base.py.HttpError: if the request returns an HTTP error
   """
@@ -332,15 +335,16 @@ def ValidateExclusivity(cr_manifest,
       cluster.
     parent_ref: the parent collection that the cluster is to be registered to.
     intended_membership: the ID of the membership to be created.
-    release_track: the release_track used in the gcloud command,
-      or None if it is not available.
+    release_track: the release_track used in the gcloud command, or None if it
+      is not available.
+
   Returns:
     the ValidateExclusivityResponse from API.
 
   Raises:
     apitools.base.py.HttpError: if the request returns an HTTP error.
   """
-  release_track = base.ReleaseTrack.BETA
+  release_track = calliope_base.ReleaseTrack.BETA
   client = gkehub_api_util.GetApiClientForTrack(release_track)
   return client.projects_locations_memberships.ValidateExclusivity(
       client.MESSAGES_MODULE
@@ -362,8 +366,8 @@ def GenerateExclusivityManifest(crd_manifest,
     cr_manifest: the YAML manifest of the Membership CR fetched from the
       cluster.
     membership_ref: the full resource name of the membership.
-    release_track: the release_track used in the gcloud command,
-      or None if it is not available.
+    release_track: the release_track used in the gcloud command, or None if it
+      is not available.
 
   Returns:
     the GenerateExclusivityManifestResponse from API.
@@ -373,7 +377,7 @@ def GenerateExclusivityManifest(crd_manifest,
   """
 
   # TODO(b/145955278): remove static mapping after Exclusivity is promoted.
-  release_track = base.ReleaseTrack.BETA
+  release_track = calliope_base.ReleaseTrack.BETA
   client = gkehub_api_util.GetApiClientForTrack(release_track)
   return client.projects_locations_memberships.GenerateExclusivityManifest(
       client.MESSAGES_MODULE
@@ -459,3 +463,30 @@ def GetGKEURIAndResourceName(project_id, cluster_location, cluster_name):
   gke_cluster_uri = '{}/v1/projects/{}/locations/{}/clusters/{}'.format(
       container_endpoint, project_id, cluster_location, cluster_name)
   return gke_resource_link, gke_cluster_uri
+
+
+# This will get full membership resource name format which should be used most
+# of the time, this is a supported format in resource args, API function
+# request/response objects, etc.
+def ListMembershipsFull():
+  """Lists full Membership names in the fleet for the current project.
+
+  Returns:
+    A list of full membership resource names in the fleet in the form
+    'projects/*/locations/*/memberships/*'.
+    A list of locations which were unreachable.
+  """
+  client = core_apis.GetClientInstance('gkehub', 'v1beta1')
+  response = client.projects_locations_memberships.List(
+      client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsListRequest(
+          parent=hub_base.HubCommand.LocationResourceName(location='-')))
+
+  return [
+      m.name for m in response.resources if not _ClusterMissing(m.endpoint)
+  ], response.unreachable
+
+
+def _ClusterMissing(m):
+  for t in ['gkeCluster', 'multiCloudCluster', 'onPremCluster']:
+    if hasattr(m, t):
+      return getattr(getattr(m, t), 'clusterMissing', False)

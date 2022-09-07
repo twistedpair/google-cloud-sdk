@@ -454,9 +454,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -2146,7 +2148,8 @@ class GoogleCloudAssetV1QueryAssetsOutputConfigBigQueryDestination(_messages.Mes
       overwrites the entire table or all the partitions data. * WRITE_APPEND:
       If the table or partition already exists, BigQuery appends the data to
       the table or the latest partition. * WRITE_EMPTY: If the table already
-      exists and contains data, an error is returned.
+      exists and contains data, a 'duplicate' error is returned in the job
+      result. The default value is WRITE_EMPTY.
   """
 
   dataset = _messages.StringField(1)

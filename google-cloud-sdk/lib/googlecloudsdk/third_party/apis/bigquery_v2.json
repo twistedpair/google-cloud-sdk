@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20220819",
+ "revision": "20220829",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -1324,6 +1324,13 @@
      "$ref": "Clustering",
      "description": "[Beta] Clustering specification for the destination table. Must be specified with time-based partitioning, data in the table will be first partitioned and subsequently clustered."
     },
+    "connectionProperties": {
+     "type": "array",
+     "description": "Connection properties.",
+     "items": {
+      "$ref": "ConnectionProperty"
+     }
+    },
     "createDisposition": {
      "type": "string",
      "description": "[Optional] Specifies whether the job is allowed to create new tables. The following values are supported: CREATE_IF_NEEDED: If the table does not exist, BigQuery creates the table. CREATE_NEVER: The table must already exist. If it does not, a 'notFound' error is returned in the job result. The default value is CREATE_IF_NEEDED. Creation, truncation and append actions occur as one atomic update upon job completion."
@@ -1942,6 +1949,10 @@
     "searchStatistics": {
      "$ref": "SearchStatistics",
      "description": "[Output-only] Search query specific statistics."
+    },
+    "sparkStatistics": {
+     "$ref": "SparkStatistics",
+     "description": "[Output-only] Statistics of a Spark procedure job."
     },
     "statementType": {
      "type": "string",
@@ -2707,6 +2718,45 @@
      "type": "string",
      "description": "[Required] The time at which the base table was snapshot. This value is reported in the JSON response using RFC3339 format.",
      "format": "date-time"
+    }
+   }
+  },
+  "SparkLoggingInfo": {
+   "id": "SparkLoggingInfo",
+   "type": "object",
+   "properties": {
+    "project_id": {
+     "type": "string",
+     "description": "[Output-only] Project ID used for logging"
+    },
+    "resource_type": {
+     "type": "string",
+     "description": "[Output-only] Resource type used for logging"
+    }
+   }
+  },
+  "SparkStatistics": {
+   "id": "SparkStatistics",
+   "type": "object",
+   "properties": {
+    "endpoints": {
+     "type": "object",
+     "description": "[Output-only] Endpoints generated for the Spark job.",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "logging_info": {
+     "$ref": "SparkLoggingInfo",
+     "description": "[Output-only] Logging info is used to generate a link to Cloud Logging."
+    },
+    "spark_job_id": {
+     "type": "string",
+     "description": "[Output-only] Spark job id if a Spark job is created successfully."
+    },
+    "spark_job_location": {
+     "type": "string",
+     "description": "[Output-only] Location where the Spark job is executed."
     }
    }
   },

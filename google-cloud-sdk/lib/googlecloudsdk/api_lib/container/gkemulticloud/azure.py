@@ -30,11 +30,14 @@ class _AzureClientBase(client.ClientBase):
   def _Cluster(self, cluster_ref, args):
     azure_client = resource_args.ParseAzureClientResourceArg(args).RelativeName(
     ) if hasattr(args, 'client') and args.IsSpecified('client') else None
+    cluster_type = self._messages.GoogleCloudGkemulticloudV1AzureCluster
     kwargs = {
+        'annotations': self._Annotations(args, cluster_type),
         'authorization': self._Authorization(args),
         'azureClient': azure_client,
         'azureRegion': flags.GetAzureRegion(args),
         'controlPlane': self._ControlPlane(args),
+        'description': flags.GetDescription(args),
         'fleet': self._Fleet(args),
         'loggingConfig': flags.GetLogging(args),
         'name': cluster_ref.azureClustersId,

@@ -463,6 +463,24 @@
           "description": "Output only. Whether this volume is a boot volume. A boot volume is one which contains a boot LUN.",
           "readOnly": true,
           "type": "boolean"
+        },
+        "performanceTier": {
+          "description": "Immutable. Performance tier of the Volume. Default is SHARED.",
+          "type": "string",
+          "enumDescriptions": [
+            "Value is not specified.",
+            "Regular volumes, shared aggregates.",
+            "Dedicated (assigned) aggregates."
+          ],
+          "enum": [
+            "VOLUME_PERFORMANCE_TIER_UNSPECIFIED",
+            "VOLUME_PERFORMANCE_TIER_SHARED",
+            "VOLUME_PERFORMANCE_TIER_DEDICATED"
+          ]
+        },
+        "notes": {
+          "description": "Input only. User-specified notes for new Volume. Used to provision Volumes that require manual intervention.",
+          "type": "string"
         }
       }
     },
@@ -669,6 +687,10 @@
         "qosPolicy": {
           "description": "The QOS policy applied to this VLAN attachment. This value should be preferred to using qos at vrf level.",
           "$ref": "QosPolicy"
+        },
+        "id": {
+          "description": "Immutable. The identifier of the attachment within vrf.",
+          "type": "string"
         }
       }
     },
@@ -2047,6 +2069,20 @@
         "gcpService": {
           "description": "The GCP service of the storage volume. Available gcp_service are in https:\/\/cloud.google.com\/bare-metal\/docs\/bms-planning.",
           "type": "string"
+        },
+        "performanceTier": {
+          "description": "Performance tier of the Volume. Default is SHARED.",
+          "type": "string",
+          "enumDescriptions": [
+            "Value is not specified.",
+            "Regular volumes, shared aggregates.",
+            "Dedicated (assigned) aggregates."
+          ],
+          "enum": [
+            "VOLUME_PERFORMANCE_TIER_UNSPECIFIED",
+            "VOLUME_PERFORMANCE_TIER_SHARED",
+            "VOLUME_PERFORMANCE_TIER_DEDICATED"
+          ]
         }
       }
     },

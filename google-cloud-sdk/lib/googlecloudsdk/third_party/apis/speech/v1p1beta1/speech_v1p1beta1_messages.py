@@ -167,15 +167,13 @@ class LongRunningRecognizeRequest(_messages.Message):
     audio: Required. The audio data to be recognized.
     config: Required. Provides information to the recognizer that specifies
       how to process the request.
-    name: Use `model` field in RecognitionConfig instead.
     outputConfig: Optional. Specifies an optional destination for the
       recognition results.
   """
 
   audio = _messages.MessageField('RecognitionAudio', 1)
   config = _messages.MessageField('RecognitionConfig', 2)
-  name = _messages.StringField(3)
-  outputConfig = _messages.MessageField('TranscriptOutputConfig', 4)
+  outputConfig = _messages.MessageField('TranscriptOutputConfig', 3)
 
 
 class LongRunningRecognizeResponse(_messages.Message):
@@ -651,9 +649,6 @@ class RecognitionMetadata(_messages.Message):
       'Nexus 5X' or 'Polycom SoundStation IP 6000' or 'POTS' or 'VoIP' or
       'Cardioid Microphone'.
     recordingDeviceType: The type of device the speech was recorded with.
-    tags: A freeform field to tag this input sample with. This can be used for
-      grouping the logs into separate buckets. This enables selective purging
-      of data based on the tags, and also for training models in AutoML.
   """
 
   class InteractionTypeValueValuesEnum(_messages.Enum):
@@ -747,7 +742,6 @@ class RecognitionMetadata(_messages.Message):
   originalMimeType = _messages.StringField(7)
   recordingDeviceName = _messages.StringField(8)
   recordingDeviceType = _messages.EnumField('RecordingDeviceTypeValueValuesEnum', 9)
-  tags = _messages.StringField(10, repeated=True)
 
 
 class RecognizeRequest(_messages.Message):
@@ -854,25 +848,6 @@ class SpeechContext(_messages.Message):
 
   boost = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   phrases = _messages.StringField(2, repeated=True)
-
-
-class SpeechOperationMetadata(_messages.Message):
-  r"""Describes the progress of a long-running call. It is included in the
-  `metadata` field of the `Operation` returned by the `GetOperation` call of
-  the `google::longrunning::Operations` service.
-
-  Fields:
-    lastUpdateTime: Time of the most recent processing update.
-    progressPercent: Approximate percentage of progress, from AutoML Operation
-      Metadata.
-    startTime: Time when the request was received.
-    worksOn: The resource being worked on.
-  """
-
-  lastUpdateTime = _messages.StringField(1)
-  progressPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  startTime = _messages.StringField(3)
-  worksOn = _messages.StringField(4)
 
 
 class SpeechOperationsGetRequest(_messages.Message):

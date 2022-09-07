@@ -76,7 +76,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
         method_id='netapp.projects.locations.activedirectories.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[],
+        query_params=['name'],
         relative_path='v1alpha1/{+parent}/activedirectories',
         request_field='activeDirectory',
         request_type_name='NetappProjectsLocationsActivedirectoriesCreateRequest',

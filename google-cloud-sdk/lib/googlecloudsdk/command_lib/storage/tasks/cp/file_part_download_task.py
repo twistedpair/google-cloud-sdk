@@ -28,6 +28,7 @@ import threading
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import request_config_factory
+from googlecloudsdk.command_lib.storage import fast_crc32c_util
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import tracker_file_util
@@ -105,9 +106,9 @@ def _get_digesters(component_number, resource):
       digesters[hash_util.HashAlgorithm.MD5] = hashing.get_md5()
 
     elif (resource.crc32c_hash and
-          (crc32c.IS_FAST_GOOGLE_CRC32C_AVAILABLE or
-           check_hashes == properties.CheckHashes.ALWAYS.value)):
-      digesters[hash_util.HashAlgorithm.CRC32C] = crc32c.get_crc32c()
+          (check_hashes == properties.CheckHashes.ALWAYS.value or
+           fast_crc32c_util.is_fast_crc32c_available())):
+      digesters[hash_util.HashAlgorithm.CRC32C] = fast_crc32c_util.get_crc32c()
 
   if not digesters:
     log.warning(
@@ -190,15 +191,21 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
       download_util.validate_download_hash_and_delete_corrupt_files(
           self._destination_resource.storage_url.object_name,
           self._source_resource.md5_hash, calculated_digest)
-    # Only for one-shot composite object downloads as final CRC32C validated in
-    # FinalizeSlicedDownloadTask.
-    elif (hash_util.HashAlgorithm.CRC32C in digesters and
-          self._component_number is None):
-      calculated_digest = crc32c.get_hash(
-          digesters[hash_util.HashAlgorithm.CRC32C])
-      download_util.validate_download_hash_and_delete_corrupt_files(
-          self._destination_resource.storage_url.object_name,
-          self._source_resource.crc32c_hash, calculated_digest)
+    elif hash_util.HashAlgorithm.CRC32C in digesters:
+      # Perform deferred hash calculations now.
+      if isinstance(digesters[hash_util.HashAlgorithm.CRC32C],
+                    fast_crc32c_util.DeferredCrc32c):
+        digesters[hash_util.HashAlgorithm.CRC32C].sum_file(
+            self._destination_resource.storage_url.object_name, self._offset,
+            self._length)
+      # Only for one-shot composite object downloads as final CRC32C validated
+      # in FinalizeSlicedDownloadTask.
+      if self._component_number is None:
+        calculated_digest = crc32c.get_hash(
+            digesters[hash_util.HashAlgorithm.CRC32C])
+        download_util.validate_download_hash_and_delete_corrupt_files(
+            self._destination_resource.storage_url.object_name,
+            self._source_resource.crc32c_hash, calculated_digest)
 
     return api_download_result
 

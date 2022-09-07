@@ -103,9 +103,6 @@
   "auth": {
     "oauth2": {
       "scopes": {
-        "https://www.googleapis.com/auth/cloud-identity": {
-          "description": "Private Service: https:\/\/www.googleapis.com\/auth\/cloud-identity"
-        },
         "https://www.googleapis.com/auth/cloud-identity.devices": {
           "description": "Private Service: https:\/\/www.googleapis.com\/auth\/cloud-identity.devices"
         },
@@ -120,12 +117,6 @@
         },
         "https://www.googleapis.com/auth/cloud-identity.groups.readonly": {
           "description": "See any Cloud Identity Groups that you can access, including group members and their emails"
-        },
-        "https://www.googleapis.com/auth/cloud-identity.userinvitations": {
-          "description": "See, send, or cancel any Cloud Identity UserInvitations to join your organization to users"
-        },
-        "https://www.googleapis.com/auth/cloud-identity.userinvitations.readonly": {
-          "description": "See, send, or cancel any Cloud Identity UserInvitations to join your organization to users"
         },
         "https://www.googleapis.com/auth/cloud-platform": {
           "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
@@ -2455,7 +2446,6 @@
             "$ref": "Operation"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.devices"
           ],
           "description": "Creates a device. Only company-owned device may be created. **Note**: This method is available only to customers who have one of the following SKUs: Enterprise Standard, Enterprise Plus, Enterprise for Education, and Cloud Identity Premium"
@@ -2481,7 +2471,6 @@
             "$ref": "Device"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.devices",
             "https://www.googleapis.com/auth/cloud-identity.devices.readonly"
           ],
@@ -2536,7 +2525,6 @@
             "$ref": "ListDevicesResponse"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.devices",
             "https://www.googleapis.com/auth/cloud-identity.devices.readonly"
           ],
@@ -2563,7 +2551,6 @@
             "$ref": "Operation"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.devices"
           ],
           "description": "Deletes the specified device."
@@ -2592,7 +2579,6 @@
             "$ref": "Operation"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.devices"
           ],
           "description": "Wipes all data on the specified device."
@@ -2621,7 +2607,6 @@
             "$ref": "Operation"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.devices"
           ],
           "description": "Cancels an unfinished device wipe. This operation can be used to cancel device wipe in the gap between the wipe operation returning success and the device being wiped."
@@ -2652,7 +2637,6 @@
                 "$ref": "DeviceUser"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.devices",
                 "https://www.googleapis.com/auth/cloud-identity.devices.readonly"
               ],
@@ -2700,7 +2684,6 @@
                 "$ref": "ListDeviceUsersResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.devices",
                 "https://www.googleapis.com/auth/cloud-identity.devices.readonly"
               ],
@@ -2727,7 +2710,6 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.devices"
               ],
               "description": "Deletes the specified DeviceUser. This also revokes the user's access to device data."
@@ -2807,7 +2789,6 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.devices"
               ],
               "description": "Approves device to access user data."
@@ -2836,7 +2817,6 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.devices"
               ],
               "description": "Blocks device from accessing user data"
@@ -2865,7 +2845,6 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.devices"
               ],
               "description": "Wipes the user's account on a device."
@@ -2894,7 +2873,6 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.devices"
               ],
               "description": "Cancels an unfinished user account wipe. This operation can be used to cancel device wipe in the gap between the wipe operation returning success and the device being wiped."
@@ -2930,7 +2908,6 @@
                     "$ref": "ClientState"
                   },
                   "scopes": [
-                    "https://www.googleapis.com/auth/cloud-identity",
                     "https://www.googleapis.com/auth/cloud-identity.devices",
                     "https://www.googleapis.com/auth/cloud-identity.devices.readonly"
                   ],
@@ -2971,7 +2948,6 @@
                     "$ref": "Operation"
                   },
                   "scopes": [
-                    "https://www.googleapis.com/auth/cloud-identity",
                     "https://www.googleapis.com/auth/cloud-identity.devices"
                   ],
                   "description": "Updates the client state for the device user **Note**: This method is available only to customers who have one of the following SKUs: Enterprise Standard, Enterprise Plus, Enterprise for Education, and Cloud Identity Premium"
@@ -3015,7 +2991,6 @@
             "$ref": "Operation"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.groups",
             "https://www.googleapis.com/auth/cloud-platform"
           ],
@@ -3042,7 +3017,6 @@
             "$ref": "Group"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.groups",
             "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
             "https://www.googleapis.com/auth/cloud-platform"
@@ -3076,7 +3050,6 @@
             "$ref": "SecuritySettings"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.groups",
             "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
             "https://www.googleapis.com/auth/cloud-platform"
@@ -3113,7 +3086,6 @@
             "$ref": "Operation"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.groups",
             "https://www.googleapis.com/auth/cloud-platform"
           ],
@@ -3149,7 +3121,6 @@
             "$ref": "Operation"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.groups",
             "https://www.googleapis.com/auth/cloud-platform"
           ],
@@ -3176,7 +3147,6 @@
             "$ref": "Operation"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.groups",
             "https://www.googleapis.com/auth/cloud-platform"
           ],
@@ -3205,7 +3175,6 @@
             "$ref": "LookupGroupNameResponse"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.groups",
             "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
             "https://www.googleapis.com/auth/cloud-platform"
@@ -3254,7 +3223,6 @@
             "$ref": "SearchGroupsResponse"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.groups",
             "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
             "https://www.googleapis.com/auth/cloud-platform"
@@ -3305,7 +3273,6 @@
             "$ref": "ListGroupsResponse"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-identity",
             "https://www.googleapis.com/auth/cloud-identity.groups",
             "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
             "https://www.googleapis.com/auth/cloud-platform"
@@ -3341,7 +3308,6 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
@@ -3368,7 +3334,6 @@
                 "$ref": "Membership"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -3396,7 +3361,6 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
@@ -3433,7 +3397,6 @@
                 "$ref": "LookupMembershipNameResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -3485,7 +3448,6 @@
                 "$ref": "ListMembershipsResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -3516,7 +3478,6 @@
                 "$ref": "ModifyMembershipRolesResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
@@ -3554,7 +3515,6 @@
                 "$ref": "SearchTransitiveMembershipsResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -3598,7 +3558,6 @@
                 "$ref": "SearchTransitiveGroupsResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -3631,7 +3590,6 @@
                 "$ref": "CheckTransitiveMembershipResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -3664,7 +3622,6 @@
                 "$ref": "Operation"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity",
                 "https://www.googleapis.com/auth/cloud-identity.groups",
                 "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -3775,10 +3732,6 @@
               "response": {
                 "$ref": "UserInvitation"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity.userinvitations",
-                "https://www.googleapis.com/auth/cloud-identity.userinvitations.readonly"
-              ],
               "description": "Retrieves a UserInvitation resource. **Note:** New consumer accounts with the customer's verified domain created within the previous 48 hours will not appear in the result. This delay also applies to newly-verified domains."
             },
             "list": {
@@ -3822,10 +3775,6 @@
               "response": {
                 "$ref": "ListUserInvitationsResponse"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity.userinvitations",
-                "https://www.googleapis.com/auth/cloud-identity.userinvitations.readonly"
-              ],
               "description": "Retrieves a list of UserInvitation resources. **Note:** New consumer accounts with the customer's verified domain created within the previous 48 hours will not appear in the result. This delay also applies to newly-verified domains."
             },
             "send": {
@@ -3851,9 +3800,6 @@
               "response": {
                 "$ref": "Operation"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity.userinvitations"
-              ],
               "description": "Sends a UserInvitation to email. If the `UserInvitation` does not exist for this request and it is a valid request, the request creates a `UserInvitation`. **Note:** The `get` and `list` methods have a 48-hour delay where newly-created consumer accounts will not appear in the results. You can still send a `UserInvitation` to those accounts if you know the unmanaged email address and IsInvitableUser==True."
             },
             "cancel": {
@@ -3879,9 +3825,6 @@
               "response": {
                 "$ref": "Operation"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity.userinvitations"
-              ],
               "description": "Cancels a UserInvitation that was already sent."
             },
             "isInvitableUser": {
@@ -3904,10 +3847,6 @@
               "response": {
                 "$ref": "IsInvitableUserResponse"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-identity.userinvitations",
-                "https://www.googleapis.com/auth/cloud-identity.userinvitations.readonly"
-              ],
               "description": "Verifies whether a user account is eligible to receive a UserInvitation (is an unmanaged account). Eligibility is based on the following criteria: * the email address is a consumer account and it's the primary email address of the account, and * the domain of the email address matches an existing verified Google Workspace or Cloud Identity domain If both conditions are met, the user is eligible. **Note:** This method is not supported for Workspace Essentials customers."
             }
           }

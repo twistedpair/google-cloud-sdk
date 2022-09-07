@@ -537,6 +537,10 @@ apis:
           path: projects/{projectId}/regions/{regionId}
         projects.regions.operations_list:
           path: projects/{projectId}/regions/{regionId}/operations
+        projects.regions.clusters:
+          path: projects/{projectId}/regions/{region}/clusters/{clusterName}
+        projects.regions.clusters.gceNodePools:
+          path: projects/{projectId}/regions/{region}/clusters/{clusterName}/gceNodePools/{gceNodePoolsId}
       default: true
   datastore:
     v1beta1:

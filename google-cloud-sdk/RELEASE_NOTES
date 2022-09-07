@@ -5,6 +5,79 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 401.0.0 (2022-09-07)
+
+### Google Cloud CLI
+
+* Added warning message to indicate support for Python 2 will soon be deprecated.
+
+### AlloyDB
+
+*   Added `--view` flag to `gcloud alpha alloydb instances describe` to get the
+    view of AlloyDB instance. `--view=BASIC` will be the same response as describe
+    instance without this flag, and `--view=FULL` for read pool instance will
+    list the details of each node in the pool.
+
+### Anthos Multi-Cloud
+
+*   Added `--description` flag to `gcloud container aws clusters update` to
+    update the description of AWS clusters.
+*   Added `--clear-description` flag to `gcloud container aws clusters update`
+    to clear the description of AWS clusters.
+*   Added `--annotations` flag to `gcloud container aws clusters update` to
+    update the annotations of AWS clusters.
+*   Added `--clear-annotations` flag to `gcloud container aws clusters update`
+    to clear the annotations of AWS clusters.
+*   Added `--description` flag to `gcloud container azure clusters create` to
+    set the description field when creating Azure clusters.
+*   Added `--annotations` flag to `gcloud container azure clusters create` to
+    set the annotations field when creating Azure clusters.
+*   Added `--description` flag to `gcloud container azure clusters update` to
+    update the description of Azure clusters.
+*   Added `--clear-description` flag to `gcloud container azure clusters update`
+    to clear the description of Azure clusters.
+*   Added `--annotations` flag to `gcloud container azure clusters update` to
+    update the annotations of Azure clusters.
+*   Added `--clear-annotations` flag to `gcloud container azure clusters update`
+    to clear the annotations of Azure clusters.
+
+### Cloud Run
+
+* Added execution log URI to `gcloud beta run jobs executions describe` output.
+
+### Compute Engine
+
+* Promoted `--snapshot-type` flag of `gcloud compute snapshots create` to GA.
+* Added `--json-custom-content-types` for `gcloud compute security-policies update`, and promoted it to beta and GA.
+* Promoted `--guest-os-features` flag of `gcloud compute images import` to GA.
+* Promoted `gcloud compute firewall-rules migrate` to beta.
+* Added `--share-setting` and `--share-with` flags to `gcloud compute sole-tenancy node-groups create|update` for GA.
+* Added `--share-settings` flag to `gcloud compute sole-tenancy node-groups list` for GA.
+* Added `--node-project` flag to `gcloud compute instances create` for GA.
+
+### Network Management
+
+* Added `cloudFunction` argument for source in
+ `gcloud network-management connectivity-tests`. This allows the user to run
+ tests using Cloud Function endpoint types as source.
+
+### Stackdriver Logging
+
+* Promoted the following commands to beta and GA:
+  * `gcloud logging copy`
+  * `gcloud logging settings get`
+  * `gcloud logging settings update`
+  * `gcloud logging operations cancel`
+  * `gcloud logging operations describe`
+  * `gcloud logging operations list`
+
+* Promoted `--bucket-name` flag of `gcloud logging metrics` to beta and GA.
+* Promoted `--cmke-kms-key-name` flag of `gcloud logging buckets` to beta and GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 400.0.0 (2022-08-30)
 
 ### Breaking Changes

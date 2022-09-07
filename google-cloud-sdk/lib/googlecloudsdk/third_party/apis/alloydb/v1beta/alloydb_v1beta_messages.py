@@ -913,9 +913,7 @@ class Cluster(_messages.Message):
     encryptionInfo: Output only. The encryption information for the cluster.
     etag: For Resource freshness validation (https://google.aip.dev/154)
     initialUser: Input only. Initial user to setup during cluster creation.
-      Required. If used in `RestoreCluster` this is ignored. We intend to
-      deprecate this post private preview, once we have separate User
-      resources.
+      Required. If used in `RestoreCluster` this is ignored.
     labels: Labels as key value pairs
     migrationSource: Output only. Cluster created via DMS migration.
     name: Output only. The name of the cluster resource with the format: *
@@ -1337,7 +1335,7 @@ class GoogleTypeTimeOfDay(_messages.Message):
 
 class Instance(_messages.Message):
   r"""An Instance is a computing unit that an end customer can connect to.
-  It's the main unit of computing resources in AlloyDB. NEXT ID: 21
+  It's the main unit of computing resources in AlloyDB. NEXT ID: 22
 
   Enums:
     AvailabilityTypeValueValuesEnum: Availability type of an Instance.

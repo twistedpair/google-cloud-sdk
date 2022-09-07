@@ -27,16 +27,14 @@ from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
 
 
-def _GetPolicyMessageName(release_track):
-  """Returns the organization policy message name based on the release_track."""
-  api_version = orgpolicy_simulator.GetApiVersion(release_track).capitalize()
-  return 'GoogleCloudPolicysimulator' + api_version + 'OrgPolicyOverlay' + 'PolicyOverlay'
+def _GetPolicyMessage():
+  """Returns the organization policy message."""
+  return 'GoogleCloudOrgpolicy' + 'V2' + 'Policy'
 
 
-def _GetCustomConstraintMessageName(release_track):
-  """Returns the organization custom constraint message name based on the release_track."""
-  api_version = orgpolicy_simulator.GetApiVersion(release_track).capitalize()
-  return 'GoogleCloudPolicysimulator' + api_version + 'OrgPolicyOverlay' + 'CustomConstraintOverlay'
+def _GetCustomConstraintMessage():
+  """Returns the organization custom constraint message."""
+  return 'GoogleCloudOrgpolicy' + 'V2' + 'CustomConstraint'
 
 
 def GetParentFromOrganization(org_id):
@@ -63,7 +61,7 @@ def GetPolicyMessageFromFile(filepath, release_track):
   op_simulator_api = orgpolicy_simulator.OrgPolicySimulatorApi(
       release_track)
   message = getattr(op_simulator_api.messages,
-                    _GetPolicyMessageName(release_track))
+                    _GetPolicyMessage())
   try:
     return encoding.JsonToMessage(message, json_str)
   except Exception as e:
@@ -90,7 +88,7 @@ def GetCustomConstraintMessageFromFile(filepath, release_track):
   op_simulator_api = orgpolicy_simulator.OrgPolicySimulatorApi(
       release_track)
   message = getattr(op_simulator_api.messages,
-                    _GetCustomConstraintMessageName(release_track))
+                    _GetCustomConstraintMessage())
   try:
     return encoding.JsonToMessage(message, json_str)
   except Exception as e:

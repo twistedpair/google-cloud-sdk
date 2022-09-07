@@ -35,6 +35,7 @@ from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import debug_output
 
 import six
 
@@ -196,13 +197,13 @@ class CloudWildcardIterator(WildcardIterator):
           fetching bucket resources
     """
     super(CloudWildcardIterator, self).__init__()
-    url = _compress_url_wildcards(url)
-    self._url = url
+    self._url = _compress_url_wildcards(url)
+    self._client = api_factory.get_api(self._url.scheme)
+
     self._all_versions = all_versions
     self._error_on_missing_key = error_on_missing_key
     self._fields_scope = fields_scope
     self._get_bucket_metadata = get_bucket_metadata
-    self._client = api_factory.get_api(url.scheme)
 
     if url.url_string.endswith(url.delimiter):
       # Forces the API to return prefixes instead of their contents.
@@ -240,31 +241,38 @@ class CloudWildcardIterator(WildcardIterator):
     return self._client.get_object_metadata(
         resource.bucket, resource.name, request_config)
 
+  def _try_getting_object_directly(self, bucket_name):
+    """Matches user input that doesn't need expansion."""
+    try:
+      resource = self._client.get_object_metadata(
+          bucket_name,
+          self._url.object_name,
+          # TODO(b/197754758): add user request args from surface.
+          request_config_factory.get_request_config(self._url),
+          self._url.generation,
+          self._fields_scope)
+
+      return self._decrypt_resource_if_necessary(resource)
+    except api_errors.NotFoundError:
+      # Object does not exist. Could be a prefix.
+      pass
+    return None
+
   def _fetch_objects(self, bucket_name):
     """Fetch all objects for the given bucket that match the URL."""
     needs_further_expansion = (
-        contains_wildcard(self._url.object_name) or self._all_versions)
+        contains_wildcard(self._url.object_name) or self._all_versions or
+        self._url.url_string.endswith(self._url.delimiter))
     if not needs_further_expansion:
-      try:
-        # Assume that the url represents a single object.
-        resource = self._client.get_object_metadata(
-            bucket_name,
-            self._url.object_name,
-            # TODO(b/197754758): add user request args from surface.
-            request_config_factory.get_request_config(self._url),
-            self._url.generation,
-            self._fields_scope)
-
-        return [self._decrypt_resource_if_necessary(resource)]
-      except api_errors.NotFoundError:
-        # Object does not exist. Could be a prefix.
-        pass
+      # Assume that the URL represents a single object.
+      direct_query_result = self._try_getting_object_directly(bucket_name)
+      if direct_query_result:
+        return [direct_query_result]
+    # Will run if direct check found no result.
     return self._expand_object_path(bucket_name)
 
   def _expand_object_path(self, bucket_name):
-    """If wildcard, expand object names.
-
-    Recursively expand each folder with wildcard.
+    """Expands object names.
 
     Args:
       bucket_name (str): Name of the bucket.
@@ -273,10 +281,17 @@ class CloudWildcardIterator(WildcardIterator):
       resource_reference.Resource objects where each resource can be
       an ObjectResource object or a PrefixResource object.
     """
-    # Retain original name to see if user wants only prefixes.
     original_object_name = self._url.object_name
-    # Force API to return prefix resource not the prefix's contents.
-    object_name = storage_url.rstrip_one_delimiter(original_object_name)
+    if original_object_name.endswith(self._url.delimiter):
+      if not contains_wildcard(self._url.object_name):
+        # Get object with trailing slash in addition to prefix check below.
+        direct_query_result = self._try_getting_object_directly(bucket_name)
+        if direct_query_result:
+          yield direct_query_result
+      # Force API to return prefix resource not the prefix's contents.
+      object_name = storage_url.rstrip_one_delimiter(original_object_name)
+    else:
+      object_name = original_object_name
 
     names_needing_expansion = collections.deque([object_name])
     error = None
@@ -288,7 +303,6 @@ class CloudWildcardIterator(WildcardIterator):
       # CloudWildcardParts(prefix='a/b', filter_pattern='*c',
       #                    delimiter='/', suffix='d/e*f/g.txt')
       wildcard_parts = CloudWildcardParts.from_string(name, self._url.delimiter)
-
       # Fetch all the objects and prefixes.
       resource_iterator = self._client.list_objects(
           all_versions=self._all_versions or bool(self._url.generation),
@@ -297,9 +311,8 @@ class CloudWildcardIterator(WildcardIterator):
           fields_scope=self._fields_scope,
           prefix=wildcard_parts.prefix or None)
 
-      # We have all the objects and prefixes that matched the
-      # wildcard_parts.prefix. Use the filter_pattern to eliminate non-matching
-      # objects and prefixes.
+      # We have all the objects and prefixes that matched wildcard_parts.prefix.
+      # Use filter_pattern to eliminate non-matching objects and prefixes.
       filtered_resources = self._filter_resources(
           resource_iterator,
           wildcard_parts.prefix + wildcard_parts.filter_pattern)
@@ -319,8 +332,9 @@ class CloudWildcardIterator(WildcardIterator):
               names_needing_expansion.append(resource_path +
                                              wildcard_parts.suffix)
         else:
-          # Make sure an object is not returned if the original query was for
-          # a prefix.
+          # Make sure regular object not returned if the original query was for
+          # a prefix or object with a trailing delimiter.
+          # Needed for gs://b/f*/ to filter out gs://b/f.txt.
           if (not resource_path.endswith(self._url.delimiter) and
               original_object_name.endswith(self._url.delimiter)):
             continue
@@ -345,8 +359,13 @@ class CloudWildcardIterator(WildcardIterator):
     """
     # Case 1: The original pattern should always be present.
     wildcard_patterns = [wildcard_pattern]
+    if not wildcard_pattern.endswith(storage_url.CLOUD_URL_DELIMITER):
+      # Case 2: Allow matching both objects and prefixes with same name.
+      wildcard_patterns.append(wildcard_pattern +
+                               storage_url.CLOUD_URL_DELIMITER)
+
     if '/**/' in wildcard_pattern:
-      # Case 2: Will fetch object gs://bucket/dir1/a.txt if pattern is
+      # Case 3: Will fetch object gs://bucket/dir1/a.txt if pattern is
       # gs://bucket/dir1/**/a.txt
       updated_pattern = wildcard_pattern.replace('/**/', '/')
       wildcard_patterns.append(updated_pattern)
@@ -355,10 +374,10 @@ class CloudWildcardIterator(WildcardIterator):
 
     for pattern in (wildcard_pattern, updated_pattern):
       if pattern.startswith('**/'):
-        # Case 3 (using wildcard_pattern): Will fetch object gs://bucket/a.txt
+        # Case 4 (using wildcard_pattern): Will fetch object gs://bucket/a.txt
         # if pattern is gs://bucket/**/a.txt. Note that '/**/' will match
         # '/a.txt' not 'a.txt'.
-        # Case 4:(using updated_pattern) Will fetch gs://bucket/dir1/dir2/a.txt
+        # Case 5 (using updated_pattern): Will fetch gs://bucket/dir1/dir2/a.txt
         # if the pattern is gs://bucket/**/dir1/**/a.txt
         wildcard_patterns.append(pattern[3:])
     return [re.compile(fnmatch.translate(p)) for p in wildcard_patterns]
@@ -376,20 +395,12 @@ class CloudWildcardIterator(WildcardIterator):
     """
     regex_patterns = self._get_regex_patterns(wildcard_pattern)
     for resource in resource_iterator:
-      if isinstance(resource, resource_reference.PrefixResource):
-        object_name = (
-            storage_url.rstrip_one_delimiter(resource.storage_url.object_name))
-      else:
-        # Do not strip trailing delimiters for object resources, otherwise they
-        # will be filtered out incorrectly.
-        object_name = resource.storage_url.object_name
-
       if (self._url.generation and
           resource.storage_url.generation != self._url.generation):
         # Filter based on generation, if generation is present in the request.
         continue
       for regex_pattern in regex_patterns:
-        if regex_pattern.match(object_name):
+        if regex_pattern.match(resource.storage_url.object_name):
           yield resource
           break
 
@@ -471,6 +482,9 @@ class CloudWildcardParts:
       suffix = None
 
     return cls(prefix, filter_pattern, delimiter, suffix)
+
+  def __repr__(self):
+    return debug_output.generic_repr(self)
 
 
 def _split_on_wildcard(string):

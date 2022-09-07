@@ -236,9 +236,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -1315,8 +1317,8 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
     r"""Requested verifiability options.
 
     Values:
-      NOT_VERIFIED: Not a verifiable build. (default)
-      VERIFIED: Verified build.
+      NOT_VERIFIED: Not a verifiable build (the default).
+      VERIFIED: Build must be verified.
     """
     NOT_VERIFIED = 0
     VERIFIED = 1
@@ -1386,6 +1388,14 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildStep(_messages.Message):
       is not updated in real-time as the build progresses.
 
   Fields:
+    allowExitCodes: Allow this build step to fail without failing the entire
+      build if and only if the exit code is one of the specified codes. If
+      allow_failure is also specified, this field will take precedence.
+    allowFailure: Allow this build step to fail without failing the entire
+      build. If false, the entire build will fail if this step fails.
+      Otherwise, the build will succeed, but this step will still have a
+      failure status. Error information will be reported in the failure_detail
+      field.
     args: A list of arguments that will be presented to the step when it is
       started. If the image used to run the step's container has an
       entrypoint, the `args` are used as arguments to that entrypoint. If the
@@ -1404,6 +1414,7 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildStep(_messages.Message):
     env: A list of environment variable definitions to be used when running a
       step. The elements are of the form "KEY=VALUE" for the environment
       variable "KEY" being given the value "VALUE".
+    exitCode: Output only. Return code from running the step.
     id: Unique identifier for this build step, used in `wait_for` to reference
       this build step as a dependency.
     name: Required. The name of the container image that will run this
@@ -1475,20 +1486,23 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildStep(_messages.Message):
     CANCELLED = 8
     EXPIRED = 9
 
-  args = _messages.StringField(1, repeated=True)
-  dir = _messages.StringField(2)
-  entrypoint = _messages.StringField(3)
-  env = _messages.StringField(4, repeated=True)
-  id = _messages.StringField(5)
-  name = _messages.StringField(6)
-  pullTiming = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 7)
-  script = _messages.StringField(8)
-  secretEnv = _messages.StringField(9, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
-  timeout = _messages.StringField(11)
-  timing = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 12)
-  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 13, repeated=True)
-  waitFor = _messages.StringField(14, repeated=True)
+  allowExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  allowFailure = _messages.BooleanField(2)
+  args = _messages.StringField(3, repeated=True)
+  dir = _messages.StringField(4)
+  entrypoint = _messages.StringField(5)
+  env = _messages.StringField(6, repeated=True)
+  exitCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  id = _messages.StringField(8)
+  name = _messages.StringField(9)
+  pullTiming = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 10)
+  script = _messages.StringField(11)
+  secretEnv = _messages.StringField(12, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  timeout = _messages.StringField(14)
+  timing = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 15)
+  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 16, repeated=True)
+  waitFor = _messages.StringField(17, repeated=True)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildWarning(_messages.Message):

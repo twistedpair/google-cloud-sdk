@@ -21,8 +21,8 @@ class AnthospolicycontrollerstatusPaProjectsFleetConstraintTemplatesGetRequest(_
 
   Fields:
     name: Required. The name of the fleet constraint template to retrieve.
-      Format: projects/{project_id}/fleetConstraintTemplate/{constraint_templa
-      te_name}.
+      Format: projects/{project_id}/fleetConstraintTemplates/{constraint_templ
+      ate_name}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -58,8 +58,8 @@ class AnthospolicycontrollerstatusPaProjectsFleetConstraintsGetRequest(_messages
 
   Fields:
     name: Required. The name of the fleet constraint to retrieve. Format: proj
-      ects/{project_id}/fleetConstraint/{constraint_template_name}/{constraint
-      _name}.
+      ects/{project_id}/fleetConstraints/{constraint_template_name}/{constrain
+      t_name}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -116,8 +116,8 @@ class AnthospolicycontrollerstatusPaProjectsMembershipConstraintTemplatesGetRequ
 
   Fields:
     name: Required. The name of the membership constraint template to
-      retrieve. Format: projects/{project_id}/membershipConstraintTemplate/{co
-      nstraint_template_name}/{membership_id}.
+      retrieve. Format: projects/{project_id}/membershipConstraintTemplates/{c
+      onstraint_template_name}/{membership_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -152,8 +152,8 @@ class AnthospolicycontrollerstatusPaProjectsMembershipConstraintsGetRequest(_mes
 
   Fields:
     name: Required. The name of the membership constraint to retrieve. Format:
-      projects/{project_id}/membershipConstraint/{constraint_template_name}/{c
-      onstraint_name}/{membership_id}.
+      projects/{project_id}/membershipConstraints/{constraint_template_name}/{
+      constraint_name}/{membership_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -751,6 +751,9 @@ class MembershipFeatureStatus(_messages.Message):
         when the Hub Feature controller determines the hub is in an unhealthy
         state and it wishes to 'take hands off' to avoid corrupting the PC or
         other data.
+      SUSPENDED: Policy Controller (PC) is installed but suspended. This means
+        that the policies are not enforced, but violations are still recorded
+        (through audit).
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
@@ -760,6 +763,7 @@ class MembershipFeatureStatus(_messages.Message):
     DECOMISSIONING = 5
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
+    SUSPENDED = 8
 
   lifecycleStatus = _messages.EnumField('LifecycleStatusValueValuesEnum', 1)
 

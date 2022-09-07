@@ -108,7 +108,7 @@ def ArgsForClusterRef(parser,
   worker_group.add_argument(
       '--secondary-worker-type',
       metavar='TYPE',
-      choices=['preemptible', 'non-preemptible'],
+      choices=['preemptible', 'non-preemptible', 'spot'],
       default='preemptible',
       help='The type of the secondary worker group.')
   num_secondary_workers = worker_group.add_argument_group(mutex=True)
@@ -1061,7 +1061,8 @@ def GetClusterConfig(args,
       secondary_worker_boot_disk_type is not None or
       num_secondary_worker_local_ssds is not None or
       args.worker_min_cpu_platform is not None or
-      args.secondary_worker_type == 'non-preemptible'):
+      args.secondary_worker_type == 'non-preemptible' or
+      args.secondary_worker_type == 'spot'):
     cluster_config.secondaryWorkerConfig = (
         dataproc.messages.InstanceGroupConfig(
             numInstances=num_secondary_workers,
@@ -1210,6 +1211,9 @@ def _GetInstanceGroupPreemptibility(dataproc, secondary_worker_type):
   if secondary_worker_type == 'non-preemptible':
     return dataproc.messages.InstanceGroupConfig.PreemptibilityValueValuesEnum(
         'NON_PREEMPTIBLE')
+  elif secondary_worker_type == 'spot':
+    return dataproc.messages.InstanceGroupConfig.PreemptibilityValueValuesEnum(
+        'SPOT')
   return None
 
 

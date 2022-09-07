@@ -640,6 +640,11 @@
           "description": "Output only. The public keys used for sharing data with this workload.",
           "readOnly": true,
           "$ref": "PublicKeys"
+        },
+        "approximateUsage": {
+          "description": "Output only. Approximate workload resource usage calculated after workload finishes.",
+          "readOnly": true,
+          "$ref": "UsageMetrics"
         }
       }
     },
@@ -682,6 +687,23 @@
           "description": "Output only. The content of the key.",
           "readOnly": true,
           "type": "string"
+        }
+      }
+    },
+    "UsageMetrics": {
+      "id": "UsageMetrics",
+      "description": "Usage Metrics represents the usage consumed by resource.",
+      "type": "object",
+      "properties": {
+        "milliDcuSeconds": {
+          "description": "Optional. DCU usage in milliDCU*seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "shuffleStorageGbSeconds": {
+          "description": "Optional. Shuffle storage usage in GB*Seconds",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1369,6 +1391,7 @@
               "The Jupyter Notebook.",
               "The Kerberos security feature.",
               "The Presto query engine.",
+              "The Trino query engine.",
               "The Ranger service.",
               "The Solr service.",
               "The Zeppelin notebook.",
@@ -1387,6 +1410,7 @@
               "JUPYTER",
               "KERBEROS",
               "PRESTO",
+              "TRINO",
               "RANGER",
               "SOLR",
               "ZEPPELIN",
@@ -2302,6 +2326,10 @@
           "description": "Optional. Job is a Presto job.",
           "$ref": "PrestoJob"
         },
+        "trinoJob": {
+          "description": "Optional. Job is a Trino job.",
+          "$ref": "TrinoJob"
+        },
         "status": {
           "description": "Output only. The job status. Additional application-specific status information may be contained in the type_job and yarn_applications fields.",
           "readOnly": true,
@@ -2814,6 +2842,47 @@
         },
         "properties": {
           "description": "Optional. A mapping of property names to values. Used to set Presto session properties (https:\/\/prestodb.io\/docs\/current\/sql\/set-session.html) Equivalent to using the --session flag in the Presto CLI",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "loggingConfig": {
+          "description": "Optional. The runtime log config for job execution.",
+          "$ref": "LoggingConfig"
+        }
+      }
+    },
+    "TrinoJob": {
+      "id": "TrinoJob",
+      "description": "A Dataproc job for running Trino (https:\/\/trino.io\/) queries. IMPORTANT: The Dataproc Trino Optional Component (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/components\/trino) must be enabled when the cluster is created to submit a Trino job to the cluster.",
+      "type": "object",
+      "properties": {
+        "queryFileUri": {
+          "description": "The HCFS URI of the script that contains SQL queries.",
+          "type": "string"
+        },
+        "queryList": {
+          "description": "A list of queries.",
+          "$ref": "QueryList"
+        },
+        "continueOnFailure": {
+          "description": "Optional. Whether to continue executing queries if a query fails. The default value is false. Setting to true can be useful when executing independent parallel queries.",
+          "type": "boolean"
+        },
+        "outputFormat": {
+          "description": "Optional. The format in which query output will be displayed. See the Trino documentation for supported output formats",
+          "type": "string"
+        },
+        "clientTags": {
+          "description": "Optional. Trino client tags to attach to this query",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "description": "Optional. A mapping of property names to values. Used to set Trino session properties (https:\/\/trino.io\/docs\/current\/sql\/set-session.html) Equivalent to using the --session flag in the Trino CLI",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -3409,6 +3478,10 @@
           "description": "Optional. Job is a Presto job.",
           "$ref": "PrestoJob"
         },
+        "trinoJob": {
+          "description": "Optional. Job is a Trino job.",
+          "$ref": "TrinoJob"
+        },
         "labels": {
           "description": "Optional. The labels to associate with this job.Label keys must be between 1 and 63 characters long, and must conform to the following regular expression: \\p{Ll}\\p{Lo}{0,62}Label values must be between 1 and 63 characters long, and must conform to the following regular expression: \\p{Ll}\\p{Lo}\\p{N}_-{0,63}No more than 32 labels can be associated with a given job.",
           "type": "object",
@@ -3541,6 +3614,45 @@
         }
       }
     },
+    "ResizeGceNodePoolRequest": {
+      "id": "ResizeGceNodePoolRequest",
+      "description": "A request to resize a Compute Engine node pool.",
+      "type": "object",
+      "properties": {
+        "size": {
+          "description": "Required. The number of running instances that the node pool should maintain at any given time. The group automatically adds or removes instances to maintain the number of instances specified by this parameter.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "requestId": {
+          "description": "Optional. A unique ID used to identify the request. If the server receives two ResizeGceNodePoolRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.ResizeGceNodePoolRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+          "type": "string"
+        },
+        "gracefulDecommissionTimeout": {
+          "description": "Optional. Timeout for graceful YARN decomissioning. Graceful decommissioning allows removing nodes from the Compute Engine timeout without interrupting jobs in progress. Timeout specifies how long to wait for jobs in progress to finish before forcefully removing nodes (and potentially interrupting jobs). Default timeout is 0 (for forceful decommission), and the maximum allowed timeout is 1 day. (see JSON representation of Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)).Only supported on Dataproc image versions 1.2 and higher.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "ListGceNodePoolsResponse": {
+      "id": "ListGceNodePoolsResponse",
+      "description": "A response to list the Compute Engine node pools in a given cluster.",
+      "type": "object",
+      "properties": {
+        "gceNodePools": {
+          "description": "The node pools from the specified cluster.",
+          "type": "array",
+          "items": {
+            "$ref": "GceNodePool"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
     "SetIamPolicyRequest": {
       "id": "SetIamPolicyRequest",
       "description": "Request message for SetIamPolicy method.",
@@ -3586,7 +3698,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. members can have the following values: allUsers: A special identifier that represents anyone who is on the internet; with or without a Google account. allAuthenticatedUsers: A special identifier that represents anyone who is authenticated with a Google account or a service account. user:{emailid}: An email address that represents a specific Google account. For example, alice@example.com . serviceAccount:{emailid}: An email address that represents a Google service account. For example, my-other-app@appspot.gserviceaccount.com. serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]: An identifier for a Kubernetes service account (https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]. group:{emailid}: An email address that represents a Google group. For example, admins@example.com. deleted:user:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a user that has been recently deleted. For example, alice@example.com?uid=123456789012345678901. If the user is recovered, this value reverts to user:{emailid} and the recovered user retains the role in the binding. deleted:serviceAccount:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901. If the service account is undeleted, this value reverts to serviceAccount:{emailid} and the undeleted service account retains the role in the binding. deleted:group:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, admins@example.com?uid=123456789012345678901. If the group is recovered, this value reverts to group:{emailid} and the recovered group retains the role in the binding. domain:{domain}: The G Suite domain (primary) that represents all the users of that domain. For example, google.com or example.com.",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. members can have the following values: allUsers: A special identifier that represents anyone who is on the internet; with or without a Google account. allAuthenticatedUsers: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. user:{emailid}: An email address that represents a specific Google account. For example, alice@example.com . serviceAccount:{emailid}: An email address that represents a Google service account. For example, my-other-app@appspot.gserviceaccount.com. serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]: An identifier for a Kubernetes service account (https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]. group:{emailid}: An email address that represents a Google group. For example, admins@example.com. deleted:user:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a user that has been recently deleted. For example, alice@example.com?uid=123456789012345678901. If the user is recovered, this value reverts to user:{emailid} and the recovered user retains the role in the binding. deleted:serviceAccount:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901. If the service account is undeleted, this value reverts to serviceAccount:{emailid} and the undeleted service account retains the role in the binding. deleted:group:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, admins@example.com?uid=123456789012345678901. If the group is recovered, this value reverts to group:{emailid} and the recovered group retains the role in the binding. domain:{domain}: The G Suite domain (primary) that represents all the users of that domain. For example, google.com or example.com.",
           "type": "array",
           "items": {
             "type": "string"
@@ -3923,6 +4035,75 @@
         },
         "warnings": {
           "description": "Warnings encountered during operation execution.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GceNodePoolOperationMetadata": {
+      "id": "GceNodePoolOperationMetadata",
+      "description": "Metadata describing the Compute Engine node pool operation.",
+      "type": "object",
+      "properties": {
+        "gceNodePoolId": {
+          "description": "Output only. Compute Engine node pool ID for the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "clusterUuid": {
+          "description": "Output only. Cluster UUID associated with the Compute Engine node pool operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "status": {
+          "description": "Output only. Current operation status.",
+          "readOnly": true,
+          "$ref": "ClusterOperationStatus"
+        },
+        "statusHistory": {
+          "description": "Output only. The previous operation status.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "ClusterOperationStatus"
+          }
+        },
+        "operationType": {
+          "description": "The operation type.",
+          "type": "string",
+          "enumDescriptions": [
+            "Compute Engine node pool operation type is unknown.",
+            "Create Compute Engine node pool operation type.",
+            "Update Compute Engine node pool operation type.",
+            "Delete Compute Engine node pool operation type.",
+            "Resize Compute Engine node pool operation type."
+          ],
+          "enum": [
+            "GCE_NODE_POOL_OPERATION_TYPE_UNSPECIFIED",
+            "CREATE",
+            "UPDATE",
+            "DELETE",
+            "RESIZE"
+          ]
+        },
+        "description": {
+          "description": "Output only. Short description of operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "labels": {
+          "description": "Output only. Labels associated with the operation",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "warnings": {
+          "description": "Output only. Errors encountered during operation execution.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "type": "string"
@@ -5995,6 +6176,170 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+              ,
+              "resources": {
+                "gceNodePools": {
+                  "methods": {
+                    "create": {
+                      "id": "dataproc.projects.regions.clusters.gceNodePools.create",
+                      "path": "v1/{+parent}/gceNodePools",
+                      "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/gceNodePools",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource where this Compute Engine node pool will be created. Format: projects\/{project}\/regions\/{region}\/clusters\/{cluster}",
+                          "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "gceNodePoolId": {
+                          "description": "Optional. An optional Compute Engine node pool id. Generated if not specified.The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end with underscore or hyphen. Must consist of between 3 and 33 characters.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. A unique ID used to identify the request. If the server receives two CreateGceNodePoolRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.CreateGceNodePoolRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GceNodePool"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#gcenodepooloperationmetadata)."
+                    },
+                    "resize": {
+                      "id": "dataproc.projects.regions.clusters.gceNodePools.resize",
+                      "path": "v1/{+name}:resize",
+                      "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/gceNodePools/{gceNodePoolsId}:resize",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the Compute Engine node pool to resize. Format: projects\/{project}\/regions\/{region}\/clusters\/{cluster}\/gceNodePools\/{gceNodePool}",
+                          "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+\/gceNodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ResizeGceNodePoolRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Resizes a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#gcenodepooloperationmetadata)."
+                    },
+                    "delete": {
+                      "id": "dataproc.projects.regions.clusters.gceNodePools.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/clusters/gceNodePools/{gceNodePoolsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the Compute Engine node pool to delete. Format: projects\/{project}\/regions\/{region}\/clusters\/{cluster}\/gceNodePools\/{gceNodePool}",
+                          "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/gceNodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. A unique ID used to identify the request. If the server receives two DeleteGceNodePoolRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.DeleteGceNodePoolRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#gcenodepooloperationmetadata)."
+                    },
+                    "get": {
+                      "id": "dataproc.projects.regions.clusters.gceNodePools.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/gceNodePools/{gceNodePoolsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the Compute Engine node pool to retrieve. Format: projects\/{project}\/regions\/{region}\/clusters\/{cluster}\/gceNodePools\/{gceNodePool}",
+                          "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+\/gceNodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GceNodePool"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the resource representation for a Compute Engine node pool in a cluster."
+                    },
+                    "list": {
+                      "id": "dataproc.projects.regions.clusters.gceNodePools.list",
+                      "path": "v1/{+parent}/gceNodePools",
+                      "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/gceNodePools",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent, which owns this collection of Compute Engine node pools. Format: projects\/{project}\/regions\/{region}\/clusters\/{cluster}",
+                          "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of node pools to return. The service may return fewer than this value. If unspecified, at most 50 node pools will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous ListGceNodePools call. Provide this to retrieve the subsequent page.When paginating, all other parameters provided to ListGceNodePools must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListGceNodePoolsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists all Compute Engine node pools in a given cluster."
+                    }
+                  }
                 }
               }
             },

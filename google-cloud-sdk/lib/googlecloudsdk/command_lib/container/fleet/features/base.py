@@ -25,7 +25,10 @@ from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base as calliope_base
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.container.fleet import api_util
 from googlecloudsdk.command_lib.container.fleet import base as hub_base
+from googlecloudsdk.command_lib.container.fleet import resources
 from googlecloudsdk.command_lib.container.fleet.features import info
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -203,33 +206,87 @@ class UpdateCommand(FeatureCommand, calliope_base.UpdateCommand):
     return self.v1alpha1_client.projects_locations_global_features.Patch(req)
 
 
-# This will get full membership resource name format which should be used most
-# of the time, this is a supported format in resource args, API function
-# request/response objects, etc.
-def ListMembershipsFull():
-  """Lists full Membership names in the fleet for the current project.
+def ParseMemberships(args,
+                     membership_flag=False,
+                     memberships_flag=False,
+                     membership_name_flag=False,
+                     all_memberships_flag=False,
+                     prompt=False,
+                     allow_cross_project=False):
+  """Returns a list of memberships to which to run the command, given the arguments.
+
+  Args:
+    args: object containing arguments passed as flags with the command
+    membership_flag: whether a --membership flag is included in this command
+    memberships_flag: whether a plural --memberships flag is included
+    membership_name_flag: whether a positional MEMBERSHIP_NAME flag is included
+    all_memberships_flag: whether --all-memberships is included in this commmand
+    prompt: whether to prompt in console for a membership when none are provided
+      in args
+    allow_cross_project: whether to allow memberships from different projects
 
   Returns:
-    A list of full membership resource names in the fleet in the form
-    'projects/*/locations/*/memberships/*'.
-    A list of locations which were unreachable.
+    memberships: A list of membership resource name strings
+
+  Raises:
+    exceptions.Error if no memberships were found or memberships are invalid
+    calliope_exceptions.RequiredArgumentException if membership was not provided
   """
-  client = core_apis.GetClientInstance('gkehub', 'v1beta1')
-  response = client.projects_locations_memberships.List(
-      client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsListRequest(
-          parent=hub_base.HubCommand.LocationResourceName(location='-')))
+  memberships = []
 
-  return [
-      m.name for m in response.resources if not _ClusterMissing(m.endpoint)
-  ], response.unreachable
+  # If running for all memberships
+  if all_memberships_flag and hasattr(
+      args, 'all_memberships') and args.all_memberships:
+    all_memberships, unreachable = api_util.ListMembershipsFull()
+    if unreachable:
+      raise exceptions.Error(
+          'Locations {} are currently unreachable. Please try again or '
+          'specify memberships for this command.'.format(unreachable))
+    if not all_memberships:
+      raise exceptions.Error('No Memberships available in the fleet.')
+    return all_memberships
 
+  # If a membership is provided
+  if membership_flag and hasattr(args, 'membership') and args.membership:
+    memberships += resources.GetExistingMembershipResourceNames(args)
 
-# For CLI output (e.g. prompts), the LOCATION/ID format
-# (e.g. us-central1/my-membership) is more readable than
-# the full resource name
-def MembershipPartialNames(memberships):
-  """Converts a list of full membership names to LOCATION/ID format."""
-  return [util.MembershipPartialName(m) for m in memberships]
+  # If a membership is provided (positional arg)
+  if membership_name_flag and hasattr(
+      args, 'MEMBERSHIP_NAME') and args.MEMBERSHIP_NAME:
+    memberships += resources.GetExistingMembershipResourceNames(
+        args, positional=True)
+
+  # If a membership list is provided
+  if memberships_flag and hasattr(args, 'memberships') and args.memberships:
+    memberships += resources.GetExistingMembershipResourceNames(
+        args, plural=True)
+
+  if memberships:
+    # Verify memberships
+    # @wenjung
+    # for membership in memberships:
+    #   if membership not in all_memberships:
+    #     raise exceptions.Error(
+    #         'Membership {} does not exist in the fleet.'.format(membership))
+    if not allow_cross_project and len(
+        resources.GetMembershipProjects(memberships)) > 1:
+      raise CrossProjectError(resources.GetMembershipProjects(memberships))
+    return memberships
+
+  # If nothing is provided
+  flag = '--memberships' if memberships_flag else 'MEMBERSHIP_NAME' if membership_name_flag else '--membership'
+  if not prompt:
+    raise calliope_exceptions.RequiredArgumentException(
+        flag, 'At least one membership is required for this command.')
+
+  membership = resources.PromptForMembership()
+  if membership:
+    memberships.append(membership)
+  else:
+    raise calliope_exceptions.RequiredArgumentException(
+        flag, 'At least one membership is required for this command.')
+
+  return memberships
 
 
 # This should not be used in the future and will be deleted

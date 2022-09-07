@@ -2064,7 +2064,10 @@ class APIAdapter(object):
         ('services-ipv4-cidr', options.services_ipv4_cidr),
         ('create-subnetwork', options.create_subnetwork),
         ('cluster-secondary-range-name', options.cluster_secondary_range_name),
-        ('services-secondary-range-name', options.services_secondary_range_name)
+        ('services-secondary-range-name',
+         options.services_secondary_range_name),
+        ('disable-pod-cidr-overprovision',
+         options.disable_pod_cidr_overprovision)
     ]
     if not options.enable_ip_alias:
       for name, opt in ip_alias_only_options:
@@ -2097,6 +2100,9 @@ class APIAdapter(object):
           servicesIpv4CidrBlock=options.services_ipv4_cidr,
           clusterSecondaryRangeName=options.cluster_secondary_range_name,
           servicesSecondaryRangeName=options.services_secondary_range_name)
+      if options.disable_pod_cidr_overprovision is not None:
+        policy.podCidrOverprovisionConfig = self.messages.PodCIDROverprovisionConfig(
+            disable=options.disable_pod_cidr_overprovision)
       if options.tpu_ipv4_cidr:
         policy.tpuIpv4CidrBlock = options.tpu_ipv4_cidr
       cluster.clusterIpv4Cidr = None
@@ -4364,10 +4370,6 @@ class V1Beta1Adapter(V1Adapter):
       if options.enable_experimental_vertical_pod_autoscaling:
         cluster.verticalPodAutoscaling.enabled = True
 
-    if options.disable_pod_cidr_overprovision is not None:
-      cluster.ipAllocationPolicy.podCidrOverprovisionConfig = self.messages.PodCIDROverprovisionConfig(
-          disable=options.disable_pod_cidr_overprovision)
-
     if options.enable_cost_allocation:
       cluster.costManagementConfig = self.messages.CostManagementConfig(
           enabled=True)
@@ -4892,10 +4894,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           .enable_experimental_vertical_pod_autoscaling)
       if options.enable_experimental_vertical_pod_autoscaling:
         cluster.verticalPodAutoscaling.enabled = True
-
-    if options.disable_pod_cidr_overprovision is not None:
-      cluster.ipAllocationPolicy.podCidrOverprovisionConfig = self.messages.PodCIDROverprovisionConfig(
-          disable=options.disable_pod_cidr_overprovision)
 
     if options.identity_provider:
       if options.workload_pool:
