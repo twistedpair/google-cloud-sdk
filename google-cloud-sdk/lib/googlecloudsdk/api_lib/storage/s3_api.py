@@ -93,6 +93,9 @@ class S3Api(cloud_api.CloudApi):
   }
 
   def __init__(self):
+    log.warning(
+        'S3 support is currently unstable and should not be relied on for'
+        ' production workloads.')
     self.client = _create_client()
 
   @_catch_client_error_raise_s3_api_error()

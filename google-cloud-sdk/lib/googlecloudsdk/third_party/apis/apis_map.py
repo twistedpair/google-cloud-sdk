@@ -1878,6 +1878,17 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'kmsinventory': {
+        'v1':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.kmsinventory.v1',
+                    client_classpath='kmsinventory_v1_client.KmsinventoryV1',
+                    messages_modulepath='kmsinventory_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'krmapihosting': {
         'v1':
             APIDef(

@@ -158,6 +158,10 @@
           "description": "Optional. Cloud Run platform specific policy.",
           "$ref": "InlineCloudRunPolicy"
         },
+        "gkePolicy": {
+          "description": "Optional. GKE platform specific policy.",
+          "$ref": "GkePolicy"
+        },
         "updateTime": {
           "description": "Output only. Time when the policy was last updated.",
           "readOnly": true,
@@ -341,6 +345,255 @@
             "EC_SIGN_P384_SHA384",
             "ECDSA_P521_SHA512",
             "EC_SIGN_P521_SHA512"
+          ]
+        }
+      }
+    },
+    "GkePolicy": {
+      "id": "GkePolicy",
+      "description": "A Binary Authorization policy for a GKE cluster. This is one type of policy that can occur as a `PlatformPolicy`.",
+      "type": "object",
+      "properties": {
+        "imageAllowlist": {
+          "description": "Optional. Images exempted from this policy. If any of the patterns match the image being evaluated, the policy evaluation will short-circuit and return a verdict of \"allowed due to image exemption\".",
+          "$ref": "ImageAllowlist"
+        },
+        "checkSets": {
+          "description": "Optional. The CheckSets to apply, scoped by namespace or namespace and service account. Exactly one CheckSet will be evaluated for a given Pod (unless the list is empty, in which case the behavior is \"always allow\"). If multiple CheckSets have scopes that match the namespace and service account of the Pod being evaluated, only the CheckSet with the MOST SPECIFIC scope will match. CheckSets must be listed in order of decreasing specificity, i.e. if a scope matches a given service account (which must include the namespace), it must come before a CheckSet with a scope matching just that namespace. This property is enforced by server-side validation. The purpose of this restriction is to ensure that if more than one CheckSet matches a given Pod, the CheckSet that will be evaluated will always be the first in the list to match (because if any other matches, it must be less specific). If `check_sets` is empty, the default behavior is to allow all images. If `check_sets` is non-empty, the last `check_sets` entry must always be a CheckSet with no scope set, i.e. a catchall to handle any situation not caught by the preceding CheckSets.",
+          "type": "array",
+          "items": {
+            "$ref": "CheckSet"
+          }
+        }
+      }
+    },
+    "ImageAllowlist": {
+      "id": "ImageAllowlist",
+      "description": "Images that are exempted from normal checks based on name pattern only.",
+      "type": "object",
+      "properties": {
+        "allowPattern": {
+          "description": "Required. A disjunction of image patterns to allow. If any of these patterns match, then the image is considered exempted by this allowlist.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "CheckSet": {
+      "id": "CheckSet",
+      "description": "A conjunction of policy checks, scoped to a particular namespace or Kubernetes service account. In order for evaluation of a CheckSet to return \"allowed\" for a given image in a given Pod, one of the following conditions must be satisfied: * The image is explicitly exempted by an entry in `image_allowlist`, OR * ALL of the `checks` evaluate to \"allowed\".",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Optional. A user-provided name for this CheckSet. This field has no effect on the policy evaluation behavior except to improve readability of messages in evaluation results.",
+          "type": "string"
+        },
+        "scope": {
+          "description": "Optional. The scope to which this CheckSet applies. If unset or an empty string (the default), applies to all namespaces and service accounts. See the Scope message documentation for details on scoping rules.",
+          "$ref": "Scope"
+        },
+        "imageAllowlist": {
+          "description": "Optional. Images exempted from this CheckSet. If any of the patterns match the image being evaluated, evaluation of this CheckSet will short-circuit and return a verdict of \"allowed\" due to image exemption.",
+          "$ref": "ImageAllowlist"
+        },
+        "checks": {
+          "description": "Optional. The checks to apply. The ultimate result of evaluating the check set will be \"allow\" if and only if every check in 'checks' evaluates to \"allow\". If `checks` is empty, the default behavior is \"always allow\".",
+          "type": "array",
+          "items": {
+            "$ref": "Check"
+          }
+        }
+      }
+    },
+    "Scope": {
+      "id": "Scope",
+      "description": "A scope specifier for CheckSets.",
+      "type": "object",
+      "properties": {
+        "kubernetesServiceAccount": {
+          "description": "Optional. Matches a single Kubernetes service account, e.g. 'my-namespace:my-service-account'. `kubernetes_service_account` scope is always more specific than `kubernetes_namespace` scope for the same namespace.",
+          "type": "string"
+        },
+        "kubernetesNamespace": {
+          "description": "Optional. Matches all Kubernetes service accounts in the provided namespace, unless a more specific `kubernetes_service_account` scope already matched.",
+          "type": "string"
+        }
+      }
+    },
+    "Check": {
+      "id": "Check",
+      "description": "A single check to perform against a Pod. Checks are grouped into CheckSets, which are defined by the top-level policy.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Optional. A user-provided name for this Check. This field has no effect on the policy evaluation behavior except to improve readability of messages in evaluation results.",
+          "type": "string"
+        },
+        "alwaysDeny": {
+          "description": "Optional. A special-case check that always denies. Note that this still only applies when the scope of the CheckSet applies and the image isn't exempted by an image allowlist. This check is primarily useful for testing, or to set the default behavior for all unmatched scopes to \"deny\".",
+          "type": "boolean"
+        },
+        "imageApprovalAttestationCheck": {
+          "description": "Optional. Require an ImageApproval-type attestation for every image in the deployment.",
+          "$ref": "ImageApprovalAttestationCheck"
+        },
+        "trustedDirectoryCheck": {
+          "description": "Optional. Require that an image lives in a trusted directory.",
+          "$ref": "TrustedDirectoryCheck"
+        },
+        "imageFreshnessCheck": {
+          "description": "Optional. Require that an image is no older than a configured expiration time. Image age is determined by its upload time.",
+          "$ref": "ImageFreshnessCheck"
+        },
+        "vulnerabilityCheck": {
+          "description": "Optional. Require that an image does not contain vulnerabilities that violate the configured rules, such as based on severity levels.",
+          "$ref": "VulnerabilityCheck"
+        }
+      }
+    },
+    "ImageApprovalAttestationCheck": {
+      "id": "ImageApprovalAttestationCheck",
+      "description": "Require a signed [DSSE](https:\/\/github.com\/secure-systems-lab\/dsse) attestation with type ImageApproval. For backwards compatibility with older Binauthz policies, \"raw\" signatures (i.e. signatures without the DSSE PAE transformation) are also accepted by this check when the source of the signature is a Container Analysis AttestationOccurrence. This backwards-compatibility shim is only true for legacy attestations from AttestationOccurrence instances, and may be phased out in the future.",
+      "type": "object",
+      "properties": {
+        "attestationAuthenticators": {
+          "description": "Required. The authenticators required by this check to verify an attestation. Typically this is one or more PKIX public keys for signature verification. Only one authenticator needs to consider an attestation verified in order for an attestation to be considered fully authenticated. In otherwords, this list of authenticators is an \"OR\" of the authenticator results. At least one authenticator is required.",
+          "type": "array",
+          "items": {
+            "$ref": "AttestationAuthenticator"
+          }
+        },
+        "containerAnalysisAttestationProjects": {
+          "description": "Optional. The projects where attestations are stored as Container Analysis Occurrences. Only one attestation needs to successfully verify an image for this check to pass, so a single verified attestation found in any of `container_analysis_attestation_projects` is sufficient for the check to pass. When fetching Occurrences from Container Analysis, only 'AttestationOccurrence' kinds are considered. In the future, additional Occurrence kinds may be added to the query.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AttestationAuthenticator": {
+      "id": "AttestationAuthenticator",
+      "description": "An attestation authenticator that will be used to verify attestations. Typically this is just a set of public keys. Conceptually, an authenticator can be treated as always returning either \"authenticated\" or \"not authenticated\" when presented with a signed attestation (almost always assumed to be a [DSSE](https:\/\/github.com\/secure-systems-lab\/dsse) attestation). The details of how an authenticator makes this decision are specific to the type of 'authenticator' that this message wraps.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Optional. A user-provided name for this AttestationAuthenticator. This field has no effect on the policy evaluation behavior except to improve readability of messages in evaluation results.",
+          "type": "string"
+        },
+        "pkixPublicKeySet": {
+          "description": "Optional. A set of raw PKIX SubjectPublicKeyInfo format public keys. If any public key in the set validates the attestation signature, then the signature is considered authenticated (i.e. any one key is sufficient to authenticate).",
+          "$ref": "PkixPublicKeySet"
+        }
+      }
+    },
+    "PkixPublicKeySet": {
+      "id": "PkixPublicKeySet",
+      "description": "A bundle of PKIX public keys, used to authenticate attestation signatures. Generally, a signature is considered to be authenticated by a PkixPublicKeySet if any of the public keys verify it (i.e. it is an \"OR\" of the keys).",
+      "type": "object",
+      "properties": {
+        "pkixPublicKeys": {
+          "description": "Required. `pkix_public_keys` must have at least one entry.",
+          "type": "array",
+          "items": {
+            "$ref": "PkixPublicKey"
+          }
+        }
+      }
+    },
+    "TrustedDirectoryCheck": {
+      "id": "TrustedDirectoryCheck",
+      "description": "A trusted directory check, which rejects images that do not come from the set of user-configured trusted directories.",
+      "type": "object",
+      "properties": {
+        "trustedDirPatterns": {
+          "description": "Required. List of trusted directory patterns. A pattern is in the form \"registry\/path\/to\/directory\". The registry domain part is defined as two or more dot-separated words, e.g., us.pkg.dev, or gcr.io. Additionally, * can be used in three ways as wildcards: 1. leading * to match varying prefixes in registry subdomain (useful for location prefixes); 2. trailing * after registry\/ to match varying endings; 3. trailing ** after registry\/ to match \"\/\" as well. For example: -- gcr.io\/my-project\/my-repo is valid to match a single directory -- *-docker.pkg.dev\/my-project\/my-repo or *.gcr.io\/my-project are valid to match varying prefixes -- gcr.io\/my-project\/* will match all direct directories in my-project -- gcr.io\/my-project\/** would match all directories in my-project -- gcr.i* is not allowed since the registry is not completely specified -- sub*domain.gcr.io\/nginx is not valid because only leading * or trailing * are allowed. -- *pkg.dev\/my-project\/my-repo is not valid because leading * can only match subdomain -- **-docker.pkg.dev is not valid because one leading * is allowed, and that it cannot match \"\/\"",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ImageFreshnessCheck": {
+      "id": "ImageFreshnessCheck",
+      "description": "An image freshness check, which rejects images that were uploaded before the set number of days ago to the supported repositories.",
+      "type": "object",
+      "properties": {
+        "maxUploadAgeDays": {
+          "description": "Required. The max number of days that is allowed since the image was uploaded. Must be greater than zero.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "VulnerabilityCheck": {
+      "id": "VulnerabilityCheck",
+      "description": "An image vulnerability check, which rejects images that violate the configured vulnerability rules.",
+      "type": "object",
+      "properties": {
+        "allowedCves": {
+          "description": "Optional. A list of specific CVEs to ignore even if the vulnerability level violates maximumUnfixableSeverity or maximumFixableSeverity. CVEs are listed in the format of Container Analysis note projects\/[PROVIDER_ID]\/notes\/[NOTE_ID]. For example: - projects\/goog-vulnz\/notes\/CVE-2021-20305 - projects\/goog-vulnz\/notes\/CVE-2020-10543 - projects\/some-vulnz-provider\/notes\/some-vulnz-note-id",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "blockedCves": {
+          "description": "Optional. A list of specific CVEs to always raise warnings about even if the vulnerability level meets maximumUnfixableSeverity or maximumFixableSeverity. CVEs are listed in the format of Container Analysis note projects\/[PROVIDER_ID]\/notes\/[NOTE_ID]. For example: - projects\/goog-vulnz\/notes\/CVE-2021-20305 - projects\/goog-vulnz\/notes\/CVE-2020-10543 - projects\/some-vulnz-provider\/notes\/some-vulnz-note-id",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "maximumUnfixableSeverity": {
+          "description": "Required. The threshold for severity for which a fix isn't currently available. This field is required and must be set.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified.",
+            "Block any vulnerability.",
+            "Allow only minimal severity.",
+            "Allow only low severity and lower.",
+            "Allow medium severity and lower.",
+            "Allow high severity and lower.",
+            "Allow critical severity and lower.",
+            "Allow all severity, even vulnerability with unspecified severity."
+          ],
+          "enum": [
+            "MAXIMUM_ALLOWED_SEVERITY_UNSPECIFIED",
+            "BLOCK_ALL",
+            "MINIMAL",
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL",
+            "ALLOW_ALL"
+          ]
+        },
+        "maximumFixableSeverity": {
+          "description": "Required. The threshold for severity for which a fix is currently available. This field is required and must be set.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified.",
+            "Block any vulnerability.",
+            "Allow only minimal severity.",
+            "Allow only low severity and lower.",
+            "Allow medium severity and lower.",
+            "Allow high severity and lower.",
+            "Allow critical severity and lower.",
+            "Allow all severity, even vulnerability with unspecified severity."
+          ],
+          "enum": [
+            "MAXIMUM_ALLOWED_SEVERITY_UNSPECIFIED",
+            "BLOCK_ALL",
+            "MINIMAL",
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL",
+            "ALLOW_ALL"
           ]
         }
       }

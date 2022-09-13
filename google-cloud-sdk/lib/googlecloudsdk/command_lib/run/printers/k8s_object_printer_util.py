@@ -58,6 +58,12 @@ def LastUpdatedMessage(record):
   return 'Last updated on {} by {}'.format(last_transition_time, modifier)
 
 
+def LastUpdatedMessageForJob(record):
+  modifier = record.last_modifier or '?'
+  last_updated_time = record.last_modified_timestamp or '?'
+  return 'Last updated on {} by {}'.format(last_updated_time, modifier)
+
+
 def GetLabels(labels):
   """Returns a human readable description of user provided labels if any."""
   if not labels:

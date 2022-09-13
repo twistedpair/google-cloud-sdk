@@ -868,7 +868,7 @@
           "type": "string"
         },
         "accessLevels": {
-          "description": "Required. Access level that a user must have to be granted access. Only one access level is supported, not multiple. This repeated field must have exactly one element. Example: \"accessPolicies\/9522\/accessLevels\/device_trusted\"",
+          "description": "Optional. Access level that a user must have to be granted access. Only one access level is supported, not multiple. This repeated field must have exactly one element. Example: \"accessPolicies\/9522\/accessLevels\/device_trusted\"",
           "type": "array",
           "items": {
             "type": "string"
@@ -1933,7 +1933,7 @@
                   "type": "string"
                 },
                 "updateMask": {
-                  "description": "Required. Only the fields specified in this mask are updated. Because name and group_key cannot be changed, update_mask is required and must always be: update_mask { paths: \"access_levels\" }",
+                  "description": "Required. Only the fields specified in this mask are updated. Because name and group_key cannot be changed, update_mask is required and may only contain the following fields: `access_levels`, `dry_run_access_levels`. Example: update_mask { paths: \"access_levels\" }",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"

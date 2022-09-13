@@ -1506,6 +1506,10 @@
         "financialContract": {
           "description": "Financial contracts linked to this consent.",
           "type": "string"
+        },
+        "offer": {
+          "description": "The name of the offer linked to this consent. It is in the format of: - \"billingAccounts\/{billing_account}\/offers\/{offer_id}\".",
+          "type": "string"
         }
       }
     },

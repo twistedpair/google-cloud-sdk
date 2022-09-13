@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.vmware import util
+from googlecloudsdk.api_lib.vmware.networks import NetworksClient
 from googlecloudsdk.command_lib.vmware.networks import util as networks_util
 
 
@@ -29,6 +30,7 @@ class NetworkPoliciesClient(util.VmwareClientBase):
   def __init__(self):
     super(NetworkPoliciesClient, self).__init__()
     self.service = self.client.projects_locations_networkPolicies
+    self.networks_client = NetworksClient()
 
   def Get(self, resource):
     request = self.messages.VmwareengineProjectsLocationsNetworkPoliciesGetRequest(
@@ -38,18 +40,21 @@ class NetworkPoliciesClient(util.VmwareClientBase):
 
   def Create(self,
              resource,
-             vmware_engine_network=None,
+             vmware_engine_network_id=None,
              description=None,
              edge_services_cidr=None,
              internet_access=None,
              external_ip_access=None):
     parent = resource.Parent().RelativeName()
+    project = resource.Parent().Parent().Name()
     network_policy_id = resource.Name()
     network_policy = self.messages.NetworkPolicy(description=description)
     internet_access_obj = self.messages.NetworkService(enabled=internet_access)
     external_ip_access_obj = self.messages.NetworkService(
         enabled=external_ip_access)
-    network_policy.vmwareEngineNetwork = vmware_engine_network
+    if vmware_engine_network_id is not None:
+      ven = self.networks_client.GetByID(project, vmware_engine_network_id)
+      network_policy.vmwareEngineNetwork = ven.name
     network_policy.edgeServicesCidr = edge_services_cidr
     network_policy.internetAccess = internet_access_obj
     network_policy.externalIp = external_ip_access_obj

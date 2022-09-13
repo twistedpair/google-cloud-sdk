@@ -280,6 +280,10 @@
         "dockerChrootPath": {
           "description": "Whether dockerChrootPath can be used.",
           "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature"
+        },
+        "dockerRunAsContainerProvidedUser": {
+          "description": "Whether dockerRunAsContainerProvidedUser can be used.",
+          "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature"
         }
       }
     },

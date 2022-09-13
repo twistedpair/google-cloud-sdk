@@ -22,6 +22,7 @@ import uuid
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.vmware import util
+from googlecloudsdk.api_lib.vmware.networks import NetworksClient
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
@@ -31,6 +32,7 @@ class NetworkPeeringClient(util.VmwareClientBase):
   def __init__(self):
     super(NetworkPeeringClient, self).__init__()
     self.service = self.client.projects_locations_global_networkPeerings
+    self.networks_client = NetworksClient()
 
   def Get(self, resource):
     request = self.messages.VmwareengineProjectsLocationsGlobalNetworkPeeringsGetRequest(
@@ -41,15 +43,20 @@ class NetworkPeeringClient(util.VmwareClientBase):
   def Create(self,
              resource,
              description=None,
-             vmware_engine_network=None,
-             peer_network=None,
+             vmware_engine_network_id=None,
+             peer_network_id=None,
              peer_network_type=None,
+             peer_project=None,
              peer_mtu=None,
              export_custom_routes=True,
              import_custom_routes=True,
              export_custom_routes_with_public_ip=True,
              import_custom_routes_with_public_ip=True,
              exchange_subnet_routes=True):
+    project = resource.Parent().Name()
+    if peer_project is None:
+      peer_project = project
+
     parent = '/'.join(resource.RelativeName().split('/')[:-2])
     peering_id = resource.Name()
     peering = self.messages.NetworkPeering(description=description)
@@ -60,8 +67,16 @@ class NetworkPeeringClient(util.VmwareClientBase):
         include_filter=lambda x: 'UNSPECIFIED' not in x).GetEnumForChoice(
             arg_utils.EnumNameToChoice(peer_network_type))
     peering.peerNetworkType = peer_network_type_enum
-    peering.vmwareEngineNetwork = vmware_engine_network
-    peering.peerNetwork = peer_network
+    if vmware_engine_network_id is not None:
+      ven = self.networks_client.GetByID(project, vmware_engine_network_id)
+      peering.vmwareEngineNetwork = ven.name
+    if peer_network_id is not None:
+      if peer_network_type_enum == self.messages.NetworkPeering.PeerNetworkTypeValueValuesEnum.VMWARE_ENGINE_NETWORK:
+        peering.peerNetwork = 'projects/{project}/locations/global/vmwareEngineNetworks/{network_id}'.format(
+            project=peer_project, network_id=peer_network_id)
+      else:
+        peering.peerNetwork = 'projects/{project}/global/networks/{network_id}'.format(
+            project=peer_project, network_id=peer_network_id)
     if peer_mtu:
       peering.peer_mtu = peer_mtu
     peering.exportCustomRoutes = export_custom_routes

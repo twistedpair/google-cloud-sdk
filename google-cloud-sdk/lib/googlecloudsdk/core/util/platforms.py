@@ -401,7 +401,7 @@ class Platform(object):
     else:
       # Killing a group leader kills the whole group.
       # Create a new session with the new process the group leader.
-      if sys.version_info[0] == 3 and sys.version_info[1] == 9:
+      if sys.version_info[0] == 3 and sys.version_info[1] > 8:
         args['start_new_session'] = True
       else:
         args['preexec_fn'] = os.setsid

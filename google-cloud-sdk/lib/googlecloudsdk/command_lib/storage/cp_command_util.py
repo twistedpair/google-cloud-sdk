@@ -188,9 +188,7 @@ def add_cp_flags(parser):
       '-U',
       '--skip-unsupported',
       action='store_true',
-      help='Skip objects with unsupported object types.'
-      'Currently, the only unsupported category is Amazon S3 objects with the'
-      ' GLACIER storage class.')
+      help='Skip objects with unsupported object types.')
   parser.add_argument(
       '-s',
       '--storage-class',

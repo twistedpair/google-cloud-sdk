@@ -21899,6 +21899,139 @@ class ComputeRegionTargetHttpsProxiesSetUrlMapRequest(_messages.Message):
   urlMapReference = _messages.MessageField('UrlMapReference', 5)
 
 
+class ComputeRegionTargetTcpProxiesDeleteRequest(_messages.Message):
+  r"""A ComputeRegionTargetTcpProxiesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    targetTcpProxy: Name of the TargetTcpProxy resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  targetTcpProxy = _messages.StringField(4, required=True)
+
+
+class ComputeRegionTargetTcpProxiesGetRequest(_messages.Message):
+  r"""A ComputeRegionTargetTcpProxiesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    targetTcpProxy: Name of the TargetTcpProxy resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  targetTcpProxy = _messages.StringField(3, required=True)
+
+
+class ComputeRegionTargetTcpProxiesInsertRequest(_messages.Message):
+  r"""A ComputeRegionTargetTcpProxiesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    targetTcpProxy: A TargetTcpProxy resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  targetTcpProxy = _messages.MessageField('TargetTcpProxy', 4)
+
+
+class ComputeRegionTargetTcpProxiesListRequest(_messages.Message):
+  r"""A ComputeRegionTargetTcpProxiesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:` operator can be used with string fields to
+      match substrings. For non-string fields it is equivalent to the `=`
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. For example, to find all objects with `owner` label use: ```
+      labels.owner:* ``` You can also filter nested fields. For example, you
+      could specify `scheduling.automaticRestart = false` to include instances
+      only if they are not scheduled for automatic restarts. You can use
+      filtering on nested fields to filter based on resource labels. To filter
+      on multiple expressions, provide each separate expression within
+      parentheses. For example: ``` (scheduling.automaticRestart = true)
+      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
+      `AND` expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
+      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
+      true) ``` If you want to use a regular expression, use the `eq` (equal)
+      or `ne` (not equal) operator against a single un-parenthesized
+      expression with or without quotes or against multiple parenthesized
+      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
+      'single quoted literal'` `fieldname eq "double quoted literal"`
+      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
+      interpreted as a regular expression using Google RE2 library syntax. The
+      literal value must match the entire field. For example, to filter for
+      instances that do not end with name "instance", you would use `name ne
+      .*instance`.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
 class ComputeRegionUrlMapsDeleteRequest(_messages.Message):
   r"""A ComputeRegionUrlMapsDeleteRequest object.
 
@@ -30885,13 +31018,14 @@ class FirewallPolicy(_messages.Message):
       property when you create the resource.
     displayName: Deprecated, please use short name instead. User-provided name
       of the Organization firewall policy. The name should be unique in the
-      organization in which the firewall policy is created. This name must be
-      set on creation and cannot be changed. The name must be 1-63 characters
-      long, and comply with RFC1035. Specifically, the name must be 1-63
-      characters long and match the regular expression
-      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
-      lowercase letter, and all following characters must be a dash, lowercase
-      letter, or digit, except the last character, which cannot be a dash.
+      organization in which the firewall policy is created. This field is not
+      applicable to network firewall policies. This name must be set on
+      creation and cannot be changed. The name must be 1-63 characters long,
+      and comply with RFC1035. Specifically, the name must be 1-63 characters
+      long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
+      means the first character must be a lowercase letter, and all following
+      characters must be a dash, lowercase letter, or digit, except the last
+      character, which cannot be a dash.
     fingerprint: Specifies a fingerprint for this resource, which is
       essentially a hash of the metadata's contents and used for optimistic
       locking. The fingerprint is initially generated by Compute Engine and
@@ -30904,9 +31038,11 @@ class FirewallPolicy(_messages.Message):
       is defined by the server.
     kind: [Output only] Type of the resource. Always compute#firewallPolicyfor
       firewall policies
-    name: [Output Only] Name of the resource. It is a numeric ID allocated by
-      GCP which uniquely identifies the Firewall Policy.
-    parent: [Output Only] The parent of the firewall policy.
+    name: Name of the resource. For Organization Firewall Policies it's a
+      [Output Only] numeric ID allocated by GCP which uniquely identifies the
+      Organization Firewall Policy.
+    parent: [Output Only] The parent of the firewall policy. This field is not
+      applicable to network firewall policies.
     region: [Output Only] URL of the region where the regional firewall policy
       resides. This field is not applicable to global firewall policies. You
       must specify this field as part of the HTTP request URL. It is not
@@ -30920,15 +31056,15 @@ class FirewallPolicy(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
-    shortName: User-provided name of the Organization firewall plicy. The name
-      should be unique in the organization in which the firewall policy is
-      created. This name must be set on creation and cannot be changed. The
-      name must be 1-63 characters long, and comply with RFC1035.
-      Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
-      character must be a lowercase letter, and all following characters must
-      be a dash, lowercase letter, or digit, except the last character, which
-      cannot be a dash.
+    shortName: User-provided name of the Organization firewall policy. The
+      name should be unique in the organization in which the firewall policy
+      is created. This field is not applicable to network firewall policies.
+      This name must be set on creation and cannot be changed. The name must
+      be 1-63 characters long, and comply with RFC1035. Specifically, the name
+      must be 1-63 characters long and match the regular expression
+      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
+      lowercase letter, and all following characters must be a dash, lowercase
+      letter, or digit, except the last character, which cannot be a dash.
   """
 
   associations = _messages.MessageField('FirewallPolicyAssociation', 1, repeated=True)
@@ -35275,6 +35411,9 @@ class Instance(_messages.Message):
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
     resourcePolicies: Resource policies applied to this instance.
+    resourceStatus: [Output Only] Specifies values set for instance attributes
+      as compared to the values requested by user in the corresponding input
+      only field.
     satisfiesPzs: [Output Only] Reserved for future use.
     scheduling: Sets the scheduling options for this instance.
     selfLink: [Output Only] Server-defined URL for this resource.
@@ -35430,19 +35569,20 @@ class Instance(_messages.Message):
   privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 28)
   reservationAffinity = _messages.MessageField('ReservationAffinity', 29)
   resourcePolicies = _messages.StringField(30, repeated=True)
-  satisfiesPzs = _messages.BooleanField(31)
-  scheduling = _messages.MessageField('Scheduling', 32)
-  selfLink = _messages.StringField(33)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 34, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 35)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 36)
-  sourceMachineImage = _messages.StringField(37)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 38)
-  startRestricted = _messages.BooleanField(39)
-  status = _messages.EnumField('StatusValueValuesEnum', 40)
-  statusMessage = _messages.StringField(41)
-  tags = _messages.MessageField('Tags', 42)
-  zone = _messages.StringField(43)
+  resourceStatus = _messages.MessageField('ResourceStatus', 31)
+  satisfiesPzs = _messages.BooleanField(32)
+  scheduling = _messages.MessageField('Scheduling', 33)
+  selfLink = _messages.StringField(34)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 35, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 36)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 37)
+  sourceMachineImage = _messages.StringField(38)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 39)
+  startRestricted = _messages.BooleanField(40)
+  status = _messages.EnumField('StatusValueValuesEnum', 41)
+  statusMessage = _messages.StringField(42)
+  tags = _messages.MessageField('Tags', 43)
+  zone = _messages.StringField(44)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -53697,6 +53837,19 @@ class ResourcePolicyWeeklyCycleDayOfWeek(_messages.Message):
   startTime = _messages.StringField(3)
 
 
+class ResourceStatus(_messages.Message):
+  r"""Contains output only fields. Use this sub-message for actual values set
+  on Instance attributes as compared to the value requested by the user
+  (intent) in their instance CRUD calls.
+
+  Fields:
+    physicalHost: [Output Only] An opaque ID of the host on which the VM is
+      running.
+  """
+
+  physicalHost = _messages.StringField(1)
+
+
 class Route(_messages.Message):
   r"""Represents a Route resource. A route defines a path from VM instances in
   the VPC network to a specific destination. This destination can be inside or
@@ -64006,6 +64159,8 @@ class TargetTcpProxy(_messages.Message):
       false.
     proxyHeader: Specifies the type of proxy header to append before sending
       data to the backend, either NONE or PROXY_V1. The default is NONE.
+    region: [Output Only] URL of the region where the regional TCP proxy
+      resides. This field is not applicable to global TCP proxy.
     selfLink: [Output Only] Server-defined URL for the resource.
     service: URL to the BackendService resource.
   """
@@ -64028,8 +64183,9 @@ class TargetTcpProxy(_messages.Message):
   name = _messages.StringField(5)
   proxyBind = _messages.BooleanField(6)
   proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 7)
-  selfLink = _messages.StringField(8)
-  service = _messages.StringField(9)
+  region = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  service = _messages.StringField(10)
 
 
 class TargetTcpProxyList(_messages.Message):

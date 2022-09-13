@@ -214,7 +214,8 @@ class SecurityPolicyRule(object):
 
   def _MakePatchRequestTuple(self, src_ip_ranges, expression, action,
                              description, preview, redirect_options,
-                             rate_limit_options, request_headers_to_add):
+                             rate_limit_options, request_headers_to_add,
+                             preconfig_waf_config):
     """Generates a SecurityPolicies PatchRule request.
 
     Args:
@@ -227,6 +228,8 @@ class SecurityPolicyRule(object):
         redirect type and redirect target.
       rate_limit_options: The rate limiting behavior for this rule.
       request_headers_to_add: A list of headers to add to requests that match
+        this rule.
+      preconfig_waf_config: preconfigured WAF configuration to be applied for
         this rule.
 
     Returns:
@@ -257,6 +260,8 @@ class SecurityPolicyRule(object):
 
     if rate_limit_options is not None:
       security_policy_rule.rateLimitOptions = rate_limit_options
+    if preconfig_waf_config is not None:
+      security_policy_rule.preconfiguredWafConfig = preconfig_waf_config
 
     return (self._client.securityPolicies, 'PatchRule',
             self._messages.ComputeSecurityPoliciesPatchRuleRequest(
@@ -325,12 +330,14 @@ class SecurityPolicyRule(object):
             redirect_options=None,
             rate_limit_options=None,
             request_headers_to_add=None,
+            preconfig_waf_config=None,
             only_generate_request=False):
     """Make and optionally send a request to Patch a security policy rule."""
     requests = [
         self._MakePatchRequestTuple(src_ip_ranges, expression, action,
                                     description, preview, redirect_options,
-                                    rate_limit_options, request_headers_to_add)
+                                    rate_limit_options, request_headers_to_add,
+                                    preconfig_waf_config)
     ]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)

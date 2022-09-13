@@ -26,6 +26,18 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 
 
+# Constants used to pick the symbol displayed to the console.
+SUCCESS = 'SUCCESS'
+UPDATING = 'UPDATING'
+FAILED = 'FAILED'
+MISSING = 'MISSING'
+DEFAULT = 'DEFAULT'
+
+# Constants used to pick the encoding
+ASCII = 'ascii'
+UTF8 = 'utf8'
+
+
 class BaseFormatter:
   """Prints the run Integration in a custom human-readable format."""
 
@@ -65,7 +77,6 @@ class BaseFormatter:
             .replace('_', ' ')
             .title())
 
-
   def GetResourceState(self, resource):
     """Return the state of the top level resource in the integration.
 
@@ -97,26 +108,76 @@ class BaseFormatter:
     Returns:
       The symbol string.
     """
-    con = console_attr.GetConsoleAttr()
-    encoding = console_attr.GetConsoleAttr().GetEncoding()
-    if properties.VALUES.core.disable_color.GetBool():
-      encoding = 'ascii'
     if status == states.DEPLOYED or status == states.ACTIVE:
-      return con.Colorize(
-          self._PickSymbol('\N{HEAVY CHECK MARK}', '+', encoding), 'green')
+      return GetSymbol(SUCCESS)
     if status in (states.PROVISIONING, states.UPDATING, states.NOT_READY):
-      return con.Colorize(self._PickSymbol(
-          '\N{HORIZONTAL ELLIPSIS}', '.', encoding), 'yellow')
+      return GetSymbol(UPDATING)
     if status == states.MISSING:
-      return con.Colorize('?', 'yellow')
+      return GetSymbol(MISSING)
     if status == states.FAILED:
-      return con.Colorize('X', 'red')
-    return con.Colorize('~', 'blue')
+      return GetSymbol(FAILED)
+    return GetSymbol(DEFAULT)
 
-  def _PickSymbol(self, best, alt, encoding):
-    """Choose the best symbol (if it's in this encoding) or an alternate."""
-    try:
-      best.encode(encoding)
-      return best
-    except UnicodeError:
-      return alt
+
+def GetSymbol(status, encoding=None):
+  """Chooses a symbol to be displayed to the console based on the status.
+
+  Args:
+    status: str, defined as a constant in this file.  CloudSDK must
+      support Python 2 at the moment so we cannot use the actual enum class.
+      If the value is not valid or supported then it will return a default
+      symbol.
+
+    encoding: str, defined as a constant in this file.  If not provided, the
+      encoding will be fetched from the user's console.
+
+  Returns:
+    Symbol (str) to be displayed to the console.
+  """
+  con = console_attr.GetConsoleAttr()
+  if encoding is None:
+    encoding = _GetEncoding()
+
+  default_symbol = con.Colorize('~', 'blue')
+  status_to_symbol = {
+      SUCCESS: con.Colorize(
+          _PickSymbol('\N{HEAVY CHECK MARK}', '+', encoding), 'green'
+      ),
+      UPDATING: con.Colorize(
+          _PickSymbol('\N{HORIZONTAL ELLIPSIS}', '.', encoding), 'yellow'
+      ),
+      FAILED: con.Colorize('X', 'red'),
+      MISSING: con.Colorize('?', 'yellow'),
+      DEFAULT: default_symbol,
+  }
+
+  return status_to_symbol.get(status, default_symbol)
+
+
+def _GetEncoding():
+  """Returns the encoding used by the user's console.
+
+  If the user has color disabled, then we will default to ascii.
+  """
+  if properties.VALUES.core.disable_color.GetBool():
+    return ASCII
+
+  return console_attr.GetConsoleAttr().GetEncoding()
+
+
+def _PickSymbol(best, alt, encoding):
+  """Chooses the best symbol (if it's in this encoding) or an alternate.
+
+  Args:
+    best: str, the symbol to return if the encoding allows.
+    alt: str, alternative to return if best cannot be encoded.
+    encoding:  str, possible values are utf8, ascii, and win.
+
+  Returns:
+    The symbol string if the encoding allows, otherwise an alternative string.
+  """
+  try:
+    best.encode(encoding)
+    return best
+  except UnicodeError:
+    return alt

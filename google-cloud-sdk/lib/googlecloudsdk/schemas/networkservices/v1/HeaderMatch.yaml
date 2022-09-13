@@ -29,32 +29,34 @@ properties:
       type: string
   exactMatch:
     description: |-
-      The value of the header should exactly match contents of exactMatch. Only
-      one of exactMatch, prefixMatch, suffixMatch or presentMatch must be set.
+      The value of the header must exactly match contents of `exact_match`. Only
+      one of `exact_match`, prefix_match, suffix_match, or present_match must be
+      set.
     type: string
   headerName:
     description: The header name to match on.
     type: string
   invertMatch:
     description: |-
-      If set to false (default), the headerMatch is considered a match if the
-      match criteria above are met. If set to true, the headerMatch is
-      considered a match if the match criteria above are NOT met. The default
-      setting is false.
+      If set to `false`, the HeaderMatch is considered a match if the match
+      criteria above are met. If set to `true`, the `HeaderMatch` is considered
+      a match if the match criteria above are NOT met. The default is `false`.
     type: boolean
   prefixMatch:
     description: |-
-      The value of the header must start with the contents of prefixMatch. Only
-      one of exactMatch, prefixMatch, suffixMatch or presentMatch must be set.
+      The value of the header must start with the contents of `prefix_match`.
+      Only one of exact_match, `prefix_match`, suffix_match, or present_match
+      must be set.
     type: string
   presentMatch:
     description: |-
-      A header with the contents of headerName must exist. The match takes place
-      whether or not the request's header has a value. Only one of exactMatch,
-      prefixMatch, suffixMatch or presentMatch must be set.
+      A header with the contents of header_name must exist. The match takes
+      place whether or not the request's header has a value. Only one of
+      exact_match, prefix_match, suffix_match, or `present_match` must be set.
     type: boolean
   suffixMatch:
     description: |-
-      The value of the header must end with the contents of suffixMatch. Only
-      one of exactMatch, prefixMatch, suffixMatch or presentMatch must be set.
+      The value of the header must end with the contents of `suffix_match`. Only
+      one of exact_match, prefix_match, `suffix_match` or present_match must be
+      set.
     type: string

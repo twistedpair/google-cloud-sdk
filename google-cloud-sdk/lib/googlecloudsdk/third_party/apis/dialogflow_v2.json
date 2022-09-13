@@ -3525,9 +3525,9 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified feature type.",
-            "Run article suggestion model.",
-            "Run FAQ model.",
-            "Run smart reply model."
+            "Run article suggestion model for chat.",
+            "Run FAQ model for chat.",
+            "Run smart reply model for chat."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
@@ -3818,9 +3818,9 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified feature type.",
-            "Run article suggestion model.",
-            "Run FAQ model.",
-            "Run smart reply model."
+            "Run article suggestion model for chat.",
+            "Run FAQ model for chat.",
+            "Run smart reply model for chat."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
@@ -8209,9 +8209,9 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified feature type.",
-            "Run article suggestion model.",
-            "Run FAQ model.",
-            "Run smart reply model."
+            "Run article suggestion model for chat.",
+            "Run FAQ model for chat.",
+            "Run smart reply model for chat."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
@@ -8414,9 +8414,9 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified feature type.",
-            "Run article suggestion model.",
-            "Run FAQ model.",
-            "Run smart reply model."
+            "Run article suggestion model for chat.",
+            "Run FAQ model for chat.",
+            "Run smart reply model for chat."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
@@ -10047,15 +10047,17 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified feature type.",
-            "Run article suggestion model.",
+            "Run article suggestion model for chat.",
             "Run FAQ model.",
-            "Run smart reply model."
+            "Run smart reply model for chat.",
+            "Run conversation summarization model for chat."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
             "ARTICLE_SUGGESTION",
             "FAQ",
-            "SMART_REPLY"
+            "SMART_REPLY",
+            "CONVERSATION_SUMMARIZATION"
           ]
         },
         "createTime": {
@@ -10570,15 +10572,17 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified feature type.",
-            "Run article suggestion model.",
+            "Run article suggestion model for chat.",
             "Run FAQ model.",
-            "Run smart reply model."
+            "Run smart reply model for chat.",
+            "Run conversation summarization model for chat."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
             "ARTICLE_SUGGESTION",
             "FAQ",
-            "SMART_REPLY"
+            "SMART_REPLY",
+            "CONVERSATION_SUMMARIZATION"
           ]
         },
         "createTime": {

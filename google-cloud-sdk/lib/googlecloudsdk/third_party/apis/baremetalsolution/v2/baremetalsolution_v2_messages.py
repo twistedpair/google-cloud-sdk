@@ -1071,11 +1071,13 @@ class Instance(_messages.Message):
       PROVISIONING: The server is being provisioned.
       RUNNING: The server is running.
       DELETED: The server has been deleted.
+      UPDATING: The server is being updated.
     """
     STATE_UNSPECIFIED = 0
     PROVISIONING = 1
     RUNNING = 2
     DELETED = 3
+    UPDATING = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1645,11 +1647,13 @@ class Network(_messages.Message):
       PROVISIONING: The Network is provisioning.
       PROVISIONED: The Network has been provisioned.
       DEPROVISIONING: The Network is being deprovisioned.
+      UPDATING: The Network is being updated.
     """
     STATE_UNSPECIFIED = 0
     PROVISIONING = 1
     PROVISIONED = 2
     DEPROVISIONING = 3
+    UPDATING = 4
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of this network.
@@ -2702,11 +2706,13 @@ class Volume(_messages.Message):
     Values:
       VOLUME_PERFORMANCE_TIER_UNSPECIFIED: Value is not specified.
       VOLUME_PERFORMANCE_TIER_SHARED: Regular volumes, shared aggregates.
-      VOLUME_PERFORMANCE_TIER_DEDICATED: Dedicated (assigned) aggregates.
+      VOLUME_PERFORMANCE_TIER_ASSIGNED: Assigned aggregates.
+      VOLUME_PERFORMANCE_TIER_HT: High throughput aggregates.
     """
     VOLUME_PERFORMANCE_TIER_UNSPECIFIED = 0
     VOLUME_PERFORMANCE_TIER_SHARED = 1
-    VOLUME_PERFORMANCE_TIER_DEDICATED = 2
+    VOLUME_PERFORMANCE_TIER_ASSIGNED = 2
+    VOLUME_PERFORMANCE_TIER_HT = 3
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""Output only. Storage protocol for the Volume.
@@ -2744,11 +2750,13 @@ class Volume(_messages.Message):
       CREATING: The storage volume is being created.
       READY: The storage volume is ready for use.
       DELETING: The storage volume has been requested to be deleted.
+      UPDATING: The storage volume is being updated.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     READY = 2
     DELETING = 3
+    UPDATING = 4
 
   class StorageTypeValueValuesEnum(_messages.Enum):
     r"""The storage type for this volume.
@@ -2844,11 +2852,13 @@ class VolumeConfig(_messages.Message):
     Values:
       VOLUME_PERFORMANCE_TIER_UNSPECIFIED: Value is not specified.
       VOLUME_PERFORMANCE_TIER_SHARED: Regular volumes, shared aggregates.
-      VOLUME_PERFORMANCE_TIER_DEDICATED: Dedicated (assigned) aggregates.
+      VOLUME_PERFORMANCE_TIER_ASSIGNED: Assigned aggregates.
+      VOLUME_PERFORMANCE_TIER_HT: High throughput aggregates.
     """
     VOLUME_PERFORMANCE_TIER_UNSPECIFIED = 0
     VOLUME_PERFORMANCE_TIER_SHARED = 1
-    VOLUME_PERFORMANCE_TIER_DEDICATED = 2
+    VOLUME_PERFORMANCE_TIER_ASSIGNED = 2
+    VOLUME_PERFORMANCE_TIER_HT = 3
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""Volume protocol.

@@ -104,8 +104,11 @@ class DeferredCrc32c(object):
     return '{:08x}'.format(self._crc).encode('ascii')
 
 
-def _is_gcloud_crc32c_installed(install_if_missing=False):
-  """Returns True if gcloud-crc32c is installed."""
+def _is_gcloud_crc32c_installed():
+  """Returns True if gcloud-crc32c is installed, otherwise tries to install."""
+  is_preferred = properties.VALUES.storage.use_gcloud_crc32c.GetBool()
+  no_preference = is_preferred is None
+  install_if_missing = is_preferred or no_preference
   try:
     return BINARY_NAME in binary_operations.CheckForInstalledBinary(
         BINARY_NAME, install_if_missing=install_if_missing)
@@ -144,9 +147,6 @@ def _should_use_gcloud_crc32c(is_installed, is_crc32c_slow, is_preferred):
       return True
     else:
       return False if no_preference else is_preferred
-  # Try to install only if needed and the user hasn't opted out already.
-  elif is_crc32c_slow and (is_preferred or no_preference):
-    return _is_gcloud_crc32c_installed(install_if_missing=True)
   return False
 
 
@@ -184,6 +184,6 @@ def get_google_crc32c_install_command():
   sdk_root = sdk_info.installation.sdk_root
   if sdk_root:
     third_party_path = os.path.join(sdk_root, 'lib', 'third_party')
-    return '{} -m pip install google-crc32c --target {}'.format(
+    return '{} -m pip install google-crc32c --upgrade --target {}'.format(
         sdk_info.basic.python_location, third_party_path)
   return None

@@ -44,7 +44,9 @@ class _AwsClientBase(client.ClientBase):
         **kwargs) if any(kwargs.values()) else None
 
   def _NodePool(self, node_pool_ref, args):
+    nodepool_type = self._messages.GoogleCloudGkemulticloudV1AwsNodePool
     kwargs = {
+        'annotations': self._Annotations(args, nodepool_type),
         'autoscaling': self._NodePoolAutoscaling(args),
         'config': self._NodeConfig(args),
         'maxPodsConstraint': self._MaxPodsConstraint(args),

@@ -1212,9 +1212,11 @@ class GoogleIamV1Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -1703,12 +1705,32 @@ class ManagedZonePrivateVisibilityConfig(_messages.Message):
   r"""A ManagedZonePrivateVisibilityConfig object.
 
   Fields:
+    gkeClusters: The list of Google Kubernetes Engine clusters that can see
+      this zone.
     kind: A string attribute.
     networks: The list of VPC networks that can see this zone.
   """
 
-  kind = _messages.StringField(1, default='dns#managedZonePrivateVisibilityConfig')
-  networks = _messages.MessageField('ManagedZonePrivateVisibilityConfigNetwork', 2, repeated=True)
+  gkeClusters = _messages.MessageField('ManagedZonePrivateVisibilityConfigGKECluster', 1, repeated=True)
+  kind = _messages.StringField(2, default='dns#managedZonePrivateVisibilityConfig')
+  networks = _messages.MessageField('ManagedZonePrivateVisibilityConfigNetwork', 3, repeated=True)
+
+
+class ManagedZonePrivateVisibilityConfigGKECluster(_messages.Message):
+  r"""A ManagedZonePrivateVisibilityConfigGKECluster object.
+
+  Fields:
+    gkeClusterName: The resource name of the cluster to bind this ManagedZone
+      to. This should be specified in the format like:
+      projects/*/locations/*/clusters/*. This is referenced from GKE
+      projects.locations.clusters.get API:
+      https://cloud.google.com/kubernetes-
+      engine/docs/reference/rest/v1/projects.locations.clusters/get
+    kind: A string attribute.
+  """
+
+  gkeClusterName = _messages.StringField(1)
+  kind = _messages.StringField(2, default='dns#managedZonePrivateVisibilityConfigGKECluster')
 
 
 class ManagedZonePrivateVisibilityConfigNetwork(_messages.Message):
@@ -2425,6 +2447,8 @@ class ResponsePolicy(_messages.Message):
 
   Fields:
     description: User-provided description for this Response Policy.
+    gkeClusters: The list of Google Kubernetes Engine clusters to which this
+      response policy is applied.
     id: Unique identifier for the resource; defined by the server (output
       only).
     kind: A string attribute.
@@ -2434,10 +2458,28 @@ class ResponsePolicy(_messages.Message):
   """
 
   description = _messages.StringField(1)
-  id = _messages.IntegerField(2)
-  kind = _messages.StringField(3, default='dns#responsePolicy')
-  networks = _messages.MessageField('ResponsePolicyNetwork', 4, repeated=True)
-  responsePolicyName = _messages.StringField(5)
+  gkeClusters = _messages.MessageField('ResponsePolicyGKECluster', 2, repeated=True)
+  id = _messages.IntegerField(3)
+  kind = _messages.StringField(4, default='dns#responsePolicy')
+  networks = _messages.MessageField('ResponsePolicyNetwork', 5, repeated=True)
+  responsePolicyName = _messages.StringField(6)
+
+
+class ResponsePolicyGKECluster(_messages.Message):
+  r"""A ResponsePolicyGKECluster object.
+
+  Fields:
+    gkeClusterName: The resource name of the cluster to bind this response
+      policy to. This should be specified in the format like:
+      projects/*/locations/*/clusters/*. This is referenced from GKE
+      projects.locations.clusters.get API:
+      https://cloud.google.com/kubernetes-
+      engine/docs/reference/rest/v1/projects.locations.clusters/get
+    kind: A string attribute.
+  """
+
+  gkeClusterName = _messages.StringField(1)
+  kind = _messages.StringField(2, default='dns#responsePolicyGKECluster')
 
 
 class ResponsePolicyNetwork(_messages.Message):

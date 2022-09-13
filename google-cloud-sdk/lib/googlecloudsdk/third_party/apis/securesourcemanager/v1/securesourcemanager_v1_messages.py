@@ -94,9 +94,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -199,6 +201,22 @@ class HostConfig(_messages.Message):
   html = _messages.StringField(4)
 
 
+class InitialConfig(_messages.Message):
+  r"""Repository initialization configs.
+
+  Fields:
+    defaultBranch: Default branch name of the repository.
+    gitignores: List of gitignore template names user can choose from.
+    license: License template name user can choose from.
+    readme: README template name. Valid template name(s) are: default.
+  """
+
+  defaultBranch = _messages.StringField(1)
+  gitignores = _messages.StringField(2, repeated=True)
+  license = _messages.StringField(3)
+  readme = _messages.StringField(4)
+
+
 class Instance(_messages.Message):
   r"""All state for a SecureSourceManager instance.
 
@@ -277,7 +295,7 @@ class Instance(_messages.Message):
 
 
 class ListInstancesResponse(_messages.Message):
-  r"""Message for response to listing Instances.
+  r"""ListInstancesResponse is the response for listing Instances.
 
   Fields:
     instances: The list of Instance.
@@ -318,7 +336,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class ListRepositoriesResponse(_messages.Message):
-  r"""Message for response to listing Repositories.
+  r"""ListRepositoriesResponse is the response for listing Repositories.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
@@ -331,7 +349,7 @@ class ListRepositoriesResponse(_messages.Message):
 
 
 class ListSshKeysResponse(_messages.Message):
-  r"""Message for response to listing SSH Keys.
+  r"""ListSshKeysResponse is the response for listing SSH Keys.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
@@ -654,6 +672,7 @@ class Repository(_messages.Message):
     etag: Optional. This checksum is computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
+    initialConfig: Input only. Initial configurations for the repository.
     instance: Output only. The name of the instance that the repository is
       created in.
     name: Optional. A unique identifier for a repository. The name should be
@@ -695,11 +714,12 @@ class Repository(_messages.Message):
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   etag = _messages.StringField(4)
-  instance = _messages.StringField(5)
-  name = _messages.StringField(6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
-  uris = _messages.MessageField('URIs', 9)
+  initialConfig = _messages.MessageField('InitialConfig', 5)
+  instance = _messages.StringField(6)
+  name = _messages.StringField(7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+  uris = _messages.MessageField('URIs', 10)
 
 
 class SecuresourcemanagerProjectsLocationsGetRequest(_messages.Message):
@@ -1185,7 +1205,7 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class SshKey(_messages.Message):
-  r"""A SshKey object.
+  r"""Metadata of a SecureSourceManager SSH Key
 
   Messages:
     AnnotationsValue: Optional. User annotations. These attributes can only be
@@ -1211,6 +1231,9 @@ class SshKey(_messages.Message):
       key creator, but users with the canActAs permission on a service account
       can also set the owner of the SSH key to that service account.
     publicKey: Required. Input only. Immutable. The SSH key text.
+    title: Required. Title of ssh key. This value is provided by the ssh key
+      owner upon creation. Format: This value should be 4-63 characters, and
+      valid characters are /a-z-/.
     uid: Output only. Unique identifier of the SSH key.
     updateTime: Output only. Update timestamp.
   """
@@ -1274,8 +1297,9 @@ class SshKey(_messages.Message):
   name = _messages.StringField(5)
   owner = _messages.StringField(6)
   publicKey = _messages.BytesField(7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  title = _messages.StringField(8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class StandardQueryParameters(_messages.Message):

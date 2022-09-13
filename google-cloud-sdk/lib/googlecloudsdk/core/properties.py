@@ -389,6 +389,8 @@ class _Sections(object):
       Cloud SDK.
     redis: Section, The section containing redis properties for the Cloud SDK.
     run: Section, The section containing run properties for the Cloud SDK.
+    runapps: Section, The section containing runapps properties for the Cloud
+      SDK.
     secrets: Section, The section containing secretmanager properties for the
       Cloud SDK.
     spanner: Section, The section containing spanner properties for the Cloud
@@ -476,6 +478,7 @@ class _Sections(object):
     self.recaptcha = _SectionRecaptcha()
     self.redis = _SectionRedis()
     self.run = _SectionRun()
+    self.runapps = _SectionRunApps()
     self.secrets = _SectionSecrets()
     self.spanner = _SectionSpanner()
     self.storage = _SectionStorage()
@@ -547,6 +550,7 @@ class _Sections(object):
         self.recaptcha,
         self.redis,
         self.run,
+        self.runapps,
         self.secrets,
         self.spanner,
         self.storage,
@@ -2847,6 +2851,20 @@ class _SectionRun(_Section):
         help_text='Target platform for running commands.')
 
 
+class _SectionRunApps(_Section):
+  """Contains the properties for the 'runapps' section."""
+
+  def __init__(self):
+    super(_SectionRunApps, self).__init__('runapps')
+    self.experimental_integrations = self._AddBool(
+        'experimental_integrations',
+        help_text='If enabled then the user will have access to integrations '
+        'that are currently experimental. These integrations will also not be'
+        'usable in the API for those who are not allowlisted.',
+        default=False,
+        hidden=True)
+
+
 class _SectionScc(_Section):
   """Contains the properties for the 'scc' section."""
 
@@ -3091,9 +3109,25 @@ class _SectionStorage(_Section):
         'Values can be provided either in bytes or as human-readable values '
         '(e.g., "150M" to represent 150 mebibytes).')
 
+    self.parallel_composite_upload_compatibility_check = self._AddBool(
+        'parallel_composite_upload_compatibility_check',
+        default=True,
+        help_text='Determines if the GET bucket call should be performed to '
+        'check if the default storage class and retention period for the '
+        'destination bucket meet the criteria for parallel composite upload.')
+
+    self.parallel_composite_upload_enabled = self._Add(
+        'parallel_composite_upload_enabled',
+        default=None,
+        help_text='Determines whether parallel composite upload should be '
+        'used. Default value is None which will use parallel composite upload '
+        'and log an appropriate warning for the user explaining that parallel '
+        'composite upload is being used by default.',
+        choices=[True, False, None])
+
     self.parallel_composite_upload_threshold = self._Add(
         'parallel_composite_upload_threshold',
-        default='0',
+        default='150M',
         validator=_HumanReadableByteAmountValidator,
         help_text='Specifies the maximum size of a file to upload in a single '
         'stream. Files larger than this threshold will be partitioned into '
@@ -3101,8 +3135,8 @@ class _SectionStorage(_Section):
         'object. The number of components will be the smaller of '
         'ceil(file_size / parallel_composite_upload_component_size) and '
         'the maximum number of objects the API allows composing at once. For '
-        'Cloud Storage this limit is 32. If this property is set to 0, then '
-        'automatic parallel uploads will never occur.')
+        'Cloud Storage this limit is 32. This property has no effect if '
+        'parallel_composite_upload_enabled is set to False.')
 
     self.s3_endpoint_url = self._Add(
         's3_endpoint_url',
@@ -3119,7 +3153,7 @@ class _SectionStorage(_Section):
 
     self.use_gcloud_crc32c = self._AddBool(
         'use_gcloud_crc32c',
-        default=False,
+        default=None,
         help_text=(
             'If True, data integrity checks use a binary subprocess to '
             ' calculate CRC32C hashes with the included gcloud-crc32c tool'

@@ -26,6 +26,7 @@ from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
 def AddDescriptionArg(parser):
+  """Adds --description flag."""
   parser.add_argument(
       "--description", required=False, help="Description of the endpoint.")
 
@@ -34,21 +35,34 @@ DEFAULT_SEVERITIES = ["INFORMATIONAL", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
 
 
 def AddSeverityArg(parser, required=True, severity_levels=None):
+  """Adds --severity flag."""
   choices = severity_levels or DEFAULT_SEVERITIES
   parser.add_argument(
       "--severity",
       required=required,
       choices=choices,
-      help="The minimum severity of threats to report on.")
+      help="Minimum severity of threats to report on.")
+
+
+def AddThreatExceptionsArg(parser, required=False):
+  parser.add_argument(
+      "--threat-exceptions",
+      type=arg_parsers.ArgList(),
+      required=required,
+      metavar="exc1,exc2,...",
+      help="List of threat IDs to be excepted from alerting. "
+      "Passing empty list clears the exceptions."
+  )
 
 
 def AddNetworkArg(parser,
                   required=True,
-                  help_text="The name of the VPC network to monitor"):
+                  help_text="Name of the VPC network to monitor"):
+  """Adds --network flag."""
   parser.add_argument("--network", required=required, help=help_text)
 
 
-def AddZoneArg(parser, required=True, help_text="The zone of the endpoint"):
+def AddZoneArg(parser, required=True, help_text="Zone of the endpoint"):
   parser.add_argument("--zone", required=required, default="-", help=help_text)
 
 
@@ -67,14 +81,15 @@ def AddTrafficLogsArg(
 
 
 def AddEndpointResource(parser):
+  """Adds Endpoint resource."""
   name = "endpoint"
   resource_spec = concepts.ResourceSpec(
       "ids.projects.locations.endpoints",
       "endpoint",
       endpointId=concepts.ResourceParameterAttributeConfig(
-          "endpoint", "The name of the {resource}"),
+          "endpoint", "Name of the {resource}"),
       locationId=concepts.ResourceParameterAttributeConfig(
-          "zone", "The zone of the {resource}.", parameter_name="locationId"),
+          "zone", "Zone of the {resource}.", parameter_name="locationId"),
       projectId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name=name,
@@ -90,6 +105,7 @@ def AddMaxWait(parser,
                "complete, after which the operation continues asynchronously. "
                "Ignored if --no-async isn't specified. "
                "See $ gcloud topic datetimes for information on time formats."):
+  """Adds --max-wait flag."""
   parser.add_argument(
       "--max-wait",
       dest="max_wait",
@@ -111,9 +127,9 @@ def AddOperationResource(parser):
       "operation",
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=concepts.ResourceParameterAttributeConfig(
-          "zone", "The zone of the {resource}.", parameter_name="locationsId"),
+          "zone", "Zone of the {resource}.", parameter_name="locationsId"),
       operationsId=concepts.ResourceParameterAttributeConfig(
-          "operation", "The name of the {resource}"))
+          "operation", "Name of the {resource}"))
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name=name,
       concept_spec=resource_spec,

@@ -331,70 +331,6 @@
         }
       }
     },
-    "GoogleIamV2GetEffectivePoliciesResponse": {
-      "id": "GoogleIamV2GetEffectivePoliciesResponse",
-      "type": "object",
-      "properties": {
-        "policiesPerResource": {
-          "description": "Ordered list starting from the resource on which this API was called, and walking up the hierarchy.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResource"
-          }
-        }
-      }
-    },
-    "GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResource": {
-      "id": "GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResource",
-      "type": "object",
-      "properties": {
-        "attachmentPoint": {
-          "description": "Empty if the user doesn\u2019t have the \u201Ckind.list\u201D permission for any of the policy kinds in the request.",
-          "type": "string"
-        },
-        "policiesPerResourcePerKind": {
-          "description": "One entry for each kind in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerResourcePerKind"
-          }
-        }
-      }
-    },
-    "GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerResourcePerKind": {
-      "id": "GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerResourcePerKind",
-      "type": "object",
-      "properties": {
-        "kind": {
-          "type": "string"
-        },
-        "hasListPermission": {
-          "description": "Is false if \"kind.list\" permission is denied. If false, policies is empty.",
-          "type": "boolean"
-        },
-        "policies": {
-          "description": "Includes policies for a specific kind for callers having 'kind.list' permission (i.e. has_list_permission = true) and any such policies exist.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerResourcePerKindPolicyView"
-          }
-        }
-      }
-    },
-    "GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerResourcePerKindPolicyView": {
-      "id": "GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerResourcePerKindPolicyView",
-      "type": "object",
-      "properties": {
-        "hasGetPermission": {
-          "description": "Is false if \u201Ckind.get\u201D permission is denied. If false, policies.rules is empty.",
-          "type": "boolean"
-        },
-        "policy": {
-          "description": "A single policy. Includes policy.rules for callers having 'kind.get' permission (i.e. has_get_permission = true) and rules exist in the policy.",
-          "$ref": "GoogleIamV2Policy"
-        }
-      }
-    },
     "GoogleIamV2ListApplicablePoliciesResponse": {
       "id": "GoogleIamV2ListApplicablePoliciesResponse",
       "description": "Response message for ListApplicablePolicies method.",
@@ -721,36 +657,6 @@
     },
     "v2": {
       "methods": {
-        "getEffectivePolicies": {
-          "id": "iam.getEffectivePolicies",
-          "path": "v2/{+attachmentPoint}:getEffectivePolicies",
-          "flatPath": "v2/{v2Id}:getEffectivePolicies",
-          "httpMethod": "GET",
-          "parameters": {
-            "attachmentPoint": {
-              "description": "Required. The Cloud resource at which the effective policies are to be retrieved.",
-              "pattern": "^[^\/]+$",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            },
-            "filter": {
-              "description": "Filtering currently only supports the kind of policies to return, and must be in the format \u201Ckind:[policyKind1],[policyKind2]\u201D. An empty value returns all policy kinds. Example Value: \"\" (empty), \u201Ckind:denyPolicies\u201D, \"kind:denyPolicies,grantPolicies\".",
-              "location": "query",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "attachmentPoint"
-          ],
-          "response": {
-            "$ref": "GoogleIamV2GetEffectivePoliciesResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Deprecated: Use ListApplicablePolicies instead."
-        },
         "listApplicablePolicies": {
           "id": "iam.listApplicablePolicies",
           "path": "v2/{+attachmentPoint}:listApplicablePolicies",

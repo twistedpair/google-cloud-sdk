@@ -106,9 +106,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -353,7 +355,8 @@ class Domain(_messages.Message):
       EXPIRED: A `Registration` resource cannot be created for this domain
         because it is expired and needs to be renewed with Google Domains.
       DELETED: A `Registration` resource cannot be created for this domain
-        because it is deleted, but can be restored with Google Domains.
+        because it is deleted, but it may be possible to restore it with
+        Google Domains.
     """
     RESOURCE_STATE_UNSPECIFIED = 0
     IMPORTABLE = 1

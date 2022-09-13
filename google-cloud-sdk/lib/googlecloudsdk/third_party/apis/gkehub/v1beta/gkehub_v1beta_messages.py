@@ -17,7 +17,7 @@ class AnthosObservabilityFeatureSpec(_messages.Message):
   r"""**Anthos Observability**: Spec
 
   Fields:
-    defaultMembershipSpec: default membership spec for unconfigured
+    defaultMembershipSpec: Default membership spec for unconfigured
       memberships
   """
 
@@ -28,12 +28,12 @@ class AnthosObservabilityMembershipSpec(_messages.Message):
   r"""**Anthosobservability**: Per-Membership Feature spec.
 
   Fields:
-    doNotOptimizeMetrics: use full of metrics rather than optimized metrics.
+    doNotOptimizeMetrics: Use full of metrics rather than optimized metrics.
       See https://cloud.google.com/anthos/clusters/docs/on-
       prem/1.8/concepts/logging-and-
       monitoring#optimized_metrics_default_metrics
-    enableStackdriverOnApplications: enable collecting and reporting metrics
-      and logs from user apps See go/onyx-application-metrics-logs-user-guide
+    enableStackdriverOnApplications: Enable collecting and reporting metrics
+      and logs from user apps.
     version: the version of stackdriver operator used by this feature
   """
 
@@ -399,6 +399,8 @@ class ConfigManagementConfigSync(_messages.Message):
   r"""Configuration for Config Sync
 
   Fields:
+    allowVerticalScale: Set to true to allow the vertical scaling. Defaults to
+      false which disallows vertical scaling.
     enabled: Enables the installation of ConfigSync. If set to true,
       ConfigSync resources will be created and the other ConfigSync fields
       will be applied if exist. If set to false, all other ConfigSync fields
@@ -414,11 +416,12 @@ class ConfigManagementConfigSync(_messages.Message):
       or "unstructured" mode.
   """
 
-  enabled = _messages.BooleanField(1)
-  git = _messages.MessageField('ConfigManagementGitConfig', 2)
-  oci = _messages.MessageField('ConfigManagementOciConfig', 3)
-  preventDrift = _messages.BooleanField(4)
-  sourceFormat = _messages.StringField(5)
+  allowVerticalScale = _messages.BooleanField(1)
+  enabled = _messages.BooleanField(2)
+  git = _messages.MessageField('ConfigManagementGitConfig', 3)
+  oci = _messages.MessageField('ConfigManagementOciConfig', 4)
+  preventDrift = _messages.BooleanField(5)
+  sourceFormat = _messages.StringField(6)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):
@@ -2178,6 +2181,7 @@ class IdentityServiceOidcConfig(_messages.Message):
     deployCloudConsoleProxy: Flag to denote if reverse proxy is used to
       connect to auth provider. This flag should be set to true when provider
       is not reachable by Google Cloud Console.
+    enableAccessToken: Enable access token.
     encryptedClientSecret: Output only. Encrypted OIDC Client secret
     extraParams: Comma-separated list of key-value pairs.
     groupPrefix: Prefix to prepend to group name.
@@ -2195,15 +2199,16 @@ class IdentityServiceOidcConfig(_messages.Message):
   clientId = _messages.StringField(2)
   clientSecret = _messages.StringField(3)
   deployCloudConsoleProxy = _messages.BooleanField(4)
-  encryptedClientSecret = _messages.BytesField(5)
-  extraParams = _messages.StringField(6)
-  groupPrefix = _messages.StringField(7)
-  groupsClaim = _messages.StringField(8)
-  issuerUri = _messages.StringField(9)
-  kubectlRedirectUri = _messages.StringField(10)
-  scopes = _messages.StringField(11)
-  userClaim = _messages.StringField(12)
-  userPrefix = _messages.StringField(13)
+  enableAccessToken = _messages.BooleanField(5)
+  encryptedClientSecret = _messages.BytesField(6)
+  extraParams = _messages.StringField(7)
+  groupPrefix = _messages.StringField(8)
+  groupsClaim = _messages.StringField(9)
+  issuerUri = _messages.StringField(10)
+  kubectlRedirectUri = _messages.StringField(11)
+  scopes = _messages.StringField(12)
+  userClaim = _messages.StringField(13)
+  userPrefix = _messages.StringField(14)
 
 
 class KubernetesMetadata(_messages.Message):
@@ -3406,6 +3411,47 @@ class ServiceMeshControlPlaneManagement(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
+class ServiceMeshDataPlaneManagement(_messages.Message):
+  r"""Status of data plane management. Only reported per-member.
+
+  Enums:
+    StateValueValuesEnum: Lifecycle status of data plane management.
+
+  Fields:
+    details: Explanation of the status.
+    state: Lifecycle status of data plane management.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Lifecycle status of data plane management.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: Unspecified
+      DISABLED: DISABLED means that the component is not enabled.
+      FAILED_PRECONDITION: FAILED_PRECONDITION means that provisioning cannot
+        proceed because of some characteristic of the member cluster.
+      PROVISIONING: PROVISIONING means that provisioning is in progress.
+      ACTIVE: ACTIVE means that the component is ready for use.
+      STALLED: STALLED means that provisioning could not be done.
+      NEEDS_ATTENTION: NEEDS_ATTENTION means that the component is ready, but
+        some user intervention is required. (For example that the user should
+        migrate workloads to a new control plane revision.)
+      DEGRADED: DEGRADED means that the component is ready, but operating in a
+        degraded state.
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    DISABLED = 1
+    FAILED_PRECONDITION = 2
+    PROVISIONING = 3
+    ACTIVE = 4
+    STALLED = 5
+    NEEDS_ATTENTION = 6
+    DEGRADED = 7
+
+  details = _messages.MessageField('ServiceMeshStatusDetails', 1, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
 class ServiceMeshMembershipSpec(_messages.Message):
   r"""**Service Mesh**: Spec for a single Membership for the servicemesh
   feature
@@ -3459,9 +3505,11 @@ class ServiceMeshMembershipState(_messages.Message):
 
   Fields:
     controlPlaneManagement: Output only. Status of control plane management
+    dataPlaneManagement: Output only. Status of data plane management.
   """
 
   controlPlaneManagement = _messages.MessageField('ServiceMeshControlPlaneManagement', 1)
+  dataPlaneManagement = _messages.MessageField('ServiceMeshDataPlaneManagement', 2)
 
 
 class ServiceMeshSpec(_messages.Message):

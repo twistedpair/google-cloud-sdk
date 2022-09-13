@@ -37,8 +37,8 @@ properties:
       performance. HTTP/2 improves connection re-use and reduces connection
       setup overhead by sending multiple streams over the same connection. Some
       legacy HTTP clients may have issues with HTTP/2 connections due to broken
-      HTTP/2 implementations. Setting this to 'true' will prevent HTTP/2 from
-      being advertised and negotiated.
+      HTTP/2 implementations. Setting this to `true` prevents HTTP/2 from being
+      advertised and negotiated.
     type: boolean
   disableQuic:
     description: HTTP/3 (IETF QUIC) and Google QUIC are enabled by default.
@@ -51,11 +51,11 @@ properties:
   edgeSslCertificates:
     description: |-
       Certificate resources that are used to authenticate connections between
-      users and the EdgeCacheService. Note that only "global" certificates with
-      a "scope" of "EDGE_CACHE" can be attached to an EdgeCacheService. The
-      following are both valid paths to a Certificate resource: *
-      projects/project/locations/global/certificates/media-example-com-cert *
-      media-example-com-cert You may specify up to 5 SSL certificates.
+      users and the EdgeCacheService. Note that only global certificates with a
+      scope of `EDGE_CACHE` can be attached to an EdgeCacheService. The
+      following are both valid paths to an `edge_ssl_certificates` resource: *
+      `projects/project/locations/global/certificates/media-example-com-cert` *
+      `media-example-com-cert` You may specify up to 5 SSL certificates.
     type: array
     items:
       type: string
@@ -65,25 +65,25 @@ properties:
   logConfig:
     description: |-
       Specifies the logging options for the traffic served by this service.
-      If logging is enabled, logs will be exported to Cloud Logging.
+      If logging is enabled, logs are exported to Cloud Logging.
     $ref: LogConfig.yaml
   name:
     description: |-
       Name of the resource; provided by the client when the resource is
       created. The name must be 1-64 characters long, and match the regular
-      expression a-zA-Z* which means the first character must be a letter,
-      and all following characters must be a dash, underscore, letter or
-      digit.
+      expression `[a-zA-Z]([a-zA-Z0-9_-])*` which means the first character
+      must be a letter, and all following characters must be a dash,
+      underscore, letter or digit.
     type: string
   requireTls:
     description: |-
       Require TLS (HTTPS) for all clients connecting to this service.
-      Clients who connect over HTTP (port 80) will receive a HTTP 301 to the
-      same URL over HTTPS (port 443). You must have at least one (1)
-      edgeSslCertificate specified to enable this.
+      Clients who connect over HTTP (port 80) receive an HTTP 301 response
+      to the same URL over HTTPS (port 443). You must have at least one
+      edge_ssl_certificates specified to enable this.
     type: boolean
   routing:
     description: |-
-      Defines how requests are routed, modified, cached and/or which origin
+      Defines how requests are routed, modified, cached, and which origin
       content is filled from.
     $ref: Routing.yaml

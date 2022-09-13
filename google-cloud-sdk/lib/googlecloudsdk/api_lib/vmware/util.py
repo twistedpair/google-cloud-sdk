@@ -79,3 +79,7 @@ class VmwareClientBase(object):
 
     return waiter.WaitFor(
         poller, operation_ref, message, max_wait_ms=max_wait.seconds * 1000)
+
+
+def GetResourceId(resource_name):
+  return resource_name.split('/')[-1]

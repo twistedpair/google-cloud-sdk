@@ -41,7 +41,10 @@ def CheckFieldsSpecifiedBeta(unused_instance_ref, args, patch_request):
 
 def CheckFieldsSpecifiedAlpha(unused_instance_ref, args, patch_request):
   """Checks if fields to update are registered for ALPHA track."""
-  return CheckFieldsSpecifiedCommon(args, patch_request, [])
+  additional_update_args = [
+      'maintenance_version',
+  ]
+  return CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args)
 
 
 def CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args):
@@ -223,4 +226,11 @@ def UpdateSecondaryIpRange(unused_instance_ref, args, patch_request):
   """Hook to update secondary IP range."""
   if args.IsSpecified('secondary_ip_range'):
     patch_request = AddFieldToUpdateMask('secondary_ip_range', patch_request)
+  return patch_request
+
+
+def UpdateMaintenanceVersion(unused_instance_ref, args, patch_request):
+  """Hook to update maintenance version to the update mask of the request."""
+  if args.IsSpecified('maintenance_version'):
+    patch_request = AddFieldToUpdateMask('maintenance_version', patch_request)
   return patch_request

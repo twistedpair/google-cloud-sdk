@@ -379,3 +379,19 @@ def AddMigListManagedInstancesResultsFlag(parser):
       type=lambda x: x.lower(),
       choices=choices,
       help=help_text)
+
+
+def AddMigForceUpdateOnRepairFlags(parser):
+  """Adding force update on repair flag to the parser."""
+  help_text = """
+      Specifies whether to apply the group's latest configuration when
+      repairing a VM. If you updated the group's instance template or
+      per-instance configurations after the VM was created, then these changes
+      are applied when VM is repaired. If this flag is disabled with
+      ``-no-force-update-on-repair'', then updates are applied in accordance
+      with the group's update policy type.
+    """
+  parser.add_argument(
+      '--force-update-on-repair',
+      action=arg_parsers.StoreTrueFalseAction,
+      help=help_text)

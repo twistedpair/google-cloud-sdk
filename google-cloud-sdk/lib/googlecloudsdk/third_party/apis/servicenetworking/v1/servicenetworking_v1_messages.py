@@ -535,6 +535,21 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CloudSQLConfig(_messages.Message):
+  r"""Cloud SQL configuration.
+
+  Fields:
+    service: Peering service used for peering with the Cloud SQL project.
+    umbrellaNetwork: The name of the umbrella network in the Cloud SQL
+      umbrella project.
+    umbrellaProject: The project number of the Cloud SQL umbrella project.
+  """
+
+  service = _messages.StringField(1)
+  umbrellaNetwork = _messages.StringField(2)
+  umbrellaProject = _messages.IntegerField(3)
+
+
 class Connection(_messages.Message):
   r"""Represents a private connection resource. A private connection is
   implemented as a VPC Network Peering connection between a service producer's
@@ -571,6 +586,7 @@ class ConsumerConfig(_messages.Message):
   r"""Configuration information for a private service access connection.
 
   Fields:
+    cloudsqlConfigs: Represents one or multiple Cloud SQL configurations.
     consumerExportCustomRoutes: Export custom routes flag value for peering
       from consumer to producer.
     consumerExportSubnetRoutesWithPublicIp: Export subnet routes with public
@@ -600,18 +616,19 @@ class ConsumerConfig(_messages.Message):
       VPC host network.
   """
 
-  consumerExportCustomRoutes = _messages.BooleanField(1)
-  consumerExportSubnetRoutesWithPublicIp = _messages.BooleanField(2)
-  consumerImportCustomRoutes = _messages.BooleanField(3)
-  consumerImportSubnetRoutesWithPublicIp = _messages.BooleanField(4)
-  producerExportCustomRoutes = _messages.BooleanField(5)
-  producerExportSubnetRoutesWithPublicIp = _messages.BooleanField(6)
-  producerImportCustomRoutes = _messages.BooleanField(7)
-  producerImportSubnetRoutesWithPublicIp = _messages.BooleanField(8)
-  producerNetwork = _messages.StringField(9)
-  reservedRanges = _messages.MessageField('GoogleCloudServicenetworkingV1ConsumerConfigReservedRange', 10, repeated=True)
-  usedIpRanges = _messages.StringField(11, repeated=True)
-  vpcScReferenceArchitectureEnabled = _messages.BooleanField(12)
+  cloudsqlConfigs = _messages.MessageField('CloudSQLConfig', 1, repeated=True)
+  consumerExportCustomRoutes = _messages.BooleanField(2)
+  consumerExportSubnetRoutesWithPublicIp = _messages.BooleanField(3)
+  consumerImportCustomRoutes = _messages.BooleanField(4)
+  consumerImportSubnetRoutesWithPublicIp = _messages.BooleanField(5)
+  producerExportCustomRoutes = _messages.BooleanField(6)
+  producerExportSubnetRoutesWithPublicIp = _messages.BooleanField(7)
+  producerImportCustomRoutes = _messages.BooleanField(8)
+  producerImportSubnetRoutesWithPublicIp = _messages.BooleanField(9)
+  producerNetwork = _messages.StringField(10)
+  reservedRanges = _messages.MessageField('GoogleCloudServicenetworkingV1ConsumerConfigReservedRange', 11, repeated=True)
+  usedIpRanges = _messages.StringField(12, repeated=True)
+  vpcScReferenceArchitectureEnabled = _messages.BooleanField(13)
 
 
 class ConsumerConfigMetadata(_messages.Message):

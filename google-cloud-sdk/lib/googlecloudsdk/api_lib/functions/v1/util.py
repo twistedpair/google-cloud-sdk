@@ -47,7 +47,7 @@ _DEPLOY_WAIT_NOTICE = 'Deploying function (may take a while - up to 2 minutes)'
 
 _FUNCTION_NAME_RE = re.compile(r'^[A-Za-z](?:[-_A-Za-z0-9]{0,61}[A-Za-z0-9])?$')
 _FUNCTION_NAME_ERROR = (
-    'Function name must contain only lower case Latin letters, digits and a '
+    'Function name must contain only Latin letters, digits and a '
     'hyphen (-). It must start with letter, must not end with a hyphen, '
     'and must be at most 63 characters long.')
 

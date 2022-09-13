@@ -840,6 +840,10 @@
           "description": "Optional. Whether scheduled snapshots creation is enabled.",
           "type": "boolean"
         },
+        "snapshotLocation": {
+          "description": "Optional. The Cloud Storage location for storing automatically created snapshots.",
+          "type": "string"
+        },
         "snapshotsCreationSchedule": {
           "description": "Optional. The cron expression representing the time when snapshots creation mechanism runs. This field is subject to additional validation around frequency of execution.",
           "type": "string"

@@ -176,64 +176,6 @@ class GoogleIamV2DenyRule(_messages.Message):
   exceptionPrincipals = _messages.StringField(5, repeated=True)
 
 
-class GoogleIamV2GetEffectivePoliciesResponse(_messages.Message):
-  r"""A GoogleIamV2GetEffectivePoliciesResponse object.
-
-  Fields:
-    policiesPerResource: Ordered list starting from the resource on which this
-      API was called, and walking up the hierarchy.
-  """
-
-  policiesPerResource = _messages.MessageField('GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResource', 1, repeated=True)
-
-
-class GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResource(_messages.Message):
-  r"""A GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResource object.
-
-  Fields:
-    attachmentPoint: Empty if the user doesn't have the "kind.list" permission
-      for any of the policy kinds in the request.
-    policiesPerResourcePerKind: One entry for each kind in the request.
-  """
-
-  attachmentPoint = _messages.StringField(1)
-  policiesPerResourcePerKind = _messages.MessageField('GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerResourcePerKind', 2, repeated=True)
-
-
-class GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerResourcePerKind(_messages.Message):
-  r"""A GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerR
-  esourcePerKind object.
-
-  Fields:
-    hasListPermission: Is false if "kind.list" permission is denied. If false,
-      policies is empty.
-    kind: A string attribute.
-    policies: Includes policies for a specific kind for callers having
-      'kind.list' permission (i.e. has_list_permission = true) and any such
-      policies exist.
-  """
-
-  hasListPermission = _messages.BooleanField(1)
-  kind = _messages.StringField(2)
-  policies = _messages.MessageField('GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerResourcePerKindPolicyView', 3, repeated=True)
-
-
-class GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerResourcePerKindPolicyView(_messages.Message):
-  r"""A GoogleIamV2GetEffectivePoliciesResponsePoliciesPerResourcePoliciesPerR
-  esourcePerKindPolicyView object.
-
-  Fields:
-    hasGetPermission: Is false if "kind.get" permission is denied. If false,
-      policies.rules is empty.
-    policy: A single policy. Includes policy.rules for callers having
-      'kind.get' permission (i.e. has_get_permission = true) and rules exist
-      in the policy.
-  """
-
-  hasGetPermission = _messages.BooleanField(1)
-  policy = _messages.MessageField('GoogleIamV2Policy', 2)
-
-
 class GoogleIamV2ListApplicablePoliciesResponse(_messages.Message):
   r"""Response message for ListApplicablePolicies method.
 
@@ -566,22 +508,6 @@ class GoogleTypeExpr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
-
-
-class IamGetEffectivePoliciesRequest(_messages.Message):
-  r"""A IamGetEffectivePoliciesRequest object.
-
-  Fields:
-    attachmentPoint: Required. The Cloud resource at which the effective
-      policies are to be retrieved.
-    filter: Filtering currently only supports the kind of policies to return,
-      and must be in the format "kind:[policyKind1],[policyKind2]". An empty
-      value returns all policy kinds. Example Value: "" (empty),
-      "kind:denyPolicies", "kind:denyPolicies,grantPolicies".
-  """
-
-  attachmentPoint = _messages.StringField(1, required=True)
-  filter = _messages.StringField(2)
 
 
 class IamListApplicablePoliciesRequest(_messages.Message):

@@ -49,6 +49,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     self.projects_locations_privateClouds_clusters = self.ProjectsLocationsPrivateCloudsClustersService(self)
     self.projects_locations_privateClouds_externalAddresses = self.ProjectsLocationsPrivateCloudsExternalAddressesService(self)
     self.projects_locations_privateClouds_hcxActivationKeys = self.ProjectsLocationsPrivateCloudsHcxActivationKeysService(self)
+    self.projects_locations_privateClouds_subnets = self.ProjectsLocationsPrivateCloudsSubnetsService(self)
     self.projects_locations_privateClouds = self.ProjectsLocationsPrivateCloudsService(self)
     self.projects_locations_vmwareEngineNetworks = self.ProjectsLocationsVmwareEngineNetworksService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -65,7 +66,7 @@ class VmwareengineV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists the VPC network peering routes exchanged over a peering connection.
+      r"""Lists the network peering routes exchanged over a peering connection.
 
       Args:
         request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest) input message
@@ -102,7 +103,7 @@ class VmwareengineV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new VPC network peering between the service and consumer VPC networks provided in a `NetworkPeering` resource.
+      r"""Creates a new network peering between the peer network and VMware Engine network provided in a `NetworkPeering` resource.
 
       Args:
         request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsCreateRequest) input message
@@ -129,7 +130,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a `NetworkPeering` resource. When a network peering is deleted for a consumer VPC network, the service project VPC network becomes inaccessible to that consumer VPC network.
+      r"""Deletes a `NetworkPeering` resource. When a network peering is deleted for a VMware Engine network, the peer network becomes inaccessible to that VMware Engine network.
 
       Args:
         request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsDeleteRequest) input message
@@ -156,7 +157,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a `NetworkPeering` resource by its resource name. The resource contains details of the VPC network peering, such as peered VPC networks, import and export custom route configurations, and peering state.
+      r"""Retrieves a `NetworkPeering` resource by its resource name. The resource contains details of the network peering, such as peered networks, import and export custom route configurations, and peering state.
 
       Args:
         request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsGetRequest) input message
@@ -402,7 +403,7 @@ class VmwareengineV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new network policy in a given consumer VPC network of a project and location (region). A new network policy cannot be created if another network policy already exists in the same scope.
+      r"""Creates a new network policy in a given VMware Engine network of a project and location (region). A new network policy cannot be created if another network policy already exists in the same scope.
 
       Args:
         request: (VmwareengineProjectsLocationsNetworkPoliciesCreateRequest) input message
@@ -1342,6 +1343,43 @@ class VmwareengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsPrivateCloudsSubnetsService(base_api.BaseApiService):
+    """Service class for the projects_locations_privateClouds_subnets resource."""
+
+    _NAME = 'projects_locations_privateClouds_subnets'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsPrivateCloudsSubnetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists subnets in a given private cloud.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsSubnetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSubnetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/subnets',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateClouds.subnets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/subnets',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsSubnetsListRequest',
+        response_type_name='ListSubnetsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsPrivateCloudsService(base_api.BaseApiService):
     """Service class for the projects_locations_privateClouds resource."""
 
@@ -1353,7 +1391,7 @@ class VmwareengineV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new `PrivateCloud` resource in a given project and location. Private clouds can only be created in zones, regional private clouds are not supported. Creating a private cloud also creates a [management cluster](https://cloud.google.com/vmware-engine/docs/concepts-vmware-components) for that private cloud. For the first private cloud created in the given VPC network (`networkConfig.network`), VMware Engine creates a VPC peering with a service network.
+      r"""Creates a new `PrivateCloud` resource in a given project and location. Private clouds can only be created in zones, regional private clouds are not supported. Creating a private cloud also creates a [management cluster](https://cloud.google.com/vmware-engine/docs/concepts-vmware-components) for that private cloud.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsCreateRequest) input message
@@ -1768,7 +1806,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a `VmwareEngineNetwork` resource by its resource name. The resource contains details of the VMware Engine network, such as its VMware Engine network type, peered VPC networks in a service project, and state (for example, `CREATING`, `ACTIVE`, `DELETING`).
+      r"""Retrieves a `VmwareEngineNetwork` resource by its resource name. The resource contains details of the VMware Engine network, such as its VMware Engine network type, peered networks in a service project, and state (for example, `CREATING`, `ACTIVE`, `DELETING`).
 
       Args:
         request: (VmwareengineProjectsLocationsVmwareEngineNetworksGetRequest) input message

@@ -972,6 +972,13 @@
         "allocatedIpRange": {
           "description": "The name of the allocated ip range for the private ip CloudSQL instance. For example: \"google-managed-services-default\". If set, the cloned instance ip will be created in the allocated range. The range name must comply with [RFC 1035](https:\/\/tools.ietf.org\/html\/rfc1035). Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])?. Reserved for future use.",
           "type": "string"
+        },
+        "databaseNames": {
+          "description": "(SQL Server only) Clone only the specified databases from the source instance. Clone all databases if empty.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1670,7 +1677,7 @@
           ]
         },
         "connectorEnforcement": {
-          "description": "Specifies if connections must use Cloud SQL connectors. Option values include the following: * `NOT_REQUIRED`: Cloud SQL instances can be connected without Cloud SQL Connectors. * `REQUIRED`: Only allow connections that use Cloud SQL Connectors. Note that using REQUIRED disables all existing authorized networks. If this field is not specified when creating a new instance, NOT_REQUIRED is used. If this field is not specified when patching or updating an existing instance, it is left unchanged in the instance.",
+          "description": "Specifies if connections must use Cloud SQL connectors. Option values include the following: `NOT_REQUIRED` (Cloud SQL instances can be connected without Cloud SQL Connectors) and `REQUIRED` (Only allow connections that use Cloud SQL Connectors) Note that using REQUIRED disables all existing authorized networks. If this field is not specified when creating a new instance, NOT_REQUIRED is used. If this field is not specified when patching or updating an existing instance, it is left unchanged in the instance.",
           "type": "string",
           "enumDescriptions": [
             "The requirement for Cloud SQL connectors is unknown.",
@@ -3980,7 +3987,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/sqlservice.admin"
           ],
-          "description": "Updates settings of a Cloud SQL instance. This method supports patch semantics."
+          "description": "Partially updates settings of a Cloud SQL instance by merging the request with the current configuration. This method supports patch semantics."
         },
         "promoteReplica": {
           "id": "sql.instances.promoteReplica",

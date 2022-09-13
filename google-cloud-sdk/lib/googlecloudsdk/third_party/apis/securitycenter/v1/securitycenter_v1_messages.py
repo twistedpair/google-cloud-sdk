@@ -35,7 +35,7 @@ class Access(_messages.Message):
       with the identity. As compared to `principal_email`, supports principals
       that aren't associated with email addresses, such as third party
       principals. For most identities, the format will be
-      `principal://iam.googleapis.com/{identity pool name}/subject/{subject)`
+      `principal://iam.googleapis.com/{identity pool name}/subjects/{subject}`
       except for some GKE identities (GKE_WORKLOAD, FREEFORM,
       GKE_HUB_WORKLOAD) that are still in the legacy format
       `serviceAccount:{identity pool name}[{subject}]`
@@ -285,9 +285,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -5788,12 +5790,12 @@ class ServiceAccountDelegationInfo(_messages.Message):
   r"""Identity delegation history of an authenticated service account.
 
   Fields:
-    principalEmail: The email address of a Google account. .
+    principalEmail: The email address of a Google account.
     principalSubject: A string representing the principal_subject associated
       with the identity. As compared to `principal_email`, supports principals
       that aren't associated with email addresses, such as third party
       principals. For most identities, the format will be
-      `principal://iam.googleapis.com/{identity pool name}/subject/{subject)`
+      `principal://iam.googleapis.com/{identity pool name}/subjects/{subject}`
       except for some GKE identities (GKE_WORKLOAD, FREEFORM,
       GKE_HUB_WORKLOAD) that are still in the legacy format
       `serviceAccount:{identity pool name}[{subject}]`

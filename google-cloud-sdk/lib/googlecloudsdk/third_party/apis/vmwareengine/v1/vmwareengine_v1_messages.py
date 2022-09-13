@@ -96,9 +96,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -489,6 +491,18 @@ class HcxActivationKey(_messages.Message):
   uid = _messages.StringField(5)
 
 
+class IpAddressRange(_messages.Message):
+  r"""Represents an IP address range.
+
+  Fields:
+    firstAddress: The first IP address of the range.
+    lastAddress: The last IP address of the range.
+  """
+
+  firstAddress = _messages.StringField(1)
+  lastAddress = _messages.StringField(2)
+
+
 class IpRange(_messages.Message):
   r"""An IP range provided in any one of the supported formats.
 
@@ -591,7 +605,7 @@ class ListNetworkPeeringsResponse(_messages.Message):
   r"""Response message for VmwareEngine.ListNetworkPeerings
 
   Fields:
-    networkPeerings: A list of VPC network peerings.
+    networkPeerings: A list of network peerings.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
     unreachable: Unreachable resources.
@@ -673,6 +687,22 @@ class ListPrivateCloudsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   privateClouds = _messages.MessageField('PrivateCloud', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListSubnetsResponse(_messages.Message):
+  r"""Response message for VmwareEngine.ListSubnets
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    subnets: A list of subnets.
+    unreachable: Locations that could not be reached when making an aggregated
+      query using wildcards.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  subnets = _messages.MessageField('Subnet', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -840,12 +870,12 @@ class NetworkConfig(_messages.Message):
 
 
 class NetworkPeering(_messages.Message):
-  r"""Details of a VPC network peering.
+  r"""Details of a network peering.
 
   Enums:
-    PeerNetworkTypeValueValuesEnum: Required. The type of the VPC network to
-      peer with the VMware Engine service network.
-    StateValueValuesEnum: Output only. State of the VPC network peering. This
+    PeerNetworkTypeValueValuesEnum: Required. The type of the network to peer
+      with the VMware Engine network.
+    StateValueValuesEnum: Output only. State of the network peering. This
       field has a value of 'ACTIVE' when there's a matching configuration in
       the peer network. New values may be added to this enum when appropriate.
 
@@ -853,44 +883,44 @@ class NetworkPeering(_messages.Message):
     createTime: Output only. Creation time of this resource.
     description: Optional. User-provided description for this network peering.
     exchangeSubnetRoutes: Optional. True if full mesh connectivity is created
-      and managed automatically between peered VPC networks; false otherwise.
+      and managed automatically between peered networks; false otherwise.
       Currently this field is always true because Google Compute Engine
       automatically creates and manages subnetwork routes between two VPC
       networks when peering state is 'ACTIVE'.
     exportCustomRoutes: Optional. True if custom routes are exported to the
-      peered VPC network; false otherwise. The default value is true.
+      peered network; false otherwise. The default value is true.
     exportCustomRoutesWithPublicIp: Optional. True if all subnet routes with a
       public IP address range are exported; false otherwise. The default value
       is true. IPv4 special-use ranges
       (https://en.wikipedia.org/wiki/IPv4#Special_addresses) are always
       exported to peers and are not controlled by this field.
     importCustomRoutes: Optional. True if custom routes are imported from the
-      peered VPC network; false otherwise. The default value is true.
+      peered network; false otherwise. The default value is true.
     importCustomRoutesWithPublicIp: Optional. True if all subnet routes with
       public IP address range are imported; false otherwise. The default value
       is true. IPv4 special-use ranges
       (https://en.wikipedia.org/wiki/IPv4#Special_addresses) are always
       imported to peers and are not controlled by this field.
-    name: Output only. The resource name of the VPC network peering. Resource
+    name: Output only. The resource name of the network peering. Resource
       names are scheme-less URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/global/networkPeerings/my-peering`
     peerMtu: A integer attribute.
     peerNetwork: Required. The relative resource name of the network to peer
-      with the VMware Engine network. This network can be a consumer VPC
-      network or another VMware Engine network. If the `peer_network_type` is
-      VMWARE_ENGINE_NETWORK, specify the name in the form: `projects/{project}
-      /locations/global/vmwareEngineNetworks/{vmware_engine_network_id}`.
-      Otherwise specify the name in the form:
+      with a standard VMware Engine network. The provided network can be a
+      consumer VPC network or another standard VMware Engine network. If the
+      `peer_network_type` is VMWARE_ENGINE_NETWORK, specify the name in the
+      form: `projects/{project}/locations/global/vmwareEngineNetworks/{vmware_
+      engine_network_id}`. Otherwise specify the name in the form:
       `projects/{project}/global/networks/{network_id}`, where `{project}` can
       either be a project number or a project ID.
-    peerNetworkType: Required. The type of the VPC network to peer with the
-      VMware Engine service network.
-    state: Output only. State of the VPC network peering. This field has a
-      value of 'ACTIVE' when there's a matching configuration in the peer
-      network. New values may be added to this enum when appropriate.
+    peerNetworkType: Required. The type of the network to peer with the VMware
+      Engine network.
+    state: Output only. State of the network peering. This field has a value
+      of 'ACTIVE' when there's a matching configuration in the peer network.
+      New values may be added to this enum when appropriate.
     stateDetails: Output only. Output Only. Details about the current state of
-      the VPC network peering.
+      the network peering.
     uid: Output only. System-generated unique identifier for the resource.
     updateTime: Output only. Last update time of this resource.
     vmwareEngineNetwork: Required. The relative resource name of the VMware
@@ -900,8 +930,8 @@ class NetworkPeering(_messages.Message):
   """
 
   class PeerNetworkTypeValueValuesEnum(_messages.Enum):
-    r"""Required. The type of the VPC network to peer with the VMware Engine
-    service network.
+    r"""Required. The type of the network to peer with the VMware Engine
+    network.
 
     Values:
       PEER_NETWORK_TYPE_UNSPECIFIED: Unspecified
@@ -928,12 +958,12 @@ class NetworkPeering(_messages.Message):
     THIRD_PARTY_SERVICE = 5
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. State of the VPC network peering. This field has a value
-    of 'ACTIVE' when there's a matching configuration in the peer network. New
+    r"""Output only. State of the network peering. This field has a value of
+    'ACTIVE' when there's a matching configuration in the peer network. New
     values may be added to this enum when appropriate.
 
     Values:
-      STATE_UNSPECIFIED: Unspecified VPC network peering state. This is the
+      STATE_UNSPECIFIED: Unspecified network peering state. This is the
         default value.
       INACTIVE: The peering is not active.
       ACTIVE: The peering is active.
@@ -967,9 +997,10 @@ class NetworkPeering(_messages.Message):
 class NetworkPolicy(_messages.Message):
   r"""Represents a network policy resource. Network policies are regional
   resources. You can use a network policy to enable or disable internet access
-  and external IP access. Network policies are associated with a VPC network,
-  which span across regions. For a given region, a network policy applies to
-  all private clouds in the VPC network associated with the policy.
+  and external IP access. Network policies are associated with a VMware Engine
+  network, which might span across regions. For a given region, a network
+  policy applies to all private clouds in the VMware Engine network associated
+  with the policy.
 
   Fields:
     createTime: Output only. Creation time of this resource.
@@ -1256,7 +1287,7 @@ class OperationMetadata(_messages.Message):
 
 
 class PeeringRoute(_messages.Message):
-  r"""Exchanged VPC network peering route.
+  r"""Exchanged network peering route.
 
   Enums:
     DirectionValueValuesEnum: Output only. Direction of the routes exchanged
@@ -1651,6 +1682,83 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class Subnet(_messages.Message):
+  r"""Subnet in a private cloud. Either management subnets (e.g. vMotion) that
+  are read-only or NSX-T segments that can also be created/updated/deleted.
+  NSX-T segments can be used to connect workload VMs to.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the resource.
+
+  Fields:
+    createTime: Output only. Creation time of this resource.
+    description: User-provided description for this subnet.
+    dhcpAddressRanges: DHCP address ranges. Only a single element is supported
+      in the list. Both the first and the last address must be included in the
+      subnet range. It cannot include the first or the last address of the
+      subnet or the `gateway_ip`.
+    displayName: User-provided name for this subnet.
+    etag: Checksum that may be sent on update and delete requests to ensure
+      that the user-provided value is up to date before the server processes a
+      request. The server computes checksums based on the value of other
+      fields in the request.
+    gatewayId: The canonical identifier of the logical router that this subnet
+      is attached to. The value of this field needs to be filled from
+      `ListLogicalRoutersResponse.logical_router.router_id`. If the value of
+      this field is set to the empty string, the subnet is not attached to any
+      router.
+    gatewayIp: The IP address of the gateway of this subnet. Must fall within
+      the IP prefix defined above.
+    ipCidrRange: The IP address range of the subnet in CIDR format
+      '10.0.0.0/24'.
+    name: Output only. The resource name of this subnet. Resource names are
+      schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      cloud/subnets/my-subnet`
+    standardConfig: Output only. Whether the NSX-T configuration in the
+      backend follows the standard configuration supported by Google Cloud. If
+      false, the subnet cannot be modified through Google Cloud, only through
+      NSX-T directly.
+    state: Output only. The state of the resource.
+    type: Output only. The type of the subnet. For example "System Management"
+      or "NSX-T Segment".
+    uid: Output only. System-generated unique identifier for the resource.
+    updateTime: Output only. Last update time of this resource.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the resource.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value should never be used.
+      ACTIVE: The subnet is ready.
+      CREATING: The subnet is being created.
+      UPDATING: The subnet is being updated.
+      DELETING: The subnet is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    UPDATING = 3
+    DELETING = 4
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  dhcpAddressRanges = _messages.MessageField('IpAddressRange', 3, repeated=True)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  gatewayId = _messages.StringField(6)
+  gatewayIp = _messages.StringField(7)
+  ipCidrRange = _messages.StringField(8)
+  name = _messages.StringField(9)
+  standardConfig = _messages.BooleanField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  type = _messages.StringField(12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+
+
 class TestIamPermissionsRequest(_messages.Message):
   r"""Request message for `TestIamPermissions` method.
 
@@ -1847,9 +1955,9 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsDeleteRequest(_messages.
   object.
 
   Fields:
-    name: Required. The resource name of the VPC network peering to be
-      deleted. Resource names are schemeless URIs that follow the conventions
-      in https://cloud.google.com/apis/design/resource_names. For example:
+    name: Required. The resource name of the network peering to be deleted.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/global/networkPeerings/my-peering`
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -1873,7 +1981,7 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsGetRequest(_messages.Mes
   r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsGetRequest object.
 
   Fields:
-    name: Required. The resource name of the VPC network peering to retrieve.
+    name: Required. The resource name of the network peering to retrieve.
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/global/networkPeerings/my-peering`
@@ -1891,8 +1999,8 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsListRequest(_messages.Me
       operator, and the value that you want to use for filtering. The value
       must be a string, a number, or a boolean. The comparison operator must
       be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of
-      VPC network peerings, you can exclude the ones named `example-peering`
-      by specifying `name != "example-peering"`. To filter on multiple
+      network peerings, you can exclude the ones named `example-peering` by
+      specifying `name != "example-peering"`. To filter on multiple
       expressions, provide each separate expression within parentheses. For
       example: ``` (name = "example-peering") (createTime >
       "2021-04-12T08:15:10.40Z") ``` By default, each expression is an `AND`
@@ -1904,9 +2012,9 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsListRequest(_messages.Me
       results are ordered by `name` in ascending order. You can also sort
       results in descending order based on the `name` value using
       `orderBy="name desc"`. Currently, only ordering by `name` is supported.
-    pageSize: The maximum number of VPC network peerings to return in one
-      page. The maximum value is coerced to 1000. The default value of this
-      field is 500.
+    pageSize: The maximum number of network peerings to return in one page.
+      The maximum value is coerced to 1000. The default value of this field is
+      500.
     pageToken: A page token, received from a previous `ListNetworkPeerings`
       call. Provide this to retrieve the subsequent page. When paginating, all
       other parameters provided to `ListNetworkPeerings` must match the call
@@ -1928,7 +2036,7 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsPatchRequest(_messages.M
   r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the VPC network peering. Resource
+    name: Output only. The resource name of the network peering. Resource
       names are scheme-less URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/global/networkPeerings/my-peering`
@@ -1978,7 +2086,7 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest
       call. Provide this to retrieve the subsequent page. When paginating, all
       other parameters provided to `ListPeeringRoutes` must match the call
       that provided the page token.
-    parent: Required. The resource name of the VPC network peering to retrieve
+    parent: Required. The resource name of the network peering to retrieve
       peering routes from. Resource names are schemeless URIs that follow the
       conventions in https://cloud.google.com/apis/design/resource_names. For
       example: `projects/my-project/locations/global/networkPeerings/my-
@@ -3253,6 +3361,47 @@ class VmwareengineProjectsLocationsPrivateCloudsShowVcenterCredentialsRequest(_m
   privateCloud = _messages.StringField(1, required=True)
 
 
+class VmwareengineProjectsLocationsPrivateCloudsSubnetsListRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsSubnetsListRequest object.
+
+  Fields:
+    filter: A filter expression that matches resources returned in the
+      response. The expression must specify the field name, a comparison
+      operator, and the value that you want to use for filtering. The value
+      must be a string, a number, or a boolean. The comparison operator must
+      be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of
+      subnets, you can exclude the ones named `example-subnet` by specifying
+      `name != "example-subnet"`. To filter on multiple expressions, provide
+      each separate expression within parentheses. For example: ``` (name =
+      "example-subnet") (createTime > "2021-04-12T08:15:10.40Z") ``` By
+      default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ``` (name =
+      "example-subnet-1") AND (subnetId > "example-subnet-id") OR (name =
+      "example-subnet-2") ```
+    orderBy: Sorts list results by a certain order. By default, returned
+      results are ordered by `name` in ascending order. You can also sort
+      results in descending order based on the `name` value using
+      `orderBy="name desc"`. Currently, only ordering by `name` is supported.
+    pageSize: The maximum number of subnets to return in one page. The service
+      may return fewer than this value. The maximum value is coerced to 1000.
+      The default value of this field is 500.
+    pageToken: A page token, received from a previous `ListSubnetsRequest`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListSubnetsRequest` must match the call
+      that provided the page token.
+    parent: Required. The resource name of the private cloud to be queried for
+      subnets. Resource names are schemeless URIs that follow the conventions
+      in https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class VmwareengineProjectsLocationsPrivateCloudsTestIamPermissionsRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsPrivateCloudsTestIamPermissionsRequest
   object.
@@ -3383,8 +3532,8 @@ class VmwareengineProjectsLocationsVmwareEngineNetworksListRequest(_messages.Mes
       operator, and the value that you want to use for filtering. The value
       must be a string, a number, or a boolean. The comparison operator must
       be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of
-      VPC network peerings, you can exclude the ones named `example-network`
-      by specifying `name != "example-network"`. To filter on multiple
+      network peerings, you can exclude the ones named `example-network` by
+      specifying `name != "example-network"`. To filter on multiple
       expressions, provide each separate expression within parentheses. For
       example: ``` (name = "example-network") (createTime >
       "2021-04-12T08:15:10.40Z") ``` By default, each expression is an `AND`
@@ -3473,10 +3622,10 @@ class VpcNetwork(_messages.Message):
 
     Values:
       TYPE_UNSPECIFIED: The default value. This value should never be used.
-      INTRANET: VPC network that will be peered with the consumer VPC network
-        or other service VPC network. Access a private cloud through Compute
-        Engine VMs on a peered VPC network or an on-premises resource
-        connected to a peered consumer VPC network.
+      INTRANET: VPC network that will be peered with a consumer VPC network or
+        the intranet VPC of another VMware Engine network. Access a private
+        cloud through Compute Engine VMs on a peered VPC network or an on-
+        premises resource connected to a peered consumer VPC network.
       INTERNET: VPC network used for internet access to and from a private
         cloud.
       GOOGLE_CLOUD: VPC network used for access to Google Cloud services like

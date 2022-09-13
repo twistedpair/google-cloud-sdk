@@ -287,16 +287,6 @@
         "maintenancePolicy": {
           "description": "Optional. Cluster-wide maintenance policy configuration.",
           "$ref": "MaintenancePolicy"
-        },
-        "controlPlaneVersion": {
-          "description": "Output only. The control plane release version",
-          "readOnly": true,
-          "type": "string"
-        },
-        "nodeVersion": {
-          "description": "Output only. The lowest release version among all worker nodes. This field can be empty if the cluster does not have any worker nodes.",
-          "readOnly": true,
-          "type": "string"
         }
       }
     },
@@ -500,11 +490,6 @@
         "localDiskEncryption": {
           "description": "Optional. Local disk encryption options. This field is only used when enabling CMEK support.",
           "$ref": "LocalDiskEncryption"
-        },
-        "nodeVersion": {
-          "description": "Output only. The lowest release version among all worker nodes.",
-          "readOnly": true,
-          "type": "string"
         }
       }
     },
@@ -605,10 +590,10 @@
           "description": "The Google Distributed Cloud Edge zone of this machine.",
           "type": "string"
         },
-        "version": {
-          "description": "Output only. The software version of the machine.",
+        "disabled": {
+          "description": "Output only. Whether the machine is disabled. If disabled, the machine is unable to enter service.",
           "readOnly": true,
-          "type": "string"
+          "type": "boolean"
         }
       }
     },

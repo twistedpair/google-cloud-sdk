@@ -54,6 +54,7 @@ ATTACHED_CLUSTERS_FORMAT = """\
   table(
     name.basename(),
     platformVersion:label=PLATFORM_VERSION,
+    kubernetesVersion:label=KUBERNETES_VERSION,
     state)"""
 
 AWS_CLUSTERS_FORMAT = """\

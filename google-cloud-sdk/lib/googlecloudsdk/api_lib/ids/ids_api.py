@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""API Wrapper lib for Cloud IDS"""
+"""API Wrapper lib for Cloud IDS."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -51,15 +51,15 @@ def GetEffectiveApiEndpoint(release_track=base.ReleaseTrack.GA):
 class Client:
   """API client for IDS commands."""
 
-  def __init__(self, releaseTrack):
-    self._client = GetClientInstance(releaseTrack)
+  def __init__(self, release_track):
+    self._client = GetClientInstance(release_track)
     self._endpoint_client = self._client.projects_locations_endpoints
     self._operations_client = self._client.projects_locations_operations
     self._locations_client = self._client.projects_locations
-    self.messages = GetMessagesModule(releaseTrack)
+    self.messages = GetMessagesModule(release_track)
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName('ids',
-                                            _VERSION_MAP.get(releaseTrack))
+                                            _VERSION_MAP.get(release_track))
 
   def _ParseSeverityLevel(self, severity_name):
     return self.messages.Endpoint.SeverityValueValuesEnum.lookup_by_name(
@@ -70,6 +70,7 @@ class Client:
                      parent,
                      network,
                      severity,
+                     threat_exceptions=(),
                      description='',
                      enable_traffic_logs=False,
                      labels=None):
@@ -78,11 +79,24 @@ class Client:
         network=network,
         description=description,
         severity=self._ParseSeverityLevel(severity),
+        threatExceptions=threat_exceptions,
         trafficLogs=enable_traffic_logs,
         labels=labels)
     req = self.messages.IdsProjectsLocationsEndpointsCreateRequest(
         endpointId=name, parent=parent, endpoint=endpoint)
     return self._endpoint_client.Create(req)
+
+  def UpdateEndpoint(self,
+                     name,
+                     threat_exceptions,
+                     update_mask):
+    """Calls the UpdateEndpoint API."""
+    endpoint = self.messages.Endpoint(
+        name=name,
+        threatExceptions=threat_exceptions)
+    req = self.messages.IdsProjectsLocationsEndpointsPatchRequest(
+        name=name, endpoint=endpoint, updateMask=','.join(update_mask))
+    return self._endpoint_client.Patch(req)
 
   def DeleteEndpoint(self, name):
     """Calls the DeleteEndpoint API."""
@@ -124,21 +138,24 @@ class Client:
                        max_wait=datetime.timedelta(seconds=600)):
     """Waits for an operation to complete.
 
-      Polls the IDS Operation service until the operation completes, fails, or
+    Polls the IDS Operation service until the operation completes, fails, or
       max_wait_seconds elapses.
-      Args:
-        operation_ref: a Resource created by GetOperationRef describing the
-          Operation.
-        message: the message to display to the user while they wait.
-        has_result: if True, the function will return the target of the
-          operation (the IDS Endpoint) when it completes. If False, nothing will
-          be returned (useful for Delete operations)
-        max_wait: The time to wait for the operation to succeed before
-          returning.
 
-      Returns:
-        if has_result = True, an Endpoint entity.
-        Otherwise, None.
+    Args:
+      operation_ref:
+        A Resource created by GetOperationRef describing the Operation.
+      message:
+        The message to display to the user while they wait.
+      has_result:
+        If True, the function will return the target of the
+        operation (the IDS Endpoint) when it completes. If False, nothing will
+        be returned (useful for Delete operations)
+      max_wait:
+        The time to wait for the operation to succeed before timing out.
+
+    Returns:
+      if has_result = True, an Endpoint entity.
+      Otherwise, None.
     """
     if has_result:
       poller = waiter.CloudOperationPoller(self._endpoint_client,

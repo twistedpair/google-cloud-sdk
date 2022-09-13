@@ -1178,7 +1178,11 @@
       "type": "object",
       "properties": {
         "vrf": {
-          "description": "Name of the VRF of which this route is part.",
+          "description": "Name of the VRF of which this route is part. Deprecated; use `network` instead.",
+          "type": "string"
+        },
+        "network": {
+          "description": "Name of the network of which this route is part.",
           "type": "string"
         },
         "prefix": {
@@ -1190,16 +1194,28 @@
           "type": "string"
         },
         "object": {
-          "description": "IP SLA tracking object that is monitoring the next hop IP address validity and installation of static route in RIB (route information base).",
+          "description": "IP SLA tracking object that is monitoring the next hop IP address validity and installation of static route in RIB (route information base). Deprecated; this is no longer exposed.",
           "type": "string"
         },
         "objectResolved": {
+          "description": "Whether the next hop is reachable or not. Deprecated; Use next_hop_reachable instead.",
+          "type": "boolean"
+        },
+        "nextHopReachable": {
           "description": "Whether the next hop is reachable or not.",
           "type": "boolean"
         },
         "routeInstalled": {
-          "description": "Whether the route is installed, as determined by the route information base result (RIB result).",
+          "description": "Whether the route is installed, as determined by the route information base result (RIB result). Deprecated; use route_install_status instead.",
           "type": "boolean"
+        },
+        "routeInstallStatus": {
+          "description": "An enum representing the status of the route installation.",
+          "$ref": "RouteStatus"
+        },
+        "routeInstallStatusAdditionalInfo": {
+          "description": "A string elaborating the route_install_status, if there's more information (for example, if there's an error, we will include some information about it in this field).",
+          "type": "string"
         },
         "route": {
           "description": "Name of the route (see Route.name).",
@@ -1250,6 +1266,27 @@
         "nextHopAddress": {
           "description": "Required. An IP address to use as the next hop for this route. Must use the same protocol as |destination_cidr|.",
           "type": "string"
+        },
+        "state": {
+          "description": "Output only. Current stage of the resource to the device by config push.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state.",
+            "The resource is being prepared to be applied to the rack.",
+            "The resource has started being applied to the rack.",
+            "The resource has been pushed to the rack.",
+            "The resource failed to push to the rack.",
+            "The resource is under deletion."
+          ],
+          "enum": [
+            "STATE_UNKNOWN",
+            "STATE_PENDING",
+            "STATE_PROVISIONING",
+            "STATE_RUNNING",
+            "STATE_SUSPENDED",
+            "STATE_DELETING"
+          ]
         }
       }
     },

@@ -21,7 +21,8 @@ from __future__ import unicode_literals
 ATTACHED_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'description': 'description',
     'annotations': 'annotations',
-    'platform_version': 'platform_version'
+    'platform_version': 'platform_version',
+    'admin_users': 'authorization.admin_users',
 }
 
 AWS_CLUSTER_ARGS_TO_UPDATE_MASKS = {
@@ -89,7 +90,9 @@ AWS_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
     'proxy_secret_version_id': 'config.proxy_config.secret_version',
     'ssh_ec2_key_pair': 'config.ssh_config.ec2_key_pair',
     'clear_ssh_ec2_key_pair': 'config.ssh_config.ec2_key_pair',
-    'iam_instance_profile': 'config.iam_instance_profile'
+    'iam_instance_profile': 'config.iam_instance_profile',
+    'annotations': 'annotations',
+    'clear_annotations': 'annotations'
 }
 
 AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS = {

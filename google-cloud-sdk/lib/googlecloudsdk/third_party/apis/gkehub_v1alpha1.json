@@ -619,7 +619,7 @@
           "$ref": "GitConfig"
         },
         "sourceFormat": {
-          "description": "Specifies whether the Config Sync Repo is in \u201Chierarchical\u201D or \u201Cunstructured\u201D mode.",
+          "description": "Specifies whether the Config Sync Repo is in \"hierarchical\" or \"unstructured\" mode.",
           "type": "string"
         },
         "enabled": {
@@ -633,6 +633,10 @@
         "oci": {
           "description": "OCI repo configuration for the cluster",
           "$ref": "OciConfig"
+        },
+        "allowVerticalScale": {
+          "description": "Set to true to allow the vertical scaling. Defaults to false which disallows vertical scaling.",
+          "type": "boolean"
         }
       }
     },
@@ -1073,7 +1077,7 @@
           }
         },
         "defaultMembershipSpec": {
-          "description": "default membership spec when nothing is specified",
+          "description": "Default membership spec when nothing is specified.",
           "$ref": "AnthosObservabilityMembershipSpec"
         }
       }
@@ -1084,11 +1088,11 @@
       "type": "object",
       "properties": {
         "enableStackdriverOnApplications": {
-          "description": "enable collecting and reporting metrics and logs from user apps See go\/onyx-application-metrics-logs-user-guide",
+          "description": "Enable collecting and reporting metrics and logs from user apps.",
           "type": "boolean"
         },
         "doNotOptimizeMetrics": {
-          "description": "use full of metrics rather than optimized metrics. See https:\/\/cloud.google.com\/anthos\/clusters\/docs\/on-prem\/1.8\/concepts\/logging-and-monitoring#optimized_metrics_default_metrics",
+          "description": "Use full of metrics rather than optimized metrics. See https:\/\/cloud.google.com\/anthos\/clusters\/docs\/on-prem\/1.8\/concepts\/logging-and-monitoring#optimized_metrics_default_metrics",
           "type": "boolean"
         },
         "version": {
@@ -1335,8 +1339,22 @@
       "description": "ClusterUpgradeFeatureSpec contains the input for the ClusterUpgrade feature.",
       "type": "object",
       "properties": {
-        "upstreamFleets": {
-          "description": "This fleet consumes upgrades that have COMPLETE status code in the upstream fleets. See FleetGKEUpgradeState.Code for code definitions. This field can be either project id or number of the fleet host project per go\/aip\/2510. This is defined as repeated for future proof reasons. Initial implementation will enforce at most one upstream fleet.",
+        "workspaces": {
+          "description": "Map of workspace name to its corresponding spec. The workspace name should be in the format of `projects\/[project_id]\/locations\/global\/workspaces\/[ws_id]`.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "WorkspaceClusterUpgradeFeatureSpec"
+          }
+        }
+      }
+    },
+    "WorkspaceClusterUpgradeFeatureSpec": {
+      "id": "WorkspaceClusterUpgradeFeatureSpec",
+      "description": "WorkspaceClusterUpgradeFeatureSpec is per workspace spec.",
+      "type": "object",
+      "properties": {
+        "upstreamWorkspaces": {
+          "description": "This workspace consumes upgrades that have COMPLETE status code in the upstream workspaces. See WorkspaceGKEUpgradeState.Code for code definitions. This field is the fully qualified resource name of the workspace, in the format of `projects\/[project_id]\/locations\/global\/workspaces\/[ws_id]`.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1430,39 +1448,25 @@
     },
     "GKEUpgradeFeatureSpec": {
       "id": "GKEUpgradeFeatureSpec",
-      "description": "GKEUpgradeFeatureSpec contains feature spec for GKE clusters per release channel. This includes upgrades that are eligible for a subset of clusters (partially eligible upgrades). Partially eligible upgrades will be applied on the current fleet, but won't be propagated to the downstream fleet.",
+      "description": "GKEUpgradeFeatureSpec is the feature spec for GKE clusters.",
       "type": "object",
       "properties": {
-        "rapid": {
-          "description": "Desired upgrades for clusters in the rapid release channel.",
+        "upgrades": {
+          "description": "A list of upgrades to be applied.",
           "type": "array",
           "items": {
-            "$ref": "FleetGKEUpgrade"
-          }
-        },
-        "regular": {
-          "description": "Desired upgrades for clusters in the regular release channel.",
-          "type": "array",
-          "items": {
-            "$ref": "FleetGKEUpgrade"
-          }
-        },
-        "stable": {
-          "description": "Desired upgrades for clusters in the stable release channel.",
-          "type": "array",
-          "items": {
-            "$ref": "FleetGKEUpgrade"
+            "$ref": "WorkspaceGKEUpgrade"
           }
         }
       }
     },
-    "FleetGKEUpgrade": {
-      "id": "FleetGKEUpgrade",
-      "description": "FleetGKEUpgrade is a GKEUpgrade and its eligibility at the fleet scope.",
+    "WorkspaceGKEUpgrade": {
+      "id": "WorkspaceGKEUpgrade",
+      "description": "WorkspaceGKEUpgrade is a GKEUpgrade and its eligibility at the workspace scope. This includes upgrades that are eligible for a subset of clusters (partially eligible upgrades). Partially eligible upgrades will be applied on the current workspace, but won't be propagated to the downstream workspace.",
       "type": "object",
       "properties": {
         "upgrade": {
-          "description": "Which upgrade to perform on the fleet.",
+          "description": "Which upgrade to perform on the workspace.",
           "$ref": "GKEUpgrade"
         },
         "memberships": {
@@ -2302,7 +2306,7 @@
           "type": "string"
         },
         "lastSync": {
-          "description": "Timestamp of when ACM last successfully synced the repo The time format is specified in https:\/\/golang.org\/pkg\/time\/#Time.String This field is being deprecated. Use last_sync_time instead. (b\/154053616)",
+          "description": "Timestamp of when ACM last successfully synced the repo The time format is specified in https:\/\/golang.org\/pkg\/time\/#Time.String This field is being deprecated. Use last_sync_time instead.",
           "type": "string"
         },
         "lastSyncTime": {
@@ -2717,11 +2721,12 @@
             "The lifecycle state is unspecified.",
             "Policy Controller (PC) does not exist on the given cluster, and no k8s resources of any type that are associated with the PC should exist there. The cluster does not possess a membership with the Hub Feature controller.",
             "The Hub Feature controller possesses a Membership, however Policy Controller is not fully installed on the cluster. In this state the hub can be expected to be taking actions to install the PC on the cluster.",
-            "Policy Controller (PC) is fully installed on the cluster and in an operational mode. In this state the Hub Feature controller will be reconciling state with the PC, and the PC will be performing it\u2019s operational tasks per that software. Entering a READY state requires that the hub has confirmed the PC is installed and its pods are operational with the version of the PC the Hub Feature controller expects.",
+            "Policy Controller (PC) is fully installed on the cluster and in an operational mode. In this state the Hub Feature controller will be reconciling state with the PC, and the PC will be performing it's operational tasks per that software. Entering a READY state requires that the hub has confirmed the PC is installed and its pods are operational with the version of the PC the Hub Feature controller expects.",
             "Policy Controller (PC) is fully installed, but in the process of changing the configuration (including changing the version of PC either up and down, or modifying the manifests of PC) of the resources running on the cluster. The Hub Feature controller has a Membership, is aware of the version the cluster should be running in, but has not confirmed for itself that the PC is running with that version.",
             "Policy Controller (PC) may have resources on the cluster, but the Hub Feature controller wishes to remove the Membership. The Membership still exists.",
-            "Policy Controller (PC) is not operational, and the Hub Feature controller is unable to act to make it operational. Entering a CLUSTER_ERROR state happens automatically when the PCH determines that a PC installed on the cluster is non-operative or that the cluster does not meet requirements set for the Hub Feature controller to administer the cluster but has nevertheless been given an instruction to do so (such as \u2018install\u2019).",
-            "In this state, the PC may still be operational, and only the Hub Feature controller is unable to act. The hub should not issue instructions to change the PC state, or otherwise interfere with the on-cluster resources. Entering a HUB_ERROR state happens automatically when the Hub Feature controller determines the hub is in an unhealthy state and it wishes to \u2018take hands off\u2019 to avoid corrupting the PC or other data."
+            "Policy Controller (PC) is not operational, and the Hub Feature controller is unable to act to make it operational. Entering a CLUSTER_ERROR state happens automatically when the PCH determines that a PC installed on the cluster is non-operative or that the cluster does not meet requirements set for the Hub Feature controller to administer the cluster but has nevertheless been given an instruction to do so (such as \u2018install').",
+            "In this state, the PC may still be operational, and only the Hub Feature controller is unable to act. The hub should not issue instructions to change the PC state, or otherwise interfere with the on-cluster resources. Entering a HUB_ERROR state happens automatically when the Hub Feature controller determines the hub is in an unhealthy state and it wishes to \u2018take hands off' to avoid corrupting the PC or other data.",
+            "Policy Controller (PC) is installed but suspended. This means that the policies are not enforced, but violations are still recorded (through audit)."
           ],
           "enum": [
             "LIFECYCLE_STATE_UNSPECIFIED",
@@ -2731,7 +2736,8 @@
             "UPDATING",
             "DECOMISSIONING",
             "CLUSTER_ERROR",
-            "HUB_ERROR"
+            "HUB_ERROR",
+            "SUSPENDED"
           ]
         },
         "componentStates": {
@@ -2755,11 +2761,12 @@
             "The lifecycle state is unspecified.",
             "Policy Controller (PC) does not exist on the given cluster, and no k8s resources of any type that are associated with the PC should exist there. The cluster does not possess a membership with the Hub Feature controller.",
             "The Hub Feature controller possesses a Membership, however Policy Controller is not fully installed on the cluster. In this state the hub can be expected to be taking actions to install the PC on the cluster.",
-            "Policy Controller (PC) is fully installed on the cluster and in an operational mode. In this state the Hub Feature controller will be reconciling state with the PC, and the PC will be performing it\u2019s operational tasks per that software. Entering a READY state requires that the hub has confirmed the PC is installed and its pods are operational with the version of the PC the Hub Feature controller expects.",
+            "Policy Controller (PC) is fully installed on the cluster and in an operational mode. In this state the Hub Feature controller will be reconciling state with the PC, and the PC will be performing it's operational tasks per that software. Entering a READY state requires that the hub has confirmed the PC is installed and its pods are operational with the version of the PC the Hub Feature controller expects.",
             "Policy Controller (PC) is fully installed, but in the process of changing the configuration (including changing the version of PC either up and down, or modifying the manifests of PC) of the resources running on the cluster. The Hub Feature controller has a Membership, is aware of the version the cluster should be running in, but has not confirmed for itself that the PC is running with that version.",
             "Policy Controller (PC) may have resources on the cluster, but the Hub Feature controller wishes to remove the Membership. The Membership still exists.",
-            "Policy Controller (PC) is not operational, and the Hub Feature controller is unable to act to make it operational. Entering a CLUSTER_ERROR state happens automatically when the PCH determines that a PC installed on the cluster is non-operative or that the cluster does not meet requirements set for the Hub Feature controller to administer the cluster but has nevertheless been given an instruction to do so (such as \u2018install\u2019).",
-            "In this state, the PC may still be operational, and only the Hub Feature controller is unable to act. The hub should not issue instructions to change the PC state, or otherwise interfere with the on-cluster resources. Entering a HUB_ERROR state happens automatically when the Hub Feature controller determines the hub is in an unhealthy state and it wishes to \u2018take hands off\u2019 to avoid corrupting the PC or other data."
+            "Policy Controller (PC) is not operational, and the Hub Feature controller is unable to act to make it operational. Entering a CLUSTER_ERROR state happens automatically when the PCH determines that a PC installed on the cluster is non-operative or that the cluster does not meet requirements set for the Hub Feature controller to administer the cluster but has nevertheless been given an instruction to do so (such as \u2018install').",
+            "In this state, the PC may still be operational, and only the Hub Feature controller is unable to act. The hub should not issue instructions to change the PC state, or otherwise interfere with the on-cluster resources. Entering a HUB_ERROR state happens automatically when the Hub Feature controller determines the hub is in an unhealthy state and it wishes to \u2018take hands off' to avoid corrupting the PC or other data.",
+            "Policy Controller (PC) is installed but suspended. This means that the policies are not enforced, but violations are still recorded (through audit)."
           ],
           "enum": [
             "LIFECYCLE_STATE_UNSPECIFIED",
@@ -2769,7 +2776,8 @@
             "UPDATING",
             "DECOMISSIONING",
             "CLUSTER_ERROR",
-            "HUB_ERROR"
+            "HUB_ERROR",
+            "SUSPENDED"
           ]
         },
         "details": {
@@ -2877,8 +2885,22 @@
       "description": "ClusterUpgradeFeatureState contains the status fields specific to the ClusterUpgrade feature.",
       "type": "object",
       "properties": {
-        "downstreamFleets": {
-          "description": "This fleets whose upstream_fleets contain the current fleet. This field can be either project id or number of the fleet host project per go\/aip\/2510.",
+        "workspaces": {
+          "description": "Map of workspace name to its corresponding state. The workspace name should be in the format of `projects\/[project_id]\/locations\/global\/workspaces\/[ws_id]`.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "WorkspaceClusterUpgradeFeatureState"
+          }
+        }
+      }
+    },
+    "WorkspaceClusterUpgradeFeatureState": {
+      "id": "WorkspaceClusterUpgradeFeatureState",
+      "description": "WorkspaceClusterUpgradeFeatureState is per workspace state.",
+      "type": "object",
+      "properties": {
+        "downstreamWorkspaces": {
+          "description": "Tge workspaces whose upstream_workspaces contain the current workspace. This field is the fully qualified resource name of the workspace, in the format of `projects\/[project_id]\/locations\/global\/workspaces\/[ws_id]`.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2915,56 +2937,28 @@
     },
     "GKEUpgradeFeatureState": {
       "id": "GKEUpgradeFeatureState",
-      "description": "GKEUpgradeFeatureState contains feature states for GKE clusters in the fleet.",
+      "description": "GKEUpgradeFeatureState contains feature states for GKE clusters in the workspace.",
       "type": "object",
       "properties": {
-        "rapid": {
-          "description": "Rapid channel upgrade state.",
+        "state": {
+          "description": "Upgrade state.",
           "type": "array",
           "items": {
-            "$ref": "FleetGKEUpgradeState"
+            "$ref": "WorkspaceGKEUpgradeState"
           }
         },
-        "regular": {
-          "description": "Regular channel upgrade state.",
+        "history": {
+          "description": "Store the last N (N=100) upgrades for debugging purpose.",
           "type": "array",
           "items": {
-            "$ref": "FleetGKEUpgradeState"
-          }
-        },
-        "stable": {
-          "description": "Stable channel upgrade state.",
-          "type": "array",
-          "items": {
-            "$ref": "FleetGKEUpgradeState"
-          }
-        },
-        "rapidHistory": {
-          "description": "Store the last N (N=100) upgrades for debugging purpose. Rapid channel upgrade history.",
-          "type": "array",
-          "items": {
-            "$ref": "FleetGKEUpgradeState"
-          }
-        },
-        "regularHistory": {
-          "description": "Regular channel upgrade history.",
-          "type": "array",
-          "items": {
-            "$ref": "FleetGKEUpgradeState"
-          }
-        },
-        "stableHistory": {
-          "description": "Stable channel upgrade history.",
-          "type": "array",
-          "items": {
-            "$ref": "FleetGKEUpgradeState"
+            "$ref": "WorkspaceGKEUpgradeState"
           }
         }
       }
     },
-    "FleetGKEUpgradeState": {
-      "id": "FleetGKEUpgradeState",
-      "description": "FleetGKEUpgradeState is a GKEUpgrade and its state at the fleet scope.",
+    "WorkspaceGKEUpgradeState": {
+      "id": "WorkspaceGKEUpgradeState",
+      "description": "WorkspaceGKEUpgradeState is a GKEUpgrade and its state at the workspace scope.",
       "type": "object",
       "properties": {
         "upgrade": {
@@ -3000,12 +2994,12 @@
           "type": "string",
           "enumDescriptions": [
             "Required by https:\/\/linter.aip.dev\/126\/unspecified.",
-            "The upgrade is ineligible. At the fleet scope, this means the upgrade is ineligible for all the clusters in the fleet.",
-            "The upgrade is pending. At the fleet scope, this means the upgrade is pending for all the clusters in the fleet.",
-            "The upgrade is in progress. At the fleet scope, this means the upgrade is in progress for at least one cluster in the fleet.",
-            "The upgrade has finished and is soaking until the soaking time is up. At the fleet scope, this means at least one cluster is in soaking while the rest are either soaking or complete.",
+            "The upgrade is ineligible. At the workspace scope, this means the upgrade is ineligible for all the clusters in the workspace.",
+            "The upgrade is pending. At the workspace scope, this means the upgrade is pending for all the clusters in the workspace.",
+            "The upgrade is in progress. At the workspace scope, this means the upgrade is in progress for at least one cluster in the workspace.",
+            "The upgrade has finished and is soaking until the soaking time is up. At the workspace scope, this means at least one cluster is in soaking while the rest are either soaking or complete.",
             "A cluster will be forced to enter soaking if an upgrade doesn't finish within a certain limit, despite it's actual status.",
-            "The upgrade has passed all post conditions (soaking). At the fleet scope, this means all eligible clusters are in COMPLETE status."
+            "The upgrade has passed all post conditions (soaking). At the workspace scope, this means all eligible clusters are in COMPLETE status."
           ],
           "enum": [
             "CODE_UNSPECIFIED",
@@ -3153,7 +3147,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"

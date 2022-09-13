@@ -52,6 +52,7 @@ class AddonsConfig(_messages.Message):
       Persistent Disk CSI driver.
     gcpFilestoreCsiDriverConfig: Configuration for the GCP Filestore CSI
       driver.
+    gkeBackupAgentConfig: Configuration for the Backup for GKE agent addon.
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
       replication controller has based on the resource usage of the existing
@@ -74,10 +75,11 @@ class AddonsConfig(_messages.Message):
   dnsCacheConfig = _messages.MessageField('DnsCacheConfig', 3)
   gcePersistentDiskCsiDriverConfig = _messages.MessageField('GcePersistentDiskCsiDriverConfig', 4)
   gcpFilestoreCsiDriverConfig = _messages.MessageField('GcpFilestoreCsiDriverConfig', 5)
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 6)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 7)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 8)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 9)
+  gkeBackupAgentConfig = _messages.MessageField('GkeBackupAgentConfig', 6)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 7)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 8)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 9)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 10)
 
 
 class AdvancedMachineFeatures(_messages.Message):
@@ -1951,6 +1953,16 @@ class GetOpenIDConfigResponse(_messages.Message):
   jwks_uri = _messages.StringField(6)
   response_types_supported = _messages.StringField(7, repeated=True)
   subject_types_supported = _messages.StringField(8, repeated=True)
+
+
+class GkeBackupAgentConfig(_messages.Message):
+  r"""Configuration for the Backup for GKE Agent.
+
+  Fields:
+    enabled: Whether the Backup for GKE agent is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class HorizontalPodAutoscaling(_messages.Message):

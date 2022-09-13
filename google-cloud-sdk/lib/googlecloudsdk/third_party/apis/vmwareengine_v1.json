@@ -699,6 +699,135 @@
         }
       }
     },
+    "ListSubnetsResponse": {
+      "id": "ListSubnetsResponse",
+      "description": "Response message for VmwareEngine.ListSubnets",
+      "type": "object",
+      "properties": {
+        "subnets": {
+          "description": "A list of subnets.",
+          "type": "array",
+          "items": {
+            "$ref": "Subnet"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached when making an aggregated query using wildcards.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Subnet": {
+      "id": "Subnet",
+      "description": "Subnet in a private cloud. Either management subnets (e.g. vMotion) that are read-only or NSX-T segments that can also be created\/updated\/deleted. NSX-T segments can be used to connect workload VMs to.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this subnet. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/subnets\/my-subnet`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Creation time of this resource.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Last update time of this resource.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "displayName": {
+          "description": "User-provided name for this subnet.",
+          "type": "string"
+        },
+        "description": {
+          "description": "User-provided description for this subnet.",
+          "type": "string"
+        },
+        "ipCidrRange": {
+          "description": "The IP address range of the subnet in CIDR format '10.0.0.0\/24'.",
+          "type": "string"
+        },
+        "gatewayIp": {
+          "description": "The IP address of the gateway of this subnet. Must fall within the IP prefix defined above.",
+          "type": "string"
+        },
+        "gatewayId": {
+          "description": "The canonical identifier of the logical router that this subnet is attached to. The value of this field needs to be filled from `ListLogicalRoutersResponse.logical_router.router_id`. If the value of this field is set to the empty string, the subnet is not attached to any router.",
+          "type": "string"
+        },
+        "dhcpAddressRanges": {
+          "description": "DHCP address ranges. Only a single element is supported in the list. Both the first and the last address must be included in the subnet range. It cannot include the first or the last address of the subnet or the `gateway_ip`.",
+          "type": "array",
+          "items": {
+            "$ref": "IpAddressRange"
+          }
+        },
+        "type": {
+          "description": "Output only. The type of the subnet. For example \"System Management\" or \"NSX-T Segment\".",
+          "readOnly": true,
+          "type": "string"
+        },
+        "standardConfig": {
+          "description": "Output only. Whether the NSX-T configuration in the backend follows the standard configuration supported by Google Cloud. If false, the subnet cannot be modified through Google Cloud, only through NSX-T directly.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "state": {
+          "description": "Output only. The state of the resource.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value should never be used.",
+            "The subnet is ready.",
+            "The subnet is being created.",
+            "The subnet is being updated.",
+            "The subnet is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING",
+            "UPDATING",
+            "DELETING"
+          ]
+        },
+        "uid": {
+          "description": "Output only. System-generated unique identifier for the resource.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "etag": {
+          "description": "Checksum that may be sent on update and delete requests to ensure that the user-provided value is up to date before the server processes a request. The server computes checksums based on the value of other fields in the request.",
+          "type": "string"
+        }
+      }
+    },
+    "IpAddressRange": {
+      "id": "IpAddressRange",
+      "description": "Represents an IP address range.",
+      "type": "object",
+      "properties": {
+        "firstAddress": {
+          "description": "The first IP address of the range.",
+          "type": "string"
+        },
+        "lastAddress": {
+          "description": "The last IP address of the range.",
+          "type": "string"
+        }
+      }
+    },
     "ListExternalAccessRulesResponse": {
       "id": "ListExternalAccessRulesResponse",
       "description": "Response message for VmwareEngine.ListExternalAccessRules",
@@ -965,11 +1094,11 @@
     },
     "NetworkPeering": {
       "id": "NetworkPeering",
-      "description": "Details of a VPC network peering.",
+      "description": "Details of a network peering.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the VPC network peering. Resource names are scheme-less URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/networkPeerings\/my-peering`",
+          "description": "Output only. The resource name of the network peering. Resource names are scheme-less URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/networkPeerings\/my-peering`",
           "readOnly": true,
           "type": "string"
         },
@@ -986,19 +1115,19 @@
           "format": "google-datetime"
         },
         "peerNetwork": {
-          "description": "Required. The relative resource name of the network to peer with the VMware Engine network. This network can be a consumer VPC network or another VMware Engine network. If the `peer_network_type` is VMWARE_ENGINE_NETWORK, specify the name in the form: `projects\/{project}\/locations\/global\/vmwareEngineNetworks\/{vmware_engine_network_id}`. Otherwise specify the name in the form: `projects\/{project}\/global\/networks\/{network_id}`, where `{project}` can either be a project number or a project ID.",
+          "description": "Required. The relative resource name of the network to peer with a standard VMware Engine network. The provided network can be a consumer VPC network or another standard VMware Engine network. If the `peer_network_type` is VMWARE_ENGINE_NETWORK, specify the name in the form: `projects\/{project}\/locations\/global\/vmwareEngineNetworks\/{vmware_engine_network_id}`. Otherwise specify the name in the form: `projects\/{project}\/global\/networks\/{network_id}`, where `{project}` can either be a project number or a project ID.",
           "type": "string"
         },
         "exportCustomRoutes": {
-          "description": "Optional. True if custom routes are exported to the peered VPC network; false otherwise. The default value is true.",
+          "description": "Optional. True if custom routes are exported to the peered network; false otherwise. The default value is true.",
           "type": "boolean"
         },
         "importCustomRoutes": {
-          "description": "Optional. True if custom routes are imported from the peered VPC network; false otherwise. The default value is true.",
+          "description": "Optional. True if custom routes are imported from the peered network; false otherwise. The default value is true.",
           "type": "boolean"
         },
         "exchangeSubnetRoutes": {
-          "description": "Optional. True if full mesh connectivity is created and managed automatically between peered VPC networks; false otherwise. Currently this field is always true because Google Compute Engine automatically creates and manages subnetwork routes between two VPC networks when peering state is 'ACTIVE'.",
+          "description": "Optional. True if full mesh connectivity is created and managed automatically between peered networks; false otherwise. Currently this field is always true because Google Compute Engine automatically creates and manages subnetwork routes between two VPC networks when peering state is 'ACTIVE'.",
           "type": "boolean"
         },
         "exportCustomRoutesWithPublicIp": {
@@ -1010,11 +1139,11 @@
           "type": "boolean"
         },
         "state": {
-          "description": "Output only. State of the VPC network peering. This field has a value of 'ACTIVE' when there's a matching configuration in the peer network. New values may be added to this enum when appropriate.",
+          "description": "Output only. State of the network peering. This field has a value of 'ACTIVE' when there's a matching configuration in the peer network. New values may be added to this enum when appropriate.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
-            "Unspecified VPC network peering state. This is the default value.",
+            "Unspecified network peering state. This is the default value.",
             "The peering is not active.",
             "The peering is active.",
             "The peering is being created.",
@@ -1029,7 +1158,7 @@
           ]
         },
         "stateDetails": {
-          "description": "Output only. Output Only. Details about the current state of the VPC network peering.",
+          "description": "Output only. Output Only. Details about the current state of the network peering.",
           "readOnly": true,
           "type": "string"
         },
@@ -1038,7 +1167,7 @@
           "format": "int32"
         },
         "peerNetworkType": {
-          "description": "Required. The type of the VPC network to peer with the VMware Engine service network.",
+          "description": "Required. The type of the network to peer with the VMware Engine network.",
           "type": "string",
           "enumDescriptions": [
             "Unspecified",
@@ -1078,7 +1207,7 @@
       "type": "object",
       "properties": {
         "networkPeerings": {
-          "description": "A list of VPC network peerings.",
+          "description": "A list of network peerings.",
           "type": "array",
           "items": {
             "$ref": "NetworkPeering"
@@ -1117,7 +1246,7 @@
     },
     "PeeringRoute": {
       "id": "PeeringRoute",
-      "description": "Exchanged VPC network peering route.",
+      "description": "Exchanged network peering route.",
       "type": "object",
       "properties": {
         "destRange": {
@@ -1247,7 +1376,7 @@
     },
     "NetworkPolicy": {
       "id": "NetworkPolicy",
-      "description": "Represents a network policy resource. Network policies are regional resources. You can use a network policy to enable or disable internet access and external IP access. Network policies are associated with a VPC network, which span across regions. For a given region, a network policy applies to all private clouds in the VPC network associated with the policy.",
+      "description": "Represents a network policy resource. Network policies are regional resources. You can use a network policy to enable or disable internet access and external IP access. Network policies are associated with a VMware Engine network, which might span across regions. For a given region, a network policy applies to all private clouds in the VMware Engine network associated with the policy.",
       "type": "object",
       "properties": {
         "name": {
@@ -1440,7 +1569,7 @@
           "type": "string",
           "enumDescriptions": [
             "The default value. This value should never be used.",
-            "VPC network that will be peered with the consumer VPC network or other service VPC network. Access a private cloud through Compute Engine VMs on a peered VPC network or an on-premises resource connected to a peered consumer VPC network.",
+            "VPC network that will be peered with a consumer VPC network or the intranet VPC of another VMware Engine network. Access a private cloud through Compute Engine VMs on a peered VPC network or an on-premises resource connected to a peered consumer VPC network.",
             "VPC network used for internet access to and from a private cloud.",
             "VPC network used for access to Google Cloud services like Cloud Storage."
           ],
@@ -1592,7 +1721,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
@@ -2031,7 +2160,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new `PrivateCloud` resource in a given project and location. Private clouds can only be created in zones, regional private clouds are not supported. Creating a private cloud also creates a [management cluster](https:\/\/cloud.google.com\/vmware-engine\/docs\/concepts-vmware-components) for that private cloud. For the first private cloud created in the given VPC network (`networkConfig.network`), VMware Engine creates a VPC peering with a service network."
+                  "description": "Creates a new `PrivateCloud` resource in a given project and location. Private clouds can only be created in zones, regional private clouds are not supported. Creating a private cloud also creates a [management cluster](https:\/\/cloud.google.com\/vmware-engine\/docs\/concepts-vmware-components) for that private cloud."
                 },
                 "patch": {
                   "id": "vmwareengine.projects.locations.privateClouds.patch",
@@ -2798,6 +2927,56 @@
                     }
                   }
                 },
+                "subnets": {
+                  "methods": {
+                    "list": {
+                      "id": "vmwareengine.projects.locations.privateClouds.subnets.list",
+                      "path": "v1/{+parent}/subnets",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/subnets",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the private cloud to be queried for subnets. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of subnets to return in one page. The service may return fewer than this value. The maximum value is coerced to 1000. The default value of this field is 500.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous `ListSubnetsRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListSubnetsRequest` must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of subnets, you can exclude the ones named `example-subnet` by specifying `name != \"example-subnet\"`. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-subnet\") (createTime > \"2021-04-12T08:15:10.40Z\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"example-subnet-1\") AND (subnetId > \"example-subnet-id\") OR (name = \"example-subnet-2\") ```",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Sorts list results by a certain order. By default, returned results are ordered by `name` in ascending order. You can also sort results in descending order based on the `name` value using `orderBy=\"name desc\"`. Currently, only ordering by `name` is supported.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListSubnetsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists subnets in a given private cloud."
+                    }
+                  }
+                },
                 "hcxActivationKeys": {
                   "methods": {
                     "create": {
@@ -3135,7 +3314,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new network policy in a given consumer VPC network of a project and location (region). A new network policy cannot be created if another network policy already exists in the same scope."
+                  "description": "Creates a new network policy in a given VMware Engine network of a project and location (region). A new network policy cannot be created if another network policy already exists in the same scope."
                 },
                 "patch": {
                   "id": "vmwareengine.projects.locations.networkPolicies.patch",
@@ -3561,7 +3740,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the VPC network peering to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/networkPeerings\/my-peering`",
+                          "description": "Required. The resource name of the network peering to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/networkPeerings\/my-peering`",
                           "pattern": "^projects\/[^\/]+\/locations\/global\/networkPeerings\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3577,7 +3756,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Retrieves a `NetworkPeering` resource by its resource name. The resource contains details of the VPC network peering, such as peered VPC networks, import and export custom route configurations, and peering state."
+                      "description": "Retrieves a `NetworkPeering` resource by its resource name. The resource contains details of the network peering, such as peered networks, import and export custom route configurations, and peering state."
                     },
                     "list": {
                       "id": "vmwareengine.projects.locations.global.networkPeerings.list",
@@ -3593,7 +3772,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "The maximum number of VPC network peerings to return in one page. The maximum value is coerced to 1000. The default value of this field is 500.",
+                          "description": "The maximum number of network peerings to return in one page. The maximum value is coerced to 1000. The default value of this field is 500.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -3604,7 +3783,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of VPC network peerings, you can exclude the ones named `example-peering` by specifying `name != \"example-peering\"`. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-peering\") (createTime > \"2021-04-12T08:15:10.40Z\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"example-peering-1\") AND (createTime > \"2021-04-12T08:15:10.40Z\") OR (name = \"example-peering-2\") ```",
+                          "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of network peerings, you can exclude the ones named `example-peering` by specifying `name != \"example-peering\"`. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-peering\") (createTime > \"2021-04-12T08:15:10.40Z\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"example-peering-1\") AND (createTime > \"2021-04-12T08:15:10.40Z\") OR (name = \"example-peering-2\") ```",
                           "location": "query",
                           "type": "string"
                         },
@@ -3661,7 +3840,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new VPC network peering between the service and consumer VPC networks provided in a `NetworkPeering` resource."
+                      "description": "Creates a new network peering between the peer network and VMware Engine network provided in a `NetworkPeering` resource."
                     },
                     "delete": {
                       "id": "vmwareengine.projects.locations.global.networkPeerings.delete",
@@ -3670,7 +3849,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the VPC network peering to be deleted. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/networkPeerings\/my-peering`",
+                          "description": "Required. The resource name of the network peering to be deleted. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/networkPeerings\/my-peering`",
                           "pattern": "^projects\/[^\/]+\/locations\/global\/networkPeerings\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3691,7 +3870,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a `NetworkPeering` resource. When a network peering is deleted for a consumer VPC network, the service project VPC network becomes inaccessible to that consumer VPC network."
+                      "description": "Deletes a `NetworkPeering` resource. When a network peering is deleted for a VMware Engine network, the peer network becomes inaccessible to that VMware Engine network."
                     },
                     "patch": {
                       "id": "vmwareengine.projects.locations.global.networkPeerings.patch",
@@ -3700,7 +3879,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. The resource name of the VPC network peering. Resource names are scheme-less URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/networkPeerings\/my-peering`",
+                          "description": "Output only. The resource name of the network peering. Resource names are scheme-less URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/networkPeerings\/my-peering`",
                           "pattern": "^projects\/[^\/]+\/locations\/global\/networkPeerings\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3744,7 +3923,7 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "parent": {
-                              "description": "Required. The resource name of the VPC network peering to retrieve peering routes from. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/networkPeerings\/my-peering`",
+                              "description": "Required. The resource name of the network peering to retrieve peering routes from. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/networkPeerings\/my-peering`",
                               "pattern": "^projects\/[^\/]+\/locations\/global\/networkPeerings\/[^\/]+$",
                               "location": "path",
                               "required": true,
@@ -3776,7 +3955,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Lists the VPC network peering routes exchanged over a peering connection."
+                          "description": "Lists the network peering routes exchanged over a peering connection."
                         }
                       }
                     }
@@ -3921,7 +4100,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Retrieves a `VmwareEngineNetwork` resource by its resource name. The resource contains details of the VMware Engine network, such as its VMware Engine network type, peered VPC networks in a service project, and state (for example, `CREATING`, `ACTIVE`, `DELETING`)."
+                  "description": "Retrieves a `VmwareEngineNetwork` resource by its resource name. The resource contains details of the VMware Engine network, such as its VMware Engine network type, peered networks in a service project, and state (for example, `CREATING`, `ACTIVE`, `DELETING`)."
                 },
                 "list": {
                   "id": "vmwareengine.projects.locations.vmwareEngineNetworks.list",
@@ -3948,7 +4127,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of VPC network peerings, you can exclude the ones named `example-network` by specifying `name != \"example-network\"`. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-network\") (createTime > \"2021-04-12T08:15:10.40Z\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"example-network-1\") AND (createTime > \"2021-04-12T08:15:10.40Z\") OR (name = \"example-network-2\") ```",
+                      "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of network peerings, you can exclude the ones named `example-network` by specifying `name != \"example-network\"`. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-network\") (createTime > \"2021-04-12T08:15:10.40Z\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"example-network-1\") AND (createTime > \"2021-04-12T08:15:10.40Z\") OR (name = \"example-network-2\") ```",
                       "location": "query",
                       "type": "string"
                     },

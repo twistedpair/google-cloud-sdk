@@ -22,7 +22,6 @@ from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
-from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks.objects import patch_object_task
 from googlecloudsdk.core import log
@@ -57,16 +56,16 @@ class RewriteObjectTask(task.Task):
         generation=self._object_resource.storage_url.generation,
         request_config=request_config)
 
-    if existing_object_resource.kms_key:
+    if existing_object_resource.kms_key:  # Existing CMEK.
       encryption_changing = existing_object_resource.kms_key != getattr(
           encryption_util.get_encryption_key(), 'key', None)
-    elif existing_object_resource.decryption_key_hash:
+    elif existing_object_resource.decryption_key_hash:  # Existing CSEK.
       encryption_changing = (
           existing_object_resource.decryption_key_hash != getattr(
               encryption_util.get_encryption_key(), 'sha256', None))
     else:  # No existing encryption.
-      encryption_changing = encryption_util.get_encryption_key() not in (
-          None, user_request_args_factory.CLEAR)
+      # Clear flag can still reset an object to bucket's default encryption.
+      encryption_changing = encryption_util.get_encryption_key() is not None
 
     new_storage_class = getattr(request_config.resource_args, 'storage_class',
                                 None)

@@ -27,7 +27,6 @@ import os
 import random
 
 from googlecloudsdk.api_lib.storage import api_factory
-from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import gcs_api
 from googlecloudsdk.command_lib.storage import gzip_util
 from googlecloudsdk.command_lib.storage import manifest_util
@@ -40,7 +39,6 @@ from googlecloudsdk.command_lib.storage.tasks.cp import file_part_upload_task
 from googlecloudsdk.command_lib.storage.tasks.cp import finalize_composite_upload_task
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.util import scaled_integer
 
 
 def _get_random_prefix():
@@ -56,7 +54,8 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
                destination_resource,
                delete_source=False,
                print_created_message=False,
-               user_request_args=None):
+               user_request_args=None,
+               is_composite_upload_eligible=False):
     """Initializes task.
 
     Args:
@@ -71,6 +70,8 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
       print_created_message (bool): Print a message containing the versioned
         URL of the copy result.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
+      is_composite_upload_eligible (bool): If True, parallel composite
+        upload may be performed.
     """
     super(FileUploadTask, self).__init__(
         source_resource,
@@ -78,12 +79,10 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
         user_request_args=user_request_args)
     self._delete_source = delete_source
     self._print_created_message = print_created_message
+    self._is_composite_upload_eligible = is_composite_upload_eligible
 
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
-
-    self._composite_upload_threshold = scaled_integer.ParseInteger(
-        properties.VALUES.storage.parallel_composite_upload_threshold.Get())
 
   def execute(self, task_status_queue=None):
     destination_provider = self._destination_resource.storage_url.scheme
@@ -117,7 +116,6 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
         source_path = original_source_path
       size = os.path.getsize(source_path)
 
-    api_capabilties = api_factory.get_capabilities(destination_provider)
     component_count = copy_component_util.get_component_count(
         size,
         properties.VALUES.storage.parallel_composite_upload_component_size.Get(
@@ -126,9 +124,7 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
         # task-level. Porting because in the process of solving a major bug.
         gcs_api.MAX_OBJECTS_PER_COMPOSE_CALL)
     should_perform_single_transfer = (
-        source_url.is_stream or size < self._composite_upload_threshold or
-        not self._composite_upload_threshold or
-        cloud_api.Capability.COMPOSE_OBJECTS not in api_capabilties or
+        not self._is_composite_upload_eligible or
         not task_util.should_use_parallelism() or component_count <= 1)
 
     if should_perform_single_transfer:

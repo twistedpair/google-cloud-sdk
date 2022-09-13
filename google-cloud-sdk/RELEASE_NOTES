@@ -5,6 +5,83 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 402.0.0 (2022-09-13)
+
+### Breaking Changes
+
+*   **(Google Cloud CLI)** The gcloud command-line tool no longer overrides the scheme specified in the
+  `https_proxy` environment variable. Previously, the scheme was silently
+  ignored and the gcloud command-line tool would always attempt to connect to
+  the proxy via HTTP, even if the proxy server URL specified HTTPS.
+  * Note that the gcloud command-line tool does not currently support connecting
+    to proxies via HTTPS (nor did it previously).
+  * If attempting to connect to an HTTP proxy results in warnings or errors,
+    ensure that the `https_proxy` environment variable looks like `http://...`
+    as opposed to `https://...`.
+  * See <https://cloud.google.com/sdk/docs/proxy-settings#proxy_configuration>
+    for more information.
+*   **(Batch)** Deprecated positional argument `TASK_GROUP` of `gcloud batch tasks list`.
+*   **(Batch)** Use `--job` as the required flag instead.
+
+
+### Anthos Multi-Cloud
+
+*   Added `--annotations` flag to `gcloud container aws node-pools create` to
+    set the annotations field when creating AWS node pools.
+*   Added `--annotations` flag to `gcloud container aws node-pools update` to
+    update the annotations of AWS node pools.
+*   Added `--clear-annotations` flag to `gcloud container aws node-pools update`
+    to clear the annotations of AWS node pools.
+
+### Batch
+
+*   Updated `--config` flag to support job configs from Here Doc.
+
+### Cloud Dataproc
+
+*   Fixed issue where `gcloud dataproc batches list` would hang when large
+    numbers of batches are present.
+
+### Cloud Deploy
+
+* Added `gcloud deploy targets redeploy` command to redeploy a release to a given target.
+* Added `gcloud deploy rollouts retry-job`, `gcloud deploy job-runs list`, and `gcloud deploy job-runs describe` commands for Deployment Verification Public Preview.
+
+### Cloud Run
+
+* Fixed issue where job-level labels are not propagated to its execution.
+* Added `last updated message` to `gcloud beta run jobs describe` output.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.13.
+* Promoted `gcloud storage` to GA.
+
+### Compute Engine
+
+* Added <get|set>-iam-policy` and `<add|remove>-iam-policy-bindings` to `gcloud compute backend-services` for GA.
+* Added `gcloud compute security-policies rules add-preconfig-waf-exclusion|remove-preconfig-waf-exclusion` in alpha and beta.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.93.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### GKE Hub
+
+* Added new argument to the following commands:
+  * `gcloud container hub mesh update --management automatic`.
+  * `gcloud container fleet mesh update --management automatic`.
+
+### Identity and Access Management
+
+* Added support for executable-sourced external account credentials.
+* Added support for configuring the access token lifetime for service account impersonation when using external account credentials.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 401.0.0 (2022-09-07)
 
 ### Google Cloud CLI

@@ -28,26 +28,27 @@ properties:
   hostRewrite:
     description: |-
       Prior to forwarding the request to the selected origin, the request's host
-      header is replaced with contents of hostRewrite. The host value must be
+      header is replaced with contents of `host_rewrite`. The host value must be
       between 1 and 255 characters.
     type: string
   pathPrefixRewrite:
     description: |-
       Prior to forwarding the request to the selected origin, the matching
-      portion of the request's path is replaced by pathPrefixRewrite. If
-      specified, the path value must start with a / and be between 1 and 1024
-      characters long (inclusive). pathPrefixRewrite may only be used when all
-      of a route's MatchRules specify prefixMatch or fullPathMatch. Only one of
-      pathPrefixRewrite and pathTemplateRewrite may be specified.
+      portion of the request's path is replaced by `path_prefix_rewrite`. If
+      specified, the path value must start with a `/` and be between 1 and 1024
+      characters long (inclusive). `path_prefix_rewrite` may only be used when
+      all of a route's match_rules specify prefix_match or full_path_match. Only
+      one of `path_prefix_rewrite` and path_template_rewrite may be specified.
     type: string
   pathTemplateRewrite:
     description: |-
       Prior to forwarding the request to the selected origin, if the request
-      matched a pathTemplateMatch, the matching portion of the request's path is
-      replaced re-written using the pattern specified by pathTemplateRewrite.
-      pathTemplateRewrite must be between 1 and 255 characters (inclusive), must
-      start with a '/', and must only use variables captured by the route's
-      pathTemplate matchers. pathTemplateRewrite may only be used when all of a
-      route's MatchRules specify pathTemplate. Only one of pathPrefixRewrite and
-      pathTemplateRewrite may be specified.
+      matched a path_template_match, the matching portion of the request's path
+      is replaced re-written using the pattern specified by
+      `path_template_rewrite`. `path_template_rewrite` must be between 1 and 255
+      characters (inclusive), must start with a `/`, and must only use variables
+      captured by the route's `path_template_match`. `path_template_rewrite` may
+      only be used when all of a route's match_rules specify
+      `path_template_match`. Only one of path_prefix_rewrite and
+      `path_template_rewrite` may be specified.
     type: string

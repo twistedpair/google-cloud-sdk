@@ -32,15 +32,16 @@ properties:
     description: A human-readable description of the resource.
     type: string
   name:
-    description: The name to which this PathMatcher is referred by the HostRule.
+    description: |-
+      The name to which this `PathMatcher` is referred by the HostRule.
     type: string
   routeRules:
     description: |-
-      The routeRules to match against. routeRules support advanced routing
-      behaviour, and can match on paths, headers and query parameters, as well
-      as status codes and HTTP methods. You must specify at least one (1) rule,
-      and can specify a maximum of 64 rules. Route rules must not have duplicate
-      priority values.
+      A list of RouteRule rules to match against. `RouteRule` rules support
+      advanced routing behavior, and can match on paths, headers and query
+      parameters, as well as status codes and HTTP methods. You must specify at
+      least one rule, and can specify a maximum of 64 rules. `RouteRule` rules
+      must not have duplicate priority values.
     type: array
     items:
       $ref: RouteRule.yaml

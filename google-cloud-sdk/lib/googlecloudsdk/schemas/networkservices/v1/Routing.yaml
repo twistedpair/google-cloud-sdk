@@ -30,17 +30,19 @@ properties:
       type: string
   hostRules:
     description: |-
-      The list of hostRules to match against. These rules define which hostnames
-      the EdgeCacheService will match against, and which route configurations
-      apply. You may specify up to 5 host rules.
+      A list of HostRule rules to match against. `RouteRule` rules support
+      advanced routing behavior, and can match on paths, headers and query
+      parameters, as well as status codes and HTTP methods. You may specify up
+      to 5 host rules.
     type: array
     items:
       $ref: HostRule.yaml
   pathMatchers:
     description: |-
-      The list of pathMatchers referenced via name by hostRules. PathMatcher
-      is used to match the path portion of the URL when a HostRule matches
-      the URL's host portion. You may specify up to 10 path matchers.
+      The list of PathMatchers referenced via name by HostRules.
+      `PathMatcher` is used to match the path portion of the URL when a
+      `HostRule` matches the URL's host portion. You may specify up to 10
+      path matchers.
     type: array
     items:
       $ref: PathMatcher.yaml

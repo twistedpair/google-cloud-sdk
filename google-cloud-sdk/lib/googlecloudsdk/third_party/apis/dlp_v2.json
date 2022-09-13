@@ -3084,7 +3084,7 @@
           "$ref": "GooglePrivacyDlpV2FieldId"
         },
         "enableAutoPopulationOfTimespanConfig": {
-          "description": "When the job is started by a JobTrigger we will automatically figure out a valid start_time to avoid scanning files that have not been modified since the last time the JobTrigger executed. This will be based on the time of the execution of the last run of the JobTrigger.",
+          "description": "When the job is started by a JobTrigger we will automatically figure out a valid start_time to avoid scanning files that have not been modified since the last time the JobTrigger executed. This will be based on the time of the execution of the last run of the JobTrigger or the timespan end_time used in the last run of the JobTrigger.",
           "type": "boolean"
         }
       }
@@ -3099,7 +3099,7 @@
           "$ref": "GooglePrivacyDlpV2SaveFindings"
         },
         "pubSub": {
-          "description": "Publish a notification to a pubsub topic.",
+          "description": "Publish a notification to a Pub\/Sub topic.",
           "$ref": "GooglePrivacyDlpV2PublishToPubSub"
         },
         "publishSummaryToCscc": {
@@ -4645,7 +4645,7 @@
     },
     "GooglePrivacyDlpV2DataProfilePubSubMessage": {
       "id": "GooglePrivacyDlpV2DataProfilePubSubMessage",
-      "description": "Pub\/Sub topic message for a DataProfileAction.PubSubNotification event. To receive a message of protocol buffer schema type, convert the message data to an object of this proto class. https:\/\/cloud.google.com\/pubsub\/docs\/samples\/pubsub-subscribe-proto-messages",
+      "description": "Pub\/Sub topic message for a DataProfileAction.PubSubNotification event. To receive a message of protocol buffer schema type, convert the message data to an object of this proto class.",
       "type": "object",
       "properties": {
         "profile": {
@@ -5055,7 +5055,7 @@
     },
     "GooglePrivacyDlpV2DataProfilePubSubCondition": {
       "id": "GooglePrivacyDlpV2DataProfilePubSubCondition",
-      "description": "A condition for determining whether a PubSub should be triggered.",
+      "description": "A condition for determining whether a Pub\/Sub should be triggered.",
       "type": "object",
       "properties": {
         "expressions": {

@@ -6,7 +6,7 @@
   "canonicalName": "Run Apps",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "Run Apps API",
+  "title": "Serverless Integrations API",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -762,14 +762,6 @@
           "readOnly": true,
           "$ref": "DeploymentStatus"
         },
-        "render": {
-          "description": "If specified, the configurations for the deployment will be output as described but the underlying resources will not be actuated.",
-          "$ref": "Render"
-        },
-        "serviceAccount": {
-          "description": "Email address of the service account to use for the resource actuation.",
-          "type": "string"
-        },
         "dryRun": {
           "description": "The data used for dry run. When this dry run message is set, a dry run deployment will be created. A dry run deployment will not deploy live resources. It will generate change plans that include proposed changes and drift changes. The results will be populated inside the dry run message.",
           "$ref": "DryRun"
@@ -971,57 +963,6 @@
         },
         "errorMessage": {
           "description": "The error details if the state is FAILED.",
-          "type": "string"
-        }
-      }
-    },
-    "Render": {
-      "id": "Render",
-      "description": "Message to encapsulate the parameters for a Render.",
-      "type": "object",
-      "properties": {
-        "format": {
-          "description": "The format in which to render the Application.",
-          "type": "string",
-          "enumDescriptions": [
-            "No render format specified.",
-            "Render into Terraform configs.",
-            "Render into KRM configs."
-          ],
-          "enum": [
-            "RENDER_FORMAT_UNKNOWN",
-            "RENDER_FORMAT_TERRAFORM",
-            "RENDER_FORMAT_KRM"
-          ]
-        },
-        "outputLocation": {
-          "description": "The output location to push the rendered configs to.",
-          "$ref": "Target"
-        }
-      }
-    },
-    "Target": {
-      "id": "Target",
-      "description": "A type of persisted data store to which Render outputs.",
-      "type": "object",
-      "properties": {
-        "cloudStorage": {
-          "description": "A Cloud Storage target location.",
-          "$ref": "CloudStorage"
-        }
-      }
-    },
-    "CloudStorage": {
-      "id": "CloudStorage",
-      "description": "Configures a Cloud Storage location.",
-      "type": "object",
-      "properties": {
-        "bucket": {
-          "description": "Google Cloud Storage bucket containing the source (see Bucket Name Requirements).",
-          "type": "string"
-        },
-        "object": {
-          "description": "Google Cloud Storage object containing the source.",
           "type": "string"
         }
       }

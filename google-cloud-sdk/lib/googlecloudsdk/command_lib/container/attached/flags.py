@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
+
 
 def AddPlatformVersion(parser, required=True):
   parser.add_argument(
@@ -80,3 +82,26 @@ Examples:
 
 def GetDistribution(args):
   return getattr(args, 'distribution', None)
+
+
+def AddAdminUsers(parser):
+  help_txt = """
+Users that can perform operations as a cluster administrator.
+
+There is no way to completely remove admin users after setting.
+"""
+
+  parser.add_argument(
+      '--admin-users',
+      type=arg_parsers.ArgList(),
+      metavar='USER',
+      required=False,
+      help=help_txt)
+
+
+def GetAdminUsers(args):
+  if not hasattr(args, 'admin_users'):
+    return None
+  if args.admin_users:
+    return args.admin_users
+  return None

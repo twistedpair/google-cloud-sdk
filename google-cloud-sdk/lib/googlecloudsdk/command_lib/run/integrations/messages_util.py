@@ -103,3 +103,30 @@ def GetDeployMessage(resource_type, create=False):
       message += ' Manual DNS configuration will be required after completion.'
     return message
   return None
+
+
+def IntegrationAlreadyExists(name):
+  """Generates a message when an integration already exists during create.
+
+  Args:
+    name: name of the integration.
+
+  Returns:
+    A string message.
+  """
+  return ('Integration with name [{}] already exists. '
+          'Update it with `gcloud run integrations update`.').format(name)
+
+
+def IntegrationNotFound(name):
+  """Generates a message when an integration is not found.
+
+  Args:
+    name: name of the integration.
+
+  Returns:
+    A string message.
+  """
+  return ('Integration [{}] cannot be found. '
+          'First create an integration with `gcloud run integrations create`.'
+         ).format(name)

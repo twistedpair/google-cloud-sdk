@@ -17,7 +17,7 @@ class AnthosObservabilityFeatureSpec(_messages.Message):
   r"""**Anthos Observability**: Spec
 
   Fields:
-    defaultMembershipSpec: default membership spec for unconfigured
+    defaultMembershipSpec: Default membership spec for unconfigured
       memberships
   """
 
@@ -28,12 +28,12 @@ class AnthosObservabilityMembershipSpec(_messages.Message):
   r"""**Anthosobservability**: Per-Membership Feature spec.
 
   Fields:
-    doNotOptimizeMetrics: use full of metrics rather than optimized metrics.
+    doNotOptimizeMetrics: Use full of metrics rather than optimized metrics.
       See https://cloud.google.com/anthos/clusters/docs/on-
       prem/1.8/concepts/logging-and-
       monitoring#optimized_metrics_default_metrics
-    enableStackdriverOnApplications: enable collecting and reporting metrics
-      and logs from user apps See go/onyx-application-metrics-logs-user-guide
+    enableStackdriverOnApplications: Enable collecting and reporting metrics
+      and logs from user apps.
     version: the version of stackdriver operator used by this feature
   """
 
@@ -543,20 +543,13 @@ class ClusterUpgradeGKEUpgrade(_messages.Message):
 
 
 class ClusterUpgradeGKEUpgradeFeatureSpec(_messages.Message):
-  r"""GKEUpgrade is a GKEUpgrade and its eligibility at the workspace scope.
-  This includes upgrades that are eligible for a subset of clusters (partially
-  eligible upgrades). Partially eligible upgrades will be applied on the
-  current workspace, but won't be propagated to the downstream workspace.
+  r"""GKEUpgradeFeatureSpec is the feature spec for GKE clusters.
 
   Fields:
-    memberships: A list of eligible clusters to be upgraded to the given
-      GKEUpgrade. Each membership resource is in the following format:
-      `projects/[project_id]/locations/[location]/membership/[membership_id]`.
-    upgrade: Which upgrade to perform on the workspace.
+    upgrades: A list of upgrades to be applied.
   """
 
-  memberships = _messages.StringField(1, repeated=True)
-  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 2)
+  upgrades = _messages.MessageField('ClusterUpgradeWorkspaceGKEUpgrade', 1, repeated=True)
 
 
 class ClusterUpgradeGKEUpgradeFeatureState(_messages.Message):
@@ -783,6 +776,24 @@ class ClusterUpgradeWorkspaceFeatureState(_messages.Message):
   downstreamWorkspaces = _messages.StringField(1, repeated=True)
   gkeState = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureState', 2)
   ignored = _messages.MessageField('IgnoredValue', 3)
+
+
+class ClusterUpgradeWorkspaceGKEUpgrade(_messages.Message):
+  r"""WorkspaceGKEUpgrade is a GKEUpgrade and its eligibility at the workspace
+  scope. This includes upgrades that are eligible for a subset of clusters
+  (partially eligible upgrades). Partially eligible upgrades will be applied
+  on the current workspace, but won't be propagated to the downstream
+  workspace.
+
+  Fields:
+    memberships: A list of eligible clusters to be upgraded to the given
+      GKEUpgrade. Each membership resource is in the following format:
+      `projects/[project_id]/locations/[location]/membership/[membership_id]`.
+    upgrade: Which upgrade to perform on the workspace.
+  """
+
+  memberships = _messages.StringField(1, repeated=True)
+  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 2)
 
 
 class ClusterUpgradeWorkspaceGKEUpgradeState(_messages.Message):
@@ -1062,6 +1073,8 @@ class ConfigManagementConfigSync(_messages.Message):
   r"""Configuration for Config Sync
 
   Fields:
+    allowVerticalScale: Set to true to allow the vertical scaling. Defaults to
+      false which disallows vertical scaling.
     enabled: Enables the installation of ConfigSync. If set to true,
       ConfigSync resources will be created and the other ConfigSync fields
       will be applied if exist. If set to false, all other ConfigSync fields
@@ -1077,11 +1090,12 @@ class ConfigManagementConfigSync(_messages.Message):
       or "unstructured" mode.
   """
 
-  enabled = _messages.BooleanField(1)
-  git = _messages.MessageField('ConfigManagementGitConfig', 2)
-  oci = _messages.MessageField('ConfigManagementOciConfig', 3)
-  preventDrift = _messages.BooleanField(4)
-  sourceFormat = _messages.StringField(5)
+  allowVerticalScale = _messages.BooleanField(1)
+  enabled = _messages.BooleanField(2)
+  git = _messages.MessageField('ConfigManagementGitConfig', 3)
+  oci = _messages.MessageField('ConfigManagementOciConfig', 4)
+  preventDrift = _messages.BooleanField(5)
+  sourceFormat = _messages.StringField(6)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):

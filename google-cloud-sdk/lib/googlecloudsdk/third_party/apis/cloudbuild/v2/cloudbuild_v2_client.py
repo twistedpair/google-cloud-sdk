@@ -440,7 +440,7 @@ class CloudbuildV2(base_api.BaseApiClient):
         method_id='cloudbuild.projects.locations.connections.processWebhook',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[],
+        query_params=['webhookKey'],
         relative_path='v2/{+parent}/connections:processWebhook',
         request_field='httpBody',
         request_type_name='CloudbuildProjectsLocationsConnectionsProcessWebhookRequest',

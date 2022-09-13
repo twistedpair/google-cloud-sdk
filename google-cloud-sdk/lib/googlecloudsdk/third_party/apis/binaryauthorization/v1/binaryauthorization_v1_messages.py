@@ -107,6 +107,30 @@ class AllowlistPattern(_messages.Message):
   namePattern = _messages.StringField(1)
 
 
+class AttestationAuthenticator(_messages.Message):
+  r"""An attestation authenticator that will be used to verify attestations.
+  Typically this is just a set of public keys. Conceptually, an authenticator
+  can be treated as always returning either "authenticated" or "not
+  authenticated" when presented with a signed attestation (almost always
+  assumed to be a [DSSE](https://github.com/secure-systems-lab/dsse)
+  attestation). The details of how an authenticator makes this decision are
+  specific to the type of 'authenticator' that this message wraps.
+
+  Fields:
+    displayName: Optional. A user-provided name for this
+      AttestationAuthenticator. This field has no effect on the policy
+      evaluation behavior except to improve readability of messages in
+      evaluation results.
+    pkixPublicKeySet: Optional. A set of raw PKIX SubjectPublicKeyInfo format
+      public keys. If any public key in the set validates the attestation
+      signature, then the signature is considered authenticated (i.e. any one
+      key is sufficient to authenticate).
+  """
+
+  displayName = _messages.StringField(1)
+  pkixPublicKeySet = _messages.MessageField('PkixPublicKeySet', 2)
+
+
 class AttestationOccurrence(_messages.Message):
   r"""Occurrence that represents a single "attestation". The authenticity of
   an attestation can be verified using the attached signature. If the verifier
@@ -539,6 +563,69 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class Check(_messages.Message):
+  r"""A single check to perform against a Pod. Checks are grouped into
+  CheckSets, which are defined by the top-level policy.
+
+  Fields:
+    alwaysDeny: Optional. A special-case check that always denies. Note that
+      this still only applies when the scope of the CheckSet applies and the
+      image isn't exempted by an image allowlist. This check is primarily
+      useful for testing, or to set the default behavior for all unmatched
+      scopes to "deny".
+    displayName: Optional. A user-provided name for this Check. This field has
+      no effect on the policy evaluation behavior except to improve
+      readability of messages in evaluation results.
+    imageApprovalAttestationCheck: Optional. Require an ImageApproval-type
+      attestation for every image in the deployment.
+    imageFreshnessCheck: Optional. Require that an image is no older than a
+      configured expiration time. Image age is determined by its upload time.
+    trustedDirectoryCheck: Optional. Require that an image lives in a trusted
+      directory.
+    vulnerabilityCheck: Optional. Require that an image does not contain
+      vulnerabilities that violate the configured rules, such as based on
+      severity levels.
+  """
+
+  alwaysDeny = _messages.BooleanField(1)
+  displayName = _messages.StringField(2)
+  imageApprovalAttestationCheck = _messages.MessageField('ImageApprovalAttestationCheck', 3)
+  imageFreshnessCheck = _messages.MessageField('ImageFreshnessCheck', 4)
+  trustedDirectoryCheck = _messages.MessageField('TrustedDirectoryCheck', 5)
+  vulnerabilityCheck = _messages.MessageField('VulnerabilityCheck', 6)
+
+
+class CheckSet(_messages.Message):
+  r"""A conjunction of policy checks, scoped to a particular namespace or
+  Kubernetes service account. In order for evaluation of a CheckSet to return
+  "allowed" for a given image in a given Pod, one of the following conditions
+  must be satisfied: * The image is explicitly exempted by an entry in
+  `image_allowlist`, OR * ALL of the `checks` evaluate to "allowed".
+
+  Fields:
+    checks: Optional. The checks to apply. The ultimate result of evaluating
+      the check set will be "allow" if and only if every check in 'checks'
+      evaluates to "allow". If `checks` is empty, the default behavior is
+      "always allow".
+    displayName: Optional. A user-provided name for this CheckSet. This field
+      has no effect on the policy evaluation behavior except to improve
+      readability of messages in evaluation results.
+    imageAllowlist: Optional. Images exempted from this CheckSet. If any of
+      the patterns match the image being evaluated, evaluation of this
+      CheckSet will short-circuit and return a verdict of "allowed" due to
+      image exemption.
+    scope: Optional. The scope to which this CheckSet applies. If unset or an
+      empty string (the default), applies to all namespaces and service
+      accounts. See the Scope message documentation for details on scoping
+      rules.
+  """
+
+  checks = _messages.MessageField('Check', 1, repeated=True)
+  displayName = _messages.StringField(2)
+  imageAllowlist = _messages.MessageField('ImageAllowlist', 3)
+  scope = _messages.MessageField('Scope', 4)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -638,6 +725,37 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GkePolicy(_messages.Message):
+  r"""A Binary Authorization policy for a GKE cluster. This is one type of
+  policy that can occur as a `PlatformPolicy`.
+
+  Fields:
+    checkSets: Optional. The CheckSets to apply, scoped by namespace or
+      namespace and service account. Exactly one CheckSet will be evaluated
+      for a given Pod (unless the list is empty, in which case the behavior is
+      "always allow"). If multiple CheckSets have scopes that match the
+      namespace and service account of the Pod being evaluated, only the
+      CheckSet with the MOST SPECIFIC scope will match. CheckSets must be
+      listed in order of decreasing specificity, i.e. if a scope matches a
+      given service account (which must include the namespace), it must come
+      before a CheckSet with a scope matching just that namespace. This
+      property is enforced by server-side validation. The purpose of this
+      restriction is to ensure that if more than one CheckSet matches a given
+      Pod, the CheckSet that will be evaluated will always be the first in the
+      list to match (because if any other matches, it must be less specific).
+      If `check_sets` is empty, the default behavior is to allow all images.
+      If `check_sets` is non-empty, the last `check_sets` entry must always be
+      a CheckSet with no scope set, i.e. a catchall to handle any situation
+      not caught by the preceding CheckSets.
+    imageAllowlist: Optional. Images exempted from this policy. If any of the
+      patterns match the image being evaluated, the policy evaluation will
+      short-circuit and return a verdict of "allowed due to image exemption".
+  """
+
+  checkSets = _messages.MessageField('CheckSet', 1, repeated=True)
+  imageAllowlist = _messages.MessageField('ImageAllowlist', 2)
+
+
 class IamPolicy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
@@ -712,6 +830,61 @@ class IamPolicy(_messages.Message):
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class ImageAllowlist(_messages.Message):
+  r"""Images that are exempted from normal checks based on name pattern only.
+
+  Fields:
+    allowPattern: Required. A disjunction of image patterns to allow. If any
+      of these patterns match, then the image is considered exempted by this
+      allowlist.
+  """
+
+  allowPattern = _messages.StringField(1, repeated=True)
+
+
+class ImageApprovalAttestationCheck(_messages.Message):
+  r"""Require a signed [DSSE](https://github.com/secure-systems-lab/dsse)
+  attestation with type ImageApproval. For backwards compatibility with older
+  Binauthz policies, "raw" signatures (i.e. signatures without the DSSE PAE
+  transformation) are also accepted by this check when the source of the
+  signature is a Container Analysis AttestationOccurrence. This backwards-
+  compatibility shim is only true for legacy attestations from
+  AttestationOccurrence instances, and may be phased out in the future.
+
+  Fields:
+    attestationAuthenticators: Required. The authenticators required by this
+      check to verify an attestation. Typically this is one or more PKIX
+      public keys for signature verification. Only one authenticator needs to
+      consider an attestation verified in order for an attestation to be
+      considered fully authenticated. In otherwords, this list of
+      authenticators is an "OR" of the authenticator results. At least one
+      authenticator is required.
+    containerAnalysisAttestationProjects: Optional. The projects where
+      attestations are stored as Container Analysis Occurrences. Only one
+      attestation needs to successfully verify an image for this check to
+      pass, so a single verified attestation found in any of
+      `container_analysis_attestation_projects` is sufficient for the check to
+      pass. When fetching Occurrences from Container Analysis, only
+      'AttestationOccurrence' kinds are considered. In the future, additional
+      Occurrence kinds may be added to the query.
+  """
+
+  attestationAuthenticators = _messages.MessageField('AttestationAuthenticator', 1, repeated=True)
+  containerAnalysisAttestationProjects = _messages.StringField(2, repeated=True)
+
+
+class ImageFreshnessCheck(_messages.Message):
+  r"""An image freshness check, which rejects images that were uploaded before
+  the set number of days ago to the supported repositories.
+
+  Fields:
+    maxUploadAgeDays: Required. The max number of days that is allowed since
+      the image was uploaded. Must be greater than zero.
+  """
+
+  maxUploadAgeDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class InlineAttestor(_messages.Message):
@@ -890,6 +1063,19 @@ class PkixPublicKey(_messages.Message):
   signatureAlgorithm = _messages.EnumField('SignatureAlgorithmValueValuesEnum', 2)
 
 
+class PkixPublicKeySet(_messages.Message):
+  r"""A bundle of PKIX public keys, used to authenticate attestation
+  signatures. Generally, a signature is considered to be authenticated by a
+  PkixPublicKeySet if any of the public keys verify it (i.e. it is an "OR" of
+  the keys).
+
+  Fields:
+    pkixPublicKeys: Required. `pkix_public_keys` must have at least one entry.
+  """
+
+  pkixPublicKeys = _messages.MessageField('PkixPublicKey', 1, repeated=True)
+
+
 class Platform(_messages.Message):
   r"""A platform supported by binary authorization platform policy.
 
@@ -909,6 +1095,7 @@ class PlatformPolicy(_messages.Message):
   Fields:
     cloudRunPolicy: Optional. Cloud Run platform specific policy.
     description: Optional. A description comment about the policy.
+    gkePolicy: Optional. GKE platform specific policy.
     name: Output only. The relative resource name of the BinAuthz platform
       policy, in the form of `projects/*/platforms/*/policies/*`.
     updateTime: Output only. Time when the policy was last updated.
@@ -916,8 +1103,9 @@ class PlatformPolicy(_messages.Message):
 
   cloudRunPolicy = _messages.MessageField('InlineCloudRunPolicy', 1)
   description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  gkePolicy = _messages.MessageField('GkePolicy', 3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class Policy(_messages.Message):
@@ -1130,6 +1318,23 @@ class Policy(_messages.Message):
   updateTime = _messages.StringField(11)
 
 
+class Scope(_messages.Message):
+  r"""A scope specifier for CheckSets.
+
+  Fields:
+    kubernetesNamespace: Optional. Matches all Kubernetes service accounts in
+      the provided namespace, unless a more specific
+      `kubernetes_service_account` scope already matched.
+    kubernetesServiceAccount: Optional. Matches a single Kubernetes service
+      account, e.g. 'my-namespace:my-service-account'.
+      `kubernetes_service_account` scope is always more specific than
+      `kubernetes_namespace` scope for the same namespace.
+  """
+
+  kubernetesNamespace = _messages.StringField(1)
+  kubernetesServiceAccount = _messages.StringField(2)
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -1275,6 +1480,33 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+class TrustedDirectoryCheck(_messages.Message):
+  r"""A trusted directory check, which rejects images that do not come from
+  the set of user-configured trusted directories.
+
+  Fields:
+    trustedDirPatterns: Required. List of trusted directory patterns. A
+      pattern is in the form "registry/path/to/directory". The registry domain
+      part is defined as two or more dot-separated words, e.g., us.pkg.dev, or
+      gcr.io. Additionally, * can be used in three ways as wildcards: 1.
+      leading * to match varying prefixes in registry subdomain (useful for
+      location prefixes); 2. trailing * after registry/ to match varying
+      endings; 3. trailing ** after registry/ to match "/" as well. For
+      example: -- gcr.io/my-project/my-repo is valid to match a single
+      directory -- *-docker.pkg.dev/my-project/my-repo or *.gcr.io/my-project
+      are valid to match varying prefixes -- gcr.io/my-project/* will match
+      all direct directories in my-project -- gcr.io/my-project/** would match
+      all directories in my-project -- gcr.i* is not allowed since the
+      registry is not completely specified -- sub*domain.gcr.io/nginx is not
+      valid because only leading * or trailing * are allowed. -- *pkg.dev/my-
+      project/my-repo is not valid because leading * can only match subdomain
+      -- **-docker.pkg.dev is not valid because one leading * is allowed, and
+      that it cannot match "/"
+  """
+
+  trustedDirPatterns = _messages.StringField(1, repeated=True)
+
+
 class UserOwnedGrafeasNote(_messages.Message):
   r"""An user owned Grafeas note references a Grafeas Attestation.Authority
   Note created by the user.
@@ -1354,6 +1586,93 @@ class ValidateAttestationOccurrenceResponse(_messages.Message):
 
   denialReason = _messages.StringField(1)
   result = _messages.EnumField('ResultValueValuesEnum', 2)
+
+
+class VulnerabilityCheck(_messages.Message):
+  r"""An image vulnerability check, which rejects images that violate the
+  configured vulnerability rules.
+
+  Enums:
+    MaximumFixableSeverityValueValuesEnum: Required. The threshold for
+      severity for which a fix is currently available. This field is required
+      and must be set.
+    MaximumUnfixableSeverityValueValuesEnum: Required. The threshold for
+      severity for which a fix isn't currently available. This field is
+      required and must be set.
+
+  Fields:
+    allowedCves: Optional. A list of specific CVEs to ignore even if the
+      vulnerability level violates maximumUnfixableSeverity or
+      maximumFixableSeverity. CVEs are listed in the format of Container
+      Analysis note projects/[PROVIDER_ID]/notes/[NOTE_ID]. For example: -
+      projects/goog-vulnz/notes/CVE-2021-20305 - projects/goog-
+      vulnz/notes/CVE-2020-10543 - projects/some-vulnz-provider/notes/some-
+      vulnz-note-id
+    blockedCves: Optional. A list of specific CVEs to always raise warnings
+      about even if the vulnerability level meets maximumUnfixableSeverity or
+      maximumFixableSeverity. CVEs are listed in the format of Container
+      Analysis note projects/[PROVIDER_ID]/notes/[NOTE_ID]. For example: -
+      projects/goog-vulnz/notes/CVE-2021-20305 - projects/goog-
+      vulnz/notes/CVE-2020-10543 - projects/some-vulnz-provider/notes/some-
+      vulnz-note-id
+    maximumFixableSeverity: Required. The threshold for severity for which a
+      fix is currently available. This field is required and must be set.
+    maximumUnfixableSeverity: Required. The threshold for severity for which a
+      fix isn't currently available. This field is required and must be set.
+  """
+
+  class MaximumFixableSeverityValueValuesEnum(_messages.Enum):
+    r"""Required. The threshold for severity for which a fix is currently
+    available. This field is required and must be set.
+
+    Values:
+      MAXIMUM_ALLOWED_SEVERITY_UNSPECIFIED: Not specified.
+      BLOCK_ALL: Block any vulnerability.
+      MINIMAL: Allow only minimal severity.
+      LOW: Allow only low severity and lower.
+      MEDIUM: Allow medium severity and lower.
+      HIGH: Allow high severity and lower.
+      CRITICAL: Allow critical severity and lower.
+      ALLOW_ALL: Allow all severity, even vulnerability with unspecified
+        severity.
+    """
+    MAXIMUM_ALLOWED_SEVERITY_UNSPECIFIED = 0
+    BLOCK_ALL = 1
+    MINIMAL = 2
+    LOW = 3
+    MEDIUM = 4
+    HIGH = 5
+    CRITICAL = 6
+    ALLOW_ALL = 7
+
+  class MaximumUnfixableSeverityValueValuesEnum(_messages.Enum):
+    r"""Required. The threshold for severity for which a fix isn't currently
+    available. This field is required and must be set.
+
+    Values:
+      MAXIMUM_ALLOWED_SEVERITY_UNSPECIFIED: Not specified.
+      BLOCK_ALL: Block any vulnerability.
+      MINIMAL: Allow only minimal severity.
+      LOW: Allow only low severity and lower.
+      MEDIUM: Allow medium severity and lower.
+      HIGH: Allow high severity and lower.
+      CRITICAL: Allow critical severity and lower.
+      ALLOW_ALL: Allow all severity, even vulnerability with unspecified
+        severity.
+    """
+    MAXIMUM_ALLOWED_SEVERITY_UNSPECIFIED = 0
+    BLOCK_ALL = 1
+    MINIMAL = 2
+    LOW = 3
+    MEDIUM = 4
+    HIGH = 5
+    CRITICAL = 6
+    ALLOW_ALL = 7
+
+  allowedCves = _messages.StringField(1, repeated=True)
+  blockedCves = _messages.StringField(2, repeated=True)
+  maximumFixableSeverity = _messages.EnumField('MaximumFixableSeverityValueValuesEnum', 3)
+  maximumUnfixableSeverity = _messages.EnumField('MaximumUnfixableSeverityValueValuesEnum', 4)
 
 
 encoding.AddCustomJsonFieldMapping(

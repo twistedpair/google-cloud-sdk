@@ -1318,6 +1318,8 @@ class ScheduledSnapshotsConfig(_messages.Message):
 
   Fields:
     enabled: Optional. Whether scheduled snapshots creation is enabled.
+    snapshotLocation: Optional. The Cloud Storage location for storing
+      automatically created snapshots.
     snapshotsCreationSchedule: Optional. The cron expression representing the
       time when snapshots creation mechanism runs. This field is subject to
       additional validation around frequency of execution.
@@ -1329,9 +1331,10 @@ class ScheduledSnapshotsConfig(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
-  snapshotsCreationSchedule = _messages.StringField(2)
-  snapshotsRetentionDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  timeZone = _messages.StringField(4)
+  snapshotLocation = _messages.StringField(2)
+  snapshotsCreationSchedule = _messages.StringField(3)
+  snapshotsRetentionDays = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  timeZone = _messages.StringField(5)
 
 
 class SchedulerResource(_messages.Message):

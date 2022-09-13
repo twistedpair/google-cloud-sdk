@@ -95,3 +95,11 @@ class Job(k8s_object.KubernetesObject):
   @max_retries.setter
   def max_retries(self, value):
     self.task_template.spec.maxRetries = value
+
+  @property
+  def last_modifier(self):
+    return self.annotations.get(u'run.googleapis.com/lastModifier')
+
+  @property
+  def last_modified_timestamp(self):
+    return self.labels.get(u'run.googleapis.com/lastUpdatedTime')

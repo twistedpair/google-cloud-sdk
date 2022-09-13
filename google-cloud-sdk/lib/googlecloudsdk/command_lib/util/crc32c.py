@@ -19,13 +19,19 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import base64
+import warnings
 
 import six
 
 # pylint: disable=g-import-not-at-top
 try:
   # TODO(b/175725675) Make google_crc32c available with Cloud SDK.
-  import google_crc32c
+  # Supress missing c extension warnings raised by google-crc32c. This usually
+  # means the user needs to re-install the library.
+  with warnings.catch_warnings():
+    warnings.simplefilter('ignore')
+    import google_crc32c
+
   if google_crc32c.implementation in ('c', 'cffi'):
     # google-crc32c==1.1.3 changed implementation value to `c`.
     # We are checking both to ensure this is compatible with older versions.

@@ -808,3 +808,35 @@ def AddGracefulDecommissionTimeoutFlag(parser):
       ),
       hidden=True,
       required=False)
+
+
+def AddDriverPoolId(parser):
+  """Adds the customer provided driver pool id field.
+
+  Args:
+    parser: The argparse parser for the command.
+  """
+  parser.add_argument(
+      '--driver-pool-id',
+      help=("""
+            Custom identifier for the DRIVER Compute Engine node pool being
+            created. If this is not provided a random string will be used.
+            """),
+      hidden=True,
+      required=False,
+      default=None)
+
+
+def AddEnableGceNodePoolsFlag(parser):
+  """Adds the hidden flag to enable population of the auxiliaryGceNodePools field on the cluster config.
+
+  Args:
+    parser: The argparse parser for the command.
+  """
+  parser.add_argument(
+      '--enable-gce-node-pools',
+      help=('Enable Compute Engine node pools. Currently only DRIVER role node'
+            ' pools are allowed.'),
+      hidden=True,
+      default=False,
+      required=False)

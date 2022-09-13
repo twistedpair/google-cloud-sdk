@@ -39,6 +39,7 @@ ROLLOUT_ID_TEMPLATE = '{}-to-{}-{:04d}'
 WILDCARD_RELEASE_NAME_TEMPLATE = '{}/releases/-'
 SUCCEED_ROLLOUT_ORDERBY = 'DeployEndTime desc'
 PENDING_ROLLOUT_ORDERBY = 'CreateTime desc'
+ENQUEUETIME_ROLLOUT_ORDERBY = 'EnqueueTime desc'
 
 
 def RolloutReferenceFromName(rollout_name):
@@ -94,25 +95,31 @@ def ListPendingRollouts(target_ref, pipeline_ref):
       order_by=PENDING_ROLLOUT_ORDERBY)
 
 
-def GetSucceededRollout(target_ref, pipeline_ref, page_size=None, limit=None):
-  """Gets a successfully deployed rollouts for the releases associated with the specified target and index.
+def GetFilteredRollouts(target_ref,
+                        pipeline_ref,
+                        filter_str,
+                        order_by,
+                        page_size=None,
+                        limit=None):
+  """Gets successfully deployed rollouts for the releases associated with the specified target and index.
 
   Args:
     target_ref: protorpc.messages.Message, target object.
     pipeline_ref: protorpc.messages.Message, pipeline object.
+    filter_str: Filter string to use when listing rollouts.
+    order_by: order_by field to use when listing rollouts.
     page_size: int, the maximum number of objects to return per page.
     limit: int, the maximum number of `Rollout` objects to return.
 
   Returns:
     a rollout object or None if no rollouts in the target.
   """
-  filter_str = DEPLOYED_ROLLOUT_FILTER_TEMPLATE.format(target_ref.Name())
   parent = WILDCARD_RELEASE_NAME_TEMPLATE.format(pipeline_ref.RelativeName())
 
   return rollout.RolloutClient().List(
       release_name=parent,
-      filter_str=filter_str,
-      order_by=SUCCEED_ROLLOUT_ORDERBY,
+      filter_str=filter_str.format(target_ref.Name()),
+      order_by=order_by,
       page_size=page_size,
       limit=limit)
 
@@ -196,9 +203,11 @@ def GetValidRollBackCandidate(target_ref, pipeline_ref):
     An list containg the currently deployed release and the next valid
     deployable release.
   """
-  iterable = GetSucceededRollout(
+  iterable = GetFilteredRollouts(
       target_ref=target_ref,
       pipeline_ref=pipeline_ref,
+      filter_str=DEPLOYED_ROLLOUT_FILTER_TEMPLATE,
+      order_by=SUCCEED_ROLLOUT_ORDERBY,
       limit=None,
       page_size=10)
   rollouts = []

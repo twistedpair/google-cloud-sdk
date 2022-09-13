@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import abc
 import collections
+import inspect
 import io
 
 from google.auth.transport import requests as google_auth_requests
@@ -30,6 +31,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.util import http_proxy_types
+from googlecloudsdk.core.util import platforms
 
 import httplib2
 import requests
@@ -39,6 +41,21 @@ from six.moves import http_client as httplib
 from six.moves import urllib
 import socks
 from urllib3.util.ssl_ import create_urllib3_context
+
+try:
+  import urllib.request as urllib_request  # pylint: disable=g-import-not-at-top
+except ImportError:  # PY2
+  import urllib as urllib_request  # pylint: disable=g-import-not-at-top
+
+
+_INVALID_HTTPS_PROXY_ENV_VAR_WARNING = (
+    'It appears that the current proxy configuration is using an HTTPS scheme '
+    'for contacting the proxy server, which likely indicates an error in your '
+    'HTTPS_PROXY environment variable setting. This can usually be resolved '
+    'by setting HTTPS_PROXY=http://... instead of HTTPS_PROXY=https://... '
+    'See https://cloud.google.com/sdk/docs/proxy-settings for more information.'
+)
+_invalid_https_proxy_env_var_warning_shown = False
 
 
 def GetSession(timeout='unset',
@@ -213,21 +230,41 @@ def Session(
   Returns: A requests.Session subclass.
   """
   session = session or requests.Session()
+  proxy_info = GetProxyInfo()
 
   orig_request_method = session.request
   def WrappedRequest(*args, **kwargs):
     if 'timeout' not in kwargs:
       kwargs['timeout'] = timeout
+
+    # Work around a proxy bug in Python's standard library on Windows.
+    if _HasBpo42627() and 'proxies' not in kwargs:
+      kwargs['proxies'] = _AdjustProxiesKwargForBpo42627(
+          proxy_info, urllib_request.getproxies_environment(),
+          orig_request_method, *args, **kwargs)
+
     return orig_request_method(*args, **kwargs)
   session.request = WrappedRequest
 
-  proxy_info = GetProxyInfo()
   if proxy_info:
     session.trust_env = False
     session.proxies = {
         'http': proxy_info,
         'https': proxy_info,
     }
+  elif _HasInvalidHttpsProxyEnvVarScheme():
+    # Requests (and by extension gcloud) currently only supports connecting to
+    # proxy servers via HTTP. Until that changes, provide a more informative
+    # message when attempting to connect via HTTPS (usually due to a
+    # misconfigured HTTPS_PROXY env var), since this now results in a (rather
+    # opaque) error as of newer versions of urllib3 (b/228647259#comment30).
+    global _invalid_https_proxy_env_var_warning_shown
+    if not _invalid_https_proxy_env_var_warning_shown:
+      # Just do this once per command invocation to avoid spamming the warning
+      # multiple times (we initialize multiple sessions per command).
+      _invalid_https_proxy_env_var_warning_shown = True
+      log.warning(_INVALID_HTTPS_PROXY_ENV_VAR_WARNING)
+
   client_side_certificate = None
   if client_certificate is not None and client_key is not None and ca_certs is not None:
     log.debug(
@@ -490,3 +527,80 @@ class _ApitoolsRequests():
       content = response.content
 
     return httplib2.Response(headers), content
+
+
+def _HasInvalidHttpsProxyEnvVarScheme():
+  """Returns whether the HTTPS proxy env var is using an HTTPS scheme."""
+  # We call urllib.getproxies_environment instead of checking os.environ
+  # ourselves to ensure we match the semantics of what the requests library ends
+  # up doing.
+  env_proxies = urllib_request.getproxies_environment()
+  return env_proxies.get('https', '').startswith('https://')
+
+
+def _HasBpo42627():
+  """Returns whether Python is affected by https://bugs.python.org/issue42627.
+
+  Due to a bug in Python's standard library, urllib.request misparses the
+  Windows registry proxy settings and assumes that HTTPS URLs should use an
+  HTTPS proxy, when in fact they should use an HTTP proxy.
+
+  This bug affects PY<3.9, as well as lower patch versions of 3.9, 3.10, and
+  3.11.
+
+  Returns:
+    True if proxies read from the Windows registry are being parsed incorrectly.
+  """
+  return (
+      platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS
+      and hasattr(urllib_request, 'getproxies_registry')
+      and urllib_request.getproxies_registry().get('https', '').startswith(
+          'https://')
+  )
+
+
+def _AdjustProxiesKwargForBpo42627(
+    gcloud_proxy_info, environment_proxies,
+    orig_request_method, *args, **kwargs):
+  """Returns proxies to workaround https://bugs.python.org/issue42627 if needed.
+
+  Args:
+    gcloud_proxy_info: str, Proxy info from gcloud properties.
+    environment_proxies: dict, Proxy config from http/https_proxy env vars.
+    orig_request_method: function, The original requests.Session.request method.
+    *args: Positional arguments to the original request method.
+    **kwargs: Keyword arguments to the original request method.
+  Returns:
+    Optional[dict], Adjusted proxies to pass to the request method, or None if
+      no adjustment is necessary.
+  """
+  # Proxy precedence:
+  #   gcloud properties > http/https/no_proxy env vars > registry settings
+  # So if proxy settings come from either of the first two, then there's no need
+  # to adjust anything.
+  if gcloud_proxy_info or environment_proxies:
+    return None
+
+  # We want to correct proxies incorrectly parsed from the registry by sending a
+  # tweaked 'proxies' kwarg to the requests.Session.request method. However,
+  # proxies passed in this manner apply unconditionally, and we still wish to
+  # respect the "ProxyOverride" settings from the registry. So we extract the
+  # URL passed to the method, and only pass a corrected HTTPS proxy if requests
+  # would end up using the proxy for that URL when taking "ProxyOverride"
+  # settings into account.
+  url = inspect.getcallargs(orig_request_method, *args, **kwargs)['url']  # pylint: disable=deprecated-method, for PY2 compatibility
+  proxies = requests.utils.get_environ_proxies(url)  # Respects ProxyOverride.
+  https_proxy = proxies.get('https')
+  if not https_proxy:
+    return None
+
+  if not https_proxy.startswith('https://'):
+    # This should theoretically never happen, since
+    # requests.utils.get_environ_proxies should have returned proxies from the
+    # registry if we got here, and those will have been bugged. But just in case
+    # some implementation detail changes, don't try to adjust anything.
+    return None
+
+  return {
+      'https': https_proxy.replace('https://', 'http://', 1)
+  }

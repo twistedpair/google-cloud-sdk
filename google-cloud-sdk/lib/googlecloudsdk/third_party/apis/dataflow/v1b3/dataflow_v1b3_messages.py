@@ -917,6 +917,7 @@ class DataflowProjectsJobsAggregatedRequest(_messages.Message):
     location: The [regional endpoint]
       (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
       that contains this job.
+    name: Optional. The job name. Optional.
     pageSize: If there are many jobs, limit response to at most this many. The
       actual number of jobs returned will be the lesser of max_responses and
       an unspecified server-defined limit.
@@ -968,10 +969,11 @@ class DataflowProjectsJobsAggregatedRequest(_messages.Message):
 
   filter = _messages.EnumField('FilterValueValuesEnum', 1)
   location = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  projectId = _messages.StringField(5, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 6)
+  name = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  projectId = _messages.StringField(6, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 7)
 
 
 class DataflowProjectsJobsCreateRequest(_messages.Message):
@@ -1118,6 +1120,7 @@ class DataflowProjectsJobsListRequest(_messages.Message):
     location: The [regional endpoint]
       (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
       that contains this job.
+    name: Optional. The job name. Optional.
     pageSize: If there are many jobs, limit response to at most this many. The
       actual number of jobs returned will be the lesser of max_responses and
       an unspecified server-defined limit.
@@ -1169,10 +1172,11 @@ class DataflowProjectsJobsListRequest(_messages.Message):
 
   filter = _messages.EnumField('FilterValueValuesEnum', 1)
   location = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  projectId = _messages.StringField(5, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 6)
+  name = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  projectId = _messages.StringField(6, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 7)
 
 
 class DataflowProjectsJobsMessagesListRequest(_messages.Message):
@@ -1666,6 +1670,7 @@ class DataflowProjectsLocationsJobsListRequest(_messages.Message):
     location: The [regional endpoint]
       (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
       that contains this job.
+    name: Optional. The job name. Optional.
     pageSize: If there are many jobs, limit response to at most this many. The
       actual number of jobs returned will be the lesser of max_responses and
       an unspecified server-defined limit.
@@ -1717,10 +1722,11 @@ class DataflowProjectsLocationsJobsListRequest(_messages.Message):
 
   filter = _messages.EnumField('FilterValueValuesEnum', 1)
   location = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  projectId = _messages.StringField(5, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 6)
+  name = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  projectId = _messages.StringField(6, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 7)
 
 
 class DataflowProjectsLocationsJobsMessagesListRequest(_messages.Message):
@@ -5121,11 +5127,14 @@ class PipelineDescription(_messages.Message):
       pipeline.
     originalPipelineTransform: Description of each transform in the pipeline
       and collections between them.
+    stepNamesHash: A hash value of the submitted pipeline portable graph step
+      names if exists.
   """
 
   displayData = _messages.MessageField('DisplayData', 1, repeated=True)
   executionPipelineStage = _messages.MessageField('ExecutionStageSummary', 2, repeated=True)
   originalPipelineTransform = _messages.MessageField('TransformSummary', 3, repeated=True)
+  stepNamesHash = _messages.StringField(4)
 
 
 class Point(_messages.Message):

@@ -21,6 +21,130 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 
+_WAF_EXCLUSION_REQUEST_FIELD_HELP_TEXT = """
+You can specify an exact match or a partial match by using a field operator and
+a field value. Available field operators are:
+- ``EQUALS'': the operator matches if the field value equals the specified
+              value.
+- ``STARTS_WITH'': the operator matches if the field value starts with the
+                   specified value.
+- ``ENDS_WITH'': the operator matches if the field value ends with the specified
+                 value.
+- ``CONTAINS'': the operator matches if the field value contains the specified
+                value.
+- ``EQUALS_ANY'': the operator matches if the field value is any value.
+
+A field value must be given if the field operator is not ``EQUALS_ANY'', and
+cannot be given if the field operator is ``EQUALS_ANY''. For example,
+`--request-header-to-exclude op=EQUALS,val=abc` or
+`--request-header-to-exclude op=EQUALS_ANY`.
+
+This flag can be repeated to specify multiple request headers to exclude. For
+example,
+`--request-header-to-exclude op=EQUALS,val=abc --request-header-to-exclude op=STARTS_WITH,val=xyz`.
+"""
+
+_WAF_EXCLUSION_TARGET_RULE_SET_HELP_TEXT_FOR_ADD = """
+Target WAF rule set where the request field exclusions being added would apply.
+
+This, together with the target rule IDs (if given), determines the target for
+associating request field exclusions. See `--target-rule-ids`.
+"""
+
+_WAF_EXCLUSION_TARGET_RULE_SET_HELP_TEXT_FOR_REMOVE = """
+Target WAF rule set from where to remove the request field exclusions.
+
+This, together with the target rule IDs (if given), determines the target for
+associating request field exclusions. See `--target-rule-ids`.
+
+Note that the removal of request field exclusions is restricted to those
+associated with a matching target. Set this flag to * if you want to remove
+request field exclusions regardless of the target.
+"""
+
+_WAF_EXCLUSION_TARGET_RULE_IDS_HELP_TEXT_FOR_ADD = """
+A comma-separated list of target rule IDs under the WAF rule set where the
+request field exclusions being added would apply. If omitted, the added request
+field exclusions will be associated with the rule set only, which would apply
+to all the rule IDs under the rule set.
+"""
+
+_WAF_EXCLUSION_TARGET_RULE_IDS_HELP_TEXT_FOR_REMOVE = """
+A comma-separated list of target rule IDs under the WAF rule set from where to
+remove the request field exclusions. If omitted, the removal of request field
+exclusions is restricted to those associated with the rule set only, without
+specific rule IDs.
+"""
+
+_WAF_EXCLUSION_REQUEST_COOKIE_HELP_TEXT_FOR_ADD = """
+Adds a request cookie to the request field exclusions associated with the rule
+set and rule IDs (if given). This specifies a request cookie whose value will
+be excluded from inspection during preconfigured WAF evaluation.
+""" + _WAF_EXCLUSION_REQUEST_FIELD_HELP_TEXT
+
+_WAF_EXCLUSION_REQUEST_COOKIE_HELP_TEXT_FOR_REMOVE = """
+Removes a request cookie from the existing request field exclusions associated
+with the rule set and rule IDs (if given).
+""" + _WAF_EXCLUSION_REQUEST_FIELD_HELP_TEXT
+
+_WAF_EXCLUSION_REQUEST_HEADER_HELP_TEXT_FOR_ADD = """
+Adds a request header to the request field exclusions associated with the rule
+set and rule IDs (if given). This specifies a request header whose value will be
+excluded from inspection during preconfigured WAF evaluation.
+
+Refer to the syntax under `--request-cookie-to-exclude`.
+
+This flag can be repeated to specify multiple request headers.
+"""
+
+_WAF_EXCLUSION_REQUEST_HEADER_HELP_TEXT_FOR_REMOVE = """
+Removes a request header from the existing request field exclusions associated
+with the rule set and rule IDs (if given).
+
+Refer to the syntax under `--request-cookie-to-exclude`.
+
+This flag can be repeated to specify multiple request headers.
+"""
+
+_WAF_EXCLUSION_REQUEST_QUERY_PARAM_HELP_TEXT_FOR_ADD = """
+Adds a request query parameter to the request field exclusions associated with
+the rule set and rule IDs (if given). This specifies a request query parameter
+in the query string or in the POST body whose value will be excluded from
+inspection during preconfigured WAF evaluation.
+
+Refer to the syntax under `--request-cookie-to-exclude`.
+
+This flag can be repeated to specify multiple request query parameters.
+"""
+
+_WAF_EXCLUSION_REQUEST_QUERY_PARAM_HELP_TEXT_FOR_REMOVE = """
+Removes a request query parameter from the existing request field exclusions
+associated with the rule set and rule IDs (if given).
+
+Refer to the syntax under `--request-cookie-to-exclude`.
+
+This flag can be repeated to specify multiple request query parameters.
+"""
+
+_WAF_EXCLUSION_REQUEST_URI_HELP_TEXT_FOR_ADD = """
+Adds a request URI to the request field exclusions associated with the rule set
+and rule IDs (if given). This specifies a request URI from the request line to
+be excluded from inspection during preconfigured WAF evaluation.
+
+Refer to the syntax under `--request-cookie-to-exclude`.
+
+This flag can be repeated to specify multiple request URIs.
+"""
+
+_WAF_EXCLUSION_REQUEST_URI_HELP_TEXT_FOR_REMOVE = """
+Removes a request URI from the existing request field exclusions associated with
+the rule set and rule IDs (if given).
+
+Refer to the syntax under `--request-cookie-to-exclude`.
+
+This flag can be repeated to specify multiple request URIs.
+"""
+
 
 class SecurityPolicyRulesCompleter(compute_completers.ListCommandCompleter):
 
@@ -287,3 +411,78 @@ def AddRequestHeadersToAdd(parser):
       A comma-separated list of header names and header values to add to
       requests that match this rule.
       """)
+
+
+def AddTargetRuleSet(parser, is_add):
+  """Adds target-rule-set argument to the argparse."""
+  parser.add_argument(
+      '--target-rule-set',
+      required=True,
+      help=_WAF_EXCLUSION_TARGET_RULE_SET_HELP_TEXT_FOR_ADD
+      if is_add else _WAF_EXCLUSION_TARGET_RULE_SET_HELP_TEXT_FOR_REMOVE)
+
+
+def AddTargetRuleIds(parser, is_add):
+  """Adds target-rule-ids argument to the argparse."""
+  parser.add_argument(
+      '--target-rule-ids',
+      type=arg_parsers.ArgList(),
+      metavar='RULE_ID',
+      help=_WAF_EXCLUSION_TARGET_RULE_IDS_HELP_TEXT_FOR_ADD
+      if is_add else _WAF_EXCLUSION_TARGET_RULE_IDS_HELP_TEXT_FOR_REMOVE)
+
+
+def AddRequestCookie(parser, is_add):
+  """Adds request-cookie-to-exclude argument to the argparse."""
+  parser.add_argument(
+      '--request-cookie-to-exclude',
+      type=arg_parsers.ArgDict(
+          spec={
+              'op': str,
+              'val': str,
+          }, required_keys=['op']),
+      action='append',
+      help=_WAF_EXCLUSION_REQUEST_COOKIE_HELP_TEXT_FOR_ADD
+      if is_add else _WAF_EXCLUSION_REQUEST_COOKIE_HELP_TEXT_FOR_REMOVE)
+
+
+def AddRequestHeader(parser, is_add):
+  """Adds request-header-to-exclude argument to the argparse."""
+  parser.add_argument(
+      '--request-header-to-exclude',
+      type=arg_parsers.ArgDict(
+          spec={
+              'op': str,
+              'val': str,
+          }, required_keys=['op']),
+      action='append',
+      help=_WAF_EXCLUSION_REQUEST_HEADER_HELP_TEXT_FOR_ADD
+      if is_add else _WAF_EXCLUSION_REQUEST_HEADER_HELP_TEXT_FOR_REMOVE)
+
+
+def AddRequestQueryParam(parser, is_add):
+  """Adds request-query-param-to-exclude argument to the argparse."""
+  parser.add_argument(
+      '--request-query-param-to-exclude',
+      type=arg_parsers.ArgDict(
+          spec={
+              'op': str,
+              'val': str,
+          }, required_keys=['op']),
+      action='append',
+      help=_WAF_EXCLUSION_REQUEST_QUERY_PARAM_HELP_TEXT_FOR_ADD
+      if is_add else _WAF_EXCLUSION_REQUEST_QUERY_PARAM_HELP_TEXT_FOR_REMOVE)
+
+
+def AddRequestUri(parser, is_add):
+  """Adds request-uri-to-exclude argument to the argparse."""
+  parser.add_argument(
+      '--request-uri-to-exclude',
+      type=arg_parsers.ArgDict(
+          spec={
+              'op': str,
+              'val': str,
+          }, required_keys=['op']),
+      action='append',
+      help=_WAF_EXCLUSION_REQUEST_URI_HELP_TEXT_FOR_ADD
+      if is_add else _WAF_EXCLUSION_REQUEST_URI_HELP_TEXT_FOR_REMOVE)

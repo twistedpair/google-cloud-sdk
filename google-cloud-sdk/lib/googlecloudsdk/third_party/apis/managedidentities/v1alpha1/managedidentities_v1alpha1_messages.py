@@ -133,9 +133,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -461,12 +463,10 @@ class EnableMigrationRequest(_messages.Message):
   method.
 
   Fields:
-    description: Required. Description for Domain Migration Change.
     migratingDomains: Required. List of the on-prem domains to be migrated.
   """
 
-  description = _messages.StringField(1)
-  migratingDomains = _messages.MessageField('OnPremDomainDetails', 2, repeated=True)
+  migratingDomains = _messages.MessageField('OnPremDomainDetails', 1, repeated=True)
 
 
 class Expr(_messages.Message):

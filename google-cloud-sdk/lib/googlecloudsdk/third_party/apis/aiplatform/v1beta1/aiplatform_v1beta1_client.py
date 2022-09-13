@@ -5480,6 +5480,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RemoveContextChildren(self, request, global_params=None):
+      r"""Remove a set of children contexts from a parent Context. If any of the child Contexts were NOT added to the parent Context, they are simply skipped.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresContextsRemoveContextChildrenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1RemoveContextChildrenResponse) The response message.
+      """
+      config = self.GetMethodConfig('RemoveContextChildren')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveContextChildren.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/contexts/{contextsId}:removeContextChildren',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.metadataStores.contexts.removeContextChildren',
+        ordered_params=['context'],
+        path_params=['context'],
+        query_params=[],
+        relative_path='v1beta1/{+context}:removeContextChildren',
+        request_field='googleCloudAiplatformV1beta1RemoveContextChildrenRequest',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresContextsRemoveContextChildrenRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1RemoveContextChildrenResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsMetadataStoresExecutionsService(base_api.BaseApiService):
     """Service class for the projects_locations_metadataStores_executions resource."""
 

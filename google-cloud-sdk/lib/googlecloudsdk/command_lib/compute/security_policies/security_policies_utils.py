@@ -224,6 +224,33 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
       if 'enforceOnKeyName' in rate_limit_options:
         security_policy_rule.rateLimitOptions.enforceOnKeyName = (
             rate_limit_options['enforceOnKeyName'])
+    if 'preconfiguredWafConfig' in rule:
+      preconfig_waf_config = messages.SecurityPolicyRulePreconfiguredWafConfig()
+      for exclusion in rule['preconfiguredWafConfig'].get('exclusions', []):
+        exclusion_to_add = (
+            messages.SecurityPolicyRulePreconfiguredWafConfigExclusion())
+        if 'targetRuleSet' in exclusion:
+          exclusion_to_add.targetRuleSet = exclusion['targetRuleSet']
+        for target_rule_id in exclusion.get('targetRuleIds', []):
+          exclusion_to_add.targetRuleIds.append(target_rule_id)
+        for request_header in exclusion.get('requestHeadersToExclude', []):
+          exclusion_to_add.requestHeadersToExclude.append(
+              ConvertPreconfigWafExclusionRequestField(request_header,
+                                                       messages))
+        for request_cookie in exclusion.get('requestCookiesToExclude', []):
+          exclusion_to_add.requestCookiesToExclude.append(
+              ConvertPreconfigWafExclusionRequestField(request_cookie,
+                                                       messages))
+        for request_query_param in exclusion.get('requestQueryParamsToExclude',
+                                                 []):
+          exclusion_to_add.requestQueryParamsToExclude.append(
+              ConvertPreconfigWafExclusionRequestField(request_query_param,
+                                                       messages))
+        for request_uri in exclusion.get('requestUrisToExclude', []):
+          exclusion_to_add.requestUrisToExclude.append(
+              ConvertPreconfigWafExclusionRequestField(request_uri, messages))
+        preconfig_waf_config.exclusions.append(exclusion_to_add)
+      security_policy_rule.preconfiguredWafConfig = preconfig_waf_config
 
   security_policy.rules = rules
 
@@ -242,6 +269,28 @@ def ConvertToEnum(versioned_expr, messages):
   """
   return messages.SecurityPolicyRuleMatcher.VersionedExprValueValuesEnum(
       versioned_expr)
+
+
+def ConvertPreconfigWafExclusionRequestField(request_field_in_rule, messages):
+  """Converts the request field in preconfigured WAF exclusion configuration.
+
+  Args:
+    request_field_in_rule: a request field in preconfigured WAF exclusion
+      configuration read from the security policy config file.
+    messages: the set of available messages.
+
+  Returns:
+    The proto representation of the request field.
+  """
+  request_field = (
+      messages.SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams())
+  if 'op' in request_field_in_rule:
+    request_field.op = (
+        messages.SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams
+        .OpValueValuesEnum(request_field_in_rule['op']))
+  if 'val' in request_field_in_rule:
+    request_field.val = request_field_in_rule['val']
+  return request_field
 
 
 def WriteToFile(output_file, security_policy, file_format):

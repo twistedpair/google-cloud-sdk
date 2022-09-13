@@ -127,9 +127,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -1438,9 +1440,9 @@ class WorkstationConfig(_messages.Message):
     persistentDirectories: Directories to persist across Workstation sessions.
     reconciling: Output only. Indicates whether this resource is currently
       being updated to match its intended state.
-    runningTimeout: How long to wait before automatically stopping an
+    runningTimeout: How long to wait before automatically stopping a
       workstation after it started. A value of 0 indicates that workstations
-      using this config should never time out. Must be non-zero value if
+      using this config should never time out. Must be a non-zero value if
       encryption_key is set.
     uid: Output only. A system-assigned unique identified for this resource.
     updateTime: Output only. Time when this resource was most recently

@@ -409,14 +409,14 @@
           }
         },
         "publicKeys": {
-          "description": "Optional. An ordered list of Ed25519 public keys to use for validating signed requests. Ed25519 public keys are not secret, and only allow Google to validate a request was signed by your corresponding private key. Ensure that the private key is kept secret, and that only authorized users can add public keys to a keyset. You can rotate keys by appending (pushing) a new key to the list of public keys, and removing any superseded keys. You must specify at least one of `public_keys` and validation_shared_keys. You may specify both `public_keys` and `validation_shared_keys`. The keys in `public_keys` are checked first. You may specify at most 1 Google-managed public key. If you specify `public_keys`, you must specify at least one key and may specify up to three keys.",
+          "description": "Optional. An ordered list of Ed25519 public keys to use for validating signed requests. Ed25519 public keys are not secret, and only allow Google to validate a request was signed by your corresponding private key. Ensure that the private key is kept secret, and that only authorized users can add public keys to a keyset. You can rotate keys by appending (pushing) a new key to the list of public keys, and removing any superseded keys. You must specify `public_keys` or validation_shared_keys (or both). The keys in `public_keys` are checked first. You may specify no more than one Google-managed public key. If you specify `public_keys`, you must specify at least one key and may specify up to three keys.",
           "type": "array",
           "items": {
             "$ref": "PublicKey"
           }
         },
         "validationSharedKeys": {
-          "description": "Optional. An ordered list of shared keys to use for validating signed requests. Shared keys are secret. Ensure that only authorized users can add `validation_shared_keys` to a keyset. You can rotate keys by appending (pushing) a new key to the list of `validation_shared_keys` and removing any superseded keys. You must specify at least one of public_keys and `validation_shared_keys`. You may specify both `public_keys` and `validation_shared_keys`. The keys in `public_keys` are checked first. If you specify `validation_shared_keys`, you must specify at least one key and may have up to three keys.",
+          "description": "Optional. An ordered list of shared keys to use for validating signed requests. Shared keys are secret. Ensure that only authorized users can add `validation_shared_keys` to a keyset. You can rotate keys by appending (pushing) a new key to the list of `validation_shared_keys` and removing any superseded keys. You must specify public_keys or `validation_shared_keys` (or both). The keys in `public_keys` are checked first. If you specify `validation_shared_keys`, you must specify at least one key and may have up to three keys.",
           "type": "array",
           "items": {
             "$ref": "Secret"
@@ -434,11 +434,11 @@
           "type": "string"
         },
         "value": {
-          "description": "Optional. The base64-encoded value of the Ed25519 public key. The base64 encoding can be padded (44 bytes) or unpadded (43 bytes). Representations or encodings of the public key other than this are rejected with an error. Exactly one of value or managed must be specified.",
+          "description": "Optional. The base64-encoded value of the Ed25519 public key. The base64 encoding can be padded (44 bytes) or unpadded (43 bytes). Representations or encodings of the public key other than this are rejected with an error. Either `value` or `managed` must be specified.",
           "type": "string"
         },
         "managed": {
-          "description": "Optional. Set to true to have the CDN automatically manage this public key value. Exactly one of value or managed may be specified.",
+          "description": "Optional. Set to true to have the CDN automatically manage this public key value. Either `value` or `managed` must be specified.",
           "type": "boolean"
         }
       }
@@ -505,7 +505,7 @@
           }
         },
         "originAddress": {
-          "description": "Required. - **FQDN**: `media-backend.example.com` - **IPv4**: `35.218.1.1` - **IPv6**: `2607:f8b0:4012:809::200e` - **Google Cloud Storage**: `gs:\/\/bucketname` or `bucketname.storage.googleapis.com` The following limitations apply to fully-qualified domain names: * They must be resolvable via public DNS. * They must not contain a protocol (such as `https:\/\/`). * They must not contain any slashes. When providing an IP address, it must be publicly routable. IPv6 addresses must not be enclosed in square brackets.",
+          "description": "Required. - **FQDN**: `media-backend.example.com` - **IPv4**: `35.218.1.1` - **IPv6**: `2607:f8b0:4012:809::200e` - **Google Cloud Storage**: `gs:\/\/bucketname` or `bucketname.storage.googleapis.com` The following limitations apply to fully-qualified domain names: * They must be resolvable through public DNS. * They must not contain a protocol (such as `https:\/\/`). * They must not contain any slashes. When providing an IP address, it must be publicly routable. IPv6 addresses must not be enclosed in square brackets.",
           "type": "string"
         },
         "protocol": {
@@ -549,8 +549,8 @@
               "Retry if the origin responds with any HTTP 5xx response code.",
               "Similar to 5xx, but only applies to HTTP response codes 502, 503 or 504.",
               "Retry for retriable 4xx response codes, which include HTTP 409 (Conflict) and HTTP 429 (Too Many Requests).",
-              "Retry if the origin returns a HTTP 404 (Not Found). This can be useful when generating video content, and the segment is not available yet.",
-              "Retry if the origin returns a HTTP 403 (Forbidden). This can be useful for origins that return 403 (instead of 404) for missing content for security reasons."
+              "Retry if the origin returns an HTTP 404 (Not Found). This can be useful when generating video content, and the segment is not available yet.",
+              "Retry if the origin returns an HTTP 403 (Forbidden). This can be useful for origins that return 403 (instead of 404) for missing content for security reasons."
             ],
             "enum": [
               "RETRY_CONDITIONS_UNSPECIFIED",
@@ -579,7 +579,7 @@
       "type": "object",
       "properties": {
         "connectTimeout": {
-          "description": "Optional. The maximum duration to wait for a single origin connection to be established, including DNS lookup, TLS handshake and TCP\/QUIC connection establishment. Defaults to 5 seconds. The timeout must be a value between 1s and 15s. The `connect_timeout` capped by the deadline set by the request's max_attempts_timeout. The last connection attempt may have a smaller `connect_timeout` in order to adhere to the overall `max_attempts_timeout`.",
+          "description": "Optional. The maximum duration to wait for a single origin connection to be established, including DNS lookup, TLS handshake, and TCP\/QUIC connection establishment. Defaults to 5 seconds. The timeout must be a value between 1s and 15s. The `connect_timeout` capped by the deadline set by the request's max_attempts_timeout. The last connection attempt may have a smaller `connect_timeout` in order to adhere to the overall `max_attempts_timeout`.",
           "type": "string",
           "format": "google-duration"
         },
@@ -705,7 +705,7 @@
           }
         },
         "routing": {
-          "description": "Required. Defines how requests are routed, modified, cached and \/ or which origin content is filled from.",
+          "description": "Required. Defines how requests are routed, modified, cached, and which origin content is filled from.",
           "$ref": "Routing"
         },
         "logConfig": {
@@ -720,7 +720,7 @@
     },
     "Routing": {
       "id": "Routing",
-      "description": "Defines how requests are routed, modified, cached and \/ or which origin content is filled from.",
+      "description": "Defines how requests are routed, modified, cached, and which origin content is filled from.",
       "type": "object",
       "properties": {
         "hostRules": {
@@ -873,15 +873,15 @@
       "type": "object",
       "properties": {
         "prefixMatch": {
-          "description": "Optional. For satisfying the `MatchRule` condition, the request's path must begin with the specified `prefix_match`. `prefix_match` must begin with a `\/`. The value must be between 1 and 1024 characters (inclusive). Exactly one of `prefix_match`, full_path_match, or path_template_match must be specified.",
+          "description": "Optional. For satisfying the `MatchRule` condition, the request's path must begin with the specified `prefix_match`. `prefix_match` must begin with a `\/`. The value must be between 1 and 1024 characters (inclusive). One of `prefix_match`, full_path_match, or path_template_match must be specified.",
           "type": "string"
         },
         "fullPathMatch": {
-          "description": "Optional. For satisfying the `MatchRule` condition, the path of the request must exactly match the value specified in `full_path_match` after removing any query parameters and anchor that may be part of the original URL. `full_path_match` must begin with a `\/`. The value must be between 1 and 1024 characters, (inclusive). Exactly one of prefix_match, `full_path_match`, or path_template_match must be specified.",
+          "description": "Optional. For satisfying the `MatchRule` condition, the path of the request must exactly match the value specified in `full_path_match` after removing any query parameters and anchor that may be part of the original URL. `full_path_match` must begin with a `\/`. The value must be between 1 and 1024 characters, (inclusive). One of prefix_match, `full_path_match`, or path_template_match must be specified.",
           "type": "string"
         },
         "pathTemplateMatch": {
-          "description": "Optional. For satisfying the `MatchRule` condition, the path of the request must match the wildcard pattern specified in `path_template_match` after removing any query parameters and anchor that may be part of the original URL. `path_template_match` must be between 1 and 255 characters (inclusive). The pattern specified by `path_template_match` may have at most 5 wildcard operators and at most 5 variable captures in total. Exactly one of prefix_match, full_path_match, or `path_template_match` must be specified.",
+          "description": "Optional. For satisfying the `MatchRule` condition, the path of the request must match the wildcard pattern specified in `path_template_match` after removing any query parameters and anchor that may be part of the original URL. `path_template_match` must be between 1 and 255 characters (inclusive). The pattern specified by `path_template_match` may have at most 5 wildcard operators and at most 5 variable captures in total. One of prefix_match, full_path_match, or `path_template_match` must be specified.",
           "type": "string"
         },
         "ignoreCase": {
@@ -941,7 +941,7 @@
       "type": "object",
       "properties": {
         "presentMatch": {
-          "description": "Optional. Specifies that the QueryParameterMatcher matches if the request contains the query parameter. The match can success as long as the request contains the query parameter, regardless of whether the parameter has a value or not. Only one of `present_match` or exact_match must be set.",
+          "description": "Optional. Specifies that the QueryParameterMatcher matches if the request contains the query parameter. The match can succeed as long as the request contains the query parameter, regardless of whether the parameter has a value or not. Only one of `present_match` or exact_match must be set.",
           "type": "boolean"
         },
         "exactMatch": {
@@ -1093,13 +1093,13 @@
           }
         },
         "signedRequestMode": {
-          "description": "Optional. Whether to enforce signed requests. The default value is DISABLED, which means all content is public, and does not authorize access. You must also set a signed_request_keyset to enable signed requests. When set to REQUIRE_SIGNATURES, all matching requests will have their signature validated. Requests that aren't signed with the corresponding private key, or that are otherwise invalid (such as expired or do not match the signature, IP address, or header) are rejected with a HTTP 403. If logging is turned on, then invalid requests are also logged.",
+          "description": "Optional. Whether to enforce signed requests. The default value is DISABLED, which means all content is public, and does not authorize access. You must also set a signed_request_keyset to enable signed requests. When set to REQUIRE_SIGNATURES or REQUIRE_TOKENS, all matching requests get their signature validated. Requests that aren't signed with the corresponding private key, or that are otherwise invalid (such as expired or do not match the signature, IP address, or header) are rejected with a HTTP 403. If logging is turned on, then invalid requests are also logged.",
           "type": "string",
           "enumDescriptions": [
             "Unspecified value. Defaults to `DISABLED`.",
             "Do not enforce signed requests.",
-            "Enforce signed requests using query parameter, path component, or cookie signatures. All requests must have a valid signature. Requests that are missing the signature (URL or cookie-based) will be rejected as if the signature was invalid.",
-            "Enforce signed requests using signed tokens. All requests must have a valid signed token. Requests that are missing a signed token (URL or cookie-based) will be rejected as if the signed token was invalid."
+            "Enforce signed requests using query parameter, path component, or cookie signatures. All requests must have a valid signature. Requests that are missing the signature (URL or cookie-based) are rejected as if the signature was invalid.",
+            "Enforce signed requests using signed tokens. All requests must have a valid signed token. Requests that are missing a signed token (URL or cookie-based) are rejected as if the signed token was invalid."
           ],
           "enum": [
             "SIGNED_REQUEST_MODE_UNSPECIFIED",
@@ -1159,14 +1159,14 @@
           }
         },
         "includedHeaderNames": {
-          "description": "Optional. Names of HTTP request headers to include in cache keys. The value of the header field is used as part of the cache key. The following limitations apply: - Header names must be valid HTTP RFC 7230 header field values. - Header field names are case insensitive - You may specify up to five header names. - To include the HTTP method, use `:method` Refer to the documentation for the allowed list of header names. Specifying several headers, and \/ or headers that have a large range of values (such as per-user) dramatically impacts the cache hit rate, and may result in a higher eviction rate and reduced performance.",
+          "description": "Optional. Names of HTTP request headers to include in cache keys. The value of the header field is used as part of the cache key. The following limitations apply: - Header names must be valid HTTP RFC 7230 header field values. - Header field names are case insensitive - You may specify up to five header names. - To include the HTTP method, use `:method` Refer to the documentation for the allowed list of header names. Specifying several headers or headers that have a large range of values, such as per-user, dramatically impacts the cache hit rate, and may result in a higher eviction rate and reduced performance.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "includedCookieNames": {
-          "description": "Optional. Names of cookies to include in cache keys. The cookie name and cookie value of each cookie named is used as part of the cache key. The following limitations apply: - Must be valid RFC 6265 \"cookie-name\" tokens - Are case sensitive - Cannot start with \"Edge-Cache-\" (case insensitive) Specifying several cookies, and \/ or cookies that have a large range of values (such as per-user) dramatically impacts the cache hit rate, and may result in a higher eviction rate and reduced performance. You may specify up to three cookie names.",
+          "description": "Optional. Names of cookies to include in cache keys. The cookie name and cookie value of each cookie named is used as part of the cache key. The following limitations apply: - Must be valid RFC 6265 \"cookie-name\" tokens - Are case sensitive - Cannot start with \"Edge-Cache-\" (case insensitive) Specifying several cookies or cookies that have a large range of values, such as per-user, dramatically impacts the cache hit rate, and may result in a higher eviction rate and reduced performance. You may specify up to three cookie names.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1347,7 +1347,7 @@
           "type": "string"
         },
         "cacheTags": {
-          "description": "A list of cache tags used to identify cached objects. Cache tags are specified when the response is first cached, by setting the \"Cache-Tag\" response header at the origin. By default, all objects have a cache tag representing the HTTP status code of the response, the MIME content-type, and the origin. Multiple cache tags in the same revalidation request are treated as Boolean `OR` - for example, `tag1 OR tag2 OR tag3`. If a host and \/ or path are also specified, these are treated as Boolean `AND` with any tags. Up to 10 tags may be specified in a single invalidation request.",
+          "description": "A list of cache tags used to identify cached objects. Cache tags are specified when the response is first cached, by setting the \"Cache-Tag\" response header at the origin. By default, all objects have a cache tag representing the HTTP status code of the response, the MIME content-type, and the origin. Multiple cache tags in the same revalidation request are treated as Boolean `OR` - for example, `tag1 OR tag2 OR tag3`. If a host and path are also specified, these are treated as Boolean `AND` with any tags. Up to 10 tags may be specified in a single invalidation request.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1431,6 +1431,13 @@
             "SECURE_WEB_GATEWAY"
           ]
         },
+        "addresses": {
+          "description": "Optional. Zero or one IPv4-address on which the Gateway will receive the traffic. When no address is provided, an IP from the subnetwork is allocated This field only applies to gateways of type 'SECURE_WEB_GATEWAY'. Gateways of type 'OPEN_MESH' listen on 0.0.0.0.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "ports": {
           "description": "Required. One or more port numbers (1-65535), on which the Gateway will receive traffic. The proxy binds to the specified ports. Gateways of type 'SECURE_WEB_GATEWAY' are limited to 1 port. Gateways of type 'OPEN_MESH' listen on 0.0.0.0 and support multiple ports.",
           "type": "array",
@@ -1449,6 +1456,25 @@
         },
         "authorizationPolicy": {
           "description": "Optional. A fully-qualified AuthorizationPolicy URL reference. Specifies how traffic is authorized. If empty, authorization checks are disabled.",
+          "type": "string"
+        },
+        "certificateUrls": {
+          "description": "Optional. A fully-qualified Certificates URL reference. The proxy presents a Certificate (selected based on SNI) when establishing a TLS connection. This feature only applies to gateways of type 'SECURE_WEB_GATEWAY'.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "securityPolicy": {
+          "description": "Optional. A fully-qualified SecurityPolicy URL reference. Defines how a server should apply security policy to inbound (VM to Proxy) initiated connections. This policy is specific to gateways of type 'SECURE_WEB_GATEWAY'.",
+          "type": "string"
+        },
+        "network": {
+          "description": "Optional. The relative resource name identifying the VPC network that is using this configuration. For example: `projects\/*\/global\/networks\/network-1`. Currently, this field is specific to gateways of type 'SECURE_WEB_GATEWAY'.",
+          "type": "string"
+        },
+        "subnetwork": {
+          "description": "Optional. The relative resource name identifying the subnetwork in which this SWG is allocated. For example: `projects\/*\/regions\/us-central1\/subnetworks\/network-1` Currently, this field is specific to gateways of type 'SECURE_WEB_GATEWAY\".",
           "type": "string"
         }
       }
@@ -2778,7 +2804,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"

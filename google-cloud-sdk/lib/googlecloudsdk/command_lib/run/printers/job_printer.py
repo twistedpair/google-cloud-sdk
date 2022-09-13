@@ -89,17 +89,35 @@ class JobPrinter(cp.CustomPrinterBase):
       lines.append('Last executed {} with execution {}'.format(
           record.status.latestCreatedExecution.creationTimestamp,
           record.status.latestCreatedExecution.name))
+    lines.append(k8s_util.LastUpdatedMessageForJob(record))
     return cp.Lines(lines)
+
+  @staticmethod
+  def _formatOutput(record):
+    output = []
+    header = k8s_util.BuildHeader(record)
+    status = JobPrinter.TransformStatus(record)
+    labels = k8s_util.GetLabels(record.labels)
+    spec = JobPrinter.TransformSpec(record)
+    ready_message = k8s_util.FormatReadyMessage(record)
+    if header:
+      output.append(header)
+    if status:
+      output.append(status)
+    output.append(' ')
+    if labels:
+      output.append(labels)
+      output.append(' ')
+    if spec:
+      output.append(spec)
+    if ready_message:
+      output.append(ready_message)
+
+    return output
 
   def Transform(self, record):
     """Transform a job into the output structure of marker classes."""
-    fmt = cp.Lines([
-        k8s_util.BuildHeader(record),
-        self.TransformStatus(record), ' ',
-        k8s_util.GetLabels(record.labels), ' ',
-        self.TransformSpec(record),
-        k8s_util.FormatReadyMessage(record)
-    ])
+    fmt = cp.Lines(JobPrinter._formatOutput(record))
     return fmt
 
 
@@ -243,5 +261,5 @@ class ExecutionPrinter(cp.CustomPrinterBase):
 
   def Transform(self, record):
     """Transform a job into the output structure of marker classes."""
-    fmt = cp.Lines(self._formatOutput(record))
+    fmt = cp.Lines(ExecutionPrinter._formatOutput(record))
     return fmt

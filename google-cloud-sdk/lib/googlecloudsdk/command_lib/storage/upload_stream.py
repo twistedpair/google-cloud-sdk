@@ -159,9 +159,8 @@ class UploadStream:
         if (self._bytes_read_since_last_progress_callback >=
             _PROGRESS_CALLBACK_THRESHOLD):
           self._bytes_read_since_last_progress_callback = 0
-          current_pos = self._get_absolute_position()
-          self._progress_callback(current_pos)
-          self._progress_updated_with_end_byte = current_pos == self._length
+          self._progress_callback(self._get_absolute_position())
+          self._progress_updated_with_end_byte = self.tell() == self._length
 
     return data
 

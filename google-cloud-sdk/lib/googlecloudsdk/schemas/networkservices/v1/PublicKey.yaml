@@ -5,7 +5,6 @@ description: A gcloud export/import command YAML validation schema.
 type: object
 required:
 - id
-- value
 additionalProperties: false
 properties:
   COMMENT:
@@ -31,14 +30,19 @@ properties:
   id:
     description: |-
       The ID of the public key. The ID must be 1-64 characters long, and match
-      the regular expression a-zA-Z* which means the first character must be a
-      letter, and all following characters must be a dash, underscore, letter or
-      digit.
+      the regular expression `[a-zA-Z]([a-zA-Z0-9_-])*` which means the first
+      character must be a letter, and all following characters must be a dash,
+      underscore, letter or digit.
     type: string
+  managed:
+    description: |-
+      Set to true to have the CDN automatically manage this public key value.
+      Exactly one of value or managed may be specified.
+    type: boolean
   value:
     description: |-
       The base64-encoded value of the Ed25519 public key. The base64 encoding
       can be padded (44 bytes) or unpadded (43 bytes). Representations or
-      encodings of the public key other than this will be rejected with an
-      error.
+      encodings of the public key other than this are rejected with an error.
+      Exactly one of value or managed must be specified.
     type: string

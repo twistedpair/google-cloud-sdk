@@ -69,6 +69,9 @@ def ArgsForClusterRef(parser,
   flags.AddZoneFlag(parser, short_flags=include_deprecated)
   flags.AddComponentFlag(parser)
 
+  flags.AddEnableGceNodePoolsFlag(parser)
+  flags.AddDriverPoolId(parser)
+
   platform_group = parser.add_argument_group(mutex=True)
   gce_platform_group = platform_group.add_argument_group(help="""\
     Compute Engine options for Dataproc clusters.
@@ -1079,21 +1082,49 @@ def GetClusterConfig(args,
             preemptibility=_GetInstanceGroupPreemptibility(
                 dataproc, args.secondary_worker_type)))
 
-  if (args.driver_pool_size is not None or
-      args.driver_pool_machine_type is not None or
-      args.driver_pool_boot_disk_type is not None or
-      driver_pool_boot_disk_size_gb is not None or
-      args.num_driver_pool_local_ssds is not None or
-      args.driver_pool_local_ssd_interface is not None or
-      args.driver_pool_min_cpu_platform is not None):
-    cluster_config.auxiliaryNodePoolConfigs = []
-    cluster_config.auxiliaryNodePoolConfigs.append(
+  # Add input-only auxiliaryGceNodePools, only if enable flag is set
+  if _AtLeastOneGceNodePoolSpecified(args, driver_pool_boot_disk_size_gb):
+    cluster_config.auxiliaryGceNodePools = [
+        dataproc.messages.AuxiliaryGceNodePool(
+            gceNodePool=(dataproc.messages.GceNodePool(
+                labels=labels_util.ParseCreateArgs(
+                    args, dataproc.messages.GceNodePool.LabelsValue),
+                roles=[
+                    dataproc.messages.GceNodePool.RolesValueListEntryValuesEnum
+                    .DRIVER
+                ],
+                nodePoolConfig=dataproc.messages.InstanceGroupConfig(
+                    numInstances=args.driver_pool_size,
+                    imageUri=image_ref and image_ref.SelfLink(),
+                    machineTypeUri=args.driver_pool_machine_type,
+                    accelerators=driver_pool_accelerators,
+                    diskConfig=GetDiskConfig(
+                        dataproc, args.driver_pool_boot_disk_type,
+                        driver_pool_boot_disk_size_gb,
+                        args.num_driver_pool_local_ssds,
+                        args.driver_pool_local_ssd_interface),
+                    minCpuPlatform=args.driver_pool_min_cpu_platform))),
+            # FE should generate the driver pool id if none is provided
+            gceNodePoolId=args.driver_pool_id)
+    ]
+  elif (args.IsSpecified('driver_pool_size') or
+        args.IsSpecified('driver_pool_machine_type') or
+        args.IsSpecified('driver_pool_boot_disk_type') or
+        driver_pool_boot_disk_size_gb is not None or
+        args.IsSpecified('num_driver_pool_local_ssds') or
+        args.IsSpecified('driver_pool_local_ssd_interface') or
+        args.IsSpecified('driver_pool_min_cpu_platform') or
+        args.IsSpecified('driver_pool_id')):
+    cluster_config.auxiliaryNodePoolConfigs = [
         dataproc.messages.NodePoolConfig(
             roles=[
                 dataproc.messages.NodePoolConfig.RolesValueListEntryValuesEnum
                 .DRIVER
             ],
-            nodePoolId='driver-pool',
+            nodePoolId=args.driver_pool_id or
+            # FE validation for checks if this field exists instead of if its
+            # empty, so we need a valid default value
+            'driver-pool',
             nodePoolConfig=dataproc.messages.InstanceGroupConfig(
                 numInstances=args.driver_pool_size,
                 imageUri=image_ref and image_ref.SelfLink(),
@@ -1104,7 +1135,8 @@ def GetClusterConfig(args,
                                          driver_pool_boot_disk_size_gb,
                                          args.num_driver_pool_local_ssds,
                                          args.driver_pool_local_ssd_interface),
-                minCpuPlatform=args.driver_pool_min_cpu_platform)))
+                minCpuPlatform=args.driver_pool_min_cpu_platform))
+    ]
 
   if args.enable_component_gateway:
     cluster_config.endpointConfig = dataproc.messages.EndpointConfig(
@@ -1201,6 +1233,18 @@ def _SetDataprocMetricConfig(args, cluster_config, dataproc):
                 metric_source,
                 dataproc.messages.Metric.MetricSourceValueValuesEnum),
             metricOverrides=metric_overrides))
+
+
+def _AtLeastOneGceNodePoolSpecified(args, driver_pool_boot_disk_size_gb):
+  return args.enable_gce_node_pools and (
+      args.IsSpecified('driver_pool_size') or
+      args.IsSpecified('driver_pool_machine_type') or
+      args.IsSpecified('driver_pool_boot_disk_type') or
+      driver_pool_boot_disk_size_gb is not None or
+      args.IsSpecified('num_driver_pool_local_ssds') or
+      args.IsSpecified('driver_pool_local_ssd_interface') or
+      args.IsSpecified('driver_pool_min_cpu_platform') or
+      args.IsSpecified('driver_pool_id'))
 
 
 def _FirstNonNone(first, second):

@@ -338,7 +338,7 @@ class RunAppsOperations(object):
 
     if name in resources_map:
       raise exceptions.ArgumentError(
-          'Integration with name [{}] already exists.'.format(name))
+          messages_util.IntegrationAlreadyExists(name))
 
     resource_config = {}
     typekit.UpdateResourceConfig(parameters, resource_config)
@@ -426,7 +426,7 @@ class RunAppsOperations(object):
     existing_resource = resources_map.get(name)
     if existing_resource is None:
       raise exceptions.IntegrationNotFoundError(
-          'Integration [{}] cannot be found'.format(name))
+          messages_util.IntegrationNotFound(name))
 
     typekit = typekits_util.GetTypeKitByResource(existing_resource)
     resource_type = typekit.resource_type

@@ -842,7 +842,7 @@ class GoogleDatastoreAdminV1Index(_messages.Message):
     kind: Required. The entity kind to which this index applies.
     projectId: Output only. Project ID.
     properties: Required. An ordered sequence of property names and their
-      index attributes.
+      index attributes. Requires: * A maximum of 100 properties.
     state: Output only. The state of the index.
   """
 

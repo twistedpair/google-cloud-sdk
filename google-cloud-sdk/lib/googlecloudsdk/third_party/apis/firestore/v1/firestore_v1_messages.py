@@ -511,10 +511,11 @@ class FieldFilter(_messages.Message):
 
 
 class FieldReference(_messages.Message):
-  r"""A reference to a field, such as `max(messages.time) as max_time`.
+  r"""A reference to a field in a document, ex: `stats.operations`.
 
   Fields:
-    fieldPath: A string attribute.
+    fieldPath: The relative path of the document being referenced. Requires: *
+      Conform to document field name limitations.
   """
 
   fieldPath = _messages.StringField(1)
@@ -1566,15 +1567,15 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
     StateValueValuesEnum: Output only. The serving state of the index.
 
   Fields:
-    fields: The fields supported by this index. For composite indexes, this is
-      always 2 or more fields. The last field entry is always for the field
-      path `__name__`. If, on creation, `__name__` was not specified as the
-      last field, it will be added automatically with the same direction as
-      that of the last field defined. If the final field in a composite index
-      is not directional, the `__name__` will be ordered ASCENDING (unless
-      explicitly specified). For single field indexes, this will always be
-      exactly one entry with a field path equal to the field path of the
-      associated field.
+    fields: The fields supported by this index. For composite indexes, this
+      requires a minimum of 2 and a maximum of 100 fields. The last field
+      entry is always for the field path `__name__`. If, on creation,
+      `__name__` was not specified as the last field, it will be added
+      automatically with the same direction as that of the last field defined.
+      If the final field in a composite index is not directional, the
+      `__name__` will be ordered ASCENDING (unless explicitly specified). For
+      single field indexes, this will always be exactly one entry with a field
+      path equal to the field path of the associated field.
     name: Output only. A server defined name for this index. The form of this
       name for composite indexes will be: `projects/{project_id}/databases/{da
       tabase_id}/collectionGroups/{collection_id}/indexes/{composite_index_id}
@@ -2625,12 +2626,19 @@ class StructuredQuery(_messages.Message):
   r"""A Firestore query.
 
   Fields:
-    endAt: A end point for the query results.
+    endAt: A potential prefix of a position in the result set to end the query
+      at. This is similar to `START_AT` but with it controlling the end
+      position rather than the start position. Requires: * The number of
+      values cannot be greater than the number of fields specified in the
+      `ORDER BY` clause.
     from_: The collections to query.
     limit: The maximum number of results to return. Applies after all other
-      constraints. Must be >= 0 if specified.
-    offset: The number of results to skip. Applies before limit, but after all
-      other constraints. Must be >= 0 if specified.
+      constraints. Requires: * The value must be greater than or equal to zero
+      if specified.
+    offset: The number of documents to skip before returning the first result.
+      This applies after the constraints specified by the `WHERE`, `START AT`,
+      & `END AT` but before the `LIMIT` clause. Requires: * The value must be
+      greater than or equal to zero if specified.
     orderBy: The order to apply to the query results. Firestore allows callers
       to provide a full ordering, a partial ordering, or no ordering at all.
       In all cases, Firestore guarantees a stable ordering through the
@@ -2646,7 +2654,22 @@ class StructuredQuery(_messages.Message):
       __name__ ASC` * `WHERE __name__ > ... AND a > 1` becomes `WHERE __name__
       > ... AND a > 1 ORDER BY a ASC, __name__ ASC`
     select: The projection to return.
-    startAt: A starting point for the query results.
+    startAt: A potential prefix of a position in the result set to start the
+      query at. The ordering of the result set is based on the `ORDER BY`
+      clause of the original query. ``` SELECT * FROM k WHERE a = 1 AND b > 2
+      ORDER BY b ASC, __name__ ASC; ``` This query's results are ordered by
+      `(b ASC, __name__ ASC)`. Cursors can reference either the full ordering
+      or a prefix of the location, though it cannot reference more fields than
+      what are in the provided `ORDER BY`. Continuing off the example above,
+      attaching the following start cursors will have varying impact: - `START
+      BEFORE (2, /k/123)`: start the query right before `a = 1 AND b > 2 AND
+      __name__ > /k/123`. - `START AFTER (10)`: start the query right after `a
+      = 1 AND b > 10`. Unlike `OFFSET` which requires scanning over the first
+      N results to skip, a start cursor allows the query to begin at a logical
+      position. This position is not required to match an actual result, it
+      will scan forward from this position to find the next document.
+      Requires: * The number of values cannot be greater than the number of
+      fields specified in the `ORDER BY` clause.
     where: The filter to apply.
   """
 

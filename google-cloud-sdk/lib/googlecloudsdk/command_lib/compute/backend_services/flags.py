@@ -548,7 +548,10 @@ def AddNoHealthChecks(parser, default=None):
       '--no-health-checks',
       action='store_true',
       default=default,
-      help='Removes all health checks for the backend service.')
+      help="""\
+      Removes all health checks for the backend service if the backend service
+      has no backends attached.
+      """)
 
 
 def GetHealthCheckUris(args, resource_resolver, resource_parser):

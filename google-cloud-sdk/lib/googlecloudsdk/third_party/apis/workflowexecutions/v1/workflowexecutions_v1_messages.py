@@ -58,6 +58,16 @@ class Execution(_messages.Message):
       The value can only be present if the execution's state is `SUCCEEDED`.
     startTime: Output only. Marks the beginning of execution.
     state: Output only. Current state of the execution.
+    status: Output only. Status tracks the current steps and progress data of
+      this execution. > **Preview:** This field is covered by the > [Pre-GA
+      Offerings Terms](https://cloud.google.com/terms/service-terms) of > the
+      Google Cloud Terms of Service. Pre-GA features might have limited >
+      support, and changes to pre-GA features might not be compatible with >
+      other pre-GA versions. For more information, see the > [launch stage
+      descriptions](https://cloud.google.com/products#product-launch-stages).
+      > This field is usable only if your project has access. See the >
+      [access request page](https://docs.google.com/forms/d/e/1FAIpQLSdgwrSV8Y
+      4xZv_tvI6X2JEGX1-ty9yizv3_EAOVHWVKXvDLEA/viewform).
     workflowRevisionId: Output only. Revision of the workflow this execution
       is using.
   """
@@ -100,7 +110,8 @@ class Execution(_messages.Message):
   result = _messages.StringField(6)
   startTime = _messages.StringField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
-  workflowRevisionId = _messages.StringField(9)
+  status = _messages.MessageField('Status', 9)
+  workflowRevisionId = _messages.StringField(10)
 
 
 class ListExecutionsResponse(_messages.Message):
@@ -292,6 +303,43 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class Status(_messages.Message):
+  r"""> **Preview:** This field is covered by the > [Pre-GA Offerings
+  Terms](https://cloud.google.com/terms/service-terms) of > the Google Cloud
+  Terms of Service. Pre-GA features might have limited > support, and changes
+  to pre-GA features might not be compatible with > other pre-GA versions. For
+  more information, see the > [launch stage
+  descriptions](https://cloud.google.com/products#product-launch-stages). >
+  This field is usable only if your project has access. See the > [access
+  request page](https://docs.google.com/forms/d/e/1FAIpQLSdgwrSV8Y4xZv_tvI6X2J
+  EGX1-ty9yizv3_EAOVHWVKXvDLEA/viewform). Represents the current status of
+  this execution.
+
+  Fields:
+    currentSteps: A list of currently executing or last executed step names
+      for the workflow execution currently running. If the workflow has
+      succeeded or failed, this is the last attempted or executed step.
+      Presently, if the current step is inside a subworkflow, the list only
+      includes that step. In the future, the list will contain items for each
+      step in the call stack, starting with the outermost step in the `main`
+      subworkflow, and ending with the most deeply nested step.
+  """
+
+  currentSteps = _messages.MessageField('Step', 1, repeated=True)
+
+
+class Step(_messages.Message):
+  r"""Represents a step of the workflow this execution is running.
+
+  Fields:
+    routine: Name of a routine within the workflow.
+    step: Name of a step within the routine.
+  """
+
+  routine = _messages.StringField(1)
+  step = _messages.StringField(2)
 
 
 class TriggerPubsubExecutionRequest(_messages.Message):

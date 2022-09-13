@@ -95,9 +95,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -135,14 +137,26 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class CommitSchemaRequest(_messages.Message):
+  r"""Request for CommitSchema method.
+
+  Fields:
+    schema: Required. The schema revision to commit.
+  """
+
+  schema = _messages.MessageField('Schema', 1)
+
+
 class CreateSnapshotRequest(_messages.Message):
   r"""Request for the `CreateSnapshot` method.
 
   Messages:
-    LabelsValue: See Creating and managing labels.
+    LabelsValue: See [Creating and managing
+      labels](https://cloud.google.com/pubsub/docs/labels).
 
   Fields:
-    labels: See Creating and managing labels.
+    labels: See [Creating and managing
+      labels](https://cloud.google.com/pubsub/docs/labels).
     subscription: Required. The subscription whose backlog the snapshot
       retains. Specifically, the created snapshot is guaranteed to retain: (a)
       The existing backlog on the subscription. More precisely, this is
@@ -155,7 +169,8 @@ class CreateSnapshotRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""See Creating and managing labels.
+    r"""See [Creating and managing
+    labels](https://cloud.google.com/pubsub/docs/labels).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -273,6 +288,19 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class ListSchemaRevisionsResponse(_messages.Message):
+  r"""Response for the `ListSchemaRevisions` method.
+
+  Fields:
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is empty, there are no subsequent pages.
+    schemas: The revisions of the schema.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  schemas = _messages.MessageField('Schema', 2, repeated=True)
 
 
 class ListSchemasResponse(_messages.Message):
@@ -602,6 +630,20 @@ class PubsubMessage(_messages.Message):
   publishTime = _messages.StringField(5)
 
 
+class PubsubProjectsSchemasCommitRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasCommitRequest object.
+
+  Fields:
+    commitSchemaRequest: A CommitSchemaRequest resource to be passed as the
+      request body.
+    name: Required. The name of the schema we are revising. Format is
+      `projects/{project}/schemas/{schema}`.
+  """
+
+  commitSchemaRequest = _messages.MessageField('CommitSchemaRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class PubsubProjectsSchemasCreateRequest(_messages.Message):
   r"""A PubsubProjectsSchemasCreateRequest object.
 
@@ -629,6 +671,21 @@ class PubsubProjectsSchemasDeleteRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class PubsubProjectsSchemasDeleteRevisionRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasDeleteRevisionRequest object.
+
+  Fields:
+    name: Required. The name of the schema revision to be deleted, with a
+      revision ID explicitly included. Example: projects/123/schemas/my-
+      schema@c7cfa2a8
+    revisionId: Required. The revision ID to roll back to. It must be a
+      revision of the same schema. Example: c7cfa2a8
+  """
+
+  name = _messages.StringField(1, required=True)
+  revisionId = _messages.StringField(2)
 
 
 class PubsubProjectsSchemasGetIamPolicyRequest(_messages.Message):
@@ -733,6 +790,58 @@ class PubsubProjectsSchemasListRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
+class PubsubProjectsSchemasListRevisionsRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasListRevisionsRequest object.
+
+  Enums:
+    ViewValueValuesEnum: The set of Schema fields to return in the response.
+      If not set, returns Schemas with `name` and `type`, but not
+      `definition`. Set to `FULL` to retrieve all fields.
+
+  Fields:
+    name: Required. The name of the schema to list revisions for.
+    pageSize: The maximum number of revisions to return per page.
+    pageToken: The page token, received from a previous ListSchemaRevisions
+      call. Provide this to retrieve the subsequent page.
+    view: The set of Schema fields to return in the response. If not set,
+      returns Schemas with `name` and `type`, but not `definition`. Set to
+      `FULL` to retrieve all fields.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The set of Schema fields to return in the response. If not set,
+    returns Schemas with `name` and `type`, but not `definition`. Set to
+    `FULL` to retrieve all fields.
+
+    Values:
+      SCHEMA_VIEW_UNSPECIFIED: The default / unset value. The API will default
+        to the BASIC view.
+      BASIC: Include the name and type of the schema, but not the definition.
+      FULL: Include all Schema object fields.
+    """
+    SCHEMA_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
+
+
+class PubsubProjectsSchemasRollbackRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasRollbackRequest object.
+
+  Fields:
+    name: Required. The schema being rolled back with revision id.
+    rollbackSchemaRequest: A RollbackSchemaRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rollbackSchemaRequest = _messages.MessageField('RollbackSchemaRequest', 2)
+
+
 class PubsubProjectsSchemasSetIamPolicyRequest(_messages.Message):
   r"""A PubsubProjectsSchemasSetIamPolicyRequest object.
 
@@ -802,8 +911,9 @@ class PubsubProjectsSnapshotsCreateRequest(_messages.Message):
     name: Required. User-provided name for this snapshot. If the name is not
       provided in the request, the server will assign a random name for this
       snapshot on the same project as the subscription. Note that for REST API
-      requests, you must specify a name. See the resource name rules. Format
-      is `projects/{project}/snapshots/{snap}`.
+      requests, you must specify a name. See the [resource name
+      rules](https://cloud.google.com/pubsub/docs/admin#resource_names).
+      Format is `projects/{project}/snapshots/{snap}`.
   """
 
   createSnapshotRequest = _messages.MessageField('CreateSnapshotRequest', 1)
@@ -1328,7 +1438,7 @@ class PushConfig(_messages.Message):
       this attribute. The only supported values for the `x-goog-version`
       attribute are: * `v1beta1`: uses the push format defined in the v1beta1
       Pub/Sub API. * `v1` or `v1beta2`: uses the push format defined in the v1
-      Pub/Sub API. For example: attributes { "x-goog-version": "v1" }
+      Pub/Sub API. For example: `attributes { "x-goog-version": "v1" }`
 
   Fields:
     attributes: Endpoint configuration attributes that can be used to control
@@ -1344,7 +1454,7 @@ class PushConfig(_messages.Message):
       this attribute. The only supported values for the `x-goog-version`
       attribute are: * `v1beta1`: uses the push format defined in the v1beta1
       Pub/Sub API. * `v1` or `v1beta2`: uses the push format defined in the v1
-      Pub/Sub API. For example: attributes { "x-goog-version": "v1" }
+      Pub/Sub API. For example: `attributes { "x-goog-version": "v1" }`
     oidcToken: If specified, Pub/Sub will generate and attach an OIDC JWT
       token as an `Authorization` header in the HTTP request for every pushed
       message.
@@ -1368,7 +1478,7 @@ class PushConfig(_messages.Message):
     attribute. The only supported values for the `x-goog-version` attribute
     are: * `v1beta1`: uses the push format defined in the v1beta1 Pub/Sub API.
     * `v1` or `v1beta2`: uses the push format defined in the v1 Pub/Sub API.
-    For example: attributes { "x-goog-version": "v1" }
+    For example: `attributes { "x-goog-version": "v1" }`
 
     Messages:
       AdditionalProperty: An additional property for a AttributesValue object.
@@ -1439,6 +1549,17 @@ class RetryPolicy(_messages.Message):
 
   maximumBackoff = _messages.StringField(1)
   minimumBackoff = _messages.StringField(2)
+
+
+class RollbackSchemaRequest(_messages.Message):
+  r"""Request for the `RollbackSchema` method.
+
+  Fields:
+    revisionId: Required. The revision ID to roll back to. It must be a
+      revision of the same schema. Example: c7cfa2a8
+  """
+
+  revisionId = _messages.StringField(1)
 
 
 class Schema(_messages.Message):
@@ -1692,13 +1813,14 @@ class Subscription(_messages.Message):
       or not the subscription can receive messages.
 
   Messages:
-    LabelsValue: See Creating and managing labels.
+    LabelsValue: See [Creating and managing
+      labels](https://cloud.google.com/pubsub/docs/labels).
 
   Fields:
     ackDeadlineSeconds: The approximate amount of time (on a best-effort
       basis) Pub/Sub waits for the subscriber to acknowledge receipt before
       resending the message. In the interval after the message is delivered
-      and before it is acknowledged, it is considered to be *outstanding*.
+      and before it is acknowledged, it is considered to be _outstanding_.
       During that time period, the message will not be redelivered (on a best-
       effort basis). For pull subscriptions, this value is used as the initial
       value for the ack deadline. To override this value for a given message,
@@ -1750,7 +1872,8 @@ class Subscription(_messages.Message):
       then only `PubsubMessage`s whose `attributes` field matches the filter
       are delivered on this subscription. If empty, then no messages are
       filtered out.
-    labels: See Creating and managing labels.
+    labels: See [Creating and managing
+      labels](https://cloud.google.com/pubsub/docs/labels).
     messageRetentionDuration: How long to retain unacknowledged messages in
       the subscription's backlog, from the moment a message is published. If
       `retain_acked_messages` is true, then this also configures the retention
@@ -1809,7 +1932,8 @@ class Subscription(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""See Creating and managing labels.
+    r"""See [Creating and managing
+    labels](https://cloud.google.com/pubsub/docs/labels).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

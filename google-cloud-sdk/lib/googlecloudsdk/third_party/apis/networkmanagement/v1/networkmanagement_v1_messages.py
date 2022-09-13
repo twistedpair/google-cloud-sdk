@@ -173,9 +173,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -218,23 +220,23 @@ class CancelOperationRequest(_messages.Message):
 
 
 class CloudFunctionEndpoint(_messages.Message):
-  r"""Wrapper for cloud function attributes.
+  r"""Wrapper for Cloud Function attributes.
 
   Fields:
-    uri: A [Cloud function](https://cloud.google.com/functions) name.
+    uri: A [Cloud Function](https://cloud.google.com/functions) name.
   """
 
   uri = _messages.StringField(1)
 
 
 class CloudFunctionInfo(_messages.Message):
-  r"""For display only. Metadata associated with a Cloud function.
+  r"""For display only. Metadata associated with a Cloud Function.
 
   Fields:
-    displayName: Name of a Cloud function.
-    location: Location in which the Cloud function is deployed.
-    uri: URI of a Cloud function.
-    versionId: Latest successfully deployed version id of the Cloud function.
+    displayName: Name of a Cloud Function.
+    location: Location in which the Cloud Function is deployed.
+    uri: URI of a Cloud Function.
+    versionId: Latest successfully deployed version id of the Cloud Function.
   """
 
   displayName = _messages.StringField(1)
@@ -460,7 +462,7 @@ class DropInfo(_messages.Message):
       CLOUD_SQL_INSTANCE_NO_IP_ADDRESS: Packet was dropped because the Cloud
         SQL instance has neither a private nor a public IP address.
       CLOUD_FUNCTION_NOT_ACTIVE: Packet could be dropped because the Cloud
-        function is not in an active status.
+        Function is not in an active status.
       VPC_CONNECTOR_NOT_SET: Packet could be dropped because no VPC connector
         is set.
       VPC_CONNECTOR_NOT_RUNNING: Packet could be dropped because the VPC
@@ -514,7 +516,7 @@ class Endpoint(_messages.Message):
       can be inferred from the source.
 
   Fields:
-    cloudFunction: A [Cloud function](https://cloud.google.com/functions).
+    cloudFunction: A [Cloud Function](https://cloud.google.com/functions).
     cloudSqlInstance: A [Cloud SQL](https://cloud.google.com/sql) instance
       URI.
     gkeMasterCluster: A cluster URI for [Google Kubernetes Engine
@@ -675,12 +677,17 @@ class FirewallInfo(_messages.Message):
         [VPC connector's implicit
         rules](https://cloud.google.com/functions/docs/networking/connecting-
         vpc#restrict-access).
+      NETWORK_FIREWALL_POLICY_RULE: Global network firewall policy rule. For
+        details, see [Network firewall
+        policies](https://cloud.google.com/vpc/docs/network-firewall-
+        policies).
     """
     FIREWALL_RULE_TYPE_UNSPECIFIED = 0
     HIERARCHICAL_FIREWALL_POLICY_RULE = 1
     VPC_FIREWALL_RULE = 2
     IMPLIED_VPC_FIREWALL_RULE = 3
     SERVERLESS_VPC_ACCESS_MANAGED_FIREWALL_RULE = 4
+    NETWORK_FIREWALL_POLICY_RULE = 5
 
   action = _messages.StringField(1)
   direction = _messages.StringField(2)
@@ -904,10 +911,12 @@ class LoadBalancerInfo(_messages.Message):
       BACKEND_TYPE_UNSPECIFIED: Type is unspecified.
       BACKEND_SERVICE: Backend Service as the load balancer's backend.
       TARGET_POOL: Target Pool as the load balancer's backend.
+      TARGET_INSTANCE: Target Instance as the load balancer's backend.
     """
     BACKEND_TYPE_UNSPECIFIED = 0
     BACKEND_SERVICE = 1
     TARGET_POOL = 2
+    TARGET_INSTANCE = 3
 
   class LoadBalancerTypeValueValuesEnum(_messages.Enum):
     r"""Type of the load balancer.
@@ -1779,7 +1788,7 @@ class Step(_messages.Message):
   Fields:
     abort: Display information of the final state "abort" and reason.
     causesDrop: This is a step that leads to the final state Drop.
-    cloudFunction: Display information of a Cloud function.
+    cloudFunction: Display information of a Cloud Function.
     cloudSqlInstance: Display information of a Cloud SQL instance.
     deliver: Display information of the final state "deliver" and reason.
     description: A description of the step. Usually this is a summary of the
@@ -1827,7 +1836,7 @@ class Step(_messages.Message):
         Cloud SQL instance. A CloudSQLInstanceInfo is populated with starting
         instance information.
       START_FROM_CLOUD_FUNCTION: Initial state: packet originating from a
-        Cloud function. A CloudFunctionInfo is populated with starting
+        Cloud Function. A CloudFunctionInfo is populated with starting
         function information.
       APPLY_INGRESS_FIREWALL_RULE: Config checking state: verify ingress
         firewall rule.

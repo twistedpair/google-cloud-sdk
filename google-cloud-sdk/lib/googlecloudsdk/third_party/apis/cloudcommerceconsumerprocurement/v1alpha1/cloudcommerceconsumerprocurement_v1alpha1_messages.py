@@ -724,6 +724,8 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Consent(_messages.Message):
     name: The resource name of a consent. An examples of valid names would be
       in the format of: -
       "billingAccounts/{billing_account}/consents/{consent}".
+    offer: The name of the offer linked to this consent. It is in the format
+      of: - "billingAccounts/{billing_account}/offers/{offer_id}".
     state: Output only. State of current consent.
     updateTime: Output only. The update time of current consent.
   """
@@ -745,8 +747,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Consent(_messages.Message):
   createTime = _messages.StringField(2)
   financialContract = _messages.StringField(3)
   name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  updateTime = _messages.StringField(6)
+  offer = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1CreateAccountMetadata(_messages.Message):

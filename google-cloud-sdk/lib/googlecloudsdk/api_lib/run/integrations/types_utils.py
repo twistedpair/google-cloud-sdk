@@ -42,7 +42,7 @@ _INTEGRATION_TYPES = frozenset([
             'Configure a custom domain for Cloud Run services with Google Cloud '
             'Load Balancer.',
         'example_command':
-            '$ gcloud run integrations create --service=[SERVICE] '
+            '$ gcloud {track} run integrations create --service=[SERVICE] '
             '--type=custom-domain --parameters=domain=example.com',
         'parameters':
             frozendict({
@@ -90,9 +90,12 @@ _INTEGRATION_TYPES = frozenset([
         'description':
             'Configure custom domains for Cloud Run services with Google Cloud '
             'Load Balancer.',
-        'example_command':  # TODO(b/237330249): revisit this message.
-            '$ gcloud run integrations update domain-routing '
-            '--parameters=set-mapping=example.com/*:[SERVICE]',
+        'example_command':
+            """Create the integration to add the first domain mapping:
+    $ gcloud {track} run integrations create --type=domain-routing --parameters='set-mapping=example.com/*:[SERVICE]'
+  Update the integration to add subsequent mappings:
+    $ gcloud {track} run integrations update domain-routing --parameters='set-mapping=anotherexample.com/*:[SERVICE]'
+        """,
         'parameters':
             frozendict({
                 'set-mapping':
@@ -142,7 +145,7 @@ _INTEGRATION_TYPES = frozenset([
             'Configure a Redis instance (Cloud Memorystore) and connect it '
             'to a Cloud Run Service.',
         'example_command':
-            '$ gcloud run integrations create --service=[SERVICE] '
+            '$ gcloud {track} run integrations create --service=[SERVICE] '
             '--type=redis --parameters=memory-size-gb=2',
         'backing_service': True,
         'parameters':
@@ -187,7 +190,7 @@ _INTEGRATION_TYPES = frozenset([
             'Configure a CloudSQL database instance and connect it '
             'to a Cloud Run Service.',
         'example_command':
-            '$ gcloud run integrations create --service=[SERVICE] '
+            '$ gcloud {track} run integrations create --service=[SERVICE] '
             '--type=cloudsql --parameters=version=MYSQL_8_0,tier=db-f1-micro',
         'backing_service': True,
         'parameters':

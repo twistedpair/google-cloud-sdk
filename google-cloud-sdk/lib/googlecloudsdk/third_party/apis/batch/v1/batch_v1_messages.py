@@ -19,8 +19,7 @@ class Accelerator(_messages.Message):
 
   Fields:
     count: The number of accelerators of this type.
-    installGpuDrivers: When true, Batch will install the GPU drivers. This
-      field will be ignored if specified.
+    installGpuDrivers: A boolean attribute.
     type: The accelerator type. For example, "nvidia-tesla-t4". See `gcloud
       compute accelerator-types list`.
   """

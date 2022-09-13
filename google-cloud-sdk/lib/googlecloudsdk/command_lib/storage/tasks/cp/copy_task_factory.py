@@ -24,6 +24,7 @@ from googlecloudsdk.command_lib.storage.tasks.cp import daisy_chain_copy_task
 from googlecloudsdk.command_lib.storage.tasks.cp import file_download_task
 from googlecloudsdk.command_lib.storage.tasks.cp import file_upload_task
 from googlecloudsdk.command_lib.storage.tasks.cp import intra_cloud_copy_task
+from googlecloudsdk.command_lib.storage.tasks.cp import parallel_composite_upload_util
 from googlecloudsdk.command_lib.storage.tasks.cp import streaming_download_task
 from googlecloudsdk.command_lib.storage.tasks.cp import streaming_upload_task
 
@@ -93,12 +94,16 @@ def get_copy_task(source_resource,
           print_created_message=print_created_message,
           user_request_args=user_request_args)
     else:
+      is_composite_upload_eligible = (
+          parallel_composite_upload_util.is_composite_upload_eligible(
+              source_resource, destination_resource, user_request_args))
       return file_upload_task.FileUploadTask(
           source_resource,
           destination_resource,
           delete_source=delete_source,
           print_created_message=print_created_message,
-          user_request_args=user_request_args)
+          user_request_args=user_request_args,
+          is_composite_upload_eligible=is_composite_upload_eligible)
 
   if (isinstance(source_url, storage_url.CloudUrl)
       and isinstance(destination_url, storage_url.CloudUrl)):

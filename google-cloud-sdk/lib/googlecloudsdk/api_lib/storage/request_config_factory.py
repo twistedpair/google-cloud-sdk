@@ -40,6 +40,7 @@ S3_REQUEST_ERROR_FIELDS = {
 }
 S3_RESOURCE_ERROR_FIELDS = {
     'public_access_prevention': 'Public Access Prevention',
+    'retention_period': 'Setting Retention Period',
 }
 S3_RESOURCE_WARNING_FIELDS = {
     'custom_time': 'Setting Custom Time',
@@ -48,7 +49,6 @@ S3_RESOURCE_WARNING_FIELDS = {
     'default_storage_class': 'Setting Default Storage Class',
     'event_based_hold': 'Setting Event-Based Holds',
     'preserve_acl': 'Preserving ACLs',
-    'retention_period': 'Setting Retention Period',
     'temporary_hold': 'Setting Temporary Holds',
     'uniform_bucket_level_access': 'Setting Uniform Bucket Level Access',
 }

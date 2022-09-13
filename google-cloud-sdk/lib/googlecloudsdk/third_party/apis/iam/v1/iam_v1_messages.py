@@ -209,9 +209,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -3501,11 +3503,11 @@ class WorkforcePool(_messages.Message):
       `locations/{location}/workforcePools/{workforce_pool_id}`
     parent: Immutable. The resource name of the parent. Format:
       `organizations/{org-id}`.
-    sessionDuration: How long the Google Cloud access tokens, console sign-in
-      sessions, and gcloud sign-in sessions from this pool are valid. Must be
-      greater than 15 minutes (900s) and less than 12 hours (43200s). If
-      `session_duration` is not configured, minted credentials will have a
-      default duration of one hour (3600s).
+    sessionDuration: Duration that the Google Cloud access tokens, console
+      sign-in sessions, and `gcloud` sign-in sessions from this pool are
+      valid. Must be greater than 15 minutes (900s) and less than 12 hours
+      (43200s). If `session_duration` is not configured, minted credentials
+      have a default duration of one hour (3600s).
     state: Output only. The state of the pool.
   """
 

@@ -36,7 +36,8 @@ class _AttachedClientBase(client.ClientBase):
         'name': cluster_ref.attachedClustersId,
         'description': flags.GetDescription(args),
         'authority': self._Authority(args),
-        'distribution': attached_flags.GetDistribution(args)
+        'distribution': attached_flags.GetDistribution(args),
+        'authorization': self._Authorization(args),
     }
     return self._messages.GoogleCloudGkemulticloudV1AttachedCluster(
         **kwargs) if any(kwargs.values()) else None
@@ -49,6 +50,19 @@ class _AttachedClientBase(client.ClientBase):
     if oidc:
       kwargs['oidcJwks'] = oidc.encode(encoding='utf-8')
     return self._messages.GoogleCloudGkemulticloudV1Authority(
+        **kwargs) if any(kwargs.values()) else None
+
+  def _Authorization(self, args):
+    admin_users = attached_flags.GetAdminUsers(args)
+    if not admin_users:
+      return None
+    kwargs = {
+        'adminUsers': [
+            self._messages.GoogleCloudGkemulticloudV1AttachedClusterUser(
+                username=u) for u in admin_users
+        ]
+    }
+    return self._messages.GoogleCloudGkemulticloudV1AttachedClustersAuthorization(
         **kwargs) if any(kwargs.values()) else None
 
 

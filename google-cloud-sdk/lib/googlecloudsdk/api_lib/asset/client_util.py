@@ -752,13 +752,16 @@ class AssetQueryClient(object):
     output_config = None
     bigquery_table = args.CONCEPTS.bigquery_table.Parse()
     if bigquery_table:
+      write_disposition = None
+      if args.IsSpecified('write_disposition'):
+        write_disposition = args.write_disposition.replace('-', '_')
       output_config = self.message_module.QueryAssetsOutputConfig(
           bigqueryDestination=self.message_module
           .GoogleCloudAssetV1QueryAssetsOutputConfigBigQueryDestination(
               dataset='projects/' + bigquery_table.projectId + '/datasets/' +
               bigquery_table.datasetId,
               table=bigquery_table.tableId,
-              writeDisposition=args.write_disposition))
+              writeDisposition=write_disposition))
     elif args.IsSpecified('write_disposition'):
       raise gcloud_exceptions.InvalidArgumentException(
           '--write_disposition',

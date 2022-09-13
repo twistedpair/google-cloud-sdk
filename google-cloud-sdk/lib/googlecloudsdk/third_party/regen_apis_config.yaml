@@ -421,7 +421,7 @@ apis:
     beta:
       discovery_doc: compute_beta.json
       unelidable_request_methods:
-        - compute.disks.resize
+      - compute.disks.resize
       resources:
         regionAcceleratorTypes:
           path: projects/{project}/regions/{region}/acceleratorTypes/{acceleratorType}
@@ -825,12 +825,16 @@ apis:
       discovery_doc: ids_v1.json
       enable_mtls: false
       resources:
-          projects:
-            path: projects/{projectId}
-          projects.locations:
-            path: projects/{projectId}/locations/{locationId}
-          projects.locations.endpoints:
-            path: projects/{projectId}/locations/{locationId}/endpoints/{endpointId}
+        projects:
+          path: projects/{projectId}
+        projects.locations:
+          path: projects/{projectId}/locations/{locationId}
+        projects.locations.endpoints:
+          path: projects/{projectId}/locations/{locationId}/endpoints/{endpointId}
+  kmsinventory:
+    v1:
+      discovery_doc: kmsinventory_v1.json
+      default: true
   krmapihosting:
     v1alpha1:
       discovery_doc: krmapihosting_v1alpha1.json
@@ -907,15 +911,15 @@ apis:
         projects.alertPolicies.conditions:
           path: projects/{projectsId}/alertPolicies/{alertPoliciesId}/conditions/{conditionsId}
       unelidable_request_methods:
-        - monitoring.projects.alertPolicies.create
-        - monitoring.projects.notificationChannels.create
+      - monitoring.projects.alertPolicies.create
+      - monitoring.projects.notificationChannels.create
     v1:
       discovery_doc: monitoring_v1.json
       default: false
       unelidable_request_methods:
-        # This is required in order to properly generate a PatchRequest message. Without this, the
-        # generated client will simply use the Dashboard message as the request message for PATCH.
-        - monitoring.projects.dashboards.patch
+      # This is required in order to properly generate a PatchRequest message. Without this, the
+      # generated client will simply use the Dashboard message as the request message for PATCH.
+      - monitoring.projects.dashboards.patch
   netapp:
     v1alpha1:
       discovery_doc: netapp_v1alpha1.json
@@ -1207,7 +1211,7 @@ apis:
       # url and the value in the request body should be different and the
       # request message is still needed.
       unelidable_request_methods:
-        - testing.projects.testMatrices.create
+      - testing.projects.testMatrices.create
   toolresults:
     v1beta3:
       discovery_doc: toolresults_v1beta3.json

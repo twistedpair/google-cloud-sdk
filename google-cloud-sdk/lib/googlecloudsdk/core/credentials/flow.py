@@ -82,7 +82,7 @@ def RaiseProxyError(source_exc):
       'because you are behind a proxy. Please set the environment variables '
       'HTTPS_PROXY and HTTP_PROXY to the address of the proxy in the format '
       '"protocol://address:port" (without quotes) and try again.\n'
-      'Example: HTTPS_PROXY=https://192.168.0.1:8080'), source_exc)
+      'Example: HTTPS_PROXY=http://192.168.0.1:8080'), source_exc)
 
 
 def PromptForAuthCode(message, authorize_url):

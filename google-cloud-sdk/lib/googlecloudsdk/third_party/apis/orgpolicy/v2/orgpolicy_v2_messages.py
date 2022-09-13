@@ -173,6 +173,9 @@ class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
     resourceTypes: Immutable. The Resource Instance type on which this policy
       applies to. Format will be of the form : "/" Example: *
       `compute.googleapis.com/Instance`.
+    updateTime: Output only. The last time this custom constraint was updated.
+      This represents the last time that the `CreateCustomConstraint` or
+      `UpdateCustomConstraint` RPC was called
   """
 
   class ActionTypeValueValuesEnum(_messages.Enum):
@@ -208,6 +211,7 @@ class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
   methodTypes = _messages.EnumField('MethodTypesValueListEntryValuesEnum', 5, repeated=True)
   name = _messages.StringField(6)
   resourceTypes = _messages.StringField(7, repeated=True)
+  updateTime = _messages.StringField(8)
 
 
 class GoogleCloudOrgpolicyV2ListConstraintsResponse(_messages.Message):

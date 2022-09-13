@@ -86,6 +86,11 @@ class DetailedProgressMessage(ThreadMessage):
     self.process_id = process_id or os.getpid()
     self.thread_id = thread_id or threading.current_thread().ident
 
+  def __eq__(self, other):
+    if not isinstance(other, self.__class__):
+      return NotImplemented
+    return self.__dict__ == other.__dict__
+
   def __repr__(self):
     """Returns a string with a valid constructor for this message."""
     source_url_string = "'{}'".format(self.source_url)
@@ -97,6 +102,7 @@ class DetailedProgressMessage(ThreadMessage):
             ' length={length}, current_byte={current_byte},'
             ' source_url={source_url}, destination_url={destination_url},'
             ' component_number={component_number},'
+            ' total_components={total_components},'
             ' operation_name={operation_name}, process_id={process_id},'
             ' thread_id={thread_id})').format(
                 class_name=self.__class__.__name__,
@@ -107,6 +113,7 @@ class DetailedProgressMessage(ThreadMessage):
                 source_url=source_url_string,
                 destination_url=destination_url_string,
                 component_number=self.component_number,
+                total_components=self.total_components,
                 operation_name=operation_name_string,
                 process_id=self.process_id,
                 thread_id=self.thread_id)
@@ -190,6 +197,11 @@ class WorkloadEstimatorMessage(ThreadMessage):
     # pylint:enable=g-doc-args
     self.item_count = item_count
     self.size = size
+
+  def __eq__(self, other):
+    if not isinstance(other, self.__class__):
+      return NotImplemented
+    return self.__dict__ == other.__dict__
 
   def __repr__(self):
     """Returns a string with a valid constructor for this message."""

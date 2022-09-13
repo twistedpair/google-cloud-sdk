@@ -146,6 +146,9 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
       FAILED_TWO_FACTOR: Indicates that the user failed a 2FA challenge.
       CORRECT_PASSWORD: Indicates the user provided the correct password.
       INCORRECT_PASSWORD: Indicates the user provided an incorrect password.
+      SOCIAL_SPAM: Indicates that the user sent unwanted and abusive messages
+        to other users of the platform, such as spam, scams, phishing, or
+        social engineering.
     """
     REASON_UNSPECIFIED = 0
     CHARGEBACK = 1
@@ -161,6 +164,7 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
     FAILED_TWO_FACTOR = 11
     CORRECT_PASSWORD = 12
     INCORRECT_PASSWORD = 13
+    SOCIAL_SPAM = 14
 
   annotation = _messages.EnumField('AnnotationValueValuesEnum', 1)
   hashedAccountId = _messages.BytesField(2)

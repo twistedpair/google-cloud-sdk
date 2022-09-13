@@ -30,7 +30,7 @@ import six
 from six.moves import range
 from six.moves import urllib
 
-
+ISSUE_TRACKER_BASE_URL = 'https://issuetracker.google.com/'
 NEW_ISSUE_URL = 'https://issuetracker.google.com/issues/new'
 ISSUE_TRACKER_URL = 'https://issuetracker.google.com/issues?q=componentid:187143%2B'
 ISSUE_TRACKER_COMPONENT = 187143
@@ -444,5 +444,10 @@ def OpenNewIssueInBrowser(info, log_data):
     url = _FormatNewIssueUrl(truncated)
   OpenInBrowser(url)
   log.status.Print('Opening your browser to a new Google Cloud SDK issue.')
-  log.status.Print("If your browser doesn't open, please file an issue: " +
-                   ISSUE_TRACKER_URL)
+  log.status.Print(
+      'If your browser does not open or you have issues loading the web page, '
+      'please ensure you are signed into your account on %s first, then try '
+      'again.' % ISSUE_TRACKER_BASE_URL)
+  log.status.Print(
+      'If you still have issues loading the web page, please file an issue: %s'
+      % ISSUE_TRACKER_URL)

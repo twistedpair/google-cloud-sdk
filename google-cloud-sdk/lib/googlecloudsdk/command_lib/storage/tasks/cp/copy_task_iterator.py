@@ -182,11 +182,12 @@ def _is_expanded_url_valid_parent_dir(expanded_url):
   if not isinstance(expanded_url, storage_url.FileUrl):
     return True
 
-  _, _, after_last_delimiter = (
-      expanded_url.versionless_url_string.rpartition(expanded_url.delimiter))
+  _, _, last_string_following_delimiter = (
+      expanded_url.versionless_url_string.rstrip(
+          expanded_url.delimiter).rpartition(expanded_url.delimiter))
 
-  return after_last_delimiter not in _RELATIVE_PATH_SYMBOLS and (
-      after_last_delimiter not in [
+  return last_string_following_delimiter not in _RELATIVE_PATH_SYMBOLS and (
+      last_string_following_delimiter not in [
           expanded_url.scheme.value + '://' + symbol
           for symbol in _RELATIVE_PATH_SYMBOLS
       ])
@@ -488,15 +489,47 @@ class CopyTaskIterator:
     is_top_level_source_object_name_conflict_possible = (
         isinstance(destination_container, resource_reference.UnknownResource)
         and self._has_multiple_top_level_sources)
-    destination_is_existing_dir = (not isinstance(
-        destination_container, resource_reference.UnknownResource) and
-                                   destination_container.is_container())
+
+    destination_exists = not isinstance(
+        destination_container, resource_reference.UnknownResource)
+
+    destination_is_existing_dir = (
+        destination_exists and
+        destination_container.is_container())
+
+    treat_destination_as_existing_dir = (
+        destination_is_existing_dir or (
+            not destination_exists and
+            destination_container.storage_url.url_string.endswith(
+                destination_container.storage_url.delimiter)))
+
     if is_top_level_source_object_name_conflict_possible or (
-        expanded_url_is_valid_parent and destination_is_existing_dir):
-      # Preserve the top-level source directory, and remove the leaf name
-      # so that it gets added to the destination.
-      source_prefix_to_ignore, _, _ = source_prefix_to_ignore.rpartition(
-          source.expanded_url.delimiter)
+        expanded_url_is_valid_parent and treat_destination_as_existing_dir):
+      # Remove the leaf name unless it is a relative path symbol, so that
+      # only top-level source directories are ignored.
+
+      # Presence of relative path symbols needs to be checked with the source
+      # to distinguish file://dir.. from file://dir/..
+      source_delimiter = source.resource.storage_url.delimiter
+      relative_path_characters_end_source_prefix = [
+          source_prefix_to_ignore.endswith(source_delimiter + i)
+          for i in _RELATIVE_PATH_SYMBOLS
+      ]
+
+      # On Windows, source paths that are relative path symbols will not contain
+      # the source delimiter, e.g. file://.. This case thus needs to be detected
+      # separately.
+      source_url_scheme_string = source.expanded_url.scheme.value + '://'
+      source_prefix_to_ignore_without_scheme = source_prefix_to_ignore[
+          len(source_url_scheme_string):]
+      source_is_relative_path_symbol = (
+          source_prefix_to_ignore_without_scheme in _RELATIVE_PATH_SYMBOLS)
+
+      if (not any(relative_path_characters_end_source_prefix) and
+          not source_is_relative_path_symbol):
+        source_prefix_to_ignore, _, _ = source_prefix_to_ignore.rpartition(
+            source.expanded_url.delimiter)
+
       if not source_prefix_to_ignore:
         # In case of Windows, the source URL might not contain any Windows
         # delimiter if it was a single directory (e.g file://dir) and

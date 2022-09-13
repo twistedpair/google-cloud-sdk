@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.vmware import util
+from googlecloudsdk.api_lib.vmware.networks import NetworksClient
 
 
 class PrivateCloudsClient(util.VmwareClientBase):
@@ -28,6 +29,7 @@ class PrivateCloudsClient(util.VmwareClientBase):
   def __init__(self):
     super(PrivateCloudsClient, self).__init__()
     self.service = self.client.projects_locations_privateClouds
+    self.networks_client = NetworksClient()
 
   def Get(self, resource):
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsGetRequest(
@@ -44,17 +46,18 @@ class PrivateCloudsClient(util.VmwareClientBase):
              node_count=None,
              network_cidr=None,
              network=None,
-             vmware_engine_network=None,
+             vmware_engine_network_id=None,
              network_project=None,
              node_custom_core_count=None):
     parent = resource.Parent().RelativeName()
+    project = resource.Parent().Parent().Name()
     private_cloud_id = resource.Name()
     private_cloud = self.messages.PrivateCloud(description=description)
     network_config = self.messages.NetworkConfig(managementCidr=network_cidr)
 
     # old networking model
     if network_project is None:
-      network_project = resource.Parent().Parent().Name()
+      network_project = project
 
     if network is not None:
       if not network.startswith('project'):
@@ -64,8 +67,9 @@ class PrivateCloudsClient(util.VmwareClientBase):
       network_config.network = network
 
     # new networking model
-    if vmware_engine_network is not None:
-      network_config.vmwareEngineNetwork = vmware_engine_network
+    if vmware_engine_network_id is not None:
+      ven = self.networks_client.GetByID(project, vmware_engine_network_id)
+      network_config.vmwareEngineNetwork = ven.name
 
     management_cluster = self.messages.ManagementCluster(
         clusterId=cluster_id, nodeCount=node_count,

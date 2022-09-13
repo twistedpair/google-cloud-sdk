@@ -85,17 +85,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_EXTENSIONCHAINS = (
-      'projects.locations.extensionChains',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/extensionChains/'
-              '{extensionChainsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_GATEWAYS = (
       'projects.locations.gateways',
       '{+name}',

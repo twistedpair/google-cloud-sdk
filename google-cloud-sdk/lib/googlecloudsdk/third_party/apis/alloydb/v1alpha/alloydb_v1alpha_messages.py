@@ -866,7 +866,7 @@ class CancelOperationRequest(_messages.Message):
 class Cluster(_messages.Message):
   r"""A cluster is a collection of regional AlloyDB resources. It can include
   a primary instance and one or more read pool instances. All cluster
-  resources share a storage layer, which scales as needed. NEXT_ID: 25
+  resources share a storage layer, which scales as needed. NEXT_ID: 27
 
   Enums:
     ClusterTypeValueValuesEnum: Output only. The type of the cluster. This is
@@ -1475,6 +1475,7 @@ class Instance(_messages.Message):
         state. Keeping that index unused in case that state also needs to
         exposed via consumer apis in future. The instance has been configured
         to sync data from some other source.
+      PROMOTING: The instance is being promoted.
     """
     STATE_UNSPECIFIED = 0
     READY = 1
@@ -1484,6 +1485,7 @@ class Instance(_messages.Message):
     MAINTENANCE = 5
     FAILED = 6
     BOOTSTRAPPING = 7
+    PROMOTING = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):

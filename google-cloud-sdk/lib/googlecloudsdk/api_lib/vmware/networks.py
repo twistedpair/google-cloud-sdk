@@ -22,6 +22,24 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.vmware import util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.vmware.networks import util as networks_util
+from googlecloudsdk.core.exceptions import Error
+from googlecloudsdk.core.resources import REGISTRY
+
+
+class NetworkNotFoundError(Error):
+
+  def __init__(self, network_id):
+    super(NetworkNotFoundError, self).__init__(
+        'FAILED_PRECONDITION: The VMware Engine network `{network_id}` doesn\'t exist. Operation on the resource can\'t be fulfilled.'
+        .format(network_id=network_id))
+
+
+class MultipleNetworksFoundError(Error):
+
+  def __init__(self, network_id):
+    super(MultipleNetworksFoundError, self).__init__(
+        'Multiple VMware Engine networks `{network_id}` exist. Operation on the resource can\'t be fulfilled.'
+        .format(network_id=network_id))
 
 
 class NetworksClient(util.VmwareClientBase):
@@ -37,6 +55,22 @@ class NetworksClient(util.VmwareClientBase):
 
     response = self.service.Get(request)
     return response
+
+  def GetByID(self, project, network_id):
+    parent_location = REGISTRY.Create(
+        'vmwareengine.projects.locations', projectsId=project, locationsId='-')
+
+    networks = list(
+        network for network in self.List(parent_location)
+        if util.GetResourceId(network.name) == network_id)
+
+    if len(networks) > 1:
+      raise MultipleNetworksFoundError(network_id)
+
+    if not networks:
+      raise NetworkNotFoundError(network_id)
+
+    return networks[0]
 
   def Create(self, resource, description=None, network_type=None):
     parent = resource.Parent().RelativeName()

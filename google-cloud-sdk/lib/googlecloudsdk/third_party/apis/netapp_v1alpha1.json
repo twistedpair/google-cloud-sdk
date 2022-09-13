@@ -237,10 +237,6 @@
           "description": "Required. Name of the storage pool",
           "type": "string"
         },
-        "storagePoolId": {
-          "description": "Required. Unique Id of the storage pool",
-          "type": "string"
-        },
         "serviceLevel": {
           "description": "Required. Service level of the storage pool",
           "type": "string",
@@ -349,10 +345,6 @@
           "description": "Required. Name of the volume",
           "type": "string"
         },
-        "volumeId": {
-          "description": "Required. Unique Id of the volume",
-          "type": "string"
-        },
         "state": {
           "description": "Output only. State of the volume",
           "readOnly": true,
@@ -447,29 +439,33 @@
           }
         },
         "smbSettings": {
-          "type": "string",
-          "enumDescriptions": [
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
-          ],
-          "enum": [
-            "SMB_SETTINGS_UNSPECIFIED",
-            "ENCRYPT_DATA",
-            "BROWSABLE",
-            "CHANGE_NOTIFY",
-            "NON_BROWSABLE",
-            "OPLOCKS",
-            "SHOW_SNAPSHOT",
-            "SHOW_PREVIOUS_VERSIONS",
-            "ACCESS_BASED_ENUMERATION"
-          ]
+          "description": "SMB share settings for the volume.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Unspecified SMB setting",
+              "Encrypt SMB data",
+              "Browsable",
+              "Change notify",
+              "Non-browsable",
+              "Operation locks",
+              "Show snapshot",
+              "Show previous versions",
+              "Access based enumeration"
+            ],
+            "enum": [
+              "SMB_SETTINGS_UNSPECIFIED",
+              "ENCRYPT_DATA",
+              "BROWSABLE",
+              "CHANGE_NOTIFY",
+              "NON_BROWSABLE",
+              "OPLOCKS",
+              "SHOW_SNAPSHOT",
+              "SHOW_PREVIOUS_VERSIONS",
+              "ACCESS_BASED_ENUMERATION"
+            ]
+          }
         },
         "mountOptions": {
           "description": "Output only. Mount options of this volume",
@@ -534,6 +530,10 @@
         "ldapEnabled": {
           "description": "Flag indicating if the volume is NFS LDAP enabled or not.",
           "type": "boolean"
+        },
+        "activeDirectoryName": {
+          "description": "Specifies the AD to be used for creating a SMB volume.",
+          "type": "string"
         }
       }
     },
@@ -788,10 +788,6 @@
           "description": "Required. The resource name of the snapshot.",
           "type": "string"
         },
-        "snapshotId": {
-          "description": "Required. Unique id of the snapshot.",
-          "type": "string"
-        },
         "state": {
           "description": "Output only. The snapshot state.",
           "readOnly": true,
@@ -843,6 +839,7 @@
     },
     "ListActiveDirectoryResponse": {
       "id": "ListActiveDirectoryResponse",
+      "description": "ListActiveDirectoryResponse contains all the active directories requested.",
       "type": "object",
       "properties": {
         "activeDirectories": {
@@ -867,6 +864,7 @@
     },
     "ActiveDirectory": {
       "id": "ActiveDirectory",
+      "description": "ActiveDirectory is the public representation of the active directory config.",
       "type": "object",
       "properties": {
         "createTime": {
@@ -1329,8 +1327,8 @@
                       "required": true,
                       "type": "string"
                     },
-                    "storagePoolId": {
-                      "description": "Required. Id of the requesting storage pool If auto-generating Id server-side, remove this field and storage_pool_id from the method_signature of Create RPC",
+                    "name": {
+                      "description": "Required. Name of the requesting storage pool If auto-generating Name server-side, remove this field and name from the method_signature of Create RPC",
                       "location": "query",
                       "type": "string"
                     }
@@ -1521,8 +1519,8 @@
                       "required": true,
                       "type": "string"
                     },
-                    "volumeId": {
-                      "description": "Required. Id of the requesting volume If auto-generating Id server-side, remove this field and volume_id from the method_signature of Create RPC",
+                    "name": {
+                      "description": "Required. Name of the requesting volume If auto-generating Name server-side, remove this field and name from the method_signature of Create RPC",
                       "location": "query",
                       "type": "string"
                     }
@@ -1587,6 +1585,11 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
+                    },
+                    "force": {
+                      "description": "If this field is set as true, CCFE will not block the volume resource deletion even if it has any snapshots resource. (Otherwise, the request will only work if the volume has no snapshots.)",
+                      "location": "query",
+                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [
@@ -1717,8 +1720,8 @@
                           "required": true,
                           "type": "string"
                         },
-                        "snapshotId": {
-                          "description": "Required. The ID to use for the snapshot. The ID must be unique within the specified volume. This value must start with a lowercase letter followed by up to 62 lowercase letters, numbers, or hyphens, and cannot end with a hyphen.",
+                        "name": {
+                          "description": "Required. The name for the snapshot. The name must be unique within the specified volume. This value must start with a lowercase letter followed by up to 62 lowercase letters, numbers, or hyphens, and cannot end with a hyphen.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1887,6 +1890,7 @@
                       "type": "string"
                     },
                     "name": {
+                      "description": "Required. Name of the active directory to create.",
                       "location": "query",
                       "type": "string"
                     }

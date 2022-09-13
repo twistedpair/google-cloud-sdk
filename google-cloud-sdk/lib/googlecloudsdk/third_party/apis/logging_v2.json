@@ -3978,6 +3978,10 @@
                       "response": {
                         "$ref": "Operation"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
                       "description": "Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation."
                     },
                     "delete": {
@@ -4000,6 +4004,10 @@
                       "response": {
                         "$ref": "Operation"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
                       "description": "Deletes a link. This will also delete the corresponding BigQuery linked dataset."
                     },
                     "list": {
@@ -4033,6 +4041,12 @@
                       "response": {
                         "$ref": "ListLinksResponse"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only",
+                        "https://www.googleapis.com/auth/logging.admin",
+                        "https://www.googleapis.com/auth/logging.read"
+                      ],
                       "description": "Lists links."
                     },
                     "get": {
@@ -4055,6 +4069,12 @@
                       "response": {
                         "$ref": "Link"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only",
+                        "https://www.googleapis.com/auth/logging.admin",
+                        "https://www.googleapis.com/auth/logging.read"
+                      ],
                       "description": "Gets a link."
                     }
                   }
@@ -5442,6 +5462,10 @@
                       "response": {
                         "$ref": "Operation"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
                       "description": "Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation."
                     },
                     "delete": {
@@ -5464,6 +5488,10 @@
                       "response": {
                         "$ref": "Operation"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
                       "description": "Deletes a link. This will also delete the corresponding BigQuery linked dataset."
                     },
                     "list": {
@@ -5497,6 +5525,12 @@
                       "response": {
                         "$ref": "ListLinksResponse"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only",
+                        "https://www.googleapis.com/auth/logging.admin",
+                        "https://www.googleapis.com/auth/logging.read"
+                      ],
                       "description": "Lists links."
                     },
                     "get": {
@@ -5519,6 +5553,12 @@
                       "response": {
                         "$ref": "Link"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only",
+                        "https://www.googleapis.com/auth/logging.admin",
+                        "https://www.googleapis.com/auth/logging.read"
+                      ],
                       "description": "Gets a link."
                     }
                   }
@@ -6713,6 +6753,10 @@
                       "response": {
                         "$ref": "Operation"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
                       "description": "Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation."
                     },
                     "delete": {
@@ -6735,6 +6779,10 @@
                       "response": {
                         "$ref": "Operation"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
                       "description": "Deletes a link. This will also delete the corresponding BigQuery linked dataset."
                     },
                     "list": {
@@ -6768,6 +6816,12 @@
                       "response": {
                         "$ref": "ListLinksResponse"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only",
+                        "https://www.googleapis.com/auth/logging.admin",
+                        "https://www.googleapis.com/auth/logging.read"
+                      ],
                       "description": "Lists links."
                     },
                     "get": {
@@ -6790,6 +6844,12 @@
                       "response": {
                         "$ref": "Link"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only",
+                        "https://www.googleapis.com/auth/logging.admin",
+                        "https://www.googleapis.com/auth/logging.read"
+                      ],
                       "description": "Gets a link."
                     }
                   }
@@ -7949,6 +8009,10 @@
                       "response": {
                         "$ref": "Operation"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
                       "description": "Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation."
                     },
                     "delete": {
@@ -7971,6 +8035,10 @@
                       "response": {
                         "$ref": "Operation"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
                       "description": "Deletes a link. This will also delete the corresponding BigQuery linked dataset."
                     },
                     "list": {
@@ -8004,6 +8072,12 @@
                       "response": {
                         "$ref": "ListLinksResponse"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only",
+                        "https://www.googleapis.com/auth/logging.admin",
+                        "https://www.googleapis.com/auth/logging.read"
+                      ],
                       "description": "Lists links."
                     },
                     "get": {
@@ -8026,6 +8100,12 @@
                       "response": {
                         "$ref": "Link"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only",
+                        "https://www.googleapis.com/auth/logging.admin",
+                        "https://www.googleapis.com/auth/logging.read"
+                      ],
                       "description": "Gets a link."
                     }
                   }
@@ -8685,6 +8765,10 @@
                   "response": {
                     "$ref": "Operation"
                   },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
                   "description": "Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation."
                 },
                 "delete": {
@@ -8707,6 +8791,10 @@
                   "response": {
                     "$ref": "Operation"
                   },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
                   "description": "Deletes a link. This will also delete the corresponding BigQuery linked dataset."
                 },
                 "list": {
@@ -8740,6 +8828,12 @@
                   "response": {
                     "$ref": "ListLinksResponse"
                   },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ],
                   "description": "Lists links."
                 },
                 "get": {
@@ -8762,6 +8856,12 @@
                   "response": {
                     "$ref": "Link"
                   },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ],
                   "description": "Gets a link."
                 }
               }

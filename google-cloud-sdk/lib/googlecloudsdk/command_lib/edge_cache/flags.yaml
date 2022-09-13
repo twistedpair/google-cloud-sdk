@@ -206,7 +206,6 @@ keyset:
   public_keys:
     arg_name: public-key
     api_field: edgeCacheKeyset.publicKeys
-    required: true
     repeated: true
     type:
       arg_dict:
@@ -215,16 +214,57 @@ keyset:
           arg_name: id
         - api_field: value
           arg_name: value
+          required: false
+        - api_field: managed
+          arg_name: managed
+          required: false
     help_text: |
       Set of public keys to use for validating signed requests, when associated with a route.
-      This flag can be repeated to create a Keyset with multiple public keys. Each key should be
-      specified in the form `id=ID,value=BASE64ENCODEDPUBLICKEY`
+      This flag can be repeated to create a Keyset with multiple public keys.
+
+      If you are providing your own public keys, specify the key in the form
+      `id=ID,value=BASE64ENCODEDPUBLICKEY`.
+
+      If you are using Google-managed public keys as part of a dual-token setup, specify the
+      key in the form `id=ID,managed=true`.
 
       *id*::: id (name) name of the key within the keyset.
 
-      *value*::: URL-safe base64 encoded public key.
+      *value*::: URL-safe base64 encoded public key.  Cannot be specified if `managed=true`.
 
-      To create a public key with `id` 'foo', pass `--public-key='id=foo,value=VALUE'` to {command}
+      *managed*::: Boolean indicating this is a Google-managed key.  Cannot be specified if
+           `value=true`.
+
+      :::
+      To create a public key with `id` 'foo', pass `--public-key='id=foo,value=VALUE'` to {command}.
+
+      To create a Google-managed public key with `id` 'bar', pass `--public-key='id=foo,managed=true'`
+      to {command}.
+
+      At least one of public-key or validation-shared-key must be specified.
+
+  validation_shared_keys:
+    arg_name: validation-shared-key
+    api_field: edgeCacheKeyset.validationSharedKeys
+    repeated: true
+    type:
+      arg_dict:
+        spec:
+        - api_field: secretVersion
+          arg_name: secret_version
+    help_text: |
+      An ordered list of shared keys to use for validating signed requests.
+
+      To create a validation shared key pointing to a Secret Manager secret version with name
+      `projects/PROJECT/secrets/SECRET/versions/VERSION`, pass
+      `--validation-shared-key='secret_version=projects/PROJECT/secrets/SECRET/versions/VERSION'`
+      to {command}.
+
+      *secret_version*::: The name of the secret in Secret Manager.  Must be in the format
+      `projects/PROJECT/secrets/SECRET/versions/VERSION`.
+
+      :::
+      At least one of public-key or validation-shared-key must be specified.
 
 service:
   description:

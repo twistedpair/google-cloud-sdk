@@ -421,6 +421,12 @@
         "description": {
           "description": "Detailed information about this custom policy constraint.",
           "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. The last time this custom constraint was updated. This represents the last time that the `CreateCustomConstraint` or `UpdateCustomConstraint` RPC was called",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

@@ -27,9 +27,11 @@ import enum
 import hashlib
 import json
 import os
+import sqlite3
 
 from google.auth import compute_engine as google_auth_compute_engine
 from google.auth import credentials as google_auth_creds
+from google.auth import exceptions as google_auth_exceptions
 from google.auth import external_account as google_auth_external_account
 from google.auth import impersonated_credentials as google_auth_impersonated
 from googlecloudsdk.core import config
@@ -43,7 +45,6 @@ from oauth2client import client
 from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
 import six
-import sqlite3
 
 ADC_QUOTA_PROJECT_FIELD_NAME = 'quota_project_id'
 
@@ -1036,33 +1037,27 @@ def FromJsonGoogleAuth(json_value):
       json_key['client_id'] = config.CLOUDSDK_CLIENT_ID
       json_key['client_secret'] = config.CLOUDSDK_CLIENT_NOTSOSECRET
 
-    cred = None
     try:
-      # pylint: disable=g-import-not-at-top
-      from google.auth import aws
-
-      # Check if configuration corresponds to an AWS credentials.
-      cred = aws.Credentials.from_info(json_key, scopes=config.CLOUDSDK_SCOPES)
-    except ValueError:
-      pass
-    except TypeError:
-      pass
-
-    try:
-      # pylint: disable=g-import-not-at-top
-      from google.auth import identity_pool
-
-      cred = identity_pool.Credentials.from_info(
-          json_key, scopes=config.CLOUDSDK_SCOPES)
-    except ValueError:
-      pass
-
-    if cred:
-      return cred
-    else:
+      if json_key.get('subject_token_type'
+                     ) == 'urn:ietf:params:aws:token-type:aws4_request':
+        # Check if configuration corresponds to an AWS credentials.
+        from google.auth import aws  # pylint: disable=g-import-not-at-top
+        return aws.Credentials.from_info(
+            json_key, scopes=config.CLOUDSDK_SCOPES)
+      elif (json_key.get('credential_source') is not None and
+            json_key.get('credential_source').get('executable') is not None):
+        from google.auth import pluggable  # pylint: disable=g-import-not-at-top
+        return pluggable.Credentials.from_info(
+            json_key, scopes=config.CLOUDSDK_SCOPES)
+      else:
+        from google.auth import identity_pool  # pylint: disable=g-import-not-at-top
+        return identity_pool.Credentials.from_info(
+            json_key, scopes=config.CLOUDSDK_SCOPES)
+    except (ValueError, TypeError, google_auth_exceptions.RefreshError):
       raise InvalidCredentialsError(
           'The provided external account credentials are invalid or '
           'unsupported')
+
   if cred_type == CredentialTypeGoogleAuth.USER_ACCOUNT:
     json_key['token_uri'] = GetEffectiveTokenUri(json_key)
     # Import only when necessary to decrease the startup time. Move it to

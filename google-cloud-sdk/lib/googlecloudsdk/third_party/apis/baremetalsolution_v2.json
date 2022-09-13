@@ -172,13 +172,15 @@
             "The server is in an unknown state.",
             "The server is being provisioned.",
             "The server is running.",
-            "The server has been deleted."
+            "The server has been deleted.",
+            "The server is being updated."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "PROVISIONING",
             "RUNNING",
-            "DELETED"
+            "DELETED",
+            "UPDATING"
           ]
         },
         "hyperthreadingEnabled": {
@@ -361,13 +363,15 @@
             "The storage volume is in an unknown state.",
             "The storage volume is being created.",
             "The storage volume is ready for use.",
-            "The storage volume has been requested to be deleted."
+            "The storage volume has been requested to be deleted.",
+            "The storage volume is being updated."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "READY",
-            "DELETING"
+            "DELETING",
+            "UPDATING"
           ]
         },
         "requestedSizeGib": {
@@ -470,12 +474,14 @@
           "enumDescriptions": [
             "Value is not specified.",
             "Regular volumes, shared aggregates.",
-            "Dedicated (assigned) aggregates."
+            "Assigned aggregates.",
+            "High throughput aggregates."
           ],
           "enum": [
             "VOLUME_PERFORMANCE_TIER_UNSPECIFIED",
             "VOLUME_PERFORMANCE_TIER_SHARED",
-            "VOLUME_PERFORMANCE_TIER_DEDICATED"
+            "VOLUME_PERFORMANCE_TIER_ASSIGNED",
+            "VOLUME_PERFORMANCE_TIER_HT"
           ]
         },
         "notes": {
@@ -557,13 +563,15 @@
             "The Network is in an unknown state.",
             "The Network is provisioning.",
             "The Network has been provisioned.",
-            "The Network is being deprovisioned."
+            "The Network is being deprovisioned.",
+            "The Network is being updated."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "PROVISIONING",
             "PROVISIONED",
-            "DEPROVISIONING"
+            "DEPROVISIONING",
+            "UPDATING"
           ]
         },
         "vlanId": {
@@ -2076,12 +2084,14 @@
           "enumDescriptions": [
             "Value is not specified.",
             "Regular volumes, shared aggregates.",
-            "Dedicated (assigned) aggregates."
+            "Assigned aggregates.",
+            "High throughput aggregates."
           ],
           "enum": [
             "VOLUME_PERFORMANCE_TIER_UNSPECIFIED",
             "VOLUME_PERFORMANCE_TIER_SHARED",
-            "VOLUME_PERFORMANCE_TIER_DEDICATED"
+            "VOLUME_PERFORMANCE_TIER_ASSIGNED",
+            "VOLUME_PERFORMANCE_TIER_HT"
           ]
         }
       }

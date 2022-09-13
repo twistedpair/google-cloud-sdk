@@ -1298,6 +1298,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Mess
     dockerNetwork: Whether dockerNetwork can be used or what network modes are
       allowed. E.g. one may allow `off` value only via `allowed_values`.
     dockerPrivileged: Whether dockerPrivileged can be used.
+    dockerRunAsContainerProvidedUser: Whether dockerRunAsContainerProvidedUser
+      can be used.
     dockerRunAsRoot: Whether dockerRunAsRoot can be used.
     dockerRuntime: Whether dockerRuntime is allowed to be set or what runtimes
       are allowed. Note linux_isolation takes precedence, and if set,
@@ -1328,10 +1330,11 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Mess
   dockerChrootPath = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 3)
   dockerNetwork = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 4)
   dockerPrivileged = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 5)
-  dockerRunAsRoot = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 6)
-  dockerRuntime = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 7)
-  dockerSiblingContainers = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 8)
-  linuxIsolation = _messages.EnumField('LinuxIsolationValueValuesEnum', 9)
+  dockerRunAsContainerProvidedUser = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 6)
+  dockerRunAsRoot = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 7)
+  dockerRuntime = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 8)
+  dockerSiblingContainers = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 9)
+  linuxIsolation = _messages.EnumField('LinuxIsolationValueValuesEnum', 10)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature(_messages.Message):

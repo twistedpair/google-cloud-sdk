@@ -1106,72 +1106,6 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class ExtensionChain(_messages.Message):
-  r"""ExtensionChain is a resource representing a chain of programmable
-  extensions, to be injected in the request processing path.
-
-  Messages:
-    LabelsValue: Optional. Set of label tags associated with the
-      ExtensionChain resource.
-
-  Fields:
-    createTime: Output only. The timestamp when the resource was created.
-    description: Optional. A human-readable description of the resource.
-    httpExtensions: List of Extension resources that can process http
-      requests.
-    labels: Optional. Set of label tags associated with the ExtensionChain
-      resource.
-    name: Required. Name of the ExtensionChain resource. It matches pattern `p
-      rojects/{project}/locations/{location}/extensionChains/{extension_chain}
-      `.
-    updateTime: Output only. The timestamp when the resource was updated.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Set of label tags associated with the ExtensionChain
-    resource.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  httpExtensions = _messages.MessageField('ExtensionChainExtension', 3, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
-
-
-class ExtensionChainExtension(_messages.Message):
-  r"""A single Extension in a chain.
-
-  Fields:
-    wasmPlugin: Required. The relative resource name of the WasmPlugin
-      resource to execute in format:
-      projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}.
-  """
-
-  wasmPlugin = _messages.StringField(1)
-
-
 class Gateway(_messages.Message):
   r"""Gateway represents the configuration for a proxy, typically a load
   balancer. It captures the ip:port over which the services are exposed by the
@@ -2439,21 +2373,6 @@ class ListEndpointPoliciesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class ListExtensionChainsResponse(_messages.Message):
-  r"""Response returned by the ListExtensionChains method.
-
-  Fields:
-    extensionChains: List of ExtensionChain resources.
-    nextPageToken: If there might be more results than those appearing in this
-      response, then `next_page_token` is included. To get the next set of
-      results, call this method again using the value of `next_page_token` as
-      `page_token`.
-  """
-
-  extensionChains = _messages.MessageField('ExtensionChain', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
 class ListGatewaysResponse(_messages.Message):
   r"""Response returned by the ListGateways method.
 
@@ -3596,85 +3515,6 @@ class NetworkservicesProjectsLocationsEndpointPoliciesTestIamPermissionsRequest(
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class NetworkservicesProjectsLocationsExtensionChainsCreateRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsExtensionChainsCreateRequest object.
-
-  Fields:
-    extensionChain: A ExtensionChain resource to be passed as the request
-      body.
-    extensionChainId: Required. User-provided ID of the ExtensionChain
-      resource to be created.
-    parent: Required. The parent resource of the ExtensionChain. Must be in
-      the format `projects/*/locations/global`.
-  """
-
-  extensionChain = _messages.MessageField('ExtensionChain', 1)
-  extensionChainId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class NetworkservicesProjectsLocationsExtensionChainsDeleteRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsExtensionChainsDeleteRequest object.
-
-  Fields:
-    name: Required. A name of the ExtensionChain to delete. Must be in the
-      format `projects/*/locations/global/extensionChains/*`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworkservicesProjectsLocationsExtensionChainsGetRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsExtensionChainsGetRequest object.
-
-  Fields:
-    name: Required. A name of the ExtensionChain to get. Must be in the format
-      `projects/*/locations/global/extensionChains/*`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworkservicesProjectsLocationsExtensionChainsListRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsExtensionChainsListRequest object.
-
-  Fields:
-    pageSize: Maximum number of ExtensionChain to return per call. If
-      unspecified, at most 50 ExtensionChains will be returned. The maximum
-      value is 1000; values above 1000 will be coerced to 1000.
-    pageToken: The value returned by the last `ListExtensionChainsResponse`
-      Indicates that this is a continuation of a prior `ListExtensionChains`
-      call, and that the system should return the next page of data.
-    parent: Required. The project and location from which the ExtensionChains
-      should be listed, specified in the format `projects/*/locations/global`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class NetworkservicesProjectsLocationsExtensionChainsPatchRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsExtensionChainsPatchRequest object.
-
-  Fields:
-    extensionChain: A ExtensionChain resource to be passed as the request
-      body.
-    name: Required. Name of the ExtensionChain resource. It matches pattern `p
-      rojects/{project}/locations/{location}/extensionChains/{extension_chain}
-      `.
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the ExtensionChain resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
-  """
-
-  extensionChain = _messages.MessageField('ExtensionChain', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
 
 
 class NetworkservicesProjectsLocationsGatewaysCreateRequest(_messages.Message):

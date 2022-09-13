@@ -134,7 +134,7 @@ class BmsClient(object):
     response_count = 0
     errors = []
     for location in self.ListLocations(project_resource):
-      # TODO (b/198857865): Global region will be used when it is ready.
+      # TODO(b/198857865): Global region will be used when it is ready.
       location_name = location.name.split('/')[-1]
       if skip_global_region and location_name == _GLOBAL_REGION:
         continue
@@ -482,12 +482,13 @@ class BmsClient(object):
                    name=resource.RelativeName()))
     return self.snapshots_service.Get(request)
 
-  def CreateVolumeSnapshot(self, resource, description):
-    request = (self.messages
-               .BaremetalsolutionProjectsLocationsVolumesSnapshotsCreateRequest(
-                   parent=resource.RelativeName(),
-                   volumeSnapshot=self.messages.VolumeSnapshot(
-                       description=description)))
+  def CreateVolumeSnapshot(self, resource, name, description):
+    request = (
+        self.messages
+        .BaremetalsolutionProjectsLocationsVolumesSnapshotsCreateRequest(
+            parent=resource.RelativeName(),
+            volumeSnapshot=self.messages.VolumeSnapshot(
+                name=name, description=description)))
     return self.snapshots_service.Create(request)
 
   def DeleteVolumeSnapshot(self, resource):
@@ -496,13 +497,11 @@ class BmsClient(object):
                    name=resource.RelativeName()))
     return self.snapshots_service.Delete(request)
 
-  def RestoreVolumeSnapshot(self, volume_resource, snapshot_name):
-    snapshot_resource_name = '%s/snapshots/%s' % (
-        volume_resource.RelativeName(), snapshot_name)
+  def RestoreVolumeSnapshot(self, snapshot_name):
     request = (
         self.messages
         .BaremetalsolutionProjectsLocationsVolumesSnapshotsRestoreVolumeSnapshotRequest(  # pylint: disable=line-too-long
-            volumeSnapshot=snapshot_resource_name))
+            volumeSnapshot=snapshot_name))
     return self.snapshots_service.RestoreVolumeSnapshot(request)
 
   def GetNfsShare(self, resource):
@@ -550,6 +549,12 @@ class BmsClient(object):
         updateMask=','.join(updated_fields))
 
     return self.nfs_shares_service.Patch(request)
+
+  def DeleteNfsShare(self, nfs_share_resource):
+    """Delete an existing nfs share resource."""
+    request = self.messages.BaremetalsolutionProjectsLocationsNfsSharesDeleteRequest(
+        name=nfs_share_resource.RelativeName())
+    return self.nfs_shares_service.Delete(request)
 
   def ListSshKeys(self,
                   project_resource,

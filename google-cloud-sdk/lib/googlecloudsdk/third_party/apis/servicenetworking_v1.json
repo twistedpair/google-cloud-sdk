@@ -651,6 +651,13 @@
           "items": {
             "type": "string"
           }
+        },
+        "cloudsqlConfigs": {
+          "description": "Represents one or multiple Cloud SQL configurations.",
+          "type": "array",
+          "items": {
+            "$ref": "CloudSQLConfig"
+          }
         }
       }
     },
@@ -670,6 +677,26 @@
         },
         "address": {
           "description": "The starting address of the reserved range. The address must be a valid IPv4 address in the x.x.x.x format. This value combined with the IP prefix length is the CIDR range for the reserved range.",
+          "type": "string"
+        }
+      }
+    },
+    "CloudSQLConfig": {
+      "id": "CloudSQLConfig",
+      "description": "Cloud SQL configuration.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "Peering service used for peering with the Cloud SQL project.",
+          "type": "string"
+        },
+        "umbrellaProject": {
+          "description": "The project number of the Cloud SQL umbrella project.",
+          "type": "string",
+          "format": "int64"
+        },
+        "umbrellaNetwork": {
+          "description": "The name of the umbrella network in the Cloud SQL umbrella project.",
           "type": "string"
         }
       }

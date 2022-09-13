@@ -726,7 +726,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates settings of a Cloud SQL instance. This method supports patch semantics.
+      r"""Partially updates settings of a Cloud SQL instance by merging the request with the current configuration. This method supports patch semantics.
 
       Args:
         request: (SqlInstancesPatchRequest) input message

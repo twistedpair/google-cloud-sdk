@@ -908,7 +908,10 @@ def CreateNetworkInterfaceMessage(resources,
     # Try interpreting the address as IPv6.
     try:
       # ipaddress only allows unicode input
-      ipaddress.ip_address(six.text_type(internal_ipv6_address))
+      if '/' in six.text_type(internal_ipv6_address):
+        ipaddress.ip_network(six.text_type(internal_ipv6_address))
+      else:
+        ipaddress.ip_address(six.text_type(internal_ipv6_address))
       network_interface.ipv6Address = internal_ipv6_address
     except ValueError:
       # ipaddress could not resolve as an IPv6 address.

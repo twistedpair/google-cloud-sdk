@@ -180,7 +180,7 @@ def GetLocationResourceSpec(resource_name='location'):
       resource_name=resource_name,
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False)
+      disable_auto_completers=True)
 
 
 def GetConnectionProfileResourceSpec(resource_name='connection_profile'):
@@ -190,7 +190,7 @@ def GetConnectionProfileResourceSpec(resource_name='connection_profile'):
       connectionProfilesId=ConnectionProfileAttributeConfig(name=resource_name),
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False)
+      disable_auto_completers=True)
 
 
 def GetPrivateConnectionResourceSpec(resource_name='private_connection'):
@@ -200,7 +200,7 @@ def GetPrivateConnectionResourceSpec(resource_name='private_connection'):
       privateConnectionsId=PrivateConnectionAttributeConfig(name=resource_name),
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False)
+      disable_auto_completers=True)
 
 
 def GetStreamResourceSpec(resource_name='stream'):
@@ -210,7 +210,7 @@ def GetStreamResourceSpec(resource_name='stream'):
       streamsId=StreamAttributeConfig(name=resource_name),
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False)
+      disable_auto_completers=True)
 
 
 def GetRouteResourceSpec(resource_name='route'):
@@ -222,7 +222,7 @@ def GetRouteResourceSpec(resource_name='route'):
           'private-connection'),
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False)
+      disable_auto_completers=True)
 
 
 def AddConnectionProfileResourceArg(parser,

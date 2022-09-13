@@ -173,9 +173,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -218,23 +220,23 @@ class CancelOperationRequest(_messages.Message):
 
 
 class CloudFunctionEndpoint(_messages.Message):
-  r"""Wrapper for cloud function attributes.
+  r"""Wrapper for Cloud Function attributes.
 
   Fields:
-    uri: A [Cloud function](https://cloud.google.com/functions) name.
+    uri: A [Cloud Function](https://cloud.google.com/functions) name.
   """
 
   uri = _messages.StringField(1)
 
 
 class CloudFunctionInfo(_messages.Message):
-  r"""For display only. Metadata associated with a Cloud function.
+  r"""For display only. Metadata associated with a Cloud Function.
 
   Fields:
-    displayName: Name of a Cloud function.
-    location: Location in which the Cloud function is deployed.
-    uri: URI of a Cloud function.
-    versionId: Latest successfully deployed version id of the Cloud function.
+    displayName: Name of a Cloud Function.
+    location: Location in which the Cloud Function is deployed.
+    uri: URI of a Cloud Function.
+    versionId: Latest successfully deployed version id of the Cloud Function.
   """
 
   displayName = _messages.StringField(1)
@@ -454,6 +456,10 @@ class DropInfo(_messages.Message):
         balancing/docs/health-checks#firewall_rules).
       INSTANCE_NOT_RUNNING: Packet is sent from or to a Compute Engine
         instance that is not in a running state.
+      GKE_CLUSTER_NOT_RUNNING: Packet sent from or to a GKE cluster that is
+        not in running state.
+      CLOUD_SQL_INSTANCE_NOT_RUNNING: Packet sent from or to a Cloud SQL
+        instance that is not in running state.
       TRAFFIC_TYPE_BLOCKED: The type of traffic is blocked and the user cannot
         configure a firewall rule to enable it. See [Always blocked
         traffic](https://cloud.google.com/vpc/docs/firewalls#blockedtraffic)
@@ -476,8 +482,24 @@ class DropInfo(_messages.Message):
         Services Network.
       CLOUD_SQL_INSTANCE_NO_IP_ADDRESS: Packet was dropped because the Cloud
         SQL instance has neither a private nor a public IP address.
+      GKE_CONTROL_PLANE_REGION_MISMATCH: Packet was dropped because a GKE
+        cluster private endpoint is unreachable from a region different from
+        the cluster's region.
+      PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION: Packet sent from a
+        public GKE cluster control plane to a private IP address.
+      GKE_CONTROL_PLANE_NO_ROUTE: Packet was dropped because there is no route
+        from a GKE cluster control plane to a destination network.
+      CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC: Packet sent from
+        a Cloud SQL instance to an external IP address is not allowed. The
+        Cloud SQL instance is not configured to send packets to external IP
+        addresses.
+      PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION: Packet sent from a
+        Cloud SQL instance with only a public IP address to a private IP
+        address.
+      CLOUD_SQL_INSTANCE_NO_ROUTE: Packet was dropped because there is no
+        route from a Cloud SQL instance to a destination network.
       CLOUD_FUNCTION_NOT_ACTIVE: Packet could be dropped because the Cloud
-        function is not in an active status.
+        Function is not in an active status.
       VPC_CONNECTOR_NOT_SET: Packet could be dropped because no VPC connector
         is set.
       VPC_CONNECTOR_NOT_RUNNING: Packet could be dropped because the VPC
@@ -487,10 +509,6 @@ class DropInfo(_messages.Message):
         access.
       PSC_CONNECTION_NOT_ACCEPTED: Privte Service Connect (PSC) connection is
         not in accepted state.
-      GKE_CLUSTER_NOT_RUNNING: Packet sent from or to a GKE cluster that is
-        not in running state.
-      CLOUD_SQL_INSTANCE_NOT_RUNNING: Packet sent from or to a Cloud SQL
-        instance that is not in running state.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -507,20 +525,26 @@ class DropInfo(_messages.Message):
     FORWARDING_RULE_NO_INSTANCES = 12
     FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK = 13
     INSTANCE_NOT_RUNNING = 14
-    TRAFFIC_TYPE_BLOCKED = 15
-    GKE_MASTER_UNAUTHORIZED_ACCESS = 16
-    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 17
-    DROPPED_INSIDE_GKE_SERVICE = 18
-    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 19
-    GOOGLE_MANAGED_SERVICE_NO_PEERING = 20
-    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 21
-    CLOUD_FUNCTION_NOT_ACTIVE = 22
-    VPC_CONNECTOR_NOT_SET = 23
-    VPC_CONNECTOR_NOT_RUNNING = 24
-    FORWARDING_RULE_REGION_MISMATCH = 25
-    PSC_CONNECTION_NOT_ACCEPTED = 26
-    GKE_CLUSTER_NOT_RUNNING = 27
-    CLOUD_SQL_INSTANCE_NOT_RUNNING = 28
+    GKE_CLUSTER_NOT_RUNNING = 15
+    CLOUD_SQL_INSTANCE_NOT_RUNNING = 16
+    TRAFFIC_TYPE_BLOCKED = 17
+    GKE_MASTER_UNAUTHORIZED_ACCESS = 18
+    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 19
+    DROPPED_INSIDE_GKE_SERVICE = 20
+    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 21
+    GOOGLE_MANAGED_SERVICE_NO_PEERING = 22
+    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 23
+    GKE_CONTROL_PLANE_REGION_MISMATCH = 24
+    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 25
+    GKE_CONTROL_PLANE_NO_ROUTE = 26
+    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 27
+    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 28
+    CLOUD_SQL_INSTANCE_NO_ROUTE = 29
+    CLOUD_FUNCTION_NOT_ACTIVE = 30
+    VPC_CONNECTOR_NOT_SET = 31
+    VPC_CONNECTOR_NOT_RUNNING = 32
+    FORWARDING_RULE_REGION_MISMATCH = 33
+    PSC_CONNECTION_NOT_ACCEPTED = 34
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)
@@ -555,7 +579,7 @@ class Endpoint(_messages.Message):
       can be inferred from the source.
 
   Fields:
-    cloudFunction: A [Cloud function](https://cloud.google.com/functions).
+    cloudFunction: A [Cloud Function](https://cloud.google.com/functions).
     cloudSqlInstance: A [Cloud SQL](https://cloud.google.com/sql) instance
       URI.
     gkeMasterCluster: A cluster URI for [Google Kubernetes Engine
@@ -719,7 +743,10 @@ class FirewallInfo(_messages.Message):
         [VPC connector's implicit
         rules](https://cloud.google.com/functions/docs/networking/connecting-
         vpc#restrict-access).
-      NETWORK_FIREWALL_POLICY_RULE: Global network firewall policy rule.
+      NETWORK_FIREWALL_POLICY_RULE: Global network firewall policy rule. For
+        details, see [Network firewall
+        policies](https://cloud.google.com/vpc/docs/network-firewall-
+        policies).
     """
     FIREWALL_RULE_TYPE_UNSPECIFIED = 0
     HIERARCHICAL_FIREWALL_POLICY_RULE = 1
@@ -976,10 +1003,12 @@ class LoadBalancerInfo(_messages.Message):
       BACKEND_TYPE_UNSPECIFIED: Type is unspecified.
       BACKEND_SERVICE: Backend Service as the load balancer's backend.
       TARGET_POOL: Target Pool as the load balancer's backend.
+      TARGET_INSTANCE: Target Instance as the load balancer's backend.
     """
     BACKEND_TYPE_UNSPECIFIED = 0
     BACKEND_SERVICE = 1
     TARGET_POOL = 2
+    TARGET_INSTANCE = 3
 
   class LoadBalancerTypeValueValuesEnum(_messages.Enum):
     r"""Type of the load balancer.
@@ -1924,7 +1953,7 @@ class Step(_messages.Message):
   Fields:
     abort: Display information of the final state "abort" and reason.
     causesDrop: This is a step that leads to the final state Drop.
-    cloudFunction: Display information of a Cloud function.
+    cloudFunction: Display information of a Cloud Function.
     cloudSqlInstance: Display information of a Cloud SQL instance.
     deliver: Display information of the final state "deliver" and reason.
     description: A description of the step. Usually this is a summary of the
@@ -1972,7 +2001,7 @@ class Step(_messages.Message):
         Cloud SQL instance. A CloudSQLInstanceInfo is populated with starting
         instance information.
       START_FROM_CLOUD_FUNCTION: Initial state: packet originating from a
-        Cloud function. A CloudFunctionInfo is populated with starting
+        Cloud Function. A CloudFunctionInfo is populated with starting
         function information.
       APPLY_INGRESS_FIREWALL_RULE: Config checking state: verify ingress
         firewall rule.

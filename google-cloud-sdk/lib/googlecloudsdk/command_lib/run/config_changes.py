@@ -103,17 +103,21 @@ class LabelChanges(ConfigChanger):
     maybe_new_labels = update_result.GetOrNone()
     if maybe_new_labels:
       resource.metadata.labels = maybe_new_labels
-      if self._copy_to_revision and hasattr(resource.template, 'labels'):
+      # For job, resource.template points to task template which has no
+      # metadata. Use job specific execution_template instead.
+      template = resource.execution_template if hasattr(
+          resource, 'execution_template') else resource.template
+      if self._copy_to_revision and hasattr(template, 'labels'):
         # Service labels are the source of truth and *overwrite* revision labels
         # See go/run-labels-prd for deets.
         # However, we need to preserve the nonce if there is one.
-        nonce = resource.template.labels.get(revision.NONCE_LABEL)
-        resource.template.metadata.labels = copy.deepcopy(maybe_new_labels)
+        nonce = template.labels.get(revision.NONCE_LABEL)
+        template.metadata.labels = copy.deepcopy(maybe_new_labels)
         for label_to_remove in self.LABELS_NOT_ALLOWED_IN_REVISION:
-          if label_to_remove in resource.template.labels:
-            del resource.template.labels[label_to_remove]
+          if label_to_remove in template.labels:
+            del template.labels[label_to_remove]
         if nonce:
-          resource.template.labels[revision.NONCE_LABEL] = nonce
+          template.labels[revision.NONCE_LABEL] = nonce
     return resource
 
 

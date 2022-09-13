@@ -357,7 +357,8 @@
               "Indicates that the user passed a 2FA challenge.",
               "Indicates that the user failed a 2FA challenge.",
               "Indicates the user provided the correct password.",
-              "Indicates the user provided an incorrect password."
+              "Indicates the user provided an incorrect password.",
+              "Indicates that the user sent unwanted and abusive messages to other users of the platform, such as spam, scams, phishing, or social engineering."
             ],
             "enum": [
               "REASON_UNSPECIFIED",
@@ -373,7 +374,8 @@
               "PASSED_TWO_FACTOR",
               "FAILED_TWO_FACTOR",
               "CORRECT_PASSWORD",
-              "INCORRECT_PASSWORD"
+              "INCORRECT_PASSWORD",
+              "SOCIAL_SPAM"
             ]
           }
         },

@@ -167,7 +167,7 @@ def AddMutationArgs(parser, required=True):
       Agent has both a logging module and a metrics module already. So other
       types of agents are not allowed when there is an agent with type
       ``ops-agent''. See
-      https://cloud.google.com/stackdriver/docs/solutions/ops-agent#which_agent
+      https://cloud.google.com/stackdriver/docs/solutions/agents#which-agent-should-you-choose
       for which agent to use.
 
       *enable-autoupgrade*::: Whether to enable autoupgrade of the agent.

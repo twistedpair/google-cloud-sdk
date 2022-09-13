@@ -1077,10 +1077,13 @@ class CloudbuildProjectsLocationsConnectionsProcessWebhookRequest(_messages.Mess
     httpBody: A HttpBody resource to be passed as the request body.
     parent: Required. Project and location where the webhook will be received.
       Format: `projects/*/locations/*`.
+    webhookKey: Arbitrary additional key to find the maching repository for a
+      webhook event if needed.
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
   parent = _messages.StringField(2, required=True)
+  webhookKey = _messages.StringField(3)
 
 
 class CloudbuildProjectsLocationsConnectionsRepositoriesCreateRequest(_messages.Message):

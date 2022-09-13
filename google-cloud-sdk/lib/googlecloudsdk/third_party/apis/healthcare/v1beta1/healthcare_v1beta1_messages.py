@@ -398,9 +398,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -6960,7 +6962,8 @@ class SchemaConfig(_messages.Message):
         `Bundle.entry.response.outcome`.
       ANALYTICS_V2: Analytics V2, similar to schema defined by the FHIR
         community, with added support for extensions with one or more
-        occurrences and contained resources in stringified JSON.
+        occurrences and contained resources in stringified JSON. Analytics V2
+        uses more space in the destination table than Analytics V1.
     """
     SCHEMA_TYPE_UNSPECIFIED = 0
     LOSSLESS = 1

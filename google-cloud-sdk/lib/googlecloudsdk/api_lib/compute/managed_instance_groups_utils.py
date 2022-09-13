@@ -1259,6 +1259,18 @@ def ValidateAutohealingPolicies(auto_healing_policies):
     console_io.PromptContinue(message=message, cancel_on_no=True)
 
 
+def CreateInstanceLifecyclePolicy(messages, args):
+  """Creates instance lifecycle policy list from args."""
+  policy = messages.InstanceGroupManagerInstanceLifecyclePolicy()
+  if args.IsSpecified('force_update_on_repair'):
+    if args.force_update_on_repair:
+      policy.forceUpdateOnRepair = messages.InstanceGroupManagerInstanceLifecyclePolicy.ForceUpdateOnRepairValueValuesEnum.YES
+    else:
+      policy.forceUpdateOnRepair = messages.InstanceGroupManagerInstanceLifecyclePolicy.ForceUpdateOnRepairValueValuesEnum.NO
+
+  return ValueOrNone(policy)
+
+
 def CreateStandbyPolicy(messages, initial_delay_sec):
   """Creates standby policy from args."""
   # pylint: disable=g-explicit-bool-comparison

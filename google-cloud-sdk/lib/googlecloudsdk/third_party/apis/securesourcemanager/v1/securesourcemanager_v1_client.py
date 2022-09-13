@@ -57,7 +57,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Repository in a given project and location.
+      r"""Creates a new SSH key in a given project and location.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsInstancesSshkeysCreateRequest) input message
@@ -84,7 +84,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Repository.
+      r"""Deletes a SSH key.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsInstancesSshkeysDeleteRequest) input message

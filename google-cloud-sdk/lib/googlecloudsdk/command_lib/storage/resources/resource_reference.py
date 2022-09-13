@@ -157,6 +157,7 @@ class BucketResource(CloudResource):
     self.etag = etag
     self.location = location
     self.metadata = metadata
+    # TODO(b/245804149): Move to GcsBucketResource.
     self.retention_period = retention_period
     self.default_storage_class = default_storage_class
     self.uniform_bucket_level_access = uniform_bucket_level_access

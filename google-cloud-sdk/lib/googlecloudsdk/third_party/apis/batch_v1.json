@@ -731,7 +731,6 @@
           "format": "int64"
         },
         "installGpuDrivers": {
-          "description": "When true, Batch will install the GPU drivers. This field will be ignored if specified.",
           "type": "boolean"
         }
       }

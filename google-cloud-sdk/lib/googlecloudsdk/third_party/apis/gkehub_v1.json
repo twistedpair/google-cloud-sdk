@@ -936,7 +936,7 @@
           "$ref": "ConfigManagementGitConfig"
         },
         "sourceFormat": {
-          "description": "Specifies whether the Config Sync Repo is in \u201Chierarchical\u201D or \u201Cunstructured\u201D mode.",
+          "description": "Specifies whether the Config Sync Repo is in \"hierarchical\" or \"unstructured\" mode.",
           "type": "string"
         },
         "enabled": {
@@ -950,6 +950,10 @@
         "oci": {
           "description": "OCI repo configuration for the cluster",
           "$ref": "ConfigManagementOciConfig"
+        },
+        "allowVerticalScale": {
+          "description": "Set to true to allow the vertical scaling. Defaults to false which disallows vertical scaling.",
+          "type": "boolean"
         }
       }
     },
@@ -1206,6 +1210,10 @@
           "readOnly": true,
           "type": "string",
           "format": "byte"
+        },
+        "enableAccessToken": {
+          "description": "Enable access token.",
+          "type": "boolean"
         }
       }
     },
@@ -1472,6 +1480,11 @@
           "description": "Output only. Status of control plane management",
           "readOnly": true,
           "$ref": "ServiceMeshControlPlaneManagement"
+        },
+        "dataPlaneManagement": {
+          "description": "Output only. Status of data plane management.",
+          "readOnly": true,
+          "$ref": "ServiceMeshDataPlaneManagement"
         }
       }
     },
@@ -1525,6 +1538,44 @@
         "details": {
           "description": "Human-readable explanation of code.",
           "type": "string"
+        }
+      }
+    },
+    "ServiceMeshDataPlaneManagement": {
+      "id": "ServiceMeshDataPlaneManagement",
+      "description": "Status of data plane management. Only reported per-member.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Lifecycle status of data plane management.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified",
+            "DISABLED means that the component is not enabled.",
+            "FAILED_PRECONDITION means that provisioning cannot proceed because of some characteristic of the member cluster.",
+            "PROVISIONING means that provisioning is in progress.",
+            "ACTIVE means that the component is ready for use.",
+            "STALLED means that provisioning could not be done.",
+            "NEEDS_ATTENTION means that the component is ready, but some user intervention is required. (For example that the user should migrate workloads to a new control plane revision.)",
+            "DEGRADED means that the component is ready, but operating in a degraded state."
+          ],
+          "enum": [
+            "LIFECYCLE_STATE_UNSPECIFIED",
+            "DISABLED",
+            "FAILED_PRECONDITION",
+            "PROVISIONING",
+            "ACTIVE",
+            "STALLED",
+            "NEEDS_ATTENTION",
+            "DEGRADED"
+          ]
+        },
+        "details": {
+          "description": "Explanation of the status.",
+          "type": "array",
+          "items": {
+            "$ref": "ServiceMeshStatusDetails"
+          }
         }
       }
     },

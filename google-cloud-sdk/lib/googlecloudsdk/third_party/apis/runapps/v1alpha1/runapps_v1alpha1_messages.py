@@ -301,19 +301,6 @@ class CloudRunServiceConfig(_messages.Message):
   resources = _messages.MessageField('ServiceResourceBindingConfig', 1, repeated=True)
 
 
-class CloudStorage(_messages.Message):
-  r"""Configures a Cloud Storage location.
-
-  Fields:
-    bucket: Google Cloud Storage bucket containing the source (see Bucket Name
-      Requirements).
-    object: Google Cloud Storage object containing the source.
-  """
-
-  bucket = _messages.StringField(1)
-  object = _messages.StringField(2)
-
-
 class Config(_messages.Message):
   r"""Message for the Application Config Next tag: 6
 
@@ -394,10 +381,6 @@ class Deployment(_messages.Message):
     name: Output only. Canonical name of resource
     reconciling: Output only. Indicates whether the resource's reconciliation
       is still in progress.
-    render: If specified, the configurations for the deployment will be output
-      as described but the underlying resources will not be actuated.
-    serviceAccount: Email address of the service account to use for the
-      resource actuation.
     status: Output only. The status of the deployment
     updateTime: Output only. Update time stamp
   """
@@ -466,10 +449,8 @@ class Deployment(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 9)
   name = _messages.StringField(10)
   reconciling = _messages.BooleanField(11)
-  render = _messages.MessageField('Render', 12)
-  serviceAccount = _messages.StringField(13)
-  status = _messages.MessageField('DeploymentStatus', 14)
-  updateTime = _messages.StringField(15)
+  status = _messages.MessageField('DeploymentStatus', 12)
+  updateTime = _messages.StringField(13)
 
 
 class DeploymentOperationMetadata(_messages.Message):
@@ -935,33 +916,6 @@ class RedisInstanceConfig(_messages.Message):
   """
 
   memory_size_gb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-
-
-class Render(_messages.Message):
-  r"""Message to encapsulate the parameters for a Render.
-
-  Enums:
-    FormatValueValuesEnum: The format in which to render the Application.
-
-  Fields:
-    format: The format in which to render the Application.
-    outputLocation: The output location to push the rendered configs to.
-  """
-
-  class FormatValueValuesEnum(_messages.Enum):
-    r"""The format in which to render the Application.
-
-    Values:
-      RENDER_FORMAT_UNKNOWN: No render format specified.
-      RENDER_FORMAT_TERRAFORM: Render into Terraform configs.
-      RENDER_FORMAT_KRM: Render into KRM configs.
-    """
-    RENDER_FORMAT_UNKNOWN = 0
-    RENDER_FORMAT_TERRAFORM = 1
-    RENDER_FORMAT_KRM = 2
-
-  format = _messages.EnumField('FormatValueValuesEnum', 1)
-  outputLocation = _messages.MessageField('Target', 2)
 
 
 class ResourceComponentStatus(_messages.Message):
@@ -1629,16 +1583,6 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
-
-
-class Target(_messages.Message):
-  r"""A type of persisted data store to which Render outputs.
-
-  Fields:
-    cloudStorage: A Cloud Storage target location.
-  """
-
-  cloudStorage = _messages.MessageField('CloudStorage', 1)
 
 
 class TypedName(_messages.Message):

@@ -124,9 +124,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -1366,20 +1368,21 @@ class ObjectMeta(_messages.Message):
       categorize (scope and select) objects. May match selectors of
       replication controllers and routes. More info:
       https://kubernetes.io/docs/user-guide/labels
-    name: The immutable name of the resource. In Cloud Run, name is required
-      when creating top-level resources (Service, Job), and must be unique
-      within a Cloud Run project/region. More info:
-      https://kubernetes.io/docs/user-guide/identifiers#names If ObjectMeta is
-      part of a CreateServiceRequest, name must contain fewer than 50
-      characters. Otherwise,
-    namespace: Defines the space within each name must be unique within a
-      Cloud Run region. In Cloud Run, it must be project ID or number.
+    name: Required. The name of the resource. In Cloud Run, name is required
+      when creating top-level resources (Service, Job), must be unique within
+      a Cloud Run project/region, and cannot be changed once created. More
+      info: https://kubernetes.io/docs/user-guide/identifiers#names If
+      ObjectMeta is part of a CreateServiceRequest, name must contain fewer
+      than 50 characters.
+    namespace: Required. Defines the space within each name must be unique
+      within a Cloud Run region. In Cloud Run, it must be project ID or
+      number.
     ownerReferences: Not supported by Cloud Run
-    resourceVersion: Optional. Opaque, system-generated value that represents
-      the internal version of this object that can be used by clients to
-      determine when objects have changed. May be used for optimistic
-      concurrency, change detection, and the watch operation on a resource or
-      set of resources. Clients must treat these values as opaque and passed
+    resourceVersion: Opaque, system-generated value that represents the
+      internal version of this object that can be used by clients to determine
+      when objects have changed. May be used for optimistic concurrency,
+      change detection, and the watch operation on a resource or set of
+      resources. Clients must treat these values as opaque and passed
       unmodified back to the server or omit the value to disable conflict-
       detection. More info:
       https://git.k8s.io/community/contributors/devel/sig-architecture/api-
@@ -2453,8 +2456,10 @@ class RunNamespacesServicesCreateRequest(_messages.Message):
   Fields:
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
-    parent: The resource's parent. In Cloud Run, it may be one of the
-      following: * `namespaces/{project_id_or_number}` *
+    parent: Required. The resource's parent. In Cloud Run, it may be one of
+      the following: * `{project_id_or_number}` *
+      `namespaces/{project_id_or_number}` *
+      `namespaces/{project_id_or_number}/services` *
       `projects/{project_id_or_number}/locations/{region}` *
       `projects/{project_id_or_number}/regions/{region}`
     service: A Service resource to be passed as the request body.
@@ -2473,8 +2478,8 @@ class RunNamespacesServicesDeleteRequest(_messages.Message):
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
     kind: Not supported, and ignored by Cloud Run.
-    name: The fully qualified name of the service to delete. It can be any of
-      the following forms: *
+    name: Required. The fully qualified name of the service to delete. It can
+      be any of the following forms: *
       `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
       {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
       ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
@@ -2492,8 +2497,8 @@ class RunNamespacesServicesGetRequest(_messages.Message):
   r"""A RunNamespacesServicesGetRequest object.
 
   Fields:
-    name: The fully qualified name of the service to retrieve. It can be any
-      of the following forms: *
+    name: Required. The fully qualified name of the service to retrieve. It
+      can be any of the following forms: *
       `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
       {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
       ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
@@ -2506,15 +2511,16 @@ class RunNamespacesServicesListRequest(_messages.Message):
   r"""A RunNamespacesServicesListRequest object.
 
   Fields:
-    continue_: Optional. Encoded string to continue paging.
+    continue_: Encoded string to continue paging.
     fieldSelector: Not supported, and ignored by Cloud Run.
     includeUninitialized: Not supported, and ignored by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
-    limit: Optional. The maximum number of records that should be returned.
-    parent: The parent from where the resources should be listed. In Cloud
-      Run, it may be one of the following: *
+    limit: The maximum number of records that should be returned.
+    parent: Required. The parent from where the resources should be listed. In
+      Cloud Run, it may be one of the following: * `{project_id_or_number}` *
       `namespaces/{project_id_or_number}` *
+      `namespaces/{project_id_or_number}/services` *
       `projects/{project_id_or_number}/locations/{region}` *
       `projects/{project_id_or_number}/regions/{region}`
     resourceVersion: Not supported, and ignored by Cloud Run.
@@ -2537,8 +2543,8 @@ class RunNamespacesServicesReplaceServiceRequest(_messages.Message):
   Fields:
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
-    name: The fully qualified name of the service to replace. It can be any of
-      the following forms: *
+    name: Required. The fully qualified name of the service to replace. It can
+      be any of the following forms: *
       `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
       {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
       ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
@@ -3016,8 +3022,10 @@ class RunProjectsLocationsServicesCreateRequest(_messages.Message):
   Fields:
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
-    parent: The resource's parent. In Cloud Run, it may be one of the
-      following: * `namespaces/{project_id_or_number}` *
+    parent: Required. The resource's parent. In Cloud Run, it may be one of
+      the following: * `{project_id_or_number}` *
+      `namespaces/{project_id_or_number}` *
+      `namespaces/{project_id_or_number}/services` *
       `projects/{project_id_or_number}/locations/{region}` *
       `projects/{project_id_or_number}/regions/{region}`
     service: A Service resource to be passed as the request body.
@@ -3036,8 +3044,8 @@ class RunProjectsLocationsServicesDeleteRequest(_messages.Message):
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
     kind: Not supported, and ignored by Cloud Run.
-    name: The fully qualified name of the service to delete. It can be any of
-      the following forms: *
+    name: Required. The fully qualified name of the service to delete. It can
+      be any of the following forms: *
       `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
       {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
       ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
@@ -3081,8 +3089,8 @@ class RunProjectsLocationsServicesGetRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesGetRequest object.
 
   Fields:
-    name: The fully qualified name of the service to retrieve. It can be any
-      of the following forms: *
+    name: Required. The fully qualified name of the service to retrieve. It
+      can be any of the following forms: *
       `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
       {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
       ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
@@ -3095,15 +3103,16 @@ class RunProjectsLocationsServicesListRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesListRequest object.
 
   Fields:
-    continue_: Optional. Encoded string to continue paging.
+    continue_: Encoded string to continue paging.
     fieldSelector: Not supported, and ignored by Cloud Run.
     includeUninitialized: Not supported, and ignored by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
-    limit: Optional. The maximum number of records that should be returned.
-    parent: The parent from where the resources should be listed. In Cloud
-      Run, it may be one of the following: *
+    limit: The maximum number of records that should be returned.
+    parent: Required. The parent from where the resources should be listed. In
+      Cloud Run, it may be one of the following: * `{project_id_or_number}` *
       `namespaces/{project_id_or_number}` *
+      `namespaces/{project_id_or_number}/services` *
       `projects/{project_id_or_number}/locations/{region}` *
       `projects/{project_id_or_number}/regions/{region}`
     resourceVersion: Not supported, and ignored by Cloud Run.
@@ -3126,8 +3135,8 @@ class RunProjectsLocationsServicesReplaceServiceRequest(_messages.Message):
   Fields:
     dryRun: Indicates that the server should validate the request and populate
       default values without persisting the request. Supported values: `all`
-    name: The fully qualified name of the service to replace. It can be any of
-      the following forms: *
+    name: Required. The fully qualified name of the service to replace. It can
+      be any of the following forms: *
       `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
       {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
       ojects/{project_id_or_number}/regions/{region}/services/{service_name}`

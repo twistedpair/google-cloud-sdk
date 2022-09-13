@@ -4579,7 +4579,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the batch to retrieve.",
+                      "description": "Required. The fully qualified name of the batch to retrieve in the format \"projects\/PROJECT_ID\/locations\/DATAPROC_REGION\/batches\/BATCH_ID\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/batches\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4645,7 +4645,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the batch resource to delete.",
+                      "description": "Required. The fully qualified name of the batch to retrieve in the format \"projects\/PROJECT_ID\/locations\/DATAPROC_REGION\/batches\/BATCH_ID\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/batches\/[^\/]+$",
                       "location": "path",
                       "required": true,

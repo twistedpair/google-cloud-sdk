@@ -258,7 +258,7 @@
     },
     "ListInstancesResponse": {
       "id": "ListInstancesResponse",
-      "description": "Message for response to listing Instances.",
+      "description": "ListInstancesResponse is the response for listing Instances.",
       "type": "object",
       "properties": {
         "instances": {
@@ -362,7 +362,7 @@
     },
     "ListRepositoriesResponse": {
       "id": "ListRepositoriesResponse",
-      "description": "Message for response to listing Repositories.",
+      "description": "ListRepositoriesResponse is the response for listing Repositories.",
       "type": "object",
       "properties": {
         "repositories": {
@@ -428,6 +428,10 @@
           "description": "Output only. uris for the repository.",
           "readOnly": true,
           "$ref": "URIs"
+        },
+        "initialConfig": {
+          "description": "Input only. Initial configurations for the repository.",
+          "$ref": "InitialConfig"
         }
       }
     },
@@ -450,9 +454,35 @@
         }
       }
     },
+    "InitialConfig": {
+      "id": "InitialConfig",
+      "description": "Repository initialization configs.",
+      "type": "object",
+      "properties": {
+        "defaultBranch": {
+          "description": "Default branch name of the repository.",
+          "type": "string"
+        },
+        "gitignores": {
+          "description": "List of gitignore template names user can choose from.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "license": {
+          "description": "License template name user can choose from.",
+          "type": "string"
+        },
+        "readme": {
+          "description": "README template name. Valid template name(s) are: default.",
+          "type": "string"
+        }
+      }
+    },
     "ListSshKeysResponse": {
       "id": "ListSshKeysResponse",
-      "description": "Message for response to listing SSH Keys.",
+      "description": "ListSshKeysResponse is the response for listing SSH Keys.",
       "type": "object",
       "properties": {
         "sshkeys": {
@@ -470,6 +500,7 @@
     },
     "SshKey": {
       "id": "SshKey",
+      "description": "Metadata of a SecureSourceManager SSH Key",
       "type": "object",
       "properties": {
         "name": {
@@ -519,6 +550,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "title": {
+          "description": "Required. Title of ssh key. This value is provided by the ssh key owner upon creation. Format: This value should be 4-63 characters, and valid characters are \/a-z-\/.",
+          "type": "string"
         }
       }
     },
@@ -579,7 +614,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
@@ -1301,7 +1336,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new Repository in a given project and location."
+                      "description": "Creates a new SSH key in a given project and location."
                     },
                     "delete": {
                       "id": "securesourcemanager.projects.locations.instances.sshkeys.delete",
@@ -1331,7 +1366,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a Repository."
+                      "description": "Deletes a SSH key."
                     }
                   }
                 }

@@ -14,7 +14,8 @@ package = 'netapp'
 
 
 class ActiveDirectory(_messages.Message):
-  r"""A ActiveDirectory object.
+  r"""ActiveDirectory is the public representation of the active directory
+  config.
 
   Enums:
     StateValueValuesEnum: Output only. The state of the AD.
@@ -144,7 +145,8 @@ class HourlySchedule(_messages.Message):
 
 
 class ListActiveDirectoryResponse(_messages.Message):
-  r"""A ListActiveDirectoryResponse object.
+  r"""ListActiveDirectoryResponse contains all the active directories
+  requested.
 
   Fields:
     activeDirectories: The list of active directories.
@@ -367,7 +369,7 @@ class NetappProjectsLocationsActivedirectoriesCreateRequest(_messages.Message):
   Fields:
     activeDirectory: A ActiveDirectory resource to be passed as the request
       body.
-    name: A string attribute.
+    name: Required. Name of the active directory to create.
     parent: Required. Value for parent.
   """
 
@@ -518,16 +520,16 @@ class NetappProjectsLocationsStoragepoolsCreateRequest(_messages.Message):
   r"""A NetappProjectsLocationsStoragepoolsCreateRequest object.
 
   Fields:
+    name: Required. Name of the requesting storage pool If auto-generating
+      Name server-side, remove this field and name from the method_signature
+      of Create RPC
     parent: Required. Value for parent.
     storagePool: A StoragePool resource to be passed as the request body.
-    storagePoolId: Required. Id of the requesting storage pool If auto-
-      generating Id server-side, remove this field and storage_pool_id from
-      the method_signature of Create RPC
   """
 
-  parent = _messages.StringField(1, required=True)
-  storagePool = _messages.MessageField('StoragePool', 2)
-  storagePoolId = _messages.StringField(3)
+  name = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
+  storagePool = _messages.MessageField('StoragePool', 3)
 
 
 class NetappProjectsLocationsStoragepoolsDeleteRequest(_messages.Message):
@@ -592,26 +594,30 @@ class NetappProjectsLocationsVolumesCreateRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesCreateRequest object.
 
   Fields:
+    name: Required. Name of the requesting volume If auto-generating Name
+      server-side, remove this field and name from the method_signature of
+      Create RPC
     parent: Required. Value for parent.
     volume: A Volume resource to be passed as the request body.
-    volumeId: Required. Id of the requesting volume If auto-generating Id
-      server-side, remove this field and volume_id from the method_signature
-      of Create RPC
   """
 
-  parent = _messages.StringField(1, required=True)
-  volume = _messages.MessageField('Volume', 2)
-  volumeId = _messages.StringField(3)
+  name = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
+  volume = _messages.MessageField('Volume', 3)
 
 
 class NetappProjectsLocationsVolumesDeleteRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesDeleteRequest object.
 
   Fields:
+    force: If this field is set as true, CCFE will not block the volume
+      resource deletion even if it has any snapshots resource. (Otherwise, the
+      request will only work if the volume has no snapshots.)
     name: Required. Name of the volume
   """
 
-  name = _messages.StringField(1, required=True)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class NetappProjectsLocationsVolumesGetRequest(_messages.Message):
@@ -679,18 +685,18 @@ class NetappProjectsLocationsVolumesSnapshotsCreateRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesSnapshotsCreateRequest object.
 
   Fields:
+    name: Required. The name for the snapshot. The name must be unique within
+      the specified volume. This value must start with a lowercase letter
+      followed by up to 62 lowercase letters, numbers, or hyphens, and cannot
+      end with a hyphen.
     parent: Required. The NetApp volume to create the snapshots of, in the
       format `projects/{project_id}/locations/{location}/volumes/{volume_id}`
     snapshot: A Snapshot resource to be passed as the request body.
-    snapshotId: Required. The ID to use for the snapshot. The ID must be
-      unique within the specified volume. This value must start with a
-      lowercase letter followed by up to 62 lowercase letters, numbers, or
-      hyphens, and cannot end with a hyphen.
   """
 
-  parent = _messages.StringField(1, required=True)
-  snapshot = _messages.MessageField('Snapshot', 2)
-  snapshotId = _messages.StringField(3)
+  name = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
+  snapshot = _messages.MessageField('Snapshot', 3)
 
 
 class NetappProjectsLocationsVolumesSnapshotsDeleteRequest(_messages.Message):
@@ -951,7 +957,6 @@ class Snapshot(_messages.Message):
       Requests with longer descriptions will be rejected.
     labels: Resource labels to represent user provided metadata.
     name: Required. The resource name of the snapshot.
-    snapshotId: Required. Unique id of the snapshot.
     state: Output only. The snapshot state.
     stateDetails: Output only. State details of the storage pool
     usedBytes: Output only. Current storage usage for the snapshot in bytes.
@@ -1001,10 +1006,9 @@ class Snapshot(_messages.Message):
   description = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  snapshotId = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  stateDetails = _messages.StringField(7)
-  usedBytes = _messages.FloatField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  stateDetails = _messages.StringField(6)
+  usedBytes = _messages.FloatField(7)
 
 
 class SnapshotPolicy(_messages.Message):
@@ -1161,7 +1165,6 @@ class StoragePool(_messages.Message):
     serviceLevel: Required. Service level of the storage pool
     state: Output only. State of the storage pool
     stateDetails: Output only. State details of the storage pool
-    storagePoolId: Required. Unique Id of the storage pool
     volumeCapacityGib: Output only. Allocated size of all volumes in GIB in
       the storage pool
     volumeCount: Output only. Volume count of the storage pool
@@ -1227,9 +1230,8 @@ class StoragePool(_messages.Message):
   serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
   stateDetails = _messages.StringField(8)
-  storagePoolId = _messages.StringField(9)
-  volumeCapacityGib = _messages.IntegerField(10)
-  volumeCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  volumeCapacityGib = _messages.IntegerField(9)
+  volumeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
 
 
 class Volume(_messages.Message):
@@ -1239,13 +1241,15 @@ class Volume(_messages.Message):
     ProtocolsValueListEntryValuesEnum:
     SecurityStyleValueValuesEnum: Security Style of the Volume
     ServiceLevelValueValuesEnum: Output only. Service level of the volume
-    SmbSettingsValueValuesEnum:
+    SmbSettingsValueListEntryValuesEnum:
     StateValueValuesEnum: Output only. State of the volume
 
   Messages:
     LabelsValue: Labels as key value pairs
 
   Fields:
+    activeDirectoryName: Specifies the AD to be used for creating a SMB
+      volume.
     capacityGib: Required. Capacity in GIB of the volume
     createTime: Output only. Create time of the volume
     description: Description of the volume
@@ -1264,7 +1268,7 @@ class Volume(_messages.Message):
     securityStyle: Security Style of the Volume
     serviceLevel: Output only. Service level of the volume
     shareName: Required. Share name of the volume
-    smbSettings: A SmbSettingsValueValuesEnum attribute.
+    smbSettings: SMB share settings for the volume.
     snapReserve: Snap_reserve specifies percentage of volume storage reserved
       for snapshot storage. Default is 0 percent.
     snapshotDirectory: Snapshot_directory if enabled (true) the volume will
@@ -1278,7 +1282,6 @@ class Volume(_messages.Message):
       will be created with. Applicable for NFS protocol types only.
     usedGib: Output only. Used capacity in GIB of the volume. This is not
       realtime usage, periodically computed by SDE.
-    volumeId: Required. Unique Id of the volume
   """
 
   class ProtocolsValueListEntryValuesEnum(_messages.Enum):
@@ -1319,19 +1322,19 @@ class Volume(_messages.Message):
     PREMIUM = 1
     EXTREME = 2
 
-  class SmbSettingsValueValuesEnum(_messages.Enum):
-    r"""SmbSettingsValueValuesEnum enum type.
+  class SmbSettingsValueListEntryValuesEnum(_messages.Enum):
+    r"""SmbSettingsValueListEntryValuesEnum enum type.
 
     Values:
-      SMB_SETTINGS_UNSPECIFIED: <no description>
-      ENCRYPT_DATA: <no description>
-      BROWSABLE: <no description>
-      CHANGE_NOTIFY: <no description>
-      NON_BROWSABLE: <no description>
-      OPLOCKS: <no description>
-      SHOW_SNAPSHOT: <no description>
-      SHOW_PREVIOUS_VERSIONS: <no description>
-      ACCESS_BASED_ENUMERATION: <no description>
+      SMB_SETTINGS_UNSPECIFIED: Unspecified SMB setting
+      ENCRYPT_DATA: Encrypt SMB data
+      BROWSABLE: Browsable
+      CHANGE_NOTIFY: Change notify
+      NON_BROWSABLE: Non-browsable
+      OPLOCKS: Operation locks
+      SHOW_SNAPSHOT: Show snapshot
+      SHOW_PREVIOUS_VERSIONS: Show previous versions
+      ACCESS_BASED_ENUMERATION: Access based enumeration
     """
     SMB_SETTINGS_UNSPECIFIED = 0
     ENCRYPT_DATA = 1
@@ -1387,31 +1390,31 @@ class Volume(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  capacityGib = _messages.IntegerField(1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  exportPolicy = _messages.MessageField('ExportPolicy', 4)
-  kerberosEnabled = _messages.BooleanField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  ldapEnabled = _messages.BooleanField(7)
-  mountOptions = _messages.MessageField('MountOption', 8, repeated=True)
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 11, repeated=True)
-  psaRange = _messages.StringField(12)
-  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 13)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 14)
-  shareName = _messages.StringField(15)
-  smbSettings = _messages.EnumField('SmbSettingsValueValuesEnum', 16)
-  snapReserve = _messages.FloatField(17)
-  snapshotDirectory = _messages.BooleanField(18)
-  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  stateDetails = _messages.StringField(21)
-  storagePoolName = _messages.StringField(22)
-  unixPermissions = _messages.StringField(23)
-  usedGib = _messages.IntegerField(24)
-  volumeId = _messages.StringField(25)
+  activeDirectoryName = _messages.StringField(1)
+  capacityGib = _messages.IntegerField(2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  exportPolicy = _messages.MessageField('ExportPolicy', 5)
+  kerberosEnabled = _messages.BooleanField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  ldapEnabled = _messages.BooleanField(8)
+  mountOptions = _messages.MessageField('MountOption', 9, repeated=True)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 12, repeated=True)
+  psaRange = _messages.StringField(13)
+  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 14)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 15)
+  shareName = _messages.StringField(16)
+  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 17, repeated=True)
+  snapReserve = _messages.FloatField(18)
+  snapshotDirectory = _messages.BooleanField(19)
+  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  stateDetails = _messages.StringField(22)
+  storagePoolName = _messages.StringField(23)
+  unixPermissions = _messages.StringField(24)
+  usedGib = _messages.IntegerField(25)
 
 
 class WeeklySchedule(_messages.Message):

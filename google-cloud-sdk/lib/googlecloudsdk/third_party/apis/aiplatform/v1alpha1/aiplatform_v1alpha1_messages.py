@@ -11335,6 +11335,9 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageClassificatio
       MODEL_TYPE_UNSPECIFIED: Should not be set.
       CLOUD: A Model best tailored to be used within Google Cloud, and which
         cannot be exported. Default.
+      CLOUD_1: A model type best tailored to be used within Google Cloud,
+        which cannot be exported externally. Compared to the CLOUD model
+        above, it is expected to have higher prediction accuracy.
       MOBILE_TF_LOW_LATENCY_1: A model that, in addition to being available
         within Google Cloud, can also be exported (see
         ModelService.ExportModel) as TensorFlow or Core ML model and used on a
@@ -11353,9 +11356,10 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageClassificatio
     """
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD = 1
-    MOBILE_TF_LOW_LATENCY_1 = 2
-    MOBILE_TF_VERSATILE_1 = 3
-    MOBILE_TF_HIGH_ACCURACY_1 = 4
+    CLOUD_1 = 2
+    MOBILE_TF_LOW_LATENCY_1 = 3
+    MOBILE_TF_VERSATILE_1 = 4
+    MOBILE_TF_HIGH_ACCURACY_1 = 5
 
   baseModelId = _messages.StringField(1)
   budgetMilliNodeHours = _messages.IntegerField(2)
@@ -11458,6 +11462,10 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageObjectDetecti
       CLOUD_LOW_LATENCY_1: A model best tailored to be used within Google
         Cloud, and which cannot be exported. Expected to have a low latency,
         but may have lower prediction quality than other cloud models.
+      CLOUD_1: A model best tailored to be used within Google Cloud, and which
+        cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and and
+        CLOUD_LOW_LATENCY_1 models above, it is expected to have higher
+        prediction quality and lower latency.
       MOBILE_TF_LOW_LATENCY_1: A model that, in addition to being available
         within Google Cloud can also be exported (see
         ModelService.ExportModel) and used on a mobile or edge device with
@@ -11480,10 +11488,11 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageObjectDetecti
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD_HIGH_ACCURACY_1 = 1
     CLOUD_LOW_LATENCY_1 = 2
-    MOBILE_TF_LOW_LATENCY_1 = 3
-    MOBILE_TF_VERSATILE_1 = 4
-    MOBILE_TF_HIGH_ACCURACY_1 = 5
-    CLOUD_STREAMING_1 = 6
+    CLOUD_1 = 3
+    MOBILE_TF_LOW_LATENCY_1 = 4
+    MOBILE_TF_VERSATILE_1 = 5
+    MOBILE_TF_HIGH_ACCURACY_1 = 6
+    CLOUD_STREAMING_1 = 7
 
   budgetMilliNodeHours = _messages.IntegerField(1)
   disableEarlyStopping = _messages.BooleanField(2)
@@ -17210,6 +17219,9 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificatio
       MODEL_TYPE_UNSPECIFIED: Should not be set.
       CLOUD: A Model best tailored to be used within Google Cloud, and which
         cannot be exported. Default.
+      CLOUD_1: A model type best tailored to be used within Google Cloud,
+        which cannot be exported externally. Compared to the CLOUD model
+        above, it is expected to have higher prediction accuracy.
       MOBILE_TF_LOW_LATENCY_1: A model that, in addition to being available
         within Google Cloud, can also be exported (see
         ModelService.ExportModel) as TensorFlow or Core ML model and used on a
@@ -17228,9 +17240,10 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificatio
     """
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD = 1
-    MOBILE_TF_LOW_LATENCY_1 = 2
-    MOBILE_TF_VERSATILE_1 = 3
-    MOBILE_TF_HIGH_ACCURACY_1 = 4
+    CLOUD_1 = 2
+    MOBILE_TF_LOW_LATENCY_1 = 3
+    MOBILE_TF_VERSATILE_1 = 4
+    MOBILE_TF_HIGH_ACCURACY_1 = 5
 
   baseModelId = _messages.StringField(1)
   budgetMilliNodeHours = _messages.IntegerField(2)
@@ -17333,6 +17346,10 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetecti
       CLOUD_LOW_LATENCY_1: A model best tailored to be used within Google
         Cloud, and which cannot be exported. Expected to have a low latency,
         but may have lower prediction quality than other cloud models.
+      CLOUD_1: A model best tailored to be used within Google Cloud, and which
+        cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and and
+        CLOUD_LOW_LATENCY_1 models above, it is expected to have higher
+        prediction quality and lower latency.
       MOBILE_TF_LOW_LATENCY_1: A model that, in addition to being available
         within Google Cloud can also be exported (see
         ModelService.ExportModel) and used on a mobile or edge device with
@@ -17355,10 +17372,11 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetecti
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD_HIGH_ACCURACY_1 = 1
     CLOUD_LOW_LATENCY_1 = 2
-    MOBILE_TF_LOW_LATENCY_1 = 3
-    MOBILE_TF_VERSATILE_1 = 4
-    MOBILE_TF_HIGH_ACCURACY_1 = 5
-    CLOUD_STREAMING_1 = 6
+    CLOUD_1 = 3
+    MOBILE_TF_LOW_LATENCY_1 = 4
+    MOBILE_TF_VERSATILE_1 = 5
+    MOBILE_TF_HIGH_ACCURACY_1 = 6
+    CLOUD_STREAMING_1 = 7
 
   budgetMilliNodeHours = _messages.IntegerField(1)
   disableEarlyStopping = _messages.BooleanField(2)
@@ -19989,6 +20007,10 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
     modelMonitoringConfig: Model monitoring config will be used for analysis
       model behaviors, based on the input and output to the batch prediction
       job, as well as the provided training dataset.
+    modelMonitoringStatsAnomalies: Get batch prediction job monitoring
+      statistics.
+    modelMonitoringStatus: Output only. The running status of the model
+      monitoring pipeline.
     modelParameters: The parameters that govern the predictions. The schema of
       the parameters may be specified via the Model's PredictSchemata's
       parameters_schema_uri.
@@ -20094,16 +20116,18 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
   manualBatchTuningParameters = _messages.MessageField('GoogleCloudAiplatformV1alpha1ManualBatchTuningParameters', 12)
   model = _messages.StringField(13)
   modelMonitoringConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringConfig', 14)
-  modelParameters = _messages.MessageField('extra_types.JsonValue', 15)
-  name = _messages.StringField(16)
-  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputConfig', 17)
-  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputInfo', 18)
-  partialFailures = _messages.MessageField('GoogleRpcStatus', 19, repeated=True)
-  resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1alpha1ResourcesConsumed', 20)
-  startTime = _messages.StringField(21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  unmanagedContainerModel = _messages.MessageField('GoogleCloudAiplatformV1alpha1UnmanagedContainerModel', 23)
-  updateTime = _messages.StringField(24)
+  modelMonitoringStatsAnomalies = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringStatsAnomalies', 15, repeated=True)
+  modelMonitoringStatus = _messages.MessageField('GoogleRpcStatus', 16)
+  modelParameters = _messages.MessageField('extra_types.JsonValue', 17)
+  name = _messages.StringField(18)
+  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputConfig', 19)
+  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputInfo', 20)
+  partialFailures = _messages.MessageField('GoogleRpcStatus', 21, repeated=True)
+  resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1alpha1ResourcesConsumed', 22)
+  startTime = _messages.StringField(23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  unmanagedContainerModel = _messages.MessageField('GoogleCloudAiplatformV1alpha1UnmanagedContainerModel', 25)
+  updateTime = _messages.StringField(26)
 
 
 class GoogleCloudAiplatformV1alpha1BatchPredictionJobInputConfig(_messages.Message):
@@ -32332,6 +32356,9 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
       MODEL_TYPE_UNSPECIFIED: Should not be set.
       CLOUD: A Model best tailored to be used within Google Cloud, and which
         cannot be exported. Default.
+      CLOUD_1: A model type best tailored to be used within Google Cloud,
+        which cannot be exported externally. Compared to the CLOUD model
+        above, it is expected to have higher prediction accuracy.
       MOBILE_TF_LOW_LATENCY_1: A model that, in addition to being available
         within Google Cloud, can also be exported (see
         ModelService.ExportModel) as TensorFlow or Core ML model and used on a
@@ -32350,9 +32377,10 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
     """
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD = 1
-    MOBILE_TF_LOW_LATENCY_1 = 2
-    MOBILE_TF_VERSATILE_1 = 3
-    MOBILE_TF_HIGH_ACCURACY_1 = 4
+    CLOUD_1 = 2
+    MOBILE_TF_LOW_LATENCY_1 = 3
+    MOBILE_TF_VERSATILE_1 = 4
+    MOBILE_TF_HIGH_ACCURACY_1 = 5
 
   baseModelId = _messages.StringField(1)
   budgetMilliNodeHours = _messages.IntegerField(2)
@@ -32455,6 +32483,10 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDe
       CLOUD_LOW_LATENCY_1: A model best tailored to be used within Google
         Cloud, and which cannot be exported. Expected to have a low latency,
         but may have lower prediction quality than other cloud models.
+      CLOUD_1: A model best tailored to be used within Google Cloud, and which
+        cannot be exported. Compared to the CLOUD_HIGH_ACCURACY_1 and and
+        CLOUD_LOW_LATENCY_1 models above, it is expected to have higher
+        prediction quality and lower latency.
       MOBILE_TF_LOW_LATENCY_1: A model that, in addition to being available
         within Google Cloud can also be exported (see
         ModelService.ExportModel) and used on a mobile or edge device with
@@ -32477,10 +32509,11 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDe
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD_HIGH_ACCURACY_1 = 1
     CLOUD_LOW_LATENCY_1 = 2
-    MOBILE_TF_LOW_LATENCY_1 = 3
-    MOBILE_TF_VERSATILE_1 = 4
-    MOBILE_TF_HIGH_ACCURACY_1 = 5
-    CLOUD_STREAMING_1 = 6
+    CLOUD_1 = 3
+    MOBILE_TF_LOW_LATENCY_1 = 4
+    MOBILE_TF_VERSATILE_1 = 5
+    MOBILE_TF_HIGH_ACCURACY_1 = 6
+    CLOUD_STREAMING_1 = 7
 
   budgetMilliNodeHours = _messages.IntegerField(1)
   disableEarlyStopping = _messages.BooleanField(2)

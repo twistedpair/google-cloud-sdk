@@ -375,6 +375,33 @@ class ManagedidentitiesV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def CheckMigrationPermission(self, request, global_params=None):
+      r"""CheckMigrationPermission API gets the current state of DomainMigration.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsCheckMigrationPermissionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckMigrationPermissionResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckMigrationPermission')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckMigrationPermission.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:checkMigrationPermission',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.checkMigrationPermission',
+        ordered_params=['domain'],
+        path_params=['domain'],
+        query_params=[],
+        relative_path='v1beta1/{+domain}:checkMigrationPermission',
+        request_field='checkMigrationPermissionRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsCheckMigrationPermissionRequest',
+        response_type_name='CheckMigrationPermissionResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a Microsoft AD domain.
 
@@ -452,6 +479,60 @@ class ManagedidentitiesV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}:detachTrust',
         request_field='detachTrustRequest',
         request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsDetachTrustRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def DisableMigration(self, request, global_params=None):
+      r"""Disable Domain Migration.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsDisableMigrationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DisableMigration')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DisableMigration.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:disableMigration',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.disableMigration',
+        ordered_params=['domain'],
+        path_params=['domain'],
+        query_params=[],
+        relative_path='v1beta1/{+domain}:disableMigration',
+        request_field='disableMigrationRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsDisableMigrationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def EnableMigration(self, request, global_params=None):
+      r"""Enable Domain Migration.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsEnableMigrationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('EnableMigration')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnableMigration.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:enableMigration',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.enableMigration',
+        ordered_params=['domain'],
+        path_params=['domain'],
+        query_params=[],
+        relative_path='v1beta1/{+domain}:enableMigration',
+        request_field='enableMigrationRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsEnableMigrationRequest',
         response_type_name='Operation',
         supports_download=False,
     )

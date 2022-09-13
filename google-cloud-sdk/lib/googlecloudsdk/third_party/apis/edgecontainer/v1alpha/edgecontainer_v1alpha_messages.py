@@ -840,6 +840,8 @@ class Machine(_messages.Message):
 
   Fields:
     createTime: Output only. The time when the node pool was created.
+    disabled: Output only. Whether the machine is disabled. If disabled, the
+      machine is unable to enter service.
     hostedNode: Canonical resource name of the node that this machine is
       responsible for hosting e.g. projects/{project}/locations/{location}/clu
       sters/{cluster_id}/nodePools/{pool_id}/{node}, Or empty if the machine
@@ -876,12 +878,13 @@ class Machine(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  hostedNode = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
-  version = _messages.StringField(6)
-  zone = _messages.StringField(7)
+  disabled = _messages.BooleanField(2)
+  hostedNode = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+  version = _messages.StringField(7)
+  zone = _messages.StringField(8)
 
 
 class MaintenancePolicy(_messages.Message):

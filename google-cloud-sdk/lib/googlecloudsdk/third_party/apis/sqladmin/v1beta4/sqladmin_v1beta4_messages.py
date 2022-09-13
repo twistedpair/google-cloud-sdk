@@ -308,6 +308,8 @@ class CloneContext(_messages.Message):
       position up to which the source instance is cloned. If not specified,
       the source instance is cloned up to the most recent binary log
       coordinates.
+    databaseNames: (SQL Server only) Clone only the specified databases from
+      the source instance. Clone all databases if empty.
     destinationInstanceName: Name of the Cloud SQL instance to be created as a
       clone.
     kind: This is always `sql#cloneContext`.
@@ -318,10 +320,11 @@ class CloneContext(_messages.Message):
 
   allocatedIpRange = _messages.StringField(1)
   binLogCoordinates = _messages.MessageField('BinLogCoordinates', 2)
-  destinationInstanceName = _messages.StringField(3)
-  kind = _messages.StringField(4)
-  pitrTimestampMs = _messages.IntegerField(5)
-  pointInTime = _messages.StringField(6)
+  databaseNames = _messages.StringField(3, repeated=True)
+  destinationInstanceName = _messages.StringField(4)
+  kind = _messages.StringField(5)
+  pitrTimestampMs = _messages.IntegerField(6)
+  pointInTime = _messages.StringField(7)
 
 
 class ConnectSettings(_messages.Message):
@@ -2176,10 +2179,10 @@ class Settings(_messages.Message):
       Configuration](https://cloud.google.com/sql/docs/mysql/high-
       availability).
     ConnectorEnforcementValueValuesEnum: Specifies if connections must use
-      Cloud SQL connectors. Option values include the following: *
-      `NOT_REQUIRED`: Cloud SQL instances can be connected without Cloud SQL
-      Connectors. * `REQUIRED`: Only allow connections that use Cloud SQL
-      Connectors. Note that using REQUIRED disables all existing authorized
+      Cloud SQL connectors. Option values include the following:
+      `NOT_REQUIRED` (Cloud SQL instances can be connected without Cloud SQL
+      Connectors) and `REQUIRED` (Only allow connections that use Cloud SQL
+      Connectors) Note that using REQUIRED disables all existing authorized
       networks. If this field is not specified when creating a new instance,
       NOT_REQUIRED is used. If this field is not specified when patching or
       updating an existing instance, it is left unchanged in the instance.
@@ -2218,9 +2221,9 @@ class Settings(_messages.Message):
     backupConfiguration: The daily backup configuration for the instance.
     collation: The name of server Instance collation.
     connectorEnforcement: Specifies if connections must use Cloud SQL
-      connectors. Option values include the following: * `NOT_REQUIRED`: Cloud
-      SQL instances can be connected without Cloud SQL Connectors. *
-      `REQUIRED`: Only allow connections that use Cloud SQL Connectors. Note
+      connectors. Option values include the following: `NOT_REQUIRED` (Cloud
+      SQL instances can be connected without Cloud SQL Connectors) and
+      `REQUIRED` (Only allow connections that use Cloud SQL Connectors) Note
       that using REQUIRED disables all existing authorized networks. If this
       field is not specified when creating a new instance, NOT_REQUIRED is
       used. If this field is not specified when patching or updating an
@@ -2319,9 +2322,9 @@ class Settings(_messages.Message):
 
   class ConnectorEnforcementValueValuesEnum(_messages.Enum):
     r"""Specifies if connections must use Cloud SQL connectors. Option values
-    include the following: * `NOT_REQUIRED`: Cloud SQL instances can be
-    connected without Cloud SQL Connectors. * `REQUIRED`: Only allow
-    connections that use Cloud SQL Connectors. Note that using REQUIRED
+    include the following: `NOT_REQUIRED` (Cloud SQL instances can be
+    connected without Cloud SQL Connectors) and `REQUIRED` (Only allow
+    connections that use Cloud SQL Connectors) Note that using REQUIRED
     disables all existing authorized networks. If this field is not specified
     when creating a new instance, NOT_REQUIRED is used. If this field is not
     specified when patching or updating an existing instance, it is left

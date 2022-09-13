@@ -1148,7 +1148,8 @@ class DataprocProjectsLocationsBatchesDeleteRequest(_messages.Message):
   r"""A DataprocProjectsLocationsBatchesDeleteRequest object.
 
   Fields:
-    name: Required. The name of the batch resource to delete.
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID"
   """
 
   name = _messages.StringField(1, required=True)
@@ -1158,7 +1159,8 @@ class DataprocProjectsLocationsBatchesGetRequest(_messages.Message):
   r"""A DataprocProjectsLocationsBatchesGetRequest object.
 
   Fields:
-    name: Required. The name of the batch to retrieve.
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID"
   """
 
   name = _messages.StringField(1, required=True)

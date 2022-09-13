@@ -272,6 +272,33 @@ class StoragetransferV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Delete(self, request, global_params=None):
+      r"""Deletes a transfer job. Deleting a transfer job sets its status to DELETED.
+
+      Args:
+        request: (StoragetransferTransferJobsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/transferJobs/{transferJobsId}',
+        http_method='DELETE',
+        method_id='storagetransfer.transferJobs.delete',
+        ordered_params=['jobName', 'projectId'],
+        path_params=['jobName'],
+        query_params=['projectId'],
+        relative_path='v1/{+jobName}',
+        request_field='',
+        request_type_name='StoragetransferTransferJobsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets a transfer job.
 

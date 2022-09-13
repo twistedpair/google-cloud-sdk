@@ -68,6 +68,60 @@ class AutoDetectDecodingConfig(_messages.Message):
 
 
 
+class BatchRecognizeMetadata(_messages.Message):
+  r"""LRO metadata for BatchRecognize.
+
+  Messages:
+    TranscriptionMetadataValue: A TranscriptionMetadataValue object.
+
+  Fields:
+    transcriptionMetadata: A TranscriptionMetadataValue attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TranscriptionMetadataValue(_messages.Message):
+    r"""A TranscriptionMetadataValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        TranscriptionMetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        TranscriptionMetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TranscriptionMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A BatchRecognizeTranscriptionMetadata attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('BatchRecognizeTranscriptionMetadata', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  transcriptionMetadata = _messages.MessageField('TranscriptionMetadataValue', 1)
+
+
+class BatchRecognizeTranscriptionMetadata(_messages.Message):
+  r"""Metadata about transcription for a single file (e.g. progress percent,
+  etc.)
+
+  Fields:
+    error: Error if one was encountered.
+    progressPercent: How much of the file has been transcribed so far.
+    uri: Uri to transcript.
+  """
+
+  error = _messages.MessageField('Status', 1)
+  progressPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(3)
+
+
 class Config(_messages.Message):
   r"""Message representing the config for the Speech-to-Text API. This
   includes an optional [KMS key](https://cloud.google.com/kms/docs/resource-
@@ -299,6 +353,7 @@ class OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
   Fields:
+    batchRecognizeMetadata: Metadata specific to the BatchRecognize RPC
     createRecognizerRequest: The CreateRecognizerRequest that spawned the
       Operation.
     createTime: Output only. The time the operation was created.
@@ -326,17 +381,18 @@ class OperationMetadata(_messages.Message):
     updateTime: Output only. The time the operation finished running.
   """
 
-  createRecognizerRequest = _messages.MessageField('CreateRecognizerRequest', 1)
-  createTime = _messages.StringField(2)
-  deleteRecognizerRequest = _messages.MessageField('DeleteRecognizerRequest', 3)
-  kmsKeyName = _messages.StringField(4)
-  kmsKeyVersionName = _messages.StringField(5)
-  method = _messages.StringField(6)
-  progressPercent = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(8)
-  undeleteRecognizerRequest = _messages.MessageField('UndeleteRecognizerRequest', 9)
-  updateRecognizerRequest = _messages.MessageField('UpdateRecognizerRequest', 10)
-  updateTime = _messages.StringField(11)
+  batchRecognizeMetadata = _messages.MessageField('BatchRecognizeMetadata', 1)
+  createRecognizerRequest = _messages.MessageField('CreateRecognizerRequest', 2)
+  createTime = _messages.StringField(3)
+  deleteRecognizerRequest = _messages.MessageField('DeleteRecognizerRequest', 4)
+  kmsKeyName = _messages.StringField(5)
+  kmsKeyVersionName = _messages.StringField(6)
+  method = _messages.StringField(7)
+  progressPercent = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(9)
+  undeleteRecognizerRequest = _messages.MessageField('UndeleteRecognizerRequest', 10)
+  updateRecognizerRequest = _messages.MessageField('UpdateRecognizerRequest', 11)
+  updateTime = _messages.StringField(12)
 
 
 class RecognitionConfig(_messages.Message):
@@ -362,6 +418,9 @@ class RecognitionConfig(_messages.Message):
 class RecognitionFeatures(_messages.Message):
   r"""Available recognition features.
 
+  Enums:
+    MultiChannelModeValueValuesEnum: Mode for recognizing multi-channel audio.
+
   Fields:
     diarizationConfig: Config to enable speaker diarization and set additional
       parameters to make diarization better suited for your application. Note:
@@ -375,9 +434,6 @@ class RecognitionFeatures(_messages.Message):
       result hypotheses. This feature is only available in select languages.
       Setting this for requests in other languages has no effect at all. The
       default `false` value does not add punctuation to result hypotheses.
-    enableSeparateRecognitionPerChannel: Whether, or not, to perform a
-      separate recognition per each of the channels present in the provided
-      audio. If disabled only recognizes the first channel of audio.
     enableSpokenEmojis: The spoken emoji behavior for the call. If `true`,
       adds spoken emoji formatting for the request. This will replace spoken
       emojis with the corresponding Unicode symbols in the final transcript.
@@ -394,20 +450,39 @@ class RecognitionFeatures(_messages.Message):
       and the start and end time offsets (timestamps) for those words. If
       `false`, no word-level time offset information is returned. The default
       is `false`.
+    maxAlternatives: Maximum number of recognition hypotheses to be returned.
+      The server may return fewer than `max_alternatives`. Valid values are
+      `0`-`30`. A value of `0` or `1` will return a maximum of one. If
+      omitted, will return a maximum of one.
+    multiChannelMode: Mode for recognizing multi-channel audio.
     profanityFilter: If set to `true`, the server will attempt to filter out
       profanities, replacing all but the initial character in each filtered
       word with asterisks, e.g. "f***". If set to `false` or omitted,
       profanities won't be filtered out.
   """
 
+  class MultiChannelModeValueValuesEnum(_messages.Enum):
+    r"""Mode for recognizing multi-channel audio.
+
+    Values:
+      MULTI_CHANNEL_MODE_UNSPECIFIED: Default value for the multi-channel
+        mode. If the audio contains multiple channels, only the first channel
+        will be transcribed; other channels will be ignored.
+      SEPARATE_RECOGNITION_PER_CHANNEL: If selected, each channel in the
+        provided audio is transcribed independently.
+    """
+    MULTI_CHANNEL_MODE_UNSPECIFIED = 0
+    SEPARATE_RECOGNITION_PER_CHANNEL = 1
+
   diarizationConfig = _messages.MessageField('SpeakerDiarizationConfig', 1)
   enableAutomaticPunctuation = _messages.BooleanField(2)
-  enableSeparateRecognitionPerChannel = _messages.BooleanField(3)
-  enableSpokenEmojis = _messages.BooleanField(4)
-  enableSpokenPunctuation = _messages.BooleanField(5)
-  enableWordConfidence = _messages.BooleanField(6)
-  enableWordTimeOffsets = _messages.BooleanField(7)
-  profanityFilter = _messages.BooleanField(8)
+  enableSpokenEmojis = _messages.BooleanField(3)
+  enableSpokenPunctuation = _messages.BooleanField(4)
+  enableWordConfidence = _messages.BooleanField(5)
+  enableWordTimeOffsets = _messages.BooleanField(6)
+  maxAlternatives = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  multiChannelMode = _messages.EnumField('MultiChannelModeValueValuesEnum', 8)
+  profanityFilter = _messages.BooleanField(9)
 
 
 class RecognitionResponseMetadata(_messages.Message):

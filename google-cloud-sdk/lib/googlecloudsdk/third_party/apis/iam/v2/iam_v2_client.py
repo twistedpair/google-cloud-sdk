@@ -235,33 +235,6 @@ class IamV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def GetEffectivePolicies(self, request, global_params=None):
-      r"""Deprecated: Use ListApplicablePolicies instead.
-
-      Args:
-        request: (IamGetEffectivePoliciesRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleIamV2GetEffectivePoliciesResponse) The response message.
-      """
-      config = self.GetMethodConfig('GetEffectivePolicies')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetEffectivePolicies.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/{v2Id}:getEffectivePolicies',
-        http_method='GET',
-        method_id='iam.getEffectivePolicies',
-        ordered_params=['attachmentPoint'],
-        path_params=['attachmentPoint'],
-        query_params=['filter'],
-        relative_path='v2/{+attachmentPoint}:getEffectivePolicies',
-        request_field='',
-        request_type_name='IamGetEffectivePoliciesRequest',
-        response_type_name='GoogleIamV2GetEffectivePoliciesResponse',
-        supports_download=False,
-    )
-
     def ListApplicablePolicies(self, request, global_params=None):
       r"""Retrieves all the policies that are attached to the specified resource, or anywhere in the ancestry of the resource. For example, for a project this endpoint would return all the `denyPolicy` kind policies attached to the project, its parent folder (if any), and its parent organization (if any). The endpoint requires the same permissions that it would take to call `ListPolicies` or `GetPolicy`. The main reason to use this endpoint is as a policy admin to debug access issues for a resource.
 

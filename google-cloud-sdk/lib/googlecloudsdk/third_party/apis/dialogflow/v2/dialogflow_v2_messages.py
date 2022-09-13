@@ -9301,9 +9301,9 @@ class GoogleCloudDialogflowV2ClearSuggestionFeatureConfigOperationMetadata(_mess
 
     Values:
       TYPE_UNSPECIFIED: Unspecified feature type.
-      ARTICLE_SUGGESTION: Run article suggestion model.
-      FAQ: Run FAQ model.
-      SMART_REPLY: Run smart reply model.
+      ARTICLE_SUGGESTION: Run article suggestion model for chat.
+      FAQ: Run FAQ model for chat.
+      SMART_REPLY: Run smart reply model for chat.
     """
     TYPE_UNSPECIFIED = 0
     ARTICLE_SUGGESTION = 1
@@ -9354,9 +9354,9 @@ class GoogleCloudDialogflowV2ClearSuggestionFeatureConfigRequest(_messages.Messa
 
     Values:
       TYPE_UNSPECIFIED: Unspecified feature type.
-      ARTICLE_SUGGESTION: Run article suggestion model.
-      FAQ: Run FAQ model.
-      SMART_REPLY: Run smart reply model.
+      ARTICLE_SUGGESTION: Run article suggestion model for chat.
+      FAQ: Run FAQ model for chat.
+      SMART_REPLY: Run smart reply model for chat.
     """
     TYPE_UNSPECIFIED = 0
     ARTICLE_SUGGESTION = 1
@@ -13315,9 +13315,9 @@ class GoogleCloudDialogflowV2SetSuggestionFeatureConfigOperationMetadata(_messag
 
     Values:
       TYPE_UNSPECIFIED: Unspecified feature type.
-      ARTICLE_SUGGESTION: Run article suggestion model.
-      FAQ: Run FAQ model.
-      SMART_REPLY: Run smart reply model.
+      ARTICLE_SUGGESTION: Run article suggestion model for chat.
+      FAQ: Run FAQ model for chat.
+      SMART_REPLY: Run smart reply model for chat.
     """
     TYPE_UNSPECIFIED = 0
     ARTICLE_SUGGESTION = 1
@@ -13658,9 +13658,9 @@ class GoogleCloudDialogflowV2SuggestionFeature(_messages.Message):
 
     Values:
       TYPE_UNSPECIFIED: Unspecified feature type.
-      ARTICLE_SUGGESTION: Run article suggestion model.
-      FAQ: Run FAQ model.
-      SMART_REPLY: Run smart reply model.
+      ARTICLE_SUGGESTION: Run article suggestion model for chat.
+      FAQ: Run FAQ model for chat.
+      SMART_REPLY: Run smart reply model for chat.
     """
     TYPE_UNSPECIFIED = 0
     ARTICLE_SUGGESTION = 1
@@ -14262,14 +14262,17 @@ class GoogleCloudDialogflowV2beta1ClearSuggestionFeatureConfigOperationMetadata(
 
     Values:
       TYPE_UNSPECIFIED: Unspecified feature type.
-      ARTICLE_SUGGESTION: Run article suggestion model.
+      ARTICLE_SUGGESTION: Run article suggestion model for chat.
       FAQ: Run FAQ model.
-      SMART_REPLY: Run smart reply model.
+      SMART_REPLY: Run smart reply model for chat.
+      CONVERSATION_SUMMARIZATION: Run conversation summarization model for
+        chat.
     """
     TYPE_UNSPECIFIED = 0
     ARTICLE_SUGGESTION = 1
     FAQ = 2
     SMART_REPLY = 3
+    CONVERSATION_SUMMARIZATION = 4
 
   conversationProfile = _messages.StringField(1)
   createTime = _messages.StringField(2)
@@ -16425,14 +16428,17 @@ class GoogleCloudDialogflowV2beta1SetSuggestionFeatureConfigOperationMetadata(_m
 
     Values:
       TYPE_UNSPECIFIED: Unspecified feature type.
-      ARTICLE_SUGGESTION: Run article suggestion model.
+      ARTICLE_SUGGESTION: Run article suggestion model for chat.
       FAQ: Run FAQ model.
-      SMART_REPLY: Run smart reply model.
+      SMART_REPLY: Run smart reply model for chat.
+      CONVERSATION_SUMMARIZATION: Run conversation summarization model for
+        chat.
     """
     TYPE_UNSPECIFIED = 0
     ARTICLE_SUGGESTION = 1
     FAQ = 2
     SMART_REPLY = 3
+    CONVERSATION_SUMMARIZATION = 4
 
   conversationProfile = _messages.StringField(1)
   createTime = _messages.StringField(2)

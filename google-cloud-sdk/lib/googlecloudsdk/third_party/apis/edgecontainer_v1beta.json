@@ -627,6 +627,11 @@
           "description": "Output only. The software version of the machine.",
           "readOnly": true,
           "type": "string"
+        },
+        "disabled": {
+          "description": "Output only. Whether the machine is disabled. If disabled, the machine is unable to enter service.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },

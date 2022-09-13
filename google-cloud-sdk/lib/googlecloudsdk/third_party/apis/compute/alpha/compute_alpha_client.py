@@ -76,6 +76,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.licenses = self.LicensesService(self)
     self.machineImages = self.MachineImagesService(self)
     self.machineTypes = self.MachineTypesService(self)
+    self.networkAttachments = self.NetworkAttachmentsService(self)
     self.networkEdgeSecurityServices = self.NetworkEdgeSecurityServicesService(self)
     self.networkEndpointGroups = self.NetworkEndpointGroupsService(self)
     self.networkFirewallPolicies = self.NetworkFirewallPoliciesService(self)
@@ -9344,6 +9345,224 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeMachineTypesListRequest',
         response_type_name='MachineTypeList',
+        supports_download=False,
+    )
+
+  class NetworkAttachmentsService(base_api.BaseApiService):
+    """Service class for the networkAttachments resource."""
+
+    _NAME = 'networkAttachments'
+
+    def __init__(self, client):
+      super(ComputeAlpha.NetworkAttachmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project.
+
+      Args:
+        request: (ComputeNetworkAttachmentsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkAttachmentAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.networkAttachments.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/aggregated/networkAttachments',
+        request_field='',
+        request_type_name='ComputeNetworkAttachmentsAggregatedListRequest',
+        response_type_name='NetworkAttachmentAggregatedList',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified NetworkAttachment in the given scope.
+
+      Args:
+        request: (ComputeNetworkAttachmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.networkAttachments.delete',
+        ordered_params=['project', 'region', 'networkAttachment'],
+        path_params=['networkAttachment', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkAttachments/{networkAttachment}',
+        request_field='',
+        request_type_name='ComputeNetworkAttachmentsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified NetworkAttachment resource in the given scope.
+
+      Args:
+        request: (ComputeNetworkAttachmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkAttachment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.networkAttachments.get',
+        ordered_params=['project', 'region', 'networkAttachment'],
+        path_params=['networkAttachment', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/networkAttachments/{networkAttachment}',
+        request_field='',
+        request_type_name='ComputeNetworkAttachmentsGetRequest',
+        response_type_name='NetworkAttachment',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeNetworkAttachmentsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.networkAttachments.getIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/regions/{region}/networkAttachments/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name='ComputeNetworkAttachmentsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a NetworkAttachment in the specified project in the given scope using the parameters that are included in the request.
+
+      Args:
+        request: (ComputeNetworkAttachmentsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.networkAttachments.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkAttachments',
+        request_field='networkAttachment',
+        request_type_name='ComputeNetworkAttachmentsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the NetworkAttachments for a project in the given scope.
+
+      Args:
+        request: (ComputeNetworkAttachmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkAttachmentList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.networkAttachments.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/networkAttachments',
+        request_field='',
+        request_type_name='ComputeNetworkAttachmentsListRequest',
+        response_type_name='NetworkAttachmentList',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeNetworkAttachmentsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.networkAttachments.setIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/networkAttachments/{resource}/setIamPolicy',
+        request_field='regionSetPolicyRequest',
+        request_type_name='ComputeNetworkAttachmentsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeNetworkAttachmentsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.networkAttachments.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/networkAttachments/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeNetworkAttachmentsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -21550,6 +21769,32 @@ class ComputeAlpha(base_api.BaseApiClient):
       super(ComputeAlpha.TargetTcpProxiesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves the list of all TargetTcpProxy resources, regional and global, available to the specified project.
+
+      Args:
+        request: (ComputeTargetTcpProxiesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TargetTcpProxyAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.targetTcpProxies.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/aggregated/targetTcpProxies',
+        request_field='',
+        request_type_name='ComputeTargetTcpProxiesAggregatedListRequest',
+        response_type_name='TargetTcpProxyAggregatedList',
+        supports_download=False,
+    )
 
     def Delete(self, request, global_params=None):
       r"""Deletes the specified TargetTcpProxy resource.

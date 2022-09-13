@@ -1383,6 +1383,18 @@ class StoragetransferProjectsAgentPoolsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class StoragetransferTransferJobsDeleteRequest(_messages.Message):
+  r"""A StoragetransferTransferJobsDeleteRequest object.
+
+  Fields:
+    jobName: Required. The job to delete.
+    projectId: Required. The ID of the Google Cloud project that owns the job.
+  """
+
+  jobName = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+
+
 class StoragetransferTransferJobsGetRequest(_messages.Message):
   r"""A StoragetransferTransferJobsGetRequest object.
 
@@ -1879,7 +1891,7 @@ class UpdateTransferJobRequest(_messages.Message):
       notification_config, logging_config, and status. An
       `UpdateTransferJobRequest` that specifies other fields are rejected with
       the error INVALID_ARGUMENT. Updating a job status to DELETED requires
-      `storagetransfer.jobs.delete` permissions.
+      `storagetransfer.jobs.delete` permission.
     updateTransferJobFieldMask: The field mask of the fields in `transferJob`
       that are to be updated in this request. Fields in `transferJob` that can
       be updated are: description, transfer_spec, notification_config,

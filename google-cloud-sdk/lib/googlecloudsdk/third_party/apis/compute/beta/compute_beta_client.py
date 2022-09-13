@@ -19456,6 +19456,32 @@ class ComputeBeta(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves the list of all TargetTcpProxy resources, regional and global, available to the specified project.
+
+      Args:
+        request: (ComputeTargetTcpProxiesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TargetTcpProxyAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.targetTcpProxies.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/aggregated/targetTcpProxies',
+        request_field='',
+        request_type_name='ComputeTargetTcpProxiesAggregatedListRequest',
+        response_type_name='TargetTcpProxyAggregatedList',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified TargetTcpProxy resource.
 

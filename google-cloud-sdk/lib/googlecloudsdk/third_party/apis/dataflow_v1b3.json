@@ -1061,6 +1061,10 @@
           "items": {
             "$ref": "DisplayData"
           }
+        },
+        "stepNamesHash": {
+          "description": "A hash value of the submitted pipeline portable graph step names if exists.",
+          "type": "string"
         }
       }
     },
@@ -6026,6 +6030,11 @@
                   "description": "The [regional endpoint] (https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints) that contains this job.",
                   "location": "query",
                   "type": "string"
+                },
+                "name": {
+                  "description": "Optional. The job name. Optional.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -6101,6 +6110,11 @@
                 },
                 "location": {
                   "description": "The [regional endpoint] (https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints) that contains this job.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Optional. The job name. Optional.",
                   "location": "query",
                   "type": "string"
                 }
@@ -7196,6 +7210,11 @@
                     },
                     "pageToken": {
                       "description": "Set this to the 'next_page_token' field of a previous response to request additional results in a long list.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "Optional. The job name. Optional.",
                       "location": "query",
                       "type": "string"
                     }

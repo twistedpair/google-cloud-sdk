@@ -54,10 +54,30 @@ class SpeechV2Client(object):
       client = apis.GetClientInstance(_API_NAME, _API_VERSION)
     return client.projects_locations_recognizers
 
-  def Create(self, resource, display_name, model, language_codes):
+  def Create(self,
+             resource,
+             display_name,
+             model,
+             language_codes,
+             profanity_filter=False,
+             enable_word_time_offsets=False,
+             enable_word_confidence=False,
+             enable_automatic_punctuation=False,
+             enable_spoken_punctuation=False,
+             enable_spoken_emojis=False):
     """Call API create method with provided arguments."""
     recognizer = self._messages.Recognizer(
         displayName=display_name, model=model, languageCodes=language_codes)
+    recognizer.defaultRecognitionConfig = self._messages.RecognitionConfig()
+    recognizer.defaultRecognitionConfig.features = self._messages.RecognitionFeatures(
+    )
+    recognizer.defaultRecognitionConfig.features.profanityFilter = profanity_filter
+    recognizer.defaultRecognitionConfig.features.enableWordTimeOffsets = enable_word_time_offsets
+    recognizer.defaultRecognitionConfig.features.enableWordConfidence = enable_word_confidence
+    recognizer.defaultRecognitionConfig.features.enableAutomaticPunctuation = enable_automatic_punctuation
+    recognizer.defaultRecognitionConfig.features.enableSpokenPunctuation = enable_spoken_punctuation
+    recognizer.defaultRecognitionConfig.features.enableSpokenEmojis = enable_spoken_emojis
+
     request = self._messages.SpeechProjectsLocationsRecognizersCreateRequest(
         parent=resource.Parent().RelativeName(),
         recognizerId=resource.Name(),

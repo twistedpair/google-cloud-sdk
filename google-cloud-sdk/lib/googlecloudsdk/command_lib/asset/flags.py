@@ -782,7 +782,7 @@ def AddQuerySystemBigQueryArgs(parser):
               """If the table or partition already exists, BigQuery overwrites
               the entire table or all the partition\'s data.""",
           'write-append':
-              """AIf the table or partition already exists, BigQuery appends the
+              """If the table or partition already exists, BigQuery appends the
               data to the table or the latest partition.""",
           'write-empty':
               """If the table already exists and contains data, an error is

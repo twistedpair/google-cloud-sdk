@@ -22,7 +22,7 @@ class AnthosObservabilityFeatureSpec(_messages.Message):
       Stackdriver CR
 
   Fields:
-    defaultMembershipSpec: default membership spec when nothing is specified
+    defaultMembershipSpec: Default membership spec when nothing is specified.
     membershipSpecs: Per-membership spec that determines the spec in
       Stackdriver CR
   """
@@ -67,12 +67,12 @@ class AnthosObservabilityMembershipSpec(_messages.Message):
   r"""**Anthosobservability**: Per-Membership Feature spec.
 
   Fields:
-    doNotOptimizeMetrics: use full of metrics rather than optimized metrics.
+    doNotOptimizeMetrics: Use full of metrics rather than optimized metrics.
       See https://cloud.google.com/anthos/clusters/docs/on-
       prem/1.8/concepts/logging-and-
       monitoring#optimized_metrics_default_metrics
-    enableStackdriverOnApplications: enable collecting and reporting metrics
-      and logs from user apps See go/onyx-application-metrics-logs-user-guide
+    enableStackdriverOnApplications: Enable collecting and reporting metrics
+      and logs from user apps.
     version: the version of stackdriver operator used by this feature
   """
 
@@ -494,9 +494,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -679,26 +681,44 @@ class ClusterUpgradeFeatureSpec(_messages.Message):
   r"""ClusterUpgradeFeatureSpec contains the input for the ClusterUpgrade
   feature.
 
+  Messages:
+    WorkspacesValue: Map of workspace name to its corresponding spec. The
+      workspace name should be in the format of
+      `projects/[project_id]/locations/global/workspaces/[ws_id]`.
+
   Fields:
-    gkeUpgradeOverrides: Allow users to override some properties of each GKE
-      upgrade.
-    internalGkeUpgradeFeatureSpec: internal_gke_upgrade_feature_spec contains
-      the desired GKE upgrades. It will only be updated by the controller. We
-      will hide initially and decide whether we really need to expose it
-      later.
-    postConditions: Post conditions to evaluate to mark an upgrade COMPLETE.
-    upstreamFleets: This fleet consumes upgrades that have COMPLETE status
-      code in the upstream fleets. See FleetGKEUpgradeState.Code for code
-      definitions. This field can be either project id or number of the fleet
-      host project per go/aip/2510. This is defined as repeated for future
-      proof reasons. Initial implementation will enforce at most one upstream
-      fleet.
+    workspaces: Map of workspace name to its corresponding spec. The workspace
+      name should be in the format of
+      `projects/[project_id]/locations/global/workspaces/[ws_id]`.
   """
 
-  gkeUpgradeOverrides = _messages.MessageField('GKEUpgradeOverride', 1, repeated=True)
-  internalGkeUpgradeFeatureSpec = _messages.MessageField('GKEUpgradeFeatureSpec', 2)
-  postConditions = _messages.MessageField('PostConditions', 3)
-  upstreamFleets = _messages.StringField(4, repeated=True)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class WorkspacesValue(_messages.Message):
+    r"""Map of workspace name to its corresponding spec. The workspace name
+    should be in the format of
+    `projects/[project_id]/locations/global/workspaces/[ws_id]`.
+
+    Messages:
+      AdditionalProperty: An additional property for a WorkspacesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type WorkspacesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a WorkspacesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A WorkspaceClusterUpgradeFeatureSpec attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('WorkspaceClusterUpgradeFeatureSpec', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  workspaces = _messages.MessageField('WorkspacesValue', 1)
 
 
 class ClusterUpgradeFeatureState(_messages.Message):
@@ -706,54 +726,43 @@ class ClusterUpgradeFeatureState(_messages.Message):
   ClusterUpgrade feature.
 
   Messages:
-    IgnoredValue: A list of memberships ignored by the feature. For example,
-      manually upgraded clusters can be ignored if they are newer than the
-      default versions of its release channel. The membership resource is in
-      the format:
-      `projects/[project_id]/locations/[location]/membership/[membership_id]`.
+    WorkspacesValue: Map of workspace name to its corresponding state. The
+      workspace name should be in the format of
+      `projects/[project_id]/locations/global/workspaces/[ws_id]`.
 
   Fields:
-    downstreamFleets: This fleets whose upstream_fleets contain the current
-      fleet. This field can be either project id or number of the fleet host
-      project per go/aip/2510.
-    gkeState: Feature state for GKE clusters.
-    ignored: A list of memberships ignored by the feature. For example,
-      manually upgraded clusters can be ignored if they are newer than the
-      default versions of its release channel. The membership resource is in
-      the format:
-      `projects/[project_id]/locations/[location]/membership/[membership_id]`.
+    workspaces: Map of workspace name to its corresponding state. The
+      workspace name should be in the format of
+      `projects/[project_id]/locations/global/workspaces/[ws_id]`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class IgnoredValue(_messages.Message):
-    r"""A list of memberships ignored by the feature. For example, manually
-    upgraded clusters can be ignored if they are newer than the default
-    versions of its release channel. The membership resource is in the format:
-    `projects/[project_id]/locations/[location]/membership/[membership_id]`.
+  class WorkspacesValue(_messages.Message):
+    r"""Map of workspace name to its corresponding state. The workspace name
+    should be in the format of
+    `projects/[project_id]/locations/global/workspaces/[ws_id]`.
 
     Messages:
-      AdditionalProperty: An additional property for a IgnoredValue object.
+      AdditionalProperty: An additional property for a WorkspacesValue object.
 
     Fields:
-      additionalProperties: Additional properties of type IgnoredValue
+      additionalProperties: Additional properties of type WorkspacesValue
     """
 
     class AdditionalProperty(_messages.Message):
-      r"""An additional property for a IgnoredValue object.
+      r"""An additional property for a WorkspacesValue object.
 
       Fields:
         key: Name of the additional property.
-        value: A IgnoredMembership attribute.
+        value: A WorkspaceClusterUpgradeFeatureState attribute.
       """
 
       key = _messages.StringField(1)
-      value = _messages.MessageField('IgnoredMembership', 2)
+      value = _messages.MessageField('WorkspaceClusterUpgradeFeatureState', 2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  downstreamFleets = _messages.StringField(1, repeated=True)
-  gkeState = _messages.MessageField('GKEUpgradeFeatureState', 2)
-  ignored = _messages.MessageField('IgnoredValue', 3)
+  workspaces = _messages.MessageField('WorkspacesValue', 1)
 
 
 class Condition(_messages.Message):
@@ -948,6 +957,8 @@ class ConfigSync(_messages.Message):
   r"""Configuration for Config Sync
 
   Fields:
+    allowVerticalScale: Set to true to allow the vertical scaling. Defaults to
+      false which disallows vertical scaling.
     enabled: Enables the installation of ConfigSync. If set to true,
       ConfigSync resources will be created and the other ConfigSync fields
       will be applied if exist. If set to false, all other ConfigSync fields
@@ -963,11 +974,12 @@ class ConfigSync(_messages.Message):
       or "unstructured" mode.
   """
 
-  enabled = _messages.BooleanField(1)
-  git = _messages.MessageField('GitConfig', 2)
-  oci = _messages.MessageField('OciConfig', 3)
-  preventDrift = _messages.BooleanField(4)
-  sourceFormat = _messages.StringField(5)
+  allowVerticalScale = _messages.BooleanField(1)
+  enabled = _messages.BooleanField(2)
+  git = _messages.MessageField('GitConfig', 3)
+  oci = _messages.MessageField('OciConfig', 4)
+  preventDrift = _messages.BooleanField(5)
+  sourceFormat = _messages.StringField(6)
 
 
 class ConfigSyncDeploymentState(_messages.Message):
@@ -1805,63 +1817,6 @@ class FeatureTest(_messages.Message):
   third = _messages.EnumField('ThirdValueValuesEnum', 9)
 
 
-class FleetGKEUpgrade(_messages.Message):
-  r"""FleetGKEUpgrade is a GKEUpgrade and its eligibility at the fleet scope.
-
-  Fields:
-    memberships: A list of eligible clusters to be upgraded to the given
-      GKEUpgrade. Each membership resource is in the following format:
-      `projects/[project_id]/locations/[location]/membership/[membership_id]`.
-    upgrade: Which upgrade to perform on the fleet.
-  """
-
-  memberships = _messages.StringField(1, repeated=True)
-  upgrade = _messages.MessageField('GKEUpgrade', 2)
-
-
-class FleetGKEUpgradeState(_messages.Message):
-  r"""FleetGKEUpgradeState is a GKEUpgrade and its state at the fleet scope.
-
-  Messages:
-    StatsValue: Number of GKE clusters in each status code.
-
-  Fields:
-    lastUpdateTime: Last update timestamp of the state change.
-    stats: Number of GKE clusters in each status code.
-    status: Status of the upgrade.
-    upgrade: Which upgrade to track the state.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class StatsValue(_messages.Message):
-    r"""Number of GKE clusters in each status code.
-
-    Messages:
-      AdditionalProperty: An additional property for a StatsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type StatsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a StatsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.IntegerField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  lastUpdateTime = _messages.StringField(1)
-  stats = _messages.MessageField('StatsValue', 2)
-  status = _messages.MessageField('UpgradeStatus', 3)
-  upgrade = _messages.MessageField('GKEUpgrade', 4)
-
-
 class FleetObservabilityFeatureSpec(_messages.Message):
   r"""An empty spec for FleetObservability feature. This is required since
   Feature proto requires a spec.
@@ -1904,42 +1859,26 @@ class GKEUpgrade(_messages.Message):
 
 
 class GKEUpgradeFeatureSpec(_messages.Message):
-  r"""GKEUpgradeFeatureSpec contains feature spec for GKE clusters per release
-  channel. This includes upgrades that are eligible for a subset of clusters
-  (partially eligible upgrades). Partially eligible upgrades will be applied
-  on the current fleet, but won't be propagated to the downstream fleet.
+  r"""GKEUpgradeFeatureSpec is the feature spec for GKE clusters.
 
   Fields:
-    rapid: Desired upgrades for clusters in the rapid release channel.
-    regular: Desired upgrades for clusters in the regular release channel.
-    stable: Desired upgrades for clusters in the stable release channel.
+    upgrades: A list of upgrades to be applied.
   """
 
-  rapid = _messages.MessageField('FleetGKEUpgrade', 1, repeated=True)
-  regular = _messages.MessageField('FleetGKEUpgrade', 2, repeated=True)
-  stable = _messages.MessageField('FleetGKEUpgrade', 3, repeated=True)
+  upgrades = _messages.MessageField('WorkspaceGKEUpgrade', 1, repeated=True)
 
 
 class GKEUpgradeFeatureState(_messages.Message):
   r"""GKEUpgradeFeatureState contains feature states for GKE clusters in the
-  fleet.
+  workspace.
 
   Fields:
-    rapid: Rapid channel upgrade state.
-    rapidHistory: Store the last N (N=100) upgrades for debugging purpose.
-      Rapid channel upgrade history.
-    regular: Regular channel upgrade state.
-    regularHistory: Regular channel upgrade history.
-    stable: Stable channel upgrade state.
-    stableHistory: Stable channel upgrade history.
+    history: Store the last N (N=100) upgrades for debugging purpose.
+    state: Upgrade state.
   """
 
-  rapid = _messages.MessageField('FleetGKEUpgradeState', 1, repeated=True)
-  rapidHistory = _messages.MessageField('FleetGKEUpgradeState', 2, repeated=True)
-  regular = _messages.MessageField('FleetGKEUpgradeState', 3, repeated=True)
-  regularHistory = _messages.MessageField('FleetGKEUpgradeState', 4, repeated=True)
-  stable = _messages.MessageField('FleetGKEUpgradeState', 5, repeated=True)
-  stableHistory = _messages.MessageField('FleetGKEUpgradeState', 6, repeated=True)
+  history = _messages.MessageField('WorkspaceGKEUpgradeState', 1, repeated=True)
+  state = _messages.MessageField('WorkspaceGKEUpgradeState', 2, repeated=True)
 
 
 class GKEUpgradeOverride(_messages.Message):
@@ -3037,6 +2976,9 @@ class OnClusterState(_messages.Message):
         when the Hub Feature controller determines the hub is in an unhealthy
         state and it wishes to 'take hands off' to avoid corrupting the PC or
         other data.
+      SUSPENDED: Policy Controller (PC) is installed but suspended. This means
+        that the policies are not enforced, but violations are still recorded
+        (through audit).
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
@@ -3046,6 +2988,7 @@ class OnClusterState(_messages.Message):
     DECOMISSIONING = 5
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
+    SUSPENDED = 8
 
   details = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
@@ -3441,6 +3384,9 @@ class PolicyControllerFeatureState(_messages.Message):
         when the Hub Feature controller determines the hub is in an unhealthy
         state and it wishes to 'take hands off' to avoid corrupting the PC or
         other data.
+      SUSPENDED: Policy Controller (PC) is installed but suspended. This means
+        that the policies are not enforced, but violations are still recorded
+        (through audit).
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
@@ -3450,6 +3396,7 @@ class PolicyControllerFeatureState(_messages.Message):
     DECOMISSIONING = 5
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
+    SUSPENDED = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ComponentStatesValue(_messages.Message):
@@ -4171,7 +4118,7 @@ class SyncState(_messages.Message):
     importToken: Token indicating the state of the importer.
     lastSync: Timestamp of when ACM last successfully synced the repo The time
       format is specified in https://golang.org/pkg/time/#Time.String This
-      field is being deprecated. Use last_sync_time instead. (b/154053616)
+      field is being deprecated. Use last_sync_time instead.
     lastSyncTime: Timestamp type of when ACM last successfully synced the repo
     sourceToken: Token indicating the state of the repo.
     syncToken: Token indicating the state of the syncer.
@@ -4281,19 +4228,21 @@ class UpgradeStatus(_messages.Message):
 
     Values:
       CODE_UNSPECIFIED: Required by https://linter.aip.dev/126/unspecified.
-      INELIGIBLE: The upgrade is ineligible. At the fleet scope, this means
-        the upgrade is ineligible for all the clusters in the fleet.
-      PENDING: The upgrade is pending. At the fleet scope, this means the
-        upgrade is pending for all the clusters in the fleet.
-      IN_PROGRESS: The upgrade is in progress. At the fleet scope, this means
-        the upgrade is in progress for at least one cluster in the fleet.
+      INELIGIBLE: The upgrade is ineligible. At the workspace scope, this
+        means the upgrade is ineligible for all the clusters in the workspace.
+      PENDING: The upgrade is pending. At the workspace scope, this means the
+        upgrade is pending for all the clusters in the workspace.
+      IN_PROGRESS: The upgrade is in progress. At the workspace scope, this
+        means the upgrade is in progress for at least one cluster in the
+        workspace.
       SOAKING: The upgrade has finished and is soaking until the soaking time
-        is up. At the fleet scope, this means at least one cluster is in
+        is up. At the workspace scope, this means at least one cluster is in
         soaking while the rest are either soaking or complete.
       FORCED_SOAKING: A cluster will be forced to enter soaking if an upgrade
         doesn't finish within a certain limit, despite it's actual status.
       COMPLETE: The upgrade has passed all post conditions (soaking). At the
-        fleet scope, this means all eligible clusters are in COMPLETE status.
+        workspace scope, this means all eligible clusters are in COMPLETE
+        status.
     """
     CODE_UNSPECIFIED = 0
     INELIGIBLE = 1
@@ -4401,6 +4350,147 @@ class WorkloadCertificateMembershipSpec(_messages.Message):
     ENABLED = 2
 
   certificateManagement = _messages.EnumField('CertificateManagementValueValuesEnum', 1)
+
+
+class WorkspaceClusterUpgradeFeatureSpec(_messages.Message):
+  r"""WorkspaceClusterUpgradeFeatureSpec is per workspace spec.
+
+  Fields:
+    gkeUpgradeOverrides: Allow users to override some properties of each GKE
+      upgrade.
+    internalGkeUpgradeFeatureSpec: internal_gke_upgrade_feature_spec contains
+      the desired GKE upgrades. It will only be updated by the controller. We
+      will hide initially and decide whether we really need to expose it
+      later.
+    postConditions: Post conditions to evaluate to mark an upgrade COMPLETE.
+    upstreamWorkspaces: This workspace consumes upgrades that have COMPLETE
+      status code in the upstream workspaces. See
+      WorkspaceGKEUpgradeState.Code for code definitions. This field is the
+      fully qualified resource name of the workspace, in the format of
+      `projects/[project_id]/locations/global/workspaces/[ws_id]`.
+  """
+
+  gkeUpgradeOverrides = _messages.MessageField('GKEUpgradeOverride', 1, repeated=True)
+  internalGkeUpgradeFeatureSpec = _messages.MessageField('GKEUpgradeFeatureSpec', 2)
+  postConditions = _messages.MessageField('PostConditions', 3)
+  upstreamWorkspaces = _messages.StringField(4, repeated=True)
+
+
+class WorkspaceClusterUpgradeFeatureState(_messages.Message):
+  r"""WorkspaceClusterUpgradeFeatureState is per workspace state.
+
+  Messages:
+    IgnoredValue: A list of memberships ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel. The membership resource is in
+      the format:
+      `projects/[project_id]/locations/[location]/membership/[membership_id]`.
+
+  Fields:
+    downstreamWorkspaces: Tge workspaces whose upstream_workspaces contain the
+      current workspace. This field is the fully qualified resource name of
+      the workspace, in the format of
+      `projects/[project_id]/locations/global/workspaces/[ws_id]`.
+    gkeState: Feature state for GKE clusters.
+    ignored: A list of memberships ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel. The membership resource is in
+      the format:
+      `projects/[project_id]/locations/[location]/membership/[membership_id]`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class IgnoredValue(_messages.Message):
+    r"""A list of memberships ignored by the feature. For example, manually
+    upgraded clusters can be ignored if they are newer than the default
+    versions of its release channel. The membership resource is in the format:
+    `projects/[project_id]/locations/[location]/membership/[membership_id]`.
+
+    Messages:
+      AdditionalProperty: An additional property for a IgnoredValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type IgnoredValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a IgnoredValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A IgnoredMembership attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('IgnoredMembership', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  downstreamWorkspaces = _messages.StringField(1, repeated=True)
+  gkeState = _messages.MessageField('GKEUpgradeFeatureState', 2)
+  ignored = _messages.MessageField('IgnoredValue', 3)
+
+
+class WorkspaceGKEUpgrade(_messages.Message):
+  r"""WorkspaceGKEUpgrade is a GKEUpgrade and its eligibility at the workspace
+  scope. This includes upgrades that are eligible for a subset of clusters
+  (partially eligible upgrades). Partially eligible upgrades will be applied
+  on the current workspace, but won't be propagated to the downstream
+  workspace.
+
+  Fields:
+    memberships: A list of eligible clusters to be upgraded to the given
+      GKEUpgrade. Each membership resource is in the following format:
+      `projects/[project_id]/locations/[location]/membership/[membership_id]`.
+    upgrade: Which upgrade to perform on the workspace.
+  """
+
+  memberships = _messages.StringField(1, repeated=True)
+  upgrade = _messages.MessageField('GKEUpgrade', 2)
+
+
+class WorkspaceGKEUpgradeState(_messages.Message):
+  r"""WorkspaceGKEUpgradeState is a GKEUpgrade and its state at the workspace
+  scope.
+
+  Messages:
+    StatsValue: Number of GKE clusters in each status code.
+
+  Fields:
+    lastUpdateTime: Last update timestamp of the state change.
+    stats: Number of GKE clusters in each status code.
+    status: Status of the upgrade.
+    upgrade: Which upgrade to track the state.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class StatsValue(_messages.Message):
+    r"""Number of GKE clusters in each status code.
+
+    Messages:
+      AdditionalProperty: An additional property for a StatsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type StatsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a StatsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  lastUpdateTime = _messages.StringField(1)
+  stats = _messages.MessageField('StatsValue', 2)
+  status = _messages.MessageField('UpgradeStatus', 3)
+  upgrade = _messages.MessageField('GKEUpgrade', 4)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -4533,6 +4533,11 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
+                    },
+                    "webhookKey": {
+                      "description": "Arbitrary additional key to find the maching repository for a webhook event if needed.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [

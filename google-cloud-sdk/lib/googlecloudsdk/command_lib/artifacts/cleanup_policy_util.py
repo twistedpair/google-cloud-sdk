@@ -42,29 +42,24 @@ def ParseCleanupPolicy(path):
   """
   content = console_io.ReadFromFileOrStdin(path, binary=False)
   try:
-    policy = json.loads(encoding.Decode(content))
+    file_policies = json.loads(encoding.Decode(content))
   except ValueError as e:
     raise apitools_exceptions.InvalidUserInputError(
         'Could not read JSON file {}: {}'.format(path, e))
-  if 'cleanup' not in policy:
-    raise ar_exceptions.InvalidInputValueError(
-        'Key "cleanup" not found in JSON root.')
-  for key in ['name', 'action', 'condition']:
-    if key not in policy['cleanup']:
-      raise ar_exceptions.InvalidInputValueError(
-          'Key "{}" not found in policy.'.format(key))
-
-  condition = dict()
-  if 'versionAge' in policy['cleanup']['condition']:
-    seconds = times.ParseDuration(policy['cleanup']['condition']['versionAge'])
-    condition['versionAge'] = six.text_type(seconds.total_seconds) + 's'
-
-  return {
-      policy['cleanup']['name']: {
-          'id': policy['cleanup']['name'],
-          'condition': condition,
-      }
-  }
+  policies = dict()
+  for policy in file_policies:
+    for key in ['name', 'action', 'condition']:
+      if key not in policy:
+        raise ar_exceptions.InvalidInputValueError(
+            'Key "{}" not found in policy.'.format(key))
+    condition = dict()
+    if 'versionAge' in policy['condition']:
+      seconds = times.ParseDuration(policy['condition']['versionAge'])
+      condition['versionAge'] = six.text_type(seconds.total_seconds) + 's'
+    policies[policy['name']] = {
+        'id': policy['name'],
+        'condition': condition}
+  return policies
 
 
 def SetDeleteCleanupPolicyUpdateMask(unused_ref, unused_args, request):
@@ -76,4 +71,12 @@ def SetDeleteCleanupPolicyUpdateMask(unused_ref, unused_args, request):
 def RepositoryToCleanupPoliciesResponse(response, unused_args):
   if not response.cleanupPolicies:
     return None
+  return response.cleanupPolicies.additionalProperties
+
+
+def RepositoryToSetCleanupPolicyResponse(response, unused_args):
+  if not response.cleanupPolicies:
+    raise ar_exceptions.ArtifactRegistryError(
+        'Failed to set cleanup policy. Cleanup policies are currently in '
+        'private preview.')
   return response.cleanupPolicies.additionalProperties

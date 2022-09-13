@@ -372,7 +372,7 @@ class GatewaySecurityPolicy(_messages.Message):
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
-    description: Required. Free-text description of the resource.
+    description: Optional. Free-text description of the resource.
     name: Required. Name of the resource. Name is of the form projects/{projec
       t}/locations/{location}/gatewaySecurityPolicies/{gateway_security_policy
       } gateway_security_policy should match the
@@ -401,7 +401,7 @@ class GatewaySecurityPolicyRule(_messages.Message):
     basicProfile: Required. Profile which tells what the primitive action
       should be.
     createTime: Output only. Time when the rule was created.
-    description: Required. Free-text description of the resource.
+    description: Optional. Free-text description of the resource.
     enabled: Required. Whether the rule is enforced.
     name: Required. Immutable. Name of the resource. ame is the full resource
       name so projects/{project}/locations/{location}/gatewaySecurityPolicies/
@@ -409,7 +409,7 @@ class GatewaySecurityPolicyRule(_messages.Message):
       (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
     priority: Required. Priority of the rule. Lower number corresponds to
       higher precedence.
-    sessionMatcher: Optional. CEL expression for matching on session criteria.
+    sessionMatcher: Required. CEL expression for matching on session criteria.
     updateTime: Output only. Time when the rule was updated.
   """
 
@@ -548,9 +548,11 @@ class GoogleIamV1Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -2674,7 +2676,7 @@ class UrlList(_messages.Message):
 
   Fields:
     createTime: Output only. Time when the security policy was created.
-    description: Required. Free-text description of the resource.
+    description: Optional. Free-text description of the resource.
     name: Required. Name of the resource provided by the user. Name is of the
       form projects/{project}/locations/{location}/urlLists/{url_list}
       url_list should match the pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).

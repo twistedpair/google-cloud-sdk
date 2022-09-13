@@ -30,7 +30,7 @@ import textwrap
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
-from googlecloudsdk.command_lib.storage import fast_crc32c_util
+from googlecloudsdk.command_lib.storage import fast_crc32c_util as fast_crc32c
 from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
@@ -51,16 +51,16 @@ from googlecloudsdk.core.util import scaled_integer
 
 def _get_hash_check_warning_base():
   # Create the text in a function so that we can test it easily.
-  install_command = fast_crc32c_util.get_google_crc32c_install_command()
+  google_crc32c_install_step = fast_crc32c.get_google_crc32c_install_command()
+  gcloud_crc32c_install_step = 'gcloud components install gcloud-crc32c'
   return textwrap.dedent(
       """\
-      This download {{}} since the google-crc32c
-      binary is not installed, and Python hash computation will likely
-      throttle performance. You can change this by installing the binary
-      {by_running_command}or
-      modifying the "storage/check_hashes" config setting.""".format(
-          by_running_command='by running "{}" '.format(install_command)
-          if install_command else ''))
+      This download {{}} since fast hash calculation tools
+      are not installed. You can change this by running:
+      \t$ {crc32c_step}
+      You can also modify the "storage/check_hashes" config setting.""".format(
+          crc32c_step=google_crc32c_install_step
+          if google_crc32c_install_step else gcloud_crc32c_install_step))
 
 
 _HASH_CHECK_WARNING_BASE = _get_hash_check_warning_base()
@@ -81,7 +81,7 @@ def _log_or_raise_crc32c_issues(resource):
     errors.Error: gcloud storage set to fail if performance-optimized digesters
       could not be created.
   """
-  if (not resource.crc32c_hash or fast_crc32c_util.is_fast_crc32c_available()):
+  if (not resource.crc32c_hash or fast_crc32c.is_fast_crc32c_available()):
     # If resource.crc32c not available, no hash will be verified.
     # If a binary crc32c libary is available, hashing behavior will be standard.
     return

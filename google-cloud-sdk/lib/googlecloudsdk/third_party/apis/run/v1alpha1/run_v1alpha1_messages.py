@@ -255,20 +255,21 @@ class ObjectMeta(_messages.Message):
       categorize (scope and select) objects. May match selectors of
       replication controllers and routes. More info:
       https://kubernetes.io/docs/user-guide/labels
-    name: The immutable name of the resource. In Cloud Run, name is required
-      when creating top-level resources (Service, Job), and must be unique
-      within a Cloud Run project/region. More info:
-      https://kubernetes.io/docs/user-guide/identifiers#names If ObjectMeta is
-      part of a CreateServiceRequest, name must contain fewer than 50
-      characters. Otherwise,
-    namespace: Defines the space within each name must be unique within a
-      Cloud Run region. In Cloud Run, it must be project ID or number.
+    name: Required. The name of the resource. In Cloud Run, name is required
+      when creating top-level resources (Service, Job), must be unique within
+      a Cloud Run project/region, and cannot be changed once created. More
+      info: https://kubernetes.io/docs/user-guide/identifiers#names If
+      ObjectMeta is part of a CreateServiceRequest, name must contain fewer
+      than 50 characters.
+    namespace: Required. Defines the space within each name must be unique
+      within a Cloud Run region. In Cloud Run, it must be project ID or
+      number.
     ownerReferences: Not supported by Cloud Run
-    resourceVersion: Optional. Opaque, system-generated value that represents
-      the internal version of this object that can be used by clients to
-      determine when objects have changed. May be used for optimistic
-      concurrency, change detection, and the watch operation on a resource or
-      set of resources. Clients must treat these values as opaque and passed
+    resourceVersion: Opaque, system-generated value that represents the
+      internal version of this object that can be used by clients to determine
+      when objects have changed. May be used for optimistic concurrency,
+      change detection, and the watch operation on a resource or set of
+      resources. Clients must treat these values as opaque and passed
       unmodified back to the server or omit the value to disable conflict-
       detection. More info:
       https://git.k8s.io/community/contributors/devel/sig-architecture/api-

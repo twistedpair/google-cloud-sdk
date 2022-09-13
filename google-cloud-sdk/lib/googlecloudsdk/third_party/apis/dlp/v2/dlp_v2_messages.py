@@ -2332,7 +2332,7 @@ class GooglePrivacyDlpV2Action(_messages.Message):
     deidentify: Create a de-identified copy of the input data.
     jobNotificationEmails: Enable email notification for project owners and
       editors on job's completion/failure.
-    pubSub: Publish a notification to a pubsub topic.
+    pubSub: Publish a notification to a Pub/Sub topic.
     publishFindingsToCloudDataCatalog: Publish findings to Cloud Datahub.
     publishSummaryToCscc: Publish summary to Cloud Security Command Center
       (Alpha).
@@ -3471,7 +3471,7 @@ class GooglePrivacyDlpV2DataProfileLocation(_messages.Message):
 
 
 class GooglePrivacyDlpV2DataProfilePubSubCondition(_messages.Message):
-  r"""A condition for determining whether a PubSub should be triggered.
+  r"""A condition for determining whether a Pub/Sub should be triggered.
 
   Fields:
     expressions: An expression.
@@ -3484,7 +3484,6 @@ class GooglePrivacyDlpV2DataProfilePubSubMessage(_messages.Message):
   r"""Pub/Sub topic message for a DataProfileAction.PubSubNotification event.
   To receive a message of protocol buffer schema type, convert the message
   data to an object of this proto class.
-  https://cloud.google.com/pubsub/docs/samples/pubsub-subscribe-proto-messages
 
   Enums:
     EventValueValuesEnum: The event that caused the Pub/Sub message to be
@@ -7066,7 +7065,8 @@ class GooglePrivacyDlpV2TimespanConfig(_messages.Message):
       JobTrigger we will automatically figure out a valid start_time to avoid
       scanning files that have not been modified since the last time the
       JobTrigger executed. This will be based on the time of the execution of
-      the last run of the JobTrigger.
+      the last run of the JobTrigger or the timespan end_time used in the last
+      run of the JobTrigger.
     endTime: Exclude files, tables, or rows newer than this value. If not set,
       no upper time limit is applied.
     startTime: Exclude files, tables, or rows older than this value. If not

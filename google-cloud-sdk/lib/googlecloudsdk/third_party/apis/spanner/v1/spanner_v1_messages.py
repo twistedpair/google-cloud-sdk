@@ -193,9 +193,11 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
       service account. For example, `my-other-
       app@appspot.gserviceaccount.com`. *
       `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
@@ -2957,8 +2959,32 @@ class ReadRequest(_messages.Message):
 class ReadWrite(_messages.Message):
   r"""Message type to initiate a read-write transaction. Currently this
   transaction type has no options.
+
+  Enums:
+    ReadLockModeValueValuesEnum: Read lock mode for the transaction.
+
+  Fields:
+    readLockMode: Read lock mode for the transaction.
   """
 
+  class ReadLockModeValueValuesEnum(_messages.Enum):
+    r"""Read lock mode for the transaction.
+
+    Values:
+      READ_LOCK_MODE_UNSPECIFIED: Default value. If the value is not
+        specified, the pessimistic read lock is used.
+      PESSIMISTIC: Pessimistic lock mode. Read locks are acquired immediately
+        on read.
+      OPTIMISTIC: Optimistic lock mode. Locks for reads within the transaction
+        are not acquired on read. Instead the locks are acquired on a commit
+        to validate that read/queried data has not changed since the
+        transaction started.
+    """
+    READ_LOCK_MODE_UNSPECIFIED = 0
+    PESSIMISTIC = 1
+    OPTIMISTIC = 2
+
+  readLockMode = _messages.EnumField('ReadLockModeValueValuesEnum', 1)
 
 
 class ReplicaInfo(_messages.Message):
@@ -5270,6 +5296,9 @@ class Type(_messages.Message):
     arrayElementType: If code == ARRAY, then `array_element_type` is the type
       of the array elements.
     code: Required. The TypeCode for this type.
+    protoTypeFqn: If code == PROTO or code == ENUM, then `proto_type_fqn` is
+      the fully qualified name of the proto type representing the proto/enum
+      definition.
     structType: If code == STRUCT, then `struct_type` provides type
       information for the struct's fields.
     typeAnnotation: The TypeAnnotationCode that disambiguates SQL type that
@@ -5316,6 +5345,9 @@ class Type(_messages.Message):
         only the first key is preserved. - Members of a JSON object are not
         guaranteed to have their order preserved. - JSON array elements will
         have their order preserved.
+      PROTO: Encoded as a base64-encoded `string`, as described in RFC 4648,
+        section 4.
+      ENUM: Encoded as `string`, in decimal format.
     """
     TYPE_CODE_UNSPECIFIED = 0
     BOOL = 1
@@ -5329,6 +5361,8 @@ class Type(_messages.Message):
     STRUCT = 9
     NUMERIC = 10
     JSON = 11
+    PROTO = 12
+    ENUM = 13
 
   class TypeAnnotationValueValuesEnum(_messages.Enum):
     r"""The TypeAnnotationCode that disambiguates SQL type that Spanner will
@@ -5362,8 +5396,9 @@ class Type(_messages.Message):
 
   arrayElementType = _messages.MessageField('Type', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)
-  structType = _messages.MessageField('StructType', 3)
-  typeAnnotation = _messages.EnumField('TypeAnnotationValueValuesEnum', 4)
+  protoTypeFqn = _messages.StringField(3)
+  structType = _messages.MessageField('StructType', 4)
+  typeAnnotation = _messages.EnumField('TypeAnnotationValueValuesEnum', 5)
 
 
 class UpdateDatabaseDdlMetadata(_messages.Message):
