@@ -18,3 +18,15 @@ cluster:
     attribute_name: cluster
     help: |
       The name of the cluster containing the {resource}.
+
+config:
+  name: config
+  collection: workstations.projects.locations.workstationClusters.workstationConfigs
+  attributes:
+  - *region
+  - *cluster
+  - &config
+    parameter_name: workstationConfigsId
+    attribute_name: config
+    help: |
+      The name of the config containing the {resource}.

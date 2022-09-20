@@ -59,7 +59,7 @@ def _YieldFromLocations(locations, project, limit, messages, client):
     for function in list_pager.YieldFromList(
         service=client.projects_locations_functions,
         request=messages.CloudfunctionsProjectsLocationsFunctionsListRequest(
-            parent=location_ref.RelativeName()),
+            parent=location_ref.RelativeName(), filter='environment="GEN_2"'),
         limit=limit,
         field='functions',
         batch_size_attribute='pageSize',

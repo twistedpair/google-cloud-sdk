@@ -94,20 +94,16 @@ class CloudBuildLogClient(object):
   def __init__(self):
     self.v2_client = v2_client_util.GetClientInstance()
 
-  def _GetLogFilter(self, create_time, run_id, run_type, region,
-                    completion_time):
+  def _GetLogFilter(self, create_time, run_id, run_type, region):
     run_label = 'taskRun' if run_type == 'taskrun' else 'pipelineRun'
-    completion_time_filter = (' AND timestamp<="{timestamp}"').format(
-        timestamp=completion_time) if completion_time else ''
     return ('(labels."k8s-pod/tekton.dev/{run_label}"="{run_id}" OR '
             'labels."k8s-pod/tekton_dev/{run_label}"="{run_id}") AND '
             'timestamp>="{timestamp}" AND resource.labels.location="{region}"'
-            '{completion_filter}').format(
-                run_label=run_label,
-                run_id=run_id,
-                timestamp=create_time,
-                region=region,
-                completion_filter=completion_time_filter)
+           ).format(
+               run_label=run_label,
+               run_id=run_id,
+               timestamp=create_time,
+               region=region)
 
   def ShouldStopTailer(self, log_tailer, run, project, region, run_id,
                        run_type):
@@ -124,8 +120,7 @@ class CloudBuildLogClient(object):
   def Stream(self, project, region, run_id, run_type, out=log.out):
     """Streams the logs for a run if available."""
     run = v2_client_util.GetRun(project, region, run_id, run_type)
-    log_filter = self._GetLogFilter(run.createTime, run_id, run_type, region,
-                                    run.completionTime)
+    log_filter = self._GetLogFilter(run.createTime, run_id, run_type, region)
     log_tailer = GCLLogTailer.FromFilter(project, log_filter, out=out)
 
     t = None
@@ -150,8 +145,7 @@ class CloudBuildLogClient(object):
   ):
     """Print the logs for a run."""
     run = v2_client_util.GetRun(project, region, run_id, run_type)
-    log_filter = self._GetLogFilter(run.createTime, run_id, run_type, region,
-                                    run.completionTime)
+    log_filter = self._GetLogFilter(run.createTime, run_id, run_type, region)
     log_tailer = GCLLogTailer.FromFilter(project, log_filter)
 
     if log_tailer:

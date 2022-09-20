@@ -3564,6 +3564,7 @@ class GoogleCloudDataplexV1Task(_messages.Message):
     name: Output only. The relative resource name of the task, of the form:
       projects/{project_number}/locations/{location_id}/lakes/{lake_id}/
       tasks/{task_id}.
+    notebook: Config related to running scheduled Notebooks.
     spark: Config related to running custom Spark tasks.
     state: Output only. Current state of the task.
     triggerSpec: Required. Spec related to how often and when a task should be
@@ -3621,11 +3622,12 @@ class GoogleCloudDataplexV1Task(_messages.Message):
   executionStatus = _messages.MessageField('GoogleCloudDataplexV1TaskExecutionStatus', 5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  spark = _messages.MessageField('GoogleCloudDataplexV1TaskSparkTaskConfig', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  triggerSpec = _messages.MessageField('GoogleCloudDataplexV1TaskTriggerSpec', 10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  notebook = _messages.MessageField('GoogleCloudDataplexV1TaskNotebookTaskConfig', 8)
+  spark = _messages.MessageField('GoogleCloudDataplexV1TaskSparkTaskConfig', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  triggerSpec = _messages.MessageField('GoogleCloudDataplexV1TaskTriggerSpec', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class GoogleCloudDataplexV1TaskExecutionSpec(_messages.Message):
@@ -3821,6 +3823,28 @@ class GoogleCloudDataplexV1TaskInfrastructureSpecVpcNetwork(_messages.Message):
   network = _messages.StringField(1)
   networkTags = _messages.StringField(2, repeated=True)
   subNetwork = _messages.StringField(3)
+
+
+class GoogleCloudDataplexV1TaskNotebookTaskConfig(_messages.Message):
+  r"""Config for running scheduled notebooks.
+
+  Fields:
+    archiveUris: Optional. GCS URIs of archives to be extracted into the
+      working directory of each executor. Supported file types: .jar, .tar,
+      .tar.gz, .tgz, and .zip.
+    fileUris: Optional. GCS URIs of files to be placed in the working
+      directory of each executor.
+    infrastructureSpec: Optional. Infrastructure specification for the
+      execution.
+    notebook: Required. Path to input notebook. This can be the GCS URI of the
+      notebook file or the path to a Notebook Content. The execution args are
+      accessible as environment variables (TASK_key=value).
+  """
+
+  archiveUris = _messages.StringField(1, repeated=True)
+  fileUris = _messages.StringField(2, repeated=True)
+  infrastructureSpec = _messages.MessageField('GoogleCloudDataplexV1TaskInfrastructureSpec', 3)
+  notebook = _messages.StringField(4)
 
 
 class GoogleCloudDataplexV1TaskSparkTaskConfig(_messages.Message):

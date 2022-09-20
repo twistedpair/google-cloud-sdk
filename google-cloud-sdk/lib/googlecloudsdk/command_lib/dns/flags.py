@@ -875,4 +875,5 @@ def GetLocationArg():
       '--location',
       type=str,
       help='Specifies the desired service location the request is sent to. '
-      'Default to Cloud DNS global service.')
+      'Defaults to Cloud DNS global service. Use --location=global if you want '
+      'to target the global service.')

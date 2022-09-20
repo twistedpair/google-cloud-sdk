@@ -149,42 +149,105 @@ def AddMembershipResourceArg(parser,
       required=membership_required).AddToParser(parser)
 
 
-def GetExistingMembershipResourceNames(args, plural=False, positional=False):
-  """Gets the resource name of a membership in the fleet using a membership resource argument.
+def MembershipLocationSpecified(args):
+  """Returns whether a membership location is specified in args."""
+  location_re = re.compile(r'\/locations\/([a-z0-9\-]+)\/')
+  if args.IsSpecified('location'):
+    return True
+  if args.IsKnownAndSpecified('membership') and location_re.search(
+      args.membership) is not None:
+    return True
+  if args.IsKnownAndSpecified('MEMBERSHIP_NAME') and location_re.search(
+      args.MEMBERSHIP_NAME) is not None:
+    return True
+  if args.IsKnownAndSpecified('memberships') and all(
+      [location_re.search(m) is not None for m in args.memberships]):
+    return True
+  return False
 
-  Assumes the argument is called `--membership`, `--memberships` if plural, or
-  `MEMBERSHIP_NAME` if positional. Runs ListMemberships call to verify the
-  membership exists.
+
+def SearchMembershipResource(args):
+  """Searches the fleet for an ambiguous membership provided in args.
+
+  Only necessary if location is ambiguous, i.e.
+  MembershipLocationSpecified(args) is
+  False. Assumes the argument is called `--membership`, or `MEMBERSHIP_NAME` if
+  positional. Runs ListMemberships API call to
+  verify the membership exists.
 
   Args:
     args: arguments provided to a command, including a membership resource arg
-    plural: whether the membership flag is plural (--memberships)
-    positional: whether the argument is positional
+
+  Returns:
+    A membership resource name string
+      (e.g. projects/x/locations/y/memberships/z)
+
+  Raises:
+    googlecloudsdk.core.exceptions.Error: unable to find the membership
+      in the fleet
+  """
+  if args.IsKnownAndSpecified('MEMBERSHIP_NAME'):
+    arg_membership = args.MEMBERSHIP_NAME
+  elif args.IsKnownAndSpecified('membership'):
+    arg_membership = args.membership
+  else:
+    return None
+
+  all_memberships, unavailable = api_util.ListMembershipsFull()
+  if unavailable:
+    raise exceptions.Error(
+        ('Locations [{}] are currently unreachable. Please specify '
+         'memberships using `--location` or the full resource name '
+         '(projects/*/locations/*/memberships/*)').format(unavailable))
+  if not all_memberships:
+    raise exceptions.Error('No memberships available in the fleet.')
+
+  # Search all memberships for specified membership
+  found = []
+  for existing_membership in all_memberships:
+    if arg_membership in existing_membership:
+      found.append(existing_membership)
+  if not found:
+    raise exceptions.Error(
+        'Membership {} not found in the fleet.'.format(arg_membership))
+  elif len(found) > 1:
+    raise AmbiguousMembershipError(arg_membership)
+  return found[0]
+
+
+def SearchMembershipResourcesPlural(args):
+  """Searches the fleet for the membership resources provided in args.
+
+  Only necessary if location is ambiguous, i.e.
+  MembershipLocationSpecified(args) is
+  False. Assumes the argument is called `--membership`, `--memberships` if
+  plural, or `MEMBERSHIP_NAME` if positional. Runs ListMemberships API call to
+  verify the membership exists.
+
+  Args:
+    args: arguments provided to a command, including a membership resource arg
 
   Returns:
     A list of membership resource names
-    (e.g. projects/x/locations/y/memberships/z)
+      (e.g. ["projects/x/locations/y/memberships/z"])
 
-  Raises: googlecloudsdk.core.exceptions.Error if unable to find the membership
-  in the fleet
+  Raises:
+    googlecloudsdk.core.exceptions.Error: unable to find a membership
+      in the fleet
   """
-  unavailable_err = ''
+  if args.IsKnownAndSpecified('memberships'):
+    arg_memberships = args.memberships
+  else:
+    return None
+
   all_memberships, unavailable = api_util.ListMembershipsFull()
   if unavailable:
-    unavailable_err = ' Locations {} are currently unavailable.'.format(
-        unavailable)
+    raise exceptions.Error(
+        ('Locations [{}] are currently unreachable. Please specify '
+         'memberships using `--location` or the full resource name '
+         '(projects/*/locations/*/memberships/*)').format(unavailable))
   if not all_memberships:
-    raise exceptions.Error('No memberships available in the fleet.' +
-                           unavailable_err)
-
-  if positional and hasattr(args, 'MEMBERSHIP_NAME') and args.MEMBERSHIP_NAME:
-    arg_memberships = [args.MEMBERSHIP_NAME]
-  elif plural and hasattr(args, 'memberships') and args.memberships:
-    arg_memberships = args.memberships
-  elif hasattr(args, 'membership') and args.membership:
-    arg_memberships = [args.membership]
-  else:
-    return []
+    raise exceptions.Error('No memberships available in the fleet.')
 
   memberships = []
   for arg_membership in arg_memberships:
@@ -195,16 +258,9 @@ def GetExistingMembershipResourceNames(args, plural=False, positional=False):
         found.append(existing_membership)
     if not found:
       raise exceptions.Error(
-          'Membership {} not found in the fleet.'.format(arg_membership) +
-          (' Locations {} were unavailable.'.format(unavailable
-                                                   ) if unavailable else ''))
+          'Membership {} not found in the fleet.'.format(arg_membership))
     elif len(found) > 1:
       raise AmbiguousMembershipError(arg_membership)
-    if unavailable:
-      raise exceptions.Error(
-          ('Locations [{}] are currently unreachable. Please specify '
-           'memberships using `--location` or the full resource name '
-           '(projects/*/locations/*/memberships/*)').format(unavailable))
     memberships.append(found[0])
   return memberships
 

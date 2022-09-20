@@ -114,7 +114,13 @@ class SpeechV2Client(object):
              resource,
              display_name=None,
              model=None,
-             language_codes=None):
+             language_codes=None,
+             profanity_filter=None,
+             enable_word_time_offsets=None,
+             enable_word_confidence=None,
+             enable_automatic_punctuation=None,
+             enable_spoken_punctuation=None,
+             enable_spoken_emojis=None):
     """Call API update method with provided arguments."""
     recognizer = self.Get(resource)
     update_mask = []
@@ -127,6 +133,44 @@ class SpeechV2Client(object):
     if language_codes is not None:
       recognizer.languageCodes = language_codes
       update_mask.append('language_codes')
+
+    if recognizer.defaultRecognitionConfig is None:
+      recognizer.defaultRecognitionConfig = self._messages.RecognitionConfig()
+
+    if recognizer.defaultRecognitionConfig.features is None:
+      recognizer.defaultRecognitionConfig.features = (
+          self._messages.RecognitionFeatures())
+
+    features = recognizer.defaultRecognitionConfig.features
+
+    if profanity_filter is not None:
+      features.profanityFilter = profanity_filter
+      update_mask.append('default_recognition_config.features.profanity_filter')
+
+    if enable_word_time_offsets is not None:
+      features.enableWordTimeOffsets = enable_word_time_offsets
+      update_mask.append(
+          'default_recognition_config.features.enable_word_time_offsets')
+
+    if enable_word_confidence is not None:
+      features.enableWordConfidence = enable_word_confidence
+      update_mask.append(
+          'default_recognition_config.features.enable_word_confidence')
+
+    if enable_automatic_punctuation is not None:
+      features.enableAutomaticPunctuation = enable_automatic_punctuation
+      update_mask.append(
+          'default_recognition_config.features.enable_automatic_punctuation')
+
+    if enable_spoken_punctuation is not None:
+      features.enableSpokenPunctuation = enable_spoken_punctuation
+      update_mask.append(
+          'default_recognition_config.features.enable_spoken_punctuation')
+
+    if enable_spoken_emojis is not None:
+      features.enableSpokenEmojis = enable_spoken_emojis
+      update_mask.append(
+          'default_recognition_config.features.enable_spoken_emojis')
 
     request = self._messages.SpeechProjectsLocationsRecognizersPatchRequest(
         name=resource.RelativeName(),

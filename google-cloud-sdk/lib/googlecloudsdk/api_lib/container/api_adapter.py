@@ -634,6 +634,7 @@ class CreateClusterOptions(object):
       autoprovisioning_node_pool_soak_duration=None,
       enable_google_cloud_access=None,
       managed_config=None,
+      fleet_project=None,
       gateway_api=None,
       logging_variant=None
   ):
@@ -808,6 +809,7 @@ class CreateClusterOptions(object):
     self.autoprovisioning_node_pool_soak_duration = autoprovisioning_node_pool_soak_duration
     self.enable_google_cloud_access = enable_google_cloud_access
     self.managed_config = managed_config
+    self.fleet_project = fleet_project
     self.gateway_api = gateway_api
     self.logging_variant = logging_variant
 
@@ -1356,6 +1358,32 @@ class APIAdapter(object):
     except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
 
+  def CheckAutopilotCompatibility(self, cluster_ref):
+    """Check autopilot compatibility of a cluster.
+
+    Args:
+      cluster_ref: cluster resource to check.
+
+    Returns:
+      A list of autopilot compatibility issues.
+    Raises:
+      Error: if cluster cannot be found or caller is missing permissions. Will
+        attempt to find similar clusters in other zones for a more useful error
+        if the user has list permissions.
+    """
+    try:
+      return self.client.projects_locations_clusters.CheckAutopilotCompatibility(
+          self.messages.
+          ContainerProjectsLocationsClustersCheckAutopilotCompatibilityRequest(
+              name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref
+                                          .zone, cluster_ref.clusterId)))
+    except apitools_exceptions.HttpNotFoundError as error:
+      api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+      # Cluster couldn't be found, maybe user got the location wrong?
+      self.CheckClusterOtherZones(cluster_ref, api_error)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+
   def CheckClusterOtherZones(self, cluster_ref, api_error):
     """Searches for similar clusters in other locations and reports via error.
 
@@ -1851,6 +1879,11 @@ class APIAdapter(object):
         raise util.Error(
             MANGED_CONFIG_TYPE_NOT_SUPPORTED.format(
                 type=options.managed_config))
+
+    if options.fleet_project:
+      if cluster.fleet is None:
+        cluster.fleet = self.messages.Fleet()
+      cluster.fleet.project = options.fleet_project
 
     if options.logging_variant is not None:
       if cluster.nodePoolDefaults is None:

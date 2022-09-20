@@ -1060,12 +1060,12 @@
       "type": "object",
       "properties": {
         "minReplicaCount": {
-          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If provided, this value must be in the range of [1, 1000].",
+          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If the requested value is too large, the deployment will error.",
           "type": "integer",
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number. If provided, this value must be in the range of [1, 1000].",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number.",
           "type": "integer",
           "format": "int32"
         }
@@ -2812,6 +2812,43 @@
           "description": "Exports Feature values as of this timestamp. If not set, retrieve values as of now. Timestamp, if present, must not have higher than millisecond precision.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1DeleteFeatureValuesRequest": {
+      "id": "GoogleCloudAiplatformV1beta1DeleteFeatureValuesRequest",
+      "description": "Request message for FeaturestoreService.DeleteFeatureValues.",
+      "type": "object",
+      "properties": {
+        "selectEntity": {
+          "description": "Select feature values to be deleted by specifying entities.",
+          "$ref": "GoogleCloudAiplatformV1beta1DeleteFeatureValuesRequestSelectEntity"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1DeleteFeatureValuesRequestSelectEntity": {
+      "id": "GoogleCloudAiplatformV1beta1DeleteFeatureValuesRequestSelectEntity",
+      "description": "Message to select entity. If an entity id is selected, all the feature values corresponding to the entity id will be deleted, including the entityId.",
+      "type": "object",
+      "properties": {
+        "entityIdSelector": {
+          "description": "Required. Selectors choosing feature values of which entity id to be deleted from the EntityType.",
+          "$ref": "GoogleCloudAiplatformV1beta1EntityIdSelector"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1EntityIdSelector": {
+      "id": "GoogleCloudAiplatformV1beta1EntityIdSelector",
+      "description": "Selector for entityId. Getting ids from the given source.",
+      "type": "object",
+      "properties": {
+        "csvSource": {
+          "description": "Source of Csv",
+          "$ref": "GoogleCloudAiplatformV1beta1CsvSource"
+        },
+        "entityIdField": {
+          "description": "Source column that holds entity IDs. If not provided, entity IDs are extracted from the column named `entity_id`.",
+          "type": "string"
         }
       }
     },
@@ -9883,12 +9920,12 @@
       "type": "object",
       "properties": {
         "minReplicaCount": {
-          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If provided, this value must be in the range of [1, 1000].",
+          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If the requested value is too large, the deployment will error.",
           "type": "integer",
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number. If provided, this value must be in the range of [1, 1000].",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number.",
           "type": "integer",
           "format": "int32"
         }
@@ -11053,6 +11090,24 @@
           "type": "string",
           "format": "int64"
         }
+      }
+    },
+    "GoogleCloudAiplatformInternalDeleteFeatureValuesOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalDeleteFeatureValuesOperationMetadata",
+      "description": "Details of operations that delete Feature values.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for Featurestore delete Features values.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDeleteFeatureValuesResponse": {
+      "id": "GoogleCloudAiplatformInternalDeleteFeatureValuesResponse",
+      "description": "Response message for FeaturestoreService.DeleteFeatureValues.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudAiplatformInternalPurgeArtifactsMetadata": {
@@ -13029,12 +13084,12 @@
       "type": "object",
       "properties": {
         "minReplicaCount": {
-          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If provided, this value must be in the range of [1, 1000].",
+          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If the requested value is too large, the deployment will error.",
           "type": "integer",
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number. If provided, this value must be in the range of [1, 1000].",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number.",
           "type": "integer",
           "format": "int32"
         }
@@ -14200,6 +14255,24 @@
         }
       }
     },
+    "GoogleCloudAiplatformUiDeleteFeatureValuesOperationMetadata": {
+      "id": "GoogleCloudAiplatformUiDeleteFeatureValuesOperationMetadata",
+      "description": "Details of operations that delete Feature values.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for Featurestore delete Features values.",
+          "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiDeleteFeatureValuesResponse": {
+      "id": "GoogleCloudAiplatformUiDeleteFeatureValuesResponse",
+      "description": "Response message for FeaturestoreService.DeleteFeatureValues.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudAiplatformUiMutateDeployedIndexOperationMetadata": {
       "id": "GoogleCloudAiplatformUiMutateDeployedIndexOperationMetadata",
       "description": "Runtime operation information for IndexEndpointService.MutateDeployedIndex.",
@@ -14887,7 +14960,7 @@
           "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig"
         },
         "quantiles": {
-          "description": "Quantiles to use for minimize-quantile-loss `optimization_objective`. Up to 5 quantiles are allowed of values between 0 and 1, exclusive. Required if the value of optimization_objective is minimize-quantile-loss. Represents the percent quantiles to use for that objective. Quantiles must be unique.",
+          "description": "Quantiles to use for minimize-quantile-loss `optimization_objective`, or for probabilistic inference. Up to 5 quantiles are allowed of values between 0 and 1, exclusive. Required if the value of optimization_objective is minimize-quantile-loss. Represents the percent quantiles to use for that objective. Quantiles must be unique.",
           "type": "array",
           "items": {
             "type": "number",
@@ -14908,6 +14981,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "enableProbabilisticInference": {
+          "description": "If probabilistic inference is enabled, the model will fit a distribution that captures the uncertainty of a prediction. At inference time, the predictive distribution is used to make a point prediction that minimizes the optimization objective. For example, the mean of a predictive distribution is the point prediction that minimizes RMSE loss. If quantiles are specified, then the quantiles of the distribution are also returned. The optimization objective cannot be minimize-quantile-loss.",
+          "type": "boolean"
         },
         "validationOptions": {
           "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
@@ -17980,12 +18057,12 @@
       "type": "object",
       "properties": {
         "minReplicaCount": {
-          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If provided, this value must be in the range of [1, 1000].",
+          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If the requested value is too large, the deployment will error.",
           "type": "integer",
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number. If provided, this value must be in the range of [1, 1000].",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number.",
           "type": "integer",
           "format": "int32"
         }
@@ -19942,6 +20019,24 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1DeleteFeatureValuesOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1DeleteFeatureValuesOperationMetadata",
+      "description": "Details of operations that delete Feature values.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for Featurestore delete Features values.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponse": {
+      "id": "GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponse",
+      "description": "Response message for FeaturestoreService.DeleteFeatureValues.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudAiplatformV1beta1MutateDeployedIndexOperationMetadata": {
       "id": "GoogleCloudAiplatformV1beta1MutateDeployedIndexOperationMetadata",
       "description": "Runtime operation information for IndexEndpointService.MutateDeployedIndex.",
@@ -21007,7 +21102,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig"
         },
         "quantiles": {
-          "description": "Quantiles to use for minimize-quantile-loss `optimization_objective`. Up to 5 quantiles are allowed of values between 0 and 1, exclusive. Required if the value of optimization_objective is minimize-quantile-loss. Represents the percent quantiles to use for that objective. Quantiles must be unique.",
+          "description": "Quantiles to use for minimize-quantile-loss `optimization_objective`, or for probabilistic inference. Up to 5 quantiles are allowed of values between 0 and 1, exclusive. Required if the value of optimization_objective is minimize-quantile-loss. Represents the percent quantiles to use for that objective. Quantiles must be unique.",
           "type": "array",
           "items": {
             "type": "number",
@@ -21028,6 +21123,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "enableProbabilisticInference": {
+          "description": "If probabilistic inference is enabled, the model will fit a distribution that captures the uncertainty of a prediction. At inference time, the predictive distribution is used to make a point prediction that minimizes the optimization objective. For example, the mean of a predictive distribution is the point prediction that minimizes RMSE loss. If quantiles are specified, then the quantiles of the distribution are also returned. The optimization objective cannot be minimize-quantile-loss.",
+          "type": "boolean"
         },
         "validationOptions": {
           "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
@@ -23736,12 +23835,12 @@
       "type": "object",
       "properties": {
         "minReplicaCount": {
-          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If provided, this value must be in the range of [1, 1000].",
+          "description": "Immutable. The minimum number of replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas up to max_replica_count, and as traffic decreases, some of these extra replicas may be freed. If the requested value is too large, the deployment will error.",
           "type": "integer",
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number. If provided, this value must be in the range of [1, 1000].",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number.",
           "type": "integer",
           "format": "int32"
         }
@@ -25705,7 +25804,7 @@
           "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig"
         },
         "quantiles": {
-          "description": "Quantiles to use for minimize-quantile-loss `optimization_objective`. Up to 5 quantiles are allowed of values between 0 and 1, exclusive. Required if the value of optimization_objective is minimize-quantile-loss. Represents the percent quantiles to use for that objective. Quantiles must be unique.",
+          "description": "Quantiles to use for minimize-quantile-loss `optimization_objective`, or for probabilistic inference. Up to 5 quantiles are allowed of values between 0 and 1, exclusive. Required if the value of optimization_objective is minimize-quantile-loss. Represents the percent quantiles to use for that objective. Quantiles must be unique.",
           "type": "array",
           "items": {
             "type": "number",
@@ -25726,6 +25825,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "enableProbabilisticInference": {
+          "description": "If probabilistic inference is enabled, the model will fit a distribution that captures the uncertainty of a prediction. At inference time, the predictive distribution is used to make a point prediction that minimizes the optimization objective. For example, the mean of a predictive distribution is the point prediction that minimizes RMSE loss. If quantiles are specified, then the quantiles of the distribution are also returned. The optimization objective cannot be minimize-quantile-loss.",
+          "type": "boolean"
         },
         "validationOptions": {
           "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
@@ -28917,6 +29020,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Exports Feature values from all the entities of a target EntityType."
+                    },
+                    "deleteFeatureValues": {
+                      "id": "aiplatform.projects.locations.featurestores.entityTypes.deleteFeatureValues",
+                      "path": "v1beta1/{+entityType}:deleteFeatureValues",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}/entityTypes/{entityTypesId}:deleteFeatureValues",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "entityType": {
+                          "description": "Required. The resource name of the EntityType grouping the Features for which values are being deleted from. Format: `projects\/{project}\/locations\/{location}\/featurestores\/{featurestore}\/entityTypes\/{entityType}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/featurestores\/[^\/]+\/entityTypes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "entityType"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1beta1DeleteFeatureValuesRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Delete Feature values from Featurestore. The progress of the deletion is tracked by the returned operation. The deleted feature values are guaranteed to be invisible to subsequent read operations after the operation is marked as successfully done. If a delete feature values operation fails, the feature values returned from reads and exports may be inconsistent. If consistency is required, the caller must retry the same delete request again and wait till the new operation returned is marked as successfully done."
                     }
                   }
                   ,
@@ -34354,6 +34485,11 @@
                           "description": "Filter specifying the boolean condition for the Artifacts to satisfy in order to be part of the result set. The syntax to define filter query is based on https:\/\/google.aip.dev\/160. The supported set of filters include the following: * **Attribute filtering**: For example: `display_name = \"test\"`. Supported fields include: `name`, `display_name`, `uri`, `state`, `schema_title`, `create_time`, and `update_time`. Time fields, such as `create_time` and `update_time`, require values specified in RFC-3339 format. For example: `create_time = \"2020-11-19T11:30:00-04:00\"` * **Metadata field**: To filter on metadata fields use traversal operation as follows: `metadata..`. For example: `metadata.field_1.number_value = 10.0` * **Context based filtering**: To filter Artifacts based on the contexts to which they belong, use the function operator with the full resource name `in_context()`. For example: `in_context(\"projects\/\/locations\/\/metadataStores\/\/contexts\/\")` Each of the above supported filter types can be combined together using logical operators (`AND` & `OR`). For example: `display_name = \"test\" AND metadata.field1.bool_value = true`.",
                           "location": "query",
                           "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "How the list of messages is ordered. Specify the values to order by and an ordering operation. The default sorting order is ascending. To specify descending order for a field, users append a \" desc\" suffix; for example: \"foo desc, bar\". Subfields are specified with a `.` character, such as foo.bar. see https:\/\/google.aip.dev\/132#ordering for more details.",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -34588,6 +34724,11 @@
                         },
                         "filter": {
                           "description": "Filter specifying the boolean condition for the Contexts to satisfy in order to be part of the result set. The syntax to define filter query is based on https:\/\/google.aip.dev\/160. Following are the supported set of filters: * **Attribute filtering**: For example: `display_name = \"test\"`. Supported fields include: `name`, `display_name`, `schema_title`, `create_time`, and `update_time`. Time fields, such as `create_time` and `update_time`, require values specified in RFC-3339 format. For example: `create_time = \"2020-11-19T11:30:00-04:00\"`. * **Metadata field**: To filter on metadata fields use traversal operation as follows: `metadata..`. For example: `metadata.field_1.number_value = 10.0`. * **Parent Child filtering**: To filter Contexts based on parent-child relationship use the HAS operator as follows: ``` parent_contexts: \"projects\/\/locations\/\/metadataStores\/\/contexts\/\" child_contexts: \"projects\/\/locations\/\/metadataStores\/\/contexts\/\" ``` Each of the above supported filters can be combined together using logical operators (`AND` & `OR`). For example: `display_name = \"test\" AND metadata.field1.bool_value = true`.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "How the list of messages is ordered. Specify the values to order by and an ordering operation. The default sorting order is ascending. To specify descending order for a field, users append a \" desc\" suffix; for example: \"foo desc, bar\". Subfields are specified with a `.` character, such as foo.bar. see https:\/\/google.aip.dev\/132#ordering for more details.",
                           "location": "query",
                           "type": "string"
                         }
@@ -34902,6 +35043,11 @@
                         },
                         "filter": {
                           "description": "Filter specifying the boolean condition for the Executions to satisfy in order to be part of the result set. The syntax to define filter query is based on https:\/\/google.aip.dev\/160. Following are the supported set of filters: * **Attribute filtering**: For example: `display_name = \"test\"`. Supported fields include: `name`, `display_name`, `state`, `schema_title`, `create_time`, and `update_time`. Time fields, such as `create_time` and `update_time`, require values specified in RFC-3339 format. For example: `create_time = \"2020-11-19T11:30:00-04:00\"`. * **Metadata field**: To filter on metadata fields use traversal operation as follows: `metadata..` For example: `metadata.field_1.number_value = 10.0` * **Context based filtering**: To filter Executions based on the contexts to which they belong use the function operator with the full resource name: `in_context()`. For example: `in_context(\"projects\/\/locations\/\/metadataStores\/\/contexts\/\")` Each of the above supported filters can be combined together using logical operators (`AND` & `OR`). For example: `display_name = \"test\" AND metadata.field1.bool_value = true`.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "How the list of messages is ordered. Specify the values to order by and an ordering operation. The default sorting order is ascending. To specify descending order for a field, users append a \" desc\" suffix; for example: \"foo desc, bar\". Subfields are specified with a `.` character, such as foo.bar. see https:\/\/google.aip.dev\/132#ordering for more details.",
                           "location": "query",
                           "type": "string"
                         }
@@ -36320,7 +36466,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `training_task_definition` `=`, `!=` comparisons, and `:` wildcard. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"PIPELINE_STATE_SUCCEEDED\" AND display_name:\"my_pipeline_*\"` * `state!=\"PIPELINE_STATE_FAILED\" OR display_name=\"my_pipeline\"` * `NOT display_name=\"my_pipeline\"` * `create_time>\"2021-05-18T00:00:00Z\"` * `training_task_definition:\"*automl_text_classification*\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `training_task_definition` `=`, `!=` comparisons, and `:` wildcard. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. * `labels` supports general map functions that is: `labels.key=value` - key:value equality `labels.key:* - key existence Some examples of using the filter are: * `state=\"PIPELINE_STATE_SUCCEEDED\" AND display_name:\"my_pipeline_*\"` * `state!=\"PIPELINE_STATE_FAILED\" OR display_name=\"my_pipeline\"` * `NOT display_name=\"my_pipeline\"` * `create_time>\"2021-05-18T00:00:00Z\"` * `training_task_definition:\"*automl_text_classification*\"`",
                       "location": "query",
                       "type": "string"
                     },

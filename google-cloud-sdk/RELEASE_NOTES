@@ -5,6 +5,89 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 403.0.0 (2022-09-20)
+
+### Breaking Changes
+
+*   **(Assured Workloads)** Removed AU_REGIONS_AND_US_SUPPORT as compliance regime options for `gcloud assured workloads create` command.
+*   **(Assured Workloads)** Removed messages related to 'Versioning' as they should not be used externally.
+*   **(Assured Workloads)** Removed v1beta1 messages from v1 api and vice-versa.
+*   **(Assured Workloads)** Updated violation acknowledge api to POST Request.
+
+
+### Google Cloud CLI
+
+* Fixed issue where MTLS endpoints were not used when `use_client_certificate`
+  was true.
+* Fixed issue where `gcloud auth application-default set-quota-project` would
+  fail if `serviceusage.services.use` permission was revoked from the active
+  project.
+* Added bundled Python 3 as a default component on `x86_64` component-based
+  Linux installs. The bundled Python 3 interpreter will be preferred over the
+  system Python interpreter when invoking the gcloud command-line tool.
+  * The bundled Python 3 interpreter should work on supported Linux systems, but
+    a different interpreter can be specified by setting the `CLOUDSDK_PYTHON`
+    environment variable. See `gcloud topic startup` and
+    <https://cloud.google.com/sdk/docs/install#linux> for more information.
+
+### AI
+
+* Added `gcloud beta api indexes remove-datapoints` and `gcloud beta api indexes upsert-datapoints` to support Matching Engine steaming update.
+
+### AlloyDB
+
+*   Added support to specify automated backup policy in `gcloud beta alloydb
+    clusters create`.
+*   Updated `gcloud beta alloydb clusters create` to support PITR (point in time recovery) configuration via new `--disable-pitr` and `--pitr-log-retention-window` flags.
+
+### Artifact Registry
+
+* Fixed a bug where the plus sign ("+") was not escaped properly, making it
+  impossible to delete artifacts with a plus sign in their version.
+
+### Batch
+
+* Improved error message formats for `gcloud batch jobs submit` unparsable json config file,  `gcloud batch jobs describe` job and `gcloud batch tasks describe` task that does not exist.
+
+### BigQuery
+
+* Expose object_metadata for private preview.
+* Improve error message for unparseable parameters.
+
+### Binauthz
+
+*   Updated `gcloud container binauthz attestations list` to also return
+    occurrences in cases where the artifact-url does not begin with https.
+
+### Cloud DNS
+
+* Added Location flag to Cloud DNS Managed Zones, Response Policies GA commands. This flag can be specified to target Cloud DNS Zonal Servers.
+
+### Cloud Dataproc
+
+*   Fixed issue where `gcloud beta dataproc sessions list` would hang when large
+    numbers of sessions are present.
+
+### Cloud Deploy
+
+*   Added new `--from-run-manifest` to `gcloud deploy releases create` command.
+    When used, a Skaffold file will be generated using the Cloud Run manifest.
+
+### Cloud Run
+
+* Added `--encryption-key-shutdown-hours` flag to `gcloud beta run deploy` and `gcloud beta run services update` to set the number of hours to wait before an automatic shutdown server after CMEK key revocation is detected.
+* Added `--clear-encryption-key-shutdown-hours` flag to `gcloud beta run deploy` and `gcloud beta run services update` to clear the CMEK key shutdown hours setting.
+
+### Compute Engine
+
+* Updated `gcloud compute instance-templates create` to throw error if `--machine-type`/`--labels` flags are used with `--source-instance`.
+* Promoted `--compression-mode` flag to `gcloud compute backend-services <create | update>` to GA.
+* Promoted `--compression-mode` flag to `gcloud compute backend-buckets <create | update>` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 402.0.0 (2022-09-13)
 
 ### Breaking Changes

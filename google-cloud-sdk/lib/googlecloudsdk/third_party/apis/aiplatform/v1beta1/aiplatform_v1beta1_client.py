@@ -3301,6 +3301,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DeleteFeatureValues(self, request, global_params=None):
+      r"""Delete Feature values from Featurestore. The progress of the deletion is tracked by the returned operation. The deleted feature values are guaranteed to be invisible to subsequent read operations after the operation is marked as successfully done. If a delete feature values operation fails, the feature values returned from reads and exports may be inconsistent. If consistency is required, the caller must retry the same delete request again and wait till the new operation returned is marked as successfully done.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeaturestoresEntityTypesDeleteFeatureValuesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteFeatureValues')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteFeatureValues.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}/entityTypes/{entityTypesId}:deleteFeatureValues',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.featurestores.entityTypes.deleteFeatureValues',
+        ordered_params=['entityType'],
+        path_params=['entityType'],
+        query_params=[],
+        relative_path='v1beta1/{+entityType}:deleteFeatureValues',
+        request_field='googleCloudAiplatformV1beta1DeleteFeatureValuesRequest',
+        request_type_name='AiplatformProjectsLocationsFeaturestoresEntityTypesDeleteFeatureValuesRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def ExportFeatureValues(self, request, global_params=None):
       r"""Exports Feature values from all the entities of a target EntityType.
 
@@ -5138,7 +5165,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.metadataStores.artifacts.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v1beta1/{+parent}/artifacts',
         request_field='',
         request_type_name='AiplatformProjectsLocationsMetadataStoresArtifactsListRequest',
@@ -5391,7 +5418,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.metadataStores.contexts.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v1beta1/{+parent}/contexts',
         request_field='',
         request_type_name='AiplatformProjectsLocationsMetadataStoresContextsListRequest',
@@ -5644,7 +5671,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.metadataStores.executions.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v1beta1/{+parent}/executions',
         request_field='',
         request_type_name='AiplatformProjectsLocationsMetadataStoresExecutionsListRequest',

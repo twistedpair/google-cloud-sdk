@@ -29,6 +29,9 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import scaled_integer
 
 
+_STANDARD_STORAGE_CLASS = 'STANDARD'
+
+
 def is_destination_composite_upload_compatible(destination_resource,
                                                user_request_args):
   """Checks if destination bucket is compatible for parallel composite upload.
@@ -63,17 +66,23 @@ def is_destination_composite_upload_compatible(destination_resource,
     else:
       raise
 
+  resource_args = getattr(user_request_args, 'resource_args', None)
+  object_storage_class = getattr(resource_args, 'storage_class', None)
   if bucket_resource.retention_period is not None:
     reason = 'Destination bucket has retention period set'
-  else:
-    user_storage_class = getattr(
-        getattr(user_request_args, 'resource_args', None), 'storage_class',
-        None)
-    if (user_storage_class == 'STANDARD' or
-        (user_storage_class is None and
-         bucket_resource.default_storage_class == 'STANDARD')):
-      return True
+  elif bucket_resource.default_event_based_hold:
+    reason = 'Destination bucket has event-based hold set'
+  elif getattr(resource_args, 'event_based_hold', None):
+    reason = 'Object will be created with event-based hold'
+  elif getattr(resource_args, 'temporary_hold', None):
+    reason = 'Object will be created with temporary hold'
+  elif (bucket_resource.default_storage_class != _STANDARD_STORAGE_CLASS and
+        object_storage_class != _STANDARD_STORAGE_CLASS):
+    reason = 'Destination has a default storage class other than "STANDARD"'
+  elif object_storage_class not in (None, _STANDARD_STORAGE_CLASS):
     reason = 'Object will be created with a storage class other than "STANDARD"'
+  else:
+    return True
 
   log.warning(
       '{}, hence parallel'
@@ -81,7 +90,6 @@ def is_destination_composite_upload_compatible(destination_resource,
       ' this check, run: gcloud config set '
       'storage/parallel_composite_upload_compatibility_check=False'.format(
           reason))
-
   return False
 
 
@@ -164,10 +172,10 @@ def is_composite_upload_eligible(source_resource,
             'Parallel composite upload was turned ON to get the best'
             ' performance on uploading large objects.'
             ' If you would like to opt-out and instead perform a normal upload,'
-            ' run: gcloud config set'
-            ' storage/parallel_composite_upload_enabled=False.'
+            ' run:'
+            ' gcloud config set storage/parallel_composite_upload_enabled False'
             ' If you would like to disable this warning, run:'
-            ' gcloud config set storage/parallel_composite_upload_enabled=True.'
+            ' gcloud config set storage/parallel_composite_upload_enabled True'
             # We say "might" here because whether parallel composite upload is
             # used or not also depends on whether parallelism is True.
             ' Note that with parallel composite upload, your object might be'
@@ -183,4 +191,3 @@ def is_composite_upload_eligible(source_resource,
       can_perform_composite_upload)
 
   return can_perform_composite_upload
-

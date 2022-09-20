@@ -92,3 +92,38 @@ def ParseAttachedClusterResourceArg(args):
   return resources.REGISTRY.ParseRelativeName(
       args.CONCEPTS.cluster.Parse().RelativeName(),
       collection='gkemulticloud.projects.locations.attachedClusters')
+
+
+def FleetMembershipAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='fleet_membership',
+      help_text='attached cluster membership of the {resource}, in the form of projects/PROJECT/locations/global/memberships/MEMBERSHIP. '
+  )
+
+
+def GetFleetMembershipResourceSpec():
+  return concepts.ResourceSpec(
+      'gkehub.projects.locations.memberships',
+      resource_name='fleet_membership',
+      locationsId=LocationAttributeConfig(),
+      membershipsId=FleetMembershipAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
+
+
+def AddFleetMembershipResourceArg(parser):
+  """Adds a resource argument for Fleet Membership.
+
+  Args:
+    parser: The argparse parser to add the resource arg to.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      '--fleet-membership',
+      GetFleetMembershipResourceSpec(),
+      'Membership of the registered cluster. Membership can be the membership ID or the full resource name.',
+      required=True,
+      flag_name_overrides={
+          'location': '--fleet-membership-location',
+      }).AddToParser(parser)
+
+  parser.set_defaults(fleet_membership_location='global')

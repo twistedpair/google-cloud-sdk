@@ -35,21 +35,21 @@ class _AttachedClientBase(client.ClientBase):
         'fleet': self._Fleet(args),
         'name': cluster_ref.attachedClustersId,
         'description': flags.GetDescription(args),
-        'authority': self._Authority(args),
+        'oidcConfig': self._OidcConfig(args),
         'distribution': attached_flags.GetDistribution(args),
         'authorization': self._Authorization(args),
     }
     return self._messages.GoogleCloudGkemulticloudV1AttachedCluster(
         **kwargs) if any(kwargs.values()) else None
 
-  def _Authority(self, args):
+  def _OidcConfig(self, args):
     kwargs = {
         'issuerUrl': attached_flags.GetIssuerUrl(args),
     }
     oidc = attached_flags.GetOidcJwks(args)
     if oidc:
-      kwargs['oidcJwks'] = oidc.encode(encoding='utf-8')
-    return self._messages.GoogleCloudGkemulticloudV1Authority(
+      kwargs['jwks'] = oidc.encode(encoding='utf-8')
+    return self._messages.GoogleCloudGkemulticloudV1AttachedOidcConfig(
         **kwargs) if any(kwargs.values()) else None
 
   def _Authorization(self, args):
@@ -94,3 +94,15 @@ class ClustersClient(_AttachedClientBase):
             args, update_mask.ATTACHED_CLUSTER_ARGS_TO_UPDATE_MASKS),
         validateOnly=flags.GetValidateOnly(args))
     return self._service.Patch(req)
+
+  def Import(self, location_ref, fleet_membership_ref, args):
+    """Imports an Attached cluster fleet membership."""
+    req = self._messages.GkemulticloudProjectsLocationsAttachedClustersImportRequest(
+        parent=location_ref.RelativeName(),
+        googleCloudGkemulticloudV1ImportAttachedClusterRequest=
+        self._messages.GoogleCloudGkemulticloudV1ImportAttachedClusterRequest(
+            fleetMembership=fleet_membership_ref.RelativeName(),
+            platformVersion=attached_flags.GetPlatformVersion(args),
+            distribution=attached_flags.GetDistribution(args))
+        )
+    return self._service.Import(req)

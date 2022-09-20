@@ -48,6 +48,11 @@ SUBSCRIPTIONS_MOD_ACK_COLLECTION = 'pubsub.subscriptions.mod_ack'
 SUBSCRIPTIONS_MOD_CONFIG_COLLECTION = 'pubsub.subscriptions.mod_config'
 SUBSCRIPTIONS_PULL_COLLECTION = 'pubsub.subscriptions.pull'
 SUBSCRIPTIONS_SEEK_COLLECTION = 'pubsub.subscriptions.seek'
+SCHEMAS_COLLECTION = 'pubsub.projects.schemas'
+
+
+class InvalidArgumentError(exceptions.Error):
+  """The user provides invalid arguments."""
 
 
 class RequestsFailedError(exceptions.Error):

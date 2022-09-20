@@ -1443,6 +1443,24 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesCreateRequest(_messages
   parent = _messages.StringField(3, required=True)
 
 
+class AiplatformProjectsLocationsFeaturestoresEntityTypesDeleteFeatureValuesRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesDeleteFeatureValues
+  Request object.
+
+  Fields:
+    entityType: Required. The resource name of the EntityType grouping the
+      Features for which values are being deleted from. Format: `projects/{pro
+      ject}/locations/{location}/featurestores/{featurestore}/entityTypes/{ent
+      ityType}`
+    googleCloudAiplatformV1beta1DeleteFeatureValuesRequest: A
+      GoogleCloudAiplatformV1beta1DeleteFeatureValuesRequest resource to be
+      passed as the request body.
+  """
+
+  entityType = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1beta1DeleteFeatureValuesRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1DeleteFeatureValuesRequest', 2)
+
+
 class AiplatformProjectsLocationsFeaturestoresEntityTypesDeleteRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesDeleteRequest
   object.
@@ -2860,6 +2878,12 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsListRequest(_messages.Me
       Each of the above supported filter types can be combined together using
       logical operators (`AND` & `OR`). For example: `display_name = "test"
       AND metadata.field1.bool_value = true`.
+    orderBy: How the list of messages is ordered. Specify the values to order
+      by and an ordering operation. The default sorting order is ascending. To
+      specify descending order for a field, users append a " desc" suffix; for
+      example: "foo desc, bar". Subfields are specified with a `.` character,
+      such as foo.bar. see https://google.aip.dev/132#ordering for more
+      details.
     pageSize: The maximum number of Artifacts to return. The service may
       return fewer. Must be in range 1-1000, inclusive. Defaults to 100.
     pageToken: A page token, received from a previous
@@ -2873,9 +2897,10 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsListRequest(_messages.Me
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class AiplatformProjectsLocationsMetadataStoresArtifactsPatchRequest(_messages.Message):
@@ -3061,6 +3086,12 @@ class AiplatformProjectsLocationsMetadataStoresContextsListRequest(_messages.Mes
       supported filters can be combined together using logical operators
       (`AND` & `OR`). For example: `display_name = "test" AND
       metadata.field1.bool_value = true`.
+    orderBy: How the list of messages is ordered. Specify the values to order
+      by and an ordering operation. The default sorting order is ascending. To
+      specify descending order for a field, users append a " desc" suffix; for
+      example: "foo desc, bar". Subfields are specified with a `.` character,
+      such as foo.bar. see https://google.aip.dev/132#ordering for more
+      details.
     pageSize: The maximum number of Contexts to return. The service may return
       fewer. Must be in range 1-1000, inclusive. Defaults to 100.
     pageToken: A page token, received from a previous
@@ -3074,9 +3105,10 @@ class AiplatformProjectsLocationsMetadataStoresContextsListRequest(_messages.Mes
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class AiplatformProjectsLocationsMetadataStoresContextsPatchRequest(_messages.Message):
@@ -3280,6 +3312,12 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsListRequest(_messages.M
       the above supported filters can be combined together using logical
       operators (`AND` & `OR`). For example: `display_name = "test" AND
       metadata.field1.bool_value = true`.
+    orderBy: How the list of messages is ordered. Specify the values to order
+      by and an ordering operation. The default sorting order is ascending. To
+      specify descending order for a field, users append a " desc" suffix; for
+      example: "foo desc, bar". Subfields are specified with a `.` character,
+      such as foo.bar. see https://google.aip.dev/132#ordering for more
+      details.
     pageSize: The maximum number of Executions to return. The service may
       return fewer. Must be in range 1-1000, inclusive. Defaults to 100.
     pageToken: A page token, received from a previous
@@ -3293,9 +3331,10 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsListRequest(_messages.M
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class AiplatformProjectsLocationsMetadataStoresExecutionsPatchRequest(_messages.Message):
@@ -5751,11 +5790,13 @@ class AiplatformProjectsLocationsTrainingPipelinesListRequest(_messages.Message)
       supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports
       `=`, `!=` comparisons. * `training_task_definition` `=`, `!=`
       comparisons, and `:` wildcard. * `create_time` supports `=`, `!=`,`<`,
-      `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format.
-      Some examples of using the filter are: *
-      `state="PIPELINE_STATE_SUCCEEDED" AND display_name:"my_pipeline_*"` *
-      `state!="PIPELINE_STATE_FAILED" OR display_name="my_pipeline"` * `NOT
-      display_name="my_pipeline"` * `create_time>"2021-05-18T00:00:00Z"` *
+      `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. *
+      `labels` supports general map functions that is: `labels.key=value` -
+      key:value equality `labels.key:* - key existence Some examples of using
+      the filter are: * `state="PIPELINE_STATE_SUCCEEDED" AND
+      display_name:"my_pipeline_*"` * `state!="PIPELINE_STATE_FAILED" OR
+      display_name="my_pipeline"` * `NOT display_name="my_pipeline"` *
+      `create_time>"2021-05-18T00:00:00Z"` *
       `training_task_definition:"*automl_text_classification*"`
     pageSize: The standard list page size.
     pageToken: The standard list page token. Typically obtained via
@@ -5975,14 +6016,13 @@ class GoogleCloudAiplatformInternalAutomaticResources(_messages.Message):
       DeployedModel increases beyond what its replicas at maximum may handle,
       a portion of the traffic will be dropped. If this value is not provided,
       a no upper bound for scaling under heavy traffic will be assume, though
-      Vertex AI may be unable to scale beyond certain replica number. If
-      provided, this value must be in the range of [1, 1000].
+      Vertex AI may be unable to scale beyond certain replica number.
     minReplicaCount: Immutable. The minimum number of replicas this
       DeployedModel will be always deployed on. If traffic against it
       increases, it may dynamically be deployed onto more replicas up to
       max_replica_count, and as traffic decreases, some of these extra
-      replicas may be freed. If provided, this value must be in the range of
-      [1, 1000].
+      replicas may be freed. If the requested value is too large, the
+      deployment will error.
   """
 
   maxReplicaCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -6314,6 +6354,21 @@ class GoogleCloudAiplatformInternalDedicatedResources(_messages.Message):
   machineSpec = _messages.MessageField('GoogleCloudAiplatformInternalMachineSpec', 2)
   maxReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   minReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformInternalDeleteFeatureValuesOperationMetadata(_messages.Message):
+  r"""Details of operations that delete Feature values.
+
+  Fields:
+    genericMetadata: Operation metadata for Featurestore delete Features
+      values.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformInternalDeleteFeatureValuesResponse(_messages.Message):
+  r"""Response message for FeaturestoreService.DeleteFeatureValues."""
 
 
 class GoogleCloudAiplatformInternalDeleteMetadataStoreOperationMetadata(_messages.Message):
@@ -8528,14 +8583,13 @@ class GoogleCloudAiplatformUiAutomaticResources(_messages.Message):
       DeployedModel increases beyond what its replicas at maximum may handle,
       a portion of the traffic will be dropped. If this value is not provided,
       a no upper bound for scaling under heavy traffic will be assume, though
-      Vertex AI may be unable to scale beyond certain replica number. If
-      provided, this value must be in the range of [1, 1000].
+      Vertex AI may be unable to scale beyond certain replica number.
     minReplicaCount: Immutable. The minimum number of replicas this
       DeployedModel will be always deployed on. If traffic against it
       increases, it may dynamically be deployed onto more replicas up to
       max_replica_count, and as traffic decreases, some of these extra
-      replicas may be freed. If provided, this value must be in the range of
-      [1, 1000].
+      replicas may be freed. If the requested value is too large, the
+      deployment will error.
   """
 
   maxReplicaCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -9129,6 +9183,21 @@ class GoogleCloudAiplatformUiDedicatedResources(_messages.Message):
   machineSpec = _messages.MessageField('GoogleCloudAiplatformUiMachineSpec', 2)
   maxReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   minReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformUiDeleteFeatureValuesOperationMetadata(_messages.Message):
+  r"""Details of operations that delete Feature values.
+
+  Fields:
+    genericMetadata: Operation metadata for Featurestore delete Features
+      values.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformUiDeleteFeatureValuesResponse(_messages.Message):
+  r"""Response message for FeaturestoreService.DeleteFeatureValues."""
 
 
 class GoogleCloudAiplatformUiDeleteOperationMetadata(_messages.Message):
@@ -12266,6 +12335,14 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputs(
       in number of units defined by the `data_granularity` field.
     dataGranularity: Expected difference in time granularity between rows in
       the data.
+    enableProbabilisticInference: If probabilistic inference is enabled, the
+      model will fit a distribution that captures the uncertainty of a
+      prediction. At inference time, the predictive distribution is used to
+      make a point prediction that minimizes the optimization objective. For
+      example, the mean of a predictive distribution is the point prediction
+      that minimizes RMSE loss. If quantiles are specified, then the quantiles
+      of the distribution are also returned. The optimization objective cannot
+      be minimize-quantile-loss.
     exportEvaluatedDataItemsConfig: Configuration for exporting test set
       predictions to a BigQuery table. If this configuration is absent, then
       the export is not performed.
@@ -12292,10 +12369,11 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputs(
       `quantiles`. * "minimize-mape" - Minimize the mean absolute percentage
       error.
     quantiles: Quantiles to use for minimize-quantile-loss
-      `optimization_objective`. Up to 5 quantiles are allowed of values
-      between 0 and 1, exclusive. Required if the value of
-      optimization_objective is minimize-quantile-loss. Represents the percent
-      quantiles to use for that objective. Quantiles must be unique.
+      `optimization_objective`, or for probabilistic inference. Up to 5
+      quantiles are allowed of values between 0 and 1, exclusive. Required if
+      the value of optimization_objective is minimize-quantile-loss.
+      Represents the percent quantiles to use for that objective. Quantiles
+      must be unique.
     targetColumn: The name of the column that the Model is to predict values
       for. This column must be unavailable at forecast.
     timeColumn: The name of the column that identifies time order in the time
@@ -12340,22 +12418,23 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputs(
   availableAtForecastColumns = _messages.StringField(2, repeated=True)
   contextWindow = _messages.IntegerField(3)
   dataGranularity = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity', 4)
-  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 5)
-  forecastHorizon = _messages.IntegerField(6)
-  hierarchyConfig = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionHierarchyConfig', 7)
-  holidayRegions = _messages.StringField(8, repeated=True)
-  optimizationObjective = _messages.StringField(9)
-  quantiles = _messages.FloatField(10, repeated=True)
-  targetColumn = _messages.StringField(11)
-  timeColumn = _messages.StringField(12)
-  timeSeriesAttributeColumns = _messages.StringField(13, repeated=True)
-  timeSeriesIdentifierColumn = _messages.StringField(14)
-  trainBudgetMilliNodeHours = _messages.IntegerField(15)
-  transformations = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 16, repeated=True)
-  unavailableAtForecastColumns = _messages.StringField(17, repeated=True)
-  validationOptions = _messages.StringField(18)
-  weightColumn = _messages.StringField(19)
-  windowConfig = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionWindowConfig', 20)
+  enableProbabilisticInference = _messages.BooleanField(5)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 6)
+  forecastHorizon = _messages.IntegerField(7)
+  hierarchyConfig = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionHierarchyConfig', 8)
+  holidayRegions = _messages.StringField(9, repeated=True)
+  optimizationObjective = _messages.StringField(10)
+  quantiles = _messages.FloatField(11, repeated=True)
+  targetColumn = _messages.StringField(12)
+  timeColumn = _messages.StringField(13)
+  timeSeriesAttributeColumns = _messages.StringField(14, repeated=True)
+  timeSeriesIdentifierColumn = _messages.StringField(15)
+  trainBudgetMilliNodeHours = _messages.IntegerField(16)
+  transformations = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 17, repeated=True)
+  unavailableAtForecastColumns = _messages.StringField(18, repeated=True)
+  validationOptions = _messages.StringField(19)
+  weightColumn = _messages.StringField(20)
+  windowConfig = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionWindowConfig', 21)
 
 
 class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity(_messages.Message):
@@ -14830,14 +14909,13 @@ class GoogleCloudAiplatformV1AutomaticResources(_messages.Message):
       DeployedModel increases beyond what its replicas at maximum may handle,
       a portion of the traffic will be dropped. If this value is not provided,
       a no upper bound for scaling under heavy traffic will be assume, though
-      Vertex AI may be unable to scale beyond certain replica number. If
-      provided, this value must be in the range of [1, 1000].
+      Vertex AI may be unable to scale beyond certain replica number.
     minReplicaCount: Immutable. The minimum number of replicas this
       DeployedModel will be always deployed on. If traffic against it
       increases, it may dynamically be deployed onto more replicas up to
       max_replica_count, and as traffic decreases, some of these extra
-      replicas may be freed. If provided, this value must be in the range of
-      [1, 1000].
+      replicas may be freed. If the requested value is too large, the
+      deployment will error.
   """
 
   maxReplicaCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -18150,6 +18228,14 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
       in number of units defined by the `data_granularity` field.
     dataGranularity: Expected difference in time granularity between rows in
       the data.
+    enableProbabilisticInference: If probabilistic inference is enabled, the
+      model will fit a distribution that captures the uncertainty of a
+      prediction. At inference time, the predictive distribution is used to
+      make a point prediction that minimizes the optimization objective. For
+      example, the mean of a predictive distribution is the point prediction
+      that minimizes RMSE loss. If quantiles are specified, then the quantiles
+      of the distribution are also returned. The optimization objective cannot
+      be minimize-quantile-loss.
     exportEvaluatedDataItemsConfig: Configuration for exporting test set
       predictions to a BigQuery table. If this configuration is absent, then
       the export is not performed.
@@ -18176,10 +18262,11 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
       `quantiles`. * "minimize-mape" - Minimize the mean absolute percentage
       error.
     quantiles: Quantiles to use for minimize-quantile-loss
-      `optimization_objective`. Up to 5 quantiles are allowed of values
-      between 0 and 1, exclusive. Required if the value of
-      optimization_objective is minimize-quantile-loss. Represents the percent
-      quantiles to use for that objective. Quantiles must be unique.
+      `optimization_objective`, or for probabilistic inference. Up to 5
+      quantiles are allowed of values between 0 and 1, exclusive. Required if
+      the value of optimization_objective is minimize-quantile-loss.
+      Represents the percent quantiles to use for that objective. Quantiles
+      must be unique.
     targetColumn: The name of the column that the Model is to predict values
       for. This column must be unavailable at forecast.
     timeColumn: The name of the column that identifies time order in the time
@@ -18224,22 +18311,23 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
   availableAtForecastColumns = _messages.StringField(2, repeated=True)
   contextWindow = _messages.IntegerField(3)
   dataGranularity = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity', 4)
-  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 5)
-  forecastHorizon = _messages.IntegerField(6)
-  hierarchyConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHierarchyConfig', 7)
-  holidayRegions = _messages.StringField(8, repeated=True)
-  optimizationObjective = _messages.StringField(9)
-  quantiles = _messages.FloatField(10, repeated=True)
-  targetColumn = _messages.StringField(11)
-  timeColumn = _messages.StringField(12)
-  timeSeriesAttributeColumns = _messages.StringField(13, repeated=True)
-  timeSeriesIdentifierColumn = _messages.StringField(14)
-  trainBudgetMilliNodeHours = _messages.IntegerField(15)
-  transformations = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 16, repeated=True)
-  unavailableAtForecastColumns = _messages.StringField(17, repeated=True)
-  validationOptions = _messages.StringField(18)
-  weightColumn = _messages.StringField(19)
-  windowConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionWindowConfig', 20)
+  enableProbabilisticInference = _messages.BooleanField(5)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 6)
+  forecastHorizon = _messages.IntegerField(7)
+  hierarchyConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHierarchyConfig', 8)
+  holidayRegions = _messages.StringField(9, repeated=True)
+  optimizationObjective = _messages.StringField(10)
+  quantiles = _messages.FloatField(11, repeated=True)
+  targetColumn = _messages.StringField(12)
+  timeColumn = _messages.StringField(13)
+  timeSeriesAttributeColumns = _messages.StringField(14, repeated=True)
+  timeSeriesIdentifierColumn = _messages.StringField(15)
+  trainBudgetMilliNodeHours = _messages.IntegerField(16)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 17, repeated=True)
+  unavailableAtForecastColumns = _messages.StringField(18, repeated=True)
+  validationOptions = _messages.StringField(19)
+  weightColumn = _messages.StringField(20)
+  windowConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionWindowConfig', 21)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity(_messages.Message):
@@ -20548,14 +20636,13 @@ class GoogleCloudAiplatformV1alpha1AutomaticResources(_messages.Message):
       DeployedModel increases beyond what its replicas at maximum may handle,
       a portion of the traffic will be dropped. If this value is not provided,
       a no upper bound for scaling under heavy traffic will be assume, though
-      Vertex AI may be unable to scale beyond certain replica number. If
-      provided, this value must be in the range of [1, 1000].
+      Vertex AI may be unable to scale beyond certain replica number.
     minReplicaCount: Immutable. The minimum number of replicas this
       DeployedModel will be always deployed on. If traffic against it
       increases, it may dynamically be deployed onto more replicas up to
       max_replica_count, and as traffic decreases, some of these extra
-      replicas may be freed. If provided, this value must be in the range of
-      [1, 1000].
+      replicas may be freed. If the requested value is too large, the
+      deployment will error.
   """
 
   maxReplicaCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -22987,14 +23074,13 @@ class GoogleCloudAiplatformV1beta1AutomaticResources(_messages.Message):
       DeployedModel increases beyond what its replicas at maximum may handle,
       a portion of the traffic will be dropped. If this value is not provided,
       a no upper bound for scaling under heavy traffic will be assume, though
-      Vertex AI may be unable to scale beyond certain replica number. If
-      provided, this value must be in the range of [1, 1000].
+      Vertex AI may be unable to scale beyond certain replica number.
     minReplicaCount: Immutable. The minimum number of replicas this
       DeployedModel will be always deployed on. If traffic against it
       increases, it may dynamically be deployed onto more replicas up to
       max_replica_count, and as traffic decreases, some of these extra
-      replicas may be freed. If provided, this value must be in the range of
-      [1, 1000].
+      replicas may be freed. If the requested value is too large, the
+      deployment will error.
   """
 
   maxReplicaCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -24781,6 +24867,44 @@ class GoogleCloudAiplatformV1beta1DedicatedResources(_messages.Message):
   minReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformV1beta1DeleteFeatureValuesOperationMetadata(_messages.Message):
+  r"""Details of operations that delete Feature values.
+
+  Fields:
+    genericMetadata: Operation metadata for Featurestore delete Features
+      values.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1DeleteFeatureValuesRequest(_messages.Message):
+  r"""Request message for FeaturestoreService.DeleteFeatureValues.
+
+  Fields:
+    selectEntity: Select feature values to be deleted by specifying entities.
+  """
+
+  selectEntity = _messages.MessageField('GoogleCloudAiplatformV1beta1DeleteFeatureValuesRequestSelectEntity', 1)
+
+
+class GoogleCloudAiplatformV1beta1DeleteFeatureValuesRequestSelectEntity(_messages.Message):
+  r"""Message to select entity. If an entity id is selected, all the feature
+  values corresponding to the entity id will be deleted, including the
+  entityId.
+
+  Fields:
+    entityIdSelector: Required. Selectors choosing feature values of which
+      entity id to be deleted from the EntityType.
+  """
+
+  entityIdSelector = _messages.MessageField('GoogleCloudAiplatformV1beta1EntityIdSelector', 1)
+
+
+class GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponse(_messages.Message):
+  r"""Response message for FeaturestoreService.DeleteFeatureValues."""
+
+
 class GoogleCloudAiplatformV1beta1DeleteMetadataStoreOperationMetadata(_messages.Message):
   r"""Details of operations that perform MetadataService.DeleteMetadataStore.
 
@@ -25330,6 +25454,19 @@ class GoogleCloudAiplatformV1beta1Endpoint(_messages.Message):
   predictRequestResponseLoggingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictRequestResponseLoggingConfig', 12)
   trafficSplit = _messages.MessageField('TrafficSplitValue', 13)
   updateTime = _messages.StringField(14)
+
+
+class GoogleCloudAiplatformV1beta1EntityIdSelector(_messages.Message):
+  r"""Selector for entityId. Getting ids from the given source.
+
+  Fields:
+    csvSource: Source of Csv
+    entityIdField: Source column that holds entity IDs. If not provided,
+      entity IDs are extracted from the column named `entity_id`.
+  """
+
+  csvSource = _messages.MessageField('GoogleCloudAiplatformV1beta1CsvSource', 1)
+  entityIdField = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1EntityType(_messages.Message):
@@ -32795,6 +32932,14 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       in number of units defined by the `data_granularity` field.
     dataGranularity: Expected difference in time granularity between rows in
       the data.
+    enableProbabilisticInference: If probabilistic inference is enabled, the
+      model will fit a distribution that captures the uncertainty of a
+      prediction. At inference time, the predictive distribution is used to
+      make a point prediction that minimizes the optimization objective. For
+      example, the mean of a predictive distribution is the point prediction
+      that minimizes RMSE loss. If quantiles are specified, then the quantiles
+      of the distribution are also returned. The optimization objective cannot
+      be minimize-quantile-loss.
     exportEvaluatedDataItemsConfig: Configuration for exporting test set
       predictions to a BigQuery table. If this configuration is absent, then
       the export is not performed.
@@ -32821,10 +32966,11 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       `quantiles`. * "minimize-mape" - Minimize the mean absolute percentage
       error.
     quantiles: Quantiles to use for minimize-quantile-loss
-      `optimization_objective`. Up to 5 quantiles are allowed of values
-      between 0 and 1, exclusive. Required if the value of
-      optimization_objective is minimize-quantile-loss. Represents the percent
-      quantiles to use for that objective. Quantiles must be unique.
+      `optimization_objective`, or for probabilistic inference. Up to 5
+      quantiles are allowed of values between 0 and 1, exclusive. Required if
+      the value of optimization_objective is minimize-quantile-loss.
+      Represents the percent quantiles to use for that objective. Quantiles
+      must be unique.
     targetColumn: The name of the column that the Model is to predict values
       for. This column must be unavailable at forecast.
     timeColumn: The name of the column that identifies time order in the time
@@ -32869,22 +33015,23 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
   availableAtForecastColumns = _messages.StringField(2, repeated=True)
   contextWindow = _messages.IntegerField(3)
   dataGranularity = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity', 4)
-  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 5)
-  forecastHorizon = _messages.IntegerField(6)
-  hierarchyConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHierarchyConfig', 7)
-  holidayRegions = _messages.StringField(8, repeated=True)
-  optimizationObjective = _messages.StringField(9)
-  quantiles = _messages.FloatField(10, repeated=True)
-  targetColumn = _messages.StringField(11)
-  timeColumn = _messages.StringField(12)
-  timeSeriesAttributeColumns = _messages.StringField(13, repeated=True)
-  timeSeriesIdentifierColumn = _messages.StringField(14)
-  trainBudgetMilliNodeHours = _messages.IntegerField(15)
-  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 16, repeated=True)
-  unavailableAtForecastColumns = _messages.StringField(17, repeated=True)
-  validationOptions = _messages.StringField(18)
-  weightColumn = _messages.StringField(19)
-  windowConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionWindowConfig', 20)
+  enableProbabilisticInference = _messages.BooleanField(5)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 6)
+  forecastHorizon = _messages.IntegerField(7)
+  hierarchyConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHierarchyConfig', 8)
+  holidayRegions = _messages.StringField(9, repeated=True)
+  optimizationObjective = _messages.StringField(10)
+  quantiles = _messages.FloatField(11, repeated=True)
+  targetColumn = _messages.StringField(12)
+  timeColumn = _messages.StringField(13)
+  timeSeriesAttributeColumns = _messages.StringField(14, repeated=True)
+  timeSeriesIdentifierColumn = _messages.StringField(15)
+  trainBudgetMilliNodeHours = _messages.IntegerField(16)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 17, repeated=True)
+  unavailableAtForecastColumns = _messages.StringField(18, repeated=True)
+  validationOptions = _messages.StringField(19)
+  weightColumn = _messages.StringField(20)
+  windowConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionWindowConfig', 21)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity(_messages.Message):

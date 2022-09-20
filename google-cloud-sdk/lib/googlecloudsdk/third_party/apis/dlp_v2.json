@@ -4895,11 +4895,6 @@
         "infoType": {
           "description": "The infoType.",
           "$ref": "GooglePrivacyDlpV2InfoType"
-        },
-        "estimatedPrevalence": {
-          "description": "Approximate percentage of non-null rows that contained data detected by this infotype.",
-          "type": "integer",
-          "format": "int32"
         }
       }
     },

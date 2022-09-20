@@ -1196,6 +1196,10 @@ class TranslateDocumentRequest(_messages.Message):
       information.
 
   Fields:
+    customizedAttribution: Optional. This flag is to support user customized
+      attribution. If not provided, the default is `Machine Translated by
+      Google`. Customized attribution should follow rules in
+      https://cloud.google.com/translate/attribution#attribution_and_logos
     documentInputConfig: Required. Input configurations.
     documentOutputConfig: Optional. Output configurations. Defines if the
       output file should be stored within Cloud Storage as well as the desired
@@ -1260,13 +1264,14 @@ class TranslateDocumentRequest(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  documentInputConfig = _messages.MessageField('DocumentInputConfig', 1)
-  documentOutputConfig = _messages.MessageField('DocumentOutputConfig', 2)
-  glossaryConfig = _messages.MessageField('TranslateTextGlossaryConfig', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  model = _messages.StringField(5)
-  sourceLanguageCode = _messages.StringField(6)
-  targetLanguageCode = _messages.StringField(7)
+  customizedAttribution = _messages.StringField(1)
+  documentInputConfig = _messages.MessageField('DocumentInputConfig', 2)
+  documentOutputConfig = _messages.MessageField('DocumentOutputConfig', 3)
+  glossaryConfig = _messages.MessageField('TranslateTextGlossaryConfig', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  model = _messages.StringField(6)
+  sourceLanguageCode = _messages.StringField(7)
+  targetLanguageCode = _messages.StringField(8)
 
 
 class TranslateDocumentResponse(_messages.Message):

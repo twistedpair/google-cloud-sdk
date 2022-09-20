@@ -539,7 +539,7 @@
       "type": "object",
       "properties": {
         "location": {
-          "description": "Required. The location where the Cloud Run Service should be located. Format is `projects\/{project}\/locations\/{location}`.",
+          "description": "Required. The location for the Cloud Run Service. Format must be `projects\/{project}\/locations\/{location}`.",
           "type": "string"
         }
       }
@@ -850,7 +850,7 @@
           "type": "string",
           "enumDescriptions": [
             "No reason for failure is specified.",
-            "Cloud Build is not available, either because it is not enabled or because Cloud Deploy has insufficient permissions. See [required permission](\/deploy\/docs\/cloud-deploy-service-account#required_permissions).",
+            "Cloud Build is not available, either because it is not enabled or because Google Cloud Deploy has insufficient permissions. See [required permission](\/deploy\/docs\/cloud-deploy-service-account#required_permissions).",
             "The render operation did not complete successfully; check Cloud Build logs."
           ],
           "enum": [
@@ -1206,7 +1206,7 @@
     },
     "Metadata": {
       "id": "Metadata",
-      "description": "Metadata surfaces information associated with a `Rollout` to the user.",
+      "description": "Metadata includes information associated with a `Rollout`.",
       "type": "object",
       "properties": {
         "cloudRun": {
@@ -1380,7 +1380,7 @@
           "type": "string",
           "enumDescriptions": [
             "No reason for failure is specified.",
-            "Cloud Build is not available, either because it is not enabled or because Cloud Deploy has insufficient permissions. See [required permission](\/deploy\/docs\/cloud-deploy-service-account#required_permissions).",
+            "Cloud Build is not available, either because it is not enabled or because Google Cloud Deploy has insufficient permissions. See [Required permission](\/deploy\/docs\/cloud-deploy-service-account#required_permissions).",
             "The deploy operation did not complete successfully; check Cloud Build logs.",
             "The deploy build did not complete within the alloted time."
           ],
@@ -1424,7 +1424,7 @@
           "type": "string",
           "enumDescriptions": [
             "No reason for failure is specified.",
-            "Cloud Build is not available, either because it is not enabled or because Cloud Deploy has insufficient permissions. See [required permission](\/deploy\/docs\/cloud-deploy-service-account#required_permissions).",
+            "Cloud Build is not available, either because it is not enabled or because Google Cloud Deploy has insufficient permissions. See [required permission](\/deploy\/docs\/cloud-deploy-service-account#required_permissions).",
             "The verify operation did not complete successfully; check Cloud Build logs.",
             "The verify build did not complete within the alloted time.",
             "No Skaffold verify configuration was found."
@@ -2757,7 +2757,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Retry the specified Job in a Rollout."
+                          "description": "Retries the specified Job in a Rollout."
                         }
                       }
                       ,
@@ -2833,7 +2833,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "Get details of a single JobRun."
+                              "description": "Gets details of a single JobRun."
                             }
                           }
                         }

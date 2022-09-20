@@ -2687,18 +2687,18 @@ class ReconciliationOperationMetadata(_messages.Message):
   reconciliation.
 
   Enums:
-    ExclusiveActionValueValuesEnum:
+    ExclusiveActionValueValuesEnum: Excluisive action returned by the CLH.
 
   Fields:
     deleteResource: DEPRECATED. Use exclusive_action instead.
-    exclusiveAction: A ExclusiveActionValueValuesEnum attribute.
+    exclusiveAction: Excluisive action returned by the CLH.
   """
 
   class ExclusiveActionValueValuesEnum(_messages.Enum):
-    r"""ExclusiveActionValueValuesEnum enum type.
+    r"""Excluisive action returned by the CLH.
 
     Values:
-      UNKNOWN_REPAIR_ACTION: <no description>
+      UNKNOWN_REPAIR_ACTION: Unknown repair action.
       DELETE: The resource has to be deleted. When using this bit, the CLH
         should fail the operation. DEPRECATED. Instead use DELETE_RESOURCE
         OperationSignal in SideChannel. For more information - go/ccfe-delete-

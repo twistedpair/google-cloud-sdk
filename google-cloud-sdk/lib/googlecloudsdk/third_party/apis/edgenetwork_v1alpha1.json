@@ -1211,7 +1211,19 @@
         },
         "routeInstallStatus": {
           "description": "An enum representing the status of the route installation.",
-          "$ref": "RouteStatus"
+          "type": "string",
+          "enumDescriptions": [
+            "The install status was not specified.",
+            "The route was installed correctly and is active.",
+            "The route has not been installed, but there's no error (for example, the route is in the process of being installed)",
+            "The route installation failed due to an error."
+          ],
+          "enum": [
+            "ROUTE_INSTALL_STATUS_UNSPECIFIED",
+            "ROUTE_INSTALL_STATUS_ACTIVE",
+            "ROUTE_INSTALL_STATUS_PENDING",
+            "ROUTE_INSTALL_STATUS_FAILED"
+          ]
         },
         "routeInstallStatusAdditionalInfo": {
           "description": "A string elaborating the route_install_status, if there's more information (for example, if there's an error, we will include some information about it in this field).",

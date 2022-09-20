@@ -59,6 +59,9 @@ class GkemulticloudProjectsLocationsAttachedClustersDeleteRequest(_messages.Mess
       deletions through optimistic concurrency control. If the provided etag
       does not match the current etag of the cluster, the request will fail
       and an ABORTED error will be returned.
+    ignoreErrors: If set to true, the deletion of AttachedCluster resource
+      will succeed even if errors occur during deleting in cluster resources.
+      Using this parameter may result in orphaned resources in the cluster.
     name: Required. The resource name the AttachedCluster to delete.
       `AttachedCluster` names are formatted as
       `projects//locations//attachedClusters/`. See [Resource
@@ -70,8 +73,9 @@ class GkemulticloudProjectsLocationsAttachedClustersDeleteRequest(_messages.Mess
 
   allowMissing = _messages.BooleanField(1)
   etag = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  validateOnly = _messages.BooleanField(4)
+  ignoreErrors = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  validateOnly = _messages.BooleanField(5)
 
 
 class GkemulticloudProjectsLocationsAttachedClustersGetRequest(_messages.Message):
@@ -423,7 +427,7 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       `control_plane.root_volume.size_gib`. * `control_plane.ssh_config`. *
       `control_plane.ssh_config.ec2_key_pair`. *
       `control_plane.instance_placement.tenancy`. * `logging_config`. *
-      `control_plane.iam_instance_profile`.
+      `control_plane.iam_instance_profile`. * `control_plane.tags`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -951,7 +955,6 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
       a DNS subdomain. Name must be 63 characters or less, begin and end with
       alphanumerics, with dashes (-), underscores (_), dots (.), and
       alphanumerics between.
-    authority: Authority configuration.
     authorization: Optional. Configuration related to the cluster RBAC
       settings.
     createTime: Output only. The time at which this cluster was registered.
@@ -970,6 +973,7 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
       `projects//locations//attachedClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
       details on GCP resource names.
+    oidcConfig: Required. OpenID Connect (OIDC) configuration for the cluster.
     platformVersion: Required. The platform version for the cluster (e.g.
       `1.19.0-gke.1000`). You can list all supported versions on a given
       Google Cloud region by calling GetAttachedServerConfig.
@@ -1039,17 +1043,17 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  authority = _messages.MessageField('GoogleCloudGkemulticloudV1Authority', 2)
-  authorization = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClustersAuthorization', 3)
-  createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  distribution = _messages.StringField(6)
-  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClusterError', 7, repeated=True)
-  etag = _messages.StringField(8)
-  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 9)
-  kubernetesVersion = _messages.StringField(10)
-  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 11)
-  name = _messages.StringField(12)
+  authorization = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClustersAuthorization', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  distribution = _messages.StringField(5)
+  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClusterError', 6, repeated=True)
+  etag = _messages.StringField(7)
+  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 8)
+  kubernetesVersion = _messages.StringField(9)
+  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 10)
+  name = _messages.StringField(11)
+  oidcConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedOidcConfig', 12)
   platformVersion = _messages.StringField(13)
   reconciling = _messages.BooleanField(14)
   state = _messages.EnumField('StateValueValuesEnum', 15)
@@ -1093,6 +1097,30 @@ class GoogleCloudGkemulticloudV1AttachedClustersAuthorization(_messages.Message)
   adminUsers = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClusterUser', 1, repeated=True)
 
 
+class GoogleCloudGkemulticloudV1AttachedOidcConfig(_messages.Message):
+  r"""OIDC discovery information of the target cluster. Kubernetes Service
+  Account (KSA) tokens are JWT tokens signed by the cluster API server. This
+  fields indicates how GCP services validate KSA tokens in order to allow
+  system workloads (such as GKE Connect and telemetry agents) to authenticate
+  back to GCP. Both clusters with public and private issuer URLs are
+  supported. Clusters with public issuers only need to specify the
+  `issuer_url` field while clusters with private issuers need to provide both
+  `issuer_url` and `oidc_jwks`.
+
+  Fields:
+    issuerUrl: A JSON Web Token (JWT) issuer URI. `issuer` must start with
+      `https://`.
+    jwks: Optional. OIDC verification keys in JWKS format (RFC 7517). It
+      contains a list of OIDC verification keys that can be used to verify
+      OIDC JWTs. This field is required for cluster that doesn't have a
+      publicly available discovery endpoint. When provided, it will be
+      directly used to verify the OIDC JWT asserted by the IDP.
+  """
+
+  issuerUrl = _messages.StringField(1)
+  jwks = _messages.BytesField(2)
+
+
 class GoogleCloudGkemulticloudV1AttachedPlatformVersionInfo(_messages.Message):
   r"""Information about a supported Attached Clusters platform version.
 
@@ -1114,23 +1142,6 @@ class GoogleCloudGkemulticloudV1AttachedServerConfig(_messages.Message):
 
   name = _messages.StringField(1)
   validVersions = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedPlatformVersionInfo', 2, repeated=True)
-
-
-class GoogleCloudGkemulticloudV1Authority(_messages.Message):
-  r"""OIDC discovery information of the target cluster.
-
-  Fields:
-    issuerUrl: A JSON Web Token (JWT) issuer URI. `issuer` must start with
-      `https://`.
-    oidcJwks: Optional. OIDC verification keys in JWKS format (RFC 7517). It
-      contains a list of OIDC verification keys that can be used to verify
-      OIDC JWTs. This is useful for cluster that doesn't have a publicly
-      available discovery endpoint. When provided, it will be directly used to
-      verify the OIDC JWT asserted by the IDP.
-  """
-
-  issuerUrl = _messages.StringField(1)
-  oidcJwks = _messages.BytesField(2)
 
 
 class GoogleCloudGkemulticloudV1AwsAuthorization(_messages.Message):

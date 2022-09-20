@@ -176,27 +176,6 @@ class GoogleIamV2DenyRule(_messages.Message):
   exceptionPrincipals = _messages.StringField(5, repeated=True)
 
 
-class GoogleIamV2ListApplicablePoliciesResponse(_messages.Message):
-  r"""Response message for ListApplicablePolicies method.
-
-  Fields:
-    inaccessible: A list of resources that the caller does not have permission
-      to retrieve. List or Get can be used to get detailed error messages.
-      Get: `policies/{attachment-point}/denypolicies/{policy-id}` List:
-      `policies/{attachment-point}/denypolicies`
-    nextPageToken: A page token that can be used in a
-      ListApplicablePoliciesRequest to retrieve the next page. If this field
-      is blank, there are no additional pages.
-    policies: Ordered list starting from the resource on which this API was
-      called then proceeding up the hierarchy. Policies for the same
-      attachment point will be grouped, but no further ordering is guaranteed.
-  """
-
-  inaccessible = _messages.StringField(1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  policies = _messages.MessageField('GoogleIamV2Policy', 3, repeated=True)
-
-
 class GoogleIamV2ListPoliciesResponse(_messages.Message):
   r"""Response message for `ListPolicies`.
 
@@ -508,37 +487,6 @@ class GoogleTypeExpr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
-
-
-class IamListApplicablePoliciesRequest(_messages.Message):
-  r"""A IamListApplicablePoliciesRequest object.
-
-  Fields:
-    attachmentPoint: Required. The Cloud resource at which the applicable
-      policies are to be retrieved. Format: `{attachment-point}` Use the URL-
-      encoded full resource name, which means that the forward-slash
-      character, `/`, must be written as `%2F`. For example,
-      `cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-project`.
-    filter: Filtering currently only supports the kind of policies to return,
-      and must be in the format "kind:[policyKind1] OR kind:[policyKind2]".
-      New policy kinds may be added in the future without notice. Example
-      value: "kind:denyPolicies"
-    pageSize: Limit on the number of policies to include in the response.
-      Further policies can subsequently be obtained by including the
-      ListApplicablePoliciesResponse.next_page_token in a subsequent request.
-      The minimum is 25, and the maximum is 100.
-    pageToken: If present, then retrieve the batch of results following the
-      results from the preceding call to this method. `page_token` must be the
-      value of `next_page_token`
-      ListApplicablePoliciesResponse.next_page_token from the previous
-      response. The values of other method parameters should be identical to
-      those in the previous call.
-  """
-
-  attachmentPoint = _messages.StringField(1, required=True)
-  filter = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
 
 
 class IamPoliciesCreatePolicyRequest(_messages.Message):

@@ -18,9 +18,7 @@ class AlloydbProjectsLocationsBackupsCreateRequest(_messages.Message):
 
   Fields:
     backup: A Backup resource to be passed as the request body.
-    backupId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and backup_id from the method_signature
-      of Create RPC
+    backupId: Required. ID of the requesting object.
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -152,11 +150,40 @@ class AlloydbProjectsLocationsClustersCreateRequest(_messages.Message):
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    clusterId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and cluster_id from the method_signature
-      of Create RPC
+    clusterId: Required. ID of the requesting object.
     parent: Required. The name of the parent resource. For the required
       format, see the comment on the Cluster.name field.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation (e.g.
+      permission checks and any other type of validation), but do not actually
+      execute the create request.
+  """
+
+  cluster = _messages.MessageField('Cluster', 1)
+  clusterId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class AlloydbProjectsLocationsClustersCreatesecondaryRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersCreatesecondaryRequest object.
+
+  Fields:
+    cluster: A Cluster resource to be passed as the request body.
+    clusterId: Required. ID of the requesting object (the secondary cluster).
+    parent: Required. The name of the parent resource (the primary cluster).
+      For the required format, see the comment on the Cluster.name field.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -245,9 +272,39 @@ class AlloydbProjectsLocationsClustersInstancesCreateRequest(_messages.Message):
 
   Fields:
     instance: A Instance resource to be passed as the request body.
-    instanceId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and instance_id from the method_signature
-      of Create RPC
+    instanceId: Required. ID of the requesting object.
+    parent: Required. The name of the parent resource. For the required
+      format, see the comment on the Instance.name field.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation (e.g.
+      permission checks and any other type of validation), but do not actually
+      execute the create request.
+  """
+
+  instance = _messages.MessageField('Instance', 1)
+  instanceId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest
+  object.
+
+  Fields:
+    instance: A Instance resource to be passed as the request body.
+    instanceId: Required. ID of the requesting object.
     parent: Required. The name of the parent resource. For the required
       format, see the comment on the Instance.name field.
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -524,6 +581,20 @@ class AlloydbProjectsLocationsClustersPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(6)
 
 
+class AlloydbProjectsLocationsClustersPromoteRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersPromoteRequest object.
+
+  Fields:
+    name: Required. The name of the resource. For the required format, see the
+      comment on the Cluster.name field
+    promoteClusterRequest: A PromoteClusterRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  promoteClusterRequest = _messages.MessageField('PromoteClusterRequest', 2)
+
+
 class AlloydbProjectsLocationsClustersRestoreRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersRestoreRequest object.
 
@@ -637,8 +708,9 @@ class AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Messag
 
 
 class AutomatedBackupPolicy(_messages.Message):
-  r"""Message describing the user-specified automated backup policy. NEXT_ID:
-  9
+  r"""Message describing the user-specified automated backup policy. All
+  fields in the automated backup policy are optional. Defaults for each field
+  are provided if they are not set. NEXT_ID: 9
 
   Messages:
     LabelsValue: Labels to apply to backups created using this configuration.
@@ -647,9 +719,10 @@ class AutomatedBackupPolicy(_messages.Message):
     backupWindow: The length of the time window during which a backup can be
       taken. If a backup does not succeed within this time window, it will be
       canceled and considered failed. The backup window must be at least 5
-      minutes long. There is no upper bound on the window. If not set, it will
-      default to 1 hour.
-    enabled: Whether automated automated backups are enabled.
+      minutes long. There is no upper bound on the window. If not set, it
+      defaults to 1 hour.
+    enabled: Whether automated automated backups are enabled. If not set,
+      defaults to true.
     encryptionConfig: Optional. The encryption config can be specified to
       encrypt the backups with a customer-managed encryption key (CMEK). When
       this field is not specified, the backup will then use default encryption
@@ -657,7 +730,7 @@ class AutomatedBackupPolicy(_messages.Message):
     labels: Labels to apply to backups created using this configuration.
     location: The location where the backup will be stored. Currently, the
       only supported option is to store the backup in the same region as the
-      cluster.
+      cluster. If empty, defaults to the region of the cluster.
     quantityBasedRetention: Quantity-based Backup retention policy to retain
       recent backups.
     timeBasedRetention: Time-based Backup retention policy.
@@ -892,7 +965,8 @@ class Cluster(_messages.Message):
     automatedBackupPolicy: The automated backup policy for this cluster. If no
       policy is provided then the default policy will be used. The default
       policy takes one backup a day, has a backup window of 1 hour, and
-      retains backups for 14 days.
+      retains backups for 14 days. For more information on the defaults,
+      consult the documentation for the message type.
     backupSource: Output only. Cluster created from backup.
     clusterType: Output only. The type of the cluster. This is an output-only
       field and it's populated at the Cluster creation time or the Cluster
@@ -937,6 +1011,8 @@ class Cluster(_messages.Message):
       service is actively updating the resource to reconcile them. This can
       happen due to user-triggered updates or system actions like failover or
       maintenance.
+    secondaryConfig: Cross Region replication config specific to SECONDARY
+      cluster.
     sslConfig: SSL configuration for this AlloyDB Cluster.
     state: Output only. The current serving state of the cluster.
     uid: Output only. The system-generated UID of the resource. The UID is
@@ -954,12 +1030,9 @@ class Cluster(_messages.Message):
     Values:
       CLUSTER_TYPE_UNSPECIFIED: The type of the cluster is unknown.
       PRIMARY: Primary cluster that support read and write operations.
-      SECONDARY: Secondary cluster that is replicating from another region.
-        This only supports read.
     """
     CLUSTER_TYPE_UNSPECIFIED = 0
     PRIMARY = 1
-    SECONDARY = 2
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
     r"""Output only. The database engine major version. This is an output-only
@@ -1076,10 +1149,11 @@ class Cluster(_messages.Message):
   network = _messages.StringField(16)
   pitrConfig = _messages.MessageField('PitrConfig', 17)
   reconciling = _messages.BooleanField(18)
-  sslConfig = _messages.MessageField('SslConfig', 19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  uid = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 19)
+  sslConfig = _messages.MessageField('SslConfig', 20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  uid = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
 
 
 class ConnectionInfo(_messages.Message):
@@ -1448,13 +1522,10 @@ class Instance(_messages.Message):
         of size 1 can only have zonal availability. * Read pools with node
         count of 2 or more can have regional availability (nodes are present
         in 2 or more zones in a region).
-      SECONDARY: SECONDARY instances support read operations only. SECONDARY
-        instance is a cross-region read replica
     """
     INSTANCE_TYPE_UNSPECIFIED = 0
     PRIMARY = 1
     READ_POOL = 2
-    SECONDARY = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current serving state of the instance.
@@ -1901,6 +1972,34 @@ class PitrSource(_messages.Message):
   pointInTime = _messages.StringField(2)
 
 
+class PromoteClusterRequest(_messages.Message):
+  r"""Message for promoting a Cluster
+
+  Fields:
+    etag: Optional. The current etag of the Cluster. If an etag is provided
+      and does not match the current etag of the Cluster, deletion will be
+      blocked and an ABORTED error will be returned.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation (e.g.
+      permission checks and any other type of validation), but do not actually
+      execute the delete.
+  """
+
+  etag = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
+
+
 class QuantityBasedRetention(_messages.Message):
   r"""A quantity based policy specifies that a certain number of the most
   recent successful backups should be retained.
@@ -1953,9 +2052,7 @@ class RestoreClusterRequest(_messages.Message):
   Fields:
     backupSource: Backup source.
     cluster: Required. The resource being created
-    clusterId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and cluster_id from the method_signature
-      of Create RPC
+    clusterId: Required. ID of the requesting object.
     pitrSource: Point in time recovery source. PITR needs to be enabled in the
       source cluster for this operation to succeed.
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -1980,6 +2077,18 @@ class RestoreClusterRequest(_messages.Message):
   pitrSource = _messages.MessageField('PitrSource', 4)
   requestId = _messages.StringField(5)
   validateOnly = _messages.BooleanField(6)
+
+
+class SecondaryConfig(_messages.Message):
+  r"""Configuration information for the secondary cluster. This should be set
+  if and only if the cluster is of type SECONDARY.
+
+  Fields:
+    primaryClusterName: The name of the primary cluster name with the format:
+      * projects/{project}/locations/{region}/clusters/{cluster_id}
+  """
+
+  primaryClusterName = _messages.StringField(1)
 
 
 class SslConfig(_messages.Message):
@@ -2265,11 +2374,12 @@ class WeeklySchedule(_messages.Message):
     DaysOfWeekValueListEntryValuesEnum:
 
   Fields:
-    daysOfWeek: The days of the week to perform a backup. At least one day of
-      the week must be provided.
-    startTimes: The times during the day to start a backup. At least one start
-      time must be provided. The start times are assumed to be in UTC and to
-      be an exact hour (e.g., 04:00:00).
+    daysOfWeek: The days of the week to perform a backup. If this field is
+      left empty, the default of every day of the week is used.
+    startTimes: The times during the day to start a backup. The start times
+      are assumed to be in UTC and to be an exact hour (e.g., 04:00:00). If no
+      start times are provided, a single fixed start time is chosen
+      arbitrarily.
   """
 
   class DaysOfWeekValueListEntryValuesEnum(_messages.Enum):

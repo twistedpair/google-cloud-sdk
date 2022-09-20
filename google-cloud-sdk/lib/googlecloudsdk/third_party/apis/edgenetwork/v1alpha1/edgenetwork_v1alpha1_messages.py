@@ -1600,6 +1600,10 @@ class RouteStatus(_messages.Message):
   r"""RouteStatus contains fields corresponding to metrics related to the
   custom northbound static routes advertised on the router.
 
+  Enums:
+    RouteInstallStatusValueValuesEnum: An enum representing the status of the
+      route installation.
+
   Fields:
     network: Name of the network of which this route is part.
     nextHop: Next hop for this route (IP address).
@@ -1624,6 +1628,24 @@ class RouteStatus(_messages.Message):
       `network` instead.
   """
 
+  class RouteInstallStatusValueValuesEnum(_messages.Enum):
+    r"""An enum representing the status of the route installation.
+
+    Values:
+      ROUTE_INSTALL_STATUS_UNSPECIFIED: The install status was not specified.
+      ROUTE_INSTALL_STATUS_ACTIVE: The route was installed correctly and is
+        active.
+      ROUTE_INSTALL_STATUS_PENDING: The route has not been installed, but
+        there's no error (for example, the route is in the process of being
+        installed)
+      ROUTE_INSTALL_STATUS_FAILED: The route installation failed due to an
+        error.
+    """
+    ROUTE_INSTALL_STATUS_UNSPECIFIED = 0
+    ROUTE_INSTALL_STATUS_ACTIVE = 1
+    ROUTE_INSTALL_STATUS_PENDING = 2
+    ROUTE_INSTALL_STATUS_FAILED = 3
+
   network = _messages.StringField(1)
   nextHop = _messages.StringField(2)
   nextHopReachable = _messages.BooleanField(3)
@@ -1631,7 +1653,7 @@ class RouteStatus(_messages.Message):
   objectResolved = _messages.BooleanField(5)
   prefix = _messages.StringField(6)
   route = _messages.StringField(7)
-  routeInstallStatus = _messages.MessageField('RouteStatus', 8)
+  routeInstallStatus = _messages.EnumField('RouteInstallStatusValueValuesEnum', 8)
   routeInstallStatusAdditionalInfo = _messages.StringField(9)
   routeInstalled = _messages.BooleanField(10)
   vrf = _messages.StringField(11)

@@ -806,6 +806,21 @@ class CsvOptions(_messages.Message):
   skipLeadingRows = _messages.IntegerField(8)
 
 
+class DataMaskingStatistics(_messages.Message):
+  r"""A DataMaskingStatistics object.
+
+  Fields:
+    dataMaskingApplied: [Output-only] [Preview] Whether any accessed data was
+      protected by data masking. The actual evaluation is done by
+      accessStats.masked_field_count > 0. Since this is only used for the
+      discovery_doc generation purpose, as long as the type (boolean) matches,
+      client library can leverage this. The actual evaluation of the variable
+      is done else-where.
+  """
+
+  dataMaskingApplied = _messages.BooleanField(1, default=False)
+
+
 class Dataset(_messages.Message):
   r"""A Dataset object.
 
@@ -2194,6 +2209,8 @@ class JobStatistics(_messages.Message):
     copy: [Output-only] Statistics for a copy job.
     creationTime: [Output-only] Creation time of this job, in milliseconds
       since the epoch. This field will be present on all jobs.
+    dataMaskingStatistics: [Output-only] Statistics for data masking. Present
+      only for query and extract jobs.
     endTime: [Output-only] End time of this job, in milliseconds since the
       epoch. This field will be present whenever a job is in the DONE state.
     extract: [Output-only] Statistics for an extract job.
@@ -2239,22 +2256,23 @@ class JobStatistics(_messages.Message):
   completionRatio = _messages.FloatField(1)
   copy = _messages.MessageField('JobStatistics5', 2)
   creationTime = _messages.IntegerField(3)
-  endTime = _messages.IntegerField(4)
-  extract = _messages.MessageField('JobStatistics4', 5)
-  load = _messages.MessageField('JobStatistics3', 6)
-  numChildJobs = _messages.IntegerField(7)
-  parentJobId = _messages.StringField(8)
-  query = _messages.MessageField('JobStatistics2', 9)
-  quotaDeferments = _messages.StringField(10, repeated=True)
-  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 11, repeated=True)
-  reservation_id = _messages.StringField(12)
-  rowLevelSecurityStatistics = _messages.MessageField('RowLevelSecurityStatistics', 13)
-  scriptStatistics = _messages.MessageField('ScriptStatistics', 14)
-  sessionInfo = _messages.MessageField('SessionInfo', 15)
-  startTime = _messages.IntegerField(16)
-  totalBytesProcessed = _messages.IntegerField(17)
-  totalSlotMs = _messages.IntegerField(18)
-  transactionInfo = _messages.MessageField('TransactionInfo', 19)
+  dataMaskingStatistics = _messages.MessageField('DataMaskingStatistics', 4)
+  endTime = _messages.IntegerField(5)
+  extract = _messages.MessageField('JobStatistics4', 6)
+  load = _messages.MessageField('JobStatistics3', 7)
+  numChildJobs = _messages.IntegerField(8)
+  parentJobId = _messages.StringField(9)
+  query = _messages.MessageField('JobStatistics2', 10)
+  quotaDeferments = _messages.StringField(11, repeated=True)
+  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 12, repeated=True)
+  reservation_id = _messages.StringField(13)
+  rowLevelSecurityStatistics = _messages.MessageField('RowLevelSecurityStatistics', 14)
+  scriptStatistics = _messages.MessageField('ScriptStatistics', 15)
+  sessionInfo = _messages.MessageField('SessionInfo', 16)
+  startTime = _messages.IntegerField(17)
+  totalBytesProcessed = _messages.IntegerField(18)
+  totalSlotMs = _messages.IntegerField(19)
+  transactionInfo = _messages.MessageField('TransactionInfo', 20)
 
 
 class JobStatistics2(_messages.Message):

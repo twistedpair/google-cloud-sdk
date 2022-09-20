@@ -137,7 +137,7 @@ def AddMigrationJobResourceArgs(parser, verb, required=False):
       presentation_specs.ResourcePresentationSpec(
           '--destination',
           GetConnectionProfileResourceSpec(),
-          'ID of the destination connection profile, representing the'
+          'ID of the destination connection profile, representing the '
           'destination database.',
           required=required,
           flag_name_overrides={'region': ''})

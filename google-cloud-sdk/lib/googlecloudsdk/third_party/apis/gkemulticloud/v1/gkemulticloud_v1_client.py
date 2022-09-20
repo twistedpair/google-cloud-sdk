@@ -107,7 +107,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
         method_id='gkemulticloud.projects.locations.attachedClusters.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'etag', 'validateOnly'],
+        query_params=['allowMissing', 'etag', 'ignoreErrors', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='GkemulticloudProjectsLocationsAttachedClustersDeleteRequest',

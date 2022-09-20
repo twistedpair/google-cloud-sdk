@@ -36,11 +36,12 @@ DISK_TYPE_PD_STANDARD = 'pd-standard'
 DISK_TYPE_PD_BALANCED = 'pd-balanced'
 DISK_TYPE_PD_SSD = 'pd-ssd'
 DISK_TYPE_PD_EXTREME = 'pd-extreme'
-DISK_TYPE_CS_EXTREME = 'cs-extreme'
+DISK_TYPE_HD_EXTREME = 'hyperdisk-extreme'
+DISK_TYPE_HD_THROUGHPUT = 'hyperdisk-throughput'
 
-# Provisioned IOPS for pd-extreme disks
+# Provisioned IOPS for pd-extreme/cs-extreme disks
 MIN_PROVISIONED_IOPS = 10000
-MAX_PROVISIONED_IOPS = 120000
+MAX_PROVISIONED_IOPS = 300000
 DEFAULT_PROVISIONED_IOPS = 100000
 
 # Default size for each disk type
@@ -50,7 +51,8 @@ DEFAULT_DISK_SIZE_GB_MAP = {
     DISK_TYPE_PD_BALANCED: 100,
     DISK_TYPE_PD_SSD: 100,
     DISK_TYPE_PD_EXTREME: 1000,
-    DISK_TYPE_CS_EXTREME: 1000,
+    DISK_TYPE_HD_EXTREME: 1000,
+    DISK_TYPE_HD_THROUGHPUT: 2048,
 }
 
 # The maximum number of results that can be returned in a single list

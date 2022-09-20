@@ -117,8 +117,8 @@ class TypeKit(object):
     Returns:
       str, a new name for the integration.
     """
-    del parameters  # Not used in here.
-    name = '{}-{}'.format(self.integration_type, service)
+    del service, parameters  # Not used in here.
+    name = '{}-{}'.format(self.integration_type, 1)
     while name in resources_map:
       # If name already taken, tries adding an integer suffix to it.
       # If suffixed name also exists, tries increasing the number until finding

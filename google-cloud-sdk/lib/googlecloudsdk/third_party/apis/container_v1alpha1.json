@@ -1610,16 +1610,6 @@
       "description": "Parameters for node pool-level network config. Only applicable if `ip_allocation_policy.use_ip_aliases` is true.",
       "type": "object",
       "properties": {
-        "createSubnetwork": {
-          "description": "Input only. ",
-          "type": "boolean"
-        },
-        "subnetwork": {
-          "type": "string"
-        },
-        "nodeIpv4CidrBlock": {
-          "type": "string"
-        },
         "createPodRange": {
           "description": "Input only. Whether to create a new range for pod IPs in this node pool. Defaults are provided for `pod_range` and `pod_ipv4_cidr_block` if they are not specified. If neither `create_pod_range` or `pod_range` are specified, the cluster-level default (`ip_allocation_policy.cluster_ipv4_cidr_block`) is used. Only applicable if `ip_allocation_policy.use_ip_aliases` is true. This field cannot be changed after the node pool has been created.",
           "type": "boolean"
@@ -1731,7 +1721,7 @@
           "description": "Canonical code of the condition.",
           "type": "string",
           "enumDescriptions": [
-            "Not an error; returned on success HTTP Mapping: 200 OK",
+            "Not an error; returned on success. HTTP Mapping: 200 OK",
             "The operation was cancelled, typically by the caller. HTTP Mapping: 499 Client Closed Request",
             "Unknown error. For example, this error may be returned when a `Status` value received from another address space belongs to an error space that is not known in this address space. Also errors raised by APIs that do not return enough error information may be converted to this error. HTTP Mapping: 500 Internal Server Error",
             "The client specified an invalid argument. Note that this differs from `FAILED_PRECONDITION`. `INVALID_ARGUMENT` indicates arguments that are problematic regardless of the state of the system (e.g., a malformed file name). HTTP Mapping: 400 Bad Request",
@@ -3986,6 +3976,14 @@
             "IPV4",
             "IPV4_IPV6"
           ]
+        },
+        "additionalPodRangesConfig": {
+          "description": "The additional pod ranges to be added to the cluster. These pod ranges can be used by node pools to allocate pod IPs.",
+          "$ref": "AdditionalPodRangesConfig"
+        },
+        "removedAdditionalPodRangesConfig": {
+          "description": "The additional pod ranges that are to be removed from the cluster. The pod ranges specified here must have been specified earlier in the 'additional_pod_ranges_config' argument.",
+          "$ref": "AdditionalPodRangesConfig"
         }
       }
     },
@@ -4041,6 +4039,20 @@
         "enabled": {
           "description": "Whether to send workload metrics from the cluster to Google Cloud Monitoring.",
           "type": "boolean"
+        }
+      }
+    },
+    "AdditionalPodRangesConfig": {
+      "id": "AdditionalPodRangesConfig",
+      "description": "AdditionalPodRangesConfig is the configuration for additional pod secondary ranges supporting the ClusterUpdate message.",
+      "type": "object",
+      "properties": {
+        "podRangeNames": {
+          "description": "Name for pod secondary ipv4 range which has the actual range defined ahead.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

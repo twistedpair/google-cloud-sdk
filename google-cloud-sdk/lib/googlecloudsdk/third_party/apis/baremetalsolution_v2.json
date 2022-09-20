@@ -1715,7 +1715,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The name of the provisioning config.",
+          "description": "Output only. The system-generated name of the provisioning config. This follows the UUID format.",
           "readOnly": true,
           "type": "string"
         },
@@ -1798,6 +1798,10 @@
         },
         "statusMessage": {
           "description": "Optional status messages associated with the FAILED state.",
+          "type": "string"
+        },
+        "customId": {
+          "description": "Optional. The user-defined identifier of the provisioning config.",
           "type": "string"
         }
       }
@@ -3484,7 +3488,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "The list of fields to update. The only currently supported fields are: `labels`, `reservations`",
+                      "description": "The list of fields to update. The only currently supported fields are: `labels`, `reservations`, `vrf.vlan_attachments`",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -4080,7 +4084,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. The name of the provisioning config.",
+                      "description": "Output only. The system-generated name of the provisioning config. This follows the UUID format.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/provisioningConfigs\/[^\/]+$",
                       "location": "path",
                       "required": true,

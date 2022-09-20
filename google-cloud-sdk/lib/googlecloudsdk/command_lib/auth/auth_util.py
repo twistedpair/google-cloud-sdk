@@ -322,17 +322,28 @@ def AddQuotaProjectToADC(quota_project):
     raise c_exc.BadFileException(
         'The application default credentials are not user credentials, quota '
         'project cannot be added.')
-  if not AdcHasGivenPermissionOnProject(
-      quota_project, permissions=[SERVICEUSAGE_PERMISSION]):
-    raise MissingPermissionOnQuotaProjectError(
-        'Cannot add the project "{}" to application default credentials (ADC) '
-        'as a quota project because the account in ADC does not have the '
-        '"{}" permission on this project.'.format(quota_project,
-                                                  SERVICEUSAGE_PERMISSION))
+
   credentials, _ = c_creds.GetGoogleAuthDefault().load_credentials_from_file(
       config.ADCFilePath())
+  previous_quota_project = credentials.quota_project_id
+
   adc_path = c_creds.ADC(credentials).DumpExtendedADCToFile(
       quota_project=quota_project)
+
+  try:
+    if not AdcHasGivenPermissionOnProject(
+        quota_project, permissions=[SERVICEUSAGE_PERMISSION]):
+      raise MissingPermissionOnQuotaProjectError(
+          'Cannot add the project "{}" to application default credentials (ADC) '
+          'as a quota project because the account in ADC does not have the '
+          '"{}" permission on this project.'.format(quota_project,
+                                                    SERVICEUSAGE_PERMISSION))
+  except Exception:
+    # Rollback the quota project before surfacing any exception that occurred.
+    c_creds.ADC(credentials).DumpExtendedADCToFile(
+        quota_project=previous_quota_project)
+    raise
+
   LogADCIsWritten(adc_path)
   LogQuotaProjectAdded(quota_project)
 

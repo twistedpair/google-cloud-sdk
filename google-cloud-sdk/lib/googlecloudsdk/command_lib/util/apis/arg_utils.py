@@ -46,9 +46,13 @@ class UnknownFieldError(Error):
 
   def __init__(self, field_name, message):
     super(UnknownFieldError, self).__init__(
-        'Field [{}] not found in message [{}]. Available fields: [{}]'
-        .format(field_name, message.__class__.__name__,
-                ', '.join(f.name for f in message.all_fields())))
+        'Field [{}] not found in message [{}]. Available fields: [{}]'.format(
+            field_name, _GetFullClassName(message),
+            ', '.join(f.name for f in message.all_fields())))
+
+
+def _GetFullClassName(obj):
+  return '{}.{}'.format(type(obj).__module__, type(obj).__name__)
 
 
 class InvalidFieldPathError(Error):
@@ -57,7 +61,7 @@ class InvalidFieldPathError(Error):
   def __init__(self, field_path, message, reason):
     super(InvalidFieldPathError, self).__init__(
         'Invalid field path [{}] for message [{}]. Details: [{}]'
-        .format(field_path, message.__class__.__name__, reason))
+        .format(field_path, _GetFullClassName(message), reason))
 
 
 class ArgumentGenerationError(Error):

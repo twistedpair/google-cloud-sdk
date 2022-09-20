@@ -409,7 +409,7 @@
           "$ref": "HiveMetastoreConfig"
         },
         "name": {
-          "description": "Immutable. The relative resource name of the metastore service, of the form:projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}.",
+          "description": "Immutable. The relative resource name of the metastore service, in the following format:projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}.",
           "type": "string"
         },
         "createTime": {
@@ -2000,7 +2000,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Immutable. The relative resource name of the metastore service, of the form:projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}.",
+                      "description": "Immutable. The relative resource name of the metastore service, in the following format:projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,

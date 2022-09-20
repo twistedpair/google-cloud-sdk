@@ -3760,6 +3760,37 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. State of the workspace resource.",
+          "readOnly": true,
+          "$ref": "WorkspaceLifecycleState"
+        }
+      }
+    },
+    "WorkspaceLifecycleState": {
+      "id": "WorkspaceLifecycleState",
+      "description": "WorkspaceLifecycleState describes the state of a Workspace resource.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Output only. The current state of the Workspace resource.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The code is not set.",
+            "The workspace is being created.",
+            "The workspace active.",
+            "The workspace is being deleted.",
+            "The workspace is being updated."
+          ],
+          "enum": [
+            "CODE_UNSPECIFIED",
+            "CREATING",
+            "READY",
+            "DELETING",
+            "UPDATING"
+          ]
         }
       }
     },
@@ -3769,7 +3800,25 @@
       "type": "object",
       "properties": {
         "workspaces": {
-          "description": "The list of fleet namespaces",
+          "description": "The list of workspaces",
+          "type": "array",
+          "items": {
+            "$ref": "Workspace"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the `ListWorkspaces` method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        }
+      }
+    },
+    "ListWorkspacesForMembershipResponse": {
+      "id": "ListWorkspacesForMembershipResponse",
+      "description": "List of paginated workspaces for a membership.",
+      "type": "object",
+      "properties": {
+        "workspaces": {
+          "description": "The list of workspaces",
           "type": "array",
           "items": {
             "$ref": "Workspace"
@@ -5124,6 +5173,42 @@
                   ],
                   "description": "Lists fleet namespaces of a given membership"
                 },
+                "listWorkspaces": {
+                  "id": "gkehub.projects.locations.memberships.listWorkspaces",
+                  "path": "v1alpha/{+parent}:listWorkspaces",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:listWorkspaces",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent (project, location, membership) where the Workspace will be listed. Specified in the format `projects\/*\/locations\/*\/memberships\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Token returned by previous call to `ListWorkspaces` which specifies the position in the list from where to continue listing the resources.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListWorkspacesForMembershipResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists workspaces of a given membership"
+                },
                 "validateCreate": {
                   "id": "gkehub.projects.locations.memberships.validateCreate",
                   "path": "v1alpha/{+parent}/memberships:validateCreate",
@@ -6370,6 +6455,42 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Lists Workspaces."
+                },
+                "listPermitted": {
+                  "id": "gkehub.projects.locations.workspaces.listPermitted",
+                  "path": "v1alpha/{+parent}/workspaces:listPermitted",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/workspaces:listPermitted",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent (project and location) where the Workspace will be listed. Specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Token returned by previous call to `ListWorkspaces` which specifies the position in the list from where to continue listing the resources.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListWorkspacesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists workspaces that the caller is permitted to access in IAM"
                 }
               }
             }

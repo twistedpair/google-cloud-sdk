@@ -81,6 +81,33 @@ class CloudtasksV2beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Buffer(self, request, global_params=None):
+      r"""Creates and buffers a new task without the need to explicitly define a Task message. The queue must have HTTP target. Note: This feature is in its experimental stage. You must request access to the API through the [Cloud Tasks BufferTasks Experiment Signup form](https://forms.gle/X8Zr5hiXH5tTGFqh8).
+
+      Args:
+        request: (CloudtasksProjectsLocationsQueuesTasksBufferRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BufferTaskResponse) The response message.
+      """
+      config = self.GetMethodConfig('Buffer')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Buffer.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks:buffer',
+        http_method='POST',
+        method_id='cloudtasks.projects.locations.queues.tasks.buffer',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2beta2/{+parent}/tasks:buffer',
+        request_field='bufferTaskRequest',
+        request_type_name='CloudtasksProjectsLocationsQueuesTasksBufferRequest',
+        response_type_name='BufferTaskResponse',
+        supports_download=False,
+    )
+
     def CancelLease(self, request, global_params=None):
       r"""Cancel a pull task's lease. The worker can use this method to cancel a task's lease by setting its schedule_time to now. This will make the task available to be leased to the next caller of LeaseTasks.
 
@@ -306,33 +333,6 @@ class CloudtasksV2beta2(base_api.BaseApiClient):
       super(CloudtasksV2beta2.ProjectsLocationsQueuesService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def Buffer(self, request, global_params=None):
-      r"""Note: This feature is in its experimental stage. You must request access to the API through the [Cloud Tasks BufferQueues Experiment Signup form](https://forms.gle/X8Zr5hiXH5tTGFqh8). Creates and buffers a new task without the need to explicitly define a Task message. The queue must be an http queue (i.e., must have HTTP target). This method is used for a simplified application of Cloud Tasks queues in buffer and rate limitting HTTP requests.
-
-      Args:
-        request: (CloudtasksProjectsLocationsQueuesBufferRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (BufferQueueResponse) The response message.
-      """
-      config = self.GetMethodConfig('Buffer')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Buffer.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:buffer',
-        http_method='POST',
-        method_id='cloudtasks.projects.locations.queues.buffer',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v2beta2/{+name}:buffer',
-        request_field='bufferQueueRequest',
-        request_type_name='CloudtasksProjectsLocationsQueuesBufferRequest',
-        response_type_name='BufferQueueResponse',
-        supports_download=False,
-    )
 
     def Create(self, request, global_params=None):
       r"""Creates a queue. Queues created with this method allow tasks to live for a maximum of 31 days. After a task is 31 days old, the task will be deleted regardless of whether it was dispatched or not. WARNING: Using this method may have unintended side effects if you are using an App Engine `queue.yaml` or `queue.xml` file to manage your queues. Read [Overview of Queue Management and queue.yaml](https://cloud.google.com/tasks/docs/queue-yaml) before using this method.

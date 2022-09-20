@@ -71,6 +71,22 @@ def MergeMetadata(api_version='v2'):
   return Process
 
 
+def RemoveConflictingDefaults(unused_ref, args, request):
+  """Unset acceleratorType flag when it conflicts with topology arguments.
+
+  Args:
+    unused_ref: ref to the service.
+    args:  The args for this method.
+    request: The request to be made.
+
+  Returns:
+    Request with metadata field populated.
+  """
+  if args.topology is not None:
+    request.node.acceleratorType = None
+  return request
+
+
 def GetMessagesModule(version='v2'):
   return apis.GetMessagesModule('tpu', version)
 

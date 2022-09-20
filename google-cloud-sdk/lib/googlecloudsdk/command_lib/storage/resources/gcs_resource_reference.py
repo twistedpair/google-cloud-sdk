@@ -51,6 +51,7 @@ def _get_json_dump(resource):
 
 def _message_to_dict(message):
   """Converts message to dict. Returns None is message is None."""
+  # TODO(b/246556206): Remove.
   if message is not None:
     result = encoding.MessageToDict(message)
     # Explicit comparison is needed because we don't want to return None for
@@ -62,7 +63,83 @@ def _message_to_dict(message):
 
 
 class GcsBucketResource(resource_reference.BucketResource):
-  """API-specific subclass for handling metadata."""
+  """API-specific subclass for handling metadata.
+
+  Additional GCS Attributes:
+    default_acl (dict|None): Default object ACLs for the bucket.
+    default_kms_key (str|None): Default KMS key for objects in the bucket.
+    location_type (str|None): Region, dual-region, etc.
+    project_number (int|None): The project number to which the bucket belongs
+      (different from project name and project ID).
+    public_access_prevention (str|None): Public access prevention status.
+    rpo (str|None): Recovery Point Objective status.
+    satisfies_pzs (bool|None): Zone Separation status.
+  """
+
+  def __init__(
+      self,
+      storage_url_object,
+      acl=None,
+      cors_config=None,
+      creation_time=None,
+      default_acl=None,
+      default_event_based_hold=None,
+      default_kms_key=None,
+      default_storage_class=None,
+      etag=None,
+      lifecycle_config=None,
+      labels=None,
+      location=None,
+      location_type=None,
+      logging_config=None,
+      metadata=None,
+      metageneration=None,
+      project_number=None,
+      public_access_prevention=None,
+      requester_pays=None,
+      retention_policy=None,
+      rpo=None,
+      satisfies_pzs=None,
+      # TODO(b/246619585): Check if we really want this default.
+      uniform_bucket_level_access=False,
+      update_time=None,
+      versioning_enabled=None,
+      website_config=None):
+    """Initializes resource. Args are a subset of attributes."""
+    super(GcsBucketResource, self).__init__(
+        storage_url_object,
+        acl=acl,
+        cors_config=cors_config,
+        creation_time=creation_time,
+        default_event_based_hold=default_event_based_hold,
+        default_storage_class=default_storage_class,
+        etag=etag,
+        labels=labels,
+        lifecycle_config=lifecycle_config,
+        location=location,
+        logging_config=logging_config,
+        metageneration=metageneration,
+        metadata=metadata,
+        requester_pays=requester_pays,
+        retention_policy=retention_policy,
+        uniform_bucket_level_access=uniform_bucket_level_access,
+        update_time=update_time,
+        versioning_enabled=versioning_enabled,
+        website_config=website_config,
+    )
+    self.default_acl = default_acl
+    self.default_kms_key = default_kms_key
+    self.location_type = location_type
+    self.project_number = project_number
+    self.public_access_prevention = public_access_prevention
+    self.rpo = rpo
+    self.satisfies_pzs = satisfies_pzs
+
+  @property
+  def retention_period(self):
+    if self.retention_policy and self.retention_policy.get('retentionPeriod'):
+      return int(self.retention_policy['retentionPeriod'])
+    return None
 
   def get_displayable_bucket_data(self):
     """Returns the DisplaybleBucketData instance."""
@@ -100,12 +177,21 @@ class GcsBucketResource(resource_reference.BucketResource):
                         self.metadata.billing.requesterPays),
         retention_policy=_message_to_dict(self.metadata.retentionPolicy),
         rpo=self.metadata.rpo,
-        satisifes_pzs=self.metadata.satisfiesPZS,
+        satisfies_pzs=self.metadata.satisfiesPZS,
         storage_class=self.metadata.storageClass,
         update_time=self.metadata.updated,
         versioning_enabled=(self.metadata.versioning and
                             self.metadata.versioning.enabled),
         website_config=_message_to_dict(self.metadata.website))
+
+  def __eq__(self, other):
+    return (super(GcsBucketResource, self).__eq__(other) and
+            self.default_acl == other.default_acl and
+            self.default_kms_key == other.default_kms_key and
+            self.location_type == other.location_type and
+            self.project_number == other.project_number and
+            self.public_access_prevention == other.public_access_prevention and
+            self.rpo == other.rpo and self.satisfies_pzs == other.satisfies_pzs)
 
   def get_json_dump(self):
     return _get_json_dump(self)

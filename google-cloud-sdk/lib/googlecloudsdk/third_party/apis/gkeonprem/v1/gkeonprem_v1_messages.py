@@ -1802,7 +1802,7 @@ class VmwareAutoResizeConfig(_messages.Message):
   r"""VmwareAutoResizeConfig provides auto resizing configurations.
 
   Fields:
-    enabled: Whether to enable master node auto resizing.
+    enabled: Whether to enable controle plane node auto resizing.
   """
 
   enabled = _messages.BooleanField(1)
@@ -2005,7 +2005,7 @@ class VmwareControlPlaneVsphereConfig(_messages.Message):
   r"""VmwareControlPlaneVsphereConfig Control Plane Node config.
 
   Fields:
-    datastore: The Vsphere datastore used by the Master Node.
+    datastore: The Vsphere datastore used by the Control Plane Node.
   """
 
   datastore = _messages.StringField(1)

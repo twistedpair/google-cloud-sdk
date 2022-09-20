@@ -20,6 +20,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from frozendict import frozendict
+from googlecloudsdk.api_lib.run.integrations import types_utils
+from googlecloudsdk.command_lib.run.integrations import deployment_states
 from googlecloudsdk.command_lib.run.integrations.formatters import custom_domain_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import domain_routing_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import fallback_formatter
@@ -33,7 +35,7 @@ INTEGRATION_PRINTER_FORMAT = 'integration'
 _FALLBACK_FORMATTER = fallback_formatter.FallbackFormatter()
 _INTEGRATION_FORMATTER_MAPS = frozendict({
     'custom-domain': custom_domain_formatter.CustomDomainFormatter(),
-    'domain-routing': domain_routing_formatter.DomainRoutingFormatter(),
+    'custom-domains': domain_routing_formatter.DomainRoutingFormatter(),
     'redis': redis_formatter.RedisFormatter(),
 })
 
@@ -56,6 +58,8 @@ class IntegrationPrinter(cp.CustomPrinterBase):
     lines = [
         self.Header(record),
         ' ',
+        self._DeploymentProgress(record[types_utils.LATEST_DEPLOYMENT_FIELD],
+                                 formatter),
         config_block,
         ' ',
         cp.Labeled([
@@ -90,8 +94,37 @@ class IntegrationPrinter(cp.CustomPrinterBase):
     formatter = GetFormatter(record['type'])
     resource_state = status.get('state', states.UNKNOWN)
     symbol = formatter.StatusSymbolAndColor(resource_state)
-    return con.Emphasize('{} {} integration {} in region {}'.format(
-        symbol, record.get('type'), record.get('name'), record.get('region')))
+    return con.Emphasize('{} Integration status: {} in region {}'.format(
+        symbol, record.get('name'), record.get('region')))
+
+  def _DeploymentProgress(self, deployment, formatter):
+    """Returns a message denoting the deployment progress.
+
+    If there is no ongoing deployment and the deployment was successful, then
+    this will be empty.
+
+    Currently this only shows something if the latest deployment was a failure.
+    In the future this will be updated to show more granular statuses as the
+    deployment is ongoing.
+
+    Args:
+      deployment:  The deployment object
+      formatter: The specific formatter used for the integration type.
+
+    Returns:
+      str, The message denoting the most recent deployment's progress (failure).
+    """
+    if deployment is None:
+      return ''
+
+    state = str(deployment.status.state)
+
+    if state == deployment_states.FAILED:
+      reason = deployment.status.errorMessage
+      symbol = formatter.StatusSymbolAndColor(states.FAILED)
+      return '{} Latest deployment: FAILED - {}\n'.format(symbol, reason)
+
+    return ''
 
 
 def GetFormatter(integration_type):

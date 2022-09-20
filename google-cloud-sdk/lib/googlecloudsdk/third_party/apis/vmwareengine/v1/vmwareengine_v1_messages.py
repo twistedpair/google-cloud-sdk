@@ -1721,8 +1721,8 @@ class Subnet(_messages.Message):
       false, the subnet cannot be modified through Google Cloud, only through
       NSX-T directly.
     state: Output only. The state of the resource.
-    type: Output only. The type of the subnet. For example "System Management"
-      or "NSX-T Segment".
+    type: Output only. The type of the subnet. For example "management" or
+      "userDefined".
     uid: Output only. System-generated unique identifier for the resource.
     updateTime: Output only. Last update time of this resource.
   """

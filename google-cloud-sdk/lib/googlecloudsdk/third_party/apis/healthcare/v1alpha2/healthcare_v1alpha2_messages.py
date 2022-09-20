@@ -1559,6 +1559,37 @@ class FhirStore(_messages.Message):
   version = _messages.EnumField('VersionValueValuesEnum', 8)
 
 
+class FhirStoreMetric(_messages.Message):
+  r"""Count of resources and total storage size by type for a given FHIR
+  store.
+
+  Fields:
+    count: The total count of FHIR resources in the store of this resource
+      type.
+    resourceType: The FHIR resource type this metric applies to.
+    structuredStorageSizeBytes: The total amount of structured storage used by
+      FHIR resources of this resource type in the store.
+  """
+
+  count = _messages.IntegerField(1)
+  resourceType = _messages.StringField(2)
+  structuredStorageSizeBytes = _messages.IntegerField(3)
+
+
+class FhirStoreMetrics(_messages.Message):
+  r"""List of metrics for a given FHIR store.
+
+  Fields:
+    metrics: List of FhirStoreMetric by resource type.
+    name: The resource name of the FHIR store to get metrics for, in the
+      format `projects/{project_id}/datasets/{dataset_id}/fhirStores/{fhir_sto
+      re_id}`.
+  """
+
+  metrics = _messages.MessageField('FhirStoreMetric', 1, repeated=True)
+  name = _messages.StringField(2)
+
+
 class FieldMetadata(_messages.Message):
   r"""Specifies FHIR paths to match and how to handle the de-identification of
   matching fields.
@@ -3278,6 +3309,18 @@ class HealthcareProjectsLocationsDatasetsFhirStoresExportRequest(_messages.Messa
 
   exportResourcesRequest = _messages.MessageField('ExportResourcesRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresGetFHIRStoreMetricsRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsFhirStoresGetFHIRStoreMetricsRequest
+  object.
+
+  Fields:
+    name: The resource name of the FHIR store to get metrics for.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest(_messages.Message):
@@ -5296,8 +5339,9 @@ class StreamConfig(_messages.Message):
       destination store must set `enable_update_create` to true. The
       destination store must have `disable_referential_integrity` set to true.
       If a resource cannot be de-identified, errors will be logged to Cloud
-      Logging (see [Viewing error logs in Cloud Logging](/healthcare/docs/how-
-      tos/cloud-logging)).
+      Logging (see [Viewing error logs in Cloud
+      Logging](https://cloud.google.com/healthcare/docs/how-tos/cloud-
+      logging)).
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an

@@ -1890,9 +1890,9 @@ class MetastoreProjectsLocationsServicesPatchRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsServicesPatchRequest object.
 
   Fields:
-    name: Immutable. The relative resource name of the metastore service, of
-      the form:projects/{project_number}/locations/{location_id}/services/{ser
-      vice_id}.
+    name: Immutable. The relative resource name of the metastore service, in
+      the following format:projects/{project_number}/locations/{location_id}/s
+      ervices/{service_id}.
     requestId: Optional. A request ID. Specify a unique request ID to allow
       the server to ignore the request if it has completed. The server will
       ignore subsequent requests that provide a duplicate request ID for at
@@ -2359,9 +2359,9 @@ class Service(_messages.Message):
       should be integrated with external services and systems.
     metadataManagementActivity: Output only. The metadata management
       activities of the metastore service.
-    name: Immutable. The relative resource name of the metastore service, of
-      the form:projects/{project_number}/locations/{location_id}/services/{ser
-      vice_id}.
+    name: Immutable. The relative resource name of the metastore service, in
+      the following format:projects/{project_number}/locations/{location_id}/s
+      ervices/{service_id}.
     network: Immutable. The relative resource name of the VPC network on which
       the instance can be accessed. It is specified in the following
       form:projects/{project_number}/global/networks/{network_id}.

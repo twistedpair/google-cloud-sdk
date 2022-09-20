@@ -33,6 +33,7 @@ import dateutil
 from google.auth import exceptions as google_auth_exceptions
 from google.auth import external_account as google_auth_external_account
 import google.auth.compute_engine as google_auth_gce
+from googlecloudsdk.api_lib.auth import util as auth_util
 from googlecloudsdk.core import config
 from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import http
@@ -626,13 +627,19 @@ def _LoadFromFileOverride(cred_file_override, scopes, use_google_auth):
 
     # Set token_uri after scopes since token_uri needs to be explicitly
     # preserved when scopes are applied.
-    token_uri_override = properties.VALUES.auth.token_host.Get()
-    if token_uri_override:
-      cred_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(cred)
-      if cred_type == c_creds.CredentialTypeGoogleAuth.SERVICE_ACCOUNT:
+    cred_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(cred)
+    if cred_type == c_creds.CredentialTypeGoogleAuth.SERVICE_ACCOUNT:
+      token_uri_override = properties.VALUES.auth.token_host.Get()
+
+      if token_uri_override:
         # pylint: disable=protected-access
         cred._token_uri = token_uri_override
         # pylint: enable=protected-access
+    elif cred_type == c_creds.CredentialTypeGoogleAuth.USER_ACCOUNT:
+      token_uri_override = auth_util.GetTokenUri()
+      # pylint: disable=protected-access
+      cred._token_uri = token_uri_override
+      # pylint: enable=protected-access
 
     # The credential override is not stored in credential store, but we still
     # want to cache access tokens between invocations.
@@ -1177,12 +1184,9 @@ def AcquireFromToken(refresh_token,
     * google-auth is not globally disabled by auth/disable_load_google_auth.
   """
   use_google_auth = use_google_auth and (not GoogleAuthDisabledGlobally())
-  if token_uri is None:
-    if properties.VALUES.context_aware.use_client_certificate.GetBool():
-      token_uri = properties.VALUES.auth.mtls_token_host.Get(required=True)
-    else:
-      token_uri = properties.VALUES.auth.token_host.Get(required=True)
 
+  if token_uri is None:
+    token_uri = auth_util.GetTokenUri()
   if use_google_auth:
     # Import only when necessary to decrease the startup time. Move it to
     # global once google-auth is ready to replace oauth2client.

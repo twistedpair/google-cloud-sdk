@@ -452,7 +452,8 @@
               "Operation locks",
               "Show snapshot",
               "Show previous versions",
-              "Access based enumeration"
+              "Access based enumeration",
+              "Continuously available enumeration"
             ],
             "enum": [
               "SMB_SETTINGS_UNSPECIFIED",
@@ -463,7 +464,8 @@
               "OPLOCKS",
               "SHOW_SNAPSHOT",
               "SHOW_PREVIOUS_VERSIONS",
-              "ACCESS_BASED_ENUMERATION"
+              "ACCESS_BASED_ENUMERATION",
+              "CONTINUOUSLY_AVAILABLE"
             ]
           }
         },
@@ -785,7 +787,13 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The resource name of the snapshot.",
+          "description": "Output only. The resource name of the snapshot. Format: `projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}\/snapshots\/{snapshot_id}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "snapshotId": {
+          "description": "Output only. The ID of the snapshot.",
+          "readOnly": true,
           "type": "string"
         },
         "state": {
@@ -867,6 +875,11 @@
       "description": "ActiveDirectory is the public representation of the active directory config.",
       "type": "object",
       "properties": {
+        "name": {
+          "description": "Output only. The resource name of the active directory. Format: `projects\/{project_number}\/locations\/{location_id}\/activedirectories\/{active_directory_id}`.",
+          "readOnly": true,
+          "type": "string"
+        },
         "createTime": {
           "description": "Output only. Create time of the active directory.",
           "readOnly": true,
@@ -895,10 +908,6 @@
             "DELETING",
             "ERROR"
           ]
-        },
-        "name": {
-          "description": "Required. User specified name for the AD. Must be unique to the project.",
-          "type": "string"
         },
         "domain": {
           "description": "Required. Name of the Active Directory domain",
@@ -1720,8 +1729,8 @@
                           "required": true,
                           "type": "string"
                         },
-                        "name": {
-                          "description": "Required. The name for the snapshot. The name must be unique within the specified volume. This value must start with a lowercase letter followed by up to 62 lowercase letters, numbers, or hyphens, and cannot end with a hyphen.",
+                        "snapshotId": {
+                          "description": "Required. ID of the snapshot to create. This value must start with a lowercase letter followed by up to 62 lowercase letters, numbers, or hyphens, and cannot end with a hyphen.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1772,7 +1781,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the snapshot.",
+                          "description": "Output only. The resource name of the snapshot. Format: `projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}\/snapshots\/{snapshot_id}`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/snapshots\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1889,8 +1898,8 @@
                       "required": true,
                       "type": "string"
                     },
-                    "name": {
-                      "description": "Required. Name of the active directory to create.",
+                    "activeDirectoryId": {
+                      "description": "Required. ID of the active directory to create.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1916,7 +1925,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. User specified name for the AD. Must be unique to the project.",
+                      "description": "Output only. The resource name of the active directory. Format: `projects\/{project_number}\/locations\/{location_id}\/activedirectories\/{active_directory_id}`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/activedirectories\/[^\/]+$",
                       "location": "path",
                       "required": true,

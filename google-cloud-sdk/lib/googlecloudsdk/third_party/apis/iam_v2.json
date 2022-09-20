@@ -331,31 +331,6 @@
         }
       }
     },
-    "GoogleIamV2ListApplicablePoliciesResponse": {
-      "id": "GoogleIamV2ListApplicablePoliciesResponse",
-      "description": "Response message for ListApplicablePolicies method.",
-      "type": "object",
-      "properties": {
-        "policies": {
-          "description": "Ordered list starting from the resource on which this API was called then proceeding up the hierarchy. Policies for the same attachment point will be grouped, but no further ordering is guaranteed.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleIamV2Policy"
-          }
-        },
-        "inaccessible": {
-          "description": "A list of resources that the caller does not have permission to retrieve. List or Get can be used to get detailed error messages. Get: `policies\/{attachment-point}\/denypolicies\/{policy-id}` List: `policies\/{attachment-point}\/denypolicies`",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "nextPageToken": {
-          "description": "A page token that can be used in a ListApplicablePoliciesRequest to retrieve the next page. If this field is blank, there are no additional pages.",
-          "type": "string"
-        }
-      }
-    },
     "GoogleIamAdminV1AuditData": {
       "id": "GoogleIamAdminV1AuditData",
       "description": "Audit log information specific to Cloud IAM admin APIs. This message is serialized as an `Any` type in the `ServiceData` message of an `AuditLog` message.",
@@ -652,51 +627,6 @@
               "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
             }
           }
-        }
-      }
-    },
-    "v2": {
-      "methods": {
-        "listApplicablePolicies": {
-          "id": "iam.listApplicablePolicies",
-          "path": "v2/{+attachmentPoint}:listApplicablePolicies",
-          "flatPath": "v2/{v2Id}:listApplicablePolicies",
-          "httpMethod": "GET",
-          "parameters": {
-            "attachmentPoint": {
-              "description": "Required. The Cloud resource at which the applicable policies are to be retrieved. Format: `{attachment-point}` Use the URL-encoded full resource name, which means that the forward-slash character, `\/`, must be written as `%2F`. For example, `cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-project`.",
-              "pattern": "^[^\/]+$",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            },
-            "filter": {
-              "description": "Filtering currently only supports the kind of policies to return, and must be in the format \u201Ckind:[policyKind1] OR kind:[policyKind2]\u201D. New policy kinds may be added in the future without notice. Example value: \u201Ckind:denyPolicies\u201D",
-              "location": "query",
-              "type": "string"
-            },
-            "pageToken": {
-              "description": "If present, then retrieve the batch of results following the results from the preceding call to this method. `page_token` must be the value of `next_page_token` ListApplicablePoliciesResponse.next_page_token from the previous response. The values of other method parameters should be identical to those in the previous call.",
-              "location": "query",
-              "type": "string"
-            },
-            "pageSize": {
-              "description": "Limit on the number of policies to include in the response. Further policies can subsequently be obtained by including the ListApplicablePoliciesResponse.next_page_token in a subsequent request. The minimum is 25, and the maximum is 100.",
-              "location": "query",
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          "parameterOrder": [
-            "attachmentPoint"
-          ],
-          "response": {
-            "$ref": "GoogleIamV2ListApplicablePoliciesResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Retrieves all the policies that are attached to the specified resource, or anywhere in the ancestry of the resource. For example, for a project this endpoint would return all the `denyPolicy` kind policies attached to the project, its parent folder (if any), and its parent organization (if any). The endpoint requires the same permissions that it would take to call `ListPolicies` or `GetPolicy`. The main reason to use this endpoint is as a policy admin to debug access issues for a resource."
         }
       }
     }

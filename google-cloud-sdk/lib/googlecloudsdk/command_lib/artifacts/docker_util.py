@@ -606,7 +606,7 @@ def DescribeDockerImage(args):
   }
 
   metadata = ca_util.GetContainerAnalysisMetadata(docker_version, args)
-  result.update(metadata.ImagesDescribeView())
+  result.update(metadata.ArtifactsDescribeView())
   return result
 
 

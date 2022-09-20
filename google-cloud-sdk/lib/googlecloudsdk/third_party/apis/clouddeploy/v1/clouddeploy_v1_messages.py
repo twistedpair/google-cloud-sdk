@@ -192,8 +192,8 @@ class CloudRunLocation(_messages.Message):
   r"""Information specifying where to deploy a Cloud Run Service.
 
   Fields:
-    location: Required. The location where the Cloud Run Service should be
-      located. Format is `projects/{project}/locations/{location}`.
+    location: Required. The location for the Cloud Run Service. Format must be
+      `projects/{project}/locations/{location}`.
   """
 
   location = _messages.StringField(1)
@@ -1189,9 +1189,9 @@ class DeployJobRun(_messages.Message):
     Values:
       FAILURE_CAUSE_UNSPECIFIED: No reason for failure is specified.
       CLOUD_BUILD_UNAVAILABLE: Cloud Build is not available, either because it
-        is not enabled or because Cloud Deploy has insufficient permissions.
-        See [required permission](/deploy/docs/cloud-deploy-service-
-        account#required_permissions).
+        is not enabled or because Google Cloud Deploy has insufficient
+        permissions. See [Required permission](/deploy/docs/cloud-deploy-
+        service-account#required_permissions).
       EXECUTION_FAILED: The deploy operation did not complete successfully;
         check Cloud Build logs.
       DEADLINE_EXCEEDED: The deploy build did not complete within the alloted
@@ -1614,7 +1614,7 @@ class Location(_messages.Message):
 
 
 class Metadata(_messages.Message):
-  r"""Metadata surfaces information associated with a `Rollout` to the user.
+  r"""Metadata includes information associated with a `Rollout`.
 
   Fields:
     cloudRun: Output only. The name of the Cloud Run Service that is
@@ -2868,9 +2868,9 @@ class TargetRender(_messages.Message):
     Values:
       FAILURE_CAUSE_UNSPECIFIED: No reason for failure is specified.
       CLOUD_BUILD_UNAVAILABLE: Cloud Build is not available, either because it
-        is not enabled or because Cloud Deploy has insufficient permissions.
-        See [required permission](/deploy/docs/cloud-deploy-service-
-        account#required_permissions).
+        is not enabled or because Google Cloud Deploy has insufficient
+        permissions. See [required permission](/deploy/docs/cloud-deploy-
+        service-account#required_permissions).
       EXECUTION_FAILED: The render operation did not complete successfully;
         check Cloud Build logs.
     """
@@ -2972,9 +2972,9 @@ class VerifyJobRun(_messages.Message):
     Values:
       FAILURE_CAUSE_UNSPECIFIED: No reason for failure is specified.
       CLOUD_BUILD_UNAVAILABLE: Cloud Build is not available, either because it
-        is not enabled or because Cloud Deploy has insufficient permissions.
-        See [required permission](/deploy/docs/cloud-deploy-service-
-        account#required_permissions).
+        is not enabled or because Google Cloud Deploy has insufficient
+        permissions. See [required permission](/deploy/docs/cloud-deploy-
+        service-account#required_permissions).
       EXECUTION_FAILED: The verify operation did not complete successfully;
         check Cloud Build logs.
       DEADLINE_EXCEEDED: The verify build did not complete within the alloted

@@ -498,6 +498,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "customizedAttribution": {
+          "description": "Optional. This flag is to support user customized attribution. If not provided, the default is `Machine Translated by Google`. Customized attribution should follow rules in https:\/\/cloud.google.com\/translate\/attribution#attribution_and_logos",
+          "type": "string"
         }
       }
     },

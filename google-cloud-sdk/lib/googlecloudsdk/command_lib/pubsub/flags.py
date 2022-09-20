@@ -447,6 +447,19 @@ def AddSchemaSettingsFlags(parser):
       required=True)
 
 
+def AddCommitSchemaFlags(parser):
+  definition_group = parser.add_group(
+      mutex=True, help='Schema definition', required=True)
+  definition_group.add_argument(
+      '--definition', type=str, help='The new definition of the schema.')
+  definition_group.add_argument(
+      '--definition-file',
+      type=arg_parsers.FileContents(),
+      help='File containing the new schema definition.')
+  parser.add_argument(
+      '--type', type=str, help='The type of the schema.', required=True)
+
+
 def AddTopicMessageRetentionFlags(parser, is_update):
   """Add flags for the topic message retention property to the parser.
 

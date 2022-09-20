@@ -385,7 +385,7 @@ class BaremetalsolutionProjectsLocationsNetworksPatchRequest(_messages.Message):
       `projects/{project}/locations/{location}/networks/{network}`
     network: A Network resource to be passed as the request body.
     updateMask: The list of fields to update. The only currently supported
-      fields are: `labels`, `reservations`
+      fields are: `labels`, `reservations`, `vrf.vlan_attachments`
   """
 
   name = _messages.StringField(1, required=True)
@@ -503,7 +503,8 @@ class BaremetalsolutionProjectsLocationsProvisioningConfigsPatchRequest(_message
   Fields:
     email: Optional. Email provided to send a confirmation with provisioning
       config to.
-    name: Output only. The name of the provisioning config.
+    name: Output only. The system-generated name of the provisioning config.
+      This follows the UUID format.
     provisioningConfig: A ProvisioningConfig resource to be passed as the
       request body.
     updateMask: Required. The list of fields to update.
@@ -2164,6 +2165,8 @@ class ProvisioningConfig(_messages.Message):
   Fields:
     cloudConsoleUri: Output only. URI to Cloud Console UI view of this
       provisioning config.
+    customId: Optional. The user-defined identifier of the provisioning
+      config.
     email: Email provided to send a confirmation with provisioning config to.
       Deprecated in favour of email field in request messages.
     handoverServiceAccount: A service account to enable customers to access
@@ -2171,7 +2174,8 @@ class ProvisioningConfig(_messages.Message):
     instances: Instances to be created.
     location: Optional. Location name of this ProvisioningConfig. It is
       optional only for Intake UI transition period.
-    name: Output only. The name of the provisioning config.
+    name: Output only. The system-generated name of the provisioning config.
+      This follows the UUID format.
     networks: Networks to be created.
     state: Output only. State of ProvisioningConfig.
     statusMessage: Optional status messages associated with the FAILED state.
@@ -2209,18 +2213,19 @@ class ProvisioningConfig(_messages.Message):
     FAILED = 7
 
   cloudConsoleUri = _messages.StringField(1)
-  email = _messages.StringField(2)
-  handoverServiceAccount = _messages.StringField(3)
-  instances = _messages.MessageField('InstanceConfig', 4, repeated=True)
-  location = _messages.StringField(5)
-  name = _messages.StringField(6)
-  networks = _messages.MessageField('NetworkConfig', 7, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  statusMessage = _messages.StringField(9)
-  ticketId = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
-  volumes = _messages.MessageField('VolumeConfig', 12, repeated=True)
-  vpcScEnabled = _messages.BooleanField(13)
+  customId = _messages.StringField(2)
+  email = _messages.StringField(3)
+  handoverServiceAccount = _messages.StringField(4)
+  instances = _messages.MessageField('InstanceConfig', 5, repeated=True)
+  location = _messages.StringField(6)
+  name = _messages.StringField(7)
+  networks = _messages.MessageField('NetworkConfig', 8, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  statusMessage = _messages.StringField(10)
+  ticketId = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  volumes = _messages.MessageField('VolumeConfig', 13, repeated=True)
+  vpcScEnabled = _messages.BooleanField(14)
 
 
 class ProvisioningQuota(_messages.Message):

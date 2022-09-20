@@ -35,8 +35,9 @@ class ActiveDirectory(_messages.Message):
     kdcHostname: Name of the active directory machine. (ad_name on SDE)
     kdcIp: KDC server IP address for the active directory machine.
     ldapSigning: Specifies whether or not the LDAP traffic needs to be signed.
-    name: Required. User specified name for the AD. Must be unique to the
-      project.
+    name: Output only. The resource name of the active directory. Format: `pro
+      jects/{project_number}/locations/{location_id}/activedirectories/{active
+      _directory_id}`.
     netBios: Required. NetBIOS name of the server.
     nfsUsersWithLdap: If enabled, will allow access to local users and LDAP
       users. If access is needed for only LDAP users, it has to be disabled.
@@ -369,12 +370,12 @@ class NetappProjectsLocationsActivedirectoriesCreateRequest(_messages.Message):
   Fields:
     activeDirectory: A ActiveDirectory resource to be passed as the request
       body.
-    name: Required. Name of the active directory to create.
+    activeDirectoryId: Required. ID of the active directory to create.
     parent: Required. Value for parent.
   """
 
   activeDirectory = _messages.MessageField('ActiveDirectory', 1)
-  name = _messages.StringField(2)
+  activeDirectoryId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
 
 
@@ -423,8 +424,9 @@ class NetappProjectsLocationsActivedirectoriesPatchRequest(_messages.Message):
   Fields:
     activeDirectory: A ActiveDirectory resource to be passed as the request
       body.
-    name: Required. User specified name for the AD. Must be unique to the
-      project.
+    name: Output only. The resource name of the active directory. Format: `pro
+      jects/{project_number}/locations/{location_id}/activedirectories/{active
+      _directory_id}`.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the Active Directory resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -685,18 +687,17 @@ class NetappProjectsLocationsVolumesSnapshotsCreateRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesSnapshotsCreateRequest object.
 
   Fields:
-    name: Required. The name for the snapshot. The name must be unique within
-      the specified volume. This value must start with a lowercase letter
-      followed by up to 62 lowercase letters, numbers, or hyphens, and cannot
-      end with a hyphen.
     parent: Required. The NetApp volume to create the snapshots of, in the
       format `projects/{project_id}/locations/{location}/volumes/{volume_id}`
     snapshot: A Snapshot resource to be passed as the request body.
+    snapshotId: Required. ID of the snapshot to create. This value must start
+      with a lowercase letter followed by up to 62 lowercase letters, numbers,
+      or hyphens, and cannot end with a hyphen.
   """
 
-  name = _messages.StringField(1)
-  parent = _messages.StringField(2, required=True)
-  snapshot = _messages.MessageField('Snapshot', 3)
+  parent = _messages.StringField(1, required=True)
+  snapshot = _messages.MessageField('Snapshot', 2)
+  snapshotId = _messages.StringField(3)
 
 
 class NetappProjectsLocationsVolumesSnapshotsDeleteRequest(_messages.Message):
@@ -747,7 +748,9 @@ class NetappProjectsLocationsVolumesSnapshotsPatchRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesSnapshotsPatchRequest object.
 
   Fields:
-    name: Required. The resource name of the snapshot.
+    name: Output only. The resource name of the snapshot. Format: `projects/{p
+      roject_id}/locations/{location}/volumes/{volume_id}/snapshots/{snapshot_
+      id}`.
     snapshot: A Snapshot resource to be passed as the request body.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field.
@@ -956,7 +959,10 @@ class Snapshot(_messages.Message):
     description: A description of the snapshot with 2048 characters or less.
       Requests with longer descriptions will be rejected.
     labels: Resource labels to represent user provided metadata.
-    name: Required. The resource name of the snapshot.
+    name: Output only. The resource name of the snapshot. Format: `projects/{p
+      roject_id}/locations/{location}/volumes/{volume_id}/snapshots/{snapshot_
+      id}`.
+    snapshotId: Output only. The ID of the snapshot.
     state: Output only. The snapshot state.
     stateDetails: Output only. State details of the storage pool
     usedBytes: Output only. Current storage usage for the snapshot in bytes.
@@ -1006,9 +1012,10 @@ class Snapshot(_messages.Message):
   description = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  stateDetails = _messages.StringField(6)
-  usedBytes = _messages.FloatField(7)
+  snapshotId = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  stateDetails = _messages.StringField(7)
+  usedBytes = _messages.FloatField(8)
 
 
 class SnapshotPolicy(_messages.Message):
@@ -1335,6 +1342,7 @@ class Volume(_messages.Message):
       SHOW_SNAPSHOT: Show snapshot
       SHOW_PREVIOUS_VERSIONS: Show previous versions
       ACCESS_BASED_ENUMERATION: Access based enumeration
+      CONTINUOUSLY_AVAILABLE: Continuously available enumeration
     """
     SMB_SETTINGS_UNSPECIFIED = 0
     ENCRYPT_DATA = 1
@@ -1345,6 +1353,7 @@ class Volume(_messages.Message):
     SHOW_SNAPSHOT = 6
     SHOW_PREVIOUS_VERSIONS = 7
     ACCESS_BASED_ENUMERATION = 8
+    CONTINUOUSLY_AVAILABLE = 9
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the volume

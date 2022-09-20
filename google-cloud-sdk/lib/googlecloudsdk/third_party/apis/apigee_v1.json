@@ -6161,7 +6161,7 @@
     },
     "GoogleCloudApigeeV1KeyValueEntry": {
       "id": "GoogleCloudApigeeV1KeyValueEntry",
-      "description": "Key value map pair where the value represents the data associated with the corresponding key.",
+      "description": "Key value map pair where the value represents the data associated with the corresponding key. **Note**: Supported for Apigee hybrid 1.8.x and higher.",
       "type": "object",
       "properties": {
         "name": {
@@ -6176,7 +6176,7 @@
     },
     "GoogleCloudApigeeV1ListKeyValueEntriesResponse": {
       "id": "GoogleCloudApigeeV1ListKeyValueEntriesResponse",
-      "description": "The request structure for listing Key value map keys and its corrresponding values.",
+      "description": "The request structure for listing key value map keys and its corresponding values.",
       "type": "object",
       "properties": {
         "keyValueEntries": {
@@ -7980,7 +7980,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Get the Key value entry value for org, env or apis scoped Key value map."
+                      "description": "Get the key value entry value for a key value map scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher."
                     },
                     "delete": {
                       "id": "apigee.organizations.apis.keyvaluemaps.entries.delete",
@@ -8005,7 +8005,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Note:** After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior."
+                      "description": "Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Notes:** * After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior. * Supported for Apigee hybrid 1.8.x and higher."
                     },
                     "create": {
                       "id": "apigee.organizations.apis.keyvaluemaps.entries.create",
@@ -8033,7 +8033,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates key value entries in a key value map scoped to an organization, environment, or API proxy."
+                      "description": "Creates key value entries in a key value map scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher."
                     },
                     "list": {
                       "id": "apigee.organizations.apis.keyvaluemaps.entries.list",
@@ -8069,7 +8069,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists key value entries for key values maps scoped to an organization, environment, or API proxy."
+                      "description": "Lists key value entries for key values maps scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher."
                     }
                   }
                 }
@@ -11296,7 +11296,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Get the Key value entry value for org, env or apis scoped Key value map."
+                      "description": "Get the key value entry value for a key value map scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher."
                     },
                     "delete": {
                       "id": "apigee.organizations.environments.keyvaluemaps.entries.delete",
@@ -11321,7 +11321,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Note:** After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior."
+                      "description": "Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Notes:** * After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior. * Supported for Apigee hybrid 1.8.x and higher."
                     },
                     "create": {
                       "id": "apigee.organizations.environments.keyvaluemaps.entries.create",
@@ -11349,7 +11349,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates key value entries in a key value map scoped to an organization, environment, or API proxy."
+                      "description": "Creates key value entries in a key value map scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher."
                     },
                     "list": {
                       "id": "apigee.organizations.environments.keyvaluemaps.entries.list",
@@ -11385,7 +11385,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists key value entries for key values maps scoped to an organization, environment, or API proxy."
+                      "description": "Lists key value entries for key values maps scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher."
                     }
                   }
                 }
@@ -15415,7 +15415,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Get the Key value entry value for org, env or apis scoped Key value map."
+                  "description": "Get the key value entry value for a key value map scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher."
                 },
                 "delete": {
                   "id": "apigee.organizations.keyvaluemaps.entries.delete",
@@ -15440,7 +15440,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Note:** After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior."
+                  "description": "Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Notes:** * After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior. * Supported for Apigee hybrid 1.8.x and higher."
                 },
                 "create": {
                   "id": "apigee.organizations.keyvaluemaps.entries.create",
@@ -15468,7 +15468,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates key value entries in a key value map scoped to an organization, environment, or API proxy."
+                  "description": "Creates key value entries in a key value map scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher."
                 },
                 "list": {
                   "id": "apigee.organizations.keyvaluemaps.entries.list",
@@ -15504,7 +15504,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists key value entries for key values maps scoped to an organization, environment, or API proxy."
+                  "description": "Lists key value entries for key values maps scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher."
                 }
               }
             }

@@ -1574,7 +1574,7 @@
           "$ref": "GoogleCloudHealthcareV1alpha2FhirBigQueryDestination"
         },
         "deidentifiedStoreDestination": {
-          "description": "The destination FHIR store for de-identified resources. After this field is added, all subsequent creates\/updates\/patches to the source store will be de-identified using the provided configuration and applied to the destination store. Importing resources to the source store will not trigger the streaming. If the source store already contains resources when this option is enabled, those resources will not be copied to the destination store unless they are subsequently updated. This may result in invalid references in the destination store. Before adding this config, you must grant the healthcare.fhirResources.update permission on the destination store to your project's **Cloud Healthcare Service Agent** [service account](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/permissions-healthcare-api-gcp-products#the_cloud_healthcare_service_agent). The destination store must set `enable_update_create` to true. The destination store must have `disable_referential_integrity` set to true. If a resource cannot be de-identified, errors will be logged to Cloud Logging (see [Viewing error logs in Cloud Logging](\/healthcare\/docs\/how-tos\/cloud-logging)).",
+          "description": "The destination FHIR store for de-identified resources. After this field is added, all subsequent creates\/updates\/patches to the source store will be de-identified using the provided configuration and applied to the destination store. Importing resources to the source store will not trigger the streaming. If the source store already contains resources when this option is enabled, those resources will not be copied to the destination store unless they are subsequently updated. This may result in invalid references in the destination store. Before adding this config, you must grant the healthcare.fhirResources.update permission on the destination store to your project's **Cloud Healthcare Service Agent** [service account](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/permissions-healthcare-api-gcp-products#the_cloud_healthcare_service_agent). The destination store must set `enable_update_create` to true. The destination store must have `disable_referential_integrity` set to true. If a resource cannot be de-identified, errors will be logged to Cloud Logging (see [Viewing error logs in Cloud Logging](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/cloud-logging)).",
           "$ref": "DeidentifiedStoreDestination"
         }
       }
@@ -1761,6 +1761,45 @@
         "uriPrefix": {
           "description": "URI for a Cloud Storage directory where the server writes result files, in the format `gs:\/\/{bucket-id}\/{path\/to\/destination\/dir}`. If there is no trailing slash, the service appends one when composing the object path. The Cloud Storage bucket referenced in `uri_prefix` must exist or an error occurs.",
           "type": "string"
+        }
+      }
+    },
+    "FhirStoreMetrics": {
+      "id": "FhirStoreMetrics",
+      "description": "List of metrics for a given FHIR store.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the FHIR store to get metrics for, in the format `projects\/{project_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
+          "type": "string"
+        },
+        "metrics": {
+          "description": "List of FhirStoreMetric by resource type.",
+          "type": "array",
+          "items": {
+            "$ref": "FhirStoreMetric"
+          }
+        }
+      }
+    },
+    "FhirStoreMetric": {
+      "id": "FhirStoreMetric",
+      "description": "Count of resources and total storage size by type for a given FHIR store.",
+      "type": "object",
+      "properties": {
+        "resourceType": {
+          "description": "The FHIR resource type this metric applies to.",
+          "type": "string"
+        },
+        "count": {
+          "description": "The total count of FHIR resources in the store of this resource type.",
+          "type": "string",
+          "format": "int64"
+        },
+        "structuredStorageSizeBytes": {
+          "description": "The total amount of structured storage used by FHIR resources of this resource type in the store.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -3987,6 +4026,31 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Export resources from the FHIR store to the specified destination. This method returns an Operation that can be used to track the status of the export by calling GetOperation. Immediate fatal errors appear in the error field, errors are also logged to Cloud Logging (see [Viewing error logs in Cloud Logging](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/logging)). Otherwise, when the operation finishes, a detailed response of type ExportResourcesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata."
+                    },
+                    "getFHIRStoreMetrics": {
+                      "id": "healthcare.projects.locations.datasets.fhirStores.getFHIRStoreMetrics",
+                      "path": "v1alpha2/{+name}:getFHIRStoreMetrics",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:getFHIRStoreMetrics",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name of the FHIR store to get metrics for.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "FhirStoreMetrics"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets metrics associated with the FHIR store."
                     }
                   }
                 },

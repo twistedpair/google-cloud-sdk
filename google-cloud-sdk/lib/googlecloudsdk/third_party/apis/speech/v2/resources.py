@@ -38,6 +38,17 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId'],
       True
   )
+  PROJECTS_LOCATIONS_CUSTOMCLASSES = (
+      'projects.locations.customClasses',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/customClasses/'
+              '{customClassesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -45,6 +56,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_PHRASESETS = (
+      'projects.locations.phraseSets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/phraseSets/'
+              '{phraseSetsId}',
       },
       ['name'],
       True

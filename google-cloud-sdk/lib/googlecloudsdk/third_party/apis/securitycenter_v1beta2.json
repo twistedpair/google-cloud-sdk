@@ -2179,6 +2179,42 @@
         }
       }
     },
+    "GoogleCloudSecuritycenterV1ResourceValueConfig": {
+      "id": "GoogleCloudSecuritycenterV1ResourceValueConfig",
+      "description": "A resource value config is a mapping configuration of user's tag values to resource values. Used by the attack path simulation.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name for the resource value config",
+          "type": "string"
+        },
+        "resourceValue": {
+          "description": "Required. Resource value level this expression represents",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecific value",
+            "High resource value",
+            "Medium resource value",
+            "Low resource value",
+            "No resource value, e.g. ignore these resources"
+          ],
+          "enum": [
+            "RESOURCE_VALUE_UNSPECIFIED",
+            "HIGH",
+            "MEDIUM",
+            "LOW",
+            "NONE"
+          ]
+        },
+        "tagValues": {
+          "description": "Required. Tag values combined with AND to check against. Values in the form \"tagValues\/123\" E.g. [ \"tagValues\/123\", \"tagValues\/456\", \"tagValues\/789\" ] https:\/\/cloud.google.com\/resource-manager\/docs\/tags\/tags-creating-and-managing",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "GoogleCloudSecuritycenterV1p1beta1NotificationMessage": {
       "id": "GoogleCloudSecuritycenterV1p1beta1NotificationMessage",
       "description": "Security Command Center's Notification",

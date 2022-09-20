@@ -774,7 +774,7 @@
           }
         },
         "type": {
-          "description": "Output only. The type of the subnet. For example \"System Management\" or \"NSX-T Segment\".",
+          "description": "Output only. The type of the subnet. For example \"management\" or \"userDefined\".",
           "readOnly": true,
           "type": "string"
         },

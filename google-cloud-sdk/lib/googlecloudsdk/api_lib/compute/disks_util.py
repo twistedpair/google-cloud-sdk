@@ -210,4 +210,22 @@ def IsProvisioingTypeIops(disk_type):
 
   return (disk_type.endswith('/pd-extreme') or
           disk_type.endswith('/cs-extreme') or
-          disk_type in ['pd-extreme', 'cs-extreme'])
+          disk_type.endswith('/hyperdisk-extreme') or
+          disk_type in ['pd-extreme', 'cs-extreme', 'hyperdisk-extreme'])
+
+
+def IsProvisioningTypeThroughput(disk_type):
+  """Check if the given disk type (name or URI) supports throughput provisioning.
+
+  Args:
+    disk_type: name of URI of the disk type to be checked.
+
+  Returns:
+    Boolean, true if the disk_type supports throughput provisioning (currently
+    only cs-throughput support it), false otherwise.
+  """
+
+  return (disk_type.endswith('/cs-throughput') or
+          disk_type in ['cs-throughput'] or
+          disk_type.endswith('/hyperdisk-throughput') or
+          disk_type in ['hyperdisk-throughput'])

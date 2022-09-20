@@ -4680,6 +4680,22 @@ def AddManagedConfigFlag(parser, hidden=True):
       hidden=hidden)
 
 
+def AddFleetProjectFlag(parser, hidden=True):
+  """Adds --fleet-project flag to the parser."""
+  help_text = """
+Sets fleet host project for the cluster. If specified, the current cluster will be registered as a fleet membership under the fleet host project.
+
+Example:
+$ {command} --fleet-project=my-project
+"""
+  parser.add_argument(
+      '--fleet-project',
+      help=help_text,
+      metavar='PROJECT_ID_OR_NUMBER',
+      type=str,
+      hidden=hidden)
+
+
 def AddGatewayFlags(parser, hidden=True):
   """Adds --gateway-api flag to the parser.
 

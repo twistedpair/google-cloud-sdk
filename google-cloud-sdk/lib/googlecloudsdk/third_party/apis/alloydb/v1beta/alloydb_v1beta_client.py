@@ -229,6 +229,33 @@ class AlloydbV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Createsecondary(self, request, global_params=None):
+      r"""Creates a new SECONDARY Instance in a given project and location.
+
+      Args:
+        request: (AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Createsecondary')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Createsecondary.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances:createsecondary',
+        http_method='POST',
+        method_id='alloydb.projects.locations.clusters.instances.createsecondary',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['instanceId', 'requestId', 'validateOnly'],
+        relative_path='v1beta/{+parent}/instances:createsecondary',
+        request_field='instance',
+        request_type_name='AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes a single Instance.
 
@@ -455,6 +482,33 @@ class AlloydbV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Createsecondary(self, request, global_params=None):
+      r"""Creates a cluster of type SECONDARY in the given location using the primary cluster as the source.
+
+      Args:
+        request: (AlloydbProjectsLocationsClustersCreatesecondaryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Createsecondary')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Createsecondary.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/clusters:createsecondary',
+        http_method='POST',
+        method_id='alloydb.projects.locations.clusters.createsecondary',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['clusterId', 'requestId', 'validateOnly'],
+        relative_path='v1beta/{+parent}/clusters:createsecondary',
+        request_field='cluster',
+        request_type_name='AlloydbProjectsLocationsClustersCreatesecondaryRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes a single Cluster.
 
@@ -537,7 +591,7 @@ class AlloydbV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Clusters in a given project and location.
+      r"""When adding a new API method, make sure to update the rate quota mapping to start charging for it correctly. LINT.IfChange Lists Clusters in a given project and location.
 
       Args:
         request: (AlloydbProjectsLocationsClustersListRequest) input message
@@ -586,6 +640,33 @@ class AlloydbV1beta(base_api.BaseApiClient):
         relative_path='v1beta/{+name}',
         request_field='cluster',
         request_type_name='AlloydbProjectsLocationsClustersPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Promote(self, request, global_params=None):
+      r"""Promotes a SECONDARY cluster. This turns down replication from the PRIMARY cluster and promotes a secondary cluster into its own standalone cluster. Imperative only.
+
+      Args:
+        request: (AlloydbProjectsLocationsClustersPromoteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Promote')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Promote.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:promote',
+        http_method='POST',
+        method_id='alloydb.projects.locations.clusters.promote',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}:promote',
+        request_field='promoteClusterRequest',
+        request_type_name='AlloydbProjectsLocationsClustersPromoteRequest',
         response_type_name='Operation',
         supports_download=False,
     )

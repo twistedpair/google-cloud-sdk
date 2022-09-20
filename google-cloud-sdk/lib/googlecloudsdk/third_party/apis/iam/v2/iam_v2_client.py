@@ -41,7 +41,6 @@ class IamV2(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.policies_operations = self.PoliciesOperationsService(self)
     self.policies = self.PoliciesService(self)
-    self.v2 = self.V2Service(self)
 
   class PoliciesOperationsService(base_api.BaseApiService):
     """Service class for the policies_operations resource."""
@@ -222,42 +221,5 @@ class IamV2(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='GoogleIamV2Policy',
         response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-  class V2Service(base_api.BaseApiService):
-    """Service class for the v2 resource."""
-
-    _NAME = 'v2'
-
-    def __init__(self, client):
-      super(IamV2.V2Service, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def ListApplicablePolicies(self, request, global_params=None):
-      r"""Retrieves all the policies that are attached to the specified resource, or anywhere in the ancestry of the resource. For example, for a project this endpoint would return all the `denyPolicy` kind policies attached to the project, its parent folder (if any), and its parent organization (if any). The endpoint requires the same permissions that it would take to call `ListPolicies` or `GetPolicy`. The main reason to use this endpoint is as a policy admin to debug access issues for a resource.
-
-      Args:
-        request: (IamListApplicablePoliciesRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleIamV2ListApplicablePoliciesResponse) The response message.
-      """
-      config = self.GetMethodConfig('ListApplicablePolicies')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ListApplicablePolicies.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/{v2Id}:listApplicablePolicies',
-        http_method='GET',
-        method_id='iam.listApplicablePolicies',
-        ordered_params=['attachmentPoint'],
-        path_params=['attachmentPoint'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v2/{+attachmentPoint}:listApplicablePolicies',
-        request_field='',
-        request_type_name='IamListApplicablePoliciesRequest',
-        response_type_name='GoogleIamV2ListApplicablePoliciesResponse',
         supports_download=False,
     )

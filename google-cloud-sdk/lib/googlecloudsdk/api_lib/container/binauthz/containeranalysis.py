@@ -68,7 +68,7 @@ class Client(object):
         request=(
             self.messages.ContaineranalysisProjectsNotesOccurrencesListRequest(
                 name=note_ref.RelativeName(),
-                filter=('resourceUrl="{}"'.format(artifact_url)
+                filter=('has_suffix(resourceUrl, "{}")'.format(artifact_url)
                         if artifact_url is not None else ''),
             )),
         field='occurrences',

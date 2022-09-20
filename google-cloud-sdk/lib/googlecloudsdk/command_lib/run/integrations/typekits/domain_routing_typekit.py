@@ -88,7 +88,7 @@ class DomainRoutingTypeKit(base.TypeKit):
     if not domains:
       raise exceptions.ArgumentError(
           ('Can not remove the last domain. '+
-           'Use "gcloud run integrations delete domain-routing" instead.'))
+           'Use "gcloud run integrations delete custom-domains" instead.'))
 
   def BindServiceToIntegration(self, integration_name, resource_config,
                                service_name, service_config, parameters):
@@ -106,7 +106,7 @@ class DomainRoutingTypeKit(base.TypeKit):
       service is not supported in DomainRouting integration.
     """
     raise exceptions.ArgumentError(
-        '--add-service is not supported in domain-routing integration')
+        '--add-service is not supported in custom-domains integration')
 
   def UnbindServiceFromIntegration(self, integration_name, resource_config,
                                    service_name, service_config, parameters):
@@ -124,7 +124,7 @@ class DomainRoutingTypeKit(base.TypeKit):
       service is not supported in DomainRouting integration.
     """
     raise exceptions.ArgumentError(
-        '--remove-service is not supported in domain-routing integration')
+        '--remove-service is not supported in custom-domains integration')
 
   def NewIntegrationName(self, service, parameters, app_dict):
     """Returns a name for a new integration."""

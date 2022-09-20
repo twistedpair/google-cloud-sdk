@@ -100,6 +100,20 @@ def AddCluster(parser, positional=True, required=True):
         help='AlloyDB cluster ID')
 
 
+def AddPrimaryCluster(parser, required=True):
+  """Adds a positional cluster argument to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+    required: Whether or not --primary-cluster is required.
+  """
+  parser.add_argument(
+      '--primary-cluster',
+      required=required,
+      type=str,
+      help='AlloyDB primary cluster ID')
+
+
 def AddDatabaseFlags(parser, update=False):
   """Adds a `--database-flags` flag to parser.
 
@@ -324,7 +338,10 @@ def AddAutomatedBackupFlags(parser, alloydb_messages, update=False):
     alloydb_messages: Message module.
     update: If True, adds update specific flags.
   """
-  group = parser.add_group(mutex=True, help='Automated backup policy.')
+  automated_backup_help = 'Automated backup policy.'
+  if not update:
+    automated_backup_help += ' If unspecified, automated backups are enabled.'
+  group = parser.add_group(mutex=True, help=automated_backup_help)
 
   policy_group = group.add_group(help='Enable automated backup policy.')
   policy_group.add_argument(
@@ -429,9 +446,28 @@ def AddRestoreClusterSourceFlags(parser):
       '--point-in-time',
       type=arg_parsers.Datetime.Parse,
       required=True,
-      help=(
-          'Point in time to restore to, in RFC 3339 format. For example, 2012-11-15T16:19:00.094Z.'
-      ))
+      help=('Point in time to restore to, in RFC 3339 format. For example, '
+            '2012-11-15T16:19:00.094Z.'))
+
+
+def AddPitrConfigFlags(parser):
+  """Adds PITR configuration flags.
+
+  Args:
+    parser: argparse.ArgumentParser: Parser object for command line inputs.
+  """
+  group = parser.add_group(mutex=True, help='PITR configuration. ')
+  group.add_argument(
+      '--disable-pitr',
+      action='store_true',
+      help='Disables PITR on the cluster.')
+  group.add_argument(
+      '--pitr-log-retention-window',
+      metavar='RETENTION_PERIOD',
+      type=arg_parsers.Duration(parsed_unit='s'),
+      help=('Retention window of the log files saved to support PITR. See '
+            '`$ gcloud topic datetimes` for information on absolute duration '
+            'formats.'))
 
 
 def KmsKeyAttributeConfig():

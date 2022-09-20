@@ -19,7 +19,8 @@ class Accelerator(_messages.Message):
 
   Fields:
     count: The number of accelerators of this type.
-    installGpuDrivers: A boolean attribute.
+    installGpuDrivers: Deprecated: please use instances[0].install_gpu_drivers
+      instead.
     type: The accelerator type. For example, "nvidia-tesla-t4". See `gcloud
       compute accelerator-types list`.
   """
@@ -839,14 +840,19 @@ class InstancePolicyOrTemplate(_messages.Message):
   r"""Either an InstancePolicy or an instance template.
 
   Fields:
+    installGpuDrivers: Set this field true if users want Batch to help fetch
+      drivers from a third party location and install them for GPUs specified
+      in policy.accelerators or instance_template on their behalf. Default is
+      false.
     instanceTemplate: Name of an instance template used to create VMs. Named
       the field as 'instance_template' instead of 'template' to avoid c++
       keyword conflict.
     policy: InstancePolicy.
   """
 
-  instanceTemplate = _messages.StringField(1)
-  policy = _messages.MessageField('InstancePolicy', 2)
+  installGpuDrivers = _messages.BooleanField(1)
+  instanceTemplate = _messages.StringField(2)
+  policy = _messages.MessageField('InstancePolicy', 3)
 
 
 class InstanceStatus(_messages.Message):

@@ -115,7 +115,7 @@ class ContainerAnalysisMetadata:
     view.update(self.vulnerability.ImagesListView())
     return view
 
-  def ImagesDescribeView(self):
+  def ArtifactsDescribeView(self):
     """Returns a dictionary representing the metadata.
 
     The returned dictionary is used by artifacts docker images describe command.
@@ -129,7 +129,7 @@ class ContainerAnalysisMetadata:
       view['discovery_summary'] = self.discovery
     if self.build.build_details:
       view['build_details_summary'] = self.build
-    vuln = self.vulnerability.ImagesDescribeView()
+    vuln = self.vulnerability.ArtifactsDescribeView()
     if vuln:
       view['package_vulnerability_summary'] = vuln
     if self.provenance.provenance:
@@ -164,7 +164,7 @@ class PackageVulnerabilitySummary:
   def AddCount(self, count):
     self.counts.append(count)
 
-  def ImagesDescribeView(self):
+  def ArtifactsDescribeView(self):
     """Returns a dictionary representing package vulnerability metadata.
 
     The returned dictionary is used by artifacts docker images describe command.
@@ -328,6 +328,19 @@ def GetContainerAnalysisMetadata(docker_version, args):
   return metadata
 
 
+def GetMavenArtifactOccurrences(project, maven_resource):
+  """Retrieves occurrences for Maven artifacts."""
+  metadata = ContainerAnalysisMetadata()
+
+  occ_filter = _CreateFilterForMaven(maven_resource)
+
+  occurrences = ca_requests.ListOccurrences(project, occ_filter)
+  for occ in occurrences:
+    metadata.AddOccurrence(occ, False)
+
+  return metadata
+
+
 def GetContainerAnalysisMetadataForImages(repo_or_image, occurrence_filter,
                                           images):
   """Retrieves metadata for all images with a given path prefix.
@@ -369,6 +382,17 @@ def GetContainerAnalysisMetadataForImages(repo_or_image, occurrence_filter,
           ContainerAnalysisMetadata()).vulnerability.AddCount(count)
 
   return metadata
+
+
+def _CreateFilterForMaven(maven_resource):
+  """Builds filters for containeranalysis APIs for Maven Artifacts."""
+  occ_filter = filter_util.ContainerAnalysisFilter()
+
+  filter_kinds = ['VULNERABILITY', 'DISCOVERY']
+
+  occ_filter.WithKinds(filter_kinds)
+  occ_filter.WithResources([maven_resource])
+  return occ_filter.GetFilter()
 
 
 def _CreateFilterFromImagesDescribeArgs(images, args):

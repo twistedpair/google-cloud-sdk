@@ -85,7 +85,8 @@ class RoutersClient(object):
     """Mutate the router to delete a list of interfaces."""
     # Get the list of interfaces that are to be removed from args.
     input_remove_list = args.interface_names if args.interface_names else []
-
+    input_remove_list = input_remove_list + ([args.interface_name]
+                                             if args.interface_name else [])
     # Remove interface if exists
     actual_remove_list = []
     replacement = encoding.CopyProtoMessage(existing)

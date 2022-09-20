@@ -1003,10 +1003,13 @@ class DeidentifyConfig(_messages.Message):
     annotation: Configures how annotations, meaning that the location and
       infoType of sensitive information findings, are created during de-
       identification. If unspecified, no annotations are created.
-    dicom: Configures de-id of application/DICOM content.
-    fhir: Configures de-id of application/FHIR content.
-    image: Configures de-identification of image pixels wherever they are
-      found in the source_dataset.
+    dicom: Configures de-id of application/DICOM content. Deprecated. Use
+      `dicom_tag_config` instead.
+    fhir: Configures de-id of application/FHIR content. Deprecated. Use
+      `fhir_field_config` instead.
+    image: Configures the de-identification of image pixels in the
+      source_dataset. Deprecated. Use `dicom_tag_config.options.clean_image`
+      instead.
     operationMetadata: Details about the work the de-identify operation
       performed.
     text: Configures de-identification of text wherever it is found in the
@@ -1163,14 +1166,14 @@ class DicomConfig(_messages.Message):
     Values:
       TAG_FILTER_PROFILE_UNSPECIFIED: No tag filtration profile provided. Same
         as KEEP_ALL_PROFILE.
-      MINIMAL_KEEP_LIST_PROFILE: Keep only tags required to produce valid
-        DICOM.
+      MINIMAL_KEEP_LIST_PROFILE: Keep only the tags required to produce valid
+        DICOM objects.
       ATTRIBUTE_CONFIDENTIALITY_BASIC_PROFILE: Remove tags based on DICOM
         Standard's Attribute Confidentiality Basic Profile (DICOM Standard
         Edition 2018e) http://dicom.nema.org/medical/dicom/2018e/output/chtml/
         part15/chapter_E.html.
       KEEP_ALL_PROFILE: Keep all tags.
-      DEIDENTIFY_TAG_CONTENTS: Inspects within tag contents and replaces
+      DEIDENTIFY_TAG_CONTENTS: Inspect within tag contents and replace
         sensitive text. The process can be configured using the TextConfig.
         Applies to all tags with the following Value Representation names: AE,
         LO, LT, PN, SH, ST, UC, UT, DA, DT, AS
@@ -5936,9 +5939,9 @@ class InfoTypeTransformation(_messages.Message):
     characterMaskConfig: Config for character mask.
     cryptoHashConfig: Config for crypto hash.
     dateShiftConfig: Config for date shift.
-    infoTypes: InfoTypes to apply this transformation to. If this is not
+    infoTypes: `InfoTypes` to apply this transformation to. If this is not
       specified, this transformation becomes the default transformation, and
-      is used for any info_type that is not specified in another
+      is used for any `info_type` that is not specified in another
       transformation.
     redactConfig: Config for text redaction.
     replaceWithInfoTypeConfig: Config for replace with InfoType.
@@ -7528,10 +7531,11 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class TextConfig(_messages.Message):
-  r"""A TextConfig object.
+  r"""Configures how to transform sensitive text `InfoTypes`.
 
   Fields:
     transformations: The transformations to apply to the detected data.
+      Deprecated. Use `additional_transformations` instead.
   """
 
   transformations = _messages.MessageField('InfoTypeTransformation', 1, repeated=True)

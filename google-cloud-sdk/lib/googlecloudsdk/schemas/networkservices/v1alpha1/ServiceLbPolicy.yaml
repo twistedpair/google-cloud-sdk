@@ -1,0 +1,73 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networkservices v1alpha1 ServiceLbPolicy export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- name
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  autoCapacityDrain:
+    description: |-
+      Configuration to automatically move traffic away for unhealthy IG/NEG for
+      the associated Backend Service.
+    $ref: ServiceLbPolicyAutoCapacityDrain.yaml
+  description:
+    description: |-
+      A free-text description of the resource. Max length 1024 characters.
+    type: string
+  labels:
+    description: Set of label tags associated with the ServiceLbPolicy resource.
+    $ref: LabelsValue.yaml
+  loadBalancingAlgorithm:
+    description: |-
+      The type of load balancing algorithm to be used. The default behavior is
+      BALANCE_OVER_REGION.
+    type: string
+    enum:
+    - BALANCE_OVER_REGION
+    - LOAD_BALANCING_ALGORITHM_UNSPECIFIED
+    - NEAREST_ZONE_FIRST
+  name:
+    description: |-
+      Name of the ServiceLbPolicy resource. It matches pattern `
+      projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_po
+      licy_name}`.
+    type: string
+  primaryBackends:
+    description: |-
+      primary_backends defines the list of backends which are part of the
+      Backend Service this ServiceLbPolicy is associated with. Each primary
+      backend should be a URL which points to either an IG or NEG. e.g.
+      'projects/{project}/regions/{region}/instanceGroups/{ig- name}'
+      'projects/{project}/global/networkEndpointGroups/{neg-name}'
+      'projects/{project}/regions/{region}/networkEndpointGroups/{neg-name}'
+    type: array
+    items:
+      type: string
+  reduceSpikeOverload:
+    description: |-
+      Option to specify if traffic from each client should be spread to all
+      the IGs/NEGs in the region. NOTE: This option and behavior are
+      incompatible with load_balancing_algorithm=NEAREST_ZONE_FIRST.
+    type: boolean

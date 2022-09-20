@@ -145,9 +145,15 @@ class ReplaceJobChange(ConfigChanger):
   def Adjust(self, resource):
     """Returns a replacement for resource.
 
+    The returned job is the job provided to the constructor. If
+    resource.metadata.resourceVersion is not empty, has metadata.resourceVersion
+    of returned job set to this value.
+
     Args:
       resource: job.Job, The job to adjust.
     """
+    if resource.metadata.resourceVersion:
+      self._job.metadata.resourceVersion = resource.metadata.resourceVersion
     return self._job
 
 
@@ -162,8 +168,8 @@ class ReplaceServiceChange(ConfigChanger):
     """Returns a replacement for resource.
 
     The returned service is the service provided to the constructor. If
-    resource.metadata.resourceVersion is not empty to None returned service
-    has metadata.resourceVersion set to this value.
+    resource.metadata.resourceVersion is not empty, has metadata.resourceVersion
+    of returned service set to this value.
 
     Args:
       resource: service.Service, The service to adjust.

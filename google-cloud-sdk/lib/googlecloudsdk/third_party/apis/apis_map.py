@@ -2850,6 +2850,17 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'storageinsights': {
+        'v1alpha1':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.storageinsights.v1alpha1',
+                    client_classpath='storageinsights_v1alpha1_client.StorageinsightsV1alpha1',
+                    messages_modulepath='storageinsights_v1alpha1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'storagetransfer': {
         'v1':
             APIDef(
@@ -3110,7 +3121,7 @@ MAP = {
                     class_path='googlecloudsdk.third_party.apis.workstations.v1alpha1',
                     client_classpath='workstations_v1alpha1_client.WorkstationsV1alpha1',
                     messages_modulepath='workstations_v1alpha1_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1beta':
@@ -3119,7 +3130,7 @@ MAP = {
                     class_path='googlecloudsdk.third_party.apis.workstations.v1beta',
                     client_classpath='workstations_v1beta_client.WorkstationsV1beta',
                     messages_modulepath='workstations_v1beta_messages'),
-                default_version=False,
+                default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

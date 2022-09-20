@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from frozendict import frozendict
 from googlecloudsdk.command_lib.run import exceptions
+from googlecloudsdk.core import properties
 
 BASELINE_APIS = (
     'runapps.googleapis.com',
@@ -44,6 +45,7 @@ _INTEGRATION_TYPES = frozenset([
         'example_command':
             '$ gcloud {track} run integrations create --service=[SERVICE] '
             '--type=custom-domain --parameters=domain=example.com',
+        'visible': True,
         'parameters':
             frozendict({
                 'domain':
@@ -78,23 +80,24 @@ _INTEGRATION_TYPES = frozenset([
     }),
     frozendict({
         INTEGRATION_TYPE:
-            'domain-routing',
+            'custom-domains',
         RESOURCE_TYPE:
             'router',
         'singleton':
             True,
         'singleton_name':
-            'domain-routing',
+            'custom-domains',
         REQUIRED_FIELD:
             'domains',
+        'visible': True,
         'description':
             'Configure custom domains for Cloud Run services with Google Cloud '
             'Load Balancer.',
         'example_command':
             """Create the integration to add the first domain mapping:
-    $ gcloud {track} run integrations create --type=domain-routing --parameters='set-mapping=example.com/*:[SERVICE]'
+    $ gcloud {track} run integrations create --type=custom-domains --parameters='set-mapping=example.com/*:[SERVICE]'
   Update the integration to add subsequent mappings:
-    $ gcloud {track} run integrations update domain-routing --parameters='set-mapping=anotherexample.com/*:[SERVICE]'
+    $ gcloud {track} run integrations update custom-domains --parameters='set-mapping=anotherexample.com/*:[SERVICE]'
         """,
         'parameters':
             frozendict({
@@ -148,6 +151,7 @@ _INTEGRATION_TYPES = frozenset([
             '$ gcloud {track} run integrations create --service=[SERVICE] '
             '--type=redis --parameters=memory-size-gb=2',
         'backing_service': True,
+        'visible': True,
         'parameters':
             frozendict({
                 'memory-size-gb':
@@ -189,6 +193,7 @@ _INTEGRATION_TYPES = frozenset([
         'description':
             'Configure a CloudSQL database instance and connect it '
             'to a Cloud Run Service.',
+        'visible': False,
         'example_command':
             '$ gcloud {track} run integrations create --service=[SERVICE] '
             '--type=cloudsql --parameters=version=MYSQL_8_0,tier=db-f1-micro',
@@ -239,7 +244,11 @@ def IntegrationTypes(client):
     array of integration type.
   """
   del client
-  return _INTEGRATION_TYPES
+
+  return [
+      integration for integration in _INTEGRATION_TYPES
+      if _IntegrationVisible(integration)
+  ]
 
 
 def GetIntegration(integration_type):
@@ -250,12 +259,32 @@ def GetIntegration(integration_type):
 
   Returns:
     frozendict() of values associated to the integration type.
-    If the integration does not exist, then None is returned.
+      If the integration does not exist or is not visible to the user,
+      then None is returned.
   """
   for integration in _INTEGRATION_TYPES:
-    if integration[INTEGRATION_TYPE] == integration_type:
+    if (
+        integration[INTEGRATION_TYPE] == integration_type
+        and _IntegrationVisible(integration)
+    ):
       return integration
   return None
+
+
+def _IntegrationVisible(integration):
+  """Returns whether or not the integration is visible.
+
+  Args:
+    integration: frozen_dict, each entry is defined in _INTEGRATION_TYPES
+
+  Returns:
+    True if the integration is set to visible, or if the property
+      is set to true.  Otherwise it is False.
+  """
+  show_experimental_integrations = (
+      properties.VALUES.runapps.experimental_integrations.GetBool()
+  )
+  return integration.get('visible', False) or show_experimental_integrations
 
 
 def GetResourceTypeFromConfig(resource_config):
@@ -331,8 +360,6 @@ def CheckValidIntegrationType(integration_type):
     integration_type: str, integration type to validate.
   Rasies: ArgumentError
   """
-  if integration_type not in [
-      integration[INTEGRATION_TYPE] for integration in _INTEGRATION_TYPES
-  ]:
+  if GetIntegration(integration_type) is None:
     raise exceptions.ArgumentError(
         'Integration of type {} is not supported'.format(integration_type))

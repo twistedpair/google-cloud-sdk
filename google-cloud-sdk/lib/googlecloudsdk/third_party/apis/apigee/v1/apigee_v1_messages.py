@@ -7146,7 +7146,8 @@ class GoogleCloudApigeeV1KeyAliasReference(_messages.Message):
 
 class GoogleCloudApigeeV1KeyValueEntry(_messages.Message):
   r"""Key value map pair where the value represents the data associated with
-  the corresponding key.
+  the corresponding key. **Note**: Supported for Apigee hybrid 1.8.x and
+  higher.
 
   Fields:
     name: Resource URI that can be used to identify the scope of the key value
@@ -7470,8 +7471,8 @@ class GoogleCloudApigeeV1ListInstancesResponse(_messages.Message):
 
 
 class GoogleCloudApigeeV1ListKeyValueEntriesResponse(_messages.Message):
-  r"""The request structure for listing Key value map keys and its
-  corrresponding values.
+  r"""The request structure for listing key value map keys and its
+  corresponding values.
 
   Fields:
     keyValueEntries: One or more key value map keys and values.

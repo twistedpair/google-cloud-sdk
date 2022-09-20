@@ -430,12 +430,17 @@ class DomainJoinMachineRequest(_messages.Message):
   method
 
   Fields:
-    machine: Required. Details of the VM to be domain joined
+    machine: Optional.
     ouName: Optional. OU name where the VM needs to be domain joined
+    vmIdToken: Required. Full instance id token of compute engine VM to verify
+      instance identity. More about this:
+      https://cloud.google.com/compute/docs/instances/verifying-instance-
+      identity#request_signature
   """
 
   machine = _messages.MessageField('Machine', 1)
   ouName = _messages.StringField(2)
+  vmIdToken = _messages.StringField(3)
 
 
 class DomainJoinMachineResponse(_messages.Message):

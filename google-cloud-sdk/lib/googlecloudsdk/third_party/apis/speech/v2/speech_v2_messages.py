@@ -14,73 +14,86 @@ from apitools.base.py import extra_types
 package = 'speech'
 
 
-class AudioMetadata(_messages.Message):
-  r"""Provides the metadata required to process the audio.
+class AdaptationPhraseSet(_messages.Message):
+  r"""A biasing phrase set, which can be either a string referencing the name
+  of an existing phrase set resource, or an inline definition of a phrase set.
 
   Fields:
-    audioChannelCount: Number of channels present in the Audio. If empty,
-      Cloud Speech will determine the correct value according to the encoding
-      supplied.
-    encoding: Required. The encoding of the audio data sent in the recognition
-      request. All encodings support only 1 channel (mono) audio, unless the
-      `audio_channel_count` and `enable_separate_recognition_per_channel`
-      fields are set. For best results, the audio source should be captured
-      and transmitted using a lossless encoding (`flac` or `linear16`). The
-      accuracy of the speech recognition can be reduced if lossy codecs are
-      used to capture or transmit audio, particularly if background noise is
-      present. Lossy codecs include `mulaw`, `amr`, `amr-wb`, `ogg-opus`,
-      `speex-with-header-byte`, `mp3`, and `webm-opus`. The `FLAC` and `WAV`
-      audio file formats include a header that describes the included audio
-      content. You can request recognition for `WAV` files that contain either
-      `linear16` or `mulaw` encoded audio. If you send `FLAC` or `WAV` audio
-      file format in your request, you do not need to specify an [encoding];
-      the audio encoding format is determined from the file header. If you
-      specify an [encoding] when you send `FLAC` or `WAV` audio, the encoding
-      configuration must match the encoding described in the audio header;
-      otherwise the request returns an INVALID_ARGUMENT error code. Supported
-      formats: - `linear16` Uncompressed 16-bit signed little-endian samples
-      (Linear PCM).
-    sampleRateHertz: Sample rate in Hertz of the audio data sent in all
-      RecognitionAudio messages. Valid values are: 8000-48000. 16000 is
-      optimal. For best results, set the sampling rate of the audio source to
-      16000 Hz. If that's not possible, use the native sample rate of the
-      audio source (instead of re-sampling). This field is optional for FLAC
-      and WAV audio files, but is required for all other audio formats.
+    inlinePhraseSet: An inline defined phrase set.
+    phraseSet: The name of an existing phrase set resource. The user must have
+      read access to the resource and it must not be deleted.
   """
 
-  audioChannelCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  encoding = _messages.StringField(2)
-  sampleRateHertz = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  inlinePhraseSet = _messages.MessageField('PhraseSet', 1)
+  phraseSet = _messages.StringField(2)
 
 
 class AutoDetectDecodingConfig(_messages.Message):
   r"""Automatically detected decoding parameters. Supported for the following
-  formats: * wav-linear16: 16-bit signed little-endian PCM samples in a WAV
-  container. * wav-mulaw: 8-bit companded mulaw samples in a WAV container. *
-  wav-alaw: 8-bit companded alaw samples in a WAV container. * amr: Headerless
-  AMR frames. * amrwb: Headerless AMR-WB frames. * rfc4867.5-amr: AMR frames
-  with an rfc4867.5 header. * rfc4867.5-amrwb: AMR-WB frames with an rfc4867.5
-  header. * flac: FLAC frames in the "native FLAC" container format. * mp3:
-  MPEG audio frames with optional (ignored) ID3 metadata. * ogg-opus: Opus
-  audio frames in an Ogg container. * webm-opus: Opus audio frames in a WebM
-  container.
+  encodings: * WAV_LINEAR16: 16-bit signed little-endian PCM samples in a WAV
+  container. * WAV_MULAW: 8-bit companded mulaw samples in a WAV container. *
+  WAV_ALAW: 8-bit companded alaw samples in a WAV container. * RFC4867_5_AMR:
+  AMR frames with an rfc4867.5 header. * RFC4867_5_AMRWB: AMR-WB frames with
+  an rfc4867.5 header. * FLAC: FLAC frames in the "native FLAC" container
+  format. * MP3: MPEG audio frames with optional (ignored) ID3 metadata. *
+  OGG_OPUS: Opus audio frames in an Ogg container. * WEBM_OPUS: Opus audio
+  frames in a WebM container.
   """
 
 
 
-class BatchRecognizeMetadata(_messages.Message):
-  r"""LRO metadata for BatchRecognize.
-
-  Messages:
-    TranscriptionMetadataValue: A TranscriptionMetadataValue object.
+class BatchRecognizeFileMetadata(_messages.Message):
+  r"""Metadata about a single file in a batch for BatchRecognize.
 
   Fields:
-    transcriptionMetadata: A TranscriptionMetadataValue attribute.
+    config: Features and audio metadata to use for the Automatic Speech
+      Recognition. This field in combination with the config_mask field can be
+      used to override parts of the default_recognition_config of the
+      Recognizer resource as well as the config at the request level.
+    configMask: The list of fields in config that override the values in the
+      default_recognition_config of the recognizer during this recognition
+      request. If no mask is provided, all non-default valued fields in config
+      override the values in the recognizer for this recognition request. If a
+      mask is provided, only the fields listed in the mask override the config
+      in the recognizer for this recognition request. If a wildcard (`*`) is
+      provided, config completely overrides and replaces the config in the
+      recognizer for this recognition request.
+    uri: Cloud Storage URI for the audio file.
+  """
+
+  config = _messages.MessageField('RecognitionConfig', 1)
+  configMask = _messages.StringField(2)
+  uri = _messages.StringField(3)
+
+
+class BatchRecognizeFileResult(_messages.Message):
+  r"""Final results for a single file.
+
+  Fields:
+    error: Error if one was encountered.
+    uri: The GCS URI to which recognition results were written.
+  """
+
+  error = _messages.MessageField('Status', 1)
+  uri = _messages.StringField(2)
+
+
+class BatchRecognizeMetadata(_messages.Message):
+  r"""Operation metadata for BatchRecognize.
+
+  Messages:
+    TranscriptionMetadataValue: Map from provided filename to the
+      transcription metadata for that file.
+
+  Fields:
+    transcriptionMetadata: Map from provided filename to the transcription
+      metadata for that file.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TranscriptionMetadataValue(_messages.Message):
-    r"""A TranscriptionMetadataValue object.
+    r"""Map from provided filename to the transcription metadata for that
+    file.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -107,19 +120,93 @@ class BatchRecognizeMetadata(_messages.Message):
   transcriptionMetadata = _messages.MessageField('TranscriptionMetadataValue', 1)
 
 
+class BatchRecognizeRequest(_messages.Message):
+  r"""Request message for the BatchRecognize method.
+
+  Fields:
+    config: Features and audio metadata to use for the Automatic Speech
+      Recognition. This field in combination with the config_mask field can be
+      used to override parts of the default_recognition_config of the
+      Recognizer resource.
+    configMask: The list of fields in config that override the values in the
+      default_recognition_config of the recognizer during this recognition
+      request. If no mask is provided, all given fields in config override the
+      values in the recognizer for this recognition request. If a mask is
+      provided, only the fields listed in the mask override the config in the
+      recognizer for this recognition request. If a wildcard (`*`) is
+      provided, config completely overrides and replaces the config in the
+      recognizer for this recognition request.
+    files: Audio files with file metadata for ASR.
+    recognizer: Required. Resource name of the recognizer to be used for ASR.
+  """
+
+  config = _messages.MessageField('RecognitionConfig', 1)
+  configMask = _messages.StringField(2)
+  files = _messages.MessageField('BatchRecognizeFileMetadata', 3, repeated=True)
+  recognizer = _messages.StringField(4)
+
+
+class BatchRecognizeResponse(_messages.Message):
+  r"""Response message for BatchRecognize that is packaged into a longrunning
+  Operation.
+
+  Messages:
+    ResultsValue: Map from filename to the final result for that file.
+
+  Fields:
+    results: Map from filename to the final result for that file.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResultsValue(_messages.Message):
+    r"""Map from filename to the final result for that file.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResultsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ResultsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResultsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A BatchRecognizeFileResult attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('BatchRecognizeFileResult', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  results = _messages.MessageField('ResultsValue', 1)
+
+
 class BatchRecognizeTranscriptionMetadata(_messages.Message):
-  r"""Metadata about transcription for a single file (e.g. progress percent,
-  etc.)
+  r"""Metadata about transcription for a single file (for example, progress
+  percent).
 
   Fields:
     error: Error if one was encountered.
     progressPercent: How much of the file has been transcribed so far.
-    uri: Uri to transcript.
+    uri: The GCS URI to which recognition results will be written.
   """
 
   error = _messages.MessageField('Status', 1)
   progressPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   uri = _messages.StringField(3)
+
+
+class ClassItem(_messages.Message):
+  r"""An item of the class.
+
+  Fields:
+    value: The class item's value.
+  """
+
+  value = _messages.StringField(1)
 
 
 class Config(_messages.Message):
@@ -146,11 +233,53 @@ class Config(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
+class CreateCustomClassRequest(_messages.Message):
+  r"""Request message for the CreateCustomClass method.
+
+  Fields:
+    customClass: Required. The CustomClass to create.
+    customClassId: The ID to use for the CustomClass, which will become the
+      final component of the CustomClass's resource name. This value should be
+      4-63 characters, and valid characters are /a-z-/.
+    parent: Required. The project and location where this CustomClass will be
+      created. The expected format is
+      `projects/{project}/locations/{location}`.
+    validateOnly: If set, validate the request and preview the CustomClass,
+      but do not actually create it.
+  """
+
+  customClass = _messages.MessageField('CustomClass', 1)
+  customClassId = _messages.StringField(2)
+  parent = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class CreatePhraseSetRequest(_messages.Message):
+  r"""Request message for the CreatePhraseSet method.
+
+  Fields:
+    parent: Required. The project and location where this PhraseSet will be
+      created. The expected format is
+      `projects/{project}/locations/{location}`.
+    phraseSet: Required. The PhraseSet to create.
+    phraseSetId: The ID to use for the PhraseSet, which will become the final
+      component of the PhraseSet's resource name. This value should be 4-63
+      characters, and valid characters are /a-z-/.
+    validateOnly: If set, validate the request and preview the PhraseSet, but
+      do not actually create it.
+  """
+
+  parent = _messages.StringField(1)
+  phraseSet = _messages.MessageField('PhraseSet', 2)
+  phraseSetId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
 class CreateRecognizerRequest(_messages.Message):
   r"""Request message for the CreateRecognizer method.
 
   Fields:
-    parent: Required. The project and location where this recognizer will be
+    parent: Required. The project and location where this Recognizer will be
       created. The expected format is
       `projects/{project}/locations/{location}`.
     recognizer: Required. The Recognizer to create.
@@ -167,18 +296,163 @@ class CreateRecognizerRequest(_messages.Message):
   validateOnly = _messages.BooleanField(4)
 
 
+class CustomClass(_messages.Message):
+  r"""CustomClass for biasing in speech recognition. Used to define a set of
+  words or phrases that represents a common concept or theme likely to appear
+  in your audio, for example a list of passenger ship names.
+
+  Enums:
+    StateValueValuesEnum: Output only. The CustomClass lifecycle state.
+
+  Messages:
+    AnnotationsValue: Allows users to store small amounts of arbitrary data.
+      Both the key and the value must be 63 characters or less each. At most
+      100 annotations.
+
+  Fields:
+    annotations: Allows users to store small amounts of arbitrary data. Both
+      the key and the value must be 63 characters or less each. At most 100
+      annotations.
+    createTime: Output only. Creation time.
+    deleteTime: Output only. The time at which this resource was requested for
+      deletion.
+    displayName: User-settable, human-readable name for the CustomClass. Must
+      be 63 characters or less.
+    etag: Output only. This checksum is computed by the server based on the
+      value of other fields. This may be sent on update, undelete, and delete
+      requests to ensure the client has an up-to-date value before proceeding.
+    expireTime: Output only. The time at which this resource will be purged.
+    items: A collection of class items.
+    kmsKeyName: Output only. The [KMS key
+      name](https://cloud.google.com/kms/docs/resource-hierarchy#keys) with
+      which the CustomClass is encrypted. The expected format is `projects/{pr
+      oject}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}`
+      .
+    kmsKeyVersionName: Output only. The [KMS key version
+      name](https://cloud.google.com/kms/docs/resource-hierarchy#key_versions)
+      with which the CustomClass is encrypted. The expected format is `project
+      s/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_
+      key}/cryptoKeyVersions/{crypto_key_version}`.
+    name: Output only. The resource name of the CustomClass. Format:
+      `projects/{project}/locations/{location}/customClasses/{custom_class}`.
+    reconciling: Output only. Whether or not this CustomClass is in the
+      process of being updated.
+    state: Output only. The CustomClass lifecycle state.
+    uid: Output only. System-assigned unique identifier for the CustomClass.
+    updateTime: Output only. The most recent time this resource was modified.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The CustomClass lifecycle state.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state. This is only used/useful for
+        distinguishing unset values.
+      ACTIVE: The normal and active state.
+      DELETED: This CustomClass has been deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Allows users to store small amounts of arbitrary data. Both the key
+    and the value must be 63 characters or less each. At most 100 annotations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  expireTime = _messages.StringField(6)
+  items = _messages.MessageField('ClassItem', 7, repeated=True)
+  kmsKeyName = _messages.StringField(8)
+  kmsKeyVersionName = _messages.StringField(9)
+  name = _messages.StringField(10)
+  reconciling = _messages.BooleanField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+
+
+class DeleteCustomClassRequest(_messages.Message):
+  r"""Request message for the DeleteCustomClass method.
+
+  Fields:
+    allowMissing: If set to true, and the CustomClass is not found, the
+      request will succeed and be a no-op (no Operation is recorded in this
+      case).
+    etag: This checksum is computed by the server based on the value of other
+      fields. This may be sent on update, undelete, and delete requests to
+      ensure the client has an up-to-date value before proceeding.
+    name: Required. The name of the CustomClass to delete. Format:
+      `projects/{project}/locations/{location}/customClasses/{custom_class}`
+    validateOnly: If set, validate the request and preview the deleted
+      CustomClass, but do not actually delete it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class DeletePhraseSetRequest(_messages.Message):
+  r"""Request message for the DeletePhraseSet method.
+
+  Fields:
+    allowMissing: If set to true, and the PhraseSet is not found, the request
+      will succeed and be a no-op (no Operation is recorded in this case).
+    etag: This checksum is computed by the server based on the value of other
+      fields. This may be sent on update, undelete, and delete requests to
+      ensure the client has an up-to-date value before proceeding.
+    name: Required. The name of the PhraseSet to delete. Format:
+      `projects/{project}/locations/{location}/phraseSets/{phrase_set}`
+    validateOnly: If set, validate the request and preview the deleted
+      PhraseSet, but do not actually delete it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
 class DeleteRecognizerRequest(_messages.Message):
   r"""Request message for the DeleteRecognizer method.
 
   Fields:
-    allowMissing: If set, validate the request and preview the deleted
-      Recognizer, but do not actually delete it.
+    allowMissing: If set to true, and the Recognizer is not found, the request
+      will succeed and be a no-op (no Operation is recorded in this case).
     etag: This checksum is computed by the server based on the value of other
       fields. This may be sent on update, undelete, and delete requests to
       ensure the client has an up-to-date value before proceeding.
     name: Required. The name of the Recognizer to delete. Format:
       `projects/{project}/locations/{location}/recognizers/{recognizer}`
-    validateOnly: Dry run the deletion process.
+    validateOnly: If set, validate the request and preview the deleted
+      Recognizer, but do not actually delete it.
   """
 
   allowMissing = _messages.BooleanField(1)
@@ -190,28 +464,58 @@ class DeleteRecognizerRequest(_messages.Message):
 class ExplicitDecodingConfig(_messages.Message):
   r"""Explicitly specified decoding parameters.
 
+  Enums:
+    EncodingValueValuesEnum: Required. Encoding of the audio data sent for
+      recognition.
+
   Fields:
-    encoding: Required. Allowed values are: * linear16: Headerless 16-bit
-      signed little-endian PCM samples. * mulaw: Headerless 8-bit companded
-      mulaw samples. * alaw: Headerless 8-bit companded alaw samples. * wav-
-      linear16: 16-bit signed little-endian PCM samples in a WAV container. *
-      wav-mulaw: 8-bit companded mulaw samples in a WAV container. * wav-alaw:
-      8-bit companded alaw samples in a WAV container. * amr: Headerless AMR
-      frames. * amrwb: Headerless AMR-WB frames. * rfc4867.5-amr: AMR frames
-      with an rfc4867.5 header. * rfc4867.5-amrwb: AMR-WB frames with an
-      rfc4867.5 header. * flac: FLAC frames in the "native FLAC" container
-      format. * mp3: MPEG audio frames with optional (ignored) ID3 metadata. *
-      ogg-opus: Opus audio frames in an Ogg container. * webm-opus: Opus audio
-      frames in a WebM container.
-    sampleRateHertz: Required. Sample rate in Hertz of the audio data sent for
+    audioChannelCount: Number of channels present in the audio data sent for
+      recognition. Supported for the following encodings: * LINEAR16:
+      Headerless 16-bit signed little-endian PCM samples. * MULAW: Headerless
+      8-bit companded mulaw samples. * ALAW: Headerless 8-bit companded alaw
+      samples.
+    encoding: Required. Encoding of the audio data sent for recognition.
+    sampleRateHertz: Sample rate in Hertz of the audio data sent for
       recognition. Valid values are: 8000-48000. 16000 is optimal. For best
       results, set the sampling rate of the audio source to 16000 Hz. If
       that's not possible, use the native sample rate of the audio source
-      (instead of re-sampling).
+      (instead of re-sampling). Supported for the following encodings: *
+      LINEAR16: Headerless 16-bit signed little-endian PCM samples. * MULAW:
+      Headerless 8-bit companded mulaw samples. * ALAW: Headerless 8-bit
+      companded alaw samples.
   """
 
-  encoding = _messages.StringField(1)
-  sampleRateHertz = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  class EncodingValueValuesEnum(_messages.Enum):
+    r"""Required. Encoding of the audio data sent for recognition.
+
+    Values:
+      AUDIO_ENCODING_UNSPECIFIED: Default value. This value is unused.
+      LINEAR16: Headerless 16-bit signed little-endian PCM samples.
+      MULAW: Headerless 8-bit companded mulaw samples.
+      ALAW: Headerless 8-bit companded alaw samples.
+    """
+    AUDIO_ENCODING_UNSPECIFIED = 0
+    LINEAR16 = 1
+    MULAW = 2
+    ALAW = 3
+
+  audioChannelCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 2)
+  sampleRateHertz = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class ListCustomClassesResponse(_messages.Message):
+  r"""Response message for the ListCustomClasses method.
+
+  Fields:
+    customClasses: The list of requested CustomClasses.
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is omitted, there are no subsequent pages. This
+      token expires after 72 hours.
+  """
+
+  customClasses = _messages.MessageField('CustomClass', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -225,6 +529,20 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListPhraseSetsResponse(_messages.Message):
+  r"""Response message for the ListPhraseSets method.
+
+  Fields:
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is omitted, there are no subsequent pages. This
+      token expires after 72 hours.
+    phraseSets: The list of requested PhraseSets.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  phraseSets = _messages.MessageField('PhraseSet', 2, repeated=True)
 
 
 class ListRecognizersResponse(_messages.Message):
@@ -350,49 +668,210 @@ class Operation(_messages.Message):
 
 
 class OperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
+  r"""Represents the metadata of a long-running operation.
 
   Fields:
-    batchRecognizeMetadata: Metadata specific to the BatchRecognize RPC
+    batchRecognizeMetadata: Metadata specific to the BatchRecognize method.
+    batchRecognizeRequest: The BatchRecognizeRequest that spawned the
+      Operation.
+    createCustomClassRequest: The CreateCustomClassRequest that spawned the
+      Operation.
+    createPhraseSetRequest: The CreatePhraseSetRequest that spawned the
+      Operation.
     createRecognizerRequest: The CreateRecognizerRequest that spawned the
       Operation.
-    createTime: Output only. The time the operation was created.
+    createTime: The time the operation was created.
+    deleteCustomClassRequest: The DeleteCustomClassRequest that spawned the
+      Operation.
+    deletePhraseSetRequest: The DeletePhraseSetRequest that spawned the
+      Operation.
     deleteRecognizerRequest: The DeleteRecognizerRequest that spawned the
       Operation.
-    kmsKeyName: Output only. The [KMS key
-      name](https://cloud.google.com/kms/docs/resource-hierarchy#keys) with
-      which the Operation is encrypted. The expected format is `projects/{proj
-      ect}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}`.
-    kmsKeyVersionName: Output only. The [KMS key version
+    kmsKeyName: The [KMS key name](https://cloud.google.com/kms/docs/resource-
+      hierarchy#keys) with which the content of the Operation is encrypted.
+      The expected format is `projects/{project}/locations/{location}/keyRings
+      /{key_ring}/cryptoKeys/{crypto_key}`.
+    kmsKeyVersionName: The [KMS key version
       name](https://cloud.google.com/kms/docs/resource-hierarchy#key_versions)
-      with which the Operation is encrypted. The expected format is `projects/
-      {project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_ke
-      y}/cryptoKeyVersions/{crypto_key_version}`.
-    method: Output only. Name of the verb executed by the operation.
+      with which content of the Operation is encrypted. The expected format is
+      `projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/
+      {crypto_key}/cryptoKeyVersions/{crypto_key_version}`.
+    method: The method that triggered the operation.
     progressPercent: The percent progress of the Operation. Values can range
-      from 0-100. If the value is 100, then the operation is finished
-      execution.
-    resource: Output only. Server-defined resource path for the target of the
-      operation.
+      from 0-100. If the value is 100, then the operation is finished.
+    resource: The resource path for the target of the operation.
+    undeleteCustomClassRequest: The UndeleteCustomClassRequest that spawned
+      the Operation.
+    undeletePhraseSetRequest: The UndeletePhraseSetRequest that spawned the
+      Operation.
     undeleteRecognizerRequest: The UndeleteRecognizerRequest that spawned the
+      Operation.
+    updateConfigRequest: The UpdateConfigRequest that spawned the Operation.
+    updateCustomClassRequest: The UpdateCustomClassRequest that spawned the
+      Operation.
+    updatePhraseSetRequest: The UpdatePhraseSetRequest that spawned the
       Operation.
     updateRecognizerRequest: The UpdateRecognizerRequest that spawned the
       Operation.
-    updateTime: Output only. The time the operation finished running.
+    updateTime: The time the operation was last updated.
   """
 
   batchRecognizeMetadata = _messages.MessageField('BatchRecognizeMetadata', 1)
-  createRecognizerRequest = _messages.MessageField('CreateRecognizerRequest', 2)
+  batchRecognizeRequest = _messages.MessageField('BatchRecognizeRequest', 2)
+  createCustomClassRequest = _messages.MessageField('CreateCustomClassRequest', 3)
+  createPhraseSetRequest = _messages.MessageField('CreatePhraseSetRequest', 4)
+  createRecognizerRequest = _messages.MessageField('CreateRecognizerRequest', 5)
+  createTime = _messages.StringField(6)
+  deleteCustomClassRequest = _messages.MessageField('DeleteCustomClassRequest', 7)
+  deletePhraseSetRequest = _messages.MessageField('DeletePhraseSetRequest', 8)
+  deleteRecognizerRequest = _messages.MessageField('DeleteRecognizerRequest', 9)
+  kmsKeyName = _messages.StringField(10)
+  kmsKeyVersionName = _messages.StringField(11)
+  method = _messages.StringField(12)
+  progressPercent = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(14)
+  undeleteCustomClassRequest = _messages.MessageField('UndeleteCustomClassRequest', 15)
+  undeletePhraseSetRequest = _messages.MessageField('UndeletePhraseSetRequest', 16)
+  undeleteRecognizerRequest = _messages.MessageField('UndeleteRecognizerRequest', 17)
+  updateConfigRequest = _messages.MessageField('UpdateConfigRequest', 18)
+  updateCustomClassRequest = _messages.MessageField('UpdateCustomClassRequest', 19)
+  updatePhraseSetRequest = _messages.MessageField('UpdatePhraseSetRequest', 20)
+  updateRecognizerRequest = _messages.MessageField('UpdateRecognizerRequest', 21)
+  updateTime = _messages.StringField(22)
+
+
+class Phrase(_messages.Message):
+  r"""A Phrase contains words and phrase "hints" so that the speech
+  recognition is more likely to recognize them. This can be used to improve
+  the accuracy for specific words and phrases, for example, if specific
+  commands are typically spoken by the user. This can also be used to add
+  additional words to the vocabulary of the recognizer. List items can also
+  include CustomClass references containing groups of words that represent
+  common concepts that occur in natural language.
+
+  Fields:
+    boost: Hint Boost. Overrides the boost set at the phrase set level.
+      Positive value will increase the probability that a specific phrase will
+      be recognized over other similar sounding phrases. The higher the boost,
+      the higher the chance of false positive recognition as well. Negative
+      boost values would correspond to anti-biasing. Anti-biasing is not
+      enabled, so negative boost will simply be ignored. Though `boost` can
+      accept a wide range of positive values, most use cases are best served
+      with values between 0 and 20. We recommend using a binary search
+      approach to finding the optimal value for your use case. Speech
+      recognition will skip PhraseSets with a boost value of 0.
+    value: The phrase itself.
+  """
+
+  boost = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  value = _messages.StringField(2)
+
+
+class PhraseSet(_messages.Message):
+  r"""PhraseSet for biasing in speech recognition. A PhraseSet is used to
+  provide "hints" to the speech recognizer to favor specific words and phrases
+  in the results.
+
+  Enums:
+    StateValueValuesEnum: Output only. The PhraseSet lifecycle state.
+
+  Messages:
+    AnnotationsValue: Allows users to store small amounts of arbitrary data.
+      Both the key and the value must be 63 characters or less each. At most
+      100 annotations.
+
+  Fields:
+    annotations: Allows users to store small amounts of arbitrary data. Both
+      the key and the value must be 63 characters or less each. At most 100
+      annotations.
+    boost: Hint Boost. Positive value will increase the probability that a
+      specific phrase will be recognized over other similar sounding phrases.
+      The higher the boost, the higher the chance of false positive
+      recognition as well. Valid `boost` values are between 0 (exclusive) and
+      20. We recommend using a binary search approach to finding the optimal
+      value for your use case.
+    createTime: Output only. Creation time.
+    deleteTime: Output only. The time at which this resource was requested for
+      deletion.
+    displayName: User-settable, human-readable name for the PhraseSet. Must be
+      63 characters or less.
+    etag: Output only. This checksum is computed by the server based on the
+      value of other fields. This may be sent on update, undelete, and delete
+      requests to ensure the client has an up-to-date value before proceeding.
+    expireTime: Output only. The time at which this resource will be purged.
+    kmsKeyName: Output only. The [KMS key
+      name](https://cloud.google.com/kms/docs/resource-hierarchy#keys) with
+      which the PhraseSet is encrypted. The expected format is `projects/{proj
+      ect}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}`.
+    kmsKeyVersionName: Output only. The [KMS key version
+      name](https://cloud.google.com/kms/docs/resource-hierarchy#key_versions)
+      with which the PhraseSet is encrypted. The expected format is `projects/
+      {project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_ke
+      y}/cryptoKeyVersions/{crypto_key_version}`.
+    name: Output only. The resource name of the PhraseSet. Format:
+      `projects/{project}/locations/{location}/phraseSets/{phrase_set}`.
+    phrases: A list of word and phrases.
+    reconciling: Output only. Whether or not this PhraseSet is in the process
+      of being updated.
+    state: Output only. The PhraseSet lifecycle state.
+    uid: Output only. System-assigned unique identifier for the PhraseSet.
+    updateTime: Output only. The most recent time this resource was modified.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The PhraseSet lifecycle state.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state. This is only used/useful for
+        distinguishing unset values.
+      ACTIVE: The normal and active state.
+      DELETED: This PhraseSet has been deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Allows users to store small amounts of arbitrary data. Both the key
+    and the value must be 63 characters or less each. At most 100 annotations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  boost = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   createTime = _messages.StringField(3)
-  deleteRecognizerRequest = _messages.MessageField('DeleteRecognizerRequest', 4)
-  kmsKeyName = _messages.StringField(5)
-  kmsKeyVersionName = _messages.StringField(6)
-  method = _messages.StringField(7)
-  progressPercent = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(9)
-  undeleteRecognizerRequest = _messages.MessageField('UndeleteRecognizerRequest', 10)
-  updateRecognizerRequest = _messages.MessageField('UpdateRecognizerRequest', 11)
-  updateTime = _messages.StringField(12)
+  deleteTime = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  expireTime = _messages.StringField(7)
+  kmsKeyName = _messages.StringField(8)
+  kmsKeyVersionName = _messages.StringField(9)
+  name = _messages.StringField(10)
+  phrases = _messages.MessageField('Phrase', 11, repeated=True)
+  reconciling = _messages.BooleanField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class RecognitionConfig(_messages.Message):
@@ -400,8 +879,8 @@ class RecognitionConfig(_messages.Message):
   recognition request.
 
   Fields:
-    audioMetadata: Audio metadata that describes the audio being sent for
-      recognition.
+    adaptation: Speech adaptation context that weights recognizer predictions
+      for specific words and phrases.
     autoDecodingConfig: Automatically detect decoding parameters. Preferred
       for supported formats.
     explicitDecodingConfig: Explicitly specified decoding parameters. Required
@@ -409,7 +888,7 @@ class RecognitionConfig(_messages.Message):
     features: Speech recognition features to enable.
   """
 
-  audioMetadata = _messages.MessageField('AudioMetadata', 1)
+  adaptation = _messages.MessageField('SpeechAdaptation', 1)
   autoDecodingConfig = _messages.MessageField('AutoDetectDecodingConfig', 2)
   explicitDecodingConfig = _messages.MessageField('ExplicitDecodingConfig', 3)
   features = _messages.MessageField('RecognitionFeatures', 4)
@@ -422,18 +901,18 @@ class RecognitionFeatures(_messages.Message):
     MultiChannelModeValueValuesEnum: Mode for recognizing multi-channel audio.
 
   Fields:
-    diarizationConfig: Config to enable speaker diarization and set additional
-      parameters to make diarization better suited for your application. Note:
-      When this is enabled, we send all the words from the beginning of the
-      audio for the top alternative in every consecutive STREAMING responses.
-      This is done in order to improve our speaker tags as our models learn to
-      identify the speakers in the conversation over time. For non-streaming
-      requests, the diarization results will be provided only in the top
-      alternative of the FINAL SpeechRecognitionResult.
+    diarizationConfig: Configuration to enable speaker diarization and set
+      additional parameters to make diarization better suited for your
+      application. When this is enabled, we send all the words from the
+      beginning of the audio for the top alternative in every consecutive
+      STREAMING responses. This is done in order to improve our speaker tags
+      as our models learn to identify the speakers in the conversation over
+      time. For non-streaming requests, the diarization results will be
+      provided only in the top alternative of the FINAL
+      SpeechRecognitionResult.
     enableAutomaticPunctuation: If `true`, adds punctuation to recognition
       result hypotheses. This feature is only available in select languages.
-      Setting this for requests in other languages has no effect at all. The
-      default `false` value does not add punctuation to result hypotheses.
+      The default `false` value does not add punctuation to result hypotheses.
     enableSpokenEmojis: The spoken emoji behavior for the call. If `true`,
       adds spoken emoji formatting for the request. This will replace spoken
       emojis with the corresponding Unicode symbols in the final transcript.
@@ -457,7 +936,7 @@ class RecognitionFeatures(_messages.Message):
     multiChannelMode: Mode for recognizing multi-channel audio.
     profanityFilter: If set to `true`, the server will attempt to filter out
       profanities, replacing all but the initial character in each filtered
-      word with asterisks, e.g. "f***". If set to `false` or omitted,
+      word with asterisks, for instance, "f***". If set to `false` or omitted,
       profanities won't be filtered out.
   """
 
@@ -469,7 +948,8 @@ class RecognitionFeatures(_messages.Message):
         mode. If the audio contains multiple channels, only the first channel
         will be transcribed; other channels will be ignored.
       SEPARATE_RECOGNITION_PER_CHANNEL: If selected, each channel in the
-        provided audio is transcribed independently.
+        provided audio is transcribed independently. This cannot be selected
+        if the selected model is `latest_short`.
     """
     MULTI_CHANNEL_MODE_UNSPECIFIED = 0
     SEPARATE_RECOGNITION_PER_CHANNEL = 1
@@ -503,8 +983,9 @@ class RecognizeRequest(_messages.Message):
 
   Fields:
     config: Features and audio metadata to use for the Automatic Speech
-      Recognition. Providing this field will override the
-      default_recognition_config of the Recognizer resource.
+      Recognition. This field in combination with the config_mask field can be
+      used to override parts of the default_recognition_config of the
+      Recognizer resource.
     configMask: The list of fields in config that override the values in the
       default_recognition_config of the recognizer during this recognition
       request. If no mask is provided, all non-default valued fields in config
@@ -514,7 +995,7 @@ class RecognizeRequest(_messages.Message):
       provided, config completely overrides and replaces the config in the
       recognizer for this recognition request.
     content: The audio data bytes encoded as specified in RecognitionConfig.
-      Note: as with all bytes fields, proto buffers use a pure binary
+      As with all bytes fields, proto buffers use a pure binary
       representation, whereas JSON representations use base64.
     uri: URI that points to a file that contains audio data bytes as specified
       in RecognitionConfig. The file must not be compressed (for example,
@@ -551,13 +1032,17 @@ class Recognizer(_messages.Message):
     StateValueValuesEnum: Output only. The Recognizer lifecycle state.
 
   Messages:
-    AnnotationsValue: Allows storing small amounts of arbitrary data.
+    AnnotationsValue: Allows users to store small amounts of arbitrary data.
+      Both the key and the value must be 63 characters or less each. At most
+      100 annotations.
 
   Fields:
-    annotations: Allows storing small amounts of arbitrary data.
+    annotations: Allows users to store small amounts of arbitrary data. Both
+      the key and the value must be 63 characters or less each. At most 100
+      annotations.
     createTime: Output only. Creation time.
     defaultRecognitionConfig: Default configuration to use for requests with
-      this Recognizer. This is overwritten by inline configuration in the
+      this Recognizer. This can be overwritten by inline configuration in the
       RecognizeRequest.config field.
     deleteTime: Output only. The time at which this Recognizer was requested
       for deletion.
@@ -580,23 +1065,23 @@ class Recognizer(_messages.Message):
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
       Supported languages: - `en-US` - `en-GB` - `fr-FR` If additional
       languages are provided, recognition result will contain recognition in
-      the most likely language detected including the main language_code. The
-      recognition result will include the language tag of the language
-      detected in the audio. Note: This feature is only supported for Voice
-      Command and Voice Search use cases and performance may vary for other
-      use cases (e.g., phone call transcription). Note: When creating/updated
-      a Recognizer, these values are stored in normalized BCP-47 form. For
-      example, "en-us" is stored as "en-US".
+      the most likely language detected. The recognition result will include
+      the language tag of the language detected in the audio. When you create
+      or update a Recognizer, these values are stored in normalized BCP-47
+      form. For example, "en-us" is stored as "en-US".
     model: Required. Which model to use for recognition requests. Select the
       model best suited to your domain to get best results. Supported models:
       - `latest_long` Best for long form content like media or conversation. -
       `latest_short` Best for short form content like commands or single shot
-      directed speech.
+      directed speech. When using this model, the service will stop
+      transcribing audio after the first utterance is detected and completed.
+      When using this model, SEPARATE_RECOGNITION_PER_CHANNEL is not
+      supported; multi-channel audio is accepted, but only the first channel
+      will be processed and transcribed.
     name: Output only. The resource name of the Recognizer. Format:
       `projects/{project}/locations/{location}/recognizers/{recognizer}`.
-    reconciling: Output only. Whether, or not, this Recognizer matches user's
-      intent. Eg. whether, or not, this recognizer is in the process of being
-      updated.
+    reconciling: Output only. Whether or not this Recognizer is in the process
+      of being updated.
     state: Output only. The Recognizer lifecycle state.
     uid: Output only. System-assigned unique identifier for the Recognizer.
     updateTime: Output only. The most recent time this Recognizer was
@@ -618,7 +1103,8 @@ class Recognizer(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""Allows storing small amounts of arbitrary data.
+    r"""Allows users to store small amounts of arbitrary data. Both the key
+    and the value must be 63 characters or less each. At most 100 annotations.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -660,26 +1146,147 @@ class Recognizer(_messages.Message):
 
 
 class SpeakerDiarizationConfig(_messages.Message):
-  r"""Config to enable speaker diarization.
+  r"""Configuration to enable speaker diarization.
 
   Fields:
-    enableSpeakerDiarization: If `true`, enables speaker detection for each
-      recognized word in the top alternative of the recognition result using a
-      speaker_tag provided in the WordInfo.
-    maxSpeakerCount: Maximum number of speakers in the conversation. This
-      range gives you more flexibility by allowing the system to automatically
-      determine the correct number of speakers. The maximum number of speakers
-      that can be detected is 6. If not set, the default value is 6.
-    minSpeakerCount: Note: Set `min_speaker_count` = `max_speaker_count` to
-      fix the number of speakers to be detected in the audio. Minimum number
-      of speakers in the conversation. This range gives you more flexibility
-      by allowing the system to automatically determine the correct number of
-      speakers. If not set, the default value is 2.
+    maxSpeakerCount: Required. Maximum number of speakers in the conversation.
+      Valid values are: 1-6. Must be >= `min_speaker_count`. This range gives
+      you more flexibility by allowing the system to automatically determine
+      the correct number of speakers.
+    minSpeakerCount: Required. Minimum number of speakers in the conversation.
+      This range gives you more flexibility by allowing the system to
+      automatically determine the correct number of speakers. If not set, the
+      default value is 2. To fix the number of speakers detected in the audio,
+      set `min_speaker_count` = `max_speaker_count`.
   """
 
-  enableSpeakerDiarization = _messages.BooleanField(1)
-  maxSpeakerCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  minSpeakerCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maxSpeakerCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minSpeakerCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class SpeechAdaptation(_messages.Message):
+  r"""Provides "hints" to the speech recognizer to favor specific words and
+  phrases in the results. Phrase sets can be specified as an inline resource,
+  or a reference to an existing phrase set resource.
+
+  Fields:
+    customClasses: A list of inline custom classes. Existing custom class
+      resources can be referenced directly in a phrase set.
+    phraseSets: A list of inline or referenced phrase sets.
+  """
+
+  customClasses = _messages.MessageField('CustomClass', 1, repeated=True)
+  phraseSets = _messages.MessageField('AdaptationPhraseSet', 2, repeated=True)
+
+
+class SpeechProjectsLocationsCustomClassesCreateRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsCustomClassesCreateRequest object.
+
+  Fields:
+    customClass: A CustomClass resource to be passed as the request body.
+    customClassId: The ID to use for the CustomClass, which will become the
+      final component of the CustomClass's resource name. This value should be
+      4-63 characters, and valid characters are /a-z-/.
+    parent: Required. The project and location where this CustomClass will be
+      created. The expected format is
+      `projects/{project}/locations/{location}`.
+    validateOnly: If set, validate the request and preview the CustomClass,
+      but do not actually create it.
+  """
+
+  customClass = _messages.MessageField('CustomClass', 1)
+  customClassId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class SpeechProjectsLocationsCustomClassesDeleteRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsCustomClassesDeleteRequest object.
+
+  Fields:
+    allowMissing: If set to true, and the CustomClass is not found, the
+      request will succeed and be a no-op (no Operation is recorded in this
+      case).
+    etag: This checksum is computed by the server based on the value of other
+      fields. This may be sent on update, undelete, and delete requests to
+      ensure the client has an up-to-date value before proceeding.
+    name: Required. The name of the CustomClass to delete. Format:
+      `projects/{project}/locations/{location}/customClasses/{custom_class}`
+    validateOnly: If set, validate the request and preview the deleted
+      CustomClass, but do not actually delete it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class SpeechProjectsLocationsCustomClassesGetRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsCustomClassesGetRequest object.
+
+  Fields:
+    name: Required. The name of the CustomClass to retrieve. The expected
+      format is
+      `projects/{project}/locations/{location}/customClasses/{custom_class}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpeechProjectsLocationsCustomClassesListRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsCustomClassesListRequest object.
+
+  Fields:
+    pageSize: Number of results per requests. A valid page_size ranges from 0
+      to 20 inclusive. If the page_size is zero or unspecified, a page size of
+      5 will be chosen. If the page size exceeds 20, it will be coerced down
+      to 20. Note that a call might return fewer results than the requested
+      page size.
+    pageToken: A page token, received from a previous ListCustomClasses call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to ListCustomClasses must match the call that
+      provided the page token.
+    parent: Required. The project and location of CustomClass resources to
+      list. The expected format is `projects/{project}/locations/{location}`.
+    showDeleted: Whether, or not, to show resources that have been deleted.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
+
+
+class SpeechProjectsLocationsCustomClassesPatchRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsCustomClassesPatchRequest object.
+
+  Fields:
+    customClass: A CustomClass resource to be passed as the request body.
+    name: Output only. The resource name of the CustomClass. Format:
+      `projects/{project}/locations/{location}/customClasses/{custom_class}`.
+    updateMask: The list of fields to be updated. If empty, all fields are
+      considered for update.
+    validateOnly: If set, validate the request and preview the updated
+      CustomClass, but do not actually update it.
+  """
+
+  customClass = _messages.MessageField('CustomClass', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class SpeechProjectsLocationsGetConfigRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsGetConfigRequest object.
+
+  Fields:
+    name: Required. The name of the config to retrieve. There is exactly one
+      config resource per project per location. The expected format is
+      `projects/{project}/locations/{location}/config`.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class SpeechProjectsLocationsOperationsGetRequest(_messages.Message):
@@ -708,11 +1315,107 @@ class SpeechProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class SpeechProjectsLocationsPhraseSetsCreateRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsPhraseSetsCreateRequest object.
+
+  Fields:
+    parent: Required. The project and location where this PhraseSet will be
+      created. The expected format is
+      `projects/{project}/locations/{location}`.
+    phraseSet: A PhraseSet resource to be passed as the request body.
+    phraseSetId: The ID to use for the PhraseSet, which will become the final
+      component of the PhraseSet's resource name. This value should be 4-63
+      characters, and valid characters are /a-z-/.
+    validateOnly: If set, validate the request and preview the PhraseSet, but
+      do not actually create it.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  phraseSet = _messages.MessageField('PhraseSet', 2)
+  phraseSetId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class SpeechProjectsLocationsPhraseSetsDeleteRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsPhraseSetsDeleteRequest object.
+
+  Fields:
+    allowMissing: If set to true, and the PhraseSet is not found, the request
+      will succeed and be a no-op (no Operation is recorded in this case).
+    etag: This checksum is computed by the server based on the value of other
+      fields. This may be sent on update, undelete, and delete requests to
+      ensure the client has an up-to-date value before proceeding.
+    name: Required. The name of the PhraseSet to delete. Format:
+      `projects/{project}/locations/{location}/phraseSets/{phrase_set}`
+    validateOnly: If set, validate the request and preview the deleted
+      PhraseSet, but do not actually delete it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class SpeechProjectsLocationsPhraseSetsGetRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsPhraseSetsGetRequest object.
+
+  Fields:
+    name: Required. The name of the PhraseSet to retrieve. The expected format
+      is `projects/{project}/locations/{location}/phraseSets/{phrase_set}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpeechProjectsLocationsPhraseSetsListRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsPhraseSetsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of PhraseSets to return. The service may
+      return fewer than this value. If unspecified, at most 20 PhraseSets will
+      be returned. The maximum value is 20; values above 20 will be coerced to
+      20.
+    pageToken: A page token, received from a previous ListPhraseSets call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to ListPhraseSets must match the call that provided
+      the page token.
+    parent: Required. The project and location of PhraseSet resources to list.
+      The expected format is `projects/{project}/locations/{location}`.
+    showDeleted: Whether, or not, to show resources that have been deleted.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
+
+
+class SpeechProjectsLocationsPhraseSetsPatchRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsPhraseSetsPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of the PhraseSet. Format:
+      `projects/{project}/locations/{location}/phraseSets/{phrase_set}`.
+    phraseSet: A PhraseSet resource to be passed as the request body.
+    updateMask: The list of fields to update. If empty, all non-default valued
+      fields are considered for update. Use `*` to update the entire PhraseSet
+      resource.
+    validateOnly: If set, validate the request and preview the updated
+      PhraseSet, but do not actually update it.
+  """
+
+  name = _messages.StringField(1, required=True)
+  phraseSet = _messages.MessageField('PhraseSet', 2)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
 class SpeechProjectsLocationsRecognizersCreateRequest(_messages.Message):
   r"""A SpeechProjectsLocationsRecognizersCreateRequest object.
 
   Fields:
-    parent: Required. The project and location where this recognizer will be
+    parent: Required. The project and location where this Recognizer will be
       created. The expected format is
       `projects/{project}/locations/{location}`.
     recognizer: A Recognizer resource to be passed as the request body.
@@ -733,14 +1436,15 @@ class SpeechProjectsLocationsRecognizersDeleteRequest(_messages.Message):
   r"""A SpeechProjectsLocationsRecognizersDeleteRequest object.
 
   Fields:
-    allowMissing: If set, validate the request and preview the deleted
-      Recognizer, but do not actually delete it.
+    allowMissing: If set to true, and the Recognizer is not found, the request
+      will succeed and be a no-op (no Operation is recorded in this case).
     etag: This checksum is computed by the server based on the value of other
       fields. This may be sent on update, undelete, and delete requests to
       ensure the client has an up-to-date value before proceeding.
     name: Required. The name of the Recognizer to delete. Format:
       `projects/{project}/locations/{location}/recognizers/{recognizer}`
-    validateOnly: Dry run the deletion process.
+    validateOnly: If set, validate the request and preview the deleted
+      Recognizer, but do not actually delete it.
   """
 
   allowMissing = _messages.BooleanField(1)
@@ -788,22 +1492,20 @@ class SpeechProjectsLocationsRecognizersPatchRequest(_messages.Message):
   r"""A SpeechProjectsLocationsRecognizersPatchRequest object.
 
   Fields:
-    allowMissing: If set to true, and the Recognizer is not found, a new
-      Recognizer will be created. In this situation, update_mask is ignored.
     name: Output only. The resource name of the Recognizer. Format:
       `projects/{project}/locations/{location}/recognizers/{recognizer}`.
     recognizer: A Recognizer resource to be passed as the request body.
-    updateMask: The list of fields to update. If empty, all fields are
-      considered for update.
+    updateMask: The list of fields to update. If empty, all non-default valued
+      fields are considered for update. Use `*` to update the entire
+      Recognizer resource.
     validateOnly: If set, validate the request and preview the updated
       Recognizer, but do not actually update it.
   """
 
-  allowMissing = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  recognizer = _messages.MessageField('Recognizer', 3)
-  updateMask = _messages.StringField(4)
-  validateOnly = _messages.BooleanField(5)
+  name = _messages.StringField(1, required=True)
+  recognizer = _messages.MessageField('Recognizer', 2)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class SpeechProjectsLocationsRecognizersRecognizeRequest(_messages.Message):
@@ -849,9 +1551,9 @@ class SpeechRecognitionAlternative(_messages.Message):
       rely on it to be always provided. The default of 0.0 is a sentinel value
       indicating `confidence` was not set.
     transcript: Transcript text representing the words that the user spoke.
-    words: A list of word-specific information for each recognized word. Note:
-      When enable_speaker_diarization is true, you will see all the words from
-      the beginning of the audio.
+    words: A list of word-specific information for each recognized word. When
+      enable_speaker_diarization is true, you will see all the words from the
+      beginning of the audio.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -868,7 +1570,7 @@ class SpeechRecognitionResult(_messages.Message):
       alternative being the most probable, as ranked by the recognizer.
     channelTag: For multi-channel audio, this is the channel number
       corresponding to the recognized result for the audio from that channel.
-      For audio_channel_count = `N`, its output values can range from `1` to
+      For `audio_channel_count` = `N`, its output values can range from `1` to
       `N`.
     languageCode: Output only. The [BCP-47](https://www.rfc-
       editor.org/rfc/bcp/bcp47.txt) language tag of the language in this
@@ -1008,7 +1710,7 @@ class StreamingRecognitionResult(_messages.Message):
       alternative being the most probable, as ranked by the recognizer.
     channelTag: For multi-channel audio, this is the channel number
       corresponding to the recognized result for the audio from that channel.
-      For audio_channel_count = `N`, its output values can range from `1` to
+      For `audio_channel_count` = `N`, its output values can range from `1` to
       `N`.
     isFinal: If `false`, this StreamingRecognitionResult represents an interim
       result that may change. If `true`, this is the final time the speech
@@ -1036,6 +1738,42 @@ class StreamingRecognitionResult(_messages.Message):
   stability = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
 
 
+class UndeleteCustomClassRequest(_messages.Message):
+  r"""Request message for the UndeleteCustomClass method.
+
+  Fields:
+    etag: This checksum is computed by the server based on the value of other
+      fields. This may be sent on update, undelete, and delete requests to
+      ensure the client has an up-to-date value before proceeding.
+    name: Required. The name of the CustomClass to undelete. Format:
+      `projects/{project}/locations/{location}/customClasses/{custom_class}`
+    validateOnly: If set, validate the request and preview the undeleted
+      CustomClass, but do not actually undelete it.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
+
+
+class UndeletePhraseSetRequest(_messages.Message):
+  r"""Request message for the UndeletePhraseSet method.
+
+  Fields:
+    etag: This checksum is computed by the server based on the value of other
+      fields. This may be sent on update, undelete, and delete requests to
+      ensure the client has an up-to-date value before proceeding.
+    name: Required. The name of the PhraseSet to undelete. Format:
+      `projects/{project}/locations/{location}/phraseSets/{phrase_set}`
+    validateOnly: If set, validate the request and preview the undeleted
+      PhraseSet, but do not actually undelete it.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
+
+
 class UndeleteRecognizerRequest(_messages.Message):
   r"""Request message for the UndeleteRecognizer method.
 
@@ -1054,25 +1792,74 @@ class UndeleteRecognizerRequest(_messages.Message):
   validateOnly = _messages.BooleanField(3)
 
 
+class UpdateConfigRequest(_messages.Message):
+  r"""Request message for the UpdateConfig method.
+
+  Fields:
+    config: Required. The config to update. The config's `name` field is used
+      to identify the config to be updated. The expected format is
+      `projects/{project}/locations/{location}/config`.
+    updateMask: The list of fields to be updated.
+  """
+
+  config = _messages.MessageField('Config', 1)
+  updateMask = _messages.StringField(2)
+
+
+class UpdateCustomClassRequest(_messages.Message):
+  r"""Request message for the UpdateCustomClass method.
+
+  Fields:
+    customClass: Required. The CustomClass to update. The CustomClass's `name`
+      field is used to identify the CustomClass to update. Format:
+      `projects/{project}/locations/{location}/customClasses/{custom_class}`.
+    updateMask: The list of fields to be updated. If empty, all fields are
+      considered for update.
+    validateOnly: If set, validate the request and preview the updated
+      CustomClass, but do not actually update it.
+  """
+
+  customClass = _messages.MessageField('CustomClass', 1)
+  updateMask = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
+
+
+class UpdatePhraseSetRequest(_messages.Message):
+  r"""Request message for the UpdatePhraseSet method.
+
+  Fields:
+    phraseSet: Required. The PhraseSet to update. The PhraseSet's `name` field
+      is used to identify the PhraseSet to update. Format:
+      `projects/{project}/locations/{location}/phraseSets/{phrase_set}`.
+    updateMask: The list of fields to update. If empty, all non-default valued
+      fields are considered for update. Use `*` to update the entire PhraseSet
+      resource.
+    validateOnly: If set, validate the request and preview the updated
+      PhraseSet, but do not actually update it.
+  """
+
+  phraseSet = _messages.MessageField('PhraseSet', 1)
+  updateMask = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
+
+
 class UpdateRecognizerRequest(_messages.Message):
   r"""Request message for the UpdateRecognizer method.
 
   Fields:
-    allowMissing: If set to true, and the Recognizer is not found, a new
-      Recognizer will be created. In this situation, update_mask is ignored.
     recognizer: Required. The Recognizer to update. The Recognizer's `name`
       field is used to identify the Recognizer to update. Format:
       `projects/{project}/locations/{location}/recognizers/{recognizer}`.
-    updateMask: The list of fields to update. If empty, all fields are
-      considered for update.
+    updateMask: The list of fields to update. If empty, all non-default valued
+      fields are considered for update. Use `*` to update the entire
+      Recognizer resource.
     validateOnly: If set, validate the request and preview the updated
       Recognizer, but do not actually update it.
   """
 
-  allowMissing = _messages.BooleanField(1)
-  recognizer = _messages.MessageField('Recognizer', 2)
-  updateMask = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
+  recognizer = _messages.MessageField('Recognizer', 1)
+  updateMask = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
 
 
 class WordInfo(_messages.Message):

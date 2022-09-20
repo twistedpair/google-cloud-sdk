@@ -1198,6 +1198,9 @@ apis:
       resources:
         projects:
           path: projects/{project}
+  storageinsights:
+    v1alpha1:
+      discovery_doc: storageinsights_v1alpha1.json
   storagetransfer:
     v1:
       discovery_doc: storagetransfer_v1.json
@@ -1370,9 +1373,9 @@ apis:
   workstations:
     v1alpha1:
       discovery_doc: workstations_v1alpha1.json
-      default: true
     v1beta:
       discovery_doc: workstations_v1beta.json
+      default: true
   securesourcemanager:
     v1:
       discovery_doc: securesourcemanager_v1.json

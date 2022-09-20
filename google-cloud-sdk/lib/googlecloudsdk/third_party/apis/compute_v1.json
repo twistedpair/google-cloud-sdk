@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20220902",
+  "revision": "20220909",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -15418,21 +15418,21 @@
       "type": "object",
       "properties": {
         "port": {
-          "description": "The TCP port number for the health check request. The default value is 80. Valid values are 1 through 65535.",
+          "description": "The TCP port number to which the health check prober sends packets. The default value is 80. Valid values are 1 through 65535.",
           "type": "integer",
           "format": "int32"
         },
         "portName": {
-          "description": "Port name as defined in InstanceGroup#NamedPort#name. If both port and port_name are defined, port takes precedence.",
+          "description": "Not supported.",
           "type": "string"
         },
         "portSpecification": {
-          "description": "Specifies how port is selected for health checking, can be one of following values: USE_FIXED_PORT: The port number in port is used for health checking. USE_NAMED_PORT: The portName is used for health checking. USE_SERVING_PORT: For NetworkEndpointGroup, the port specified for each network endpoint is used for health checking. For other backends, the port or named port specified in the Backend Service is used for health checking. If not specified, TCP health check follows behavior specified in port and portName fields.",
+          "description": "Specifies how a port is selected for health checking. Can be one of the following values: USE_FIXED_PORT: Specifies a port number explicitly using the port field in the health check. Supported by backend services for pass-through load balancers and backend services for proxy load balancers. Not supported by target pools. The health check supports all backends supported by the backend service provided the backend can be health checked. For example, GCE_VM_IP network endpoint groups, GCE_VM_IP_PORT network endpoint groups, and instance group backends. USE_NAMED_PORT: Not supported. USE_SERVING_PORT: Provides an indirect method of specifying the health check port by referring to the backend service. Only supported by backend services for proxy load balancers. Not supported by target pools. Not supported by backend services for pass-through load balancers. Supports all backends that can be health checked; for example, GCE_VM_IP_PORT network endpoint groups and instance group backends. For GCE_VM_IP_PORT network endpoint group backends, the health check uses the port number specified for each endpoint in the network endpoint group. For instance group backends, the health check uses the port number determined by looking up the backend service's named port in the instance group's list of named ports.",
           "type": "string",
           "enumDescriptions": [
-            "The port number in port is used for health checking.",
-            "The portName is used for health checking.",
-            "For NetworkEndpointGroup, the port specified for each network endpoint is used for health checking. For other backends, the port or named port specified in the Backend Service is used for health checking."
+            "The port number in the health check's port is used for health checking. Applies to network endpoint group and instance group backends.",
+            "Not supported.",
+            "For network endpoint group backends, the health check uses the port number specified on each endpoint in the network endpoint group. For instance group backends, the health check uses the port number specified for the backend service's named port defined in the instance group's named ports."
           ],
           "enum": [
             "USE_FIXED_PORT",
@@ -15441,11 +15441,11 @@
           ]
         },
         "request": {
-          "description": "The application data to send once the TCP connection has been established (default value is empty). If both request and response are empty, the connection establishment alone will indicate health. The request data can only be ASCII.",
+          "description": "Instructs the health check prober to send this exact ASCII string, up to 1024 bytes in length, after establishing the TCP connection.",
           "type": "string"
         },
         "response": {
-          "description": "The bytes to match against the beginning of the response data. If left empty (the default value), any response will indicate health. The response data can only be ASCII.",
+          "description": "Creates a content-based TCP health check. In addition to establishing a TCP connection, you can configure the health check to pass only when the backend sends this exact response ASCII string, up to 1024 bytes in length. For details, see: https:\/\/cloud.google.com\/load-balancing\/docs\/health-check-concepts#criteria-protocol-ssl-tcp",
           "type": "string"
         },
         "proxyHeader": {
@@ -15467,21 +15467,21 @@
       "type": "object",
       "properties": {
         "port": {
-          "description": "The TCP port number for the health check request. The default value is 443. Valid values are 1 through 65535.",
+          "description": "The TCP port number to which the health check prober sends packets. The default value is 443. Valid values are 1 through 65535.",
           "type": "integer",
           "format": "int32"
         },
         "portName": {
-          "description": "Port name as defined in InstanceGroup#NamedPort#name. If both port and port_name are defined, port takes precedence.",
+          "description": "Not supported.",
           "type": "string"
         },
         "portSpecification": {
-          "description": "Specifies how port is selected for health checking, can be one of following values: USE_FIXED_PORT: The port number in port is used for health checking. USE_NAMED_PORT: The portName is used for health checking. USE_SERVING_PORT: For NetworkEndpointGroup, the port specified for each network endpoint is used for health checking. For other backends, the port or named port specified in the Backend Service is used for health checking. If not specified, SSL health check follows behavior specified in port and portName fields.",
+          "description": "Specifies how a port is selected for health checking. Can be one of the following values: USE_FIXED_PORT: Specifies a port number explicitly using the port field in the health check. Supported by backend services for pass-through load balancers and backend services for proxy load balancers. Not supported by target pools. The health check supports all backends supported by the backend service provided the backend can be health checked. For example, GCE_VM_IP network endpoint groups, GCE_VM_IP_PORT network endpoint groups, and instance group backends. USE_NAMED_PORT: Not supported. USE_SERVING_PORT: Provides an indirect method of specifying the health check port by referring to the backend service. Only supported by backend services for proxy load balancers. Not supported by target pools. Not supported by backend services for pass-through load balancers. Supports all backends that can be health checked; for example, GCE_VM_IP_PORT network endpoint groups and instance group backends. For GCE_VM_IP_PORT network endpoint group backends, the health check uses the port number specified for each endpoint in the network endpoint group. For instance group backends, the health check uses the port number determined by looking up the backend service's named port in the instance group's list of named ports.",
           "type": "string",
           "enumDescriptions": [
-            "The port number in port is used for health checking.",
-            "The portName is used for health checking.",
-            "For NetworkEndpointGroup, the port specified for each network endpoint is used for health checking. For other backends, the port or named port specified in the Backend Service is used for health checking."
+            "The port number in the health check's port is used for health checking. Applies to network endpoint group and instance group backends.",
+            "Not supported.",
+            "For network endpoint group backends, the health check uses the port number specified on each endpoint in the network endpoint group. For instance group backends, the health check uses the port number specified for the backend service's named port defined in the instance group's named ports."
           ],
           "enum": [
             "USE_FIXED_PORT",
@@ -15490,11 +15490,11 @@
           ]
         },
         "request": {
-          "description": "The application data to send once the SSL connection has been established (default value is empty). If both request and response are empty, the connection establishment alone will indicate health. The request data can only be ASCII.",
+          "description": "Instructs the health check prober to send this exact ASCII string, up to 1024 bytes in length, after establishing the TCP connection and SSL handshake.",
           "type": "string"
         },
         "response": {
-          "description": "The bytes to match against the beginning of the response data. If left empty (the default value), any response will indicate health. The response data can only be ASCII.",
+          "description": "Creates a content-based SSL health check. In addition to establishing a TCP connection and the TLS handshake, you can configure the health check to pass only when the backend sends this exact response ASCII string, up to 1024 bytes in length. For details, see: https:\/\/cloud.google.com\/load-balancing\/docs\/health-check-concepts#criteria-protocol-ssl-tcp",
           "type": "string"
         },
         "proxyHeader": {
@@ -15516,21 +15516,21 @@
       "type": "object",
       "properties": {
         "port": {
-          "description": "The TCP port number for the health check request. The default value is 80. Valid values are 1 through 65535.",
+          "description": "The TCP port number to which the health check prober sends packets. The default value is 80. Valid values are 1 through 65535.",
           "type": "integer",
           "format": "int32"
         },
         "portName": {
-          "description": "Port name as defined in InstanceGroup#NamedPort#name. If both port and port_name are defined, port takes precedence.",
+          "description": "Not supported.",
           "type": "string"
         },
         "portSpecification": {
-          "description": "Specifies how port is selected for health checking, can be one of following values: USE_FIXED_PORT: The port number in port is used for health checking. USE_NAMED_PORT: The portName is used for health checking. USE_SERVING_PORT: For NetworkEndpointGroup, the port specified for each network endpoint is used for health checking. For other backends, the port or named port specified in the Backend Service is used for health checking. If not specified, HTTP health check follows behavior specified in port and portName fields.",
+          "description": "Specifies how a port is selected for health checking. Can be one of the following values: USE_FIXED_PORT: Specifies a port number explicitly using the port field in the health check. Supported by backend services for pass-through load balancers and backend services for proxy load balancers. Also supported in legacy HTTP health checks for target pools. The health check supports all backends supported by the backend service provided the backend can be health checked. For example, GCE_VM_IP network endpoint groups, GCE_VM_IP_PORT network endpoint groups, and instance group backends. USE_NAMED_PORT: Not supported. USE_SERVING_PORT: Provides an indirect method of specifying the health check port by referring to the backend service. Only supported by backend services for proxy load balancers. Not supported by target pools. Not supported by backend services for pass-through load balancers. Supports all backends that can be health checked; for example, GCE_VM_IP_PORT network endpoint groups and instance group backends. For GCE_VM_IP_PORT network endpoint group backends, the health check uses the port number specified for each endpoint in the network endpoint group. For instance group backends, the health check uses the port number determined by looking up the backend service's named port in the instance group's list of named ports.",
           "type": "string",
           "enumDescriptions": [
-            "The port number in port is used for health checking.",
-            "The portName is used for health checking.",
-            "For NetworkEndpointGroup, the port specified for each network endpoint is used for health checking. For other backends, the port or named port specified in the Backend Service is used for health checking."
+            "The port number in the health check's port is used for health checking. Applies to network endpoint group and instance group backends.",
+            "Not supported.",
+            "For network endpoint group backends, the health check uses the port number specified on each endpoint in the network endpoint group. For instance group backends, the health check uses the port number specified for the backend service's named port defined in the instance group's named ports."
           ],
           "enum": [
             "USE_FIXED_PORT",
@@ -15539,7 +15539,7 @@
           ]
         },
         "host": {
-          "description": "The value of the host header in the HTTP health check request. If left empty (default value), the IP on behalf of which this health check is performed will be used.",
+          "description": "The value of the host header in the HTTP health check request. If left empty (default value), the host header is set to the destination IP address to which health check packets are sent. The destination IP address depends on the type of load balancer. For details, see: https:\/\/cloud.google.com\/load-balancing\/docs\/health-check-concepts#hc-packet-dest",
           "type": "string"
         },
         "requestPath": {
@@ -15559,7 +15559,7 @@
           ]
         },
         "response": {
-          "description": "The string to match anywhere in the first 1024 bytes of the response body. If left empty (the default value), the status code determines health. The response data can only be ASCII.",
+          "description": "Creates a content-based HTTP health check. In addition to the required HTTP 200 (OK) status code, you can configure the health check to pass only when the backend sends this specific ASCII response string within the first 1024 bytes of the HTTP response body. For details, see: https:\/\/cloud.google.com\/load-balancing\/docs\/health-check-concepts#criteria-protocol-http",
           "type": "string"
         }
       }
@@ -15569,21 +15569,21 @@
       "type": "object",
       "properties": {
         "port": {
-          "description": "The TCP port number for the health check request. The default value is 443. Valid values are 1 through 65535.",
+          "description": "The TCP port number to which the health check prober sends packets. The default value is 443. Valid values are 1 through 65535.",
           "type": "integer",
           "format": "int32"
         },
         "portName": {
-          "description": "Port name as defined in InstanceGroup#NamedPort#name. If both port and port_name are defined, port takes precedence.",
+          "description": "Not supported.",
           "type": "string"
         },
         "portSpecification": {
-          "description": "Specifies how port is selected for health checking, can be one of following values: USE_FIXED_PORT: The port number in port is used for health checking. USE_NAMED_PORT: The portName is used for health checking. USE_SERVING_PORT: For NetworkEndpointGroup, the port specified for each network endpoint is used for health checking. For other backends, the port or named port specified in the Backend Service is used for health checking. If not specified, HTTPS health check follows behavior specified in port and portName fields.",
+          "description": "Specifies how a port is selected for health checking. Can be one of the following values: USE_FIXED_PORT: Specifies a port number explicitly using the port field in the health check. Supported by backend services for pass-through load balancers and backend services for proxy load balancers. Not supported by target pools. The health check supports all backends supported by the backend service provided the backend can be health checked. For example, GCE_VM_IP network endpoint groups, GCE_VM_IP_PORT network endpoint groups, and instance group backends. USE_NAMED_PORT: Not supported. USE_SERVING_PORT: Provides an indirect method of specifying the health check port by referring to the backend service. Only supported by backend services for proxy load balancers. Not supported by target pools. Not supported by backend services for pass-through load balancers. Supports all backends that can be health checked; for example, GCE_VM_IP_PORT network endpoint groups and instance group backends. For GCE_VM_IP_PORT network endpoint group backends, the health check uses the port number specified for each endpoint in the network endpoint group. For instance group backends, the health check uses the port number determined by looking up the backend service's named port in the instance group's list of named ports.",
           "type": "string",
           "enumDescriptions": [
-            "The port number in port is used for health checking.",
-            "The portName is used for health checking.",
-            "For NetworkEndpointGroup, the port specified for each network endpoint is used for health checking. For other backends, the port or named port specified in the Backend Service is used for health checking."
+            "The port number in the health check's port is used for health checking. Applies to network endpoint group and instance group backends.",
+            "Not supported.",
+            "For network endpoint group backends, the health check uses the port number specified on each endpoint in the network endpoint group. For instance group backends, the health check uses the port number specified for the backend service's named port defined in the instance group's named ports."
           ],
           "enum": [
             "USE_FIXED_PORT",
@@ -15592,7 +15592,7 @@
           ]
         },
         "host": {
-          "description": "The value of the host header in the HTTPS health check request. If left empty (default value), the IP on behalf of which this health check is performed will be used.",
+          "description": "The value of the host header in the HTTPS health check request. If left empty (default value), the host header is set to the destination IP address to which health check packets are sent. The destination IP address depends on the type of load balancer. For details, see: https:\/\/cloud.google.com\/load-balancing\/docs\/health-check-concepts#hc-packet-dest",
           "type": "string"
         },
         "requestPath": {
@@ -15612,7 +15612,7 @@
           ]
         },
         "response": {
-          "description": "The string to match anywhere in the first 1024 bytes of the response body. If left empty (the default value), the status code determines health. The response data can only be ASCII.",
+          "description": "Creates a content-based HTTPS health check. In addition to the required HTTP 200 (OK) status code, you can configure the health check to pass only when the backend sends this specific ASCII response string within the first 1024 bytes of the HTTP response body. For details, see: https:\/\/cloud.google.com\/load-balancing\/docs\/health-check-concepts#criteria-protocol-http",
           "type": "string"
         }
       }
@@ -15622,21 +15622,21 @@
       "type": "object",
       "properties": {
         "port": {
-          "description": "The TCP port number for the health check request. The default value is 443. Valid values are 1 through 65535.",
+          "description": "The TCP port number to which the health check prober sends packets. The default value is 443. Valid values are 1 through 65535.",
           "type": "integer",
           "format": "int32"
         },
         "portName": {
-          "description": "Port name as defined in InstanceGroup#NamedPort#name. If both port and port_name are defined, port takes precedence.",
+          "description": "Not supported.",
           "type": "string"
         },
         "portSpecification": {
-          "description": "Specifies how port is selected for health checking, can be one of following values: USE_FIXED_PORT: The port number in port is used for health checking. USE_NAMED_PORT: The portName is used for health checking. USE_SERVING_PORT: For NetworkEndpointGroup, the port specified for each network endpoint is used for health checking. For other backends, the port or named port specified in the Backend Service is used for health checking. If not specified, HTTP2 health check follows behavior specified in port and portName fields.",
+          "description": "Specifies how a port is selected for health checking. Can be one of the following values: USE_FIXED_PORT: Specifies a port number explicitly using the port field in the health check. Supported by backend services for pass-through load balancers and backend services for proxy load balancers. Not supported by target pools. The health check supports all backends supported by the backend service provided the backend can be health checked. For example, GCE_VM_IP network endpoint groups, GCE_VM_IP_PORT network endpoint groups, and instance group backends. USE_NAMED_PORT: Not supported. USE_SERVING_PORT: Provides an indirect method of specifying the health check port by referring to the backend service. Only supported by backend services for proxy load balancers. Not supported by target pools. Not supported by backend services for pass-through load balancers. Supports all backends that can be health checked; for example, GCE_VM_IP_PORT network endpoint groups and instance group backends. For GCE_VM_IP_PORT network endpoint group backends, the health check uses the port number specified for each endpoint in the network endpoint group. For instance group backends, the health check uses the port number determined by looking up the backend service's named port in the instance group's list of named ports.",
           "type": "string",
           "enumDescriptions": [
-            "The port number in port is used for health checking.",
-            "The portName is used for health checking.",
-            "For NetworkEndpointGroup, the port specified for each network endpoint is used for health checking. For other backends, the port or named port specified in the Backend Service is used for health checking."
+            "The port number in the health check's port is used for health checking. Applies to network endpoint group and instance group backends.",
+            "Not supported.",
+            "For network endpoint group backends, the health check uses the port number specified on each endpoint in the network endpoint group. For instance group backends, the health check uses the port number specified for the backend service's named port defined in the instance group's named ports."
           ],
           "enum": [
             "USE_FIXED_PORT",
@@ -15645,7 +15645,7 @@
           ]
         },
         "host": {
-          "description": "The value of the host header in the HTTP\/2 health check request. If left empty (default value), the IP on behalf of which this health check is performed will be used.",
+          "description": "The value of the host header in the HTTP\/2 health check request. If left empty (default value), the host header is set to the destination IP address to which health check packets are sent. The destination IP address depends on the type of load balancer. For details, see: https:\/\/cloud.google.com\/load-balancing\/docs\/health-check-concepts#hc-packet-dest",
           "type": "string"
         },
         "requestPath": {
@@ -15665,7 +15665,7 @@
           ]
         },
         "response": {
-          "description": "The string to match anywhere in the first 1024 bytes of the response body. If left empty (the default value), the status code determines health. The response data can only be ASCII.",
+          "description": "Creates a content-based HTTP\/2 health check. In addition to the required HTTP 200 (OK) status code, you can configure the health check to pass only when the backend sends this specific ASCII response string within the first 1024 bytes of the HTTP response body. For details, see: https:\/\/cloud.google.com\/load-balancing\/docs\/health-check-concepts#criteria-protocol-http",
           "type": "string"
         }
       }
@@ -15675,21 +15675,21 @@
       "type": "object",
       "properties": {
         "port": {
-          "description": "The port number for the health check request. Must be specified if port_name and port_specification are not set or if port_specification is USE_FIXED_PORT. Valid values are 1 through 65535.",
+          "description": "The TCP port number to which the health check prober sends packets. Valid values are 1 through 65535.",
           "type": "integer",
           "format": "int32"
         },
         "portName": {
-          "description": "Port name as defined in InstanceGroup#NamedPort#name. If both port and port_name are defined, port takes precedence. The port_name should conform to RFC1035.",
+          "description": "Not supported.",
           "type": "string"
         },
         "portSpecification": {
-          "description": "Specifies how port is selected for health checking, can be one of following values: USE_FIXED_PORT: The port number in port is used for health checking. USE_NAMED_PORT: The portName is used for health checking. USE_SERVING_PORT: For NetworkEndpointGroup, the port specified for each network endpoint is used for health checking. For other backends, the port or named port specified in the Backend Service is used for health checking. If not specified, gRPC health check follows behavior specified in port and portName fields.",
+          "description": "Specifies how a port is selected for health checking. Can be one of the following values: USE_FIXED_PORT: Specifies a port number explicitly using the port field in the health check. Supported by backend services for pass-through load balancers and backend services for proxy load balancers. Not supported by target pools. The health check supports all backends supported by the backend service provided the backend can be health checked. For example, GCE_VM_IP network endpoint groups, GCE_VM_IP_PORT network endpoint groups, and instance group backends. USE_NAMED_PORT: Not supported. USE_SERVING_PORT: Provides an indirect method of specifying the health check port by referring to the backend service. Only supported by backend services for proxy load balancers. Not supported by target pools. Not supported by backend services for pass-through load balancers. Supports all backends that can be health checked; for example, GCE_VM_IP_PORT network endpoint groups and instance group backends. For GCE_VM_IP_PORT network endpoint group backends, the health check uses the port number specified for each endpoint in the network endpoint group. For instance group backends, the health check uses the port number determined by looking up the backend service's named port in the instance group's list of named ports.",
           "type": "string",
           "enumDescriptions": [
-            "The port number in port is used for health checking.",
-            "The portName is used for health checking.",
-            "For NetworkEndpointGroup, the port specified for each network endpoint is used for health checking. For other backends, the port or named port specified in the Backend Service is used for health checking."
+            "The port number in the health check's port is used for health checking. Applies to network endpoint group and instance group backends.",
+            "Not supported.",
+            "For network endpoint group backends, the health check uses the port number specified on each endpoint in the network endpoint group. For instance group backends, the health check uses the port number specified for the backend service's named port defined in the instance group's named ports."
           ],
           "enum": [
             "USE_FIXED_PORT",
@@ -19653,6 +19653,9 @@
         "pscTargetService": {
           "description": "The target service url used to set up private service connection to a Google API or a PSC Producer Service Attachment. An example value is: \"asia-northeast3-cloudkms.googleapis.com\"",
           "type": "string"
+        },
+        "pscData": {
+          "$ref": "NetworkEndpointGroupPscData"
         }
       }
     },
@@ -19706,6 +19709,42 @@
         "urlMask": {
           "description": "A template to parse function field from a request URL. URL mask allows for routing to multiple Cloud Functions without having to create multiple Network Endpoint Groups and backend services. For example, request URLs \" mydomain.com\/function1\" and \"mydomain.com\/function2\" can be backed by the same Serverless NEG with URL mask \"\/<function>\". The URL mask will parse them to { function = \"function1\" } and { function = \"function2\" } respectively.",
           "type": "string"
+        }
+      }
+    },
+    "NetworkEndpointGroupPscData": {
+      "id": "NetworkEndpointGroupPscData",
+      "description": "All data that is specifically relevant to only network endpoint groups of type PRIVATE_SERVICE_CONNECT.",
+      "type": "object",
+      "properties": {
+        "consumerPscAddress": {
+          "description": "[Output Only] Address allocated from given subnetwork for PSC. This IP address acts as a VIP for a PSC NEG, allowing it to act as an endpoint in L7 PSC-XLB.",
+          "type": "string"
+        },
+        "pscConnectionId": {
+          "description": "[Output Only] The PSC connection id of the PSC Network Endpoint Group Consumer.",
+          "type": "string",
+          "format": "uint64"
+        },
+        "pscConnectionStatus": {
+          "description": "[Output Only] The connection status of the PSC Forwarding Rule.",
+          "type": "string",
+          "enumDescriptions": [
+            "The connection has been accepted by the producer.",
+            "The connection has been closed by the producer and will not serve traffic going forward.",
+            "The connection has been accepted by the producer, but the producer needs to take further action before the forwarding rule can serve traffic.",
+            "The connection is pending acceptance by the producer.",
+            "The connection has been rejected by the producer.",
+            ""
+          ],
+          "enum": [
+            "ACCEPTED",
+            "CLOSED",
+            "NEEDS_ATTENTION",
+            "PENDING",
+            "REJECTED",
+            "STATUS_UNSPECIFIED"
+          ]
         }
       }
     },
@@ -26166,6 +26205,13 @@
         "encryptedInterconnectRouter": {
           "description": "Indicates if a router is dedicated for use with encrypted VLAN attachments (interconnectAttachments).",
           "type": "boolean"
+        },
+        "md5AuthenticationKeys": {
+          "description": "Keys used for MD5 authentication.",
+          "type": "array",
+          "items": {
+            "$ref": "RouterMd5AuthenticationKey"
+          }
         }
       }
     },
@@ -26337,6 +26383,10 @@
         },
         "peerIpv6NexthopAddress": {
           "description": "IPv6 address of the BGP interface outside Google Cloud Platform.",
+          "type": "string"
+        },
+        "md5AuthenticationKeyName": {
+          "description": "Present if MD5 authentication is enabled for the peering. Must be the name of one of the entries in the Router.md5_authentication_keys. The field must comply with RFC1035.",
           "type": "string"
         }
       }
@@ -26666,6 +26716,31 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "RouterMd5AuthenticationKey": {
+      "id": "RouterMd5AuthenticationKey",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name used to identify the key. Must be unique within a router. Must be referenced by at least one bgpPeer. Must comply with RFC1035.",
+          "annotations": {
+            "required": [
+              "compute.routers.insert",
+              "compute.routers.update"
+            ]
+          },
+          "type": "string"
+        },
+        "key": {
+          "description": "[Input only] Value of the key. For patch and update calls, it can be skipped to copy the value from the previous configuration. This is allowed if the key with the same name existed before the operation. Maximum length is 80 characters. Can only contain printable ASCII characters.",
+          "annotations": {
+            "required": [
+              "compute.routers.insert"
+            ]
+          },
+          "type": "string"
         }
       }
     },
@@ -27133,6 +27208,22 @@
         },
         "bfdStatus": {
           "$ref": "BfdStatus"
+        },
+        "md5AuthEnabled": {
+          "description": "Informs whether MD5 authentication is enabled on this BGP peer.",
+          "type": "boolean"
+        },
+        "statusReason": {
+          "description": "Indicates why particular status was returned.",
+          "type": "string",
+          "enumDescriptions": [
+            "Indicates internal problems with configuration of MD5 authentication. This particular reason can only be returned when md5AuthEnabled is true and status is DOWN.",
+            ""
+          ],
+          "enum": [
+            "MD5_AUTH_INTERNAL_PROBLEM",
+            "STATUS_REASON_UNSPECIFIED"
+          ]
         }
       }
     },

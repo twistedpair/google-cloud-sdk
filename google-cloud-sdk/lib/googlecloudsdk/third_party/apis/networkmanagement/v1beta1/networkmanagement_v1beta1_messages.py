@@ -69,6 +69,8 @@ class AbortInfo(_messages.Message):
       MISMATCHED_DESTINATION_NETWORK: Aborted because the destination network
         does not match the destination endpoint.
       UNSUPPORTED: Aborted because the test scenario is not supported.
+      MISMATCHED_IP_VERSION: Aborted because the source and destination
+        resources have no common IP version.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_NETWORK = 1
@@ -86,6 +88,7 @@ class AbortInfo(_messages.Message):
     DESTINATION_ENDPOINT_NOT_FOUND = 13
     MISMATCHED_DESTINATION_NETWORK = 14
     UNSUPPORTED = 15
+    MISMATCHED_IP_VERSION = 16
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   projectsMissingPermission = _messages.StringField(2, repeated=True)
@@ -1730,13 +1733,19 @@ class RouteInfo(_messages.Message):
 
   Fields:
     destIpRange: Destination IP range of the route.
+    destPortRanges: Destination port ranges of the route. Policy based routes
+      only.
     displayName: Name of a Compute Engine route.
     instanceTags: Instance tags of the route.
     networkUri: URI of a Compute Engine network.
     nextHop: Next hop of the route.
     nextHopType: Type of next hop.
     priority: Priority of the route.
+    protocols: Protocols of the route. Policy based routes only.
     routeType: Type of route.
+    srcIpRange: Source IP address range of the route. Policy based routes
+      only.
+    srcPortRanges: Source port ranges of the route. Policy based routes only.
     uri: URI of a Compute Engine route. Dynamic route from cloud router does
       not have a URI. Advertised route from Google Cloud VPC to on-premises
       network also does not have a URI.
@@ -1792,6 +1801,7 @@ class RouteInfo(_messages.Message):
       PEERING_SUBNET: A subnet route received from peering network.
       PEERING_STATIC: A static route received from peering network.
       PEERING_DYNAMIC: A dynamic route received from peering network.
+      POLICY_BASED_ROUTE: Policy based route.
     """
     ROUTE_TYPE_UNSPECIFIED = 0
     SUBNET = 1
@@ -1800,16 +1810,21 @@ class RouteInfo(_messages.Message):
     PEERING_SUBNET = 4
     PEERING_STATIC = 5
     PEERING_DYNAMIC = 6
+    POLICY_BASED_ROUTE = 7
 
   destIpRange = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  instanceTags = _messages.StringField(3, repeated=True)
-  networkUri = _messages.StringField(4)
-  nextHop = _messages.StringField(5)
-  nextHopType = _messages.EnumField('NextHopTypeValueValuesEnum', 6)
-  priority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 8)
-  uri = _messages.StringField(9)
+  destPortRanges = _messages.StringField(2, repeated=True)
+  displayName = _messages.StringField(3)
+  instanceTags = _messages.StringField(4, repeated=True)
+  networkUri = _messages.StringField(5)
+  nextHop = _messages.StringField(6)
+  nextHopType = _messages.EnumField('NextHopTypeValueValuesEnum', 7)
+  priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  protocols = _messages.StringField(9, repeated=True)
+  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 10)
+  srcIpRange = _messages.StringField(11)
+  srcPortRanges = _messages.StringField(12, repeated=True)
+  uri = _messages.StringField(13)
 
 
 class SetIamPolicyRequest(_messages.Message):

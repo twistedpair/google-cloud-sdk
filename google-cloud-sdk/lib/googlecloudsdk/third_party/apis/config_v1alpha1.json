@@ -265,7 +265,8 @@
             "The deployment is being updated.",
             "The deployment is being deleted.",
             "The deployment has encountered an unexpected error.",
-            "The deployment is no longer being actively reconciled. This may be the result of recovering the project after deletion."
+            "The deployment is no longer being actively reconciled. This may be the result of recovering the project after deletion.",
+            "The deployment is deleted."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -274,7 +275,8 @@
             "UPDATING",
             "DELETING",
             "FAILED",
-            "SUSPENDED"
+            "SUSPENDED",
+            "DELETED"
           ]
         },
         "blueprint": {

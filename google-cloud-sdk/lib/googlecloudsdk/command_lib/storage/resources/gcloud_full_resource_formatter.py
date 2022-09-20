@@ -65,7 +65,7 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = (
             title='Bucket Policy Only Enabled',
             default=None,
             field_name='_bucket_policy_only_enabled'),
-        satisifes_pzs=base.FieldDisplayTitleAndDefault(
+        satisfies_pzs=base.FieldDisplayTitleAndDefault(
             title='Satisfies PZS', default=None),
         acl=base.FieldDisplayTitleAndDefault(
             title='ACL', default=shim_format_util.EMPTY_LIST_STRING),

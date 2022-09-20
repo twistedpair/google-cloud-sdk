@@ -127,13 +127,13 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
           }
 
     def AnalyzeWorkloadMove(self, request, global_params=None):
-      r"""Analyze if the source Assured Workloads can be moved to the target Assured Workload.
+      r"""Analyzes a hypothetical move of a source project or project-based workload to a target (destination) folder-based workload.
 
       Args:
         request: (AssuredworkloadsOrganizationsLocationsWorkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleCloudAssuredworkloadsVersioningV1beta1AnalyzeWorkloadMoveResponse) The response message.
+        (GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse) The response message.
       """
       config = self.GetMethodConfig('AnalyzeWorkloadMove')
       return self._RunMethod(
@@ -149,7 +149,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+source}/{+target}:analyzeWorkloadMove',
         request_field='',
         request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest',
-        response_type_name='GoogleCloudAssuredworkloadsVersioningV1beta1AnalyzeWorkloadMoveResponse',
+        response_type_name='GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse',
         supports_download=False,
     )
 
@@ -183,6 +183,33 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Acknowledge(self, request, global_params=None):
+      r"""Acknowledges an existing violation. By acknowledging a violation, users acknowledge the existence of a compliance violation in their workload and decide to ignore it due to a valid business justification. Acknowledgement is a permanent operation and it cannot be reverted.
+
+      Args:
+        request: (AssuredworkloadsOrganizationsLocationsWorkloadsViolationsAcknowledgeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAssuredworkloadsV1beta1AcknowledgeViolationResponse) The response message.
+      """
+      config = self.GetMethodConfig('Acknowledge')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Acknowledge.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}/violations/{violationsId}:acknowledge',
+        http_method='POST',
+        method_id='assuredworkloads.organizations.locations.workloads.violations.acknowledge',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:acknowledge',
+        request_field='googleCloudAssuredworkloadsV1beta1AcknowledgeViolationRequest',
+        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsViolationsAcknowledgeRequest',
+        response_type_name='GoogleCloudAssuredworkloadsV1beta1AcknowledgeViolationResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Retrieves Assured Workload Violation based on ID.
 
@@ -190,7 +217,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         request: (AssuredworkloadsOrganizationsLocationsWorkloadsViolationsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleCloudAssuredworkloadsVersioningV1beta1Violation) The response message.
+        (GoogleCloudAssuredworkloadsV1beta1Violation) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -206,7 +233,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}',
         request_field='',
         request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsViolationsGetRequest',
-        response_type_name='GoogleCloudAssuredworkloadsVersioningV1beta1Violation',
+        response_type_name='GoogleCloudAssuredworkloadsV1beta1Violation',
         supports_download=False,
     )
 
@@ -217,7 +244,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         request: (AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleCloudAssuredworkloadsVersioningV1beta1ListViolationsResponse) The response message.
+        (GoogleCloudAssuredworkloadsV1beta1ListViolationsResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -233,7 +260,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+parent}/violations',
         request_field='',
         request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest',
-        response_type_name='GoogleCloudAssuredworkloadsVersioningV1beta1ListViolationsResponse',
+        response_type_name='GoogleCloudAssuredworkloadsV1beta1ListViolationsResponse',
         supports_download=False,
     )
 
@@ -308,7 +335,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         request: (AssuredworkloadsOrganizationsLocationsWorkloadsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleCloudAssuredworkloadsVersioningV1beta1Workload) The response message.
+        (GoogleCloudAssuredworkloadsV1beta1Workload) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -324,7 +351,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}',
         request_field='',
         request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsGetRequest',
-        response_type_name='GoogleCloudAssuredworkloadsVersioningV1beta1Workload',
+        response_type_name='GoogleCloudAssuredworkloadsV1beta1Workload',
         supports_download=False,
     )
 
@@ -335,7 +362,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         request: (AssuredworkloadsOrganizationsLocationsWorkloadsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleCloudAssuredworkloadsVersioningV1beta1ListWorkloadsResponse) The response message.
+        (GoogleCloudAssuredworkloadsV1beta1ListWorkloadsResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -351,7 +378,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+parent}/workloads',
         request_field='',
         request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsListRequest',
-        response_type_name='GoogleCloudAssuredworkloadsVersioningV1beta1ListWorkloadsResponse',
+        response_type_name='GoogleCloudAssuredworkloadsV1beta1ListWorkloadsResponse',
         supports_download=False,
     )
 
@@ -440,13 +467,13 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
           }
 
     def AnalyzeWorkloadMove(self, request, global_params=None):
-      r"""Analyze if the source Assured Workloads can be moved to the target Assured Workload.
+      r"""Analyzes a hypothetical move of a source project or project-based workload to a target (destination) folder-based workload.
 
       Args:
         request: (AssuredworkloadsProjectsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleCloudAssuredworkloadsVersioningV1beta1AnalyzeWorkloadMoveResponse) The response message.
+        (GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse) The response message.
       """
       config = self.GetMethodConfig('AnalyzeWorkloadMove')
       return self._RunMethod(
@@ -462,7 +489,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+project}/{+target}:analyzeWorkloadMove',
         request_field='',
         request_type_name='AssuredworkloadsProjectsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest',
-        response_type_name='GoogleCloudAssuredworkloadsVersioningV1beta1AnalyzeWorkloadMoveResponse',
+        response_type_name='GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse',
         supports_download=False,
     )
 

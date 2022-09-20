@@ -879,6 +879,33 @@ class GkehubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListWorkspaces(self, request, global_params=None):
+      r"""Lists workspaces of a given membership.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsListWorkspacesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkspacesForMembershipResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListWorkspaces')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListWorkspaces.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:listWorkspaces',
+        http_method='GET',
+        method_id='gkehub.projects.locations.memberships.listWorkspaces',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}:listWorkspaces',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsMembershipsListWorkspacesRequest',
+        response_type_name='ListWorkspacesForMembershipResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates an existing Membership.
 
@@ -1563,6 +1590,33 @@ class GkehubV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+parent}/workspaces',
         request_field='',
         request_type_name='GkehubProjectsLocationsWorkspacesListRequest',
+        response_type_name='ListWorkspacesResponse',
+        supports_download=False,
+    )
+
+    def ListPermitted(self, request, global_params=None):
+      r"""Lists workspaces that the caller is permitted to access in IAM.
+
+      Args:
+        request: (GkehubProjectsLocationsWorkspacesListPermittedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkspacesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListPermitted')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListPermitted.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/workspaces:listPermitted',
+        http_method='GET',
+        method_id='gkehub.projects.locations.workspaces.listPermitted',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/workspaces:listPermitted',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsWorkspacesListPermittedRequest',
         response_type_name='ListWorkspacesResponse',
         supports_download=False,
     )

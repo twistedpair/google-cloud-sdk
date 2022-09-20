@@ -786,7 +786,8 @@
             "Dynamic route exchanged between BGP peers.",
             "A subnet route received from peering network.",
             "A static route received from peering network.",
-            "A dynamic route received from peering network."
+            "A dynamic route received from peering network.",
+            "Policy based route."
           ],
           "enum": [
             "ROUTE_TYPE_UNSPECIFIED",
@@ -795,7 +796,8 @@
             "DYNAMIC",
             "PEERING_SUBNET",
             "PEERING_STATIC",
-            "PEERING_DYNAMIC"
+            "PEERING_DYNAMIC",
+            "POLICY_BASED_ROUTE"
           ]
         },
         "nextHopType": {
@@ -857,6 +859,31 @@
         },
         "instanceTags": {
           "description": "Instance tags of the route.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "srcIpRange": {
+          "description": "Source IP address range of the route. Policy based routes only.",
+          "type": "string"
+        },
+        "destPortRanges": {
+          "description": "Destination port ranges of the route. Policy based routes only.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "srcPortRanges": {
+          "description": "Source port ranges of the route. Policy based routes only.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "protocols": {
+          "description": "Protocols of the route. Policy based routes only.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1100,7 +1127,8 @@
             "Aborted because the source network does not match the source endpoint.",
             "Aborted because the destination endpoint could not be found.",
             "Aborted because the destination network does not match the destination endpoint.",
-            "Aborted because the test scenario is not supported."
+            "Aborted because the test scenario is not supported.",
+            "Aborted because the source and destination resources have no common IP version."
           ],
           "enum": [
             "CAUSE_UNSPECIFIED",
@@ -1118,7 +1146,8 @@
             "MISMATCHED_SOURCE_NETWORK",
             "DESTINATION_ENDPOINT_NOT_FOUND",
             "MISMATCHED_DESTINATION_NETWORK",
-            "UNSUPPORTED"
+            "UNSUPPORTED",
+            "MISMATCHED_IP_VERSION"
           ]
         },
         "resourceUri": {

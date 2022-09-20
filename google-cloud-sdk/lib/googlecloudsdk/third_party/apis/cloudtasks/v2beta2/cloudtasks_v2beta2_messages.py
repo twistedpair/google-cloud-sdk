@@ -409,27 +409,25 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
-class BufferQueueRequest(_messages.Message):
-  r"""Request message for BufferQueue.
+class BufferTaskRequest(_messages.Message):
+  r"""Request message for BufferTask.
 
   Fields:
-    body: Body of the HTTP request. The body can take any generic value. The
-      value will be written to the HttpRequest of the [Task].
+    body: Optional. Body of the HTTP request. The body can take any generic
+      value. The value will be written to the HttpRequest of the [Task].
   """
 
   body = _messages.MessageField('HttpBody', 1)
 
 
-class BufferQueueResponse(_messages.Message):
-  r"""Response message for BufferQueue.
+class BufferTaskResponse(_messages.Message):
+  r"""Response message for BufferTask.
 
   Fields:
-    task: The name of the created task. For example:
-      `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID
-      `. TASK_ID is randomly generated and is unique within the queue.
+    task: The created task.
   """
 
-  task = _messages.StringField(1)
+  task = _messages.MessageField('Task', 1)
 
 
 class CancelLeaseRequest(_messages.Message):
@@ -514,21 +512,6 @@ class CloudtasksProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-
-
-class CloudtasksProjectsLocationsQueuesBufferRequest(_messages.Message):
-  r"""A CloudtasksProjectsLocationsQueuesBufferRequest object.
-
-  Fields:
-    bufferQueueRequest: A BufferQueueRequest resource to be passed as the
-      request body.
-    name: Required. The queue name. For example:
-      `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID` The queue
-      must already exist.
-  """
-
-  bufferQueueRequest = _messages.MessageField('BufferQueueRequest', 1)
-  name = _messages.StringField(2, required=True)
 
 
 class CloudtasksProjectsLocationsQueuesCreateRequest(_messages.Message):
@@ -721,6 +704,21 @@ class CloudtasksProjectsLocationsQueuesTasksAcknowledgeRequest(_messages.Message
 
   acknowledgeTaskRequest = _messages.MessageField('AcknowledgeTaskRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class CloudtasksProjectsLocationsQueuesTasksBufferRequest(_messages.Message):
+  r"""A CloudtasksProjectsLocationsQueuesTasksBufferRequest object.
+
+  Fields:
+    bufferTaskRequest: A BufferTaskRequest resource to be passed as the
+      request body.
+    parent: Required. The parent queue name. For example:
+      projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID` The queue
+      must already exist.
+  """
+
+  bufferTaskRequest = _messages.MessageField('BufferTaskRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class CloudtasksProjectsLocationsQueuesTasksCancelLeaseRequest(_messages.Message):

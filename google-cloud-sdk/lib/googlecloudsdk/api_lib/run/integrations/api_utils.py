@@ -171,6 +171,28 @@ def CreateDeployment(client, app_ref, deployment, validate_only=False):
       )
 
 
+def GetDeployment(client, deployment_name):
+  """Calls GetDeployment API of Runapps.
+
+  Args:
+    client: GAPIC API client, the api client to use.
+    deployment_name: str, the canonical name of the deployment.  For example:
+      projects/<project>/locations/<location>/applications/<app>/deployment/<id>
+
+  Returns:
+    run_apps.v1alpha1.Deployment, the Deployment object.  None is returned if
+      the deployment cannot be found.
+  """
+  try:
+    return client.projects_locations_applications_deployments.Get(
+        client.MESSAGES_MODULE
+        .RunappsProjectsLocationsApplicationsDeploymentsGetRequest(
+            name=deployment_name)
+        )
+  except api_exceptions.HttpNotFoundError:
+    return None
+
+
 def WaitForApplicationOperation(client, operation):
   """Waits for an operation to complete.
 

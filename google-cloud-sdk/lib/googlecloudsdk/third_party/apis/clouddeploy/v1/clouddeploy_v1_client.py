@@ -59,7 +59,7 @@ class ClouddeployV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Get details of a single JobRun.
+      r"""Gets details of a single JobRun.
 
       Args:
         request: (ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsGetRequest) input message
@@ -231,7 +231,7 @@ class ClouddeployV1(base_api.BaseApiClient):
     )
 
     def RetryJob(self, request, global_params=None):
-      r"""Retry the specified Job in a Rollout.
+      r"""Retries the specified Job in a Rollout.
 
       Args:
         request: (ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsRetryJobRequest) input message

@@ -825,18 +825,3 @@ def AddDriverPoolId(parser):
       hidden=True,
       required=False,
       default=None)
-
-
-def AddEnableGceNodePoolsFlag(parser):
-  """Adds the hidden flag to enable population of the auxiliaryGceNodePools field on the cluster config.
-
-  Args:
-    parser: The argparse parser for the command.
-  """
-  parser.add_argument(
-      '--enable-gce-node-pools',
-      help=('Enable Compute Engine node pools. Currently only DRIVER role node'
-            ' pools are allowed.'),
-      hidden=True,
-      default=False,
-      required=False)

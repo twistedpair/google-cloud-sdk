@@ -53,14 +53,14 @@ def GetOidcJwks(args):
   return getattr(args, 'oidc_jwks', None)
 
 
-def AddAuthority(parser):
-  """Adds Authority flags.
+def AddOidcConfig(parser):
+  """Adds Oidc Config flags.
 
   Args:
     parser: The argparse.parser to add the arguments to.
   """
 
-  group = parser.add_group('Authority', required=True)
+  group = parser.add_group('OIDC config', required=True)
   AddIssuerUrl(group, required=True)
   AddOidcJwks(group)
 

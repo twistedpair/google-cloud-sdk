@@ -497,7 +497,7 @@
           }
         },
         "livenessProbe": {
-          "description": "Periodic probe of container liveness. Container will be restarted if the probe fails. More info: https:\/\/kubernetes.io\/docs\/concepts\/workloads\/pods\/pod-lifecycle#container-probes",
+          "description": "Not supported by Cloud Run.",
           "$ref": "Probe"
         },
         "readinessProbe": {

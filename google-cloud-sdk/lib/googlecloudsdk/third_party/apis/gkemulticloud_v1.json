@@ -217,9 +217,9 @@
           "description": "Optional. A human readable description of this cluster. Cannot be longer than 255 UTF-8 encoded bytes.",
           "type": "string"
         },
-        "authority": {
-          "description": "Authority configuration.",
-          "$ref": "GoogleCloudGkemulticloudV1Authority"
+        "oidcConfig": {
+          "description": "Required. OpenID Connect (OIDC) configuration for the cluster.",
+          "$ref": "GoogleCloudGkemulticloudV1AttachedOidcConfig"
         },
         "platformVersion": {
           "description": "Required. The platform version for the cluster (e.g. `1.19.0-gke.1000`). You can list all supported versions on a given Google Cloud region by calling GetAttachedServerConfig.",
@@ -317,17 +317,17 @@
         }
       }
     },
-    "GoogleCloudGkemulticloudV1Authority": {
-      "id": "GoogleCloudGkemulticloudV1Authority",
-      "description": "OIDC discovery information of the target cluster.",
+    "GoogleCloudGkemulticloudV1AttachedOidcConfig": {
+      "id": "GoogleCloudGkemulticloudV1AttachedOidcConfig",
+      "description": "OIDC discovery information of the target cluster. Kubernetes Service Account (KSA) tokens are JWT tokens signed by the cluster API server. This fields indicates how GCP services validate KSA tokens in order to allow system workloads (such as GKE Connect and telemetry agents) to authenticate back to GCP. Both clusters with public and private issuer URLs are supported. Clusters with public issuers only need to specify the `issuer_url` field while clusters with private issuers need to provide both `issuer_url` and `oidc_jwks`.",
       "type": "object",
       "properties": {
         "issuerUrl": {
           "description": "A JSON Web Token (JWT) issuer URI. `issuer` must start with `https:\/\/`.",
           "type": "string"
         },
-        "oidcJwks": {
-          "description": "Optional. OIDC verification keys in JWKS format (RFC 7517). It contains a list of OIDC verification keys that can be used to verify OIDC JWTs. This is useful for cluster that doesn't have a publicly available discovery endpoint. When provided, it will be directly used to verify the OIDC JWT asserted by the IDP.",
+        "jwks": {
+          "description": "Optional. OIDC verification keys in JWKS format (RFC 7517). It contains a list of OIDC verification keys that can be used to verify OIDC JWTs. This field is required for cluster that doesn't have a publicly available discovery endpoint. When provided, it will be directly used to verify the OIDC JWT asserted by the IDP.",
           "type": "string",
           "format": "byte"
         }
@@ -2535,6 +2535,11 @@
                       "location": "query",
                       "type": "boolean"
                     },
+                    "ignoreErrors": {
+                      "description": "If set to true, the deletion of AttachedCluster resource will succeed even if errors occur during deleting in cluster resources. Using this parameter may result in orphaned resources in the cluster.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
                     "etag": {
                       "description": "The current etag of the AttachedCluster. Allows clients to perform deletions through optimistic concurrency control. If the provided etag does not match the current etag of the cluster, the request will fail and an ABORTED error will be returned.",
                       "location": "query",
@@ -2613,7 +2618,7 @@
                       "type": "boolean"
                     },
                     "updateMask": {
-                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AwsCluster: * `description`. * `annotations`. * `control_plane.version`. * `authorization.admin_users`. * `control_plane.aws_services_authentication.role_arn`. * `control_plane.aws_services_authentication.role_session_name`. * `control_plane.config_encryption.kms_key_arn`. * `control_plane.instance_type`. * `control_plane.security_group_ids`. * `control_plane.proxy_config`. * `control_plane.proxy_config.secret_arn`. * `control_plane.proxy_config.secret_version`. * `control_plane.root_volume.iops`. * `control_plane.root_volume.kms_key_arn`. * `control_plane.root_volume.volume_type`. * `control_plane.root_volume.size_gib`. * `control_plane.ssh_config`. * `control_plane.ssh_config.ec2_key_pair`. * `control_plane.instance_placement.tenancy`. * `logging_config`. * `control_plane.iam_instance_profile`.",
+                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AwsCluster: * `description`. * `annotations`. * `control_plane.version`. * `authorization.admin_users`. * `control_plane.aws_services_authentication.role_arn`. * `control_plane.aws_services_authentication.role_session_name`. * `control_plane.config_encryption.kms_key_arn`. * `control_plane.instance_type`. * `control_plane.security_group_ids`. * `control_plane.proxy_config`. * `control_plane.proxy_config.secret_arn`. * `control_plane.proxy_config.secret_version`. * `control_plane.root_volume.iops`. * `control_plane.root_volume.kms_key_arn`. * `control_plane.root_volume.volume_type`. * `control_plane.root_volume.size_gib`. * `control_plane.ssh_config`. * `control_plane.ssh_config.ec2_key_pair`. * `control_plane.instance_placement.tenancy`. * `logging_config`. * `control_plane.iam_instance_profile`. * `control_plane.tags`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

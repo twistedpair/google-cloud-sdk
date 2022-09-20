@@ -374,6 +374,15 @@ class DeliverInfo(_messages.Message):
       GOOGLE_API: Target is a Google API.
       GKE_MASTER: Target is a Google Kubernetes Engine cluster master.
       CLOUD_SQL_INSTANCE: Target is a Cloud SQL instance.
+      PSC_PUBLISHED_SERVICE: Target is a published service using [Private
+        Service Connect](https://cloud.google.com/vpc/docs/configure-private-
+        service-connect-services).
+      PSC_GOOGLE_API: Target is all Google APIs using [Private Service
+        Connect](https://cloud.google.com/vpc/docs/configure-private-service-
+        connect-apis).
+      PSC_VPC_SC: Target is VPC-SC using [Private Service
+        Connect](https://cloud.google.com/vpc/docs/configure-private-service-
+        connect-apis).
     """
     TARGET_UNSPECIFIED = 0
     INSTANCE = 1
@@ -381,6 +390,9 @@ class DeliverInfo(_messages.Message):
     GOOGLE_API = 3
     GKE_MASTER = 4
     CLOUD_SQL_INSTANCE = 5
+    PSC_PUBLISHED_SERVICE = 6
+    PSC_GOOGLE_API = 7
+    PSC_VPC_SC = 8
 
   resourceUri = _messages.StringField(1)
   target = _messages.EnumField('TargetValueValuesEnum', 2)
@@ -467,6 +479,8 @@ class DropInfo(_messages.Message):
         is set.
       VPC_CONNECTOR_NOT_RUNNING: Packet could be dropped because the VPC
         connector is not in a running state.
+      PSC_CONNECTION_NOT_ACCEPTED: Privte Service Connect (PSC) connection is
+        not in accepted state.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -493,6 +507,7 @@ class DropInfo(_messages.Message):
     CLOUD_FUNCTION_NOT_ACTIVE = 22
     VPC_CONNECTOR_NOT_SET = 23
     VPC_CONNECTOR_NOT_RUNNING = 24
+    PSC_CONNECTION_NOT_ACCEPTED = 25
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)
@@ -1565,13 +1580,19 @@ class RouteInfo(_messages.Message):
 
   Fields:
     destIpRange: Destination IP range of the route.
+    destPortRanges: Destination port ranges of the route. Policy based routes
+      only.
     displayName: Name of a Compute Engine route.
     instanceTags: Instance tags of the route.
     networkUri: URI of a Compute Engine network.
     nextHop: Next hop of the route.
     nextHopType: Type of next hop.
     priority: Priority of the route.
+    protocols: Protocols of the route. Policy based routes only.
     routeType: Type of route.
+    srcIpRange: Source IP address range of the route. Policy based routes
+      only.
+    srcPortRanges: Source port ranges of the route. Policy based routes only.
     uri: URI of a Compute Engine route. Dynamic route from cloud router does
       not have a URI. Advertised route from Google Cloud VPC to on-premises
       network also does not have a URI.
@@ -1627,6 +1648,7 @@ class RouteInfo(_messages.Message):
       PEERING_SUBNET: A subnet route received from peering network.
       PEERING_STATIC: A static route received from peering network.
       PEERING_DYNAMIC: A dynamic route received from peering network.
+      POLICY_BASED_ROUTE: Policy based route.
     """
     ROUTE_TYPE_UNSPECIFIED = 0
     SUBNET = 1
@@ -1635,16 +1657,21 @@ class RouteInfo(_messages.Message):
     PEERING_SUBNET = 4
     PEERING_STATIC = 5
     PEERING_DYNAMIC = 6
+    POLICY_BASED_ROUTE = 7
 
   destIpRange = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  instanceTags = _messages.StringField(3, repeated=True)
-  networkUri = _messages.StringField(4)
-  nextHop = _messages.StringField(5)
-  nextHopType = _messages.EnumField('NextHopTypeValueValuesEnum', 6)
-  priority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 8)
-  uri = _messages.StringField(9)
+  destPortRanges = _messages.StringField(2, repeated=True)
+  displayName = _messages.StringField(3)
+  instanceTags = _messages.StringField(4, repeated=True)
+  networkUri = _messages.StringField(5)
+  nextHop = _messages.StringField(6)
+  nextHopType = _messages.EnumField('NextHopTypeValueValuesEnum', 7)
+  priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  protocols = _messages.StringField(9, repeated=True)
+  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 10)
+  srcIpRange = _messages.StringField(11)
+  srcPortRanges = _messages.StringField(12, repeated=True)
+  uri = _messages.StringField(13)
 
 
 class SetIamPolicyRequest(_messages.Message):

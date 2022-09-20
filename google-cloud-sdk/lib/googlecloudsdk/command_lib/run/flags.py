@@ -904,16 +904,14 @@ def AddEncryptionKeyShutdownHoursFlag(parser, with_clear=True):
   """Add Cmek key shutdown hours flag."""
   policy_group = parser
   if with_clear:
-    policy_group = parser.add_mutually_exclusive_group(hidden=True)
+    policy_group = parser.add_mutually_exclusive_group()
     policy_group.add_argument(
         '--clear-encryption-key-shutdown-hours',
-        hidden=True,
         default=False,
         action='store_true',
         help='Remove any previously set CMEK key shutdown hours setting.')
   policy_group.add_argument(
       '--encryption-key-shutdown-hours',
-      hidden=True,
       help='The number of hours to wait before an automatic shutdown server after CMEK key '
       'revocation is detected.')
 

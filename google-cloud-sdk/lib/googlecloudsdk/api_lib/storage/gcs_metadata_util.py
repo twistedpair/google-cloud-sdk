@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import copy
 
+from apitools.base.py import encoding
 from apitools.base.py import encoding_helper
 
 from googlecloudsdk.api_lib.storage import gcs_metadata_field_converters
@@ -38,6 +39,18 @@ from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 # object ACL.
 PRIVATE_DEFAULT_OBJECT_ACL = apis.GetMessagesModule(
     'storage', 'v1').ObjectAccessControl(id='PRIVATE_DEFAULT_OBJ_ACL')
+
+
+def _message_to_dict(message):
+  """Converts message to dict. Returns None is message is None."""
+  if message is not None:
+    result = encoding.MessageToDict(message)
+    # Explicit comparison is needed because we don't want to return None for
+    # False values.
+    if result == []:  # pylint: disable=g-explicit-bool-comparison
+      return None
+    return result
+  return None
 
 
 def copy_object_metadata(source_metadata,
@@ -116,7 +129,6 @@ def get_bucket_resource_from_metadata(metadata):
   """
   url = storage_url.CloudUrl(
       scheme=storage_url.ProviderPrefix.GCS, bucket_name=metadata.name)
-  retention_period = getattr(metadata.retentionPolicy, 'retentionPeriod', None)
   uniform_bucket_level_access = getattr(
       getattr(metadata.iamConfiguration, 'uniformBucketLevelAccess', False),
       'enabled', False)
@@ -125,7 +137,8 @@ def get_bucket_resource_from_metadata(metadata):
       etag=metadata.etag,
       location=metadata.location,
       metadata=metadata,
-      retention_period=retention_period,
+      retention_policy=_message_to_dict(metadata.retentionPolicy),
+      default_event_based_hold=metadata.defaultEventBasedHold,
       default_storage_class=metadata.storageClass,
       uniform_bucket_level_access=uniform_bucket_level_access)
 

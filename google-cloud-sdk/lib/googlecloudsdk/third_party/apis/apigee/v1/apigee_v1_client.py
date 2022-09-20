@@ -833,7 +833,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates key value entries in a key value map scoped to an organization, environment, or API proxy.
+      r"""Creates key value entries in a key value map scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher.
 
       Args:
         request: (ApigeeOrganizationsApisKeyvaluemapsEntriesCreateRequest) input message
@@ -860,7 +860,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Note:** After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior.
+      r"""Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Notes:** * After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior. * Supported for Apigee hybrid 1.8.x and higher.
 
       Args:
         request: (ApigeeOrganizationsApisKeyvaluemapsEntriesDeleteRequest) input message
@@ -887,7 +887,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get the Key value entry value for org, env or apis scoped Key value map.
+      r"""Get the key value entry value for a key value map scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher.
 
       Args:
         request: (ApigeeOrganizationsApisKeyvaluemapsEntriesGetRequest) input message
@@ -914,7 +914,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists key value entries for key values maps scoped to an organization, environment, or API proxy.
+      r"""Lists key value entries for key values maps scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher.
 
       Args:
         request: (ApigeeOrganizationsApisKeyvaluemapsEntriesListRequest) input message
@@ -4180,7 +4180,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates key value entries in a key value map scoped to an organization, environment, or API proxy.
+      r"""Creates key value entries in a key value map scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesCreateRequest) input message
@@ -4207,7 +4207,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Note:** After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior.
+      r"""Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Notes:** * After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior. * Supported for Apigee hybrid 1.8.x and higher.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesDeleteRequest) input message
@@ -4234,7 +4234,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get the Key value entry value for org, env or apis scoped Key value map.
+      r"""Get the key value entry value for a key value map scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesGetRequest) input message
@@ -4261,7 +4261,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists key value entries for key values maps scoped to an organization, environment, or API proxy.
+      r"""Lists key value entries for key values maps scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesListRequest) input message
@@ -6759,7 +6759,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates key value entries in a key value map scoped to an organization, environment, or API proxy.
+      r"""Creates key value entries in a key value map scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher.
 
       Args:
         request: (ApigeeOrganizationsKeyvaluemapsEntriesCreateRequest) input message
@@ -6786,7 +6786,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Note:** After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior.
+      r"""Deletes a key value entry from a key value map scoped to an organization, environment, or API proxy. **Notes:** * After you delete the key value entry, the policy consuming the entry will continue to function with its cached values for a few minutes. This is expected behavior. * Supported for Apigee hybrid 1.8.x and higher.
 
       Args:
         request: (ApigeeOrganizationsKeyvaluemapsEntriesDeleteRequest) input message
@@ -6813,7 +6813,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get the Key value entry value for org, env or apis scoped Key value map.
+      r"""Get the key value entry value for a key value map scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher.
 
       Args:
         request: (ApigeeOrganizationsKeyvaluemapsEntriesGetRequest) input message
@@ -6840,7 +6840,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists key value entries for key values maps scoped to an organization, environment, or API proxy.
+      r"""Lists key value entries for key values maps scoped to an organization, environment, or API proxy. **Note**: Supported for Apigee hybrid 1.8.x and higher.
 
       Args:
         request: (ApigeeOrganizationsKeyvaluemapsEntriesListRequest) input message

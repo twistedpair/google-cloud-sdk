@@ -2830,6 +2830,26 @@ class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class GkehubProjectsLocationsMembershipsListWorkspacesRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsListWorkspacesRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListWorkspaces`
+      which specifies the position in the list from where to continue listing
+      the resources.
+    parent: Required. The parent (project, location, membership) where the
+      Workspace will be listed. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class GkehubProjectsLocationsMembershipsNamespacebindingsCreateRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsNamespacebindingsCreateRequest
   object.
@@ -3268,6 +3288,25 @@ class GkehubProjectsLocationsWorkspacesGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsWorkspacesListPermittedRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsWorkspacesListPermittedRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListWorkspaces`
+      which specifies the position in the list from where to continue listing
+      the resources.
+    parent: Required. The parent (project and location) where the Workspace
+      will be listed. Specified in the format `projects/*/locations/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class GkehubProjectsLocationsWorkspacesListRequest(_messages.Message):
@@ -3866,6 +3905,20 @@ class ListRBACRoleBindingsResponse(_messages.Message):
   rbacrolebindings = _messages.MessageField('RBACRoleBinding', 2, repeated=True)
 
 
+class ListWorkspacesForMembershipResponse(_messages.Message):
+  r"""List of paginated workspaces for a membership.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListWorkspaces` method. The value of an empty string means that there
+      are no more resources to return.
+    workspaces: The list of workspaces
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workspaces = _messages.MessageField('Workspace', 2, repeated=True)
+
+
 class ListWorkspacesResponse(_messages.Message):
   r"""List of Workspaces.
 
@@ -3873,7 +3926,7 @@ class ListWorkspacesResponse(_messages.Message):
     nextPageToken: A token to request the next page of resources from the
       `ListWorkspaces` method. The value of an empty string means that there
       are no more resources to return.
-    workspaces: The list of fleet namespaces
+    workspaces: The list of workspaces
   """
 
   nextPageToken = _messages.StringField(1)
@@ -5936,6 +5989,7 @@ class Workspace(_messages.Message):
     deleteTime: Output only. When the workspace was deleted.
     name: The resource name for the workspace
       `projects/{project}/locations/{location}/workspaces/{workspace}`
+    state: Output only. State of the workspace resource.
     uid: Output only. Google-generated UUID for this resource. This is unique
       across all workspace resources. If a workspace resource is deleted and
       another resource with the same name is created, it gets a different uid.
@@ -5945,8 +5999,39 @@ class Workspace(_messages.Message):
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
   name = _messages.StringField(3)
-  uid = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  state = _messages.MessageField('WorkspaceLifecycleState', 4)
+  uid = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
+class WorkspaceLifecycleState(_messages.Message):
+  r"""WorkspaceLifecycleState describes the state of a Workspace resource.
+
+  Enums:
+    CodeValueValuesEnum: Output only. The current state of the Workspace
+      resource.
+
+  Fields:
+    code: Output only. The current state of the Workspace resource.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the Workspace resource.
+
+    Values:
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The workspace is being created.
+      READY: The workspace active.
+      DELETING: The workspace is being deleted.
+      UPDATING: The workspace is being updated.
+    """
+    CODE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    UPDATING = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
 
 
 encoding.AddCustomJsonFieldMapping(

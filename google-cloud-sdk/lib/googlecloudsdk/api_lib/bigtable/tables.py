@@ -210,3 +210,38 @@ def ParseColumnFamilies(family_list):
 
   return util.GetAdminMessages().Table.ColumnFamiliesValue(
       additionalProperties=results)
+
+
+def AddFieldToUpdateMask(field, req):
+  """Adding a new field to the update mask of the updateTableRequest.
+
+  Args:
+    field: the field to be updated.
+    req: the original updateTableRequest.
+
+  Returns:
+    req: the updateTableRequest with update mask refreshed.
+  """
+  update_mask = req.updateMask
+  if update_mask:
+    if update_mask.count(field) == 0:
+      req.updateMask = update_mask + ',' + field
+  else:
+    req.updateMask = field
+  return req
+
+
+def RefreshUpdateMask(unused_ref, args, req):
+  """Refresh the update mask of the updateTableRequest according to the input arguments.
+
+  Args:
+    unused_ref: the gcloud resource (unused).
+    args: the input arguments.
+    req: the original updateTableRequest.
+
+  Returns:
+    req: the updateTableRequest with update mask refreshed.
+  """
+  if args.deletion_protection:
+    req = AddFieldToUpdateMask('deletion_protection', req)
+  return req

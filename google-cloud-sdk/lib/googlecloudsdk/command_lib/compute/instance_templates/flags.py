@@ -390,3 +390,19 @@ def AddKeyRevocationActionTypeArgs(parser):
       metavar='POLICY',
       required=False,
       help=help_text)
+
+
+def ValidateSourceInstanceFlags(args):
+  """Validates --source-instance flag."""
+
+  if getattr(args, 'source_instance', False):
+    if getattr(args, 'machine_type', False):
+      # --machine-type flag cannot be used with --source-instance flag since API
+      # doesn't support overriding machine type if source instance is provided
+      raise exceptions.ConflictingArgumentsException('--source-instance',
+                                                     '--machine-type')
+    if getattr(args, 'labels', False):
+      # --labels flag cannot be used with --source-instance flag since API
+      # doesn't support overriding labels if source instance is provided
+      raise exceptions.ConflictingArgumentsException('--source-instance',
+                                                     '--labels')

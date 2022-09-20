@@ -61,8 +61,7 @@ def GetParamsForRegistry(version, args, parent=None):
 
 
 def GetApiFromTrackAndArgs(track, args):
-  if (track == base.ReleaseTrack.BETA or
-      track == base.ReleaseTrack.ALPHA) and args.IsSpecified('location'):
+  if args.IsSpecified('location'):
     # Has specified a zone, use v2 api
     return 'v2'
   else:

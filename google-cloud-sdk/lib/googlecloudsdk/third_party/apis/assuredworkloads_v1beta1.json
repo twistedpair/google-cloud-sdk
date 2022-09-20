@@ -195,6 +195,22 @@
       "description": "An Workload object for managing highly regulated workloads of cloud customers.",
       "type": "object",
       "properties": {
+        "il4Settings": {
+          "description": "Input only. Immutable. Settings specific to resources needed for IL4.",
+          "$ref": "GoogleCloudAssuredworkloadsV1beta1WorkloadIL4Settings"
+        },
+        "cjisSettings": {
+          "description": "Input only. Immutable. Settings specific to resources needed for CJIS.",
+          "$ref": "GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings"
+        },
+        "fedrampHighSettings": {
+          "description": "Input only. Immutable. Settings specific to resources needed for FedRAMP High.",
+          "$ref": "GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampHighSettings"
+        },
+        "fedrampModerateSettings": {
+          "description": "Input only. Immutable. Settings specific to resources needed for FedRAMP Moderate.",
+          "$ref": "GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampModerateSettings"
+        },
         "name": {
           "description": "Optional. The resource name of the workload. Format: organizations\/{organization}\/locations\/{location}\/workloads\/{workload} Read-only.",
           "type": "string"
@@ -225,8 +241,7 @@
             "Health Information Trust Alliance controls",
             "Assured Workloads For EU Regions and Support controls",
             "Assured Workloads For Canada Regions and Support controls",
-            "International Traffic in Arms Regulations",
-            "Assured Workloads for Australia Regions and Support controls"
+            "International Traffic in Arms Regulations"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -239,8 +254,7 @@
             "HITRUST",
             "EU_REGIONS_AND_SUPPORT",
             "CA_REGIONS_AND_SUPPORT",
-            "ITAR",
-            "AU_REGIONS_AND_US_SUPPORT"
+            "ITAR"
           ]
         },
         "createTime": {
@@ -250,24 +264,8 @@
           "format": "google-datetime"
         },
         "billingAccount": {
-          "description": "Input only. The billing account used for the resources which are direct children of workload. This billing account is initially associated with the resources created as part of Workload creation. After the initial creation of these resources, the customer can change the assigned billing account. The resource name has the form `billingAccounts\/{billing_account_id}`. For example, `billingAccounts\/012345-567890-ABCDEF`.",
+          "description": "Optional. The billing account used for the resources which are direct children of workload. This billing account is initially associated with the resources created as part of Workload creation. After the initial creation of these resources, the customer can change the assigned billing account. The resource name has the form `billingAccounts\/{billing_account_id}`. For example, `billingAccounts\/012345-567890-ABCDEF`.",
           "type": "string"
-        },
-        "il4Settings": {
-          "description": "Input only. Immutable. Settings specific to resources needed for IL4.",
-          "$ref": "GoogleCloudAssuredworkloadsV1beta1WorkloadIL4Settings"
-        },
-        "cjisSettings": {
-          "description": "Input only. Immutable. Settings specific to resources needed for CJIS.",
-          "$ref": "GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings"
-        },
-        "fedrampHighSettings": {
-          "description": "Input only. Immutable. Settings specific to resources needed for FedRAMP High.",
-          "$ref": "GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampHighSettings"
-        },
-        "fedrampModerateSettings": {
-          "description": "Input only. Immutable. Settings specific to resources needed for FedRAMP Moderate.",
-          "$ref": "GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampModerateSettings"
         },
         "etag": {
           "description": "Optional. ETag of the workload, it is calculated on the basis of the Workload contents. It will be used in Update & Delete operations.",
@@ -318,36 +316,19 @@
           "description": "Output only. Represents the SAA enrollment response of the given workload. SAA enrollment response is queried during GetWorkload call. In failure cases, user friendly error message is shown in SAA details page.",
           "readOnly": true,
           "$ref": "GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo": {
-      "id": "GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo",
-      "description": "Represent the resources that are children of this Workload.",
-      "type": "object",
-      "properties": {
-        "resourceId": {
-          "description": "Resource identifier. For a project this represents project_number.",
-          "type": "string",
-          "format": "int64"
         },
-        "resourceType": {
-          "description": "Indicates the type of resource.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unknown resource type.",
-            "Deprecated. Existing workloads will continue to support this, but new CreateWorkloadRequests should not specify this as an input value.",
-            "Consumer Folder.",
-            "Consumer project containing encryption keys.",
-            "Keyring resource that hosts encryption keys."
-          ],
-          "enum": [
-            "RESOURCE_TYPE_UNSPECIFIED",
-            "CONSUMER_PROJECT",
-            "CONSUMER_FOLDER",
-            "ENCRYPTION_KEYS_PROJECT",
-            "KEYRING"
-          ]
+        "complianceStatus": {
+          "description": "Output only. Count of active Violations in the Workload.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceStatus"
+        },
+        "compliantButDisallowedServices": {
+          "description": "Output only. Urls for services which are compliant for this Assured Workload, but which are currently disallowed by the ResourceUsageRestriction org policy. Invoke RestrictAllowedResources endpoint to allow your project developers to use these services in their environment.\"",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -409,6 +390,36 @@
         "kmsSettings": {
           "description": "Input only. Immutable. Settings used to create a CMEK crypto key.",
           "$ref": "GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings"
+        }
+      }
+    },
+    "GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo": {
+      "id": "GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo",
+      "description": "Represent the resources that are children of this Workload.",
+      "type": "object",
+      "properties": {
+        "resourceId": {
+          "description": "Resource identifier. For a project this represents project_number.",
+          "type": "string",
+          "format": "int64"
+        },
+        "resourceType": {
+          "description": "Indicates the type of resource.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown resource type.",
+            "Deprecated. Existing workloads will continue to support this, but new CreateWorkloadRequests should not specify this as an input value.",
+            "Consumer Folder.",
+            "Consumer project containing encryption keys.",
+            "Keyring resource that hosts encryption keys."
+          ],
+          "enum": [
+            "RESOURCE_TYPE_UNSPECIFIED",
+            "CONSUMER_PROJECT",
+            "CONSUMER_FOLDER",
+            "ENCRYPTION_KEYS_PROJECT",
+            "KEYRING"
+          ]
         }
       }
     },
@@ -487,6 +498,23 @@
         }
       }
     },
+    "GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceStatus": {
+      "id": "GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceStatus",
+      "description": "Represents the Compliance Status of this workload",
+      "type": "object",
+      "properties": {
+        "activeViolationCount": {
+          "description": "Count of active Violations which haven't been acknowledged.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "acknowledgedViolationCount": {
+          "description": "Count of active Violations which are acknowledged in the Workload.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "GoogleCloudAssuredworkloadsV1beta1RestrictAllowedResourcesRequest": {
       "id": "GoogleCloudAssuredworkloadsV1beta1RestrictAllowedResourcesRequest",
       "description": "Request for restricting list of available resources in Workload environment.",
@@ -522,332 +550,13 @@
       "properties": {
       }
     },
-    "GoogleCloudAssuredworkloadsVersioningV1beta1Workload": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1Workload",
-      "description": "An Workload object for managing highly regulated workloads of cloud customers.",
-      "type": "object",
-      "properties": {
-        "il4Settings": {
-          "description": "Required. Input only. Immutable. Settings specific to resources needed for IL4.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadIL4Settings"
-        },
-        "cjisSettings": {
-          "description": "Required. Input only. Immutable. Settings specific to resources needed for CJIS.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadCJISSettings"
-        },
-        "fedrampHighSettings": {
-          "description": "Required. Input only. Immutable. Settings specific to resources needed for FedRAMP High.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadFedrampHighSettings"
-        },
-        "fedrampModerateSettings": {
-          "description": "Required. Input only. Immutable. Settings specific to resources needed for FedRAMP Moderate.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadFedrampModerateSettings"
-        },
-        "name": {
-          "description": "Optional. The resource name of the workload. Format: organizations\/{organization}\/locations\/{location}\/workloads\/{workload} Read-only.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "Required. The user-assigned display name of the Workload. When present it must be between 4 to 30 characters. Allowed characters are: lowercase and uppercase letters, numbers, hyphen, and spaces. Example: My Workload",
-          "type": "string"
-        },
-        "resources": {
-          "description": "Output only. The resources associated with this workload. These resources will be created when creating the workload. If any of the projects already exist, the workload creation will fail. Always read only.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadResourceInfo"
-          }
-        },
-        "complianceRegime": {
-          "description": "Required. Immutable. Compliance Regime associated with this workload.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unknown compliance regime.",
-            "Information protection as per DoD IL4 requirements.",
-            "Criminal Justice Information Services (CJIS) Security policies.",
-            "FedRAMP High data protection controls",
-            "FedRAMP Moderate data protection controls",
-            "Assured Workloads For US Regions data protection controls",
-            "Health Insurance Portability and Accountability Act controls",
-            "Health Information Trust Alliance controls",
-            "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls",
-            "International Traffic in Arms Regulations",
-            "Assured Workloads for Australia Regions and Support controls"
-          ],
-          "enum": [
-            "COMPLIANCE_REGIME_UNSPECIFIED",
-            "IL4",
-            "CJIS",
-            "FEDRAMP_HIGH",
-            "FEDRAMP_MODERATE",
-            "US_REGIONAL_ACCESS",
-            "HIPAA",
-            "HITRUST",
-            "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT",
-            "ITAR",
-            "AU_REGIONS_AND_US_SUPPORT"
-          ]
-        },
-        "createTime": {
-          "description": "Output only. Immutable. The Workload creation timestamp.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "billingAccount": {
-          "description": "Input only. The billing account used for the resources which are direct children of workload. This billing account is initially associated with the resources created as part of Workload creation. After the initial creation of these resources, the customer can change the assigned billing account. The resource name has the form `billingAccounts\/{billing_account_id}`. For example, `billingAccounts\/012345-567890-ABCDEF`.",
-          "type": "string"
-        },
-        "etag": {
-          "description": "Optional. ETag of the workload, it is calculated on the basis of the Workload contents. It will be used in Update & Delete operations.",
-          "type": "string"
-        },
-        "labels": {
-          "description": "Optional. Labels applied to the workload.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "provisionedResourcesParent": {
-          "description": "Input only. The parent resource for the resources managed by this Assured Workload. May be either empty or a folder resource which is a child of the Workload parent. If not specified all resources are created under the parent organization. Format: folders\/{folder_id}",
-          "type": "string"
-        },
-        "kmsSettings": {
-          "description": "Input only. Settings used to create a CMEK crypto key. When set, a project with a KMS CMEK key is provisioned. This field is deprecated as of Feb 28, 2022. In order to create a Keyring, callers should specify, ENCRYPTION_KEYS_PROJECT or KEYRING in ResourceSettings.resource_type field.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadKMSSettings"
-        },
-        "resourceSettings": {
-          "description": "Input only. Resource properties that are used to customize workload resources. These properties (such as custom project id) will be used to create workload resources if possible. This field is optional.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadResourceSettings"
-          }
-        },
-        "kajEnrollmentState": {
-          "description": "Output only. Represents the KAJ enrollment state of the given workload.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Default State for KAJ Enrollment.",
-            "Pending State for KAJ Enrollment.",
-            "Complete State for KAJ Enrollment."
-          ],
-          "enum": [
-            "KAJ_ENROLLMENT_STATE_UNSPECIFIED",
-            "KAJ_ENROLLMENT_STATE_PENDING",
-            "KAJ_ENROLLMENT_STATE_COMPLETE"
-          ]
-        },
-        "enableSovereignControls": {
-          "description": "Optional. Indicates the sovereignty status of the given workload. Currently meant to be used by Europe\/Canada customers.",
-          "type": "boolean"
-        },
-        "saaEnrollmentResponse": {
-          "description": "Output only. Represents the SAA enrollment response of the given workload. SAA enrollment response is queried during GetWorkload call. In failure cases, user friendly error message is shown in SAA details page.",
-          "readOnly": true,
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadSaaEnrollmentResponse"
-        },
-        "complianceStatus": {
-          "description": "Output only. Count of active Violations in the Workload.",
-          "readOnly": true,
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadComplianceStatus"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadIL4Settings": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadIL4Settings",
-      "description": "Settings specific to resources needed for IL4.",
-      "type": "object",
-      "properties": {
-        "kmsSettings": {
-          "description": "Input only. Immutable. Settings used to create a CMEK crypto key.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadKMSSettings"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadKMSSettings": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadKMSSettings",
-      "description": "Settings specific to the Key Management Service.",
-      "type": "object",
-      "properties": {
-        "nextRotationTime": {
-          "description": "Required. Input only. Immutable. The time at which the Key Management Service will automatically create a new version of the crypto key and mark it as the primary.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "rotationPeriod": {
-          "description": "Required. Input only. Immutable. [next_rotation_time] will be advanced by this period when the Key Management Service automatically rotates a key. Must be at least 24 hours and at most 876,000 hours.",
-          "type": "string",
-          "format": "google-duration"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadCJISSettings": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadCJISSettings",
-      "description": "Settings specific to resources needed for CJIS.",
-      "type": "object",
-      "properties": {
-        "kmsSettings": {
-          "description": "Input only. Immutable. Settings used to create a CMEK crypto key.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadKMSSettings"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadFedrampHighSettings": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadFedrampHighSettings",
-      "description": "Settings specific to resources needed for FedRAMP High.",
-      "type": "object",
-      "properties": {
-        "kmsSettings": {
-          "description": "Input only. Immutable. Settings used to create a CMEK crypto key.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadKMSSettings"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadFedrampModerateSettings": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadFedrampModerateSettings",
-      "description": "Settings specific to resources needed for FedRAMP Moderate.",
-      "type": "object",
-      "properties": {
-        "kmsSettings": {
-          "description": "Input only. Immutable. Settings used to create a CMEK crypto key.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadKMSSettings"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadResourceInfo": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadResourceInfo",
-      "description": "Represent the resources that are children of this Workload.",
-      "type": "object",
-      "properties": {
-        "resourceId": {
-          "description": "Resource identifier. For a project this represents project_number.",
-          "type": "string",
-          "format": "int64"
-        },
-        "resourceType": {
-          "description": "Indicates the type of resource.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unknown resource type.",
-            "Deprecated. Existing workloads will continue to support this, but new CreateWorkloadRequests should not specify this as an input value.",
-            "Consumer Folder.",
-            "Consumer project containing encryption keys.",
-            "Keyring resource that hosts encryption keys."
-          ],
-          "enum": [
-            "RESOURCE_TYPE_UNSPECIFIED",
-            "CONSUMER_PROJECT",
-            "CONSUMER_FOLDER",
-            "ENCRYPTION_KEYS_PROJECT",
-            "KEYRING"
-          ]
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadResourceSettings": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadResourceSettings",
-      "description": "Represent the custom settings for the resources to be created.",
-      "type": "object",
-      "properties": {
-        "resourceId": {
-          "description": "Resource identifier. For a project this represents project_id. If the project is already taken, the workload creation will fail. For KeyRing, this represents the keyring_id. For a folder, don't set this value as folder_id is assigned by Google.",
-          "type": "string"
-        },
-        "resourceType": {
-          "description": "Indicates the type of resource. This field should be specified to correspond the id to the right project type (CONSUMER_PROJECT or ENCRYPTION_KEYS_PROJECT)",
-          "type": "string",
-          "enumDescriptions": [
-            "Unknown resource type.",
-            "Deprecated. Existing workloads will continue to support this, but new CreateWorkloadRequests should not specify this as an input value.",
-            "Consumer Folder.",
-            "Consumer project containing encryption keys.",
-            "Keyring resource that hosts encryption keys."
-          ],
-          "enum": [
-            "RESOURCE_TYPE_UNSPECIFIED",
-            "CONSUMER_PROJECT",
-            "CONSUMER_FOLDER",
-            "ENCRYPTION_KEYS_PROJECT",
-            "KEYRING"
-          ]
-        },
-        "displayName": {
-          "description": "User-assigned resource display name. If not empty it will be used to create a resource with the specified name.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadSaaEnrollmentResponse": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadSaaEnrollmentResponse",
-      "description": "Signed Access Approvals (SAA) enrollment response.",
-      "type": "object",
-      "properties": {
-        "setupStatus": {
-          "description": "Indicates SAA enrollment status of a given workload.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unspecified.",
-            "SAA enrollment pending.",
-            "SAA enrollment comopleted."
-          ],
-          "enum": [
-            "SETUP_STATE_UNSPECIFIED",
-            "STATUS_PENDING",
-            "STATUS_COMPLETE"
-          ]
-        },
-        "setupErrors": {
-          "description": "Indicates SAA enrollment setup error if any.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enumDescriptions": [
-              "Unspecified.",
-              "Invalid states for all customers, to be redirected to AA UI for additional details.",
-              "Returned when there is not an EKM key configured.",
-              "Returned when there are no enrolled services or the customer is enrolled in CAA only for a subset of services.",
-              "Returned when exception was encountered during evaluation of other criteria."
-            ],
-            "enum": [
-              "SETUP_ERROR_UNSPECIFIED",
-              "ERROR_INVALID_BASE_SETUP",
-              "ERROR_MISSING_EXTERNAL_SIGNING_KEY",
-              "ERROR_NOT_ALL_SERVICES_ENROLLED",
-              "ERROR_SETUP_CHECK_FAILED"
-            ]
-          }
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadComplianceStatus": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1WorkloadComplianceStatus",
-      "description": "Represents the Compliance Status of this workload",
-      "type": "object",
-      "properties": {
-        "activeViolationCount": {
-          "description": "Count of active Violations which haven't been acknowledged.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "acknowledgedViolationCount": {
-          "description": "Count of active Violations which are acknowledged in the Workload.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1beta1AnalyzeWorkloadMoveResponse": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1AnalyzeWorkloadMoveResponse",
-      "description": "Response with the analysis if the source workload can be moved to the target workload",
+    "GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse": {
+      "id": "GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse",
+      "description": "A response that includes the analysis of the hypothetical resource move.",
       "type": "object",
       "properties": {
         "blockers": {
-          "description": "List of blockers that prevent moving the source workload to the target workload",
+          "description": "A list of blockers that should be addressed before moving the source project or project-based workload to the destination folder-based workload.",
           "type": "array",
           "items": {
             "type": "string"
@@ -855,8 +564,8 @@
         }
       }
     },
-    "GoogleCloudAssuredworkloadsVersioningV1beta1ListWorkloadsResponse": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1ListWorkloadsResponse",
+    "GoogleCloudAssuredworkloadsV1beta1ListWorkloadsResponse": {
+      "id": "GoogleCloudAssuredworkloadsV1beta1ListWorkloadsResponse",
       "description": "Response of ListWorkloads endpoint.",
       "type": "object",
       "properties": {
@@ -864,7 +573,7 @@
           "description": "List of Workloads under a given parent.",
           "type": "array",
           "items": {
-            "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1Workload"
+            "$ref": "GoogleCloudAssuredworkloadsV1beta1Workload"
           }
         },
         "nextPageToken": {
@@ -873,8 +582,8 @@
         }
       }
     },
-    "GoogleCloudAssuredworkloadsVersioningV1beta1ListViolationsResponse": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1ListViolationsResponse",
+    "GoogleCloudAssuredworkloadsV1beta1ListViolationsResponse": {
+      "id": "GoogleCloudAssuredworkloadsV1beta1ListViolationsResponse",
       "description": "Response of ListViolations endpoint.",
       "type": "object",
       "properties": {
@@ -882,7 +591,7 @@
           "description": "List of Violations under a Workload.",
           "type": "array",
           "items": {
-            "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1Violation"
+            "$ref": "GoogleCloudAssuredworkloadsV1beta1Violation"
           }
         },
         "nextPageToken": {
@@ -891,8 +600,8 @@
         }
       }
     },
-    "GoogleCloudAssuredworkloadsVersioningV1beta1Violation": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1beta1Violation",
+    "GoogleCloudAssuredworkloadsV1beta1Violation": {
+      "id": "GoogleCloudAssuredworkloadsV1beta1Violation",
       "description": "Workload monitoring Violation.",
       "type": "object",
       "properties": {
@@ -935,13 +644,17 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified state.",
-            "Violation currently active.",
-            "Violation is resolved."
+            "Violation currently active. ",
+            "Violation is resolved.",
+            "Violation is Unresolved",
+            "Violation is Exception"
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "ACTIVE",
-            "RESOLVED"
+            "RESOLVED",
+            "UNRESOLVED",
+            "EXCEPTION"
           ]
         },
         "orgPolicyConstraint": {
@@ -958,733 +671,151 @@
           "description": "Output only. Immutable. Name of the OrgPolicy which was modified with non-compliant change and resulted this violation. Format: projects\/{project_number}\/policies\/{constraint_name} folders\/{folder_id}\/policies\/{constraint_name} organizations\/{organization_id}\/policies\/{constraint_name}",
           "readOnly": true,
           "type": "string"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata": {
-      "id": "GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata",
-      "description": "Operation metadata to give request details of CreateWorkload.",
-      "type": "object",
-      "properties": {
-        "createTime": {
-          "description": "Optional. Time when the operation was created.",
+        },
+        "remediation": {
+          "description": "Output only. Compliance violation remediation",
+          "readOnly": true,
+          "$ref": "GoogleCloudAssuredworkloadsV1beta1ViolationRemediation"
+        },
+        "acknowledged": {
+          "description": "A boolean that indicates if the violation is acknowledged",
+          "type": "boolean"
+        },
+        "acknowledgementTime": {
+          "description": "Optional. Timestamp when this violation was acknowledged last. This will be absent when acknowledged field is marked as false.",
           "type": "string",
           "format": "google-datetime"
-        },
-        "displayName": {
-          "description": "Optional. The display name of the workload.",
-          "type": "string"
-        },
-        "parent": {
-          "description": "Optional. The parent of the workload.",
-          "type": "string"
-        },
-        "complianceRegime": {
-          "description": "Optional. Compliance controls that should be applied to the resources managed by the workload.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unknown compliance regime.",
-            "Information protection as per DoD IL4 requirements.",
-            "Criminal Justice Information Services (CJIS) Security policies.",
-            "FedRAMP High data protection controls",
-            "FedRAMP Moderate data protection controls",
-            "Assured Workloads For US Regions data protection controls",
-            "Health Insurance Portability and Accountability Act controls",
-            "Health Information Trust Alliance controls",
-            "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls",
-            "International Traffic in Arms Regulations",
-            "Assured Workloads for Australia Regions and Support controls"
-          ],
-          "enum": [
-            "COMPLIANCE_REGIME_UNSPECIFIED",
-            "IL4",
-            "CJIS",
-            "FEDRAMP_HIGH",
-            "FEDRAMP_MODERATE",
-            "US_REGIONAL_ACCESS",
-            "HIPAA",
-            "HITRUST",
-            "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT",
-            "ITAR",
-            "AU_REGIONS_AND_US_SUPPORT"
-          ]
         }
       }
     },
-    "GoogleCloudAssuredworkloadsV1Workload": {
-      "id": "GoogleCloudAssuredworkloadsV1Workload",
-      "description": "An Workload object for managing highly regulated workloads of cloud customers.",
+    "GoogleCloudAssuredworkloadsV1beta1ViolationRemediation": {
+      "id": "GoogleCloudAssuredworkloadsV1beta1ViolationRemediation",
+      "description": "Represents remediation guidance to resolve compliance violation for AssuredWorkload",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "Optional. The resource name of the workload. Format: organizations\/{organization}\/locations\/{location}\/workloads\/{workload} Read-only.",
-          "type": "string"
+        "instructions": {
+          "description": "Required. Remediation instructions to resolve violations",
+          "$ref": "GoogleCloudAssuredworkloadsV1beta1ViolationRemediationInstructions"
         },
-        "displayName": {
-          "description": "Required. The user-assigned display name of the Workload. When present it must be between 4 to 30 characters. Allowed characters are: lowercase and uppercase letters, numbers, hyphen, and spaces. Example: My Workload",
-          "type": "string"
-        },
-        "resources": {
-          "description": "Output only. The resources associated with this workload. These resources will be created when creating the workload. If any of the projects already exist, the workload creation will fail. Always read only.",
-          "readOnly": true,
+        "compliantValues": {
+          "description": "Values that can resolve the violation For example: for list org policy violations, this will either be the list of allowed or denied values",
           "type": "array",
           "items": {
-            "$ref": "GoogleCloudAssuredworkloadsV1WorkloadResourceInfo"
-          }
-        },
-        "complianceRegime": {
-          "description": "Required. Immutable. Compliance Regime associated with this workload.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unknown compliance regime.",
-            "Information protection as per DoD IL4 requirements.",
-            "Criminal Justice Information Services (CJIS) Security policies.",
-            "FedRAMP High data protection controls",
-            "FedRAMP Moderate data protection controls",
-            "Assured Workloads For US Regions data protection controls",
-            "Health Insurance Portability and Accountability Act controls",
-            "Health Information Trust Alliance controls",
-            "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls",
-            "International Traffic in Arms Regulations",
-            "Assured Workloads for Australia Regions and Support controls"
-          ],
-          "enum": [
-            "COMPLIANCE_REGIME_UNSPECIFIED",
-            "IL4",
-            "CJIS",
-            "FEDRAMP_HIGH",
-            "FEDRAMP_MODERATE",
-            "US_REGIONAL_ACCESS",
-            "HIPAA",
-            "HITRUST",
-            "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT",
-            "ITAR",
-            "AU_REGIONS_AND_US_SUPPORT"
-          ]
-        },
-        "createTime": {
-          "description": "Output only. Immutable. The Workload creation timestamp.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "billingAccount": {
-          "description": "Optional. The billing account used for the resources which are direct children of workload. This billing account is initially associated with the resources created as part of Workload creation. After the initial creation of these resources, the customer can change the assigned billing account. The resource name has the form `billingAccounts\/{billing_account_id}`. For example, `billingAccounts\/012345-567890-ABCDEF`.",
-          "type": "string"
-        },
-        "etag": {
-          "description": "Optional. ETag of the workload, it is calculated on the basis of the Workload contents. It will be used in Update & Delete operations.",
-          "type": "string"
-        },
-        "labels": {
-          "description": "Optional. Labels applied to the workload.",
-          "type": "object",
-          "additionalProperties": {
             "type": "string"
           }
         },
-        "provisionedResourcesParent": {
-          "description": "Input only. The parent resource for the resources managed by this Assured Workload. May be either empty or a folder resource which is a child of the Workload parent. If not specified all resources are created under the parent organization. Format: folders\/{folder_id}",
-          "type": "string"
-        },
-        "kmsSettings": {
-          "description": "Input only. Settings used to create a CMEK crypto key. When set, a project with a KMS CMEK key is provisioned. This field is deprecated as of Feb 28, 2022. In order to create a Keyring, callers should specify, ENCRYPTION_KEYS_PROJECT or KEYRING in ResourceSettings.resource_type field.",
-          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadKMSSettings"
-        },
-        "resourceSettings": {
-          "description": "Input only. Resource properties that are used to customize workload resources. These properties (such as custom project id) will be used to create workload resources if possible. This field is optional.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAssuredworkloadsV1WorkloadResourceSettings"
-          }
-        },
-        "kajEnrollmentState": {
-          "description": "Output only. Represents the KAJ enrollment state of the given workload.",
+        "remediationType": {
+          "description": "Output only. Reemediation type based on the type of org policy values violated",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
-            "Default State for KAJ Enrollment.",
-            "Pending State for KAJ Enrollment.",
-            "Complete State for KAJ Enrollment."
+            "Unspecified remediation type",
+            "Remediation type for boolean org policy",
+            "Remediation type for list org policy which have allowed values in the monitoring rule",
+            "Remediation type for list org policy which have denied values in the monitoring rule",
+            "Remediation type for gcp.restrictCmekCryptoKeyProjects"
           ],
           "enum": [
-            "KAJ_ENROLLMENT_STATE_UNSPECIFIED",
-            "KAJ_ENROLLMENT_STATE_PENDING",
-            "KAJ_ENROLLMENT_STATE_COMPLETE"
-          ]
-        },
-        "enableSovereignControls": {
-          "description": "Optional. Indicates the sovereignty status of the given workload. Currently meant to be used by Europe\/Canada customers.",
-          "type": "boolean"
-        },
-        "saaEnrollmentResponse": {
-          "description": "Output only. Represents the SAA enrollment response of the given workload. SAA enrollment response is queried during GetWorkload call. In failure cases, user friendly error message is shown in SAA details page.",
-          "readOnly": true,
-          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadSaaEnrollmentResponse"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsV1WorkloadResourceInfo": {
-      "id": "GoogleCloudAssuredworkloadsV1WorkloadResourceInfo",
-      "description": "Represent the resources that are children of this Workload.",
-      "type": "object",
-      "properties": {
-        "resourceId": {
-          "description": "Resource identifier. For a project this represents project_number.",
-          "type": "string",
-          "format": "int64"
-        },
-        "resourceType": {
-          "description": "Indicates the type of resource.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unknown resource type.",
-            "Consumer project. AssuredWorkloads Projects are no longer supported. This field will be ignored only in CreateWorkload requests. ListWorkloads and GetWorkload will continue to provide projects information. Use CONSUMER_FOLDER instead.",
-            "Consumer Folder.",
-            "Consumer project containing encryption keys.",
-            "Keyring resource that hosts encryption keys."
-          ],
-          "enum": [
-            "RESOURCE_TYPE_UNSPECIFIED",
-            "CONSUMER_PROJECT",
-            "CONSUMER_FOLDER",
-            "ENCRYPTION_KEYS_PROJECT",
-            "KEYRING"
+            "REMEDIATION_TYPE_UNSPECIFIED",
+            "REMEDIATION_BOOLEAN_ORG_POLICY_VIOLATION",
+            "REMEDIATION_LIST_ALLOWED_VALUES_ORG_POLICY_VIOLATION",
+            "REMEDIATION_LIST_DENIED_VALUES_ORG_POLICY_VIOLATION",
+            "REMEDIATION_RESTRICT_CMEK_CRYPTO_KEY_PROJECTS_ORG_POLICY_VIOLATION"
           ]
         }
       }
     },
-    "GoogleCloudAssuredworkloadsV1WorkloadKMSSettings": {
-      "id": "GoogleCloudAssuredworkloadsV1WorkloadKMSSettings",
-      "description": "Settings specific to the Key Management Service.",
+    "GoogleCloudAssuredworkloadsV1beta1ViolationRemediationInstructions": {
+      "id": "GoogleCloudAssuredworkloadsV1beta1ViolationRemediationInstructions",
+      "description": "Instructions to remediate violation",
       "type": "object",
       "properties": {
-        "nextRotationTime": {
-          "description": "Required. Input only. Immutable. The time at which the Key Management Service will automatically create a new version of the crypto key and mark it as the primary.",
-          "type": "string",
-          "format": "google-datetime"
+        "gcloudInstructions": {
+          "description": "Remediation instructions to resolve violation via gcloud cli",
+          "$ref": "GoogleCloudAssuredworkloadsV1beta1ViolationRemediationInstructionsGcloud"
         },
-        "rotationPeriod": {
-          "description": "Required. Input only. Immutable. [next_rotation_time] will be advanced by this period when the Key Management Service automatically rotates a key. Must be at least 24 hours and at most 876,000 hours.",
-          "type": "string",
-          "format": "google-duration"
+        "consoleInstructions": {
+          "description": "Remediation instructions to resolve violation via cloud console",
+          "$ref": "GoogleCloudAssuredworkloadsV1beta1ViolationRemediationInstructionsConsole"
         }
       }
     },
-    "GoogleCloudAssuredworkloadsV1WorkloadResourceSettings": {
-      "id": "GoogleCloudAssuredworkloadsV1WorkloadResourceSettings",
-      "description": "Represent the custom settings for the resources to be created.",
+    "GoogleCloudAssuredworkloadsV1beta1ViolationRemediationInstructionsGcloud": {
+      "id": "GoogleCloudAssuredworkloadsV1beta1ViolationRemediationInstructionsGcloud",
+      "description": "Remediation instructions to resolve violation via gcloud cli",
       "type": "object",
       "properties": {
-        "resourceId": {
-          "description": "Resource identifier. For a project this represents project_id. If the project is already taken, the workload creation will fail. For KeyRing, this represents the keyring_id. For a folder, don't set this value as folder_id is assigned by Google.",
-          "type": "string"
-        },
-        "resourceType": {
-          "description": "Indicates the type of resource. This field should be specified to correspond the id to the right project type (CONSUMER_PROJECT or ENCRYPTION_KEYS_PROJECT)",
-          "type": "string",
-          "enumDescriptions": [
-            "Unknown resource type.",
-            "Consumer project. AssuredWorkloads Projects are no longer supported. This field will be ignored only in CreateWorkload requests. ListWorkloads and GetWorkload will continue to provide projects information. Use CONSUMER_FOLDER instead.",
-            "Consumer Folder.",
-            "Consumer project containing encryption keys.",
-            "Keyring resource that hosts encryption keys."
-          ],
-          "enum": [
-            "RESOURCE_TYPE_UNSPECIFIED",
-            "CONSUMER_PROJECT",
-            "CONSUMER_FOLDER",
-            "ENCRYPTION_KEYS_PROJECT",
-            "KEYRING"
-          ]
-        },
-        "displayName": {
-          "description": "User-assigned resource display name. If not empty it will be used to create a resource with the specified name.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsV1WorkloadSaaEnrollmentResponse": {
-      "id": "GoogleCloudAssuredworkloadsV1WorkloadSaaEnrollmentResponse",
-      "description": "Signed Access Approvals (SAA) enrollment response.",
-      "type": "object",
-      "properties": {
-        "setupStatus": {
-          "description": "Indicates SAA enrollment status of a given workload.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unspecified.",
-            "SAA enrollment pending.",
-            "SAA enrollment comopleted."
-          ],
-          "enum": [
-            "SETUP_STATE_UNSPECIFIED",
-            "STATUS_PENDING",
-            "STATUS_COMPLETE"
-          ]
-        },
-        "setupErrors": {
-          "description": "Indicates SAA enrollment setup error if any.",
+        "gcloudCommands": {
+          "description": "Gcloud command to resolve violation",
           "type": "array",
           "items": {
-            "type": "string",
-            "enumDescriptions": [
-              "Unspecified.",
-              "Invalid states for all customers, to be redirected to AA UI for additional details.",
-              "Returned when there is not an EKM key configured.",
-              "Returned when there are no enrolled services or the customer is enrolled in CAA only for a subset of services.",
-              "Returned when exception was encountered during evaluation of other criteria."
-            ],
-            "enum": [
-              "SETUP_ERROR_UNSPECIFIED",
-              "ERROR_INVALID_BASE_SETUP",
-              "ERROR_MISSING_EXTERNAL_SIGNING_KEY",
-              "ERROR_NOT_ALL_SERVICES_ENROLLED",
-              "ERROR_SETUP_CHECK_FAILED"
-            ]
-          }
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata": {
-      "id": "GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata",
-      "description": "Operation metadata to give request details of CreateWorkload.",
-      "type": "object",
-      "properties": {
-        "createTime": {
-          "description": "Optional. Time when the operation was created.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "displayName": {
-          "description": "Optional. The display name of the workload.",
-          "type": "string"
-        },
-        "parent": {
-          "description": "Optional. The parent of the workload.",
-          "type": "string"
-        },
-        "complianceRegime": {
-          "description": "Optional. Compliance controls that should be applied to the resources managed by the workload.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unknown compliance regime.",
-            "Information protection as per DoD IL4 requirements.",
-            "Criminal Justice Information Services (CJIS) Security policies.",
-            "FedRAMP High data protection controls",
-            "FedRAMP Moderate data protection controls",
-            "Assured Workloads For US Regions data protection controls",
-            "Health Insurance Portability and Accountability Act controls",
-            "Health Information Trust Alliance controls",
-            "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls",
-            "International Traffic in Arms Regulations",
-            "Assured Workloads for Australia Regions and Support controls"
-          ],
-          "enum": [
-            "COMPLIANCE_REGIME_UNSPECIFIED",
-            "IL4",
-            "CJIS",
-            "FEDRAMP_HIGH",
-            "FEDRAMP_MODERATE",
-            "US_REGIONAL_ACCESS",
-            "HIPAA",
-            "HITRUST",
-            "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT",
-            "ITAR",
-            "AU_REGIONS_AND_US_SUPPORT"
-          ]
-        },
-        "resourceSettings": {
-          "description": "Optional. Resource properties in the input that are used for creating\/customizing workload resources.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings"
-          }
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1mainCreateWorkloadOperationMetadata": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1mainCreateWorkloadOperationMetadata",
-      "description": "Operation metadata to give request details of CreateWorkload.",
-      "type": "object",
-      "properties": {
-        "createTime": {
-          "description": "Optional. Time when the operation was created.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "displayName": {
-          "description": "Optional. The display name of the workload.",
-          "type": "string"
-        },
-        "parent": {
-          "description": "Optional. The parent of the workload.",
-          "type": "string"
-        },
-        "complianceRegime": {
-          "description": "Optional. Compliance controls that should be applied to the resources managed by the workload.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unknown compliance regime.",
-            "Information protection as per DoD IL4 requirements.",
-            "Criminal Justice Information Services (CJIS) Security policies.",
-            "FedRAMP High data protection controls",
-            "FedRAMP Moderate data protection controls",
-            "Assured Workloads For US Regions data protection controls",
-            "Health Insurance Portability and Accountability Act controls",
-            "Health Information Trust Alliance controls",
-            "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls",
-            "International Traffic in Arms Regulations",
-            "Assured Workloads for Australia Regions and Support controls"
-          ],
-          "enum": [
-            "COMPLIANCE_REGIME_UNSPECIFIED",
-            "IL4",
-            "CJIS",
-            "FEDRAMP_HIGH",
-            "FEDRAMP_MODERATE",
-            "US_REGIONAL_ACCESS",
-            "HIPAA",
-            "HITRUST",
-            "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT",
-            "ITAR",
-            "AU_REGIONS_AND_US_SUPPORT"
-          ]
-        },
-        "resourceSettings": {
-          "description": "Optional. Resource properties in the input that are used for creating\/customizing workload resources.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadResourceSettings"
-          }
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadResourceSettings": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadResourceSettings",
-      "description": "Represent the custom settings for the resources to be created.",
-      "type": "object",
-      "properties": {
-        "resourceId": {
-          "description": "Resource identifier. For a project this represents project_id. If the project is already taken, the workload creation will fail. For KeyRing, this represents the keyring_id. For a folder, don't set this value as folder_id is assigned by Google.",
-          "type": "string"
-        },
-        "resourceType": {
-          "description": "Indicates the type of resource. This field should be specified to correspond the id to the right project type (CONSUMER_PROJECT or ENCRYPTION_KEYS_PROJECT)",
-          "type": "string",
-          "enumDescriptions": [
-            "Unknown resource type.",
-            "Deprecated. Existing workloads will continue to support this, but new CreateWorkloadRequests should not specify this as an input value.",
-            "Consumer Folder.",
-            "Consumer project containing encryption keys.",
-            "Keyring resource that hosts encryption keys."
-          ],
-          "enum": [
-            "RESOURCE_TYPE_UNSPECIFIED",
-            "CONSUMER_PROJECT",
-            "CONSUMER_FOLDER",
-            "ENCRYPTION_KEYS_PROJECT",
-            "KEYRING"
-          ]
-        },
-        "displayName": {
-          "description": "User-assigned resource display name. If not empty it will be used to create a resource with the specified name.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1mainWorkload": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1mainWorkload",
-      "description": "An Workload object for managing highly regulated workloads of cloud customers.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Optional. The resource name of the workload. Format: organizations\/{organization}\/locations\/{location}\/workloads\/{workload} Read-only.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "Required. The user-assigned display name of the Workload. When present it must be between 4 to 30 characters. Allowed characters are: lowercase and uppercase letters, numbers, hyphen, and spaces. Example: My Workload",
-          "type": "string"
-        },
-        "resources": {
-          "description": "Output only. The resources associated with this workload. These resources will be created when creating the workload. If any of the projects already exist, the workload creation will fail. Always read only.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadResourceInfo"
-          }
-        },
-        "complianceRegime": {
-          "description": "Required. Immutable. Compliance Regime associated with this workload.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unknown compliance regime.",
-            "Information protection as per DoD IL4 requirements.",
-            "Criminal Justice Information Services (CJIS) Security policies.",
-            "FedRAMP High data protection controls",
-            "FedRAMP Moderate data protection controls",
-            "Assured Workloads For US Regions data protection controls",
-            "Health Insurance Portability and Accountability Act controls",
-            "Health Information Trust Alliance controls",
-            "Assured Workloads For EU Regions and Support controls",
-            "Assured Workloads For Canada Regions and Support controls",
-            "International Traffic in Arms Regulations",
-            "Assured Workloads for Australia Regions and Support controls"
-          ],
-          "enum": [
-            "COMPLIANCE_REGIME_UNSPECIFIED",
-            "IL4",
-            "CJIS",
-            "FEDRAMP_HIGH",
-            "FEDRAMP_MODERATE",
-            "US_REGIONAL_ACCESS",
-            "HIPAA",
-            "HITRUST",
-            "EU_REGIONS_AND_SUPPORT",
-            "CA_REGIONS_AND_SUPPORT",
-            "ITAR",
-            "AU_REGIONS_AND_US_SUPPORT"
-          ]
-        },
-        "createTime": {
-          "description": "Output only. Immutable. The Workload creation timestamp.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "billingAccount": {
-          "description": "Input only. The billing account used for the resources which are direct children of workload. This billing account is initially associated with the resources created as part of Workload creation. After the initial creation of these resources, the customer can change the assigned billing account. The resource name has the form `billingAccounts\/{billing_account_id}`. For example, `billingAccounts\/012345-567890-ABCDEF`.",
-          "type": "string"
-        },
-        "il4Settings": {
-          "description": "Required. Input only. Immutable. Settings specific to resources needed for IL4.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadIL4Settings"
-        },
-        "cjisSettings": {
-          "description": "Required. Input only. Immutable. Settings specific to resources needed for CJIS.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadCJISSettings"
-        },
-        "fedrampHighSettings": {
-          "description": "Required. Input only. Immutable. Settings specific to resources needed for FedRAMP High.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadFedrampHighSettings"
-        },
-        "fedrampModerateSettings": {
-          "description": "Required. Input only. Immutable. Settings specific to resources needed for FedRAMP Moderate.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadFedrampModerateSettings"
-        },
-        "etag": {
-          "description": "Optional. ETag of the workload, it is calculated on the basis of the Workload contents. It will be used in Update & Delete operations.",
-          "type": "string"
-        },
-        "labels": {
-          "description": "Optional. Labels applied to the workload.",
-          "type": "object",
-          "additionalProperties": {
             "type": "string"
           }
         },
-        "provisionedResourcesParent": {
-          "description": "Input only. The parent resource for the resources managed by this Assured Workload. May be either empty or a folder resource which is a child of the Workload parent. If not specified all resources are created under the parent organization. Format: folders\/{folder_id}",
+        "steps": {
+          "description": "Steps to resolve violation via gcloud cli",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "additionalLinks": {
+          "description": "Additional urls for more information about steps",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAssuredworkloadsV1beta1ViolationRemediationInstructionsConsole": {
+      "id": "GoogleCloudAssuredworkloadsV1beta1ViolationRemediationInstructionsConsole",
+      "description": "Remediation instructions to resolve violation via cloud console",
+      "type": "object",
+      "properties": {
+        "consoleUris": {
+          "description": "Link to console page where violations can be resolved",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "steps": {
+          "description": "Steps to resolve violation via cloud console",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "additionalLinks": {
+          "description": "Additional urls for more information about steps",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAssuredworkloadsV1beta1AcknowledgeViolationRequest": {
+      "id": "GoogleCloudAssuredworkloadsV1beta1AcknowledgeViolationRequest",
+      "description": "Request for acknowledging the violation Next Id: 4",
+      "type": "object",
+      "properties": {
+        "comment": {
+          "description": "Required. Business justification explaining the need for violation acknowledgement",
           "type": "string"
         },
-        "kmsSettings": {
-          "description": "Input only. Settings used to create a CMEK crypto key. When set, a project with a KMS CMEK key is provisioned. This field is deprecated as of Feb 28, 2022. In order to create a Keyring, callers should specify, ENCRYPTION_KEYS_PROJECT or KEYRING in ResourceSettings.resource_type field.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadKMSSettings"
-        },
-        "resourceSettings": {
-          "description": "Input only. Resource properties that are used to customize workload resources. These properties (such as custom project id) will be used to create workload resources if possible. This field is optional.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadResourceSettings"
-          }
-        },
-        "kajEnrollmentState": {
-          "description": "Output only. Represents the KAJ enrollment state of the given workload.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Default State for KAJ Enrollment.",
-            "Pending State for KAJ Enrollment.",
-            "Complete State for KAJ Enrollment."
-          ],
-          "enum": [
-            "KAJ_ENROLLMENT_STATE_UNSPECIFIED",
-            "KAJ_ENROLLMENT_STATE_PENDING",
-            "KAJ_ENROLLMENT_STATE_COMPLETE"
-          ]
-        },
-        "enableSovereignControls": {
-          "description": "Optional. Indicates the sovereignty status of the given workload. Currently meant to be used by Europe\/Canada customers.",
-          "type": "boolean"
-        },
-        "saaEnrollmentResponse": {
-          "description": "Output only. Represents the SAA enrollment response of the given workload. SAA enrollment response is queried during GetWorkload call. In failure cases, user friendly error message is shown in SAA details page.",
-          "readOnly": true,
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadSaaEnrollmentResponse"
-        },
-        "complianceStatus": {
-          "description": "Output only. Count of active Violations in the Workload.",
-          "readOnly": true,
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadComplianceStatus"
+        "nonCompliantOrgPolicy": {
+          "description": "Optional. Name of the OrgPolicy which was modified with non-compliant change and resulted in this violation. Format: projects\/{project_number}\/policies\/{constraint_name} folders\/{folder_id}\/policies\/{constraint_name} organizations\/{organization_id}\/policies\/{constraint_name}",
+          "type": "string"
         }
       }
     },
-    "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadResourceInfo": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadResourceInfo",
-      "description": "Represent the resources that are children of this Workload.",
+    "GoogleCloudAssuredworkloadsV1beta1AcknowledgeViolationResponse": {
+      "id": "GoogleCloudAssuredworkloadsV1beta1AcknowledgeViolationResponse",
+      "description": "Response for violation acknowledgement",
       "type": "object",
       "properties": {
-        "resourceId": {
-          "description": "Resource identifier. For a project this represents project_number.",
-          "type": "string",
-          "format": "int64"
-        },
-        "resourceType": {
-          "description": "Indicates the type of resource.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unknown resource type.",
-            "Deprecated. Existing workloads will continue to support this, but new CreateWorkloadRequests should not specify this as an input value.",
-            "Consumer Folder.",
-            "Consumer project containing encryption keys.",
-            "Keyring resource that hosts encryption keys."
-          ],
-          "enum": [
-            "RESOURCE_TYPE_UNSPECIFIED",
-            "CONSUMER_PROJECT",
-            "CONSUMER_FOLDER",
-            "ENCRYPTION_KEYS_PROJECT",
-            "KEYRING"
-          ]
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadIL4Settings": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadIL4Settings",
-      "description": "Settings specific to resources needed for IL4.",
-      "type": "object",
-      "properties": {
-        "kmsSettings": {
-          "description": "Input only. Immutable. Settings used to create a CMEK crypto key.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadKMSSettings"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadKMSSettings": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadKMSSettings",
-      "description": "Settings specific to the Key Management Service.",
-      "type": "object",
-      "properties": {
-        "nextRotationTime": {
-          "description": "Required. Input only. Immutable. The time at which the Key Management Service will automatically create a new version of the crypto key and mark it as the primary.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "rotationPeriod": {
-          "description": "Required. Input only. Immutable. [next_rotation_time] will be advanced by this period when the Key Management Service automatically rotates a key. Must be at least 24 hours and at most 876,000 hours.",
-          "type": "string",
-          "format": "google-duration"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadCJISSettings": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadCJISSettings",
-      "description": "Settings specific to resources needed for CJIS.",
-      "type": "object",
-      "properties": {
-        "kmsSettings": {
-          "description": "Input only. Immutable. Settings used to create a CMEK crypto key.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadKMSSettings"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadFedrampHighSettings": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadFedrampHighSettings",
-      "description": "Settings specific to resources needed for FedRAMP High.",
-      "type": "object",
-      "properties": {
-        "kmsSettings": {
-          "description": "Input only. Immutable. Settings used to create a CMEK crypto key.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadKMSSettings"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadFedrampModerateSettings": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadFedrampModerateSettings",
-      "description": "Settings specific to resources needed for FedRAMP Moderate.",
-      "type": "object",
-      "properties": {
-        "kmsSettings": {
-          "description": "Input only. Immutable. Settings used to create a CMEK crypto key.",
-          "$ref": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadKMSSettings"
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadSaaEnrollmentResponse": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadSaaEnrollmentResponse",
-      "description": "Signed Access Approvals (SAA) enrollment response.",
-      "type": "object",
-      "properties": {
-        "setupStatus": {
-          "description": "Indicates SAA enrollment status of a given workload.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unspecified.",
-            "SAA enrollment pending.",
-            "SAA enrollment comopleted."
-          ],
-          "enum": [
-            "SETUP_STATE_UNSPECIFIED",
-            "STATUS_PENDING",
-            "STATUS_COMPLETE"
-          ]
-        },
-        "setupErrors": {
-          "description": "Indicates SAA enrollment setup error if any.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enumDescriptions": [
-              "Unspecified.",
-              "Invalid states for all customers, to be redirected to AA UI for additional details.",
-              "Returned when there is not an EKM key configured.",
-              "Returned when there are no enrolled services or the customer is enrolled in CAA only for a subset of services.",
-              "Returned when exception was encountered during evaluation of other criteria."
-            ],
-            "enum": [
-              "SETUP_ERROR_UNSPECIFIED",
-              "ERROR_INVALID_BASE_SETUP",
-              "ERROR_MISSING_EXTERNAL_SIGNING_KEY",
-              "ERROR_NOT_ALL_SERVICES_ENROLLED",
-              "ERROR_SETUP_CHECK_FAILED"
-            ]
-          }
-        }
-      }
-    },
-    "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadComplianceStatus": {
-      "id": "GoogleCloudAssuredworkloadsVersioningV1mainWorkloadComplianceStatus",
-      "description": "Represents the Compliance Status of this workload",
-      "type": "object",
-      "properties": {
-        "activeViolationCount": {
-          "description": "Count of active Violations which haven't been acknowledged.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "acknowledgedViolationCount": {
-          "description": "Count of active Violations which are acknowledged in the Workload.",
-          "type": "integer",
-          "format": "int32"
-        }
       }
     }
   },
@@ -1908,7 +1039,7 @@
                     "name"
                   ],
                   "response": {
-                    "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1Workload"
+                    "$ref": "GoogleCloudAssuredworkloadsV1beta1Workload"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -1949,7 +1080,7 @@
                     "parent"
                   ],
                   "response": {
-                    "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1ListWorkloadsResponse"
+                    "$ref": "GoogleCloudAssuredworkloadsV1beta1ListWorkloadsResponse"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -1972,21 +1103,21 @@
                               "httpMethod": "GET",
                               "parameters": {
                                 "source": {
-                                  "description": "The Source is project based Workload to be moved. This is the workloads's relative path in the API, formatted as \"organizations\/{organization_id}\/locations\/{location_id}\/workloads\/{workload_id}\". For example, \"organizations\/123\/locations\/us-east1\/workloads\/assured-workload-1\".",
+                                  "description": "The source type is a project-based workload. Specify the workloads's relative resource name, formatted as: \"organizations\/{ORGANIZATION_ID}\/locations\/{LOCATION_ID}\/workloads\/{WORKLOAD_ID}\" For example: \"organizations\/123\/locations\/us-east1\/workloads\/assured-workload-1\"",
                                   "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/workloads\/[^\/]+$",
                                   "location": "path",
                                   "required": true,
                                   "type": "string"
                                 },
                                 "target": {
-                                  "description": "Required. The resource name of the Workload to fetch. This is the workloads's relative path in the API, formatted as \"organizations\/{organization_id}\/locations\/{location_id}\/workloads\/{workload_id}\". For example, \"organizations\/123\/locations\/us-east1\/workloads\/assured-workload-2\".",
+                                  "description": "Required. The resource ID of the folder-based destination workload. This workload is where the source project will hypothetically be moved to. Specify the workload's relative resource name, formatted as: \"organizations\/{ORGANIZATION_ID}\/locations\/{LOCATION_ID}\/workloads\/{WORKLOAD_ID}\" For example: \"organizations\/123\/locations\/us-east1\/workloads\/assured-workload-2\"",
                                   "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/workloads\/[^\/]+$",
                                   "location": "path",
                                   "required": true,
                                   "type": "string"
                                 },
                                 "project": {
-                                  "description": "The Source is a project based to be moved. This is the project's relative path in the API, formatted as \"cloudresourcemanager.googleapis.com\/projects\/{project_number}\" \"projects\/{project_number}\" \"cloudresourcemanager.googleapis.com\/projects\/{project_id}\" \"projects\/{project_id}\" For example, \"organizations\/123\/locations\/us-east1\/workloads\/assured-workload-1\".",
+                                  "description": "The source type is a project. Specify the project's relative resource name, formatted as either a project number or a project ID: \"projects\/{PROJECT_NUMBER}\" or \"projects\/{PROJECT_ID}\" For example: \"projects\/951040570662\" when specifying a project number, or \"projects\/my-project-123\" when specifying a project ID.",
                                   "location": "query",
                                   "type": "string"
                                 }
@@ -1996,12 +1127,12 @@
                                 "target"
                               ],
                               "response": {
-                                "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1AnalyzeWorkloadMoveResponse"
+                                "$ref": "GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse"
                               },
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "Analyze if the source Assured Workloads can be moved to the target Assured Workload"
+                              "description": "Analyzes a hypothetical move of a source project or project-based workload to a target (destination) folder-based workload."
                             }
                           }
                         }
@@ -2025,13 +1156,13 @@
                           "type": "string"
                         },
                         "interval.startTime": {
-                          "description": "The start of the time window. Default is the value of end_time.",
+                          "description": "The start of the time window.",
                           "location": "query",
                           "type": "string",
                           "format": "google-datetime"
                         },
                         "interval.endTime": {
-                          "description": "The end of the time window. Default is NOW.",
+                          "description": "The end of the time window.",
                           "location": "query",
                           "type": "string",
                           "format": "google-datetime"
@@ -2057,7 +1188,7 @@
                         "parent"
                       ],
                       "response": {
-                        "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1ListViolationsResponse"
+                        "$ref": "GoogleCloudAssuredworkloadsV1beta1ListViolationsResponse"
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
@@ -2082,12 +1213,40 @@
                         "name"
                       ],
                       "response": {
-                        "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1Violation"
+                        "$ref": "GoogleCloudAssuredworkloadsV1beta1Violation"
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Retrieves Assured Workload Violation based on ID."
+                    },
+                    "acknowledge": {
+                      "id": "assuredworkloads.organizations.locations.workloads.violations.acknowledge",
+                      "path": "v1beta1/{+name}:acknowledge",
+                      "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}/violations/{violationsId}:acknowledge",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the Violation to acknowledge. Format: organizations\/{organization}\/locations\/{location}\/workloads\/{workload}\/violations\/{violation}",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/workloads\/[^\/]+\/violations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAssuredworkloadsV1beta1AcknowledgeViolationRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudAssuredworkloadsV1beta1AcknowledgeViolationResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Acknowledges an existing violation. By acknowledging a violation, users acknowledge the existence of a compliance violation in their workload and decide to ignore it due to a valid business justification. Acknowledgement is a permanent operation and it cannot be reverted."
                     }
                   }
                 }
@@ -2112,21 +1271,21 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "project": {
-                          "description": "The Source is a project based to be moved. This is the project's relative path in the API, formatted as \"cloudresourcemanager.googleapis.com\/projects\/{project_number}\" \"projects\/{project_number}\" \"cloudresourcemanager.googleapis.com\/projects\/{project_id}\" \"projects\/{project_id}\" For example, \"organizations\/123\/locations\/us-east1\/workloads\/assured-workload-1\".",
+                          "description": "The source type is a project. Specify the project's relative resource name, formatted as either a project number or a project ID: \"projects\/{PROJECT_NUMBER}\" or \"projects\/{PROJECT_ID}\" For example: \"projects\/951040570662\" when specifying a project number, or \"projects\/my-project-123\" when specifying a project ID.",
                           "pattern": "^projects\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "target": {
-                          "description": "Required. The resource name of the Workload to fetch. This is the workloads's relative path in the API, formatted as \"organizations\/{organization_id}\/locations\/{location_id}\/workloads\/{workload_id}\". For example, \"organizations\/123\/locations\/us-east1\/workloads\/assured-workload-2\".",
+                          "description": "Required. The resource ID of the folder-based destination workload. This workload is where the source project will hypothetically be moved to. Specify the workload's relative resource name, formatted as: \"organizations\/{ORGANIZATION_ID}\/locations\/{LOCATION_ID}\/workloads\/{WORKLOAD_ID}\" For example: \"organizations\/123\/locations\/us-east1\/workloads\/assured-workload-2\"",
                           "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/workloads\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "source": {
-                          "description": "The Source is project based Workload to be moved. This is the workloads's relative path in the API, formatted as \"organizations\/{organization_id}\/locations\/{location_id}\/workloads\/{workload_id}\". For example, \"organizations\/123\/locations\/us-east1\/workloads\/assured-workload-1\".",
+                          "description": "The source type is a project-based workload. Specify the workloads's relative resource name, formatted as: \"organizations\/{ORGANIZATION_ID}\/locations\/{LOCATION_ID}\/workloads\/{WORKLOAD_ID}\" For example: \"organizations\/123\/locations\/us-east1\/workloads\/assured-workload-1\"",
                           "location": "query",
                           "type": "string"
                         }
@@ -2136,12 +1295,12 @@
                         "target"
                       ],
                       "response": {
-                        "$ref": "GoogleCloudAssuredworkloadsVersioningV1beta1AnalyzeWorkloadMoveResponse"
+                        "$ref": "GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse"
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Analyze if the source Assured Workloads can be moved to the target Assured Workload"
+                      "description": "Analyzes a hypothetical move of a source project or project-based workload to a target (destination) folder-based workload."
                     }
                   }
                 }

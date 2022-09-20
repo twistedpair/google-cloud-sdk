@@ -42,9 +42,9 @@ def GetTypeKit(integration_type):
   if integration_type == 'custom-domain':
     return custom_domain_typekit.CustomDomainTypeKit(
         types_utils.GetIntegration('custom-domain'))
-  if integration_type == 'domain-routing':
+  if integration_type == 'custom-domains':
     return domain_routing_typekit.DomainRoutingTypeKit(
-        types_utils.GetIntegration('domain-routing'))
+        types_utils.GetIntegration('custom-domains'))
   if integration_type == 'redis':
     return redis_typekit.RedisTypeKit(types_utils.GetIntegration('redis'))
   if integration_type == 'cloudsql':

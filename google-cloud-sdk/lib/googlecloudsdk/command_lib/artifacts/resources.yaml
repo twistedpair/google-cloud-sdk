@@ -52,6 +52,19 @@ repository_without_property:
     help: |
       The repository associated with the {resource}.
 
+mavenArtifact:
+  name: mavenArtifact
+  collection: artifactregistry.projects.locations.repositories.mavenArtifacts
+  attributes:
+  - *project
+  - *location
+  - *repository
+  - &mavenArtifact
+    parameter_name: mavenArtifactsId
+    attribute_name: mavenArtifact
+    help: |
+      The maven artifact associated with the {resource}.
+
 package:
   name: package
   collection: artifactregistry.projects.locations.repositories.packages

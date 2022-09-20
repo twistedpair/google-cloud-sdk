@@ -206,21 +206,60 @@ class UpdateCommand(FeatureCommand, calliope_base.UpdateCommand):
     return self.v1alpha1_client.projects_locations_global_features.Patch(req)
 
 
-def ParseMemberships(args,
-                     membership_flag=False,
-                     memberships_flag=False,
-                     membership_name_flag=False,
-                     all_memberships_flag=False,
-                     prompt=False,
-                     allow_cross_project=False):
-  """Returns a list of memberships to which to run the command, given the arguments.
+def ParseMembership(args, prompt=False):
+  """Returns a membership on which to run the command, given the arguments.
+
+  Allows for a `--membership` flag or a `MEMBERSHIP_NAME` positional flag.
 
   Args:
     args: object containing arguments passed as flags with the command
-    membership_flag: whether a --membership flag is included in this command
-    memberships_flag: whether a plural --memberships flag is included
-    membership_name_flag: whether a positional MEMBERSHIP_NAME flag is included
-    all_memberships_flag: whether --all-memberships is included in this commmand
+    prompt: whether to prompt in console for a membership when none are provided
+      in args
+
+  Returns:
+    membership: A membership resource name string
+
+  Raises:
+    exceptions.Error: no memberships were found or memberships are invalid
+    calliope_exceptions.RequiredArgumentException: membership was not provided
+  """
+
+  # If a membership is provided
+  if args.IsKnownAndSpecified('membership'):
+    if resources.MembershipLocationSpecified(args):
+      return resources.MembershipResourceName(args)
+    else:
+      return resources.SearchMembershipResource(args)
+
+  # If a membership is provided (positional arg)
+  if args.IsKnownAndSpecified('MEMBERSHIP_NAME'):
+    if resources.MembershipLocationSpecified(args):
+      return resources.MembershipResourceName(args, positional=True)
+    else:
+      return resources.SearchMembershipResource(args)
+
+  # If nothing is provided, prompt
+  flag = ('MEMBERSHIP_NAME'
+          if hasattr(args, 'MEMBERSHIP_NAME') else '--membership')
+  if not prompt:
+    raise calliope_exceptions.RequiredArgumentException(
+        flag, 'At least one membership is required for this command.')
+
+  membership = resources.PromptForMembership()
+  if membership is not None:
+    return membership
+  else:
+    raise calliope_exceptions.RequiredArgumentException(
+        flag, 'At least one membership is required for this command.')
+
+
+def ParseMembershipsPlural(args, prompt=False, allow_cross_project=False):
+  """Parses a list of membership resources from args.
+
+  Allows for a `--memberships` flag and a `--all-memberships` flag.
+
+  Args:
+    args: object containing arguments passed as flags with the command
     prompt: whether to prompt in console for a membership when none are provided
       in args
     allow_cross_project: whether to allow memberships from different projects
@@ -235,8 +274,7 @@ def ParseMemberships(args,
   memberships = []
 
   # If running for all memberships
-  if all_memberships_flag and hasattr(
-      args, 'all_memberships') and args.all_memberships:
+  if hasattr(args, 'all_memberships'):
     all_memberships, unreachable = api_util.ListMembershipsFull()
     if unreachable:
       raise exceptions.Error(
@@ -246,20 +284,12 @@ def ParseMemberships(args,
       raise exceptions.Error('No Memberships available in the fleet.')
     return all_memberships
 
-  # If a membership is provided
-  if membership_flag and hasattr(args, 'membership') and args.membership:
-    memberships += resources.GetExistingMembershipResourceNames(args)
-
-  # If a membership is provided (positional arg)
-  if membership_name_flag and hasattr(
-      args, 'MEMBERSHIP_NAME') and args.MEMBERSHIP_NAME:
-    memberships += resources.GetExistingMembershipResourceNames(
-        args, positional=True)
-
   # If a membership list is provided
-  if memberships_flag and hasattr(args, 'memberships') and args.memberships:
-    memberships += resources.GetExistingMembershipResourceNames(
-        args, plural=True)
+  if args.IsKnownAndSpecified('memberships'):
+    if resources.MembershipLocationSpecified(args):
+      memberships += resources.PluralMembershipsResourceNames(args)
+    else:
+      memberships += resources.SearchMembershipResource(args, plural=True)
 
   if memberships:
     # Verify memberships
@@ -274,7 +304,8 @@ def ParseMemberships(args,
     return memberships
 
   # If nothing is provided
-  flag = '--memberships' if memberships_flag else 'MEMBERSHIP_NAME' if membership_name_flag else '--membership'
+  flag = ('MEMBERSHIP_NAME'
+          if hasattr(args, 'MEMBERSHIP_NAME') else '--memberships')
   if not prompt:
     raise calliope_exceptions.RequiredArgumentException(
         flag, 'At least one membership is required for this command.')

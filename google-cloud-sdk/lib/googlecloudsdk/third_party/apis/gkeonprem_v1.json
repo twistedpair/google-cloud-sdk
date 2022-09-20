@@ -415,7 +415,7 @@
       "type": "object",
       "properties": {
         "enabled": {
-          "description": "Whether to enable master node auto resizing.",
+          "description": "Whether to enable controle plane node auto resizing.",
           "type": "boolean"
         }
       }
@@ -426,7 +426,7 @@
       "type": "object",
       "properties": {
         "datastore": {
-          "description": "The Vsphere datastore used by the Master Node.",
+          "description": "The Vsphere datastore used by the Control Plane Node.",
           "type": "string"
         }
       }

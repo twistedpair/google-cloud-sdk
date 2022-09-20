@@ -33,6 +33,7 @@ from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import flags as run_flags
 from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.run.integrations import flags
+from googlecloudsdk.command_lib.run.integrations import integration_list_printer
 from googlecloudsdk.command_lib.run.integrations import messages_util
 from googlecloudsdk.command_lib.run.integrations import stages
 from googlecloudsdk.command_lib.run.integrations import typekits_util
@@ -308,6 +309,29 @@ class RunAppsOperations(object):
       return None
     except KeyError:
       return None
+    except api_exceptions.HttpError:
+      return None
+
+  def GetLatestDeployment(self, resource_config):
+    """Fetches the deployment object given a resource config.
+
+    Args:
+      resource_config: dict, may contain a key called 'latestDeployment'
+
+    Returns:
+      run_apps.v1alpha1.Deployment, the Deployment object.  This is None if
+        the latest deployment name does not exist.  If the deployment itself
+        cannot be found via the name or any http errors occur, then None will
+        be returned.
+    """
+    latest_deployment_name = resource_config.get(
+        types_utils.LATEST_DEPLOYMENT_FIELD)
+
+    if not latest_deployment_name:
+      return None
+
+    try:
+      return api_utils.GetDeployment(self._client, latest_deployment_name)
     except api_exceptions.HttpError:
       return None
 
@@ -660,7 +684,9 @@ class RunAppsOperations(object):
 
     # Filter by type and/or service.
     output = []
-    for name, resource in app_resources.items():
+    # the dict is sorted by the resource name to guarantee the output
+    # is the same every time.  This is useful for scenario tests.
+    for name, resource in sorted(app_resources.items()):
       try:
         typekit = typekits_util.GetTypeKitByResource(resource)
       except exceptions.ArgumentError:
@@ -682,14 +708,22 @@ class RunAppsOperations(object):
       if service_name_filter and service_name_filter not in services:
         continue
 
-      # Assemble for Cloud SDK table formater.
-      resource = {
-          'name': name,
-          'type': integration_type,
-          'services': ','.join(services)
-      }
-      output.append(resource)
+      status = (
+          self.messages.DeploymentStatus.StateValueValuesEnum.STATE_UNSPECIFIED
+          )
+      latest_deployment = resource.get(types_utils.LATEST_DEPLOYMENT_FIELD)
+      if latest_deployment:
+        dep = api_utils.GetDeployment(self._client, latest_deployment)
+        if dep:
+          status = dep.status.state
 
+      output.append(
+          integration_list_printer.Row(
+              integration_name=name,
+              integration_type=integration_type,
+              services=','.join(services),
+              latest_deployment_status=str(status),
+          ))
     return output
 
   def _GetDefaultAppDict(self):

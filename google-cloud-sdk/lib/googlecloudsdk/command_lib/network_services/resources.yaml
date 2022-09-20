@@ -151,3 +151,15 @@ serviceBinding:
     parameter_name: serviceBindingsId
     attribute_name: service_binding
     help: Id of the service binding.
+
+serviceLbPolicy:
+  name: service lb policy
+  collection: networkservices.projects.locations.serviceLbPolicies
+  request_id_field: serviceLbPolicyId
+  attributes:
+  - *project
+  - *location
+  - &serviceLbPolicy
+    parameter_name: serviceLbPoliciesId
+    attribute_name: service_lb_policy
+    help: Id of the service LB Policy.

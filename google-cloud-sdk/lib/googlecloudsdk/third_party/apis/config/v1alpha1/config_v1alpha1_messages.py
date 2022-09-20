@@ -641,6 +641,7 @@ class Deployment(_messages.Message):
       FAILED: The deployment has encountered an unexpected error.
       SUSPENDED: The deployment is no longer being actively reconciled. This
         may be the result of recovering the project after deletion.
+      DELETED: The deployment is deleted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -649,6 +650,7 @@ class Deployment(_messages.Message):
     DELETING = 4
     FAILED = 5
     SUSPENDED = 6
+    DELETED = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

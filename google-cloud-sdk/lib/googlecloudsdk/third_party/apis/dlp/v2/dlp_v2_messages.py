@@ -4929,13 +4929,10 @@ class GooglePrivacyDlpV2InfoTypeSummary(_messages.Message):
   r"""The infoType details for this column.
 
   Fields:
-    estimatedPrevalence: Approximate percentage of non-null rows that
-      contained data detected by this infotype.
     infoType: The infoType.
   """
 
-  estimatedPrevalence = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 2)
+  infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 1)
 
 
 class GooglePrivacyDlpV2InfoTypeTransformation(_messages.Message):

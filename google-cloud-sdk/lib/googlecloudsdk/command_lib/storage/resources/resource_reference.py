@@ -131,49 +131,111 @@ class BucketResource(CloudResource):
     name (str): Name of bucket.
     scheme (storage_url.ProviderPrefix): Prefix indicating what cloud provider
       hosts the bucket.
-    etag (str|None): HTTP version identifier.
-    location (str|None): Represents region bucket was created in.
-    metadata (object|dict|None): Cloud-provider specific data type for holding
-      bucket metadata.
-    retention_period (int|None): Default time to hold items in bucket before
-      before deleting in seconds.
+    acl (dict|str|None): ACLs for the bucket.
+      If the API call to fetch the data failed, this can be an error string.
+    cors_config (dict|str|None): The CORS configuration for the bucket.
+      If the API call to fetch the data failed, this can be an error string.
+    creation_time (str|None): Bucket's creation time.
+    default_event_based_hold (bool|None): Prevents objects in bucket from being
+      deleted. Currently GCS-only but needed for generic copy logic.
     default_storage_class (str|None): Default storage class for objects in
       bucket.
+    etag (str|None): HTTP version identifier.
+    labels (dict|None): Labels for the bucket.
+    lifecycle_config (dict|str|None): The lifecycle configuration for the
+      bucket. For S3, the value can be an error string.
+    location (str|None): Represents region bucket was created in.
+    logging_config (dict|str|None): The logging configuration for the bucket.
+      If the API call to fetch the data failed, this can be an error string.
+    metadata (object|dict|None): Cloud-provider specific data type for holding
+      bucket metadata.
+    metageneration (int|None): The generation of the bucket's metadata.
+    requester_pays (bool|str|None): The "requester pays" status of the bucket.
+      For S3, the value can be an error string.
+    retention_period (int|None): Default time to hold items in bucket before
+      before deleting in seconds. Generated from retention_policy.
+    retention_policy (dict|None): Info about object retention within bucket.
+      Currently GCS-only but needed for generic copy logic.
     uniform_bucket_level_access (bool): True if all objects in the bucket share
       ACLs rather than the default, fine-grain ACL control.
+    update_time (str|None): Bucket's update time.
+    versioning_enabled (bool|str|None): If True, versioning is enabled.
+      If the API call to fetch the data failed, this can be an error string.
+    website_config (dict|str|None): The website configuration for the bucket.
+      If the API call to fetch the data failed, this can be an error string.
   """
   TYPE_STRING = 'cloud_bucket'
 
   def __init__(self,
                storage_url_object,
-               etag=None,
-               location=None,
-               metadata=None,
-               retention_period=None,
+               acl=None,
+               cors_config=None,
+               creation_time=None,
+               default_event_based_hold=None,
                default_storage_class=None,
-               uniform_bucket_level_access=False):
+               etag=None,
+               lifecycle_config=None,
+               labels=None,
+               location=None,
+               logging_config=None,
+               metageneration=None,
+               metadata=None,
+               requester_pays=None,
+               retention_policy=None,
+               uniform_bucket_level_access=False,
+               update_time=None,
+               versioning_enabled=None,
+               website_config=None):
     """Initializes resource. Args are a subset of attributes."""
     super(BucketResource, self).__init__(storage_url_object)
-    self.etag = etag
-    self.location = location
-    self.metadata = metadata
-    # TODO(b/245804149): Move to GcsBucketResource.
-    self.retention_period = retention_period
+    self.acl = acl
+    self.cors_config = cors_config
+    self.creation_time = creation_time
+    self.default_event_based_hold = default_event_based_hold
     self.default_storage_class = default_storage_class
+    self.etag = etag
+    self.labels = labels
+    self.lifecycle_config = lifecycle_config
+    self.location = location
+    self.logging_config = logging_config
+    self.metadata = metadata
+    self.metageneration = metageneration
+    self.requester_pays = requester_pays
+    self.retention_policy = retention_policy
     self.uniform_bucket_level_access = uniform_bucket_level_access
+    self.update_time = update_time
+    self.versioning_enabled = versioning_enabled
+    self.website_config = website_config
 
   @property
   def name(self):
     return self.storage_url.bucket_name
 
+  @property
+  def retention_period(self):
+    # Provider-specific subclasses can override.
+    return None
+
   def __eq__(self, other):
     return (super(BucketResource, self).__eq__(other) and
-            self.etag == other.etag and self.location == other.location and
-            self.metadata == other.metadata and
-            self.retention_period == other.retention_period and
+            self.acl == other.acl and self.cors_config == other.cors_config and
+            self.creation_time == other.creation_time and
+            self.default_event_based_hold == other.default_event_based_hold and
             self.default_storage_class == other.default_storage_class and
+            self.etag == other.etag and self.location == other.location and
+            self.labels == other.labels and
+            self.lifecycle_config == other.lifecycle_config and
+            self.location == other.location and
+            self.logging_config == other.logging_config and
+            self.metadata == other.metadata and
+            self.metageneration == other.metageneration and
+            self.requester_pays == other.requester_pays and
+            self.retention_policy == other.retention_policy and
             self.uniform_bucket_level_access
-            == other.uniform_bucket_level_access)
+            == other.uniform_bucket_level_access and
+            self.update_time == other.update_time and
+            self.versioning_enabled == other.versioning_enabled and
+            self.website_config == other.website_config)
 
   def is_container(self):
     return True
@@ -422,7 +484,7 @@ class DisplayableBucketData(DisplayableResourceData):
     retention_policy (dict|None): Default time to hold items in bucket in
       seconds.
     rpo (str|None): Recovery Point Objective status.
-    satisifes_pzs (bool|None): Zone Separation status.
+    satisfies_pzs (bool|None): Zone Separation status.
     storage_class (str|None): Storage class of the bucket.
     update_time (str|None): Bucket's update time.
     versioning_enabled (bool|str|None): If True, versioning is enabled.
@@ -453,7 +515,7 @@ class DisplayableBucketData(DisplayableResourceData):
                requester_pays=None,
                retention_policy=None,
                rpo=None,
-               satisifes_pzs=None,
+               satisfies_pzs=None,
                storage_class=None,
                update_time=None,
                versioning_enabled=None,
@@ -483,7 +545,7 @@ class DisplayableBucketData(DisplayableResourceData):
     self.requester_pays = requester_pays
     self.retention_policy = retention_policy
     self.rpo = rpo
-    self.satisifes_pzs = satisifes_pzs
+    self.satisfies_pzs = satisfies_pzs
     self.storage_class = storage_class
     self.update_time = (
         resource_util.get_formatted_timestamp_in_utc(update_time)

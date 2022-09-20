@@ -1336,6 +1336,44 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
   type = _messages.StringField(8)
 
 
+class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
+  r"""A resource value config is a mapping configuration of user's tag values
+  to resource values. Used by the attack path simulation.
+
+  Enums:
+    ResourceValueValueValuesEnum: Required. Resource value level this
+      expression represents
+
+  Fields:
+    name: Name for the resource value config
+    resourceValue: Required. Resource value level this expression represents
+    tagValues: Required. Tag values combined with AND to check against. Values
+      in the form "tagValues/123" E.g. [ "tagValues/123", "tagValues/456",
+      "tagValues/789" ] https://cloud.google.com/resource-
+      manager/docs/tags/tags-creating-and-managing
+  """
+
+  class ResourceValueValueValuesEnum(_messages.Enum):
+    r"""Required. Resource value level this expression represents
+
+    Values:
+      RESOURCE_VALUE_UNSPECIFIED: Unspecific value
+      HIGH: High resource value
+      MEDIUM: Medium resource value
+      LOW: Low resource value
+      NONE: No resource value, e.g. ignore these resources
+    """
+    RESOURCE_VALUE_UNSPECIFIED = 0
+    HIGH = 1
+    MEDIUM = 2
+    LOW = 3
+    NONE = 4
+
+  name = _messages.StringField(1)
+  resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 2)
+  tagValues = _messages.StringField(3, repeated=True)
+
+
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
   r"""Response of asset discovery run
 

@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.container import util as gke_util
 from googlecloudsdk.api_lib.container.gkemulticloud import operations as op_api_util
 from googlecloudsdk.command_lib.container.gkemulticloud import constants
@@ -29,6 +30,17 @@ from googlecloudsdk.core.console import console_io
 def _GetOperationResource(op):
   return resources.REGISTRY.ParseRelativeName(
       op.name, collection='gkemulticloud.projects.locations.operations')
+
+
+def _GetOperationTarget(op):
+  op_cluster = ''
+  if op.metadata is not None:
+    metadata = encoding.MessageToPyValue(op.metadata)
+    if 'target' in metadata:
+      op_cluster = metadata['target']
+  return resources.REGISTRY.ParseRelativeName(
+      op_cluster,
+      collection='gkemulticloud.projects.locations.attachedClusters')
 
 
 def _LogAndWaitForOperation(op, async_, message):
@@ -154,3 +166,36 @@ def Delete(resource_ref=None,
     return
   _LogAndWaitForOperation(op, async_, 'Deleting ' + message)
   log.DeletedResource(resource_ref, kind=kind, is_async=async_)
+
+
+def Import(location_ref=None,
+           resource_client=None,
+           fleet_membership_ref=None,
+           args=None,
+           kind=None,
+           message=None):
+  """Runs an import command for gkemulticloud.
+
+  Args:
+    location_ref: obj, location reference.
+    resource_client: obj, client for the resource.
+    fleet_membership_ref: obj, fleet membership reference.
+    args: obj, arguments parsed from the command.
+    kind: str, the kind of resource e.g. AWS Cluster, Azure Node Pool.
+    message: str, message to display while waiting for LRO to complete.
+
+  Returns:
+    The details of the imported resource.
+  """
+  op = resource_client.Import(
+      location_ref=location_ref,
+      fleet_membership_ref=fleet_membership_ref,
+      args=args)
+  validate_only = getattr(args, 'validate_only', False)
+  if validate_only:
+    args.format = 'disable'
+    return
+  async_ = getattr(args, 'async_', False)
+  _LogAndWaitForOperation(op, async_, message)
+  op_target = _GetOperationTarget(op)
+  log.CreatedResource(op_target, kind=kind, is_async=async_)

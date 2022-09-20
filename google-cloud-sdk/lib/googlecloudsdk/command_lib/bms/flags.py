@@ -23,6 +23,7 @@ import sys
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import yaml_data
@@ -89,6 +90,69 @@ IP_RESERVATION_KEY_SPEC = {
     'start-address': str,
     'end-address': str,
 }
+
+NFS_ALLOWED_CLIENTS_HELP_TEXT = """
+Adds an allowed client to the NFS share. This flag can be repeated to specify multiple allowed clients.
+
+*network*::: The name of the network to allow.
+
+*network-project-id*::: The project ID of the allowed client network.
+If not present, the project ID of the NFS share will be used.
+
+*cidr*::: The subnet of IP addresses permitted to access the NFS
+share.
+
+*mount-permissions*::: The mount permissions for the allowed client.
+``MOUNT_PERMISSIONS'' must be one of: `READ_ONLY`, `READ_WRITE`.
+
+*allow-dev*::: If ``yes'', allows creation of devices.
+
+*allow-suid*::: If ``yes'', allows SUID.
+
+*enable-root-squash*::: If ``yes'', enables root squashing which
+is a special mapping of the remote superuser (root) identity when
+using identity authentication .
+"""
+
+
+def _ValidateNFSMountPermissions(mount_permissions_input):
+  """Validates NFS mount permissions field, throws exception if invalid."""
+  mount_permissions = mount_permissions_input.upper()
+  if mount_permissions not in NFS_MOUNT_PERMISSIONS_CHOICES:
+    raise exceptions.InvalidArgumentException(
+        '--allowed-client',
+        'Invalid value {} for mount-permissions'.format(
+            mount_permissions_input))
+  return mount_permissions
+
+NFS_ALLOWED_CLIENT_SPEC = {
+    'network': str,
+    'network-project-id': str,
+    'cidr': str,
+    'mount-permissions': _ValidateNFSMountPermissions,
+    'allow-dev': arg_parsers.ArgBoolean(),
+    'allow-suid': arg_parsers.ArgBoolean(),
+    'enable-root-squash': arg_parsers.ArgBoolean(),
+}
+REQUIRED_NFS_ALLOWED_CLIENT_KEYS = [  # Only network-project-id is optional.
+    'network',
+    'cidr',
+    'mount-permissions',
+    'allow-dev',
+    'allow-suid',
+    'enable-root-squash',
+]
+NFS_MOUNT_PERMISSIONS_CHOICES = ('READ_ONLY', 'READ_WRITE')
+REMOVE_NFS_ALLOWED_CLIENT_SPEC = {
+    'network': str,
+    'network-project-id': str,
+    'cidr': str,
+}
+REQUIRED_REMOVE_NFS_ALLOWED_CLIENT_KEYS = [
+    # Only network-project-id is optional.
+    'network',
+    'cidr',
+]
 
 
 def AddInstanceArgToParser(parser, positional=False):
@@ -336,3 +400,78 @@ def AddNetworkIpReservationToParser(parser, hidden):
       action='store_true',
       help="""Removes all IP range reservations in the network.""",
       hidden=hidden)
+
+
+def AddNfsSizeGibArg(parser):
+  """Adds size GiB argument for NFS."""
+  parser.add_argument(
+      '--size-gib',
+      help='The requested size of the NFS share in GiB',
+      type=int,
+      required=True)
+
+
+def AddNfsStorageTypeArg(parser):
+  """Adds storage type argument for NFS."""
+  parser.add_argument(
+      '--storage-type',
+      choices={
+          'SSD':
+              'The storage type of the underlying volume will be SSD',
+          'HDD':
+              'The storage type of the underlying volume will be HDD'
+      },
+      required=True,
+      type=arg_utils.ChoiceToEnumName,
+      help=('Specifies the storage type of the underlying volume which will be'
+            ' created for the NFS share.'))
+
+
+def AddNfsAllowedClientArg(parser):
+  parser.add_argument(
+      '--allowed-client',
+      type=arg_parsers.ArgDict(spec=NFS_ALLOWED_CLIENT_SPEC,
+                               required_keys=REQUIRED_NFS_ALLOWED_CLIENT_KEYS,
+                               ),
+      required=True,
+      action='append',
+      metavar='PROPERTY=VALUE',
+      help=NFS_ALLOWED_CLIENTS_HELP_TEXT,
+      )
+
+
+def AddNfsUpdateAllowedClientArgs(parser, hidden):
+  """Adds NFS update allowed clients arguments group."""
+  group_arg = parser.add_mutually_exclusive_group(required=False, hidden=hidden)
+  group_arg.add_argument(
+      '--add-allowed-client',
+      type=arg_parsers.ArgDict(
+          spec=NFS_ALLOWED_CLIENT_SPEC,
+          required_keys=REQUIRED_NFS_ALLOWED_CLIENT_KEYS,
+      ),
+      action='append',
+      metavar='PROPERTY=VALUE',
+      help=NFS_ALLOWED_CLIENTS_HELP_TEXT,
+  )
+  group_arg.add_argument(
+      '--remove-allowed-client',
+      type=arg_parsers.ArgDict(
+          spec=REMOVE_NFS_ALLOWED_CLIENT_SPEC,
+          required_keys=REQUIRED_REMOVE_NFS_ALLOWED_CLIENT_KEYS,
+      ),
+      action='append',
+      metavar='PROPERTY=VALUE',
+      help="""
+              Removes an allowed client for the NFS share given its network name and cidr. This flag can be repeated to remove multiple allowed clients.
+
+              *network*::: The name of the network of the allowed client to remove.
+
+              *network-project-id*::: The project ID of the allowed client network.
+              If not present, the project ID of the NFS share will be used.
+
+              *cidr*::: The subnet of permitted IP addresses of the allowed client to remove.
+            """)
+  group_arg.add_argument(
+      '--clear-allowed-clients',
+      action='store_true',
+      help="""Removes all IP range reservations in the network.""")

@@ -218,18 +218,28 @@ class _SecretVolume(DataObject):
   NAMES = ('name', 'mapped_secret', 'mount_path', 'secret_name', 'items')
 
   @classmethod
-  def FromParsedYaml(cls, mount, volume_secret, secret_aliases):
-    """Make a _SecretVolume based on the volumeMount and secret from the yaml."""
+  def FromParsedYaml(cls,
+                     mount,
+                     volume_secret,
+                     secret_aliases,
+                     renamed_secrets=None):
+    """Make a SecretVolume based on the volumeMount and secret from the yaml."""
     items = []
+    renamed_secrets = renamed_secrets or {}
     for item in volume_secret.items:
       items.append(_SecretPath(key=item.key, path=item.path))
-    reachable_secret = secret_aliases.get(volume_secret.secretName, None)
-    mapped_secret = (
-        reachable_secret.FormatAnnotationItem() if reachable_secret else None)
+    name = volume_secret.secretName
+    mapped_secret = secret_aliases.get(volume_secret.secretName, None)
+    if (not mapped_secret and not secrets.IsValidK8sName(name)):
+      mapped_secret = name
+      name = renamed_secrets.get(name, None)
+      if not name:
+        name, mapped_secret = _BuildReachableSecret(volume_secret.secretName)
+        renamed_secrets[mapped_secret] = name
     return cls(
         name=mount.name,
         mount_path=mount.mountPath,
-        secret_name=volume_secret.secretName,
+        secret_name=name,
         items=items,
         mapped_secret=mapped_secret)
 
@@ -269,6 +279,8 @@ class Settings(DataObject):
       env_vars_secrets: Container environment variables where the values come
         from Secret Manager.
       volumes_secrets: Volumes where the values come from secret manager.
+      renamed_secrets: internal map of secrets that don't correspond to k8s
+        naming conventions.
       cloudsql_instances: Cloud SQL instances.
       memory: Memory limit.
       cpu: CPU limit.
@@ -279,8 +291,8 @@ class Settings(DataObject):
 
   NAMES = ('service_name', 'image', 'credential', 'context', 'builder',
            'local_port', 'env_vars', 'env_vars_secrets', 'volumes_secrets',
-           'cloudsql_instances', 'memory', 'cpu', 'namespace',
-           'readiness_probe', 'allow_secret_manager')
+           'renamed_secrets', 'cloudsql_instances', 'memory', 'cpu',
+           'namespace', 'readiness_probe', 'allow_secret_manager')
 
   @classmethod
   def Defaults(cls):
@@ -301,6 +313,7 @@ class Settings(DataObject):
         env_vars={},
         env_vars_secrets={},
         volumes_secrets=[],
+        renamed_secrets={},
         allow_secret_manager=_FLAG_UNSPECIFIED,
     )
 
@@ -333,15 +346,21 @@ class Settings(DataObject):
     secret_aliases = {}
     aliases = knative_service.annotations.get(
         container_resource.SECRETS_ANNOTATION, '')
-    secret_aliases = secrets_mapping.ParseAnnotation(aliases, True)
+    secret_aliases = {
+        k: v.FormatAnnotationItem()
+        for k, v in secrets_mapping.ParseAnnotation(aliases, True).items()
+    }
 
     # The secrets aliases are supposed to be specified in the revision Template
     # but we originally specified the wrong location.
     if knative_service.template.IsFullObject():
       template_aliases = knative_service.template_annotations.get(
           container_resource.SECRETS_ANNOTATION, '')
-      secret_aliases.update(
-          secrets_mapping.ParseAnnotation(template_aliases, True))
+      secret_aliases.update({
+          k:
+          v.FormatAnnotationItem() for k, v in secrets_mapping.ParseAnnotation(
+              template_aliases, True).items()
+      })
     new_env_vars = {}
     new_env_vars_secrets = {}
     for var in container.env:
@@ -349,14 +368,18 @@ class Settings(DataObject):
         if var.valueFrom.configMapKeyRef:
           raise exceptions.Error('env_vars from config_maps are not supported')
         elif var.valueFrom.secretKeyRef:
-          reachable_secret = secret_aliases.get(var.valueFrom.secretKeyRef.name,
-                                                None)
-          mapped_secret = (
-              reachable_secret.FormatAnnotationItem()
-              if reachable_secret else None)
+          secret_name = var.valueFrom.secretKeyRef.name
+          mapped_secret = secret_aliases.get(secret_name, None)
+
+          if not mapped_secret and not secrets.IsValidK8sName(secret_name):
+            mapped_secret = secret_name
+            secret_name = self.renamed_secrets.get(mapped_secret, None)
+            if not secret_name:
+              secret_name, mapped_secret = _BuildReachableSecret(mapped_secret)
+              self.renamed_secrets[mapped_secret] = secret_name
           new_env_vars_secrets[var.name] = _SecretEnvVar(
               key=var.valueFrom.secretKeyRef.key,
-              name=var.valueFrom.secretKeyRef.name,
+              name=secret_name,
               mapped_secret=mapped_secret)
       else:
         new_env_vars[var.name] = var.value
@@ -387,7 +410,8 @@ class Settings(DataObject):
         raise exceptions.Error('Container referenced volume "{}" which was not '
                                'found.'.format(vol.name))
       referenced_vols.append(
-          _SecretVolume.FromParsedYaml(vol, all_vols[vol.name], secret_aliases))
+          _SecretVolume.FromParsedYaml(vol, all_vols[vol.name], secret_aliases,
+                                       self.renamed_secrets))
     replacements['volumes_secrets'] = referenced_vols
 
     return self.replace(**replacements)
@@ -510,10 +534,18 @@ class Settings(DataObject):
         # it's a remote secret, need to alias it
         mapped_secret = secret_name
         if mapped_secret not in aliases:
-          secret_name = secret_name[:5] + '-' + str(uuid.uuid1())
+          secret_name = (
+              secret_name.lower().replace('_', '.')[:5] + '-' +
+              str(uuid.uuid1()))
           aliases[mapped_secret] = secret_name
         else:
           secret_name = aliases[mapped_secret]
+      elif not secrets.IsValidK8sName(secret_name):
+        if secret_name in self.renamed_secrets:
+          mapped_secret = secret_name
+          secret_name = self.renamed_secrets[secret_name]
+        else:
+          secret_name, mapped_secret = _BuildReachableSecret(secret_name)
 
       if key.startswith('/'):  # it's a volume
         # the volume path is all but the last segment
@@ -1455,3 +1487,14 @@ def _AddSecretEnvVar(envs, path):
 def _Utf8ToBase64(s):
   """Encode a utf-8 string as a base 64 string."""
   return six.ensure_text(base64.b64encode(six.ensure_binary(s)))
+
+
+def _BuildReachableSecret(name):
+  new_name = name.replace('_', '.').lower()
+  u = str(uuid.uuid1())
+  # make sure name is sufficiently small to fit the UUID
+  new_name = new_name[:253 - len(u)] + u
+  mapped = None
+  if new_name != name:
+    mapped = name
+  return new_name, mapped

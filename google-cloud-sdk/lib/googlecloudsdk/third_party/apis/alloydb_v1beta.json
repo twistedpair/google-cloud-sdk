@@ -316,13 +316,11 @@
           "type": "string",
           "enumDescriptions": [
             "The type of the cluster is unknown.",
-            "Primary cluster that support read and write operations.",
-            "Secondary cluster that is replicating from another region. This only supports read."
+            "Primary cluster that support read and write operations."
           ],
           "enum": [
             "CLUSTER_TYPE_UNSPECIFIED",
-            "PRIMARY",
-            "SECONDARY"
+            "PRIMARY"
           ]
         },
         "databaseVersion": {
@@ -365,7 +363,7 @@
           "$ref": "UserPassword"
         },
         "automatedBackupPolicy": {
-          "description": "The automated backup policy for this cluster. If no policy is provided then the default policy will be used. The default policy takes one backup a day, has a backup window of 1 hour, and retains backups for 14 days.",
+          "description": "The automated backup policy for this cluster. If no policy is provided then the default policy will be used. The default policy takes one backup a day, has a backup window of 1 hour, and retains backups for 14 days. For more information on the defaults, consult the documentation for the message type.",
           "$ref": "AutomatedBackupPolicy"
         },
         "sslConfig": {
@@ -384,6 +382,10 @@
         "pitrConfig": {
           "description": "Optional. Point-in-time recovery configuration for this cluster. By default, PITR is enabled and logs are retained for 14 days.",
           "$ref": "PitrConfig"
+        },
+        "secondaryConfig": {
+          "description": "Cross Region replication config specific to SECONDARY cluster.",
+          "$ref": "SecondaryConfig"
         }
       }
     },
@@ -445,7 +447,7 @@
     },
     "AutomatedBackupPolicy": {
       "id": "AutomatedBackupPolicy",
-      "description": "Message describing the user-specified automated backup policy. NEXT_ID: 9",
+      "description": "Message describing the user-specified automated backup policy. All fields in the automated backup policy are optional. Defaults for each field are provided if they are not set. NEXT_ID: 9",
       "type": "object",
       "properties": {
         "weeklySchedule": {
@@ -461,11 +463,11 @@
           "$ref": "QuantityBasedRetention"
         },
         "enabled": {
-          "description": "Whether automated automated backups are enabled.",
+          "description": "Whether automated automated backups are enabled. If not set, defaults to true.",
           "type": "boolean"
         },
         "backupWindow": {
-          "description": "The length of the time window during which a backup can be taken. If a backup does not succeed within this time window, it will be canceled and considered failed. The backup window must be at least 5 minutes long. There is no upper bound on the window. If not set, it will default to 1 hour.",
+          "description": "The length of the time window during which a backup can be taken. If a backup does not succeed within this time window, it will be canceled and considered failed. The backup window must be at least 5 minutes long. There is no upper bound on the window. If not set, it defaults to 1 hour.",
           "type": "string",
           "format": "google-duration"
         },
@@ -474,7 +476,7 @@
           "$ref": "EncryptionConfig"
         },
         "location": {
-          "description": "The location where the backup will be stored. Currently, the only supported option is to store the backup in the same region as the cluster.",
+          "description": "The location where the backup will be stored. Currently, the only supported option is to store the backup in the same region as the cluster. If empty, defaults to the region of the cluster.",
           "type": "string"
         },
         "labels": {
@@ -492,14 +494,14 @@
       "type": "object",
       "properties": {
         "startTimes": {
-          "description": "The times during the day to start a backup. At least one start time must be provided. The start times are assumed to be in UTC and to be an exact hour (e.g., 04:00:00).",
+          "description": "The times during the day to start a backup. The start times are assumed to be in UTC and to be an exact hour (e.g., 04:00:00). If no start times are provided, a single fixed start time is chosen arbitrarily.",
           "type": "array",
           "items": {
             "$ref": "GoogleTypeTimeOfDay"
           }
         },
         "daysOfWeek": {
-          "description": "The days of the week to perform a backup. At least one day of the week must be provided.",
+          "description": "The days of the week to perform a backup. If this field is left empty, the default of every day of the week is used.",
           "type": "array",
           "items": {
             "type": "string",
@@ -670,6 +672,36 @@
         }
       }
     },
+    "SecondaryConfig": {
+      "id": "SecondaryConfig",
+      "description": "Configuration information for the secondary cluster. This should be set if and only if the cluster is of type SECONDARY.",
+      "type": "object",
+      "properties": {
+        "primaryClusterName": {
+          "description": "The name of the primary cluster name with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
+          "type": "string"
+        }
+      }
+    },
+    "PromoteClusterRequest": {
+      "id": "PromoteClusterRequest",
+      "description": "Message for promoting a Cluster",
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        },
+        "etag": {
+          "description": "Optional. The current etag of the Cluster. If an etag is provided and does not match the current etag of the Cluster, deletion will be blocked and an ABORTED error will be returned.",
+          "type": "string"
+        },
+        "validateOnly": {
+          "description": "Optional. If set, performs request validation (e.g. permission checks and any other type of validation), but do not actually execute the delete.",
+          "type": "boolean"
+        }
+      }
+    },
     "RestoreClusterRequest": {
       "id": "RestoreClusterRequest",
       "description": "Message for restoring a Cluster from a backup or another cluster at a given point in time.",
@@ -684,7 +716,7 @@
           "$ref": "PitrSource"
         },
         "clusterId": {
-          "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and cluster_id from the method_signature of Create RPC",
+          "description": "Required. ID of the requesting object.",
           "type": "string"
         },
         "cluster": {
@@ -819,14 +851,12 @@
           "enumDescriptions": [
             "The type of the instance is unknown.",
             "PRIMARY instances support read and write operations.",
-            "READ POOL instances support read operations only. Each read pool instance consists of one or more homogeneous nodes. * Read pool of size 1 can only have zonal availability. * Read pools with node count of 2 or more can have regional availability (nodes are present in 2 or more zones in a region).",
-            "SECONDARY instances support read operations only. SECONDARY instance is a cross-region read replica"
+            "READ POOL instances support read operations only. Each read pool instance consists of one or more homogeneous nodes. * Read pool of size 1 can only have zonal availability. * Read pools with node count of 2 or more can have regional availability (nodes are present in 2 or more zones in a region)."
           ],
           "enum": [
             "INSTANCE_TYPE_UNSPECIFIED",
             "PRIMARY",
-            "READ_POOL",
-            "SECONDARY"
+            "READ_POOL"
           ]
         },
         "machineConfig": {
@@ -1635,7 +1665,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists Clusters in a given project and location."
+                  "description": "When adding a new API method, make sure to update the rate quota mapping to start charging for it correctly. LINT.IfChange Lists Clusters in a given project and location."
                 },
                 "get": {
                   "id": "alloydb.projects.locations.clusters.get",
@@ -1676,7 +1706,7 @@
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and cluster_id from the method_signature of Create RPC",
+                      "description": "Required. ID of the requesting object.",
                       "location": "query",
                       "type": "string"
                     },
@@ -1799,6 +1829,34 @@
                   ],
                   "description": "Deletes a single Cluster."
                 },
+                "promote": {
+                  "id": "alloydb.projects.locations.clusters.promote",
+                  "path": "v1beta/{+name}:promote",
+                  "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:promote",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the resource. For the required format, see the comment on the Cluster.name field",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "PromoteClusterRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Promotes a SECONDARY cluster. This turns down replication from the PRIMARY cluster and promotes a secondary cluster into its own standalone cluster. Imperative only."
+                },
                 "restore": {
                   "id": "alloydb.projects.locations.clusters.restore",
                   "path": "v1beta/{+parent}/clusters:restore",
@@ -1826,6 +1884,49 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Creates a new Cluster in a given project and location, with a volume restored from the provided source, either a backup ID or a point-in-time and a source cluster."
+                },
+                "createsecondary": {
+                  "id": "alloydb.projects.locations.clusters.createsecondary",
+                  "path": "v1beta/{+parent}/clusters:createsecondary",
+                  "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/clusters:createsecondary",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The name of the parent resource (the primary cluster). For the required format, see the comment on the Cluster.name field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clusterId": {
+                      "description": "Required. ID of the requesting object (the secondary cluster).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. If set, performs request validation (e.g. permission checks and any other type of validation), but do not actually execute the create request.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Cluster"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a cluster of type SECONDARY in the given location using the primary cluster as the source."
                 },
                 "generateClientCertificate": {
                   "id": "alloydb.projects.locations.clusters.generateClientCertificate",
@@ -1960,7 +2061,7 @@
                           "type": "string"
                         },
                         "instanceId": {
-                          "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and instance_id from the method_signature of Create RPC",
+                          "description": "Required. ID of the requesting object.",
                           "location": "query",
                           "type": "string"
                         },
@@ -1988,6 +2089,49 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Creates a new Instance in a given project and location."
+                    },
+                    "createsecondary": {
+                      "id": "alloydb.projects.locations.clusters.instances.createsecondary",
+                      "path": "v1beta/{+parent}/instances:createsecondary",
+                      "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances:createsecondary",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The name of the parent resource. For the required format, see the comment on the Instance.name field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "instanceId": {
+                          "description": "Required. ID of the requesting object.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. If set, performs request validation (e.g. permission checks and any other type of validation), but do not actually execute the create request.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Instance"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new SECONDARY Instance in a given project and location."
                     },
                     "patch": {
                       "id": "alloydb.projects.locations.clusters.instances.patch",
@@ -2255,7 +2399,7 @@
                       "type": "string"
                     },
                     "backupId": {
-                      "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and backup_id from the method_signature of Create RPC",
+                      "description": "Required. ID of the requesting object.",
                       "location": "query",
                       "type": "string"
                     },

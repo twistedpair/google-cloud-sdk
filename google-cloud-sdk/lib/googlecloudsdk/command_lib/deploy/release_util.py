@@ -68,7 +68,6 @@ deploy:
     manifests:
       - {}
   """
-# TODO(b/242346000): Remove deploy stanza below once issue is addressed.
 CLOUD_RUN_GENERATED_SKAFFOLD_TEMPLATE = """\
 apiVersion: skaffold/v3alpha1
 kind: Config
@@ -76,9 +75,7 @@ manifests:
   rawYaml:
   - {}
 deploy:
-  cloudrun:
-    projectid: unused
-    region: unused
+  cloudrun: {{}}
   """
 GENERATED_SKAFFOLD = 'skaffold.yaml'
 

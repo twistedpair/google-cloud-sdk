@@ -101,6 +101,18 @@ def AddSubscriptionResourceArg(parser, verb, plural=False):
   ).AddToParser(parser)
 
 
+def AddSchemaResourceArg(parser, verb, plural=False):
+  """Add a resource argument for a Cloud Pub/Sub Schema.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    plural: bool, if True, use a resource argument that returns a list.
+  """
+  concept_parsers.ConceptParser([CreateSchemaResourceArg(verb, plural=plural)
+                                ]).AddToParser(parser)
+
+
 def CreateTopicResourceArg(verb,
                            positional=True,
                            plural=False,

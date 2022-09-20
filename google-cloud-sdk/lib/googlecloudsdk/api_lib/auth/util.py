@@ -252,11 +252,7 @@ def _CreateGoogleAuthClientConfig(client_id_file=None):
 def _CreateGoogleAuthClientConfigFromProperties():
   """Creates a client config from gcloud's properties."""
   auth_uri = properties.VALUES.auth.auth_host.Get(required=True)
-
-  if properties.VALUES.context_aware.use_client_certificate.GetBool():
-    token_uri = properties.VALUES.auth.mtls_token_host.Get(required=True)
-  else:
-    token_uri = properties.VALUES.auth.token_host.Get(required=True)
+  token_uri = GetTokenUri()
 
   client_id = properties.VALUES.auth.client_id.Get(required=True)
   client_secret = properties.VALUES.auth.client_secret.Get(required=True)
@@ -353,3 +349,12 @@ def AssertClientSecretIsInstalledType(client_id_file):
     raise InvalidClientSecretsError(
         'Only client IDs of type \'%s\' are allowed, but encountered '
         'type \'%s\'' % (CLIENT_SECRET_INSTALLED_TYPE, client_type))
+
+
+def GetTokenUri():
+  """Get context dependent Token URI."""
+  if properties.VALUES.context_aware.use_client_certificate.GetBool():
+    token_uri = properties.VALUES.auth.mtls_token_host.Get(required=True)
+  else:
+    token_uri = properties.VALUES.auth.token_host.Get(required=True)
+  return token_uri

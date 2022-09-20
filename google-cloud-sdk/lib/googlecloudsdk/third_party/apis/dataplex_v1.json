@@ -1981,6 +1981,10 @@
         "spark": {
           "description": "Config related to running custom Spark tasks.",
           "$ref": "GoogleCloudDataplexV1TaskSparkTaskConfig"
+        },
+        "notebook": {
+          "description": "Config related to running scheduled Notebooks.",
+          "$ref": "GoogleCloudDataplexV1TaskNotebookTaskConfig"
         }
       }
     },
@@ -2281,6 +2285,35 @@
         },
         "networkTags": {
           "description": "Optional. List of network tags to apply to the job.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudDataplexV1TaskNotebookTaskConfig": {
+      "id": "GoogleCloudDataplexV1TaskNotebookTaskConfig",
+      "description": "Config for running scheduled notebooks.",
+      "type": "object",
+      "properties": {
+        "notebook": {
+          "description": "Required. Path to input notebook. This can be the GCS URI of the notebook file or the path to a Notebook Content. The execution args are accessible as environment variables (TASK_key=value).",
+          "type": "string"
+        },
+        "infrastructureSpec": {
+          "description": "Optional. Infrastructure specification for the execution.",
+          "$ref": "GoogleCloudDataplexV1TaskInfrastructureSpec"
+        },
+        "fileUris": {
+          "description": "Optional. GCS URIs of files to be placed in the working directory of each executor.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "archiveUris": {
+          "description": "Optional. GCS URIs of archives to be extracted into the working directory of each executor. Supported file types: .jar, .tar, .tar.gz, .tgz, and .zip.",
           "type": "array",
           "items": {
             "type": "string"

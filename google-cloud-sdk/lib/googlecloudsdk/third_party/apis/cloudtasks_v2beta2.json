@@ -1119,13 +1119,13 @@
         }
       }
     },
-    "BufferQueueRequest": {
-      "id": "BufferQueueRequest",
-      "description": "Request message for BufferQueue.",
+    "BufferTaskRequest": {
+      "id": "BufferTaskRequest",
+      "description": "Request message for BufferTask.",
       "type": "object",
       "properties": {
         "body": {
-          "description": "Body of the HTTP request. The body can take any generic value. The value will be written to the HttpRequest of the [Task].",
+          "description": "Optional. Body of the HTTP request. The body can take any generic value. The value will be written to the HttpRequest of the [Task].",
           "$ref": "HttpBody"
         }
       }
@@ -1157,14 +1157,14 @@
         }
       }
     },
-    "BufferQueueResponse": {
-      "id": "BufferQueueResponse",
-      "description": "Response message for BufferQueue.",
+    "BufferTaskResponse": {
+      "id": "BufferTaskResponse",
+      "description": "Response message for BufferTask.",
       "type": "object",
       "properties": {
         "task": {
-          "description": "The name of the created task. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`. TASK_ID is randomly generated and is unique within the queue.",
-          "type": "string"
+          "description": "The created task.",
+          "$ref": "Task"
         }
       }
     }
@@ -1577,34 +1577,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on a Queue. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
-                },
-                "buffer": {
-                  "id": "cloudtasks.projects.locations.queues.buffer",
-                  "path": "v2beta2/{+name}:buffer",
-                  "flatPath": "v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:buffer",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The queue name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID` The queue must already exist.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "BufferQueueRequest"
-                  },
-                  "response": {
-                    "$ref": "BufferQueueResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Note: This feature is in its experimental stage. You must request access to the API through the [Cloud Tasks BufferQueues Experiment Signup form](https:\/\/forms.gle\/X8Zr5hiXH5tTGFqh8). Creates and buffers a new task without the need to explicitly define a Task message. The queue must be an http queue (i.e., must have HTTP target). This method is used for a simplified application of Cloud Tasks queues in buffer and rate limitting HTTP requests."
                 }
               }
               ,
@@ -1894,6 +1866,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Forces a task to run now. When this method is called, Cloud Tasks will dispatch the task, even if the task is already running, the queue has reached its RateLimits or is PAUSED. This command is meant to be used for manual debugging. For example, RunTask can be used to retry a failed task after a fix has been made or to manually force a task to be dispatched now. The dispatched task is returned. That is, the task that is returned contains the status after the task is dispatched but before the task is received by its target. If Cloud Tasks receives a successful response from the task's target, then the task will be deleted; otherwise the task's schedule_time will be reset to the time that RunTask was called plus the retry delay specified in the queue's RetryConfig. RunTask returns NOT_FOUND when it is called on a task that has already succeeded or permanently failed. RunTask cannot be called on a pull task."
+                    },
+                    "buffer": {
+                      "id": "cloudtasks.projects.locations.queues.tasks.buffer",
+                      "path": "v2beta2/{+parent}/tasks:buffer",
+                      "flatPath": "v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks:buffer",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent queue name. For example: projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID` The queue must already exist.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "BufferTaskRequest"
+                      },
+                      "response": {
+                        "$ref": "BufferTaskResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates and buffers a new task without the need to explicitly define a Task message. The queue must have HTTP target. Note: This feature is in its experimental stage. You must request access to the API through the [Cloud Tasks BufferTasks Experiment Signup form](https:\/\/forms.gle\/X8Zr5hiXH5tTGFqh8)."
                     }
                   }
                 }

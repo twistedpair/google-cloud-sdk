@@ -197,8 +197,22 @@ def AddProvisionedIopsFlag(parser, arg_parsers, constants):
           'range between {min} and {max}. If not specified, the default value '
           'is {default}.').format(
               min=constants.MIN_PROVISIONED_IOPS,
-              max=constants.MAX_PROVISIONED_IOPS,
+              # TODO(b/246777440):
+              # Replace max=120000 with max=constants.MAX_PROVISIONED_IOPS.
+              # This is because the field is already GA, but hyperdisk-extreme
+              # no yet, so we will use the old text with old iops range for
+              # alpha.
+              max=120000,
               default=constants.DEFAULT_PROVISIONED_IOPS))
+
+
+def AddProvisionedThroughputFlag(parser, arg_parsers):
+  return parser.add_argument(
+      '--provisioned-throughput',
+      type=arg_parsers.BoundedInt(),
+      help=(
+          'Provisioned throughput of disk to create. The throughput unit is  '
+          'MB per sec.  Only for use with disks of type hyperdisk-throughput.'))
 
 
 def AddArchitectureFlag(parser, messages):

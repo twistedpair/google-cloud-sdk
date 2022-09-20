@@ -621,8 +621,8 @@ def ConvertBytesToMB(response, unused_args):
   return response
 
 
-def UnescapePackageNameHook(ref, unused_args, req):
-  """Unescapes slashes and pluses from request names."""
+def EscapePackageNameHook(ref, unused_args, req):
+  """Escapes slashes and pluses from request names."""
   package = resources.REGISTRY.Create(
       "artifactregistry.projects.locations.repositories.packages",
       projectsId=ref.projectsId,
@@ -633,8 +633,8 @@ def UnescapePackageNameHook(ref, unused_args, req):
   return req
 
 
-def UnescapeTagNameHook(ref, unused_args, req):
-  """Unescapes slashes and pluses from request names."""
+def EscapeTagNameHook(ref, unused_args, req):
+  """Escapes slashes and pluses from request names."""
   tag = resources.REGISTRY.Create(
       "artifactregistry.projects.locations.repositories.packages.tags",
       projectsId=ref.projectsId,
@@ -646,8 +646,8 @@ def UnescapeTagNameHook(ref, unused_args, req):
   return req
 
 
-def UnescapeVersionNameHook(ref, unused_args, req):
-  """Unescapes slashes and pluses from request names."""
+def EscapeVersionNameHook(ref, unused_args, req):
+  """Escapes slashes and pluses from request names."""
   tag = resources.REGISTRY.Create(
       "artifactregistry.projects.locations.repositories.packages.versions",
       projectsId=ref.projectsId,
@@ -797,9 +797,8 @@ def EnableUpgradeRedirection(unused_ref, args):
 
   update = console_io.PromptContinue(
       "\nThis action will redirect all Container Registry traffic to Artifact Registry for project {}."
-      " After enabling redirection, you can route traffic back to Container Registry if needed, "
-      " or you can finalize redirection to make redirection permanent.".format(
-          project),
+      " After enabling redirection, you can route traffic back to Container Registry if needed."
+      .format(project),
       default=False)
   if not update:
     log.status.Print("No changes made.")
@@ -839,53 +838,6 @@ def DisableUpgradeRedirection(unused_ref, args):
     log.status.Print("No changes made.")
     return None
   return ar_requests.DisableUpgradeRedirection(project)
-
-
-def FinalizeUpgradeRedirection(unused_ref, args):
-  """Finalizes upgrade redirection for the active project."""
-  con = console_attr.GetConsoleAttr()
-  project = GetProject(args)
-  messages = ar_requests.GetMessages()
-
-  log.status.Print("Finalizing upgrade redirection...\n")
-  if not CheckRedirectionPermission(project):
-    return None
-
-  # Check the current status is enabled first.
-  log.status.Print("Checking current redirection status...\n")
-  settings = ar_requests.GetProjectSettings(GetProject(args))
-  current_status = settings.legacyRedirectionState
-  if (current_status == messages.ProjectSettings
-      .LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_FINALIZED):
-    log.status.Print(
-        "Redirection is already finalized for project {}.".format(project))
-    return None
-  if (current_status != messages.ProjectSettings
-      .LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_ENABLED):
-    log.status.Print(
-        "Redirection is not currently enabled for project {}.".format(project))
-    log.status.Print(
-        "Enable redirection using 'gcloud artifacts settings enable-upgrade-redirection'"
-    )
-    return None
-
-  # Run the same report as enabling in case new repos have been added since.
-  failed_repos = GetRedirectionEnablementReport(project)
-  if failed_repos:
-    log.status.Print(
-        con.Colorize("FAIL: ", "red") +
-        "Redirection cannot be enabled until all Container Registry repos have equivalent Artifact Registry repositories to redirect to:"
-    )
-    return None
-
-  update = console_io.PromptContinue(
-      "This action permanently redirects gcr.io traffic to Artifact Registry "
-      "for project {}.".format(con.Emphasize(project, bold=True)),
-      default=False)
-  if not update:
-    log.status.Print("No changes made.")
-    return None
-  return ar_requests.FinalizeUpgradeRedirection(GetProject(args))
 
 
 def SanitizeRemoteRepositoryConfig(unused_ref, args, request):

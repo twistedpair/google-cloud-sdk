@@ -232,7 +232,6 @@ def AddKubernetesFileFlag():
 def AddCloudRunFileFlag():
   return base.Argument(
       '--from-run-manifest',
-      hidden=True,  # TODO(b/240427449): Unhide when Cloud Run support is public
       help=(
           'The path to a Cloud Run manifest, which Cloud Deploy will use to '
           'generate a skaffold.yaml file for you (for example, '

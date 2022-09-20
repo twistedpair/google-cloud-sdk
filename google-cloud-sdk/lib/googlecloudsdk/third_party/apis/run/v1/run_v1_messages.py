@@ -328,10 +328,7 @@ class Container(_messages.Message):
       Defaults to Always if :latest tag is specified, or IfNotPresent
       otherwise. More info:
       https://kubernetes.io/docs/concepts/containers/images#updating-images
-    livenessProbe: Periodic probe of container liveness. Container will be
-      restarted if the probe fails. More info:
-      https://kubernetes.io/docs/concepts/workloads/pods/pod-
-      lifecycle#container-probes
+    livenessProbe: Not supported by Cloud Run.
     name: Name of the container specified as a DNS_LABEL. Currently unused in
       Cloud Run. More info:
       https://kubernetes.io/docs/concepts/overview/working-with-

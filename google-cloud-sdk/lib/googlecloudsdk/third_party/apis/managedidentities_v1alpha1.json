@@ -1084,8 +1084,12 @@
       "type": "object",
       "properties": {
         "machine": {
-          "description": "Required. Details of the VM to be domain joined",
+          "description": "Optional. ",
           "$ref": "Machine"
+        },
+        "vmIdToken": {
+          "description": "Required. Full instance id token of compute engine VM to verify instance identity. More about this: https:\/\/cloud.google.com\/compute\/docs\/instances\/verifying-instance-identity#request_signature",
+          "type": "string"
         },
         "ouName": {
           "description": "Optional. OU name where the VM needs to be domain joined",
