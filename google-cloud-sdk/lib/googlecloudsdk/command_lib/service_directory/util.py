@@ -32,8 +32,71 @@ _VERSION_MAP = {
 
 
 class PolicyFileRequiredFieldsUnsetError(core_exceptions.Error):
-  """An exception to be raised when a policy file is missing required fields.
+  """An exception to be raised when a policy file is missing required fields."""
+
+
+class PolicyFileRequiredFieldsUnknownError(core_exceptions.Error):
+  """An exception to be raised when a policy file has unknown fields."""
+
+
+class PolicyFileInvalidFieldValuesError(core_exceptions.Error):
+  """An exception to be raised when a policy file has unknown fields."""
+
+
+def ValidatePolicyFile(policy):
+  """Validate that a policy file has correct fields.
+
+  Args:
+    policy: dict, key-value pairs converted from the file path passed in from
+      the --policy-from-file flag.
+
+  Raises:
+    PolicyFileRequiredFieldsUnsetError: If a required field is not found.
+    PolicyFileRequiredFieldsUnknownError: If a field is unknown.
+    PolicyFileInvalidFieldValuesError: If a field has invalid value.
   """
+  if 'metadata' not in policy:
+    raise PolicyFileRequiredFieldsUnsetError(
+        'Field "metadata" is not specified.')
+  if 'name' not in policy['metadata']:
+    raise PolicyFileRequiredFieldsUnsetError(
+        'Field "name" is not specified in "metadata".')
+  for field in policy['metadata']:
+    if field != 'name':
+      raise PolicyFileRequiredFieldsUnknownError(
+          'Unknown field in policy file: {}.'.format(field))
+
+  if 'spec' not in policy:
+    raise PolicyFileRequiredFieldsUnsetError('Field "spec" is not specified.')
+  if 'resource_policies' not in policy['spec']:
+    raise PolicyFileRequiredFieldsUnsetError(
+        'Field "resource_policies" is not specified in "spec".')
+  for policy_resource in policy['spec']['resource_policies']:
+    if 'selector' not in policy_resource:
+      raise PolicyFileRequiredFieldsUnsetError(
+          'Field "selector" is not specified.')
+    # For MVP, selector can only be '*'
+    if policy_resource['selector'] != '*':
+      raise PolicyFileInvalidFieldValuesError(
+          'Invalid value in field "selector": {}'.format(
+              policy_resource['selector']))
+    # For MVP, kind can only be MIG or UNSPECIFIED when the field is missing
+    if 'kind' in policy_resource and policy_resource['kind'] != 'MIG':
+      raise PolicyFileInvalidFieldValuesError(
+          'Invalid value in field "kind": {}'.format(policy_resource['kind']))
+    for resource_field in policy_resource:
+      if resource_field != 'kind' and resource_field != 'selector':
+        raise PolicyFileRequiredFieldsUnknownError(
+            'Unknown field in policy file: {}.'.format(resource_field))
+  for field in policy['spec']:
+    if field != 'resource_policies':
+      raise PolicyFileRequiredFieldsUnknownError(
+          'Unknown field in policy file: {}.'.format(field))
+
+  for field in policy:
+    if field != 'metadata' and field != 'spec':
+      raise PolicyFileRequiredFieldsUnknownError(
+          'Unknown field in policy file: {}.'.format(field))
 
 
 def ParseAnnotationsArg(annotations=None, resource_type=None):
@@ -68,8 +131,7 @@ def ParseAnnotationsArg(annotations=None, resource_type=None):
     additional_properties.append(
         annotations_value_msg.AdditionalProperty(key=key, value=value))
 
-  return annotations_value_msg(
-      additionalProperties=additional_properties)
+  return annotations_value_msg(additionalProperties=additional_properties)
 
 
 def ParseMetadataArg(metadata=None, resource_type=None):

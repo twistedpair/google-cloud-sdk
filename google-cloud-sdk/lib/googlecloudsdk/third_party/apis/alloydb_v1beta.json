@@ -851,12 +851,14 @@
           "enumDescriptions": [
             "The type of the instance is unknown.",
             "PRIMARY instances support read and write operations.",
-            "READ POOL instances support read operations only. Each read pool instance consists of one or more homogeneous nodes. * Read pool of size 1 can only have zonal availability. * Read pools with node count of 2 or more can have regional availability (nodes are present in 2 or more zones in a region)."
+            "READ POOL instances support read operations only. Each read pool instance consists of one or more homogeneous nodes. * Read pool of size 1 can only have zonal availability. * Read pools with node count of 2 or more can have regional availability (nodes are present in 2 or more zones in a region).",
+            "SECONDARY instances support read operations only. SECONDARY instance is a cross-region read replica"
           ],
           "enum": [
             "INSTANCE_TYPE_UNSPECIFIED",
             "PRIMARY",
-            "READ_POOL"
+            "READ_POOL",
+            "SECONDARY"
           ]
         },
         "machineConfig": {
@@ -1665,7 +1667,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "When adding a new API method, make sure to update the rate quota mapping to start charging for it correctly. LINT.IfChange Lists Clusters in a given project and location."
+                  "description": "Lists Clusters in a given project and location."
                 },
                 "get": {
                   "id": "alloydb.projects.locations.clusters.get",

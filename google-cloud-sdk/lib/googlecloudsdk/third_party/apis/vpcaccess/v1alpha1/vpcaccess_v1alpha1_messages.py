@@ -84,11 +84,13 @@ class HeartbeatConnectorRequest(_messages.Message):
     ipAddress: Required. The IP address of the VM.
     lameduck: If the VM is in lameduck mode, meaning that it is in the process
       of shutting down and should not be used for new connections.
+    projectNumber: The numeric project id of the VM.
   """
 
   heartbeatTime = _messages.StringField(1)
   ipAddress = _messages.StringField(2)
   lameduck = _messages.BooleanField(3)
+  projectNumber = _messages.StringField(4)
 
 
 class HeartbeatConnectorResponse(_messages.Message):

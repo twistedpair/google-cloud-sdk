@@ -981,7 +981,7 @@
           "$ref": "DropLargeObjects"
         },
         "streamLargeObjects": {
-          "description": "Stream large object values.",
+          "description": "Stream large object values. NOTE: This feature is currently experimental.",
           "$ref": "StreamLargeObjects"
         }
       }

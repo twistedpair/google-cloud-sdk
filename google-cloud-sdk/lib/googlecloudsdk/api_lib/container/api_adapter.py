@@ -461,183 +461,180 @@ def ExpandScopeURIs(scopes):
 class CreateClusterOptions(object):
   """Options to pass to CreateCluster."""
 
-  def __init__(
-      self,
-      node_machine_type=None,
-      node_source_image=None,
-      node_disk_size_gb=None,
-      scopes=None,
-      num_nodes=None,
-      additional_zones=None,
-      node_locations=None,
-      user=None,
-      password=None,
-      cluster_version=None,
-      node_version=None,
-      network=None,
-      cluster_ipv4_cidr=None,
-      enable_cloud_logging=None,
-      enable_cloud_monitoring=None,
-      enable_stackdriver_kubernetes=None,
-      enable_logging_monitoring_system_only=None,
-      enable_workload_monitoring_eap=None,
-      subnetwork=None,
-      addons=None,
-      istio_config=None,
-      cloud_run_config=None,
-      local_ssd_count=None,
-      local_ssd_volume_configs=None,
-      ephemeral_storage=None,
-      boot_disk_kms_key=None,
-      node_pool_name=None,
-      tags=None,
-      autoprovisioning_network_tags=None,
-      node_labels=None,
-      node_taints=None,
-      enable_autoscaling=None,
-      min_nodes=None,
-      max_nodes=None,
-      total_min_nodes=None,
-      total_max_nodes=None,
-      location_policy=None,
-      image_type=None,
-      image=None,
-      image_project=None,
-      image_family=None,
-      issue_client_certificate=None,
-      max_nodes_per_pool=None,
-      enable_kubernetes_alpha=None,
-      enable_cloud_run_alpha=None,
-      preemptible=None,
-      spot=None,
-      placement_type=None,
-      enable_autorepair=None,
-      enable_autoupgrade=None,
-      service_account=None,
-      enable_master_authorized_networks=None,
-      master_authorized_networks=None,
-      enable_legacy_authorization=None,
-      labels=None,
-      disk_type=None,
-      enable_network_policy=None,
-      enable_l4_ilb_subsetting=None,
-      services_ipv4_cidr=None,
-      enable_ip_alias=None,
-      create_subnetwork=None,
-      cluster_secondary_range_name=None,
-      services_secondary_range_name=None,
-      accelerators=None,
-      enable_binauthz=None,
-      binauthz_evaluation_mode=None,
-      min_cpu_platform=None,
-      workload_metadata=None,
-      workload_metadata_from_node=None,
-      maintenance_window=None,
-      enable_pod_security_policy=None,
-      allow_route_overlap=None,
-      private_cluster=None,
-      enable_private_nodes=None,
-      enable_private_endpoint=None,
-      master_ipv4_cidr=None,
-      tpu_ipv4_cidr=None,
-      enable_tpu=None,
-      enable_tpu_service_networking=None,
-      default_max_pods_per_node=None,
-      max_pods_per_node=None,
-      resource_usage_bigquery_dataset=None,
-      security_group=None,
-      enable_private_ipv6_access=None,
-      enable_intra_node_visibility=None,
-      enable_vertical_pod_autoscaling=None,
-      enable_experimental_vertical_pod_autoscaling=None,
-      security_profile=None,
-      security_profile_runtime_rules=None,
-      autoscaling_profile=None,
-      database_encryption_key=None,
-      metadata=None,
-      enable_network_egress_metering=None,
-      enable_resource_consumption_metering=None,
-      workload_pool=None,
-      identity_provider=None,
-      tune_gke_metadata_server_cpu=None,
-      tune_gke_metadata_server_memory=None,
-      enable_workload_certificates=None,
-      enable_mesh_certificates=None,
-      enable_alts=None,
-      enable_gke_oidc=None,
-      enable_identity_service=None,
-      enable_shielded_nodes=None,
-      linux_sysctls=None,
-      disable_default_snat=None,
-      dataplane_v2=None,
-      shielded_secure_boot=None,
-      shielded_integrity_monitoring=None,
-      system_config_from_file=None,
-      maintenance_window_start=None,
-      maintenance_window_end=None,
-      maintenance_window_recurrence=None,
-      enable_cost_allocation=None,
-      max_surge_upgrade=None,
-      max_unavailable_upgrade=None,
-      enable_autoprovisioning=None,
-      autoprovisioning_config_file=None,
-      autoprovisioning_service_account=None,
-      autoprovisioning_scopes=None,
-      autoprovisioning_locations=None,
-      min_cpu=None,
-      max_cpu=None,
-      min_memory=None,
-      max_memory=None,
-      min_accelerator=None,
-      max_accelerator=None,
-      autoprovisioning_image_type=None,
-      autoprovisioning_max_surge_upgrade=None,
-      autoprovisioning_max_unavailable_upgrade=None,
-      enable_autoprovisioning_autoupgrade=None,
-      enable_autoprovisioning_autorepair=None,
-      reservation_affinity=None,
-      reservation=None,
-      autoprovisioning_min_cpu_platform=None,
-      enable_master_global_access=None,
-      gvnic=None,
-      enable_master_metrics=None,
-      master_logs=None,
-      release_channel=None,
-      notification_config=None,
-      autopilot=None,
-      private_ipv6_google_access_type=None,
-      enable_confidential_nodes=None,
-      cluster_dns=None,
-      cluster_dns_scope=None,
-      cluster_dns_domain=None,
-      kubernetes_objects_changes_target=None,
-      kubernetes_objects_snapshots_target=None,
-      enable_gcfs=None,
-      enable_image_streaming=None,
-      private_endpoint_subnetwork=None,
-      cross_connect_subnetworks=None,
-      enable_service_externalips=None,
-      threads_per_core=None,
-      logging=None,
-      monitoring=None,
-      enable_managed_prometheus=None,
-      maintenance_interval=None,
-      disable_pod_cidr_overprovision=None,
-      stack_type=None,
-      ipv6_access_type=None,
-      enable_workload_config_audit=None,
-      pod_autoscaling_direct_metrics_opt_in=None,
-      enable_workload_vulnerability_scanning=None,
-      enable_autoprovisioning_surge_upgrade=None,
-      enable_autoprovisioning_blue_green_upgrade=None,
-      autoprovisioning_standard_rollout_policy=None,
-      autoprovisioning_node_pool_soak_duration=None,
-      enable_google_cloud_access=None,
-      managed_config=None,
-      fleet_project=None,
-      gateway_api=None,
-      logging_variant=None
-  ):
+  def __init__(self,
+               node_machine_type=None,
+               node_source_image=None,
+               node_disk_size_gb=None,
+               scopes=None,
+               num_nodes=None,
+               additional_zones=None,
+               node_locations=None,
+               user=None,
+               password=None,
+               cluster_version=None,
+               node_version=None,
+               network=None,
+               cluster_ipv4_cidr=None,
+               enable_cloud_logging=None,
+               enable_cloud_monitoring=None,
+               enable_stackdriver_kubernetes=None,
+               enable_logging_monitoring_system_only=None,
+               enable_workload_monitoring_eap=None,
+               subnetwork=None,
+               addons=None,
+               istio_config=None,
+               cloud_run_config=None,
+               local_ssd_count=None,
+               local_ssd_volume_configs=None,
+               ephemeral_storage=None,
+               boot_disk_kms_key=None,
+               node_pool_name=None,
+               tags=None,
+               autoprovisioning_network_tags=None,
+               node_labels=None,
+               node_taints=None,
+               enable_autoscaling=None,
+               min_nodes=None,
+               max_nodes=None,
+               total_min_nodes=None,
+               total_max_nodes=None,
+               location_policy=None,
+               image_type=None,
+               image=None,
+               image_project=None,
+               image_family=None,
+               issue_client_certificate=None,
+               max_nodes_per_pool=None,
+               enable_kubernetes_alpha=None,
+               enable_cloud_run_alpha=None,
+               preemptible=None,
+               spot=None,
+               placement_type=None,
+               enable_autorepair=None,
+               enable_autoupgrade=None,
+               service_account=None,
+               enable_master_authorized_networks=None,
+               master_authorized_networks=None,
+               enable_legacy_authorization=None,
+               labels=None,
+               disk_type=None,
+               enable_network_policy=None,
+               enable_l4_ilb_subsetting=None,
+               services_ipv4_cidr=None,
+               enable_ip_alias=None,
+               create_subnetwork=None,
+               cluster_secondary_range_name=None,
+               services_secondary_range_name=None,
+               accelerators=None,
+               enable_binauthz=None,
+               binauthz_evaluation_mode=None,
+               binauthz_policy=None,
+               min_cpu_platform=None,
+               workload_metadata=None,
+               workload_metadata_from_node=None,
+               maintenance_window=None,
+               enable_pod_security_policy=None,
+               allow_route_overlap=None,
+               private_cluster=None,
+               enable_private_nodes=None,
+               enable_private_endpoint=None,
+               master_ipv4_cidr=None,
+               tpu_ipv4_cidr=None,
+               enable_tpu=None,
+               enable_tpu_service_networking=None,
+               default_max_pods_per_node=None,
+               max_pods_per_node=None,
+               resource_usage_bigquery_dataset=None,
+               security_group=None,
+               enable_private_ipv6_access=None,
+               enable_intra_node_visibility=None,
+               enable_vertical_pod_autoscaling=None,
+               enable_experimental_vertical_pod_autoscaling=None,
+               security_profile=None,
+               security_profile_runtime_rules=None,
+               autoscaling_profile=None,
+               database_encryption_key=None,
+               metadata=None,
+               enable_network_egress_metering=None,
+               enable_resource_consumption_metering=None,
+               workload_pool=None,
+               identity_provider=None,
+               enable_workload_certificates=None,
+               enable_mesh_certificates=None,
+               enable_alts=None,
+               enable_gke_oidc=None,
+               enable_identity_service=None,
+               enable_shielded_nodes=None,
+               linux_sysctls=None,
+               disable_default_snat=None,
+               dataplane_v2=None,
+               shielded_secure_boot=None,
+               shielded_integrity_monitoring=None,
+               system_config_from_file=None,
+               maintenance_window_start=None,
+               maintenance_window_end=None,
+               maintenance_window_recurrence=None,
+               enable_cost_allocation=None,
+               max_surge_upgrade=None,
+               max_unavailable_upgrade=None,
+               enable_autoprovisioning=None,
+               autoprovisioning_config_file=None,
+               autoprovisioning_service_account=None,
+               autoprovisioning_scopes=None,
+               autoprovisioning_locations=None,
+               min_cpu=None,
+               max_cpu=None,
+               min_memory=None,
+               max_memory=None,
+               min_accelerator=None,
+               max_accelerator=None,
+               autoprovisioning_image_type=None,
+               autoprovisioning_max_surge_upgrade=None,
+               autoprovisioning_max_unavailable_upgrade=None,
+               enable_autoprovisioning_autoupgrade=None,
+               enable_autoprovisioning_autorepair=None,
+               reservation_affinity=None,
+               reservation=None,
+               autoprovisioning_min_cpu_platform=None,
+               enable_master_global_access=None,
+               gvnic=None,
+               enable_master_metrics=None,
+               master_logs=None,
+               release_channel=None,
+               notification_config=None,
+               autopilot=None,
+               private_ipv6_google_access_type=None,
+               enable_confidential_nodes=None,
+               cluster_dns=None,
+               cluster_dns_scope=None,
+               cluster_dns_domain=None,
+               kubernetes_objects_changes_target=None,
+               kubernetes_objects_snapshots_target=None,
+               enable_gcfs=None,
+               enable_image_streaming=None,
+               private_endpoint_subnetwork=None,
+               cross_connect_subnetworks=None,
+               enable_service_externalips=None,
+               threads_per_core=None,
+               logging=None,
+               monitoring=None,
+               enable_managed_prometheus=None,
+               maintenance_interval=None,
+               disable_pod_cidr_overprovision=None,
+               stack_type=None,
+               ipv6_access_type=None,
+               enable_workload_config_audit=None,
+               pod_autoscaling_direct_metrics_opt_in=None,
+               enable_workload_vulnerability_scanning=None,
+               enable_autoprovisioning_surge_upgrade=None,
+               enable_autoprovisioning_blue_green_upgrade=None,
+               autoprovisioning_standard_rollout_policy=None,
+               autoprovisioning_node_pool_soak_duration=None,
+               enable_google_cloud_access=None,
+               managed_config=None,
+               fleet_project=None,
+               gateway_api=None,
+               logging_variant=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -703,6 +700,7 @@ class CreateClusterOptions(object):
     self.accelerators = accelerators
     self.enable_binauthz = enable_binauthz
     self.binauthz_evaluation_mode = binauthz_evaluation_mode
+    self.binauthz_policy = binauthz_policy
     self.min_cpu_platform = min_cpu_platform
     self.workload_metadata = workload_metadata
     self.workload_metadata_from_node = workload_metadata_from_node
@@ -734,8 +732,6 @@ class CreateClusterOptions(object):
     self.enable_resource_consumption_metering = enable_resource_consumption_metering
     self.workload_pool = workload_pool
     self.identity_provider = identity_provider
-    self.tune_gke_metadata_server_cpu = tune_gke_metadata_server_cpu
-    self.tune_gke_metadata_server_memory = tune_gke_metadata_server_memory
     self.enable_workload_certificates = enable_workload_certificates
     self.enable_mesh_certificates = enable_mesh_certificates
     self.enable_alts = enable_alts
@@ -1373,8 +1369,8 @@ class APIAdapter(object):
     """
     try:
       return self.client.projects_locations_clusters.CheckAutopilotCompatibility(
-          self.messages.
-          ContainerProjectsLocationsClustersCheckAutopilotCompatibilityRequest(
+          self.messages
+          .ContainerProjectsLocationsClustersCheckAutopilotCompatibilityRequest(
               name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref
                                           .zone, cluster_ref.clusterId)))
     except apitools_exceptions.HttpNotFoundError as error:
@@ -1645,9 +1641,21 @@ class APIAdapter(object):
           enabled=options.enable_binauthz)
 
     if options.binauthz_evaluation_mode is not None:
-      cluster.binaryAuthorization = self.messages.BinaryAuthorization(
-          evaluationMode=self.messages.BinaryAuthorization
-          .EvaluationModeValueValuesEnum(options.binauthz_evaluation_mode))
+      if options.binauthz_policy is not None:
+        cluster.binaryAuthorization = self.messages.BinaryAuthorization(
+            evaluationMode=self.messages.BinaryAuthorization
+            .EvaluationModeValueValuesEnum(options.binauthz_evaluation_mode),
+            policy=options.binauthz_policy)
+      else:
+        cluster.binaryAuthorization = self.messages.BinaryAuthorization(
+            evaluationMode=self.messages.BinaryAuthorization
+            .EvaluationModeValueValuesEnum(options.binauthz_evaluation_mode))
+
+    # Binauthz policy only makes sense in the context of an evaluation mode.
+    if options.binauthz_policy and not options.binauthz_evaluation_mode:
+      raise util.Error(
+          PREREQUISITE_OPTION_ERROR_MSG.format(
+              prerequisite='binauthz-evaluation-mode', opt='binauthz-policy'))
 
     if options.maintenance_window is not None:
       cluster.maintenancePolicy = self.messages.MaintenancePolicy(
@@ -1682,21 +1690,6 @@ class APIAdapter(object):
     if options.workload_pool:
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
           workloadPool=options.workload_pool)
-      if options.tune_gke_metadata_server_memory:
-        cluster.workloadIdentityConfig.tuneGkeMetadataServerMemory = options.tune_gke_metadata_server_memory
-      if options.tune_gke_metadata_server_cpu:
-        cluster.workloadIdentityConfig.tuneGkeMetadataServerCpu = options.tune_gke_metadata_server_cpu
-    else:
-      if options.tune_gke_metadata_server_cpu:
-        raise util.Error(
-            PREREQUISITE_OPTION_ERROR_MSG.format(
-                prerequisite='workload-pool',
-                opt='tune-gke-metadata-server-cpu'))
-      if options.tune_gke_metadata_server_memory:
-        raise util.Error(
-            PREREQUISITE_OPTION_ERROR_MSG.format(
-                prerequisite='workload-pool',
-                opt='tune-gke-metadata-server-memory'))
 
     self.ParseIPAliasOptions(options, cluster)
     self.ParseAllowRouteOverlapOptions(options, cluster)
@@ -1896,8 +1889,8 @@ class APIAdapter(object):
             self.messages.NodePoolLoggingConfig())
       cluster.nodePoolDefaults.nodeConfigDefaults.loggingConfig.variantConfig = (
           self.messages.LoggingVariantConfig(
-              variant=VariantConfigEnumFromString(
-                  self.messages, options.logging_variant)))
+              variant=VariantConfigEnumFromString(self.messages,
+                                                  options.logging_variant)))
 
     return cluster
 
@@ -2093,15 +2086,14 @@ class APIAdapter(object):
 
   def ParseIPAliasOptions(self, options, cluster):
     """Parses the options for IP Alias."""
-    ip_alias_only_options = [
-        ('services-ipv4-cidr', options.services_ipv4_cidr),
-        ('create-subnetwork', options.create_subnetwork),
-        ('cluster-secondary-range-name', options.cluster_secondary_range_name),
-        ('services-secondary-range-name',
-         options.services_secondary_range_name),
-        ('disable-pod-cidr-overprovision',
-         options.disable_pod_cidr_overprovision)
-    ]
+    ip_alias_only_options = [('services-ipv4-cidr', options.services_ipv4_cidr),
+                             ('create-subnetwork', options.create_subnetwork),
+                             ('cluster-secondary-range-name',
+                              options.cluster_secondary_range_name),
+                             ('services-secondary-range-name',
+                              options.services_secondary_range_name),
+                             ('disable-pod-cidr-overprovision',
+                              options.disable_pod_cidr_overprovision)]
     if not options.enable_ip_alias:
       for name, opt in ip_alias_only_options:
         if opt:
@@ -2767,12 +2759,6 @@ class APIAdapter(object):
           enabled=options.enable_binauthz)
       update = self.messages.ClusterUpdate(
           desiredBinaryAuthorization=binary_authorization)
-    elif options.binauthz_evaluation_mode is not None:
-      binary_authorization = self.messages.BinaryAuthorization(
-          evaluationMode=self.messages.BinaryAuthorization
-          .EvaluationModeValueValuesEnum(options.binauthz_evaluation_mode))
-      update = self.messages.ClusterUpdate(
-          desiredBinaryAuthorization=binary_authorization)
     elif options.enable_vertical_pod_autoscaling is not None:
       vertical_pod_autoscaling = self.messages.VerticalPodAutoscaling(
           enabled=options.enable_vertical_pod_autoscaling)
@@ -2964,8 +2950,8 @@ class APIAdapter(object):
     if options.logging_variant is not None:
       logging_config = self.messages.NodePoolLoggingConfig()
       logging_config.variantConfig = self.messages.LoggingVariantConfig(
-          variant=VariantConfigEnumFromString(
-              self.messages, options.logging_variant))
+          variant=VariantConfigEnumFromString(self.messages,
+                                              options.logging_variant))
       update = self.messages.ClusterUpdate(
           desiredNodePoolLoggingConfig=logging_config)
     return update
@@ -3407,8 +3393,8 @@ class APIAdapter(object):
     if options.logging_variant is not None:
       logging_config = self.messages.NodePoolLoggingConfig()
       logging_config.variantConfig = self.messages.LoggingVariantConfig(
-          variant=VariantConfigEnumFromString(
-              self.messages, options.logging_variant))
+          variant=VariantConfigEnumFromString(self.messages,
+                                              options.logging_variant))
       node_config.loggingConfig = logging_config
 
     self._AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
@@ -3723,8 +3709,8 @@ class APIAdapter(object):
     elif options.logging_variant is not None:
       logging_config = self.messages.NodePoolLoggingConfig()
       logging_config.variantConfig = self.messages.LoggingVariantConfig(
-          variant=VariantConfigEnumFromString(
-              self.messages, options.logging_variant))
+          variant=VariantConfigEnumFromString(self.messages,
+                                              options.logging_variant))
       update_request.loggingConfig = logging_config
     return update_request
 
@@ -4228,29 +4214,22 @@ class APIAdapter(object):
             update=update))
     return self.ParseOperation(op.name, cluster_ref.zone)
 
-  def TuneGkeMetadataServerCpu(self, cluster_ref, existing_cluster,
-                               requested_cpu):
-    """Update gke-metadata-server CPU requests and limits."""
-    desired_workload_identity_config = existing_cluster.workloadIdentityConfig
-    desired_workload_identity_config.tuneGkeMetadataServerCpu = requested_cpu
+  def ModifyBinaryAuthorization(self, cluster_ref, existing_binauthz_config,
+                                binauthz_evaluation_mode, binauthz_policy):
+    """Updates binauthz evaluation mode and policy."""
+    if existing_binauthz_config is not None:
+      binary_authorization = self.messages.BinaryAuthorization(
+          evaluationMode=existing_binauthz_config.evaluationMode,
+          policy=existing_binauthz_config.policy)
+    else:
+      binary_authorization = self.messages.BinaryAuthorization()
+    if binauthz_evaluation_mode is not None:
+      binary_authorization.evaluationMode = self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
+          binauthz_evaluation_mode)
+    if binauthz_policy is not None:
+      binary_authorization.policy = binauthz_policy
     update = self.messages.ClusterUpdate(
-        etag=existing_cluster.etag,
-        desiredWorkloadIdentityConfig=desired_workload_identity_config)
-    op = self.client.projects_locations_clusters.Update(
-        self.messages.UpdateClusterRequest(
-            name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref.zone,
-                                        cluster_ref.clusterId),
-            update=update))
-    return self.ParseOperation(op.name, cluster_ref.zone)
-
-  def TuneGkeMetadataServerMemory(self, cluster_ref, existing_cluster,
-                                  requested_memory):
-    """Update gke-metadata-server memory requests and limits."""
-    desired_workload_identity_config = existing_cluster.workloadIdentityConfig
-    desired_workload_identity_config.tuneGkeMetadataServerMemory = requested_memory
-    update = self.messages.ClusterUpdate(
-        etag=existing_cluster.etag,
-        desiredWorkloadIdentityConfig=desired_workload_identity_config)
+        desiredBinaryAuthorization=binary_authorization)
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
             name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref.zone,

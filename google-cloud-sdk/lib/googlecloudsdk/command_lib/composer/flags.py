@@ -35,6 +35,10 @@ from googlecloudsdk.core import properties
 
 import six
 
+PREREQUISITE_OPTION_ERROR_MSG = """\
+Cannot specify --{opt} without --{prerequisite}.
+"""
+
 INVALID_OPTION_FOR_MIN_AIRFLOW_VERSION_ERROR_MSG = """\
 Cannot specify {opt}. Airflow version {airflow_version} is required.
 """
@@ -284,6 +288,13 @@ AUTOSCALING_FLAG_GROUP_DESCRIPTION = (
     'Group of arguments for setting workloads configuration in Composer 2.X '
     'or greater (--scheduler-count flag is available for '
     'Composer 1.X as well).')
+
+SCHEDULED_SNAPSHOTS_GROUP_DESCRIPTION = (
+    'Group of arguments for setting scheduled snapshots settings in Composer 2')
+
+SCHEDULED_SNAPSHOTS_UPDATE_GROUP_DESCRIPTION = (
+    'Group of arguments used during update of scheduled snapshots settings in '
+    'Composer 2')
 
 TRIGGERER_PARAMETERS_FLAG_GROUP_DESCRIPTION = (
     'Group of arguments for setting triggerer settings in Composer 2.2.X '
@@ -930,6 +941,59 @@ COMPOSER_NETWORK_IPV4_CIDR_FLAG = base.Argument(
     unless `--enable-private-environment` is also specified.
     """)
 
+# TODO(b/245909413): Update Composer version in requirements
+ENABLE_SCHEDULED_SNAPSHOT_CREATION = base.Argument(
+    '--enable-scheduled-snapshot-creation',
+    default=None,
+    const=True,
+    action='store_const',
+    required=True,
+    help="""\
+      When specified, snapshots of the environment will be created according to a schedule.
+      Can be specified for Composer 2.X or greater.
+    """)
+
+# TODO(b/245909413): Specify the minor Composer version here:
+DISABLE_SCHEDULED_SNAPSHOT_CREATION = base.Argument(
+    '--disable-scheduled-snapshot-creation',
+    default=None,
+    const=True,
+    action='store_const',
+    help="""\
+      Disables automated snapshots creation.
+      Can be specified for Composer 2.X or greater.
+    """)
+
+SNAPSHOT_CREATION_SCHEDULE = base.Argument(
+    '--snapshot-creation-schedule',
+    type=str,
+    required=True,
+    action=V2ExclusiveStoreAction,
+    help="""\
+      Cron expression specifying when snapshots of the environment should be created.
+      Can be specified for Composer 2.X or greater.
+    """)
+
+SNAPSHOT_LOCATION = base.Argument(
+    '--snapshot-location',
+    type=str,
+    action=V2ExclusiveStoreAction,
+    required=True,
+    help="""\
+      The Cloud Storage location for storing automatically created snapshots.
+      Can be specified for Composer 2.X or greater.
+    """)
+
+SNAPSHOT_SCHEDULE_TIMEZONE = base.Argument(
+    '--snapshot-schedule-timezone',
+    type=str,
+    action=V2ExclusiveStoreAction,
+    required=True,
+    help="""\
+      Timezone that sets the context to interpret snapshot_creation_schedule
+      Can be specified for Composer 2.X or greater.
+    """)
+
 MAINTENANCE_WINDOW_START_FLAG = base.Argument(
     '--maintenance-window-start',
     type=arg_parsers.Datetime.Parse,
@@ -1318,6 +1382,26 @@ def AddLabelsUpdateFlagsToGroup(update_type_group):
   labels_util.AddUpdateLabelsFlags(labels_update_group)
 
 
+def AddScheduledSnapshotFlagsToGroup(update_type_group):
+  """Adds flags related to scheduled snapshot.
+
+  Args:
+    update_type_group: argument group, the group to which flags should be added.
+  """
+
+  update_group = update_type_group.add_argument_group(
+      SCHEDULED_SNAPSHOTS_UPDATE_GROUP_DESCRIPTION, hidden=True, mutex=True)
+  DISABLE_SCHEDULED_SNAPSHOT_CREATION.AddToParser(update_group)
+
+  scheduled_snapshots_params_group = update_group.add_argument_group(
+      SCHEDULED_SNAPSHOTS_GROUP_DESCRIPTION)
+  ENABLE_SCHEDULED_SNAPSHOT_CREATION.AddToParser(
+      scheduled_snapshots_params_group)
+  SNAPSHOT_LOCATION.AddToParser(scheduled_snapshots_params_group)
+  SNAPSHOT_CREATION_SCHEDULE.AddToParser(scheduled_snapshots_params_group)
+  SNAPSHOT_SCHEDULE_TIMEZONE.AddToParser(scheduled_snapshots_params_group)
+
+
 def AddAutoscalingUpdateFlagsToGroup(update_type_group, release_track):
   """Adds flags related to updating autoscaling.
 
@@ -1350,12 +1434,9 @@ def AddAutoscalingUpdateFlagsToGroup(update_type_group, release_track):
     triggerer_enabled_group = triggerer_params_group.add_argument_group(
         TRIGGERER_ENABLED_GROUP_DESCRIPTION)
     TRIGGERER_CPU.AddToParser(triggerer_enabled_group)
-    TRIGGERER_MEMORY.AddToParser(
-        triggerer_enabled_group)
-    ENABLE_TRIGGERER.AddToParser(
-        triggerer_enabled_group)
-    DISABLE_TRIGGERER.AddToParser(
-        triggerer_params_group)
+    TRIGGERER_MEMORY.AddToParser(triggerer_enabled_group)
+    ENABLE_TRIGGERER.AddToParser(triggerer_enabled_group)
+    DISABLE_TRIGGERER.AddToParser(triggerer_params_group)
 
   # Note: this flag is available for patching of both Composer 1.*.* and 2.*.*
   # environments.

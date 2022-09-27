@@ -36,7 +36,10 @@ def CheckFieldsSpecifiedGA(unused_instance_ref, args, patch_request):
 
 def CheckFieldsSpecifiedBeta(unused_instance_ref, args, patch_request):
   """Checks if fields to update are registered for BETA track."""
-  return CheckFieldsSpecifiedCommon(args, patch_request, [])
+  additional_update_args = [
+      'maintenance_version',
+  ]
+  return CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args)
 
 
 def CheckFieldsSpecifiedAlpha(unused_instance_ref, args, patch_request):

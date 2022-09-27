@@ -639,7 +639,8 @@ def AddCreateDiskArgs(parser,
                       include_name=True,
                       support_boot=False,
                       support_multi_writer=False,
-                      support_replica_zones=False):
+                      support_replica_zones=False,
+                      support_provisioned_throughput=False):
   """Adds create-disk argument for instances and instance-templates."""
 
   disk_device_name_help = GetDiskDeviceNameHelp(
@@ -868,6 +869,14 @@ def AddCreateDiskArgs(parser,
       """
     spec['replica-zones'] = arg_parsers.ArgList(max_length=1)
 
+  if support_provisioned_throughput:
+    spec['provisioned-throughput'] = int
+    disk_help += """
+      *provisioned-throughput*::: Indicates how much throughput to provision for
+      the disk. This sets the number of throughput mb per second that the disk
+      can handle.
+    """
+
   parser.add_argument(
       '--create-disk',
       type=arg_parsers.ArgDict(spec=spec),
@@ -907,11 +916,8 @@ def AddCustomMachineTypeArgs(parser):
   custom_group.add_argument(
       '--custom-vm-type',
       help="""
-      Specifies VM type. n1 - VMs with CPU platforms Skylake and older,
-      n2 - VMs with CPU platform Cascade Lake. n2 offers flexible sizing from
-      2 to 80 vCPUs, and 1 to 640GBs of memory.
-      It also features a number of performance enhancements including exposing
-      a more accurate NUMA topology to the guest OS. The default is `n1`.
+      Specifies a custom machine type. The default is `n1`. For more information about custom machine types, see:
+      https://cloud.google.com/compute/docs/general-purpose-machines#custom_machine_types
       """)
 
 
@@ -1083,51 +1089,55 @@ def ValidateDiskBootFlags(args, enable_kms=False):
     if args.boot_disk_device_name:
       raise exceptions.BadArgumentException(
           '--boot-disk-device-name',
-          '[--boot-disk-device-name] can only be used when creating a new '
-          'boot disk.')
+          'Each instance can have exactly one boot disk. '
+          'One boot disk was specified through [--disk or --create-disk]'
+      )
 
     if args.boot_disk_type:
       raise exceptions.BadArgumentException(
           '--boot-disk-type',
-          '[--boot-disk-type] can only be used when creating a new boot '
-          'disk.')
+          'Each instance can have exactly one boot disk. '
+          'One boot disk was specified through [--disk or --create-disk]'
+      )
 
     if args.boot_disk_size:
       raise exceptions.BadArgumentException(
           '--boot-disk-size',
-          '[--boot-disk-size] can only be used when creating a new boot '
-          'disk.')
+          'Each instance can have exactly one boot disk. '
+          'One boot disk was specified through [--disk or --create-disk]'
+      )
 
     if not args.boot_disk_auto_delete:
       raise exceptions.BadArgumentException(
           '--no-boot-disk-auto-delete',
-          '[--no-boot-disk-auto-delete] can only be used when creating a '
-          'new boot disk.')
+          'Each instance can have exactly one boot disk. '
+          'One boot disk was specified through [--disk or --create-disk]'
+      )
 
     if enable_kms:
       if args.boot_disk_kms_key:
         raise exceptions.BadArgumentException(
             '--boot-disk-kms-key',
-            '[--boot-disk-kms-key] can only be used when creating a new boot '
-            'disk.')
+            'Each instance can have exactly one boot disk. '
+            'One boot disk was specified through [--disk or --create-disk]')
 
       if args.boot_disk_kms_keyring:
         raise exceptions.BadArgumentException(
             '--boot-disk-kms-keyring',
-            '[--boot-disk-kms-keyring] can only be used when creating a new '
-            'boot disk.')
+            'Each instance can have exactly one boot disk. '
+            'One boot disk was specified through [--disk or --create-disk]')
 
       if args.boot_disk_kms_location:
         raise exceptions.BadArgumentException(
             '--boot-disk-kms-location',
-            '[--boot-disk-kms-location] can only be used when creating a new '
-            'boot disk.')
+            'Each instance can have exactly one boot disk. '
+            'One boot disk was specified through [--disk or --create-disk]')
 
       if args.boot_disk_kms_project:
         raise exceptions.BadArgumentException(
             '--boot-disk-kms-project',
-            '[--boot-disk-kms-project] can only be used when creating a new '
-            'boot disk.')
+            'Each instance can have exactly one boot disk. '
+            'One boot disk was specified through [--disk or --create-disk]')
 
 
 def ValidateCreateDiskFlags(args,

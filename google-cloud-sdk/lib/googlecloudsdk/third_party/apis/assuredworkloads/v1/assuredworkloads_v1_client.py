@@ -40,6 +40,7 @@ class AssuredworkloadsV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
+    self.organizations_locations_workloads_violations = self.OrganizationsLocationsWorkloadsViolationsService(self)
     self.organizations_locations_workloads = self.OrganizationsLocationsWorkloadsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
@@ -105,6 +106,97 @@ class AssuredworkloadsV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AssuredworkloadsOrganizationsLocationsOperationsListRequest',
         response_type_name='GoogleLongrunningListOperationsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsWorkloadsViolationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_workloads_violations resource."""
+
+    _NAME = 'organizations_locations_workloads_violations'
+
+    def __init__(self, client):
+      super(AssuredworkloadsV1.OrganizationsLocationsWorkloadsViolationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Acknowledge(self, request, global_params=None):
+      r"""Acknowledges an existing violation. By acknowledging a violation, users acknowledge the existence of a compliance violation in their workload and decide to ignore it due to a valid business justification. Acknowledgement is a permanent operation and it cannot be reverted.
+
+      Args:
+        request: (AssuredworkloadsOrganizationsLocationsWorkloadsViolationsAcknowledgeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAssuredworkloadsV1AcknowledgeViolationResponse) The response message.
+      """
+      config = self.GetMethodConfig('Acknowledge')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Acknowledge.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}/violations/{violationsId}:acknowledge',
+        http_method='POST',
+        method_id='assuredworkloads.organizations.locations.workloads.violations.acknowledge',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:acknowledge',
+        request_field='googleCloudAssuredworkloadsV1AcknowledgeViolationRequest',
+        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsViolationsAcknowledgeRequest',
+        response_type_name='GoogleCloudAssuredworkloadsV1AcknowledgeViolationResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves Assured Workload Violation based on ID.
+
+      Args:
+        request: (AssuredworkloadsOrganizationsLocationsWorkloadsViolationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAssuredworkloadsV1Violation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}/violations/{violationsId}',
+        http_method='GET',
+        method_id='assuredworkloads.organizations.locations.workloads.violations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsViolationsGetRequest',
+        response_type_name='GoogleCloudAssuredworkloadsV1Violation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the Violations in the AssuredWorkload Environment. Callers may also choose to read across multiple Workloads as per [AIP-159](https://google.aip.dev/159) by using '-' (the hyphen or dash character) as a wildcard character instead of workload-id in the parent. Format `organizations/{org_id}/locations/{location}/workloads/-`.
+
+      Args:
+        request: (AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAssuredworkloadsV1ListViolationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}/violations',
+        http_method='GET',
+        method_id='assuredworkloads.organizations.locations.workloads.violations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'interval_endTime', 'interval_startTime', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/violations',
+        request_field='',
+        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest',
+        response_type_name='GoogleCloudAssuredworkloadsV1ListViolationsResponse',
         supports_download=False,
     )
 

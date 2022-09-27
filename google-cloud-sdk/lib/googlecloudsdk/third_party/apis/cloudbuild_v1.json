@@ -2458,6 +2458,111 @@
         }
       }
     },
+    "ListGitLabRepositoriesResponse": {
+      "id": "ListGitLabRepositoriesResponse",
+      "description": "RPC response object returned by the ListGitLabRepositories RPC method.",
+      "type": "object",
+      "properties": {
+        "gitlabRepositories": {
+          "description": "List of GitLab repositories",
+          "type": "array",
+          "items": {
+            "$ref": "GitLabRepository"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token that can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "GitLabRepository": {
+      "id": "GitLabRepository",
+      "description": "Proto Representing a GitLabRepository",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the repository",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Display name of the repository",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the repository",
+          "type": "string"
+        },
+        "browseUri": {
+          "description": "Link to the browse repo page on the GitLab instance",
+          "type": "string"
+        },
+        "repositoryId": {
+          "description": "Identifier for a repository",
+          "$ref": "GitLabRepositoryId"
+        }
+      }
+    },
+    "RemoveGitLabConnectedRepositoryRequest": {
+      "id": "RemoveGitLabConnectedRepositoryRequest",
+      "description": "RPC request object accepted by RemoveGitLabConnectedRepository RPC method.",
+      "type": "object",
+      "properties": {
+        "connectedRepository": {
+          "description": "The connected repository to remove.",
+          "$ref": "GitLabRepositoryId"
+        }
+      }
+    },
+    "BatchCreateGitLabConnectedRepositoriesRequest": {
+      "id": "BatchCreateGitLabConnectedRepositoriesRequest",
+      "description": "RPC request object accepted by BatchCreateGitLabConnectedRepositories RPC method.",
+      "type": "object",
+      "properties": {
+        "requests": {
+          "description": "Required. Requests to connect GitLab repositories.",
+          "type": "array",
+          "items": {
+            "$ref": "CreateGitLabConnectedRepositoryRequest"
+          }
+        }
+      }
+    },
+    "CreateGitLabConnectedRepositoryRequest": {
+      "id": "CreateGitLabConnectedRepositoryRequest",
+      "description": "Request to connect a repository from a connected GitLab host.",
+      "type": "object",
+      "properties": {
+        "parent": {
+          "description": "Required. The name of the `GitLabConfig` that adds connected repository. Format: `projects\/{project}\/locations\/{location}\/gitLabConfigs\/{config}`",
+          "type": "string"
+        },
+        "gitlabConnectedRepository": {
+          "description": "Required. The GitLab repository to connect.",
+          "$ref": "GitLabConnectedRepository"
+        }
+      }
+    },
+    "GitLabConnectedRepository": {
+      "id": "GitLabConnectedRepository",
+      "description": "GitLabConnectedRepository represents a GitLab connected repository request response.",
+      "type": "object",
+      "properties": {
+        "parent": {
+          "description": "The name of the `GitLabConfig` that added connected repository. Format: `projects\/{project}\/locations\/{location}\/gitLabConfigs\/{config}`",
+          "type": "string"
+        },
+        "repo": {
+          "description": "The GitLab repositories to connect.",
+          "$ref": "GitLabRepositoryId"
+        },
+        "status": {
+          "description": "Output only. The status of the repo connection request.",
+          "readOnly": true,
+          "$ref": "Status"
+        }
+      }
+    },
     "ListGithubEnterpriseConfigsResponse": {
       "id": "ListGithubEnterpriseConfigsResponse",
       "description": "RPC response object returned by ListGithubEnterpriseConfigs RPC method.",
@@ -3026,6 +3131,41 @@
       "properties": {
         "gitlabConfig": {
           "description": "The resource name of the GitLabConfig to be created. Format: `projects\/{project}\/locations\/{location}\/gitlabConfigs\/{id}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "BatchCreateGitLabConnectedRepositoriesResponse": {
+      "id": "BatchCreateGitLabConnectedRepositoriesResponse",
+      "description": "Response of BatchCreateGitLabConnectedRepositories RPC method.",
+      "type": "object",
+      "properties": {
+        "gitlabConnectedRepositories": {
+          "description": "The GitLab connected repository requests' responses.",
+          "type": "array",
+          "items": {
+            "$ref": "GitLabConnectedRepository"
+          }
+        }
+      }
+    },
+    "BatchCreateGitLabConnectedRepositoriesResponseMetadata": {
+      "id": "BatchCreateGitLabConnectedRepositoriesResponseMetadata",
+      "description": "Metadata for `BatchCreateGitLabConnectedRepositories` operation.",
+      "type": "object",
+      "properties": {
+        "config": {
+          "description": "The name of the `GitLabConfig` that added connected repositories. Format: `projects\/{project}\/locations\/{location}\/gitLabConfigs\/{config}`",
           "type": "string"
         },
         "createTime": {
@@ -4625,6 +4765,109 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Delete a `GitLabConfig`. This API is experimental"
+                },
+                "removeGitLabConnectedRepository": {
+                  "id": "cloudbuild.projects.locations.gitLabConfigs.removeGitLabConnectedRepository",
+                  "path": "v1/{+config}:removeGitLabConnectedRepository",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/gitLabConfigs/{gitLabConfigsId}:removeGitLabConnectedRepository",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "config": {
+                      "description": "Required. The name of the `GitLabConfig` to remove a connected repository. Format: `projects\/{project}\/locations\/{location}\/gitLabConfigs\/{config}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gitLabConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "config"
+                  ],
+                  "request": {
+                    "$ref": "RemoveGitLabConnectedRepositoryRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Remove a GitLab repository from a given GitLabConfig's connected repositories. This API is experimental."
+                }
+              }
+              ,
+              "resources": {
+                "repos": {
+                  "methods": {
+                    "list": {
+                      "id": "cloudbuild.projects.locations.gitLabConfigs.repos.list",
+                      "path": "v1/{+parent}/repos",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/gitLabConfigs/{gitLabConfigsId}/repos",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Name of the parent resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gitLabConfigs\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of repositories to return. The service may return fewer than this value.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous ListGitLabRepositoriesRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListGitLabRepositoriesRequest` must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListGitLabRepositoriesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "List all repositories for a given `GitLabConfig`. This API is experimental"
+                    }
+                  }
+                },
+                "connectedRepositories": {
+                  "methods": {
+                    "batchCreate": {
+                      "id": "cloudbuild.projects.locations.gitLabConfigs.connectedRepositories.batchCreate",
+                      "path": "v1/{+parent}/connectedRepositories:batchCreate",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/gitLabConfigs/{gitLabConfigsId}/connectedRepositories:batchCreate",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the `GitLabConfig` that adds connected repositories. Format: `projects\/{project}\/locations\/{location}\/gitLabConfigs\/{config}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gitLabConfigs\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "BatchCreateGitLabConnectedRepositoriesRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Batch connecting GitLab repositories to Cloud Build. This API is experimental."
+                    }
+                  }
                 }
               }
             },

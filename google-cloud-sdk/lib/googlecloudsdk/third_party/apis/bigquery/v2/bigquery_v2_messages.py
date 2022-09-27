@@ -1760,6 +1760,10 @@ class JobConfigurationLoad(_messages.Message):
       returned in the job result. The default value is CREATE_IF_NEEDED.
       Creation, truncation and append actions occur as one atomic update upon
       job completion.
+    createSession: If true, creates a new session, where session id will be a
+      server generated random id. If false, runs query with an existing
+      session_id passed in ConnectionProperty, otherwise runs the load job in
+      non-session mode.
     decimalTargetTypes: [Optional] Defines the list of possible SQL data types
       to which the source decimal values are converted. This list and the
       precision and the scale parameters of the decimal field determine the
@@ -1902,33 +1906,34 @@ class JobConfigurationLoad(_messages.Message):
   clustering = _messages.MessageField('Clustering', 4)
   connectionProperties = _messages.MessageField('ConnectionProperty', 5, repeated=True)
   createDisposition = _messages.StringField(6)
-  decimalTargetTypes = _messages.StringField(7, repeated=True)
-  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 8)
-  destinationTable = _messages.MessageField('TableReference', 9)
-  destinationTableProperties = _messages.MessageField('DestinationTableProperties', 10)
-  encoding = _messages.StringField(11)
-  fieldDelimiter = _messages.StringField(12)
-  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 13)
-  ignoreUnknownValues = _messages.BooleanField(14)
-  jsonExtension = _messages.StringField(15)
-  maxBadRecords = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  nullMarker = _messages.StringField(17)
-  parquetOptions = _messages.MessageField('ParquetOptions', 18)
-  preserveAsciiControlCharacters = _messages.BooleanField(19)
-  projectionFields = _messages.StringField(20, repeated=True)
-  quote = _messages.StringField(21, default='"')
-  rangePartitioning = _messages.MessageField('RangePartitioning', 22)
-  referenceFileSchemaUri = _messages.StringField(23)
-  schema = _messages.MessageField('TableSchema', 24)
-  schemaInline = _messages.StringField(25)
-  schemaInlineFormat = _messages.StringField(26)
-  schemaUpdateOptions = _messages.StringField(27, repeated=True)
-  skipLeadingRows = _messages.IntegerField(28, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(29)
-  sourceUris = _messages.StringField(30, repeated=True)
-  timePartitioning = _messages.MessageField('TimePartitioning', 31)
-  useAvroLogicalTypes = _messages.BooleanField(32)
-  writeDisposition = _messages.StringField(33)
+  createSession = _messages.BooleanField(7)
+  decimalTargetTypes = _messages.StringField(8, repeated=True)
+  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 9)
+  destinationTable = _messages.MessageField('TableReference', 10)
+  destinationTableProperties = _messages.MessageField('DestinationTableProperties', 11)
+  encoding = _messages.StringField(12)
+  fieldDelimiter = _messages.StringField(13)
+  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 14)
+  ignoreUnknownValues = _messages.BooleanField(15)
+  jsonExtension = _messages.StringField(16)
+  maxBadRecords = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  nullMarker = _messages.StringField(18)
+  parquetOptions = _messages.MessageField('ParquetOptions', 19)
+  preserveAsciiControlCharacters = _messages.BooleanField(20)
+  projectionFields = _messages.StringField(21, repeated=True)
+  quote = _messages.StringField(22, default='"')
+  rangePartitioning = _messages.MessageField('RangePartitioning', 23)
+  referenceFileSchemaUri = _messages.StringField(24)
+  schema = _messages.MessageField('TableSchema', 25)
+  schemaInline = _messages.StringField(26)
+  schemaInlineFormat = _messages.StringField(27)
+  schemaUpdateOptions = _messages.StringField(28, repeated=True)
+  skipLeadingRows = _messages.IntegerField(29, variant=_messages.Variant.INT32)
+  sourceFormat = _messages.StringField(30)
+  sourceUris = _messages.StringField(31, repeated=True)
+  timePartitioning = _messages.MessageField('TimePartitioning', 32)
+  useAvroLogicalTypes = _messages.BooleanField(33)
+  writeDisposition = _messages.StringField(34)
 
 
 class JobConfigurationQuery(_messages.Message):
@@ -2282,15 +2287,15 @@ class JobStatistics2(_messages.Message):
     ReservationUsageValueListEntry: A ReservationUsageValueListEntry object.
 
   Fields:
-    biEngineStatistics: BI Engine specific Statistics. [Output-only] BI Engine
+    biEngineStatistics: BI Engine specific Statistics. [Output only] BI Engine
       specific Statistics.
-    billingTier: [Output-only] Billing tier for the job.
-    cacheHit: [Output-only] Whether the query result was fetched from the
+    billingTier: [Output only] Billing tier for the job.
+    cacheHit: [Output only] Whether the query result was fetched from the
       query cache.
-    ddlAffectedRowAccessPolicyCount: [Output-only] [Preview] The number of row
+    ddlAffectedRowAccessPolicyCount: [Output only] [Preview] The number of row
       access policies affected by a DDL statement. Present only for DROP ALL
       ROW ACCESS POLICIES queries.
-    ddlDestinationTable: [Output-only] The DDL destination table. Present only
+    ddlDestinationTable: [Output only] The DDL destination table. Present only
       for ALTER TABLE RENAME TO queries. Note that ddl_target_table is used
       just for its type information.
     ddlOperationPerformed: The DDL operation performed, possibly dependent on
@@ -2301,37 +2306,37 @@ class JobStatistics2(_messages.Message):
       while the table does not exist. "REPLACE": The query replaced the DDL
       target. Example case: the query is CREATE OR REPLACE TABLE, and the
       table already exists. "DROP": The query deleted the DDL target.
-    ddlTargetDataset: [Output-only] The DDL target dataset. Present only for
+    ddlTargetDataset: [Output only] The DDL target dataset. Present only for
       CREATE/ALTER/DROP SCHEMA queries.
     ddlTargetRoutine: The DDL target routine. Present only for CREATE/DROP
       FUNCTION/PROCEDURE queries.
-    ddlTargetRowAccessPolicy: [Output-only] [Preview] The DDL target row
+    ddlTargetRowAccessPolicy: [Output only] [Preview] The DDL target row
       access policy. Present only for CREATE/DROP ROW ACCESS POLICY queries.
-    ddlTargetTable: [Output-only] The DDL target table. Present only for
+    ddlTargetTable: [Output only] The DDL target table. Present only for
       CREATE/DROP TABLE/VIEW and DROP ALL ROW ACCESS POLICIES queries.
-    dmlStats: [Output-only] Detailed statistics for DML statements Present
+    dmlStats: [Output only] Detailed statistics for DML statements Present
       only for DML statements INSERT, UPDATE, DELETE or TRUNCATE.
-    estimatedBytesProcessed: [Output-only] The original estimate of bytes
+    estimatedBytesProcessed: [Output only] The original estimate of bytes
       processed for the job.
-    mlStatistics: [Output-only] Statistics of a BigQuery ML training job.
-    modelTraining: [Output-only, Beta] Information about create model query
+    mlStatistics: [Output only] Statistics of a BigQuery ML training job.
+    modelTraining: [Output only, Beta] Information about create model query
       job progress.
-    modelTrainingCurrentIteration: [Output-only, Beta] Deprecated; do not use.
-    modelTrainingExpectedTotalIteration: [Output-only, Beta] Deprecated; do
+    modelTrainingCurrentIteration: [Output only, Beta] Deprecated; do not use.
+    modelTrainingExpectedTotalIteration: [Output only, Beta] Deprecated; do
       not use.
-    numDmlAffectedRows: [Output-only] The number of rows affected by a DML
+    numDmlAffectedRows: [Output only] The number of rows affected by a DML
       statement. Present only for DML statements INSERT, UPDATE or DELETE.
-    queryPlan: [Output-only] Describes execution plan for the query.
-    referencedRoutines: [Output-only] Referenced routines (persistent user-
+    queryPlan: [Output only] Describes execution plan for the query.
+    referencedRoutines: [Output only] Referenced routines (persistent user-
       defined functions and stored procedures) for the job.
-    referencedTables: [Output-only] Referenced tables for the job. Queries
+    referencedTables: [Output only] Referenced tables for the job. Queries
       that reference more than 50 tables will not have a complete list.
-    reservationUsage: [Output-only] Job resource usage breakdown by
+    reservationUsage: [Output only] Job resource usage breakdown by
       reservation.
-    schema: [Output-only] The schema of the results. Present only for
+    schema: [Output only] The schema of the results. Present only for
       successful dry run of non-legacy SQL queries.
-    searchStatistics: [Output-only] Search query specific statistics.
-    sparkStatistics: [Output-only] Statistics of a Spark procedure job.
+    searchStatistics: [Output only] Search query specific statistics.
+    sparkStatistics: [Output only] Statistics of a Spark procedure job.
     statementType: The type of query statement, if valid. Possible values (new
       values might be added in the future): "SELECT": SELECT query. "INSERT":
       INSERT query; see
@@ -2351,18 +2356,18 @@ class JobStatistics2(_messages.Message):
       "CREATE_VIEW": CREATE [OR REPLACE] VIEW ... AS SELECT ... .
       "DROP_FUNCTION" : DROP FUNCTION query. "DROP_PROCEDURE": DROP PROCEDURE
       query. "DROP_TABLE": DROP TABLE query. "DROP_VIEW": DROP VIEW query.
-    timeline: [Output-only] [Beta] Describes a timeline of job execution.
-    totalBytesBilled: [Output-only] Total bytes billed for the job.
-    totalBytesProcessed: [Output-only] Total bytes processed for the job.
-    totalBytesProcessedAccuracy: [Output-only] For dry-run jobs,
+    timeline: [Output only] [Beta] Describes a timeline of job execution.
+    totalBytesBilled: [Output only] Total bytes billed for the job.
+    totalBytesProcessed: [Output only] Total bytes processed for the job.
+    totalBytesProcessedAccuracy: [Output only] For dry-run jobs,
       totalBytesProcessed is an estimate and this field specifies the accuracy
       of the estimate. Possible values can be: UNKNOWN: accuracy of the
       estimate is unknown. PRECISE: estimate is precise. LOWER_BOUND: estimate
       is lower bound of what the query would cost. UPPER_BOUND: estimate is
       upper bound of what the query would cost.
-    totalPartitionsProcessed: [Output-only] Total number of partitions
+    totalPartitionsProcessed: [Output only] Total number of partitions
       processed from all partitioned tables referenced in the job.
-    totalSlotMs: [Output-only] Slot-milliseconds for the job.
+    totalSlotMs: [Output only] Slot-milliseconds for the job.
     undeclaredQueryParameters: Standard SQL only: list of undeclared query
       parameters detected during a dry run validation.
   """
@@ -2371,9 +2376,9 @@ class JobStatistics2(_messages.Message):
     r"""A ReservationUsageValueListEntry object.
 
     Fields:
-      name: [Output-only] Reservation name or "unreserved" for on-demand
+      name: [Output only] Reservation name or "unreserved" for on-demand
         resources usage.
-      slotMs: [Output-only] Slot-milliseconds the job spent in the given
+      slotMs: [Output only] Slot-milliseconds the job spent in the given
         reservation.
     """
 

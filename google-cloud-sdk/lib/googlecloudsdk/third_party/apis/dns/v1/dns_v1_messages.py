@@ -2445,6 +2445,9 @@ class ResponsePolicy(_messages.Message):
   r"""A Response Policy is a collection of selectors that apply to queries
   made against one or more Virtual Private Cloud networks.
 
+  Messages:
+    LabelsValue: User labels.
+
   Fields:
     description: User-provided description for this Response Policy.
     gkeClusters: The list of Google Kubernetes Engine clusters to which this
@@ -2452,17 +2455,43 @@ class ResponsePolicy(_messages.Message):
     id: Unique identifier for the resource; defined by the server (output
       only).
     kind: A string attribute.
+    labels: User labels.
     networks: List of network names specifying networks to which this policy
       is applied.
     responsePolicyName: User assigned name for this Response Policy.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""User labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   description = _messages.StringField(1)
   gkeClusters = _messages.MessageField('ResponsePolicyGKECluster', 2, repeated=True)
   id = _messages.IntegerField(3)
   kind = _messages.StringField(4, default='dns#responsePolicy')
-  networks = _messages.MessageField('ResponsePolicyNetwork', 5, repeated=True)
-  responsePolicyName = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 5)
+  networks = _messages.MessageField('ResponsePolicyNetwork', 6, repeated=True)
+  responsePolicyName = _messages.StringField(7)
 
 
 class ResponsePolicyGKECluster(_messages.Message):

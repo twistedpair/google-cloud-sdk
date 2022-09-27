@@ -22,7 +22,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run.integrations.typekits import cloudsql_typekit
-from googlecloudsdk.command_lib.run.integrations.typekits import custom_domain_typekit
 from googlecloudsdk.command_lib.run.integrations.typekits import domain_routing_typekit
 from googlecloudsdk.command_lib.run.integrations.typekits import redis_typekit
 
@@ -39,9 +38,6 @@ def GetTypeKit(integration_type):
   Returns:
     typekit.TypeKit, a typekit instance.
   """
-  if integration_type == 'custom-domain':
-    return custom_domain_typekit.CustomDomainTypeKit(
-        types_utils.GetIntegration('custom-domain'))
   if integration_type == 'custom-domains':
     return domain_routing_typekit.DomainRoutingTypeKit(
         types_utils.GetIntegration('custom-domains'))

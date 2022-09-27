@@ -955,6 +955,44 @@
         }
       }
     },
+    "DiagnoseRuntimeRequest": {
+      "id": "DiagnoseRuntimeRequest",
+      "description": "Request for creating a notebook instance diagnostic file.",
+      "type": "object",
+      "properties": {
+        "diagnosticConfig": {
+          "description": "Required. Defines flags that are used to run the diagnostic tool",
+          "$ref": "DiagnosticConfig"
+        }
+      }
+    },
+    "DiagnosticConfig": {
+      "id": "DiagnosticConfig",
+      "description": "Defines flags that are used to run the diagnostic tool",
+      "type": "object",
+      "properties": {
+        "gcsBucket": {
+          "description": "Required. User Cloud Storage bucket location (REQUIRED) ## Must be formatted with path prefix (gs:\/\/$GCS_BUCKET) Permissions: User Managed Notebooks: - storage.buckets.writer: Must be given to the project's service account attached to VM. Google Managed Notebooks: - storage.buckets.writer: Must be given to the project's service account or ## user credentials attached to VM depending on authentication mode. Cloud Storage bucket Log file will be written to gs:\/\/$GCS_BUCKET\/$RELATIVE_PATH\/$VM_DATE_$TIME.tar.gz",
+          "type": "string"
+        },
+        "relativePath": {
+          "description": "Optional. Defines the relative storage path in the Cloud Storage bucket where the diagnostic logs will be written: Default path will be the root directory of the Cloud Storage bucket (gs:\/\/$GCS_BUCKET\/$DATE_$TIME.tar.gz) Example of full path where Log file will be written: gs:\/\/$GCS_BUCKET\/$RELATIVE_PATH\/",
+          "type": "string"
+        },
+        "repairFlagEnabled": {
+          "description": "Optional. Enables flag to repair service for instance",
+          "type": "boolean"
+        },
+        "packetCaptureFlagEnabled": {
+          "description": "Optional. Enables flag to capture packets from the instance for 30 seconds",
+          "type": "boolean"
+        },
+        "copyHomeFilesFlagEnabled": {
+          "description": "Optional. Enables flag to copy all `\/home\/jupyter` folder contents",
+          "type": "boolean"
+        }
+      }
+    },
     "ListInstancesResponse": {
       "id": "ListInstancesResponse",
       "description": "Response for listing notebook instances.",
@@ -1773,6 +1811,17 @@
         "targetSnapshot": {
           "description": "Required. The snapshot for rollback. Example: \"projects\/test-project\/global\/snapshots\/krwlzipynril\".",
           "type": "string"
+        }
+      }
+    },
+    "DiagnoseInstanceRequest": {
+      "id": "DiagnoseInstanceRequest",
+      "description": "Request for creating a notebook instance diagnostic file.",
+      "type": "object",
+      "properties": {
+        "diagnosticConfig": {
+          "description": "Required. Defines flags that are used to run the diagnostic tool",
+          "$ref": "DiagnosticConfig"
         }
       }
     },
@@ -2924,6 +2973,34 @@
                   ],
                   "description": "Gets an access token for the consumer service account that the customer attached to the runtime. Only accessible from the tenant instance."
                 },
+                "diagnose": {
+                  "id": "notebooks.projects.locations.runtimes.diagnose",
+                  "path": "v1/{+name}:diagnose",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}:diagnose",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/runtimes\/{runtimes_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/runtimes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "DiagnoseRuntimeRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a Diagnostic File and runs Diagnostic Tool given a Runtime."
+                },
                 "setIamPolicy": {
                   "id": "notebooks.projects.locations.runtimes.setIamPolicy",
                   "path": "v1/{+resource}:setIamPolicy",
@@ -3566,6 +3643,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Rollbacks a notebook instance to the previous version."
+                },
+                "diagnose": {
+                  "id": "notebooks.projects.locations.instances.diagnose",
+                  "path": "v1/{+name}:diagnose",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:diagnose",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "DiagnoseInstanceRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a Diagnostic File and runs Diagnostic Tool given an Instance."
                 },
                 "upgradeInternal": {
                   "id": "notebooks.projects.locations.instances.upgradeInternal",

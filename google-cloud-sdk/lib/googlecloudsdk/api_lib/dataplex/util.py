@@ -32,7 +32,10 @@ def GetMessageModule():
   return apis.GetMessagesModule('dataplex', 'v1')
 
 
-def WaitForOperation(operation, resource):
+def WaitForOperation(operation,
+                     resource,
+                     sleep_ms=5000,
+                     pre_start_sleep_ms=1000):
   """Waits for the given google.longrunning.Operation to complete."""
   operation_ref = resources.REGISTRY.Parse(
       operation.name, collection='dataplex.projects.locations.operations')
@@ -40,8 +43,11 @@ def WaitForOperation(operation, resource):
       resource,
       GetClientInstance().projects_locations_operations)
   return waiter.WaitFor(
-      poller, operation_ref,
-      'Waiting for [{0}] to finish'.format(operation_ref.RelativeName()))
+      poller,
+      operation_ref,
+      'Waiting for [{0}] to finish'.format(operation_ref.RelativeName()),
+      sleep_ms=sleep_ms,
+      pre_start_sleep_ms=pre_start_sleep_ms)
 
 
 def CreateLabels(dataplex_resource, args):

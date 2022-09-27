@@ -246,7 +246,7 @@
           "format": "google-datetime"
         },
         "hostname": {
-          "description": "The hostname of the page on which the token was generated.",
+          "description": "The hostname of the page on which the token was generated (Web keys only).",
           "type": "string"
         },
         "action": {

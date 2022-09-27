@@ -32,16 +32,29 @@ import six
 class SupportedFeatures:
   """Simple dataclass to hold status of supported features in Bulk."""
 
-  def __init__(self, support_nvdimm, support_public_dns, support_erase_vss,
-               support_min_node_cpu, support_source_snapshot_csek,
-               support_image_csek, support_confidential_compute,
-               support_post_key_revocation_action_type, support_rsa_encrypted,
-               deprecate_maintenance_policy, support_create_disk_snapshots,
-               support_boot_snapshot_uri, support_display_device,
-               support_local_ssd_size, support_secure_tags,
-               support_host_error_timeout_seconds, support_numa_node_count,
-               support_visible_core_count, support_max_run_duration,
-               support_enable_target_shape, support_confidential_compute_type):
+  def __init__(self,
+               support_nvdimm,
+               support_public_dns,
+               support_erase_vss,
+               support_min_node_cpu,
+               support_source_snapshot_csek,
+               support_image_csek,
+               support_confidential_compute,
+               support_post_key_revocation_action_type,
+               support_rsa_encrypted,
+               deprecate_maintenance_policy,
+               support_create_disk_snapshots,
+               support_boot_snapshot_uri,
+               support_display_device,
+               support_local_ssd_size,
+               support_secure_tags,
+               support_host_error_timeout_seconds,
+               support_numa_node_count,
+               support_visible_core_count,
+               support_max_run_duration,
+               support_enable_target_shape,
+               support_confidential_compute_type,
+               support_provisioned_throughput=False):
     self.support_rsa_encrypted = support_rsa_encrypted
     self.support_secure_tags = support_secure_tags
     self.support_erase_vss = support_erase_vss
@@ -63,6 +76,7 @@ class SupportedFeatures:
     self.support_max_run_duration = support_max_run_duration
     self.support_enable_target_shape = support_enable_target_shape
     self.support_confidential_compute_type = support_confidential_compute_type
+    self.support_provisioned_throughput = support_provisioned_throughput
 
 
 def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
@@ -209,7 +223,9 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
         support_image_csek=supported_features.support_image_csek,
         support_create_disk_snapshots=supported_features
         .support_create_disk_snapshots,
-        use_disk_type_uri=False)
+        use_disk_type_uri=False,
+        support_provisioned_throughput=supported_features
+        .support_provisioned_throughput)
 
   machine_type_name = None
   if instance_utils.CheckSpecifiedMachineTypeArgs(args, skip_defaults):

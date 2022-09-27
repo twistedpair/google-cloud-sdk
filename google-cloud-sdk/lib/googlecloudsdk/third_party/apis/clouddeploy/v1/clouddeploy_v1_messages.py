@@ -1010,9 +1010,7 @@ class DeliveryPipeline(_messages.Message):
 
   Messages:
     AnnotationsValue: User annotations. These attributes can only be set and
-      used by the user, and not by Google Cloud Deploy. See
-      https://google.aip.dev/128#annotations for more details such as format
-      and size limitations.
+      used by the user, and not by Google Cloud Deploy.
     LabelsValue: Labels are attributes that can be set and used by both the
       user and by Google Cloud Deploy. Labels must meet the following
       constraints: * Keys and values can contain only lowercase letters,
@@ -1024,9 +1022,7 @@ class DeliveryPipeline(_messages.Message):
 
   Fields:
     annotations: User annotations. These attributes can only be set and used
-      by the user, and not by Google Cloud Deploy. See
-      https://google.aip.dev/128#annotations for more details such as format
-      and size limitations.
+      by the user, and not by Google Cloud Deploy.
     condition: Output only. Information around the state of the Delivery
       Pipeline.
     createTime: Output only. Time at which the pipeline was created.
@@ -1057,9 +1053,7 @@ class DeliveryPipeline(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""User annotations. These attributes can only be set and used by the
-    user, and not by Google Cloud Deploy. See
-    https://google.aip.dev/128#annotations for more details such as format and
-    size limitations.
+    user, and not by Google Cloud Deploy.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -1180,6 +1174,8 @@ class DeployJobRun(_messages.Message):
       be unspecified while the deploy is in progress or if it succeeded.
     failureMessage: Output only. Additional information about the deploy
       failure, if available.
+    metadata: Output only. Metadata containing information about the deploy
+      job run.
   """
 
   class FailureCauseValueValuesEnum(_messages.Enum):
@@ -1205,6 +1201,19 @@ class DeployJobRun(_messages.Message):
   build = _messages.StringField(1)
   failureCause = _messages.EnumField('FailureCauseValueValuesEnum', 2)
   failureMessage = _messages.StringField(3)
+  metadata = _messages.MessageField('DeployJobRunMetadata', 4)
+
+
+class DeployJobRunMetadata(_messages.Message):
+  r"""DeployJobRunMetadata surfaces information associated with a
+  `DeployJobRun` to the user.
+
+  Fields:
+    cloudRun: Output only. The name of the Cloud Run Service that is
+      associated with a `DeployJobRun`.
+  """
+
+  cloudRun = _messages.MessageField('CloudRunMetadata', 1)
 
 
 class DeploymentJobs(_messages.Message):
@@ -1430,6 +1439,47 @@ class JobRun(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 9)
   uid = _messages.StringField(10)
   verifyJobRun = _messages.MessageField('VerifyJobRun', 11)
+
+
+class JobRunNotificationEvent(_messages.Message):
+  r"""Payload proto for "clouddeploy.googleapis.com/jobrun_notification"
+  Platform Log event that describes the failure to send JobRun resource update
+  Pub/Sub notification.
+
+  Enums:
+    TypeValueValuesEnum: Type of this notification, e.g. for a Pub/Sub
+      failure.
+
+  Fields:
+    jobRun: The name of the `JobRun`.
+    message: Debug message for when a notification fails to send.
+    pipelineUid: Unique identifier of the `DeliveryPipeline`.
+    releaseUid: Unique identifier of the `Release`.
+    rolloutUid: Unique identifier of the `Rollout`.
+    targetId: ID of the `Target`.
+    type: Type of this notification, e.g. for a Pub/Sub failure.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of this notification, e.g. for a Pub/Sub failure.
+
+    Values:
+      TYPE_UNSPECIFIED: Type is unspecified.
+      TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
+        sent.
+      TYPE_RENDER_STATUES_CHANGE: Release render status changed notification.
+    """
+    TYPE_UNSPECIFIED = 0
+    TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
+    TYPE_RENDER_STATUES_CHANGE = 2
+
+  jobRun = _messages.StringField(1)
+  message = _messages.StringField(2)
+  pipelineUid = _messages.StringField(3)
+  releaseUid = _messages.StringField(4)
+  rolloutUid = _messages.StringField(5)
+  targetId = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class ListDeliveryPipelinesResponse(_messages.Message):

@@ -143,6 +143,81 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsRestrictAllowedResourcesReq
   name = _messages.StringField(2, required=True)
 
 
+class AssuredworkloadsOrganizationsLocationsWorkloadsViolationsAcknowledgeRequest(_messages.Message):
+  r"""A
+  AssuredworkloadsOrganizationsLocationsWorkloadsViolationsAcknowledgeRequest
+  object.
+
+  Fields:
+    googleCloudAssuredworkloadsV1AcknowledgeViolationRequest: A
+      GoogleCloudAssuredworkloadsV1AcknowledgeViolationRequest resource to be
+      passed as the request body.
+    name: Required. The resource name of the Violation to acknowledge. Format:
+      organizations/{organization}/locations/{location}/workloads/{workload}/v
+      iolations/{violation}
+  """
+
+  googleCloudAssuredworkloadsV1AcknowledgeViolationRequest = _messages.MessageField('GoogleCloudAssuredworkloadsV1AcknowledgeViolationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AssuredworkloadsOrganizationsLocationsWorkloadsViolationsGetRequest(_messages.Message):
+  r"""A AssuredworkloadsOrganizationsLocationsWorkloadsViolationsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the Violation to fetch (ie.
+      Violation.name). Format: organizations/{organization}/locations/{locatio
+      n}/workloads/{workload}/violations/{violation}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest(_messages.Message):
+  r"""A AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest
+  object.
+
+  Fields:
+    filter: Optional. A custom filter for filtering by the Violations
+      properties.
+    interval_endTime: The end of the time window.
+    interval_startTime: The start of the time window.
+    pageSize: Optional. Page size.
+    pageToken: Optional. Page token returned from previous request.
+    parent: Required. The Workload name. Format
+      `organizations/{org_id}/locations/{location}/workloads/{workload}`.
+  """
+
+  filter = _messages.StringField(1)
+  interval_endTime = _messages.StringField(2)
+  interval_startTime = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6, required=True)
+
+
+class GoogleCloudAssuredworkloadsV1AcknowledgeViolationRequest(_messages.Message):
+  r"""Request for acknowledging the violation Next Id: 4
+
+  Fields:
+    comment: Required. Business justification explaining the need for
+      violation acknowledgement
+    nonCompliantOrgPolicy: Optional. Name of the OrgPolicy which was modified
+      with non-compliant change and resulted in this violation. Format:
+      projects/{project_number}/policies/{constraint_name}
+      folders/{folder_id}/policies/{constraint_name}
+      organizations/{organization_id}/policies/{constraint_name}
+  """
+
+  comment = _messages.StringField(1)
+  nonCompliantOrgPolicy = _messages.StringField(2)
+
+
+class GoogleCloudAssuredworkloadsV1AcknowledgeViolationResponse(_messages.Message):
+  r"""Response for violation acknowledgement"""
+
+
 class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Message):
   r"""Operation metadata to give request details of CreateWorkload.
 
@@ -196,6 +271,19 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
   parent = _messages.StringField(4)
 
 
+class GoogleCloudAssuredworkloadsV1ListViolationsResponse(_messages.Message):
+  r"""Response of ListViolations endpoint.
+
+  Fields:
+    nextPageToken: The next page token. Returns empty if reached the last
+      page.
+    violations: List of Violations under a Workload.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  violations = _messages.MessageField('GoogleCloudAssuredworkloadsV1Violation', 2, repeated=True)
+
+
 class GoogleCloudAssuredworkloadsV1ListWorkloadsResponse(_messages.Message):
   r"""Response of ListWorkloads endpoint.
 
@@ -243,6 +331,159 @@ class GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesRequest(_messages.Mes
 
 class GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesResponse(_messages.Message):
   r"""Response for restricting the list of allowed resources."""
+
+
+class GoogleCloudAssuredworkloadsV1Violation(_messages.Message):
+  r"""Workload monitoring Violation.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the violation
+
+  Fields:
+    acknowledged: A boolean that indicates if the violation is acknowledged
+    acknowledgementTime: Optional. Timestamp when this violation was
+      acknowledged last. This will be absent when acknowledged field is marked
+      as false.
+    auditLogLink: Output only. Immutable. Audit Log Link for violated resource
+      Format: https://console.cloud.google.com/logs/query;query={logName}{prot
+      oPayload.resourceName}{timeRange}{folder}
+    beginTime: Output only. Time of the event which triggered the Violation.
+    category: Output only. Category under which this violation is mapped. e.g.
+      Location, Service Usage, Access, Encryption, etc.
+    description: Output only. Description for the Violation. e.g. OrgPolicy
+      gcp.resourceLocations has non compliant value.
+    name: Output only. Immutable. Name of the Violation. Format: organizations
+      /{organization}/locations/{location}/workloads/{workload_id}/violations/
+      {violations_id}
+    nonCompliantOrgPolicy: Output only. Immutable. Name of the OrgPolicy which
+      was modified with non-compliant change and resulted this violation.
+      Format: projects/{project_number}/policies/{constraint_name}
+      folders/{folder_id}/policies/{constraint_name}
+      organizations/{organization_id}/policies/{constraint_name}
+    orgPolicyConstraint: Output only. Immutable. The org-policy-constraint
+      that was incorrectly changed, which resulted in this violation.
+    remediation: Output only. Compliance violation remediation
+    resolveTime: Output only. Time of the event which fixed the Violation. If
+      the violation is ACTIVE this will be empty.
+    state: Output only. State of the violation
+    updateTime: Output only. The last time when the Violation record was
+      updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the violation
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      ACTIVE: Violation currently active.
+      RESOLVED: Violation is resolved.
+      UNRESOLVED: Violation is Unresolved
+      EXCEPTION: Violation is Exception
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    RESOLVED = 2
+    UNRESOLVED = 3
+    EXCEPTION = 4
+
+  acknowledged = _messages.BooleanField(1)
+  acknowledgementTime = _messages.StringField(2)
+  auditLogLink = _messages.StringField(3)
+  beginTime = _messages.StringField(4)
+  category = _messages.StringField(5)
+  description = _messages.StringField(6)
+  name = _messages.StringField(7)
+  nonCompliantOrgPolicy = _messages.StringField(8)
+  orgPolicyConstraint = _messages.StringField(9)
+  remediation = _messages.MessageField('GoogleCloudAssuredworkloadsV1ViolationRemediation', 10)
+  resolveTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
+
+
+class GoogleCloudAssuredworkloadsV1ViolationRemediation(_messages.Message):
+  r"""Represents remediation guidance to resolve compliance violation for
+  AssuredWorkload
+
+  Enums:
+    RemediationTypeValueValuesEnum: Output only. Reemediation type based on
+      the type of org policy values violated
+
+  Fields:
+    compliantValues: Values that can resolve the violation For example: for
+      list org policy violations, this will either be the list of allowed or
+      denied values
+    instructions: Required. Remediation instructions to resolve violations
+    remediationType: Output only. Reemediation type based on the type of org
+      policy values violated
+  """
+
+  class RemediationTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Reemediation type based on the type of org policy values
+    violated
+
+    Values:
+      REMEDIATION_TYPE_UNSPECIFIED: Unspecified remediation type
+      REMEDIATION_BOOLEAN_ORG_POLICY_VIOLATION: Remediation type for boolean
+        org policy
+      REMEDIATION_LIST_ALLOWED_VALUES_ORG_POLICY_VIOLATION: Remediation type
+        for list org policy which have allowed values in the monitoring rule
+      REMEDIATION_LIST_DENIED_VALUES_ORG_POLICY_VIOLATION: Remediation type
+        for list org policy which have denied values in the monitoring rule
+      REMEDIATION_RESTRICT_CMEK_CRYPTO_KEY_PROJECTS_ORG_POLICY_VIOLATION:
+        Remediation type for gcp.restrictCmekCryptoKeyProjects
+    """
+    REMEDIATION_TYPE_UNSPECIFIED = 0
+    REMEDIATION_BOOLEAN_ORG_POLICY_VIOLATION = 1
+    REMEDIATION_LIST_ALLOWED_VALUES_ORG_POLICY_VIOLATION = 2
+    REMEDIATION_LIST_DENIED_VALUES_ORG_POLICY_VIOLATION = 3
+    REMEDIATION_RESTRICT_CMEK_CRYPTO_KEY_PROJECTS_ORG_POLICY_VIOLATION = 4
+
+  compliantValues = _messages.StringField(1, repeated=True)
+  instructions = _messages.MessageField('GoogleCloudAssuredworkloadsV1ViolationRemediationInstructions', 2)
+  remediationType = _messages.EnumField('RemediationTypeValueValuesEnum', 3)
+
+
+class GoogleCloudAssuredworkloadsV1ViolationRemediationInstructions(_messages.Message):
+  r"""Instructions to remediate violation
+
+  Fields:
+    consoleInstructions: Remediation instructions to resolve violation via
+      cloud console
+    gcloudInstructions: Remediation instructions to resolve violation via
+      gcloud cli
+  """
+
+  consoleInstructions = _messages.MessageField('GoogleCloudAssuredworkloadsV1ViolationRemediationInstructionsConsole', 1)
+  gcloudInstructions = _messages.MessageField('GoogleCloudAssuredworkloadsV1ViolationRemediationInstructionsGcloud', 2)
+
+
+class GoogleCloudAssuredworkloadsV1ViolationRemediationInstructionsConsole(_messages.Message):
+  r"""Remediation instructions to resolve violation via cloud console
+
+  Fields:
+    additionalLinks: Additional urls for more information about steps
+    consoleUris: Link to console page where violations can be resolved
+    steps: Steps to resolve violation via cloud console
+  """
+
+  additionalLinks = _messages.StringField(1, repeated=True)
+  consoleUris = _messages.StringField(2, repeated=True)
+  steps = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudAssuredworkloadsV1ViolationRemediationInstructionsGcloud(_messages.Message):
+  r"""Remediation instructions to resolve violation via gcloud cli
+
+  Fields:
+    additionalLinks: Additional urls for more information about steps
+    gcloudCommands: Gcloud command to resolve violation
+    steps: Steps to resolve violation via gcloud cli
+  """
+
+  additionalLinks = _messages.StringField(1, repeated=True)
+  gcloudCommands = _messages.StringField(2, repeated=True)
+  steps = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):

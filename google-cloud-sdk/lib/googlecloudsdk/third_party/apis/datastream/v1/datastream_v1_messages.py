@@ -1609,7 +1609,8 @@ class OracleSourceConfig(_messages.Message):
     maxConcurrentCdcTasks: Maximum number of concurrent CDC tasks. The number
       should be non negative. If not set (or set to 0), the system's default
       value will be used.
-    streamLargeObjects: Stream large object values.
+    streamLargeObjects: Stream large object values. NOTE: This feature is
+      currently experimental.
   """
 
   dropLargeObjects = _messages.MessageField('DropLargeObjects', 1)

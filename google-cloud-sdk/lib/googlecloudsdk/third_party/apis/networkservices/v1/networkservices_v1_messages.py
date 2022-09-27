@@ -728,6 +728,9 @@ class EdgeCacheOrigin(_messages.Message):
       must not contain any slashes. When providing an IP address, it must be
       publicly routable. IPv6 addresses must not be enclosed in square
       brackets.
+    originOverrideAction: Optional. The override actions, including
+      url_rewrites and header additions, for requests that use this origin.
+    originRedirect: Optional. Follow redirects from this origin.
     port: Optional. The port to connect to the origin on. Defaults to port
       **443** for HTTP2 and HTTPS protocols, and port **80** for HTTP.
     protocol: Optional. The protocol to use to connect to the configured
@@ -832,11 +835,13 @@ class EdgeCacheOrigin(_messages.Message):
   maxAttempts = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   name = _messages.StringField(7)
   originAddress = _messages.StringField(8)
-  port = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 10)
-  retryConditions = _messages.EnumField('RetryConditionsValueListEntryValuesEnum', 11, repeated=True)
-  timeout = _messages.MessageField('Timeout', 12)
-  updateTime = _messages.StringField(13)
+  originOverrideAction = _messages.MessageField('OriginOverrideAction', 9)
+  originRedirect = _messages.MessageField('OriginRedirect', 10)
+  port = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 12)
+  retryConditions = _messages.EnumField('RetryConditionsValueListEntryValuesEnum', 13, repeated=True)
+  timeout = _messages.MessageField('Timeout', 14)
+  updateTime = _messages.StringField(15)
 
 
 class EdgeCacheService(_messages.Message):
@@ -4157,6 +4162,97 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class OriginHeaderAction(_messages.Message):
+  r"""OriginHeaderAction defines the addition and removal of HTTP headers for
+  requests/responses.
+
+  Fields:
+    requestHeadersToAdd: Optional. Describes a header to add. You may add a
+      maximum of 5 request headers.
+  """
+
+  requestHeadersToAdd = _messages.MessageField('OriginHeaderActionAddHeader', 1, repeated=True)
+
+
+class OriginHeaderActionAddHeader(_messages.Message):
+  r"""Describes a header to add.
+
+  Fields:
+    headerName: Required. The name of the header to add.
+    headerValue: Required. The value of the header to add.
+    replace: Optional. Whether to replace all existing headers with the same
+      name. By default, added header values are appended to the response or
+      request headers with the same field names. The added values are
+      separated by commas. To overwrite existing values, set `replace` to
+      `true`.
+  """
+
+  headerName = _messages.StringField(1)
+  headerValue = _messages.StringField(2)
+  replace = _messages.BooleanField(3)
+
+
+class OriginOverrideAction(_messages.Message):
+  r"""OriginOverrideAction defines how requests and responses may be
+  manipulated on cache fill to this origin.
+
+  Fields:
+    headerAction: Optional. The header actions, including adding & removing
+      headers, for requests handled by this origin.
+    urlRewrite: Optional. The URL rewrite configuration for requests that are
+      handled by this origin.
+  """
+
+  headerAction = _messages.MessageField('OriginHeaderAction', 1)
+  urlRewrite = _messages.MessageField('OriginUrlRewrite', 2)
+
+
+class OriginRedirect(_messages.Message):
+  r"""Options for following redirects from the origin.
+
+  Enums:
+    RedirectConditionsValueListEntryValuesEnum:
+
+  Fields:
+    redirectConditions: Optional. The set of HTTP redirect response codes that
+      the CDN follows.
+  """
+
+  class RedirectConditionsValueListEntryValuesEnum(_messages.Enum):
+    r"""RedirectConditionsValueListEntryValuesEnum enum type.
+
+    Values:
+      REDIRECT_CONDITIONS_UNSPECIFIED: It is an error to specify
+        REDIRECT_CONDITIONS_UNSPECIFIED
+      MOVED_PERMANENTLY: Follow redirect on an HTTP 301.
+      FOUND: Follow redirect on an HTTP 302.
+      SEE_OTHER: Follow redirect on an HTTP 303.
+      TEMPORARY_REDIRECT: Follow redirect on an HTTP 307.
+      PERMANENT_REDIRECT: Follow redirect on an HTTP 308.
+    """
+    REDIRECT_CONDITIONS_UNSPECIFIED = 0
+    MOVED_PERMANENTLY = 1
+    FOUND = 2
+    SEE_OTHER = 3
+    TEMPORARY_REDIRECT = 4
+    PERMANENT_REDIRECT = 5
+
+  redirectConditions = _messages.EnumField('RedirectConditionsValueListEntryValuesEnum', 1, repeated=True)
+
+
+class OriginUrlRewrite(_messages.Message):
+  r"""OriginUrlRewrite defines the URL rewrite configuration for a given
+  request handled by this origin.
+
+  Fields:
+    hostRewrite: Optional. Prior to forwarding the request to the selected
+      origin, the request's host header is replaced with contents of
+      hostRewrite. The host value must be between 1 and 255 characters.
+  """
+
+  hostRewrite = _messages.StringField(1)
 
 
 class PathMatcher(_messages.Message):

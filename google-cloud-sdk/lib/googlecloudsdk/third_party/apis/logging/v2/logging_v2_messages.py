@@ -2076,7 +2076,9 @@ class LoggingBillingAccountsLocationsBucketsViewsCreateRequest(_messages.Message
     parent: Required. The bucket in which to create the view
       `"projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"`
       For example:"projects/my-project/locations/global/buckets/my-bucket"
-    viewId: Required. The id to use for this view.
+    viewId: Required. A client-assigned identifier such as "my-view".
+      Identifiers are limited to 100 characters and can include only letters,
+      digits, underscores, hyphens, and periods.
   """
 
   logView = _messages.MessageField('LogView', 1)
@@ -2892,7 +2894,9 @@ class LoggingFoldersLocationsBucketsViewsCreateRequest(_messages.Message):
     parent: Required. The bucket in which to create the view
       `"projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"`
       For example:"projects/my-project/locations/global/buckets/my-bucket"
-    viewId: Required. The id to use for this view.
+    viewId: Required. A client-assigned identifier such as "my-view".
+      Identifiers are limited to 100 characters and can include only letters,
+      digits, underscores, hyphens, and periods.
   """
 
   logView = _messages.MessageField('LogView', 1)
@@ -3550,7 +3554,9 @@ class LoggingLocationsBucketsViewsCreateRequest(_messages.Message):
     parent: Required. The bucket in which to create the view
       `"projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"`
       For example:"projects/my-project/locations/global/buckets/my-bucket"
-    viewId: Required. The id to use for this view.
+    viewId: Required. A client-assigned identifier such as "my-view".
+      Identifiers are limited to 100 characters and can include only letters,
+      digits, underscores, hyphens, and periods.
   """
 
   logView = _messages.MessageField('LogView', 1)
@@ -4088,7 +4094,9 @@ class LoggingOrganizationsLocationsBucketsViewsCreateRequest(_messages.Message):
     parent: Required. The bucket in which to create the view
       `"projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"`
       For example:"projects/my-project/locations/global/buckets/my-bucket"
-    viewId: Required. The id to use for this view.
+    viewId: Required. A client-assigned identifier such as "my-view".
+      Identifiers are limited to 100 characters and can include only letters,
+      digits, underscores, hyphens, and periods.
   """
 
   logView = _messages.MessageField('LogView', 1)
@@ -4861,7 +4869,9 @@ class LoggingProjectsLocationsBucketsViewsCreateRequest(_messages.Message):
     parent: Required. The bucket in which to create the view
       `"projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"`
       For example:"projects/my-project/locations/global/buckets/my-bucket"
-    viewId: Required. The id to use for this view.
+    viewId: Required. A client-assigned identifier such as "my-view".
+      Identifiers are limited to 100 characters and can include only letters,
+      digits, underscores, hyphens, and periods.
   """
 
   logView = _messages.MessageField('LogView', 1)

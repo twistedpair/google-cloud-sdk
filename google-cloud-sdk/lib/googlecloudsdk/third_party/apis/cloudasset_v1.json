@@ -1889,8 +1889,15 @@
           }
         },
         "kmsKey": {
-          "description": "The Cloud KMS [CryptoKey](https:\/\/cloud.google.com\/kms\/docs\/reference\/rest\/v1\/projects.locations.keyRings.cryptoKeys) name or [CryptoKeyVersion](https:\/\/cloud.google.com\/kms\/docs\/reference\/rest\/v1\/projects.locations.keyRings.cryptoKeys.cryptoKeyVersions) name. This field is available only when the resource's Protobuf contains it. To search against the `kms_key`: * Use a field query. Example: `kmsKey:key` * Use a free text query. Example: `key`",
+          "description": "This field only presents for the purpose of backward-compatibility. Please use `kms_keys` field to retrieve KMS key information. This field will only be populated for the resource types included in this list for backward compatible purpose. To search against the `kms_key`: * Use a field query. Example: `kmsKey:key` * Use a free text query. Example: `key`",
           "type": "string"
+        },
+        "kmsKeys": {
+          "description": "The Cloud KMS [CryptoKey](https:\/\/cloud.google.com\/kms\/docs\/reference\/rest\/v1\/projects.locations.keyRings.cryptoKeys) names or [CryptoKeyVersion](https:\/\/cloud.google.com\/kms\/docs\/reference\/rest\/v1\/projects.locations.keyRings.cryptoKeys.cryptoKeyVersions) names. This field is available only when the resource's Protobuf contains it. To search against the `kms_keys`: * Use a field query. Example: `kmsKeys:key` * Use a free text query. Example: `key`",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "createTime": {
           "description": "The create timestamp of this resource, at which the resource was created. The granularity is in seconds. Timestamp.nanos will always be 0. This field is available only when the resource's Protobuf contains it. To search against `create_time`: * Use a field query. - value in seconds since unix epoch. Example: `createTime > 1609459200` - value in date string. Example: `createTime > 2021-01-01` - value in date-time string (must be quoted). Example: `createTime > \"2021-01-01T00:00:00\"`",
@@ -2370,7 +2377,7 @@
           "description": "The Google standard error code that best describes the state. For example: - OK means the analysis on this entity has been successfully finished; - PERMISSION_DENIED means an access denied error is encountered; - DEADLINE_EXCEEDED means the analysis on this entity hasn't been started in time;",
           "type": "string",
           "enumDescriptions": [
-            "Not an error; returned on success HTTP Mapping: 200 OK",
+            "Not an error; returned on success. HTTP Mapping: 200 OK",
             "The operation was cancelled, typically by the caller. HTTP Mapping: 499 Client Closed Request",
             "Unknown error. For example, this error may be returned when a `Status` value received from another address space belongs to an error space that is not known in this address space. Also errors raised by APIs that do not return enough error information may be converted to this error. HTTP Mapping: 500 Internal Server Error",
             "The client specified an invalid argument. Note that this differs from `FAILED_PRECONDITION`. `INVALID_ARGUMENT` indicates arguments that are problematic regardless of the state of the system (e.g., a malformed file name). HTTP Mapping: 400 Bad Request",
@@ -3308,6 +3315,125 @@
         }
       }
     },
+    "AnalyzeOrgPolicyGovernedAssetsResponse": {
+      "id": "AnalyzeOrgPolicyGovernedAssetsResponse",
+      "description": "The response message for AssetService.AnalyzeOrgPolicyGovernedAssets.",
+      "type": "object",
+      "properties": {
+        "governedAssets": {
+          "description": "The list of the analyzed governed assets.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedAsset"
+          }
+        },
+        "constraint": {
+          "description": "The definition of the constraint in the request.",
+          "$ref": "AnalyzerOrgPolicyConstraint"
+        },
+        "nextPageToken": {
+          "description": "The page token to fetch the next page for AnalyzeOrgPolicyGovernedAssetsResponse.governed_assets.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedAsset": {
+      "id": "GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedAsset",
+      "description": "Represents a GCP asset(resource or IAM policy) governed by the organization policies of the AnalyzeOrgPolicyGovernedAssetsRequest.constraint.",
+      "type": "object",
+      "properties": {
+        "governedResource": {
+          "description": "A GCP resource governed by the organization policies of the AnalyzeOrgPolicyGovernedAssetsRequest.constraint.",
+          "$ref": "GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedResource"
+        },
+        "governedIamPolicy": {
+          "description": "An IAM policy governed by the organization policies of the AnalyzeOrgPolicyGovernedAssetsRequest.constraint.",
+          "$ref": "GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedIamPolicy"
+        }
+      }
+    },
+    "GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedResource": {
+      "id": "GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedResource",
+      "description": "The GCP resources governed by the organization policies of the AnalyzeOrgPolicyGovernedAssetsRequest.constraint.",
+      "type": "object",
+      "properties": {
+        "fullResourceName": {
+          "description": "The [full resource name] (https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format) of the GCP resource.",
+          "type": "string"
+        },
+        "parent": {
+          "description": "The [full resource name] (https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format) of the parent of AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource.full_resource_name.",
+          "type": "string"
+        },
+        "consolidatedPolicy": {
+          "description": "The consolidated policy for the analyzed resource. The consolidated policy is computed by merging and evaluating AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource.policy_bundle. The evaluation will respect the organization policy [hierarchy rules](https:\/\/cloud.google.com\/resource-manager\/docs\/organization-policy\/understanding-hierarchy).",
+          "$ref": "AnalyzerOrgPolicy"
+        },
+        "policyBundle": {
+          "description": "The ordered list of all organization policies from the AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource.consolidated_policy.attached_resource. to the scope specified in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "AnalyzerOrgPolicy"
+          }
+        },
+        "project": {
+          "description": "The project that this resource belongs to, in the form of projects\/{PROJECT_NUMBER}. This field is available when the resource belongs to a project.",
+          "type": "string"
+        },
+        "folders": {
+          "description": "The folder(s) that this resource belongs to, in the form of folders\/{FOLDER_NUMBER}. This field is available when the resource belongs(directly or cascadingly) to one or more folders.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "organization": {
+          "description": "The organization that this resource belongs to, in the form of organizations\/{ORGANIZATION_NUMBER}. This field is available when the resource belongs(directly or cascadingly) to an organization.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedIamPolicy": {
+      "id": "GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedIamPolicy",
+      "description": "The IAM policies governed by the organization policies of the AnalyzeOrgPolicyGovernedAssetsRequest.constraint.",
+      "type": "object",
+      "properties": {
+        "attachedResource": {
+          "description": "The full resource name of the resource associated with this IAM policy. Example: `\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1`. See [Cloud Asset Inventory Resource Name Format](https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format) for more information.",
+          "type": "string"
+        },
+        "policy": {
+          "description": "The IAM policy directly set on the given resource.",
+          "$ref": "Policy"
+        },
+        "consolidatedPolicy": {
+          "description": "The consolidated policy for the analyzed IAM policy. The consolidated policy is computed by merging and evaluating AnalyzeOrgPolicyGovernedAssetsResponse.GovernedAsset.policy_bundle. The evaluation will respect the organization policy [hierarchy rules](https:\/\/cloud.google.com\/resource-manager\/docs\/organization-policy\/understanding-hierarchy).",
+          "$ref": "AnalyzerOrgPolicy"
+        },
+        "policyBundle": {
+          "description": "The ordered list of all organization policies from the consolidated_policy.attached_resource. to the scope specified in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "AnalyzerOrgPolicy"
+          }
+        },
+        "project": {
+          "description": "The project that this IAM policy belongs to, in the form of projects\/{PROJECT_NUMBER}. This field is available when the IAM policy belongs to a project.",
+          "type": "string"
+        },
+        "folders": {
+          "description": "The folder(s) that this IAM policy belongs to, in the form of folders\/{FOLDER_NUMBER}. This field is available when the IAM policy belongs(directly or cascadingly) to one or more folders.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "organization": {
+          "description": "The organization that this IAM policy belongs to, in the form of organizations\/{ORGANIZATION_NUMBER}. This field is available when the IAM policy belongs(directly or cascadingly) to an organization.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudAssetV1p7beta1Asset": {
       "id": "GoogleCloudAssetV1p7beta1Asset",
       "description": "An asset in Google Cloud. An asset can be any resource in the Google Cloud [resource hierarchy](https:\/\/cloud.google.com\/resource-manager\/docs\/cloud-platform-resource-hierarchy), a resource outside the Google Cloud resource hierarchy (such as Google Kubernetes Engine clusters and objects), or a policy (e.g. Cloud IAM policy). See [Supported asset types](https:\/\/cloud.google.com\/asset-inventory\/docs\/supported-asset-types) for more information.",
@@ -4062,7 +4188,53 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Analyzes organization policies governed resources under a scope."
+          "description": "Analyzes organization policies governed resources under a scope. This RPC only returns resources of types supported by [searchable asset types](https:\/\/cloud.google.com\/asset-inventory\/docs\/supported-asset-types#searchable_asset_types)."
+        },
+        "analyzeOrgPolicyGovernedAssets": {
+          "id": "cloudasset.analyzeOrgPolicyGovernedAssets",
+          "path": "v1/{+scope}:analyzeOrgPolicyGovernedAssets",
+          "flatPath": "v1/{v1Id}/{v1Id1}:analyzeOrgPolicyGovernedAssets",
+          "httpMethod": "GET",
+          "parameters": {
+            "scope": {
+              "description": "Required. The organization to scope the request. Only organization policies within the scope will be analyzed. The output assets will also be limited to the ones governed by those in-scope organization policies. * organizations\/{ORGANIZATION_NUMBER} (e.g., \"organizations\/123456\")",
+              "pattern": "^[^\/]+\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "constraint": {
+              "description": "Required. The name of the constraint to analyze governed assets for. The analysis only contains analyzed organization policies for the provided constraint.",
+              "location": "query",
+              "type": "string"
+            },
+            "filter": {
+              "description": "The expression to filter the governed assets in result. The only supported field is `project` and `folders`, and the only supported operator is `=`. Example: project=\"projects\/12345678\" filter will return all governed assets under projects\/12345678 including the project ifself, if applicable.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "The maximum number of items to return per page. If unspecified, AnalyzeOrgPolicyGovernedAssetsResponse.governed_assets will contain 100 items with a maximum of 200.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "The pagination token to retrieve the next page.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "scope"
+          ],
+          "response": {
+            "$ref": "AnalyzeOrgPolicyGovernedAssetsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Analyzes organization policies governed assets (GCP resources or policies) under a scope. This RPC supports custom constraints and the following 10 canned constraints: * storage.uniformBucketLevelAccess * iam.disableServiceAccountKeyCreation * iam.allowedPolicyMemberDomains * compute.vmExternalIpAccess * appengine.enforceServiceAccountActAsCheck * gcp.resourceLocations * compute.trustedImageProjects * compute.skipDefaultNetworkCreation * compute.requireOsLogin * compute.disableNestedVirtualization This RPC only returns either: * resources of types supported by [searchable asset types](https:\/\/cloud.google.com\/asset-inventory\/docs\/supported-asset-types#searchable_asset_types), or * IAM policies."
         }
       }
     },

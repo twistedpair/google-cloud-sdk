@@ -47,6 +47,8 @@ _DNS_SCOPE = {
     'vpc': 'Configures the Cloud DNS zone to be private to the VPC Network.',
 }
 
+_BINAUTHZ_GKE_POLICY_REGEX = 'projects/([^/]+)/platforms/gke/policies/([a-zA-Z0-9_-]+)'
+
 
 def AddBasicAuthFlags(parser):
   """Adds basic auth flags to the given parser.
@@ -871,6 +873,21 @@ def AddBinauthzFlags(parser, api_version='v1', hidden=False, autopilot=False):
         choices=options,
         default=None,
         help='Enable Binary Authorization for this cluster.',
+        hidden=hidden,
+    )
+  if api_version == 'v1alpha1':
+    platform_policy_type = arg_parsers.RegexpValidator(
+        _BINAUTHZ_GKE_POLICY_REGEX,
+        'GKE policy resource names have the following format: '
+        '`projects/{project_number}/platforms/gke/policies/{policy_id}`')
+    binauthz_group.add_argument(
+        '--binauthz-policy',
+        default=None,
+        type=platform_policy_type,
+        help=textwrap.dedent("""\
+          The relative resource name of the Binary Authorization policy to audit
+          and/or enforce. GKE policies have the following format:
+          `projects/{project_number}/platforms/gke/policies/{policy_id}`."""),
         hidden=hidden,
     )
 
@@ -3067,37 +3084,6 @@ Disable Workload Identity on the cluster.
 For more information on Workload Identity, see
 
             https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
-""")
-
-
-def AddWorkloadIdentityCPUFlags(parser):
-  """Adds tune-gke-metadata-server-cpu flags to the parser."""
-  parser.add_argument(
-      '--tune-gke-metadata-server-cpu',
-      type=arg_parsers.BoundedInt(lower_bound=100),
-      hidden=True,
-      default=None,
-      help="""\
-Set gke-metadata-server daemonset container cpu limits and requests.
-
-e.g. --tune-gke-metadata-server-cpu=100, the unit is CPU in millicores and
-the value should be equal or larger than 100.
-""")
-
-
-def AddWorkloadIdentityMemoryFlags(parser):
-  """Adds tune-gke-metadata-server-memory flags to the parser."""
-  parser.add_argument(
-      '--tune-gke-metadata-server-memory',
-      default=None,
-      hidden=True,
-      type=arg_parsers.BinarySize(
-          lower_bound='100Mi', default_unit='B', type_abbr='B'),
-      help="""\
-Set gke-metadata-server daemonset container memory limits and requests.
-
-e.g. --tune-gke-metadata-server-memory=100Mi, the input value should be memory
-in B, KB, MiB or MB and should be equal or larger than 100MiB.
 """)
 
 

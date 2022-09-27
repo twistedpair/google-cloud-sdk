@@ -74,37 +74,37 @@ class GcsBucketResource(resource_reference.BucketResource):
     public_access_prevention (str|None): Public access prevention status.
     rpo (str|None): Recovery Point Objective status.
     satisfies_pzs (bool|None): Zone Separation status.
+    uniform_bucket_level_access (bool|None): True if all objects in the bucket
+      share ACLs rather than the default, fine-grain ACL control.
   """
 
-  def __init__(
-      self,
-      storage_url_object,
-      acl=None,
-      cors_config=None,
-      creation_time=None,
-      default_acl=None,
-      default_event_based_hold=None,
-      default_kms_key=None,
-      default_storage_class=None,
-      etag=None,
-      lifecycle_config=None,
-      labels=None,
-      location=None,
-      location_type=None,
-      logging_config=None,
-      metadata=None,
-      metageneration=None,
-      project_number=None,
-      public_access_prevention=None,
-      requester_pays=None,
-      retention_policy=None,
-      rpo=None,
-      satisfies_pzs=None,
-      # TODO(b/246619585): Check if we really want this default.
-      uniform_bucket_level_access=False,
-      update_time=None,
-      versioning_enabled=None,
-      website_config=None):
+  def __init__(self,
+               storage_url_object,
+               acl=None,
+               cors_config=None,
+               creation_time=None,
+               default_acl=None,
+               default_event_based_hold=None,
+               default_kms_key=None,
+               default_storage_class=None,
+               etag=None,
+               labels=None,
+               lifecycle_config=None,
+               location=None,
+               location_type=None,
+               logging_config=None,
+               metadata=None,
+               metageneration=None,
+               project_number=None,
+               public_access_prevention=None,
+               requester_pays=None,
+               retention_policy=None,
+               rpo=None,
+               satisfies_pzs=None,
+               uniform_bucket_level_access=None,
+               update_time=None,
+               versioning_enabled=None,
+               website_config=None):
     """Initializes resource. Args are a subset of attributes."""
     super(GcsBucketResource, self).__init__(
         storage_url_object,
@@ -122,7 +122,6 @@ class GcsBucketResource(resource_reference.BucketResource):
         metadata=metadata,
         requester_pays=requester_pays,
         retention_policy=retention_policy,
-        uniform_bucket_level_access=uniform_bucket_level_access,
         update_time=update_time,
         versioning_enabled=versioning_enabled,
         website_config=website_config,
@@ -134,6 +133,7 @@ class GcsBucketResource(resource_reference.BucketResource):
     self.public_access_prevention = public_access_prevention
     self.rpo = rpo
     self.satisfies_pzs = satisfies_pzs
+    self.uniform_bucket_level_access = uniform_bucket_level_access
 
   @property
   def retention_period(self):
@@ -191,7 +191,10 @@ class GcsBucketResource(resource_reference.BucketResource):
             self.location_type == other.location_type and
             self.project_number == other.project_number and
             self.public_access_prevention == other.public_access_prevention and
-            self.rpo == other.rpo and self.satisfies_pzs == other.satisfies_pzs)
+            self.rpo == other.rpo and
+            self.satisfies_pzs == other.satisfies_pzs and
+            self.uniform_bucket_level_access
+            == other.uniform_bucket_level_access)
 
   def get_json_dump(self):
     return _get_json_dump(self)

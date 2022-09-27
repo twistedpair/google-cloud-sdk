@@ -119,6 +119,21 @@ class AnalyzeOrgPoliciesResponse(_messages.Message):
   orgPolicyResults = _messages.MessageField('OrgPolicyResult', 3, repeated=True)
 
 
+class AnalyzeOrgPolicyGovernedAssetsResponse(_messages.Message):
+  r"""The response message for AssetService.AnalyzeOrgPolicyGovernedAssets.
+
+  Fields:
+    constraint: The definition of the constraint in the request.
+    governedAssets: The list of the analyzed governed assets.
+    nextPageToken: The page token to fetch the next page for
+      AnalyzeOrgPolicyGovernedAssetsResponse.governed_assets.
+  """
+
+  constraint = _messages.MessageField('AnalyzerOrgPolicyConstraint', 1)
+  governedAssets = _messages.MessageField('GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedAsset', 2, repeated=True)
+  nextPageToken = _messages.StringField(3)
+
+
 class AnalyzeOrgPolicyGovernedContainersResponse(_messages.Message):
   r"""The response message for
   AssetService.AnalyzeOrgPolicyGovernedContainers.
@@ -715,6 +730,35 @@ class CloudassetAnalyzeOrgPoliciesRequest(_messages.Message):
     scope: Required. The organization to scope the request. Only organization
       policies within the scope will be analyzed. *
       organizations/{ORGANIZATION_NUMBER} (e.g., "organizations/123456")
+  """
+
+  constraint = _messages.StringField(1)
+  filter = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  scope = _messages.StringField(5, required=True)
+
+
+class CloudassetAnalyzeOrgPolicyGovernedAssetsRequest(_messages.Message):
+  r"""A CloudassetAnalyzeOrgPolicyGovernedAssetsRequest object.
+
+  Fields:
+    constraint: Required. The name of the constraint to analyze governed
+      assets for. The analysis only contains analyzed organization policies
+      for the provided constraint.
+    filter: The expression to filter the governed assets in result. The only
+      supported field is `project` and `folders`, and the only supported
+      operator is `=`. Example: project="projects/12345678" filter will return
+      all governed assets under projects/12345678 including the project
+      ifself, if applicable.
+    pageSize: The maximum number of items to return per page. If unspecified,
+      AnalyzeOrgPolicyGovernedAssetsResponse.governed_assets will contain 100
+      items with a maximum of 200.
+    pageToken: The pagination token to retrieve the next page.
+    scope: Required. The organization to scope the request. Only organization
+      policies within the scope will be analyzed. The output assets will also
+      be limited to the ones governed by those in-scope organization policies.
+      * organizations/{ORGANIZATION_NUMBER} (e.g., "organizations/123456")
   """
 
   constraint = _messages.StringField(1)
@@ -1814,6 +1858,102 @@ class GoogleCloudAssetV1AccessControlList(_messages.Message):
   conditionEvaluation = _messages.MessageField('ConditionEvaluation', 2)
   resourceEdges = _messages.MessageField('GoogleCloudAssetV1Edge', 3, repeated=True)
   resources = _messages.MessageField('GoogleCloudAssetV1Resource', 4, repeated=True)
+
+
+class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedAsset(_messages.Message):
+  r"""Represents a GCP asset(resource or IAM policy) governed by the
+  organization policies of the
+  AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
+
+  Fields:
+    governedIamPolicy: An IAM policy governed by the organization policies of
+      the AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
+    governedResource: A GCP resource governed by the organization policies of
+      the AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
+  """
+
+  governedIamPolicy = _messages.MessageField('GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedIamPolicy', 1)
+  governedResource = _messages.MessageField('GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedResource', 2)
+
+
+class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedIamPolicy(_messages.Message):
+  r"""The IAM policies governed by the organization policies of the
+  AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
+
+  Fields:
+    attachedResource: The full resource name of the resource associated with
+      this IAM policy. Example: `//compute.googleapis.com/projects/my_project_
+      123/zones/zone1/instances/instance1`. See [Cloud Asset Inventory
+      Resource Name Format](https://cloud.google.com/asset-
+      inventory/docs/resource-name-format) for more information.
+    consolidatedPolicy: The consolidated policy for the analyzed IAM policy.
+      The consolidated policy is computed by merging and evaluating
+      AnalyzeOrgPolicyGovernedAssetsResponse.GovernedAsset.policy_bundle. The
+      evaluation will respect the organization policy [hierarchy
+      rules](https://cloud.google.com/resource-manager/docs/organization-
+      policy/understanding-hierarchy).
+    folders: The folder(s) that this IAM policy belongs to, in the form of
+      folders/{FOLDER_NUMBER}. This field is available when the IAM policy
+      belongs(directly or cascadingly) to one or more folders.
+    organization: The organization that this IAM policy belongs to, in the
+      form of organizations/{ORGANIZATION_NUMBER}. This field is available
+      when the IAM policy belongs(directly or cascadingly) to an organization.
+    policy: The IAM policy directly set on the given resource.
+    policyBundle: The ordered list of all organization policies from the
+      consolidated_policy.attached_resource. to the scope specified in the
+      request.
+    project: The project that this IAM policy belongs to, in the form of
+      projects/{PROJECT_NUMBER}. This field is available when the IAM policy
+      belongs to a project.
+  """
+
+  attachedResource = _messages.StringField(1)
+  consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 2)
+  folders = _messages.StringField(3, repeated=True)
+  organization = _messages.StringField(4)
+  policy = _messages.MessageField('Policy', 5)
+  policyBundle = _messages.MessageField('AnalyzerOrgPolicy', 6, repeated=True)
+  project = _messages.StringField(7)
+
+
+class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedResource(_messages.Message):
+  r"""The GCP resources governed by the organization policies of the
+  AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
+
+  Fields:
+    consolidatedPolicy: The consolidated policy for the analyzed resource. The
+      consolidated policy is computed by merging and evaluating
+      AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource.policy_bundle.
+      The evaluation will respect the organization policy [hierarchy
+      rules](https://cloud.google.com/resource-manager/docs/organization-
+      policy/understanding-hierarchy).
+    folders: The folder(s) that this resource belongs to, in the form of
+      folders/{FOLDER_NUMBER}. This field is available when the resource
+      belongs(directly or cascadingly) to one or more folders.
+    fullResourceName: The [full resource name]
+      (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
+      the GCP resource.
+    organization: The organization that this resource belongs to, in the form
+      of organizations/{ORGANIZATION_NUMBER}. This field is available when the
+      resource belongs(directly or cascadingly) to an organization.
+    parent: The [full resource name] (https://cloud.google.com/asset-
+      inventory/docs/resource-name-format) of the parent of AnalyzeOrgPolicyGo
+      vernedAssetsResponse.GovernedResource.full_resource_name.
+    policyBundle: The ordered list of all organization policies from the Analy
+      zeOrgPolicyGovernedAssetsResponse.GovernedResource.consolidated_policy.a
+      ttached_resource. to the scope specified in the request.
+    project: The project that this resource belongs to, in the form of
+      projects/{PROJECT_NUMBER}. This field is available when the resource
+      belongs to a project.
+  """
+
+  consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 1)
+  folders = _messages.StringField(2, repeated=True)
+  fullResourceName = _messages.StringField(3)
+  organization = _messages.StringField(4)
+  parent = _messages.StringField(5)
+  policyBundle = _messages.MessageField('AnalyzerOrgPolicy', 6, repeated=True)
+  project = _messages.StringField(7)
 
 
 class GoogleCloudAssetV1BigQueryDestination(_messages.Message):
@@ -3379,7 +3519,7 @@ class IamPolicyAnalysisState(_messages.Message):
     in time;
 
     Values:
-      OK: Not an error; returned on success HTTP Mapping: 200 OK
+      OK: Not an error; returned on success. HTTP Mapping: 200 OK
       CANCELLED: The operation was cancelled, typically by the caller. HTTP
         Mapping: 499 Client Closed Request
       UNKNOWN: Unknown error. For example, this error may be returned when a
@@ -4525,13 +4665,19 @@ class ResourceSearchResult(_messages.Message):
       field query. Example: `folders:(123 OR 456)` * Use a free text query.
       Example: `123` * Specify the `scope` field as this folder in your search
       request.
-    kmsKey: The Cloud KMS [CryptoKey](https://cloud.google.com/kms/docs/refere
-      nce/rest/v1/projects.locations.keyRings.cryptoKeys) name or [CryptoKeyVe
-      rsion](https://cloud.google.com/kms/docs/reference/rest/v1/projects.loca
-      tions.keyRings.cryptoKeys.cryptoKeyVersions) name. This field is
+    kmsKey: This field only presents for the purpose of backward-
+      compatibility. Please use `kms_keys` field to retrieve KMS key
+      information. This field will only be populated for the resource types
+      included in this list for backward compatible purpose. To search against
+      the `kms_key`: * Use a field query. Example: `kmsKey:key` * Use a free
+      text query. Example: `key`
+    kmsKeys: The Cloud KMS [CryptoKey](https://cloud.google.com/kms/docs/refer
+      ence/rest/v1/projects.locations.keyRings.cryptoKeys) names or [CryptoKey
+      Version](https://cloud.google.com/kms/docs/reference/rest/v1/projects.lo
+      cations.keyRings.cryptoKeys.cryptoKeyVersions) names. This field is
       available only when the resource's Protobuf contains it. To search
-      against the `kms_key`: * Use a field query. Example: `kmsKey:key` * Use
-      a free text query. Example: `key`
+      against the `kms_keys`: * Use a field query. Example: `kmsKeys:key` *
+      Use a free text query. Example: `key`
     labels: Labels associated with this resource. See [Labelling and grouping
       GCP resources](https://cloud.google.com/blog/products/gcp/labelling-and-
       grouping-your-google-cloud-platform-resources) for more information.
@@ -4739,21 +4885,22 @@ class ResourceSearchResult(_messages.Message):
   displayName = _messages.StringField(6)
   folders = _messages.StringField(7, repeated=True)
   kmsKey = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  location = _messages.StringField(10)
-  name = _messages.StringField(11)
-  networkTags = _messages.StringField(12, repeated=True)
-  organization = _messages.StringField(13)
-  parentAssetType = _messages.StringField(14)
-  parentFullResourceName = _messages.StringField(15)
-  project = _messages.StringField(16)
-  relationships = _messages.MessageField('RelationshipsValue', 17)
-  state = _messages.StringField(18)
-  tagKeys = _messages.StringField(19, repeated=True)
-  tagValueIds = _messages.StringField(20, repeated=True)
-  tagValues = _messages.StringField(21, repeated=True)
-  updateTime = _messages.StringField(22)
-  versionedResources = _messages.MessageField('VersionedResource', 23, repeated=True)
+  kmsKeys = _messages.StringField(9, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 10)
+  location = _messages.StringField(11)
+  name = _messages.StringField(12)
+  networkTags = _messages.StringField(13, repeated=True)
+  organization = _messages.StringField(14)
+  parentAssetType = _messages.StringField(15)
+  parentFullResourceName = _messages.StringField(16)
+  project = _messages.StringField(17)
+  relationships = _messages.MessageField('RelationshipsValue', 18)
+  state = _messages.StringField(19)
+  tagKeys = _messages.StringField(20, repeated=True)
+  tagValueIds = _messages.StringField(21, repeated=True)
+  tagValues = _messages.StringField(22, repeated=True)
+  updateTime = _messages.StringField(23)
+  versionedResources = _messages.MessageField('VersionedResource', 24, repeated=True)
 
 
 class ResourceSelector(_messages.Message):

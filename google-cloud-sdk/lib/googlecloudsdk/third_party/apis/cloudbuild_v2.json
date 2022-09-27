@@ -479,6 +479,52 @@
         }
       }
     },
+    "FetchReadWriteTokenRequest": {
+      "id": "FetchReadWriteTokenRequest",
+      "description": "Message for fetching SCM read\/write token.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "FetchReadWriteTokenResponse": {
+      "id": "FetchReadWriteTokenResponse",
+      "description": "Message for responding to get read\/write token.",
+      "type": "object",
+      "properties": {
+        "token": {
+          "description": "The token content.",
+          "type": "string"
+        },
+        "expirationTime": {
+          "description": "Expiration timestamp. Can be empty if unknown or non-expiring.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "FetchReadTokenRequest": {
+      "id": "FetchReadTokenRequest",
+      "description": "Message for fetching SCM read token.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "FetchReadTokenResponse": {
+      "id": "FetchReadTokenResponse",
+      "description": "Message for responding to get read token.",
+      "type": "object",
+      "properties": {
+        "token": {
+          "description": "The token content.",
+          "type": "string"
+        },
+        "expirationTime": {
+          "description": "Expiration timestamp. Can be empty if unknown or non-expiring.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "AccessReadTokenRequest": {
       "id": "AccessReadTokenRequest",
       "description": "Message for getting SCM read token.",
@@ -581,8 +627,12 @@
           "$ref": "PipelineSpec"
         },
         "bundle": {
-          "description": "A Tekton Bundle is an OCI Image that Tekton understands. OCI is the spec for container images that docker and others (such as Tekton Bundles) follow.",
+          "description": "A Tekton Bundle is an OCI Image that Tekton understands. OCI is the spec for container images that docker and others (such as Tekton Bundles) follow. This field deprecated; please use `ref` instead.",
           "type": "string"
+        },
+        "ref": {
+          "description": "PipelineRef refer to a specific instance of a Pipeline.",
+          "$ref": "PipelineRef"
         },
         "params": {
           "description": "List of parameters.",
@@ -1286,6 +1336,21 @@
         }
       }
     },
+    "PipelineRef": {
+      "id": "PipelineRef",
+      "description": "PipelineRef can be used to refer to a specific instance of a Pipeline.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the Pipeline.",
+          "type": "string"
+        },
+        "bundle": {
+          "description": "Bundle url reference to a Tekton Bundle.",
+          "type": "string"
+        }
+      }
+    },
     "WorkflowOptions": {
       "id": "WorkflowOptions",
       "description": "Workflow runs can be modified through several Workflow options.",
@@ -1825,21 +1890,6 @@
           "description": "Output only. The exact PipelineSpec used to instantiate the run.",
           "readOnly": true,
           "$ref": "PipelineSpec"
-        }
-      }
-    },
-    "PipelineRef": {
-      "id": "PipelineRef",
-      "description": "PipelineRef can be used to refer to a specific instance of a Pipeline.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Name of the Pipeline.",
-          "type": "string"
-        },
-        "bundle": {
-          "description": "Bundle url reference to a Tekton Bundle.",
-          "type": "string"
         }
       }
     },
@@ -3926,6 +3976,141 @@
         }
       }
     },
+    "CreateGitLabConfigOperationMetadata": {
+      "id": "CreateGitLabConfigOperationMetadata",
+      "description": "Metadata for `CreateGitLabConfig` operation.",
+      "type": "object",
+      "properties": {
+        "gitlabConfig": {
+          "description": "The resource name of the GitLabConfig to be created. Format: `projects\/{project}\/locations\/{location}\/gitlabConfigs\/{id}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "UpdateGitLabConfigOperationMetadata": {
+      "id": "UpdateGitLabConfigOperationMetadata",
+      "description": "Metadata for `UpdateGitLabConfig` operation.",
+      "type": "object",
+      "properties": {
+        "gitlabConfig": {
+          "description": "The resource name of the GitLabConfig to be created. Format: `projects\/{project}\/locations\/{location}\/gitlabConfigs\/{id}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "DeleteGitLabConfigOperationMetadata": {
+      "id": "DeleteGitLabConfigOperationMetadata",
+      "description": "Metadata for `DeleteGitLabConfig` operation.",
+      "type": "object",
+      "properties": {
+        "gitlabConfig": {
+          "description": "The resource name of the GitLabConfig to be created. Format: `projects\/{project}\/locations\/{location}\/gitlabConfigs\/{id}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "BatchCreateGitLabConnectedRepositoriesResponse": {
+      "id": "BatchCreateGitLabConnectedRepositoriesResponse",
+      "description": "Response of BatchCreateGitLabConnectedRepositories RPC method.",
+      "type": "object",
+      "properties": {
+        "gitlabConnectedRepositories": {
+          "description": "The GitLab connected repository requests' responses.",
+          "type": "array",
+          "items": {
+            "$ref": "GitLabConnectedRepository"
+          }
+        }
+      }
+    },
+    "GitLabConnectedRepository": {
+      "id": "GitLabConnectedRepository",
+      "description": "GitLabConnectedRepository represents a GitLab connected repository request response.",
+      "type": "object",
+      "properties": {
+        "parent": {
+          "description": "The name of the `GitLabConfig` that added connected repository. Format: `projects\/{project}\/locations\/{location}\/gitLabConfigs\/{config}`",
+          "type": "string"
+        },
+        "repo": {
+          "description": "The GitLab repositories to connect.",
+          "$ref": "GitLabRepositoryId"
+        },
+        "status": {
+          "description": "Output only. The status of the repo connection request.",
+          "readOnly": true,
+          "$ref": "Status"
+        }
+      }
+    },
+    "GitLabRepositoryId": {
+      "id": "GitLabRepositoryId",
+      "description": "GitLabRepositoryId identifies a specific repository hosted on GitLab.com or GitLabEnterprise",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Required. Identifier for the repository. example: \"namespace\/project-slug\", namespace is usually the username or group ID",
+          "type": "string"
+        },
+        "webhookId": {
+          "description": "Output only. The ID of the webhook that was created for receiving events from this repo. We only create and manage a single webhook for each repo.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "BatchCreateGitLabConnectedRepositoriesResponseMetadata": {
+      "id": "BatchCreateGitLabConnectedRepositoriesResponseMetadata",
+      "description": "Metadata for `BatchCreateGitLabConnectedRepositories` operation.",
+      "type": "object",
+      "properties": {
+        "config": {
+          "description": "The name of the `GitLabConfig` that added connected repositories. Format: `projects\/{project}\/locations\/{location}\/gitLabConfigs\/{config}`",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "HTTPDelivery": {
       "id": "HTTPDelivery",
       "description": "HTTPDelivery is the delivery configuration for an HTTP notification.",
@@ -4760,6 +4945,11 @@
                           "description": "Page start.",
                           "location": "query",
                           "type": "string"
+                        },
+                        "filter": {
+                          "description": "A filter expression that filters resources listed in the response. Expressions must follow API improvement proposal [AIP-160](https:\/\/google.aip.dev\/160). e.g. `remote_uri:\"https:\/\/github.com*\"`.",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -4807,6 +4997,62 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Deletes a single repository."
+                    },
+                    "accessReadWriteToken": {
+                      "id": "cloudbuild.projects.locations.connections.repositories.accessReadWriteToken",
+                      "path": "v2/{+repository}:accessReadWriteToken",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/repositories/{repositoriesId}:accessReadWriteToken",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "repository": {
+                          "description": "Required. The resource name of the repository in the format `projects\/*\/locations\/*\/connections\/*\/repositories\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connections\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "repository"
+                      ],
+                      "request": {
+                        "$ref": "FetchReadWriteTokenRequest"
+                      },
+                      "response": {
+                        "$ref": "FetchReadWriteTokenResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Fetches read\/write token of a given repository."
+                    },
+                    "accessReadToken": {
+                      "id": "cloudbuild.projects.locations.connections.repositories.accessReadToken",
+                      "path": "v2/{+repository}:accessReadToken",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/repositories/{repositoriesId}:accessReadToken",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "repository": {
+                          "description": "Required. The resource name of the repository in the format `projects\/*\/locations\/*\/connections\/*\/repositories\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connections\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "repository"
+                      ],
+                      "request": {
+                        "$ref": "FetchReadTokenRequest"
+                      },
+                      "response": {
+                        "$ref": "FetchReadTokenResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Fetches read token of a given repository."
                     }
                   }
                 }

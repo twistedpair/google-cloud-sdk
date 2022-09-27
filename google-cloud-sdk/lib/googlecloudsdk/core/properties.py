@@ -291,6 +291,8 @@ class _Sections(object):
       override properties for the Cloud SDK.
     app: Section, The section containing app properties for the Cloud SDK.
     auth: Section, The section containing auth properties for the Cloud SDK.
+    batch: Section, The section containing batch properties for the
+      Cloud SDK.
     billing: Section, The section containing billing properties for the Cloud
       SDK.
     blueprints: Section, the section containing blueprints properties for the
@@ -314,6 +316,8 @@ class _Sections(object):
       clusters on AWS.
     container_azure: Section, The section containing properties for Anthos
       clusters on Azure.
+    container_bare_metal: Section, The section containing properties for Anthos
+      clusters on Bare Metal.
     container_vmware: Section, The section containing properties for Anthos
       clusters on VMware.
     context_aware: Section, The section containing context aware access
@@ -426,6 +430,7 @@ class _Sections(object):
     self.app = _SectionApp()
     self.artifacts = _SectionArtifacts()
     self.auth = _SectionAuth()
+    self.batch = _SectionBatch()
     self.billing = _SectionBilling()
     self.blueprints = _SectionBlueprints()
     self.builds = _SectionBuilds()
@@ -438,6 +443,7 @@ class _Sections(object):
     self.container_aws = _SectionContainerAws()
     self.container_azure = _SectionContainerAzure()
     self.container_vmware = _SectionContainerVmware()
+    self.container_bare_metal = _SectionContainerBareMetal()
     self.context_aware = _SectionContextAware()
     self.core = _SectionCore()
     self.ssh = _SectionSsh()
@@ -499,6 +505,7 @@ class _Sections(object):
         self.api_endpoint_overrides,
         self.app,
         self.auth,
+        self.batch,
         self.billing,
         self.blueprints,
         self.builds,
@@ -511,6 +518,7 @@ class _Sections(object):
         self.container_attached,
         self.container_aws,
         self.container_azure,
+        self.container_bare_metal,
         self.container_vmware,
         self.context_aware,
         self.core,
@@ -1475,6 +1483,19 @@ class _SectionAuth(_Section):
         'does not work for some surface.')
 
 
+class _SectionBatch(_Section):
+  """Contains the properties for the 'batch' section."""
+
+  def __init__(self):
+    super(_SectionBatch, self).__init__('batch')
+
+    self.location = self._Add(
+        'location',
+        help_text='Default location to use when working with Batch '
+        'resources. When a `location` value is required but not provided, the '
+        'command will fall back to this value, if set.')
+
+
 class _SectionBilling(_Section):
   """Contains the properties for the 'auth' section."""
 
@@ -1750,6 +1771,17 @@ class _SectionContainerAzure(_Section):
         'location',
         help_text=('Default Google Cloud location to use for Anthos clusters '
                    'on Azure.'))
+
+
+class _SectionContainerBareMetal(_Section):
+  """Contains the properties for the 'container_bare_metal' section."""
+
+  def __init__(self):
+    super(_SectionContainerBareMetal, self).__init__('container_bare_metal')
+    self.location = self._Add(
+        'location',
+        help_text=('Default Google Cloud location to use for Anthos clusters '
+                   'on Bare Metal.'))
 
 
 class _SectionContainerVmware(_Section):
@@ -3041,21 +3073,21 @@ class _SectionStorage(_Section):
 
     self.key_store_path = self._Add(
         'key_store_path',
-        hidden=True,
-        help_text=(
-            'Path to a yaml file containing an encryption key, and multiple'
-            ' decryption keys for use in storage commands. The file must be'
-            ' formatted as follows:\n'
-            '\n'
-            'encryption_key: {A customer-supplied or customer-managed key.}\n'
-            'decryption_keys:\n'
-            '- {A customer-supplied key}\n'
-            '...\n'
-            '\n'
-            'Customer-supplied encryption keys must be RFC 4648 section'
-            ' 4 base64-encoded AES256 strings. Customer-managed encryption keys'
-            ' must be of the form `projects/{project}/locations/{location}'
-            '/keyRings/{key-ring}/cryptoKeys/{crypto-key}`.'))
+        help_text=textwrap.dedent("""\
+        Path to a yaml file containing an encryption key, and multiple
+        decryption keys for use in storage commands. The file must be formatted
+        as follows:
+        +
+            encryption_key: {A customer-supplied or customer-managed key.}
+            decryption_keys:
+            - {A customer-supplied key}
+            ...
+        +
+        Customer-supplied encryption keys must be RFC 4648 section 4
+        base64-encoded AES256 strings. Customer-managed encryption keys must be
+        of the form
+        `projects/{project}/locations/{location}/keyRings/{key-ring}/cryptoKeys/{crypto-key}`.
+        """))
 
     self.max_retry_delay = self._Add(
         'max_retry_delay',

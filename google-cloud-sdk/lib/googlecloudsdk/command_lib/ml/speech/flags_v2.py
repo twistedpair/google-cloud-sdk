@@ -55,7 +55,7 @@ def AddAllFlagsToParser(parser, create=False):
   """Parses all flags for v2 STT API."""
   AddRecognizerArgToParser(parser)
   base.ASYNC_FLAG.AddToParser(parser)
-  base.ASYNC_FLAG.SetDefault(parser, True)
+  base.ASYNC_FLAG.SetDefault(parser, False)
   parser.add_argument(
       '--display-name',
       help="""\

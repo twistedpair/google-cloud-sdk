@@ -257,7 +257,7 @@
           "type": "string"
         },
         "network": {
-          "description": "Name of the Compute Engine network in which instances associated with this cluster will be created. Must be in the same project as this cluster.",
+          "description": "Name of the Compute Engine network in which instances associated with this cluster will be created.",
           "type": "string"
         },
         "subnetwork": {

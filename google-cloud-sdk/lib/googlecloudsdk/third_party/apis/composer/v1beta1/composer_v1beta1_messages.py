@@ -453,14 +453,41 @@ class ComposerProjectsLocationsOperationsListRequest(_messages.Message):
 class DataRetentionConfig(_messages.Message):
   r"""The configuration setting for Airflow database data retention mechanism.
 
+  Enums:
+    TaskLogsStorageModeValueValuesEnum: Optional. The mode of storage for
+      Airflow workers task logs. For details, see go/composer-store-task-logs-
+      in-cloud-logging-only-design-doc
+
   Fields:
     airflowDatabaseRetentionDays: Optional. The number of days describing for
       how long to store event-based records in airflow database. If the
       retention mechanism is enabled this value must be a positive integer
       otherwise, value should be set to 0.
+    taskLogsRetentionDays: Optional. The number of days to retain task logs in
+      the Cloud Logging bucket
+    taskLogsStorageMode: Optional. The mode of storage for Airflow workers
+      task logs. For details, see go/composer-store-task-logs-in-cloud-
+      logging-only-design-doc
   """
 
+  class TaskLogsStorageModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The mode of storage for Airflow workers task logs. For
+    details, see go/composer-store-task-logs-in-cloud-logging-only-design-doc
+
+    Values:
+      TASK_LOGS_STORAGE_MODE_UNSPECIFIED: This configuration is not specified
+        by the user.
+      CLOUD_LOGGING_AND_CLOUD_STORAGE: Store task logs in Cloud Logging and in
+        the environment's Cloud Storage bucket.
+      CLOUD_LOGGING_ONLY: Store task logs in Cloud Logging only.
+    """
+    TASK_LOGS_STORAGE_MODE_UNSPECIFIED = 0
+    CLOUD_LOGGING_AND_CLOUD_STORAGE = 1
+    CLOUD_LOGGING_ONLY = 2
+
   airflowDatabaseRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  taskLogsRetentionDays = _messages.IntegerField(2)
+  taskLogsStorageMode = _messages.EnumField('TaskLogsStorageModeValueValuesEnum', 3)
 
 
 class DatabaseConfig(_messages.Message):
@@ -919,6 +946,42 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
   enabled = _messages.BooleanField(2)
 
 
+class NetworkingConfig(_messages.Message):
+  r"""Configuration options for networking connections in the Composer 2
+  environment.
+
+  Enums:
+    ConnectionTypeValueValuesEnum: Optional. Indicates the user requested
+      specifc connection type between Tenant and Customer projects. You cannot
+      set networking connection type in public IP environment.
+
+  Fields:
+    connectionType: Optional. Indicates the user requested specifc connection
+      type between Tenant and Customer projects. You cannot set networking
+      connection type in public IP environment.
+  """
+
+  class ConnectionTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Indicates the user requested specifc connection type between
+    Tenant and Customer projects. You cannot set networking connection type in
+    public IP environment.
+
+    Values:
+      CONNECTION_TYPE_UNSPECIFIED: No specific connection type was requested,
+        so the environment uses the default value corresponding to the rest of
+        its configuration.
+      VPC_PEERING: Requests the use of VPC peerings for connecting the
+        Customer and Tenant projects.
+      PRIVATE_SERVICE_CONNECT: Requests the use of Private Service Connect for
+        connecting the Customer and Tenant projects.
+    """
+    CONNECTION_TYPE_UNSPECIFIED = 0
+    VPC_PEERING = 1
+    PRIVATE_SERVICE_CONNECT = 2
+
+  connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 1)
+
+
 class NodeConfig(_messages.Message):
   r"""The configuration information for the Kubernetes Engine nodes running
   the Apache Airflow software.
@@ -1246,6 +1309,8 @@ class PrivateEnvironmentConfig(_messages.Message):
       (non-RFC1918) ranges can be used for
       `IPAllocationPolicy.cluster_ipv4_cidr_block` and
       `IPAllocationPolicy.service_ipv4_cidr_block`.
+    networkingConfig: Optional. Configuration for the network connections
+      configuration in the environment.
     privateClusterConfig: Optional. Configuration for the private GKE cluster
       for a Private IP Cloud Composer environment.
     webServerIpv4CidrBlock: Optional. The CIDR block from which IP range for
@@ -1264,9 +1329,10 @@ class PrivateEnvironmentConfig(_messages.Message):
   cloudSqlIpv4CidrBlock = _messages.StringField(4)
   enablePrivateEnvironment = _messages.BooleanField(5)
   enablePrivatelyUsedPublicIps = _messages.BooleanField(6)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 7)
-  webServerIpv4CidrBlock = _messages.StringField(8)
-  webServerIpv4ReservedRange = _messages.StringField(9)
+  networkingConfig = _messages.MessageField('NetworkingConfig', 7)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 8)
+  webServerIpv4CidrBlock = _messages.StringField(9)
+  webServerIpv4ReservedRange = _messages.StringField(10)
 
 
 class RecoveryConfig(_messages.Message):

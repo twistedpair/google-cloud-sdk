@@ -1921,15 +1921,7 @@ class TableDataSet(_messages.Message):
 
 
 class TableDisplayOptions(_messages.Message):
-  r"""Table display options that can be reused.
-
-  Fields:
-    shownColumns: Optional. Columns to display in the table. Leave empty to
-      display all available columns. Note: This field is for future features
-      and is not currently used.
-  """
-
-  shownColumns = _messages.StringField(1, repeated=True)
+  r"""Table display options that can be reused."""
 
 
 class Text(_messages.Message):

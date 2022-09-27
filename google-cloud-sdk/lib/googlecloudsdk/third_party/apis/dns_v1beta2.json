@@ -1651,6 +1651,13 @@
             "$ref": "ResponsePolicyGKECluster"
           }
         },
+        "labels": {
+          "description": "User labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "kind": {
           "default": "dns#responsePolicy",
           "type": "string"

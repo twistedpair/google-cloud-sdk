@@ -82,7 +82,7 @@ class CloudtasksV2beta2(base_api.BaseApiClient):
     )
 
     def Buffer(self, request, global_params=None):
-      r"""Creates and buffers a new task without the need to explicitly define a Task message. The queue must have HTTP target. Note: This feature is in its experimental stage. You must request access to the API through the [Cloud Tasks BufferTasks Experiment Signup form](https://forms.gle/X8Zr5hiXH5tTGFqh8).
+      r"""Creates and buffers a new task without the need to explicitly define a Task message. The queue must have HTTP target. To create the task with a custom ID, use the following format and set TASK_ID to your desired ID: projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID:buffer To create the task with an automatically generated ID, use the following format: projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks:buffer. Note: This feature is in its experimental stage. You must request access to the API through the [Cloud Tasks BufferTask Experiment Signup form](https://forms.gle/X8Zr5hiXH5tTGFqh8).
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksBufferRequest) input message
@@ -95,13 +95,13 @@ class CloudtasksV2beta2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Buffer.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks:buffer',
+        flat_path='v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks/{taskId}:buffer',
         http_method='POST',
         method_id='cloudtasks.projects.locations.queues.tasks.buffer',
-        ordered_params=['parent'],
-        path_params=['parent'],
+        ordered_params=['queue', 'taskId'],
+        path_params=['queue', 'taskId'],
         query_params=[],
-        relative_path='v2beta2/{+parent}/tasks:buffer',
+        relative_path='v2beta2/{+queue}/tasks/{taskId}:buffer',
         request_field='bufferTaskRequest',
         request_type_name='CloudtasksProjectsLocationsQueuesTasksBufferRequest',
         response_type_name='BufferTaskResponse',

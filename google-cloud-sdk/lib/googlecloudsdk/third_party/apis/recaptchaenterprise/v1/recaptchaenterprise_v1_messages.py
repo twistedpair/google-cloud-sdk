@@ -780,7 +780,8 @@ class GoogleCloudRecaptchaenterpriseV1TokenProperties(_messages.Message):
   Fields:
     action: Action name provided at token generation.
     createTime: The timestamp corresponding to the generation of the token.
-    hostname: The hostname of the page on which the token was generated.
+    hostname: The hostname of the page on which the token was generated (Web
+      keys only).
     invalidReason: Reason associated with the response when valid = false.
     valid: Whether the provided user response token is valid. When valid =
       false, the reason could be specified in invalid_reason or it could also

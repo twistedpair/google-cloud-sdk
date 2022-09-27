@@ -1522,10 +1522,13 @@ class Instance(_messages.Message):
         of size 1 can only have zonal availability. * Read pools with node
         count of 2 or more can have regional availability (nodes are present
         in 2 or more zones in a region).
+      SECONDARY: SECONDARY instances support read operations only. SECONDARY
+        instance is a cross-region read replica
     """
     INSTANCE_TYPE_UNSPECIFIED = 0
     PRIMARY = 1
     READ_POOL = 2
+    SECONDARY = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current serving state of the instance.

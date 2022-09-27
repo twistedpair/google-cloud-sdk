@@ -3681,6 +3681,8 @@ class KubernetesMetadata(_messages.Message):
   representing Kubernetes clusters.
 
   Fields:
+    distribution: Output only. Distribution as identified by GKE Hub from
+      Kubernetes node resources.
     kubernetesApiServerVersion: Output only. Kubernetes API server version
       string as reported by `/version`.
     memoryMb: Output only. The total memory capacity as reported by the sum of
@@ -3699,12 +3701,13 @@ class KubernetesMetadata(_messages.Message):
       resources.
   """
 
-  kubernetesApiServerVersion = _messages.StringField(1)
-  memoryMb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  nodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  nodeProviderId = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
-  vcpuCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  distribution = _messages.StringField(1)
+  kubernetesApiServerVersion = _messages.StringField(2)
+  memoryMb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  nodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  nodeProviderId = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+  vcpuCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class KubernetesResource(_messages.Message):

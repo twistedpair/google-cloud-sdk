@@ -1648,7 +1648,7 @@ class RouteInfo(_messages.Message):
       PEERING_SUBNET: A subnet route received from peering network.
       PEERING_STATIC: A static route received from peering network.
       PEERING_DYNAMIC: A dynamic route received from peering network.
-      POLICY_BASED_ROUTE: Policy based route.
+      POLICY_BASED: Policy based route.
     """
     ROUTE_TYPE_UNSPECIFIED = 0
     SUBNET = 1
@@ -1657,7 +1657,7 @@ class RouteInfo(_messages.Message):
     PEERING_SUBNET = 4
     PEERING_STATIC = 5
     PEERING_DYNAMIC = 6
-    POLICY_BASED_ROUTE = 7
+    POLICY_BASED = 7
 
   destIpRange = _messages.StringField(1)
   destPortRanges = _messages.StringField(2, repeated=True)

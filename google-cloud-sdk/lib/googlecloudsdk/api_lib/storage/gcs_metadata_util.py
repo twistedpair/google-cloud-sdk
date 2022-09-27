@@ -130,17 +130,35 @@ def get_bucket_resource_from_metadata(metadata):
   url = storage_url.CloudUrl(
       scheme=storage_url.ProviderPrefix.GCS, bucket_name=metadata.name)
   uniform_bucket_level_access = getattr(
-      getattr(metadata.iamConfiguration, 'uniformBucketLevelAccess', False),
-      'enabled', False)
+      getattr(metadata.iamConfiguration, 'uniformBucketLevelAccess', None),
+      'enabled', None)
   return gcs_resource_reference.GcsBucketResource(
       url,
-      etag=metadata.etag,
-      location=metadata.location,
-      metadata=metadata,
-      retention_policy=_message_to_dict(metadata.retentionPolicy),
+      acl=_message_to_dict(metadata.acl),
+      cors_config=_message_to_dict(metadata.cors),
+      creation_time=metadata.timeCreated,
+      default_acl=_message_to_dict(metadata.defaultObjectAcl),
       default_event_based_hold=metadata.defaultEventBasedHold,
+      default_kms_key=getattr(metadata.encryption, 'defaultKmsKeyName', None),
       default_storage_class=metadata.storageClass,
-      uniform_bucket_level_access=uniform_bucket_level_access)
+      etag=metadata.etag,
+      lifecycle_config=_message_to_dict(metadata.lifecycle),
+      location=metadata.location,
+      location_type=metadata.locationType,
+      logging_config=_message_to_dict(metadata.logging),
+      metadata=metadata,
+      metageneration=metadata.metageneration,
+      project_number=metadata.projectNumber,
+      public_access_prevention=getattr(metadata.iamConfiguration,
+                                       'publicAccessPrevention', None),
+      requester_pays=getattr(metadata.billing, 'requesterPays', None),
+      retention_policy=_message_to_dict(metadata.retentionPolicy),
+      rpo=metadata.rpo,
+      satisfies_pzs=metadata.satisfiesPZS,
+      uniform_bucket_level_access=uniform_bucket_level_access,
+      update_time=metadata.updated,
+      versioning_enabled=getattr(metadata.versioning, 'enabled', None),
+      website_config=_message_to_dict(metadata.website))
 
 
 def get_metadata_from_bucket_resource(resource):

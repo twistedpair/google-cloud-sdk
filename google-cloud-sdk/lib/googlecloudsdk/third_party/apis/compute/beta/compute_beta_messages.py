@@ -673,6 +673,9 @@ class Address(_messages.Message):
     IpVersionValueValuesEnum: The IP version that will be used by this
       address. Valid options are IPV4 or IPV6. This can only be specified for
       a global address.
+    Ipv6EndpointTypeValueValuesEnum: The endpoint type of this address, which
+      should be VM or NETLB. This is used for deciding which type of endpoint
+      this address can be used after the external IPv6 address reservation.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this address and can only take the following values: PREMIUM
       or STANDARD. Internal IP addresses are always Premium Tier; global
@@ -718,6 +721,9 @@ class Address(_messages.Message):
       is defined by the server.
     ipVersion: The IP version that will be used by this address. Valid options
       are IPV4 or IPV6. This can only be specified for a global address.
+    ipv6EndpointType: The endpoint type of this address, which should be VM or
+      NETLB. This is used for deciding which type of endpoint this address can
+      be used after the external IPv6 address reservation.
     kind: [Output Only] Type of the resource. Always compute#address for
       addresses.
     labelFingerprint: A fingerprint for the labels being applied to this
@@ -807,6 +813,18 @@ class Address(_messages.Message):
     IPV4 = 0
     IPV6 = 1
     UNSPECIFIED_VERSION = 2
+
+  class Ipv6EndpointTypeValueValuesEnum(_messages.Enum):
+    r"""The endpoint type of this address, which should be VM or NETLB. This
+    is used for deciding which type of endpoint this address can be used after
+    the external IPv6 address reservation.
+
+    Values:
+      NETLB: Reserved IPv6 address can be used on network load balancer.
+      VM: Reserved IPv6 address can be used on VM.
+    """
+    NETLB = 0
+    VM = 1
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     r"""This signifies the networking tier used for configuring this address
@@ -924,19 +942,20 @@ class Address(_messages.Message):
   description = _messages.StringField(4)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 6)
-  kind = _messages.StringField(7, default='compute#address')
-  labelFingerprint = _messages.BytesField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 12)
-  prefixLength = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 14)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  status = _messages.EnumField('StatusValueValuesEnum', 17)
-  subnetwork = _messages.StringField(18)
-  users = _messages.StringField(19, repeated=True)
+  ipv6EndpointType = _messages.EnumField('Ipv6EndpointTypeValueValuesEnum', 7)
+  kind = _messages.StringField(8, default='compute#address')
+  labelFingerprint = _messages.BytesField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 13)
+  prefixLength = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 15)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  status = _messages.EnumField('StatusValueValuesEnum', 18)
+  subnetwork = _messages.StringField(19)
+  users = _messages.StringField(20, repeated=True)
 
 
 class AddressAggregatedList(_messages.Message):
@@ -5665,6 +5684,19 @@ class BulkInsertInstanceResourcePerInstanceProperties(_messages.Message):
   """
 
   name = _messages.StringField(1)
+
+
+class BundledLocalSsds(_messages.Message):
+  r"""A BundledLocalSsds object.
+
+  Fields:
+    defaultInterface: The default disk interface if the interface is not
+      specified.
+    partitionCount: The number of partitions.
+  """
+
+  defaultInterface = _messages.StringField(1)
+  partitionCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class CacheInvalidationRule(_messages.Message):
@@ -33141,6 +33173,9 @@ class FirewallPolicyRuleMatcher(_messages.Message):
   Fields:
     destAddressGroups: Address groups which should be matched against the
       traffic destination. Maximum number of destination address groups is 10.
+    destFqdns: Fully Qualified Domain Name (FQDN) which should be matched
+      against traffic destination. Maximum number of destination fqdn allowed
+      is 100.
     destIpRanges: CIDR IP address range. Maximum number of destination CIDR IP
       ranges allowed is 5000.
     destRegionCodes: Region codes whose IP addresses will be used to match for
@@ -33152,6 +33187,8 @@ class FirewallPolicyRuleMatcher(_messages.Message):
     layer4Configs: Pairs of IP protocols and ports that the rule should match.
     srcAddressGroups: Address groups which should be matched against the
       traffic source. Maximum number of source address groups is 10.
+    srcFqdns: Fully Qualified Domain Name (FQDN) which should be matched
+      against traffic source. Maximum number of source fqdn allowed is 100.
     srcIpRanges: CIDR IP address range. Maximum number of source CIDR IP
       ranges allowed is 5000.
     srcRegionCodes: Region codes whose IP addresses will be used to match for
@@ -33167,15 +33204,17 @@ class FirewallPolicyRuleMatcher(_messages.Message):
   """
 
   destAddressGroups = _messages.StringField(1, repeated=True)
-  destIpRanges = _messages.StringField(2, repeated=True)
-  destRegionCodes = _messages.StringField(3, repeated=True)
-  destThreatIntelligences = _messages.StringField(4, repeated=True)
-  layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 5, repeated=True)
-  srcAddressGroups = _messages.StringField(6, repeated=True)
-  srcIpRanges = _messages.StringField(7, repeated=True)
-  srcRegionCodes = _messages.StringField(8, repeated=True)
-  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 9, repeated=True)
-  srcThreatIntelligences = _messages.StringField(10, repeated=True)
+  destFqdns = _messages.StringField(2, repeated=True)
+  destIpRanges = _messages.StringField(3, repeated=True)
+  destRegionCodes = _messages.StringField(4, repeated=True)
+  destThreatIntelligences = _messages.StringField(5, repeated=True)
+  layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 6, repeated=True)
+  srcAddressGroups = _messages.StringField(7, repeated=True)
+  srcFqdns = _messages.StringField(8, repeated=True)
+  srcIpRanges = _messages.StringField(9, repeated=True)
+  srcRegionCodes = _messages.StringField(10, repeated=True)
+  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 11, repeated=True)
+  srcThreatIntelligences = _messages.StringField(12, repeated=True)
 
 
 class FirewallPolicyRuleMatcherLayer4Config(_messages.Message):
@@ -33464,7 +33503,17 @@ class ForwardingRule(_messages.Message):
       is in auto subnet mode, this field is optional. However, a subnetwork
       must be specified if the network is in custom subnet mode or when
       creating external forwarding rule with IPv6.
-    target: A string attribute.
+    target: The URL of the target resource to receive the matched traffic. For
+      regional forwarding rules, this target must be in the same region as the
+      forwarding rule. For global forwarding rules, this target must be a
+      global load balancing resource. The forwarded traffic must be of a type
+      appropriate to the target object. For more information, see the "Target"
+      column in [Port specifications](https://cloud.google.com/load-
+      balancing/docs/forwarding-rule-concepts#ip_address_specifications). For
+      Private Service Connect forwarding rules that forward traffic to Google
+      APIs, provide the name of a supported Google API bundle: - vpc-sc - APIs
+      that support VPC Service Controls. - all-apis - All supported Google
+      APIs.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -44461,6 +44510,8 @@ class MachineType(_messages.Message):
   Fields:
     accelerators: [Output Only] A list of accelerator configurations assigned
       to this machine type.
+    bundledLocalSsds: [Output Only] The configuration of bundled local SSD for
+      the machine type.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     deprecated: [Output Only] The deprecation status associated with this
@@ -44499,19 +44550,20 @@ class MachineType(_messages.Message):
     guestAcceleratorType = _messages.StringField(2)
 
   accelerators = _messages.MessageField('AcceleratorsValueListEntry', 1, repeated=True)
-  creationTimestamp = _messages.StringField(2)
-  deprecated = _messages.MessageField('DeprecationStatus', 3)
-  description = _messages.StringField(4)
-  guestCpus = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  isSharedCpu = _messages.BooleanField(7)
-  kind = _messages.StringField(8, default='compute#machineType')
-  maximumPersistentDisks = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  maximumPersistentDisksSizeGb = _messages.IntegerField(10)
-  memoryMb = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  name = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  zone = _messages.StringField(14)
+  bundledLocalSsds = _messages.MessageField('BundledLocalSsds', 2)
+  creationTimestamp = _messages.StringField(3)
+  deprecated = _messages.MessageField('DeprecationStatus', 4)
+  description = _messages.StringField(5)
+  guestCpus = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  isSharedCpu = _messages.BooleanField(8)
+  kind = _messages.StringField(9, default='compute#machineType')
+  maximumPersistentDisks = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  maximumPersistentDisksSizeGb = _messages.IntegerField(11)
+  memoryMb = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  name = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  zone = _messages.StringField(15)
 
 
 class MachineTypeAggregatedList(_messages.Message):
@@ -58318,13 +58370,17 @@ class RouterStatusBgpPeerStatus(_messages.Message):
   Fields:
     advertisedRoutes: Routes that were advertised to the remote BGP peer
     bfdStatus: A BfdStatus attribute.
+    enableIpv6: Enable IPv6 traffic over BGP Peer. If not specified, it is
+      disabled by default.
     ipAddress: IP address of the local BGP interface.
+    ipv6NexthopAddress: IPv6 address of the local BGP interface.
     linkedVpnTunnel: URL of the VPN tunnel that this BGP peer controls.
     md5AuthEnabled: Informs whether MD5 authentication is enabled on this BGP
       peer.
     name: Name of this BGP peer. Unique within the Routers resource.
     numLearnedRoutes: Number of routes learned from the remote BGP Peer.
     peerIpAddress: IP address of the remote BGP interface.
+    peerIpv6NexthopAddress: IPv6 address of the remote BGP interface.
     routerApplianceInstance: [Output only] URI of the VM instance that is used
       as third-party router appliances such as Next Gen Firewalls, Virtual
       Routers, or Router Appliances. The VM instance is the peer side of the
@@ -58364,18 +58420,21 @@ class RouterStatusBgpPeerStatus(_messages.Message):
 
   advertisedRoutes = _messages.MessageField('Route', 1, repeated=True)
   bfdStatus = _messages.MessageField('BfdStatus', 2)
-  ipAddress = _messages.StringField(3)
-  linkedVpnTunnel = _messages.StringField(4)
-  md5AuthEnabled = _messages.BooleanField(5)
-  name = _messages.StringField(6)
-  numLearnedRoutes = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(8)
-  routerApplianceInstance = _messages.StringField(9)
-  state = _messages.StringField(10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  statusReason = _messages.EnumField('StatusReasonValueValuesEnum', 12)
-  uptime = _messages.StringField(13)
-  uptimeSeconds = _messages.StringField(14)
+  enableIpv6 = _messages.BooleanField(3)
+  ipAddress = _messages.StringField(4)
+  ipv6NexthopAddress = _messages.StringField(5)
+  linkedVpnTunnel = _messages.StringField(6)
+  md5AuthEnabled = _messages.BooleanField(7)
+  name = _messages.StringField(8)
+  numLearnedRoutes = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(10)
+  peerIpv6NexthopAddress = _messages.StringField(11)
+  routerApplianceInstance = _messages.StringField(12)
+  state = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  statusReason = _messages.EnumField('StatusReasonValueValuesEnum', 15)
+  uptime = _messages.StringField(16)
+  uptimeSeconds = _messages.StringField(17)
 
 
 class RouterStatusNatStatus(_messages.Message):

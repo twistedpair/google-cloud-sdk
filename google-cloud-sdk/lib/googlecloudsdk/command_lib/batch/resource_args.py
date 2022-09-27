@@ -20,14 +20,18 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
+from googlecloudsdk.core import properties
 
 
 def LocationAttributeConfig():
+  fts = [deps.PropertyFallthrough(properties.VALUES.batch.location)]
   return concepts.ResourceParameterAttributeConfig(
       name='location',
-      help_text='Google Cloud location for the {resource}.')
+      help_text='Google Cloud location for the {resource}.',
+      fallthroughs=fts)
 
 
 def JobAttributeConfig():
@@ -86,9 +90,11 @@ def AddLocationResourceArgs(parser):
       presentation_specs.ResourcePresentationSpec(
           '--location',
           GetLocationResourceSpec(),
-          'The Batch location resource.',
+          ('The Batch location resource. If you omit this flag, the default'
+           'location is used if you set the batch/location property.'
+           'Otherwise, omitting this flag lists jobs across all locations.'),
           required=False,
-          ),
+      ),
   ]
 
   concept_parsers.ConceptParser(arg_specs).AddToParser(parser)
@@ -104,9 +110,10 @@ def AddJobFlagResourceArgs(parser):
       presentation_specs.ResourcePresentationSpec(
           '--job',
           GetJobResourceSpec(),
-          'The Batch job resource.',
+          ('The Batch job resource. If not specified,'
+           'the current batch/location is used.'),
           required=True,
-          ),
+      ),
   ]
 
   concept_parsers.ConceptParser(arg_specs).AddToParser(parser)
@@ -122,9 +129,10 @@ def AddJobResourceArgs(parser):
       presentation_specs.ResourcePresentationSpec(
           'JOB',
           GetJobResourceSpec(),
-          'The Batch job resource.',
+          ('The Batch job resource. If not specified,'
+           'the current batch/location is used.'),
           required=True,
-          ),
+      ),
   ]
 
   concept_parsers.ConceptParser(arg_specs).AddToParser(parser)
@@ -140,9 +148,10 @@ def AddTaskResourceArgs(parser):
       presentation_specs.ResourcePresentationSpec(
           'TASK',
           GetTaskResourceSpec(),
-          'The Batch task resource.',
+          ('The Batch task resource. If not specified,'
+           'the current batch/location is used.'),
           required=True,
-          ),
+      ),
   ]
 
   concept_parsers.ConceptParser(arg_specs).AddToParser(parser)

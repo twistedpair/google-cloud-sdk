@@ -40,8 +40,11 @@ class RegistrationPoliciesClient(sd_base.ServiceDirectoryApiLibBase):
       policy_kind = None
       policy_selector = None
       # For MVP we only support kind=MIG and selector=*
-      if resource_policy_spec['kind'] == 'MIG':
-        policy_kind = self.msgs.ResourcePolicy.KindValueValuesEnum.KIND_MIG
+      if 'kind' in resource_policy_spec:
+        if resource_policy_spec['kind'] == 'MIG':
+          policy_kind = self.msgs.ResourcePolicy.KindValueValuesEnum.KIND_MIG
+      else:
+        policy_kind = self.msgs.ResourcePolicy.KindValueValuesEnum.KIND_UNSPECIFIED
       if resource_policy_spec['selector'] == '*':
         policy_selector = self.msgs.Expr(expression='*')
       resource_policy = self.msgs.ResourcePolicy(
@@ -49,6 +52,7 @@ class RegistrationPoliciesClient(sd_base.ServiceDirectoryApiLibBase):
       resource_policies.append(resource_policy)
 
     namespace_name = None
+    # For MVP, this is always false
     if 'namespace' in policy_yaml['metadata']:
       namespace_name = policy_yaml['metadata']['namespace']
 
@@ -74,8 +78,11 @@ class RegistrationPoliciesClient(sd_base.ServiceDirectoryApiLibBase):
       policy_kind = None
       policy_selector = None
       # For MVP we only support kind=MIG and selector=*
-      if resource_policy_spec['kind'] == 'MIG':
-        policy_kind = self.msgs.ResourcePolicy.KindValueValuesEnum.KIND_MIG
+      if 'kind' in resource_policy_spec:
+        if resource_policy_spec['kind'] == 'MIG':
+          policy_kind = self.msgs.ResourcePolicy.KindValueValuesEnum.KIND_MIG
+      else:
+        policy_kind = self.msgs.ResourcePolicy.KindValueValuesEnum.KIND_UNSPECIFIED
       if resource_policy_spec['selector'] == '*':
         policy_selector = self.msgs.Expr(expression='*')
       resource_policy = self.msgs.ResourcePolicy(
@@ -83,6 +90,7 @@ class RegistrationPoliciesClient(sd_base.ServiceDirectoryApiLibBase):
       resource_policies.append(resource_policy)
 
     namespace_name = None
+    # For MVP, this is always false
     if 'namespace' in policy_yaml['metadata']:
       namespace_name = policy_yaml['metadata']['namespace']
 

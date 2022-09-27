@@ -31,6 +31,7 @@ from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.command_lib.storage.resources import resource_util
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -147,36 +148,61 @@ class S3Api(cloud_api.CloudApi):
 
       metadata['LocationConstraint'] = errors.S3ApiError(error)
 
-    if fields_scope is not cloud_api.FieldsScope.SHORT:
-      # Data for FieldsScope.NO_ACL.
-      for key, api_call, result_has_key in [
-          ('CORSRules', self.client.get_bucket_cors, True),
-          ('ServerSideEncryptionConfiguration',
-           self.client.get_bucket_encryption, True),
-          ('LifecycleConfiguration',
-           self.client.get_bucket_lifecycle_configuration, False),
-          ('LoggingEnabled', self.client.get_bucket_logging, True),
-          ('Payer', self.client.get_bucket_request_payment, True),
-          ('Versioning', self.client.get_bucket_versioning, False),
-          ('Website', self.client.get_bucket_website, False),
-      ]:
-        try:
-          api_result = api_call(Bucket=bucket_name)
-          # Some results are wrapped in dictionaries with keys matching "key".
-          metadata[key] = api_result.get(key) if result_has_key else api_result
-        except botocore.exceptions.ClientError as error:
-          metadata[key] = errors.S3ApiError(error)
+    if fields_scope is cloud_api.FieldsScope.SHORT:
+      return s3_resource_reference.S3BucketResource(
+          storage_url.CloudUrl(storage_url.ProviderPrefix.S3, bucket_name),
+          location=metadata.get('LocationConstraint'),
+          metadata=metadata)
 
-      # User requested ACL's with FieldsScope.FULL.
-      if fields_scope is cloud_api.FieldsScope.FULL:
-        try:
-          metadata['ACL'] = self.client.get_bucket_acl(Bucket=bucket_name)
-        except botocore.exceptions.ClientError as error:
-          metadata['ACL'] = errors.S3ApiError(error)
+    # Data for FieldsScope.NO_ACL.
+    for key, api_call, result_has_key in [
+        ('CORSRules', self.client.get_bucket_cors, True),
+        ('ServerSideEncryptionConfiguration', self.client.get_bucket_encryption,
+         True),
+        ('LifecycleConfiguration',
+         self.client.get_bucket_lifecycle_configuration, False),
+        ('LoggingEnabled', self.client.get_bucket_logging, True),
+        ('Website', self.client.get_bucket_website, False),
+    ]:
+      try:
+        api_result = api_call(Bucket=bucket_name)
+        # Some results are wrapped in dictionaries with keys matching "key".
+        metadata[key] = api_result.get(key) if result_has_key else api_result
+      except botocore.exceptions.ClientError as error:
+        metadata[key] = errors.S3ApiError(error)
+
+    # Responses to parse into booleans.
+    try:
+      api_result = self.client.get_bucket_request_payment(Bucket=bucket_name)
+      requester_pays = api_result.get('Payer') == 'Requester'
+      metadata['Payer'] = api_result.get('Payer')
+    except botocore.exceptions.ClientError as error:
+      requester_pays = metadata['Payer'] = errors.S3ApiError(error)
+    try:
+      api_result = self.client.get_bucket_versioning(Bucket=bucket_name)
+      versioning_enabled = api_result.get('Status') == 'Enabled'
+      metadata['Versioning'] = api_result
+    except botocore.exceptions.ClientError as error:
+      versioning_enabled = metadata['Versioning'] = errors.S3ApiError(error)
+
+    # User requested ACL's with FieldsScope.FULL.
+    if fields_scope is cloud_api.FieldsScope.FULL:
+      try:
+        metadata['ACL'] = self.client.get_bucket_acl(Bucket=bucket_name)
+      except botocore.exceptions.ClientError as error:
+        metadata['ACL'] = errors.S3ApiError(error)
 
     return s3_resource_reference.S3BucketResource(
         storage_url.CloudUrl(storage_url.ProviderPrefix.S3, bucket_name),
-        metadata=metadata)
+        acl=metadata.get('ACL'),
+        cors_config=metadata.get('CORSRules'),
+        lifecycle_config=metadata.get('LifecycleConfiguration'),
+        logging_config=metadata.get('LoggingEnabled'),
+        requester_pays=requester_pays,
+        location=metadata.get('LocationConstraint'),
+        metadata=metadata,
+        versioning_enabled=versioning_enabled,
+        website_config=metadata.get('Website'))
 
   def _make_patch_request(self, bucket_resource, patch_function, patch_kwargs):
     patch_kwargs['Bucket'] = bucket_resource.storage_url.bucket_name
@@ -267,9 +293,14 @@ class S3Api(cloud_api.CloudApi):
           yield self.get_bucket(bucket['Name'], fields_scope)
         else:
           yield s3_resource_reference.S3BucketResource(
-              storage_url.CloudUrl(
-                  storage_url.ProviderPrefix.S3, bucket['Name']),
-              metadata={'Bucket': bucket, 'Owner': response['Owner']})
+              storage_url.CloudUrl(storage_url.ProviderPrefix.S3,
+                                   bucket['Name']),
+              creation_time=resource_util.convert_datetime_object_to_utc(
+                  bucket['CreationDate']),
+              metadata={
+                  'Bucket': bucket,
+                  'Owner': response['Owner']
+              })
     except botocore.exceptions.ClientError as error:
       core_exceptions.reraise(errors.S3ApiError(error))
 

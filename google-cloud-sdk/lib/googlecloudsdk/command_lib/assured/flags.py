@@ -251,3 +251,12 @@ def AddListViolationsFlags(parser):
       required=True,
       help=('The parent workload of the Assured Workloads violations, '
             'provided as workload ID.'))
+
+
+def AddAcknowledgeViolationsFlags(parser):
+  """Method to add acknowledge violations flags."""
+  AddViolationResourceArgToParser(parser, verb='acknowledge')
+  parser.add_argument(
+      '--comment',
+      required=True,
+      help=('Business justification used added to acknowledge a violation.'))

@@ -656,6 +656,14 @@
         "awsV4Authentication": {
           "description": "Optional. Enable AWS Signature Version 4 origin authentication.",
           "$ref": "AWSV4Signature"
+        },
+        "originOverrideAction": {
+          "description": "Optional. The override actions, including url_rewrites and header additions, for requests that use this origin.",
+          "$ref": "OriginOverrideAction"
+        },
+        "originRedirect": {
+          "description": "Optional. Follow redirects from this origin.",
+          "$ref": "OriginRedirect"
         }
       }
     },
@@ -702,6 +710,95 @@
         "originRegion": {
           "description": "Required. The name of the AWS region that your origin is in.",
           "type": "string"
+        }
+      }
+    },
+    "OriginOverrideAction": {
+      "id": "OriginOverrideAction",
+      "description": "OriginOverrideAction defines how requests and responses may be manipulated on cache fill to this origin.",
+      "type": "object",
+      "properties": {
+        "urlRewrite": {
+          "description": "Optional. The URL rewrite configuration for requests that are handled by this origin.",
+          "$ref": "OriginUrlRewrite"
+        },
+        "headerAction": {
+          "description": "Optional. The header actions, including adding & removing headers, for requests handled by this origin.",
+          "$ref": "OriginHeaderAction"
+        }
+      }
+    },
+    "OriginUrlRewrite": {
+      "id": "OriginUrlRewrite",
+      "description": "OriginUrlRewrite defines the URL rewrite configuration for a given request handled by this origin.",
+      "type": "object",
+      "properties": {
+        "hostRewrite": {
+          "description": "Optional. Prior to forwarding the request to the selected origin, the request's host header is replaced with contents of hostRewrite. The host value must be between 1 and 255 characters.",
+          "type": "string"
+        }
+      }
+    },
+    "OriginHeaderAction": {
+      "id": "OriginHeaderAction",
+      "description": "OriginHeaderAction defines the addition and removal of HTTP headers for requests\/responses.",
+      "type": "object",
+      "properties": {
+        "requestHeadersToAdd": {
+          "description": "Optional. Describes a header to add. You may add a maximum of 5 request headers.",
+          "type": "array",
+          "items": {
+            "$ref": "OriginHeaderActionAddHeader"
+          }
+        }
+      }
+    },
+    "OriginHeaderActionAddHeader": {
+      "id": "OriginHeaderActionAddHeader",
+      "description": "Describes a header to add.",
+      "type": "object",
+      "properties": {
+        "headerName": {
+          "description": "Required. The name of the header to add.",
+          "type": "string"
+        },
+        "headerValue": {
+          "description": "Required. The value of the header to add.",
+          "type": "string"
+        },
+        "replace": {
+          "description": "Optional. Whether to replace all existing headers with the same name. By default, added header values are appended to the response or request headers with the same field names. The added values are separated by commas. To overwrite existing values, set `replace` to `true`.",
+          "type": "boolean"
+        }
+      }
+    },
+    "OriginRedirect": {
+      "id": "OriginRedirect",
+      "description": "Options for following redirects from the origin.",
+      "type": "object",
+      "properties": {
+        "redirectConditions": {
+          "description": "Optional. The set of HTTP redirect response codes that the CDN follows.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "It is an error to specify REDIRECT_CONDITIONS_UNSPECIFIED",
+              "Follow redirect on an HTTP 301.",
+              "Follow redirect on an HTTP 302.",
+              "Follow redirect on an HTTP 303.",
+              "Follow redirect on an HTTP 307.",
+              "Follow redirect on an HTTP 308."
+            ],
+            "enum": [
+              "REDIRECT_CONDITIONS_UNSPECIFIED",
+              "MOVED_PERMANENTLY",
+              "FOUND",
+              "SEE_OTHER",
+              "TEMPORARY_REDIRECT",
+              "PERMANENT_REDIRECT"
+            ]
+          }
         }
       }
     },

@@ -164,6 +164,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
         api_version=resource_collection.api_version,
         disable_auto_completers=self._disable_auto_completers,
         plural_name=self._plural_name,
+        is_positional=self.is_positional,
         **{attribute.parameter_name: attribute for attribute in attributes})
 
 

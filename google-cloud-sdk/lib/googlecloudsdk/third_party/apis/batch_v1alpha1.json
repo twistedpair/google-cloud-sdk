@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "",
+  "documentationLink": "https://cloud.google.com/batch/",
   "protocol": "rest",
   "rootUrl": "https://batch.googleapis.com/",
   "mtlsRootUrl": "https://batch.mtls.googleapis.com/",

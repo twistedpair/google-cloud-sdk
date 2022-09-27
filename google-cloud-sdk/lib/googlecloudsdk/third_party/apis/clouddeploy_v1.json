@@ -248,7 +248,7 @@
           "type": "string"
         },
         "annotations": {
-          "description": "User annotations. These attributes can only be set and used by the user, and not by Google Cloud Deploy. See https:\/\/google.aip.dev\/128#annotations for more details such as format and size limitations.",
+          "description": "User annotations. These attributes can only be set and used by the user, and not by Google Cloud Deploy.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1395,6 +1395,23 @@
           "description": "Output only. Additional information about the deploy failure, if available.",
           "readOnly": true,
           "type": "string"
+        },
+        "metadata": {
+          "description": "Output only. Metadata containing information about the deploy job run.",
+          "readOnly": true,
+          "$ref": "DeployJobRunMetadata"
+        }
+      }
+    },
+    "DeployJobRunMetadata": {
+      "id": "DeployJobRunMetadata",
+      "description": "DeployJobRunMetadata surfaces information associated with a `DeployJobRun` to the user.",
+      "type": "object",
+      "properties": {
+        "cloudRun": {
+          "description": "Output only. The name of the Cloud Run Service that is associated with a `DeployJobRun`.",
+          "readOnly": true,
+          "$ref": "CloudRunMetadata"
         }
       }
     },
@@ -1894,6 +1911,51 @@
         },
         "target": {
           "description": "The name of the `Target`.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type of this notification, e.g. for a Pub\/Sub failure.",
+          "type": "string",
+          "enumDescriptions": [
+            "Type is unspecified.",
+            "A Pub\/Sub notification failed to be sent.",
+            "Release render status changed notification."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "TYPE_PUBSUB_NOTIFICATION_FAILURE",
+            "TYPE_RENDER_STATUES_CHANGE"
+          ]
+        }
+      }
+    },
+    "JobRunNotificationEvent": {
+      "id": "JobRunNotificationEvent",
+      "description": "Payload proto for \"clouddeploy.googleapis.com\/jobrun_notification\" Platform Log event that describes the failure to send JobRun resource update Pub\/Sub notification.",
+      "type": "object",
+      "properties": {
+        "message": {
+          "description": "Debug message for when a notification fails to send.",
+          "type": "string"
+        },
+        "jobRun": {
+          "description": "The name of the `JobRun`.",
+          "type": "string"
+        },
+        "pipelineUid": {
+          "description": "Unique identifier of the `DeliveryPipeline`.",
+          "type": "string"
+        },
+        "releaseUid": {
+          "description": "Unique identifier of the `Release`.",
+          "type": "string"
+        },
+        "rolloutUid": {
+          "description": "Unique identifier of the `Rollout`.",
+          "type": "string"
+        },
+        "targetId": {
+          "description": "ID of the `Target`.",
           "type": "string"
         },
         "type": {

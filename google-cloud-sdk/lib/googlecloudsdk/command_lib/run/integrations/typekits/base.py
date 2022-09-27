@@ -31,11 +31,11 @@ class TypeKit(object):
 
   @property
   def integration_type(self):
-    return self._type_metadata['integration_type']
+    return self._type_metadata.get('integration_type')
 
   @property
   def resource_type(self):
-    return self._type_metadata['resource_type']
+    return self._type_metadata.get('resource_type')
 
   @property
   def is_singleton(self):

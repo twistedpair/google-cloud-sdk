@@ -131,38 +131,31 @@ class BucketResource(CloudResource):
     name (str): Name of bucket.
     scheme (storage_url.ProviderPrefix): Prefix indicating what cloud provider
       hosts the bucket.
-    acl (dict|str|None): ACLs for the bucket.
-      If the API call to fetch the data failed, this can be an error string.
-    cors_config (dict|str|None): The CORS configuration for the bucket.
-      If the API call to fetch the data failed, this can be an error string.
-    creation_time (str|None): Bucket's creation time.
+    acl (dict|CloudApiError|None): ACLs for the bucket.
+    cors_config (dict|CloudApiError|None): CORS configuration for the bucket.
+    creation_time (datetime|None): Bucket's creation time in UTC.
     default_event_based_hold (bool|None): Prevents objects in bucket from being
       deleted. Currently GCS-only but needed for generic copy logic.
     default_storage_class (str|None): Default storage class for objects in
       bucket.
     etag (str|None): HTTP version identifier.
     labels (dict|None): Labels for the bucket.
-    lifecycle_config (dict|str|None): The lifecycle configuration for the
-      bucket. For S3, the value can be an error string.
-    location (str|None): Represents region bucket was created in.
-    logging_config (dict|str|None): The logging configuration for the bucket.
-      If the API call to fetch the data failed, this can be an error string.
+    lifecycle_config (dict|CloudApiError|None): The lifecycle configuration for
+      the bucket.
+    location (str|CloudApiError|None): Represents region bucket was created in.
+    logging_config (dict|CloudApiError|None): Logging configuration for bucket.
     metadata (object|dict|None): Cloud-provider specific data type for holding
       bucket metadata.
     metageneration (int|None): The generation of the bucket's metadata.
-    requester_pays (bool|str|None): The "requester pays" status of the bucket.
-      For S3, the value can be an error string.
+    requester_pays (bool|CloudApiError|None): "Requester pays" status of bucket.
     retention_period (int|None): Default time to hold items in bucket before
       before deleting in seconds. Generated from retention_policy.
     retention_policy (dict|None): Info about object retention within bucket.
       Currently GCS-only but needed for generic copy logic.
-    uniform_bucket_level_access (bool): True if all objects in the bucket share
-      ACLs rather than the default, fine-grain ACL control.
     update_time (str|None): Bucket's update time.
-    versioning_enabled (bool|str|None): If True, versioning is enabled.
-      If the API call to fetch the data failed, this can be an error string.
-    website_config (dict|str|None): The website configuration for the bucket.
-      If the API call to fetch the data failed, this can be an error string.
+    versioning_enabled (bool|CloudApiError|None): Whether past object versions
+      are saved.
+    website_config (dict|CloudApiError|None): Website configuration for bucket.
   """
   TYPE_STRING = 'cloud_bucket'
 
@@ -174,15 +167,14 @@ class BucketResource(CloudResource):
                default_event_based_hold=None,
                default_storage_class=None,
                etag=None,
-               lifecycle_config=None,
                labels=None,
+               lifecycle_config=None,
                location=None,
                logging_config=None,
                metageneration=None,
                metadata=None,
                requester_pays=None,
                retention_policy=None,
-               uniform_bucket_level_access=False,
                update_time=None,
                versioning_enabled=None,
                website_config=None):
@@ -202,7 +194,6 @@ class BucketResource(CloudResource):
     self.metageneration = metageneration
     self.requester_pays = requester_pays
     self.retention_policy = retention_policy
-    self.uniform_bucket_level_access = uniform_bucket_level_access
     self.update_time = update_time
     self.versioning_enabled = versioning_enabled
     self.website_config = website_config
@@ -231,8 +222,6 @@ class BucketResource(CloudResource):
             self.metageneration == other.metageneration and
             self.requester_pays == other.requester_pays and
             self.retention_policy == other.retention_policy and
-            self.uniform_bucket_level_access
-            == other.uniform_bucket_level_access and
             self.update_time == other.update_time and
             self.versioning_enabled == other.versioning_enabled and
             self.website_config == other.website_config)

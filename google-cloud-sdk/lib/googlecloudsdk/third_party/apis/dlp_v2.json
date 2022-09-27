@@ -4775,7 +4775,7 @@
           "format": "int64"
         },
         "rowCount": {
-          "description": "Number of rows in the table when the profile was generated.",
+          "description": "Number of rows in the table when the profile was generated. This will not be populated for BigLake tables.",
           "type": "string",
           "format": "int64"
         },

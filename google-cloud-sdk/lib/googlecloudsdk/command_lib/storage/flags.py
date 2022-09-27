@@ -21,6 +21,13 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 
 
+INVENTORY_REPORTS_METADATA_FIELDS = [
+    'project', 'bucket', 'name', 'location', 'size', 'timeCreated', 'type',
+    'updated', 'storageClass', 'etag', 'retentionExpirationTime', 'crc32c',
+    'md5Hash', 'generation', 'metageneration', 'contentType',
+    'contentEncoding', 'timeStorageClassUpdated']
+
+
 def add_precondition_flags(parser):
   """Add flags indicating a precondition for an operation to happen."""
   preconditions_group = parser.add_group(
@@ -204,3 +211,85 @@ def add_continue_on_error_flag(parser):
       ' a non-zero exit status after completing the remaining operations.'
       ' This flag takes effect only in sequential execution mode (i.e.'
       ' processor and thread count are set to 1). Parallelism is default.')
+
+
+def _get_optional_help_text(require_create_flags, flag_name):
+  """Returns a text to be added for create command's help text."""
+  optional_text_map = {
+      'destination': ' Defaults to <SOURCE_BUCKET_URL>/inventory_reports/.',
+      'metadata_fields': ' Defaults to all fields being included.',
+      'start_date': ' Defaults to tomorrow.',
+      'end_date': ' Defaults to one year from --schedule-starts value.',
+      'frequency': ' Defaults to DAILY.'
+  }
+  return optional_text_map[flag_name] if require_create_flags else ''
+
+
+def add_inventory_reports_flags(parser, require_create_flags=False):
+  """Adds the flags for the inventory reports create and update commands.
+
+  Args:
+    parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
+    require_create_flags (bool): True if create flags should be required.
+  """
+  parser.add_argument(
+      '--csv-separator',
+      type=str,
+      metavar='SEPARATOR',
+      help='Sets the character used to separate the records in the inventory '
+            'report CSV file. For example, ``\\n``')
+  parser.add_argument(
+      '--csv-delimiter',
+      type=str,
+      metavar='DELIMITER',
+      help='Sets the delimiter that separates the fields in the inventory '
+            'report CSV file. For example, ``,``')
+  parser.add_argument(
+      '--csv-header',
+      action=arg_parsers.StoreTrueFalseAction,
+      help='Indicates whether or not headers are included in the inventory '
+            'report CSV file. Default is None.')
+  parser.add_argument(
+      '--destination',
+      type=str,
+      metavar='DESTINATION_URL',
+      help=('Sets the URL of the destination bucket and path where generated '
+            'reports are stored.' +
+            _get_optional_help_text(require_create_flags, 'destination')))
+  parser.add_argument(
+      '--display-name',
+      type=str,
+      help='Sets the editable name of the report configuration.')
+  parser.add_argument(
+      '--metadata-fields',
+      metavar='METADATA_FIELDS',
+      default=(
+          INVENTORY_REPORTS_METADATA_FIELDS if require_create_flags else None),
+      type=arg_parsers.ArgList(choices=INVENTORY_REPORTS_METADATA_FIELDS),
+      help=('Lists the metadata fields you want included in the inventory '
+            'report.' +
+            _get_optional_help_text(require_create_flags, 'metadata_fields')))
+  parser.add_argument(
+      '--schedule-starts',
+      type=arg_parsers.Day.Parse,
+      metavar='START_DATE',
+      help=('Sets the date you want to start generating inventory reports. '
+            'For example, 2022-01-30. Should be tomorrow or later based'
+            ' on UTC timezone.' +
+            _get_optional_help_text(require_create_flags, 'start_date')))
+  parser.add_argument(
+      '--schedule-repeats',
+      choices=['daily', 'weekly'],
+      metavar='FREQUENCY',
+      default='daily' if require_create_flags else None,
+      type=str,
+      help=('Sets how often the inventory report configuration will run.' +
+            _get_optional_help_text(require_create_flags, 'frequency')))
+  parser.add_argument(
+      '--schedule-repeats-until',
+      type=arg_parsers.Day.Parse,
+      metavar='END_DATE',
+      help=(
+          'Sets date after which you want to stop generating inventory reports. '
+          'For example, 2022-03-30.' +
+          _get_optional_help_text(require_create_flags, 'end_date')))

@@ -78,11 +78,13 @@ class AiplatformProjectsLocationsBatchPredictionJobsListRequest(_messages.Messag
       supports `=`, `!=` comparisons, and `:` wildcard. * `model_display_name`
       supports `=`, `!=` comparisons. * `state` supports `=`, `!=`
       comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=`
-      comparisons. `create_time` must be in RFC 3339 format. Some examples of
-      using the filter are: * `state="JOB_STATE_SUCCEEDED" AND
-      display_name:"my_job_*"` * `state!="JOB_STATE_FAILED" OR
-      display_name="my_job"` * `NOT display_name="my_job"` *
-      `create_time>"2021-05-18T00:00:00Z"`
+      comparisons. `create_time` must be in RFC 3339 format. * `labels`
+      supports general map functions that is: `labels.key=value` - key:value
+      equality `labels.key:* - key existence Some examples of using the filter
+      are: * `state="JOB_STATE_SUCCEEDED" AND display_name:"my_job_*"` *
+      `state!="JOB_STATE_FAILED" OR display_name="my_job"` * `NOT
+      display_name="my_job"` * `create_time>"2021-05-18T00:00:00Z"` *
+      `labels.keyA=valueA` * `labels.keyB:*`
     pageSize: The standard list page size.
     pageToken: The standard list page token. Typically obtained via
       ListBatchPredictionJobsResponse.next_page_token of the previous
@@ -159,11 +161,13 @@ class AiplatformProjectsLocationsCustomJobsListRequest(_messages.Message):
     filter: The standard list filter. Supported fields: * `display_name`
       supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports
       `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`,
-      `>=` comparisons. `create_time` must be in RFC 3339 format. Some
-      examples of using the filter are: * `state="JOB_STATE_SUCCEEDED" AND
-      display_name:"my_job_*"` * `state!="JOB_STATE_FAILED" OR
-      display_name="my_job"` * `NOT display_name="my_job"` *
-      `create_time>"2021-05-18T00:00:00Z"`
+      `>=` comparisons. `create_time` must be in RFC 3339 format. * `labels`
+      supports general map functions that is: `labels.key=value` - key:value
+      equality `labels.key:* - key existence Some examples of using the filter
+      are: * `state="JOB_STATE_SUCCEEDED" AND display_name:"my_job_*"` *
+      `state!="JOB_STATE_FAILED" OR display_name="my_job"` * `NOT
+      display_name="my_job"` * `create_time>"2021-05-18T00:00:00Z"` *
+      `labels.keyA=valueA` * `labels.keyB:*`
     pageSize: The standard list page size.
     pageToken: The standard list page token. Typically obtained via
       ListCustomJobsResponse.next_page_token of the previous
@@ -301,11 +305,13 @@ class AiplatformProjectsLocationsDataLabelingJobsListRequest(_messages.Message):
     filter: The standard list filter. Supported fields: * `display_name`
       supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports
       `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`,
-      `>=` comparisons. `create_time` must be in RFC 3339 format. Some
-      examples of using the filter are: * `state="JOB_STATE_SUCCEEDED" AND
-      display_name:"my_job_*"` * `state!="JOB_STATE_FAILED" OR
-      display_name="my_job"` * `NOT display_name="my_job"` *
-      `create_time>"2021-05-18T00:00:00Z"`
+      `>=` comparisons. `create_time` must be in RFC 3339 format. * `labels`
+      supports general map functions that is: `labels.key=value` - key:value
+      equality `labels.key:* - key existence Some examples of using the filter
+      are: * `state="JOB_STATE_SUCCEEDED" AND display_name:"my_job_*"` *
+      `state!="JOB_STATE_FAILED" OR display_name="my_job"` * `NOT
+      display_name="my_job"` * `create_time>"2021-05-18T00:00:00Z"` *
+      `labels.keyA=valueA` * `labels.keyB:*`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
     parent: Required. The parent of the DataLabelingJob. Format:
@@ -1425,11 +1431,13 @@ class AiplatformProjectsLocationsHyperparameterTuningJobsListRequest(_messages.M
     filter: The standard list filter. Supported fields: * `display_name`
       supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports
       `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`,
-      `>=` comparisons. `create_time` must be in RFC 3339 format. Some
-      examples of using the filter are: * `state="JOB_STATE_SUCCEEDED" AND
-      display_name:"my_job_*"` * `state!="JOB_STATE_FAILED" OR
-      display_name="my_job"` * `NOT display_name="my_job"` *
-      `create_time>"2021-05-18T00:00:00Z"`
+      `>=` comparisons. `create_time` must be in RFC 3339 format. * `labels`
+      supports general map functions that is: `labels.key=value` - key:value
+      equality `labels.key:* - key existence Some examples of using the filter
+      are: * `state="JOB_STATE_SUCCEEDED" AND display_name:"my_job_*"` *
+      `state!="JOB_STATE_FAILED" OR display_name="my_job"` * `NOT
+      display_name="my_job"` * `create_time>"2021-05-18T00:00:00Z"` *
+      `labels.keyA=valueA` * `labels.keyB:*`
     pageSize: The standard list page size.
     pageToken: The standard list page token. Typically obtained via
       ListHyperparameterTuningJobsResponse.next_page_token of the previous
@@ -2519,11 +2527,13 @@ class AiplatformProjectsLocationsModelDeploymentMonitoringJobsListRequest(_messa
     filter: The standard list filter. Supported fields: * `display_name`
       supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports
       `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`,
-      `>=` comparisons. `create_time` must be in RFC 3339 format. Some
-      examples of using the filter are: * `state="JOB_STATE_SUCCEEDED" AND
-      display_name:"my_job_*"` * `state!="JOB_STATE_FAILED" OR
-      display_name="my_job"` * `NOT display_name="my_job"` *
-      `create_time>"2021-05-18T00:00:00Z"`
+      `>=` comparisons. `create_time` must be in RFC 3339 format. * `labels`
+      supports general map functions that is: `labels.key=value` - key:value
+      equality `labels.key:* - key existence Some examples of using the filter
+      are: * `state="JOB_STATE_SUCCEEDED" AND display_name:"my_job_*"` *
+      `state!="JOB_STATE_FAILED" OR display_name="my_job"` * `NOT
+      display_name="my_job"` * `create_time>"2021-05-18T00:00:00Z"` *
+      `labels.keyA=valueA` * `labels.keyB:*`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
     parent: Required. The parent of the ModelDeploymentMonitoringJob. Format:
@@ -6459,7 +6469,7 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
       how to label DataItems in Datasets.
     labelingTimeLimit: Maximum duration for operators to answer a question.
       This duration is applied to all questions in the HITL. Should be [10
-      minutes, 8 hours]. Default is 45 minutes.
+      minutes, 14 days]. Default is 45 minutes.
     labels: The labels with user-defined metadata to organize your human in
       the loop configuration. Label keys and values can be no longer than 64
       characters (Unicode codepoints), can only contain lowercase letters,
@@ -6478,6 +6488,7 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
       feature is enabled, one document may be labeled by multiple human
       labelers sequentially. It also supports the expert audit or QA labeling
       in the last stage of the pipelining labeling process.
+    questionTypeConfig: Question type configuration.
     questionTypes: The question types in the HITL.
     replicaCount: Required. Number of labelers to work on each DataItem.
     runningDataItemsCount: Output only. Number of data items that belongs to
@@ -6574,13 +6585,14 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
   name = _messages.StringField(17)
   outputPath = _messages.StringField(18)
   pipeliningConfig = _messages.MessageField('GoogleCloudAiplatformInternalPipeliningAndAuditConfig', 19)
-  questionTypes = _messages.StringField(20, repeated=True)
-  replicaCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  runningDataItemsCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  runningDataLabelingJobsCount = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  specialistPool = _messages.StringField(24, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  updateTime = _messages.StringField(26)
+  questionTypeConfig = _messages.MessageField('GoogleCloudAiplatformInternalHumanInTheLoopQuestionTypeConfig', 20)
+  questionTypes = _messages.StringField(21, repeated=True)
+  replicaCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  runningDataItemsCount = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  runningDataLabelingJobsCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  specialistPool = _messages.StringField(25, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  updateTime = _messages.StringField(27)
 
 
 class GoogleCloudAiplatformInternalHumanInTheLoopEntitlement(_messages.Message):
@@ -6695,6 +6707,30 @@ class GoogleCloudAiplatformInternalHumanInTheLoopMarketplaceEntitlement(_message
   providerName = _messages.StringField(4)
 
 
+class GoogleCloudAiplatformInternalHumanInTheLoopQuestionTypeConfig(_messages.Message):
+  r"""Question type configuration.
+
+  Enums:
+    QuestionTypeCreationValueValuesEnum: Field to specify which question types
+      to create.
+
+  Fields:
+    questionTypeCreation: Field to specify which question types to create.
+  """
+
+  class QuestionTypeCreationValueValuesEnum(_messages.Enum):
+    r"""Field to specify which question types to create.
+
+    Values:
+      QUESTION_TYPE_CREATION_UNSPECIFIED: Unspecified question type creation.
+      DEFAULT_QUESTION_TYPE_ONLY: Only create one default question type.
+    """
+    QUESTION_TYPE_CREATION_UNSPECIFIED = 0
+    DEFAULT_QUESTION_TYPE_ONLY = 1
+
+  questionTypeCreation = _messages.EnumField('QuestionTypeCreationValueValuesEnum', 1)
+
+
 class GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling(_messages.Message):
   r"""Describe the random sampling parameters for triggering human in the
   loop.
@@ -6734,12 +6770,15 @@ class GoogleCloudAiplatformInternalImportFeatureValuesOperationMetadata(_message
       due to either * Not having any featureValues. * Having a null entityId.
       * Having a null timestamp. * Not being parsable (applicable for CSV
       sources).
+    timestampOutsideRetentionRowsCount: The number rows that weren't ingested
+      due to having timestamps outside the retention boundary.
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
   importedEntityCount = _messages.IntegerField(2)
   importedFeatureValueCount = _messages.IntegerField(3)
   invalidRowCount = _messages.IntegerField(4)
+  timestampOutsideRetentionRowsCount = _messages.IntegerField(5)
 
 
 class GoogleCloudAiplatformInternalImportFeatureValuesResponse(_messages.Message):
@@ -6754,11 +6793,14 @@ class GoogleCloudAiplatformInternalImportFeatureValuesResponse(_messages.Message
       due to either * Not having any featureValues. * Having a null entityId.
       * Having a null timestamp. * Not being parsable (applicable for CSV
       sources).
+    timestampOutsideRetentionRowsCount: The number rows that weren't ingested
+      due to having feature timestamps outside the retention boundary.
   """
 
   importedEntityCount = _messages.IntegerField(1)
   importedFeatureValueCount = _messages.IntegerField(2)
   invalidRowCount = _messages.IntegerField(3)
+  timestampOutsideRetentionRowsCount = _messages.IntegerField(4)
 
 
 class GoogleCloudAiplatformInternalIntegratedGradientsAttribution(_messages.Message):
@@ -9523,6 +9565,8 @@ class GoogleCloudAiplatformUiImportFeatureValuesOperationMetadata(_messages.Mess
       * Having a null timestamp. * Not being parsable (applicable for CSV
       sources).
     sourceUris: The source URI from where Feature values are imported.
+    timestampOutsideRetentionRowsCount: The number rows that weren't ingested
+      due to having timestamps outside the retention boundary.
     workerCount: The number of workers used to run the import operation.
   """
 
@@ -9531,7 +9575,8 @@ class GoogleCloudAiplatformUiImportFeatureValuesOperationMetadata(_messages.Mess
   importedFeatureValueCount = _messages.IntegerField(3)
   invalidRowCount = _messages.IntegerField(4)
   sourceUris = _messages.StringField(5, repeated=True)
-  workerCount = _messages.IntegerField(6)
+  timestampOutsideRetentionRowsCount = _messages.IntegerField(6)
+  workerCount = _messages.IntegerField(7)
 
 
 class GoogleCloudAiplatformUiImportFeatureValuesResponse(_messages.Message):
@@ -9546,11 +9591,14 @@ class GoogleCloudAiplatformUiImportFeatureValuesResponse(_messages.Message):
       due to either * Not having any featureValues. * Having a null entityId.
       * Having a null timestamp. * Not being parsable (applicable for CSV
       sources).
+    timestampOutsideRetentionRowsCount: The number rows that weren't ingested
+      due to having feature timestamps outside the retention boundary.
   """
 
   importedEntityCount = _messages.IntegerField(1)
   importedFeatureValueCount = _messages.IntegerField(2)
   invalidRowCount = _messages.IntegerField(3)
+  timestampOutsideRetentionRowsCount = _messages.IntegerField(4)
 
 
 class GoogleCloudAiplatformUiIndexPrivateEndpoints(_messages.Message):
@@ -12821,6 +12869,9 @@ class GoogleCloudAiplatformUiStudySpec(_messages.Message):
       supported by the Vertex AI Vizier service. Not supported by
       HyperparameterTuningJob or TrainingPipeline.
     parameters: Required. The set of parameters to tune.
+    transferLearningConfig: The configuration info/options for transfer
+      learning. Currently supported for Vertex AI Vizier service, not
+      HyperParameterTuningJob
   """
 
   class AlgorithmValueValuesEnum(_messages.Enum):
@@ -12878,6 +12929,7 @@ class GoogleCloudAiplatformUiStudySpec(_messages.Message):
   metrics = _messages.MessageField('GoogleCloudAiplatformUiStudySpecMetricSpec', 6, repeated=True)
   observationNoise = _messages.EnumField('ObservationNoiseValueValuesEnum', 7)
   parameters = _messages.MessageField('GoogleCloudAiplatformUiStudySpecParameterSpec', 8, repeated=True)
+  transferLearningConfig = _messages.MessageField('GoogleCloudAiplatformUiStudySpecTransferLearningConfig', 9)
 
 
 class GoogleCloudAiplatformUiStudySpecConvexStopConfig(_messages.Message):
@@ -13152,6 +13204,22 @@ class GoogleCloudAiplatformUiStudySpecParameterSpecIntegerValueSpec(_messages.Me
   defaultValue = _messages.IntegerField(1)
   maxValue = _messages.IntegerField(2)
   minValue = _messages.IntegerField(3)
+
+
+class GoogleCloudAiplatformUiStudySpecTransferLearningConfig(_messages.Message):
+  r"""This contains flag for manually disabling transfer learning for a study.
+  The names of prior studies being used for transfer learning (if any) are
+  also listed here.
+
+  Fields:
+    disableTransferLearning: Flag to to manually prevent vizier from using
+      transfer learning on a new study. Otherwise, vizier will automatically
+      determine whether or not to use transfer learning.
+    priorStudyNames: Output only. Names of previously completed studies
+  """
+
+  disableTransferLearning = _messages.BooleanField(1)
+  priorStudyNames = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudAiplatformUiSuggestTrialsMetadata(_messages.Message):
@@ -15179,12 +15247,15 @@ class GoogleCloudAiplatformV1ImportFeatureValuesOperationMetadata(_messages.Mess
       due to either * Not having any featureValues. * Having a null entityId.
       * Having a null timestamp. * Not being parsable (applicable for CSV
       sources).
+    timestampOutsideRetentionRowsCount: The number rows that weren't ingested
+      due to having timestamps outside the retention boundary.
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
   importedEntityCount = _messages.IntegerField(2)
   importedFeatureValueCount = _messages.IntegerField(3)
   invalidRowCount = _messages.IntegerField(4)
+  timestampOutsideRetentionRowsCount = _messages.IntegerField(5)
 
 
 class GoogleCloudAiplatformV1ImportFeatureValuesResponse(_messages.Message):
@@ -15199,11 +15270,14 @@ class GoogleCloudAiplatformV1ImportFeatureValuesResponse(_messages.Message):
       due to either * Not having any featureValues. * Having a null entityId.
       * Having a null timestamp. * Not being parsable (applicable for CSV
       sources).
+    timestampOutsideRetentionRowsCount: The number rows that weren't ingested
+      due to having feature timestamps outside the retention boundary.
   """
 
   importedEntityCount = _messages.IntegerField(1)
   importedFeatureValueCount = _messages.IntegerField(2)
   invalidRowCount = _messages.IntegerField(3)
+  timestampOutsideRetentionRowsCount = _messages.IntegerField(4)
 
 
 class GoogleCloudAiplatformV1IndexPrivateEndpoints(_messages.Message):
@@ -16625,7 +16699,7 @@ class GoogleCloudAiplatformV1SchemaPredictionResultError(_messages.Message):
     "NOT_FOUND".
 
     Values:
-      OK: Not an error; returned on success HTTP Mapping: 200 OK
+      OK: Not an error; returned on success. HTTP Mapping: 200 OK
       CANCELLED: The operation was cancelled, typically by the caller. HTTP
         Mapping: 499 Client Closed Request
       UNKNOWN: Unknown error. For example, this error may be returned when a
@@ -20066,7 +20140,7 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
     manualBatchTuningParameters: Immutable. Parameters configuring the batch
       behavior. Currently only applicable when dedicated_resources are used
       (in other cases Vertex AI does the tuning itself).
-    model: The name of the Model resoure that produces the predictions via
+    model: The name of the Model resource that produces the predictions via
       this job, must share the same ancestor Location. Starting this job has
       no impact on any existing deployments of the Model and their resources.
       Exactly one of model and unmanaged_container_model must be set. The
@@ -30291,12 +30365,15 @@ class GoogleCloudAiplatformV1beta1ImportFeatureValuesOperationMetadata(_messages
       due to either * Not having any featureValues. * Having a null entityId.
       * Having a null timestamp. * Not being parsable (applicable for CSV
       sources).
+    timestampOutsideRetentionRowsCount: The number rows that weren't ingested
+      due to having timestamps outside the retention boundary.
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
   importedEntityCount = _messages.IntegerField(2)
   importedFeatureValueCount = _messages.IntegerField(3)
   invalidRowCount = _messages.IntegerField(4)
+  timestampOutsideRetentionRowsCount = _messages.IntegerField(5)
 
 
 class GoogleCloudAiplatformV1beta1ImportFeatureValuesResponse(_messages.Message):
@@ -30311,11 +30388,14 @@ class GoogleCloudAiplatformV1beta1ImportFeatureValuesResponse(_messages.Message)
       due to either * Not having any featureValues. * Having a null entityId.
       * Having a null timestamp. * Not being parsable (applicable for CSV
       sources).
+    timestampOutsideRetentionRowsCount: The number rows that weren't ingested
+      due to having feature timestamps outside the retention boundary.
   """
 
   importedEntityCount = _messages.IntegerField(1)
   importedFeatureValueCount = _messages.IntegerField(2)
   invalidRowCount = _messages.IntegerField(3)
+  timestampOutsideRetentionRowsCount = _messages.IntegerField(4)
 
 
 class GoogleCloudAiplatformV1beta1IndexPrivateEndpoints(_messages.Message):
@@ -31782,7 +31862,7 @@ class GoogleCloudAiplatformV1beta1SchemaPredictionResultError(_messages.Message)
     "NOT_FOUND".
 
     Values:
-      OK: Not an error; returned on success HTTP Mapping: 200 OK
+      OK: Not an error; returned on success. HTTP Mapping: 200 OK
       CANCELLED: The operation was cancelled, typically by the caller. HTTP
         Mapping: 499 Client Closed Request
       UNKNOWN: Unknown error. For example, this error may be returned when a
@@ -33860,6 +33940,9 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
       supported by the Vertex AI Vizier service. Not supported by
       HyperparameterTuningJob or TrainingPipeline.
     parameters: Required. The set of parameters to tune.
+    transferLearningConfig: The configuration info/options for transfer
+      learning. Currently supported for Vertex AI Vizier service, not
+      HyperParameterTuningJob
   """
 
   class AlgorithmValueValuesEnum(_messages.Enum):
@@ -33918,6 +34001,7 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
   metrics = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecMetricSpec', 7, repeated=True)
   observationNoise = _messages.EnumField('ObservationNoiseValueValuesEnum', 8)
   parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpec', 9, repeated=True)
+  transferLearningConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecTransferLearningConfig', 10)
 
 
 class GoogleCloudAiplatformV1beta1StudySpecConvexAutomatedStoppingSpec(_messages.Message):
@@ -34239,6 +34323,22 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecIntegerValueSpec(_messag
   defaultValue = _messages.IntegerField(1)
   maxValue = _messages.IntegerField(2)
   minValue = _messages.IntegerField(3)
+
+
+class GoogleCloudAiplatformV1beta1StudySpecTransferLearningConfig(_messages.Message):
+  r"""This contains flag for manually disabling transfer learning for a study.
+  The names of prior studies being used for transfer learning (if any) are
+  also listed here.
+
+  Fields:
+    disableTransferLearning: Flag to to manually prevent vizier from using
+      transfer learning on a new study. Otherwise, vizier will automatically
+      determine whether or not to use transfer learning.
+    priorStudyNames: Output only. Names of previously completed studies
+  """
+
+  disableTransferLearning = _messages.BooleanField(1)
+  priorStudyNames = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1SuggestTrialsMetadata(_messages.Message):

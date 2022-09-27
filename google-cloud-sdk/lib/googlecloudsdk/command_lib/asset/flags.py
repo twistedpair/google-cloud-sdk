@@ -279,6 +279,34 @@ def AddListContentTypeArgs(parser):
       help=help_text)
 
 
+def AddSavedQueriesQueryId(parser, query_id_help_text):
+  parser.add_argument(
+      'query_id', metavar='QUERY_ID', help=query_id_help_text)
+
+
+def AddSavedQueriesQueryFilePath(parser, is_required):
+  query_file_path_help_text = (
+      'Path to JSON or YAML file that contains the query.')
+  parser.add_argument(
+      '--query-file-path', required=is_required, help=query_file_path_help_text)
+
+
+def AddSavedQueriesQueryLabels(parser):
+  labels_help_text = (
+      'A key/value pair to attach to the query,'
+      ' which can be used in search and list operations.'
+      ' You can include up to 10 labels for each saved query.'
+  )
+  parser.add_argument('--labels', help=labels_help_text)
+
+
+def AddSavedQueriesQueryDescription(parser):
+  description_help_text = (
+      'A string describing the query.'
+  )
+  parser.add_argument('--description', help=description_help_text)
+
+
 def AddFeedIdArgs(parser, help_text):
   parser.add_argument('feed', metavar='FEED_ID', help=help_text)
 
@@ -366,7 +394,7 @@ def AddFeedPubSubTopicArgs(parser, required):
       help=('Name of the Cloud Pub/Sub topic to publish to, of the form '
             '`projects/PROJECT_ID/topics/TOPIC_ID`. '
             'You can list existing topics with '
-            '`gcloud pubsub topics list  --format="text(name)"`'))
+            '`gcloud pubsub topics list --format="text(name)"`'))
 
 
 def AddChangeFeedContentTypeArgs(parser):
@@ -663,6 +691,24 @@ def AddAnalyzerAccessTimeArgs(parser):
       '--access-time',
       type=arg_parsers.Datetime.Parse,
       help=('The hypothetical access timestamp to evaluate IAM conditions.'))
+
+
+def AddAnalyzerSavedAnalysisQueryArgs(parser):
+  """Adds a saved analysis query."""
+  identity_selector_group = parser.add_group(
+      mutex=False,
+      required=False,
+      help='Specifies the name of a saved analysis query.')
+  text = (
+      'The name of a saved query. \n'
+      'When a `saved_analysis_query` is provided, '
+      'its query content will be used as the base query. Other flags\' values '
+      'will override the base query to compose the final query to run. '
+      'IDs might be in one of the following formats:\n'
+      '* projects/project_number/savedQueries/saved_query_id'
+      '* folders/folder_number/savedQueries/saved_query_id'
+      '* organizations/organization_number/savedQueries/saved_query_id')
+  identity_selector_group.add_argument('--saved-analysis-query', help=text)
 
 
 def AddAnalyzerConditionContextGroup(parser):

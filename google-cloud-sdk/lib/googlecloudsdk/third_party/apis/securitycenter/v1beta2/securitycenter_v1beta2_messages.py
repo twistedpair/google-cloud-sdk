@@ -802,7 +802,7 @@ class Finding(_messages.Message):
     StateValueValuesEnum: The state of the finding.
 
   Messages:
-    ContactsValue: Output only. Map containing the point of contacts for the
+    ContactsValue: Output only. Map containing the points of contact for the
       given finding. The key represents the type of contact, while the value
       contains a list of all the contacts that pertain. Please refer to:
       https://cloud.google.com/resource-manager/docs/managing-notification-
@@ -834,7 +834,7 @@ class Finding(_messages.Message):
       associated to the finding.
     connections: Contains information about the IP connection associated with
       the finding.
-    contacts: Output only. Map containing the point of contacts for the given
+    contacts: Output only. Map containing the points of contact for the given
       finding. The key represents the type of contact, while the value
       contains a list of all the contacts that pertain. Please refer to:
       https://cloud.google.com/resource-manager/docs/managing-notification-
@@ -889,6 +889,9 @@ class Finding(_messages.Message):
       See: https://cloud.google.com/apis/design/resource_names#relative_resour
       ce_name This field is immutable after creation time. For example:
       "organizations/{organization_id}/sources/{source_id}"
+    parentDisplayName: Output only. The human readable display name of the
+      finding source such as "Event Threat Detection" or "Security Health
+      Analytics".
     processes: Represents operating system processes associated with the
       Finding.
     resourceName: For findings on Google Cloud resources, the full resource
@@ -1014,7 +1017,7 @@ class Finding(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ContactsValue(_messages.Message):
-    r"""Output only. Map containing the point of contacts for the given
+    r"""Output only. Map containing the points of contact for the given
     finding. The key represents the type of contact, while the value contains
     a list of all the contacts that pertain. Please refer to:
     https://cloud.google.com/resource-manager/docs/managing-notification-
@@ -1121,13 +1124,14 @@ class Finding(_messages.Message):
   name = _messages.StringField(23)
   nextSteps = _messages.StringField(24)
   parent = _messages.StringField(25)
-  processes = _messages.MessageField('Process', 26, repeated=True)
-  resourceName = _messages.StringField(27)
-  securityMarks = _messages.MessageField('SecurityMarks', 28)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 29)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 30)
-  state = _messages.EnumField('StateValueValuesEnum', 31)
-  vulnerability = _messages.MessageField('Vulnerability', 32)
+  parentDisplayName = _messages.StringField(26)
+  processes = _messages.MessageField('Process', 27, repeated=True)
+  resourceName = _messages.StringField(28)
+  securityMarks = _messages.MessageField('SecurityMarks', 29)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 30)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 31)
+  state = _messages.EnumField('StateValueValuesEnum', 32)
+  vulnerability = _messages.MessageField('Vulnerability', 33)
 
 
 class Folder(_messages.Message):

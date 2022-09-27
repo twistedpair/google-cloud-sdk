@@ -966,6 +966,53 @@
         "document": {
           "description": "Required. Input document.",
           "$ref": "Document"
+        },
+        "classificationModelOptions": {
+          "description": "Model options to use for classification. Defaults to v1 options if not specified.",
+          "$ref": "ClassificationModelOptions"
+        }
+      }
+    },
+    "ClassificationModelOptions": {
+      "id": "ClassificationModelOptions",
+      "description": "Model options available for classification requests.",
+      "type": "object",
+      "properties": {
+        "v1Model": {
+          "description": "Setting this field will use the V1 model and V1 content categories version. The V1 model is a legacy model; support for this will be discontinued in the future.",
+          "$ref": "V1Model"
+        },
+        "v2Model": {
+          "description": "Setting this field will use the V2 model with the appropriate content categories version. The V2 model is a better performing model.",
+          "$ref": "V2Model"
+        }
+      }
+    },
+    "V1Model": {
+      "id": "V1Model",
+      "description": "Options for the V1 model.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "V2Model": {
+      "id": "V2Model",
+      "description": "Options for the V2 model.",
+      "type": "object",
+      "properties": {
+        "contentCategoriesVersion": {
+          "description": "The content categories used for classification.",
+          "type": "string",
+          "enumDescriptions": [
+            "If `ContentCategoriesVersion` is not specified, this option will default to `V1`.",
+            "Legacy content categories of our initial launch in 2017.",
+            "Updated content categories in 2022."
+          ],
+          "enum": [
+            "CONTENT_CATEGORIES_VERSION_UNSPECIFIED",
+            "V1",
+            "V2"
+          ]
         }
       }
     },
@@ -1054,6 +1101,10 @@
         "classifyText": {
           "description": "Classify the full document into categories.",
           "type": "boolean"
+        },
+        "classificationModelOptions": {
+          "description": "The model options to use for classification. Defaults to v1 options if not specified. Only used if `classify_text` is set to true.",
+          "$ref": "ClassificationModelOptions"
         }
       }
     },

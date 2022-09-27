@@ -41,17 +41,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_CONNECTIONPOLICIES = (
-      'projects.locations.connectionPolicies',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'connectionPolicies/{connectionPoliciesId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_GLOBAL_HUBS = (
       'projects.locations.global.hubs',
       '{+name}',
@@ -80,6 +69,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SERVICECONNECTIONPOLICIES = (
+      'projects.locations.serviceConnectionPolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'serviceConnectionPolicies/{serviceConnectionPoliciesId}',
       },
       ['name'],
       True

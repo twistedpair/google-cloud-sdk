@@ -312,14 +312,32 @@ class ClassificationCategory(_messages.Message):
   name = _messages.StringField(2)
 
 
+class ClassificationModelOptions(_messages.Message):
+  r"""Model options available for classification requests.
+
+  Fields:
+    v1Model: Setting this field will use the V1 model and V1 content
+      categories version. The V1 model is a legacy model; support for this
+      will be discontinued in the future.
+    v2Model: Setting this field will use the V2 model with the appropriate
+      content categories version. The V2 model is a better performing model.
+  """
+
+  v1Model = _messages.MessageField('V1Model', 1)
+  v2Model = _messages.MessageField('V2Model', 2)
+
+
 class ClassifyTextRequest(_messages.Message):
   r"""The document classification request message.
 
   Fields:
+    classificationModelOptions: Model options to use for classification.
+      Defaults to v1 options if not specified.
     document: Required. Input document.
   """
 
-  document = _messages.MessageField('Document', 1)
+  classificationModelOptions = _messages.MessageField('ClassificationModelOptions', 1)
+  document = _messages.MessageField('Document', 2)
 
 
 class ClassifyTextResponse(_messages.Message):
@@ -725,6 +743,9 @@ class Features(_messages.Message):
   Setting each one to true will enable that specific analysis for the input.
 
   Fields:
+    classificationModelOptions: The model options to use for classification.
+      Defaults to v1 options if not specified. Only used if `classify_text` is
+      set to true.
     classifyText: Classify the full document into categories.
     extractDocumentSentiment: Extract document-level sentiment.
     extractEntities: Extract entities.
@@ -732,11 +753,12 @@ class Features(_messages.Message):
     extractSyntax: Extract syntax information.
   """
 
-  classifyText = _messages.BooleanField(1)
-  extractDocumentSentiment = _messages.BooleanField(2)
-  extractEntities = _messages.BooleanField(3)
-  extractEntitySentiment = _messages.BooleanField(4)
-  extractSyntax = _messages.BooleanField(5)
+  classificationModelOptions = _messages.MessageField('ClassificationModelOptions', 1)
+  classifyText = _messages.BooleanField(2)
+  extractDocumentSentiment = _messages.BooleanField(3)
+  extractEntities = _messages.BooleanField(4)
+  extractEntitySentiment = _messages.BooleanField(5)
+  extractSyntax = _messages.BooleanField(6)
 
 
 class PartOfSpeech(_messages.Message):
@@ -1207,6 +1229,37 @@ class Token(_messages.Message):
   lemma = _messages.StringField(2)
   partOfSpeech = _messages.MessageField('PartOfSpeech', 3)
   text = _messages.MessageField('TextSpan', 4)
+
+
+class V1Model(_messages.Message):
+  r"""Options for the V1 model."""
+
+
+class V2Model(_messages.Message):
+  r"""Options for the V2 model.
+
+  Enums:
+    ContentCategoriesVersionValueValuesEnum: The content categories used for
+      classification.
+
+  Fields:
+    contentCategoriesVersion: The content categories used for classification.
+  """
+
+  class ContentCategoriesVersionValueValuesEnum(_messages.Enum):
+    r"""The content categories used for classification.
+
+    Values:
+      CONTENT_CATEGORIES_VERSION_UNSPECIFIED: If `ContentCategoriesVersion` is
+        not specified, this option will default to `V1`.
+      V1: Legacy content categories of our initial launch in 2017.
+      V2: Updated content categories in 2022.
+    """
+    CONTENT_CATEGORIES_VERSION_UNSPECIFIED = 0
+    V1 = 1
+    V2 = 2
+
+  contentCategoriesVersion = _messages.EnumField('ContentCategoriesVersionValueValuesEnum', 1)
 
 
 encoding.AddCustomJsonFieldMapping(

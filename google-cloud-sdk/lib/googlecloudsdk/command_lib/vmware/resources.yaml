@@ -96,3 +96,16 @@ external_address:
     attribute_name: external-address
     help: Resource ID of the ExternalAddress
   disable_auto_completers: false
+
+subnet:
+  name: subnet
+  collection: vmwareengine.projects.locations.privateClouds.subnets
+  attributes:
+  - *project
+  - *location
+  - *private_cloud
+  - &subnet
+    parameter_name: subnetId
+    attribute_name: subnet
+    help: Resource ID of the Subnet
+  disable_auto_completers: false

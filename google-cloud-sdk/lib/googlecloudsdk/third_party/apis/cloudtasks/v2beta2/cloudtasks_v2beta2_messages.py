@@ -414,7 +414,7 @@ class BufferTaskRequest(_messages.Message):
 
   Fields:
     body: Optional. Body of the HTTP request. The body can take any generic
-      value. The value will be written to the HttpRequest of the [Task].
+      value. The value is written to the HttpRequest of the [Task].
   """
 
   body = _messages.MessageField('HttpBody', 1)
@@ -712,13 +712,16 @@ class CloudtasksProjectsLocationsQueuesTasksBufferRequest(_messages.Message):
   Fields:
     bufferTaskRequest: A BufferTaskRequest resource to be passed as the
       request body.
-    parent: Required. The parent queue name. For example:
+    queue: Required. The parent queue name. For example:
       projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID` The queue
       must already exist.
+    taskId: Optional. Task ID for the task being created. If not provided, a
+      random task ID is assigned to the task.
   """
 
   bufferTaskRequest = _messages.MessageField('BufferTaskRequest', 1)
-  parent = _messages.StringField(2, required=True)
+  queue = _messages.StringField(2, required=True)
+  taskId = _messages.StringField(3, required=True)
 
 
 class CloudtasksProjectsLocationsQueuesTasksCancelLeaseRequest(_messages.Message):
@@ -1092,12 +1095,12 @@ class Header(_messages.Message):
   r"""Defines a header message. A header can have a key and a value.
 
   Fields:
-    key: A byte attribute.
-    value: A byte attribute.
+    key: The key of the header.
+    value: The value of the header.
   """
 
-  key = _messages.BytesField(1)
-  value = _messages.BytesField(2)
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class HeaderOverride(_messages.Message):

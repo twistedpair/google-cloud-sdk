@@ -1644,9 +1644,10 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     schema: Schema of the entry. An entry might not have any schema attached
       to it.
     sourceSystemTimestamps: Timestamps from the underlying resource, not from
-      the Data Catalog entry. Output only when the entry has a type listed in
-      the `EntryType` enum. For entries with `user_specified_type`, this field
-      is optional and defaults to an empty timestamp.
+      the Data Catalog entry. Output only when the entry has a system listed
+      in the `IntegratedSystem` enum. For entries with
+      `user_specified_system`, this field is optional and defaults to an empty
+      timestamp.
     type: The type of the entry. Only used for entries with types listed in
       the `EntryType` enum. Currently, only `FILESET` enum value is allowed.
       All other entries created in Data Catalog must use the

@@ -162,6 +162,59 @@ class DataprocParameters(_messages.Message):
   cluster = _messages.StringField(1)
 
 
+class DiagnoseInstanceRequest(_messages.Message):
+  r"""Request for creating a notebook instance diagnostic file.
+
+  Fields:
+    diagnosticConfig: Required. Defines flags that are used to run the
+      diagnostic tool
+  """
+
+  diagnosticConfig = _messages.MessageField('DiagnosticConfig', 1)
+
+
+class DiagnoseRuntimeRequest(_messages.Message):
+  r"""Request for creating a notebook instance diagnostic file.
+
+  Fields:
+    diagnosticConfig: Required. Defines flags that are used to run the
+      diagnostic tool
+  """
+
+  diagnosticConfig = _messages.MessageField('DiagnosticConfig', 1)
+
+
+class DiagnosticConfig(_messages.Message):
+  r"""Defines flags that are used to run the diagnostic tool
+
+  Fields:
+    copyHomeFilesFlagEnabled: Optional. Enables flag to copy all
+      `/home/jupyter` folder contents
+    gcsBucket: Required. User Cloud Storage bucket location (REQUIRED) ## Must
+      be formatted with path prefix (gs://$GCS_BUCKET) Permissions: User
+      Managed Notebooks: - storage.buckets.writer: Must be given to the
+      project's service account attached to VM. Google Managed Notebooks: -
+      storage.buckets.writer: Must be given to the project's service account
+      or ## user credentials attached to VM depending on authentication mode.
+      Cloud Storage bucket Log file will be written to
+      gs://$GCS_BUCKET/$RELATIVE_PATH/$VM_DATE_$TIME.tar.gz
+    packetCaptureFlagEnabled: Optional. Enables flag to capture packets from
+      the instance for 30 seconds
+    relativePath: Optional. Defines the relative storage path in the Cloud
+      Storage bucket where the diagnostic logs will be written: Default path
+      will be the root directory of the Cloud Storage bucket
+      (gs://$GCS_BUCKET/$DATE_$TIME.tar.gz) Example of full path where Log
+      file will be written: gs://$GCS_BUCKET/$RELATIVE_PATH/
+    repairFlagEnabled: Optional. Enables flag to repair service for instance
+  """
+
+  copyHomeFilesFlagEnabled = _messages.BooleanField(1)
+  gcsBucket = _messages.StringField(2)
+  packetCaptureFlagEnabled = _messages.BooleanField(3)
+  relativePath = _messages.StringField(4)
+  repairFlagEnabled = _messages.BooleanField(5)
+
+
 class Disk(_messages.Message):
   r"""An instance-attached disk resource.
 
@@ -1493,6 +1546,20 @@ class NotebooksProjectsLocationsInstancesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class NotebooksProjectsLocationsInstancesDiagnoseRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsInstancesDiagnoseRequest object.
+
+  Fields:
+    diagnoseInstanceRequest: A DiagnoseInstanceRequest resource to be passed
+      as the request body.
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
+  """
+
+  diagnoseInstanceRequest = _messages.MessageField('DiagnoseInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class NotebooksProjectsLocationsInstancesGetIamPolicyRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsInstancesGetIamPolicyRequest object.
 
@@ -1919,6 +1986,20 @@ class NotebooksProjectsLocationsRuntimesDeleteRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
+
+
+class NotebooksProjectsLocationsRuntimesDiagnoseRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsRuntimesDiagnoseRequest object.
+
+  Fields:
+    diagnoseRuntimeRequest: A DiagnoseRuntimeRequest resource to be passed as
+      the request body.
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/runtimes/{runtimes_id}`
+  """
+
+  diagnoseRuntimeRequest = _messages.MessageField('DiagnoseRuntimeRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class NotebooksProjectsLocationsRuntimesGetIamPolicyRequest(_messages.Message):

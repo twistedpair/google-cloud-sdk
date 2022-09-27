@@ -203,8 +203,6 @@ class CommandCommon(object):
       if self.index_help[-1] == '.':
         self.index_help = self.index_help[:-1]
 
-    # Add an annotation to the help strings to mark the release stage.
-    # TODO(b/32361958): Clean Up ReleaseTracks to Leverage Notices().
     tags = []
     tag = self.ReleaseTrack().help_tag
     if tag:

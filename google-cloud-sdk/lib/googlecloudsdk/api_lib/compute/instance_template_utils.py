@@ -250,7 +250,8 @@ def CreatePersistentCreateDiskMessages(client,
                                        create_disks,
                                        support_kms=False,
                                        container_mount_disk=None,
-                                       support_multi_writer=False):
+                                       support_multi_writer=False,
+                                       support_provisioned_throughput=False):
   """Returns a list of AttachedDisk messages.
 
   Args:
@@ -264,6 +265,8 @@ def CreatePersistentCreateDiskMessages(client,
              * size - the size of the disk,
              * provisioned-iops - Indicates how many IOPS must be provisioned
                for the disk.
+             * provisioned-throughput - Indicates how much throughput is
+               provisioned for the disks.
              * type - the type of the disk (HDD or SSD),
              * image - the name of the image to initialize from,
              * image-family - the image family name,
@@ -276,6 +279,7 @@ def CreatePersistentCreateDiskMessages(client,
     support_kms: if KMS is supported
     container_mount_disk: list of disks to be mounted to container, if any.
     support_multi_writer: if multi writer disks are supported.
+    support_provisioned_throughput: if provisioned throughout is supported.
 
   Returns:
     list of API messages for attached disks
@@ -337,6 +341,9 @@ def CreatePersistentCreateDiskMessages(client,
     if disk_architecture:
       init_params.architecture = messages.AttachedDiskInitializeParams.ArchitectureValueValuesEnum(
           disk_architecture)
+
+    if support_provisioned_throughput:
+      init_params.provisionedThroughput = disk.get('provisioned-throughput')
 
     create_disk = client.messages.AttachedDisk(
         autoDelete=auto_delete,

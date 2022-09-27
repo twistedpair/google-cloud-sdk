@@ -165,6 +165,60 @@ class RecommenderV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GetConfig(self, request, global_params=None):
+      r"""Gets the requested InsightTypeConfig. There is only one instance of the config for each InsightType.
+
+      Args:
+        request: (RecommenderBillingAccountsLocationsInsightTypesGetConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1InsightTypeConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/billingAccounts/{billingAccountsId}/locations/{locationsId}/insightTypes/{insightTypesId}/config',
+        http_method='GET',
+        method_id='recommender.billingAccounts.locations.insightTypes.getConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='RecommenderBillingAccountsLocationsInsightTypesGetConfigRequest',
+        response_type_name='GoogleCloudRecommenderV1InsightTypeConfig',
+        supports_download=False,
+    )
+
+    def UpdateConfig(self, request, global_params=None):
+      r"""Updates an InsightTypeConfig change. This will create a new revision of the config.
+
+      Args:
+        request: (RecommenderBillingAccountsLocationsInsightTypesUpdateConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1InsightTypeConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/billingAccounts/{billingAccountsId}/locations/{locationsId}/insightTypes/{insightTypesId}/config',
+        http_method='PATCH',
+        method_id='recommender.billingAccounts.locations.insightTypes.updateConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudRecommenderV1InsightTypeConfig',
+        request_type_name='RecommenderBillingAccountsLocationsInsightTypesUpdateConfigRequest',
+        response_type_name='GoogleCloudRecommenderV1InsightTypeConfig',
+        supports_download=False,
+    )
+
   class BillingAccountsLocationsRecommendersRecommendationsService(base_api.BaseApiService):
     """Service class for the billingAccounts_locations_recommenders_recommendations resource."""
 
@@ -319,6 +373,60 @@ class RecommenderV1(base_api.BaseApiClient):
       super(RecommenderV1.BillingAccountsLocationsRecommendersService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def GetConfig(self, request, global_params=None):
+      r"""Gets the requested Recommender Config. There is only one instance of the config for each Recommender.
+
+      Args:
+        request: (RecommenderBillingAccountsLocationsRecommendersGetConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1RecommenderConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/billingAccounts/{billingAccountsId}/locations/{locationsId}/recommenders/{recommendersId}/config',
+        http_method='GET',
+        method_id='recommender.billingAccounts.locations.recommenders.getConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='RecommenderBillingAccountsLocationsRecommendersGetConfigRequest',
+        response_type_name='GoogleCloudRecommenderV1RecommenderConfig',
+        supports_download=False,
+    )
+
+    def UpdateConfig(self, request, global_params=None):
+      r"""Updates a Recommender Config. This will create a new revision of the config.
+
+      Args:
+        request: (RecommenderBillingAccountsLocationsRecommendersUpdateConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1RecommenderConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/billingAccounts/{billingAccountsId}/locations/{locationsId}/recommenders/{recommendersId}/config',
+        http_method='PATCH',
+        method_id='recommender.billingAccounts.locations.recommenders.updateConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudRecommenderV1RecommenderConfig',
+        request_type_name='RecommenderBillingAccountsLocationsRecommendersUpdateConfigRequest',
+        response_type_name='GoogleCloudRecommenderV1RecommenderConfig',
+        supports_download=False,
+    )
 
   class BillingAccountsLocationsService(base_api.BaseApiService):
     """Service class for the billingAccounts_locations resource."""

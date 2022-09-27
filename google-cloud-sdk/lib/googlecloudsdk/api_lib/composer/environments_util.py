@@ -139,6 +139,14 @@ class CreateEnvironmentFlags:
       specified only in Airflow 2.2.x and greater
     triggerer_memory_gb: float or None, memory allocated to Airflow triggerer.
       Can be specified only in Airflow 2.2.x and greater
+    enable_scheduled_snapshot_creation: bool or None, whether the automatic
+      snapshot creation should be enabled
+    snapshot_creation_schedule: str or None, cron expression that specifies when
+      snapshots will be created
+    snapshot_location: str or None, a Cloud Storage location used to store
+      automatically created snapshots
+    snapshot_schedule_timezone: str or None, time zone that sets the context to
+      interpret snapshot_creation_schedule.
   """
 
   # TODO(b/154131605): This a type that is an immutable data object. Can't use
@@ -203,7 +211,11 @@ class CreateEnvironmentFlags:
                release_track=base.ReleaseTrack.GA,
                enable_triggerer=None,
                triggerer_cpu=None,
-               triggerer_memory_gb=None):
+               triggerer_memory_gb=None,
+               enable_scheduled_snapshot_creation=None,
+               snapshot_creation_schedule=None,
+               snapshot_location=None,
+               snapshot_schedule_timezone=None):
     self.node_count = node_count
     self.environment_size = environment_size
     self.labels = labels
@@ -261,6 +273,10 @@ class CreateEnvironmentFlags:
     self.master_authorized_networks = master_authorized_networks
     self.airflow_database_retention_days = airflow_database_retention_days
     self.release_track = release_track
+    self.enable_scheduled_snapshot_creation = enable_scheduled_snapshot_creation
+    self.snapshot_creation_schedule = snapshot_creation_schedule
+    self.snapshot_location = snapshot_location
+    self.snapshot_schedule_timezone = snapshot_schedule_timezone
 
 
 def _CreateNodeConfig(messages, flags):
@@ -320,7 +336,9 @@ def _CreateConfig(messages, flags, is_composer_v1):
           flags.environment_size or flags.min_workers or flags.max_workers or
           flags.scheduler_count or flags.airflow_database_retention_days or
           flags.triggerer_cpu or flags.triggerer_memory or
-          flags.enable_triggerer):
+          flags.enable_triggerer or flags.enable_scheduled_snapshot_creation or
+          flags.snapshot_creation_schedule or flags.snapshot_location or
+          flags.snapshot_schedule_timezone):
     return None
 
   config = messages.EnvironmentConfig()
@@ -374,6 +392,14 @@ def _CreateConfig(messages, flags, is_composer_v1):
   if flags.airflow_database_retention_days:
     config.dataRetentionConfig = messages.DataRetentionConfig(
         airflowDatabaseRetentionDays=flags.airflow_database_retention_days)
+
+  if flags.enable_scheduled_snapshot_creation:
+    config.recoveryConfig = messages.RecoveryConfig(
+        scheduledSnapshotsConfig=messages.ScheduledSnapshotsConfig(
+            enabled=flags.enable_scheduled_snapshot_creation,
+            snapshotCreationSchedule=flags.snapshot_creation_schedule,
+            snapshotLocation=flags.snapshot_location,
+            timeZone=flags.snapshot_schedule_timezone))
 
   if flags.private_environment:
     # Adds a PrivateClusterConfig, if necessary.
@@ -590,8 +616,8 @@ def LoadSnapshot(environment_ref,
       the operation.
     skip_environment_variables_setting: skip setting environment variables
       during the operation.
-    skip_airflow_overrides_setting: skip setting Airflow overrides during
-      the operation.
+    skip_airflow_overrides_setting: skip setting Airflow overrides during the
+      operation.
     skip_gcs_data_copying: skip copying GCS data during the operation.
     snapshot_path: path of the specific snapshot to load the snapshot.
     release_track: base.ReleaseTrack, the release track of command. Will dictate

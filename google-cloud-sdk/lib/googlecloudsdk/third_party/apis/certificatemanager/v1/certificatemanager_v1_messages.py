@@ -274,7 +274,8 @@ class CertificateMap(_messages.Message):
     description: One or more paragraphs of text description of a certificate
       map.
     gclbTargets: Output only. A list of GCLB targets which use this
-      Certificate Map.
+      Certificate Map. A Target Proxy is only present on this list if it's
+      attached to a Forwarding Rule.
     labels: Set of labels associated with a Certificate Map.
     name: A user-defined name of the Certificate Map. Certificate Map names
       must be unique globally and match pattern

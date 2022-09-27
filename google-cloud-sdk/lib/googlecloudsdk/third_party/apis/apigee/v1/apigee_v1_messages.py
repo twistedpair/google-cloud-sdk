@@ -10170,7 +10170,7 @@ class GoogleCloudApigeeV1UpdateError(_messages.Message):
     r"""Status code.
 
     Values:
-      OK: Not an error; returned on success HTTP Mapping: 200 OK
+      OK: Not an error; returned on success. HTTP Mapping: 200 OK
       CANCELLED: The operation was cancelled, typically by the caller. HTTP
         Mapping: 499 Client Closed Request
       UNKNOWN: Unknown error. For example, this error may be returned when a

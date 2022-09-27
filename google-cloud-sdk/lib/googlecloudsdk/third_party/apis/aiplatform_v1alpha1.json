@@ -2797,7 +2797,7 @@
           "type": "string"
         },
         "model": {
-          "description": "The name of the Model resoure that produces the predictions via this job, must share the same ancestor Location. Starting this job has no impact on any existing deployments of the Model and their resources. Exactly one of model and unmanaged_container_model must be set. The model resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be used.",
+          "description": "The name of the Model resource that produces the predictions via this job, must share the same ancestor Location. Starting this job has no impact on any existing deployments of the Model and their resources. Exactly one of model and unmanaged_container_model must be set. The model resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be used.",
           "type": "string"
         },
         "unmanagedContainerModel": {
@@ -8416,7 +8416,7 @@
           "$ref": "GoogleCloudAiplatformInternalHumanInTheLoopMarketplaceEntitlement"
         },
         "labelingTimeLimit": {
-          "description": "Maximum duration for operators to answer a question. This duration is applied to all questions in the HITL. Should be [10 minutes, 8 hours]. Default is 45 minutes.",
+          "description": "Maximum duration for operators to answer a question. This duration is applied to all questions in the HITL. Should be [10 minutes, 14 days]. Default is 45 minutes.",
           "type": "string",
           "format": "google-duration"
         },
@@ -8426,6 +8426,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "questionTypeConfig": {
+          "description": "Question type configuration.",
+          "$ref": "GoogleCloudAiplatformInternalHumanInTheLoopQuestionTypeConfig"
         }
       }
     },
@@ -8664,6 +8668,25 @@
         }
       }
     },
+    "GoogleCloudAiplatformInternalHumanInTheLoopQuestionTypeConfig": {
+      "id": "GoogleCloudAiplatformInternalHumanInTheLoopQuestionTypeConfig",
+      "description": "Question type configuration.",
+      "type": "object",
+      "properties": {
+        "questionTypeCreation": {
+          "description": "Field to specify which question types to create.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified question type creation.",
+            "Only create one default question type."
+          ],
+          "enum": [
+            "QUESTION_TYPE_CREATION_UNSPECIFIED",
+            "DEFAULT_QUESTION_TYPE_ONLY"
+          ]
+        }
+      }
+    },
     "GoogleCloudAiplatformInternalHumanInTheLoopEntitlement": {
       "id": "GoogleCloudAiplatformInternalHumanInTheLoopEntitlement",
       "description": "A HumanInTheLoopEntitlement represents a purchase of Human-in-the-Loop (HITL) product made by a customer on the GCP Marketplace. It allows to the purchased HITL product and to ensure the appropriate billing events occur.",
@@ -8803,6 +8826,11 @@
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
           "type": "string",
           "format": "int64"
+        },
+        "timestampOutsideRetentionRowsCount": {
+          "description": "The number rows that weren't ingested due to having timestamps outside the retention boundary.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -8823,6 +8851,11 @@
         },
         "invalidRowCount": {
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
+          "type": "string",
+          "format": "int64"
+        },
+        "timestampOutsideRetentionRowsCount": {
+          "description": "The number rows that weren't ingested due to having feature timestamps outside the retention boundary.",
           "type": "string",
           "format": "int64"
         }
@@ -11966,6 +11999,11 @@
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
           "type": "string",
           "format": "int64"
+        },
+        "timestampOutsideRetentionRowsCount": {
+          "description": "The number rows that weren't ingested due to having timestamps outside the retention boundary.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -11986,6 +12024,11 @@
         },
         "invalidRowCount": {
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
+          "type": "string",
+          "format": "int64"
+        },
+        "timestampOutsideRetentionRowsCount": {
+          "description": "The number rows that weren't ingested due to having feature timestamps outside the retention boundary.",
           "type": "string",
           "format": "int64"
         }
@@ -13893,6 +13936,10 @@
             "LAST_MEASUREMENT",
             "BEST_MEASUREMENT"
           ]
+        },
+        "transferLearningConfig": {
+          "description": "The configuration info\/options for transfer learning. Currently supported for Vertex AI Vizier service, not HyperParameterTuningJob",
+          "$ref": "GoogleCloudAiplatformUiStudySpecTransferLearningConfig"
         }
       }
     },
@@ -14165,6 +14212,25 @@
       "properties": {
         "values": {
           "description": "Required. Matches values of the parent parameter of 'CATEGORICAL' type. All values must exist in `categorical_value_spec` of parent parameter.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiStudySpecTransferLearningConfig": {
+      "id": "GoogleCloudAiplatformUiStudySpecTransferLearningConfig",
+      "description": "This contains flag for manually disabling transfer learning for a study. The names of prior studies being used for transfer learning (if any) are also listed here.",
+      "type": "object",
+      "properties": {
+        "disableTransferLearning": {
+          "description": "Flag to to manually prevent vizier from using transfer learning on a new study. Otherwise, vizier will automatically determine whether or not to use transfer learning.",
+          "type": "boolean"
+        },
+        "priorStudyNames": {
+          "description": "Output only. Names of previously completed studies",
+          "readOnly": true,
           "type": "array",
           "items": {
             "type": "string"
@@ -18224,6 +18290,11 @@
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
           "type": "string",
           "format": "int64"
+        },
+        "timestampOutsideRetentionRowsCount": {
+          "description": "The number rows that weren't ingested due to having timestamps outside the retention boundary.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -18244,6 +18315,11 @@
         },
         "invalidRowCount": {
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
+          "type": "string",
+          "format": "int64"
+        },
+        "timestampOutsideRetentionRowsCount": {
+          "description": "The number rows that weren't ingested due to having feature timestamps outside the retention boundary.",
           "type": "string",
           "format": "int64"
         }
@@ -20743,6 +20819,10 @@
             "LAST_MEASUREMENT",
             "BEST_MEASUREMENT"
           ]
+        },
+        "transferLearningConfig": {
+          "description": "The configuration info\/options for transfer learning. Currently supported for Vertex AI Vizier service, not HyperParameterTuningJob",
+          "$ref": "GoogleCloudAiplatformV1beta1StudySpecTransferLearningConfig"
         }
       }
     },
@@ -21052,6 +21132,25 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1StudySpecTransferLearningConfig": {
+      "id": "GoogleCloudAiplatformV1beta1StudySpecTransferLearningConfig",
+      "description": "This contains flag for manually disabling transfer learning for a study. The names of prior studies being used for transfer learning (if any) are also listed here.",
+      "type": "object",
+      "properties": {
+        "disableTransferLearning": {
+          "description": "Flag to to manually prevent vizier from using transfer learning on a new study. Otherwise, vizier will automatically determine whether or not to use transfer learning.",
+          "type": "boolean"
+        },
+        "priorStudyNames": {
+          "description": "Output only. Names of previously completed studies",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningJobMetadata": {
       "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTuningJobMetadata",
       "type": "object",
@@ -21334,7 +21433,7 @@
           "description": "Error status. This will be serialized into the enum name e.g. \"NOT_FOUND\".",
           "type": "string",
           "enumDescriptions": [
-            "Not an error; returned on success HTTP Mapping: 200 OK",
+            "Not an error; returned on success. HTTP Mapping: 200 OK",
             "The operation was cancelled, typically by the caller. HTTP Mapping: 499 Client Closed Request",
             "Unknown error. For example, this error may be returned when a `Status` value received from another address space belongs to an error space that is not known in this address space. Also errors raised by APIs that do not return enough error information may be converted to this error. HTTP Mapping: 500 Internal Server Error",
             "The client specified an invalid argument. Note that this differs from `FAILED_PRECONDITION`. `INVALID_ARGUMENT` indicates arguments that are problematic regardless of the state of the system (e.g., a malformed file name). HTTP Mapping: 400 Bad Request",
@@ -23597,6 +23696,11 @@
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
           "type": "string",
           "format": "int64"
+        },
+        "timestampOutsideRetentionRowsCount": {
+          "description": "The number rows that weren't ingested due to having timestamps outside the retention boundary.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -23617,6 +23721,11 @@
         },
         "invalidRowCount": {
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
+          "type": "string",
+          "format": "int64"
+        },
+        "timestampOutsideRetentionRowsCount": {
+          "description": "The number rows that weren't ingested due to having feature timestamps outside the retention boundary.",
           "type": "string",
           "format": "int64"
         }
@@ -26626,7 +26735,7 @@
           "description": "Error status. This will be serialized into the enum name e.g. \"NOT_FOUND\".",
           "type": "string",
           "enumDescriptions": [
-            "Not an error; returned on success HTTP Mapping: 200 OK",
+            "Not an error; returned on success. HTTP Mapping: 200 OK",
             "The operation was cancelled, typically by the caller. HTTP Mapping: 499 Client Closed Request",
             "Unknown error. For example, this error may be returned when a `Status` value received from another address space belongs to an error space that is not known in this address space. Also errors raised by APIs that do not return enough error information may be converted to this error. HTTP Mapping: 500 Internal Server Error",
             "The client specified an invalid argument. Note that this differs from `FAILED_PRECONDITION`. `INVALID_ARGUMENT` indicates arguments that are problematic regardless of the state of the system (e.g., a malformed file name). HTTP Mapping: 400 Bad Request",
@@ -30444,7 +30553,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. * `labels` supports general map functions that is: `labels.key=value` - key:value equality `labels.key:* - key existence Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"` * `labels.keyA=valueA` * `labels.keyB:*`",
                       "location": "query",
                       "type": "string"
                     },
@@ -30755,7 +30864,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. * `labels` supports general map functions that is: `labels.key=value` - key:value equality `labels.key:* - key existence Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"` * `labels.keyA=valueA` * `labels.keyB:*`",
                       "location": "query",
                       "type": "string"
                     },
@@ -31066,7 +31175,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. * `labels` supports general map functions that is: `labels.key=value` - key:value equality `labels.key:* - key existence Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"` * `labels.keyA=valueA` * `labels.keyB:*`",
                       "location": "query",
                       "type": "string"
                     },
@@ -31377,7 +31486,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `model_display_name` supports `=`, `!=` comparisons. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `model_display_name` supports `=`, `!=` comparisons. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. * `labels` supports general map functions that is: `labels.key=value` - key:value equality `labels.key:* - key existence Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"` * `labels.keyA=valueA` * `labels.keyB:*`",
                       "location": "query",
                       "type": "string"
                     },
@@ -31562,7 +31671,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"`",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. * `labels` supports general map functions that is: `labels.key=value` - key:value equality `labels.key:* - key existence Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"` * `labels.keyA=valueA` * `labels.keyB:*`",
                       "location": "query",
                       "type": "string"
                     },

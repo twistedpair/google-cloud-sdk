@@ -48,29 +48,6 @@ wasmPlugin:
     attribute_name: wasm_plugin
     help: The ID of the WasmPlugin.
 
-# TODO(b/124305522): Remove this and use wasmPlugin above.
-#
-# Non-positional gcloud flags use hyphens rather than underscores.
-# However, the logic that generates non-positonal flags from resources.yaml
-# entries does not perform this translation, which results in these flags
-# having underscores. To work around this, we declare the wasmPluginHyphen
-# resource, in addition to the wasmPlugin resource above. wasmPluginHyphen
-# explicitly specifies an attribute_name that uses a hyphen. We use
-# wasmPluginHyphen in contexts where we emit a non-positional flag (which
-# use hyphens), and wasmPlugin in contexts where we emit a positional flag
-# (which use underscores).
-wasmPluginHyphen:
-  name: WasmPlugin
-  collection: networkservices.projects.locations.wasmPlugins
-  request_id_field: wasmPluginId
-  attributes:
-  - *project
-  - *location
-  - &wasmPluginHyphen
-    parameter_name: wasmPluginsId
-    attribute_name: wasm-plugin
-    help: The ID of the WasmPlugin.
-
 wasmPluginVersion:
   name: WasmPluginVersion
   collection: networkservices.projects.locations.wasmPlugins.versions
@@ -78,7 +55,7 @@ wasmPluginVersion:
   attributes:
   - *project
   - *location
-  - *wasmPluginHyphen
+  - *wasmPlugin
   - &version
     parameter_name: versionsId
     attribute_name: wasm_plugin_version

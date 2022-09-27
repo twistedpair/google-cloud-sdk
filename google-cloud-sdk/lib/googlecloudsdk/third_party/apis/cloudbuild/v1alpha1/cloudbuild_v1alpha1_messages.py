@@ -152,6 +152,32 @@ class BatchCreateBitbucketServerConnectedRepositoriesResponseMetadata(_messages.
   createTime = _messages.StringField(3)
 
 
+class BatchCreateGitLabConnectedRepositoriesResponse(_messages.Message):
+  r"""Response of BatchCreateGitLabConnectedRepositories RPC method.
+
+  Fields:
+    gitlabConnectedRepositories: The GitLab connected repository requests'
+      responses.
+  """
+
+  gitlabConnectedRepositories = _messages.MessageField('GitLabConnectedRepository', 1, repeated=True)
+
+
+class BatchCreateGitLabConnectedRepositoriesResponseMetadata(_messages.Message):
+  r"""Metadata for `BatchCreateGitLabConnectedRepositories` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    config: The name of the `GitLabConfig` that added connected repositories.
+      Format: `projects/{project}/locations/{location}/gitLabConfigs/{config}`
+    createTime: Time the operation was created.
+  """
+
+  completeTime = _messages.StringField(1)
+  config = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+
+
 class BitbucketServerConnectedRepository(_messages.Message):
   r"""/ BitbucketServerConnectedRepository represents a connected Bitbucket
   Server / repository.
@@ -856,6 +882,21 @@ class CreateGitHubEnterpriseConfigOperationMetadata(_messages.Message):
   githubEnterpriseConfig = _messages.StringField(3)
 
 
+class CreateGitLabConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `CreateGitLabConfig` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    gitlabConfig: The resource name of the GitLabConfig to be created. Format:
+      `projects/{project}/locations/{location}/gitlabConfigs/{id}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  gitlabConfig = _messages.StringField(3)
+
+
 class CreateWorkerPoolOperationMetadata(_messages.Message):
   r"""Metadata for the `CreateWorkerPool` operation.
 
@@ -901,6 +942,21 @@ class DeleteGitHubEnterpriseConfigOperationMetadata(_messages.Message):
   completeTime = _messages.StringField(1)
   createTime = _messages.StringField(2)
   githubEnterpriseConfig = _messages.StringField(3)
+
+
+class DeleteGitLabConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `DeleteGitLabConfig` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    gitlabConfig: The resource name of the GitLabConfig to be created. Format:
+      `projects/{project}/locations/{location}/gitlabConfigs/{id}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  gitlabConfig = _messages.StringField(3)
 
 
 class DeleteWorkerPoolOperationMetadata(_messages.Message):
@@ -971,6 +1027,38 @@ class FileHashes(_messages.Message):
   """
 
   fileHash = _messages.MessageField('Hash', 1, repeated=True)
+
+
+class GitLabConnectedRepository(_messages.Message):
+  r"""GitLabConnectedRepository represents a GitLab connected repository
+  request response.
+
+  Fields:
+    parent: The name of the `GitLabConfig` that added connected repository.
+      Format: `projects/{project}/locations/{location}/gitLabConfigs/{config}`
+    repo: The GitLab repositories to connect.
+    status: Output only. The status of the repo connection request.
+  """
+
+  parent = _messages.StringField(1)
+  repo = _messages.MessageField('GitLabRepositoryId', 2)
+  status = _messages.MessageField('Status', 3)
+
+
+class GitLabRepositoryId(_messages.Message):
+  r"""GitLabRepositoryId identifies a specific repository hosted on GitLab.com
+  or GitLabEnterprise
+
+  Fields:
+    id: Required. Identifier for the repository. example: "namespace/project-
+      slug", namespace is usually the username or group ID
+    webhookId: Output only. The ID of the webhook that was created for
+      receiving events from this repo. We only create and manage a single
+      webhook for each repo.
+  """
+
+  id = _messages.StringField(1)
+  webhookId = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleDevtoolsCloudbuildV2OperationMetadata(_messages.Message):
@@ -1932,6 +2020,21 @@ class UpdateGitHubEnterpriseConfigOperationMetadata(_messages.Message):
   completeTime = _messages.StringField(1)
   createTime = _messages.StringField(2)
   githubEnterpriseConfig = _messages.StringField(3)
+
+
+class UpdateGitLabConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `UpdateGitLabConfig` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    gitlabConfig: The resource name of the GitLabConfig to be created. Format:
+      `projects/{project}/locations/{location}/gitlabConfigs/{id}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  gitlabConfig = _messages.StringField(3)
 
 
 class UpdateWorkerPoolOperationMetadata(_messages.Message):

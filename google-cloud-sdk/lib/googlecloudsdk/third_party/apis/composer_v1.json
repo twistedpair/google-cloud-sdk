@@ -937,6 +937,24 @@
           }
         }
       }
+    },
+    "SaveSnapshotResponse": {
+      "id": "SaveSnapshotResponse",
+      "description": "Response to SaveSnapshotRequest.",
+      "type": "object",
+      "properties": {
+        "snapshotPath": {
+          "description": "The fully-resolved Cloud Storage path of the created snapshot, e.g.: \"gs:\/\/my-bucket\/snapshots\/project_location_environment_timestamp\". This field is populated only if the snapshot creation was successful.",
+          "type": "string"
+        }
+      }
+    },
+    "LoadSnapshotResponse": {
+      "id": "LoadSnapshotResponse",
+      "description": "Response to LoadSnapshotRequest.",
+      "type": "object",
+      "properties": {
+      }
     }
   },
   "resources": {

@@ -58,6 +58,8 @@ class CloudbuildV1(base_api.BaseApiClient):
     self.projects_locations_bitbucketServerConfigs_repos = self.ProjectsLocationsBitbucketServerConfigsReposService(self)
     self.projects_locations_bitbucketServerConfigs = self.ProjectsLocationsBitbucketServerConfigsService(self)
     self.projects_locations_builds = self.ProjectsLocationsBuildsService(self)
+    self.projects_locations_gitLabConfigs_connectedRepositories = self.ProjectsLocationsGitLabConfigsConnectedRepositoriesService(self)
+    self.projects_locations_gitLabConfigs_repos = self.ProjectsLocationsGitLabConfigsReposService(self)
     self.projects_locations_gitLabConfigs = self.ProjectsLocationsGitLabConfigsService(self)
     self.projects_locations_github_installations = self.ProjectsLocationsGithubInstallationsService(self)
     self.projects_locations_github = self.ProjectsLocationsGithubService(self)
@@ -1403,6 +1405,80 @@ class CloudbuildV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsGitLabConfigsConnectedRepositoriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_gitLabConfigs_connectedRepositories resource."""
+
+    _NAME = 'projects_locations_gitLabConfigs_connectedRepositories'
+
+    def __init__(self, client):
+      super(CloudbuildV1.ProjectsLocationsGitLabConfigsConnectedRepositoriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def BatchCreate(self, request, global_params=None):
+      r"""Batch connecting GitLab repositories to Cloud Build. This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsLocationsGitLabConfigsConnectedRepositoriesBatchCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('BatchCreate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/gitLabConfigs/{gitLabConfigsId}/connectedRepositories:batchCreate',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.gitLabConfigs.connectedRepositories.batchCreate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/connectedRepositories:batchCreate',
+        request_field='batchCreateGitLabConnectedRepositoriesRequest',
+        request_type_name='CloudbuildProjectsLocationsGitLabConfigsConnectedRepositoriesBatchCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGitLabConfigsReposService(base_api.BaseApiService):
+    """Service class for the projects_locations_gitLabConfigs_repos resource."""
+
+    _NAME = 'projects_locations_gitLabConfigs_repos'
+
+    def __init__(self, client):
+      super(CloudbuildV1.ProjectsLocationsGitLabConfigsReposService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List all repositories for a given `GitLabConfig`. This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsLocationsGitLabConfigsReposListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListGitLabRepositoriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/gitLabConfigs/{gitLabConfigsId}/repos',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.gitLabConfigs.repos.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/repos',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsGitLabConfigsReposListRequest',
+        response_type_name='ListGitLabRepositoriesResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsGitLabConfigsService(base_api.BaseApiService):
     """Service class for the projects_locations_gitLabConfigs resource."""
 
@@ -1545,6 +1621,33 @@ class CloudbuildV1(base_api.BaseApiClient):
         request_field='gitLabConfig',
         request_type_name='CloudbuildProjectsLocationsGitLabConfigsPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemoveGitLabConnectedRepository(self, request, global_params=None):
+      r"""Remove a GitLab repository from a given GitLabConfig's connected repositories. This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsLocationsGitLabConfigsRemoveGitLabConnectedRepositoryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('RemoveGitLabConnectedRepository')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveGitLabConnectedRepository.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/gitLabConfigs/{gitLabConfigsId}:removeGitLabConnectedRepository',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.gitLabConfigs.removeGitLabConnectedRepository',
+        ordered_params=['config'],
+        path_params=['config'],
+        query_params=[],
+        relative_path='v1/{+config}:removeGitLabConnectedRepository',
+        request_field='removeGitLabConnectedRepositoryRequest',
+        request_type_name='CloudbuildProjectsLocationsGitLabConfigsRemoveGitLabConnectedRepositoryRequest',
+        response_type_name='Empty',
         supports_download=False,
     )
 

@@ -619,6 +619,11 @@
         "jumboFramesEnabled": {
           "description": "Whether network uses standard frames or jumbo ones.",
           "type": "boolean"
+        },
+        "gatewayIp": {
+          "description": "Output only. Gateway ip address.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },

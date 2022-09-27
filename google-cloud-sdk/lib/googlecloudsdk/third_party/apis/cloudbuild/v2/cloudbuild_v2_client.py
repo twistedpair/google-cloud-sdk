@@ -60,6 +60,60 @@ class CloudbuildV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AccessReadToken(self, request, global_params=None):
+      r"""Fetches read token of a given repository.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsRepositoriesAccessReadTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchReadTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessReadToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessReadToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/repositories/{repositoriesId}:accessReadToken',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.connections.repositories.accessReadToken',
+        ordered_params=['repository'],
+        path_params=['repository'],
+        query_params=[],
+        relative_path='v2/{+repository}:accessReadToken',
+        request_field='fetchReadTokenRequest',
+        request_type_name='CloudbuildProjectsLocationsConnectionsRepositoriesAccessReadTokenRequest',
+        response_type_name='FetchReadTokenResponse',
+        supports_download=False,
+    )
+
+    def AccessReadWriteToken(self, request, global_params=None):
+      r"""Fetches read/write token of a given repository.
+
+      Args:
+        request: (CloudbuildProjectsLocationsConnectionsRepositoriesAccessReadWriteTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchReadWriteTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessReadWriteToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessReadWriteToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}/repositories/{repositoriesId}:accessReadWriteToken',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.connections.repositories.accessReadWriteToken',
+        ordered_params=['repository'],
+        path_params=['repository'],
+        query_params=[],
+        relative_path='v2/{+repository}:accessReadWriteToken',
+        request_field='fetchReadWriteTokenRequest',
+        request_type_name='CloudbuildProjectsLocationsConnectionsRepositoriesAccessReadWriteTokenRequest',
+        response_type_name='FetchReadWriteTokenResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a Repository.
 
@@ -160,7 +214,7 @@ class CloudbuildV2(base_api.BaseApiClient):
         method_id='cloudbuild.projects.locations.connections.repositories.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/repositories',
         request_field='',
         request_type_name='CloudbuildProjectsLocationsConnectionsRepositoriesListRequest',

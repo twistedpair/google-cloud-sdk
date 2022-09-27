@@ -788,7 +788,7 @@
             "PEERING_SUBNET",
             "PEERING_STATIC",
             "PEERING_DYNAMIC",
-            "POLICY_BASED_ROUTE"
+            "POLICY_BASED"
           ]
         },
         "nextHopType": {

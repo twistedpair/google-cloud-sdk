@@ -689,8 +689,8 @@ class Address(_messages.Message):
       address. Valid options are IPV4 or IPV6. This can only be specified for
       a global address.
     Ipv6EndpointTypeValueValuesEnum: The endpoint type of this address, which
-      should be VM. This is used for deciding which endpoint this address will
-      be assigned to during the IPv6 external IP address reservation.
+      should be VM or NETLB. This is used for deciding which type of endpoint
+      this address can be used after the external IPv6 address reservation.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this address and can only take the following values: PREMIUM
       or STANDARD. Internal IP addresses are always Premium Tier; global
@@ -736,9 +736,9 @@ class Address(_messages.Message):
       is defined by the server.
     ipVersion: The IP version that will be used by this address. Valid options
       are IPV4 or IPV6. This can only be specified for a global address.
-    ipv6EndpointType: The endpoint type of this address, which should be VM.
-      This is used for deciding which endpoint this address will be assigned
-      to during the IPv6 external IP address reservation.
+    ipv6EndpointType: The endpoint type of this address, which should be VM or
+      NETLB. This is used for deciding which type of endpoint this address can
+      be used after the external IPv6 address reservation.
     kind: [Output Only] Type of the resource. Always compute#address for
       addresses.
     labelFingerprint: A fingerprint for the labels being applied to this
@@ -834,14 +834,16 @@ class Address(_messages.Message):
     UNSPECIFIED_VERSION = 2
 
   class Ipv6EndpointTypeValueValuesEnum(_messages.Enum):
-    r"""The endpoint type of this address, which should be VM. This is used
-    for deciding which endpoint this address will be assigned to during the
-    IPv6 external IP address reservation.
+    r"""The endpoint type of this address, which should be VM or NETLB. This
+    is used for deciding which type of endpoint this address can be used after
+    the external IPv6 address reservation.
 
     Values:
-      VM: Reserved IPv6 address will be assigned to VM.
+      NETLB: Reserved IPv6 address can be used on network load balancer.
+      VM: Reserved IPv6 address can be used on VM.
     """
-    VM = 0
+    NETLB = 0
+    VM = 1
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     r"""This signifies the networking tier used for configuring this address
@@ -36815,7 +36817,7 @@ class FirewallPolicyRuleMatcher(_messages.Message):
       traffic destination. Maximum number of destination address groups is 10.
     destFqdns: Fully Qualified Domain Name (FQDN) which should be matched
       against traffic destination. Maximum number of destination fqdn allowed
-      is 1000.
+      is 100.
     destIpRanges: CIDR IP address range. Maximum number of destination CIDR IP
       ranges allowed is 5000.
     destRegionCodes: Region codes whose IP addresses will be used to match for
@@ -36828,7 +36830,7 @@ class FirewallPolicyRuleMatcher(_messages.Message):
     srcAddressGroups: Address groups which should be matched against the
       traffic source. Maximum number of source address groups is 10.
     srcFqdns: Fully Qualified Domain Name (FQDN) which should be matched
-      against traffic source. Maximum number of source fqdn allowed is 1000.
+      against traffic source. Maximum number of source fqdn allowed is 100.
     srcIpRanges: CIDR IP address range. Maximum number of source CIDR IP
       ranges allowed is 5000.
     srcRegionCodes: Region codes whose IP addresses will be used to match for
@@ -37147,7 +37149,17 @@ class ForwardingRule(_messages.Message):
       is in auto subnet mode, this field is optional. However, a subnetwork
       must be specified if the network is in custom subnet mode or when
       creating external forwarding rule with IPv6.
-    target: A string attribute.
+    target: The URL of the target resource to receive the matched traffic. For
+      regional forwarding rules, this target must be in the same region as the
+      forwarding rule. For global forwarding rules, this target must be a
+      global load balancing resource. The forwarded traffic must be of a type
+      appropriate to the target object. For more information, see the "Target"
+      column in [Port specifications](https://cloud.google.com/load-
+      balancing/docs/forwarding-rule-concepts#ip_address_specifications). For
+      Private Service Connect forwarding rules that forward traffic to Google
+      APIs, provide the name of a supported Google API bundle: - vpc-sc - APIs
+      that support VPC Service Controls. - all-apis - All supported Google
+      APIs.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):

@@ -52,11 +52,11 @@ def _WorkflowTransform(workflow):
   if "spec" in pipeline:
     _PipelineSpecTransform(pipeline["spec"])
     workflow["pipelineSpec"] = pipeline["spec"]
-  elif "bundle" in pipeline:
-    workflow["bundle"] = pipeline["bundle"]
+  elif "ref" in pipeline:
+    workflow["ref"] = pipeline["ref"]
   else:
     raise cloudbuild_exceptions.InvalidYamlError(
-        "PipelineSpec or Bundle is required.")
+        "PipelineSpec or PipelineRef is required.")
 
   for workspace_binding in workflow.get("workspaces", []):
     _WorkspaceBindingTransform(workspace_binding)

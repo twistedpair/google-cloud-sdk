@@ -27,7 +27,8 @@ from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 def GetEntryArg():
   entry_data = yaml_data.ResourceYAMLData.FromPath('data_catalog.entry')
-  resource_spec = concepts.ResourceSpec.FromYaml(entry_data.GetData())
+  resource_spec = concepts.ResourceSpec.FromYaml(
+      entry_data.GetData(), is_positional=True)
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name='entry', concept_spec=resource_spec, group_help='Entry to update.')
   return concept_parsers.ConceptParser([presentation_spec])

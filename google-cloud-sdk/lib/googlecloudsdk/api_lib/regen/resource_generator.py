@@ -28,14 +28,19 @@ from googlecloudsdk.core.util import files
 import six
 
 
-_COLLECTION_SUB_RE = r'[a-zA-Z_]+(?:\.[a-zA-Z0-9_]+)+'
-_METHOD_ID_RE = re.compile(r'(?P<collection>{collection})\.get'.format(
-    collection=_COLLECTION_SUB_RE))
+_COLLECTION_SUB_RE = r'[a-zA-Z][a-zA-Z0-9_]+(?:\.[a-zA-Z0-9_]+)+'
+_METHOD_ID_RE_RAW = r'(?P<collection>{collection})\.get'.format(
+    collection=_COLLECTION_SUB_RE)
+_METHOD_ID_RE = re.compile(_METHOD_ID_RE_RAW)
 DEFAULT_PATH_NAME = ''
 
 
 class Error(Exception):
   """Errors raised by this module."""
+
+
+class NoMatchingMethodError(Error):
+  """Raised when no matching method can be found."""
 
 
 class UnsupportedDiscoveryDoc(Error):
@@ -108,17 +113,14 @@ class DiscoveryDoc(object):
 
   def _GetCollectionFromMethod(self, api_version, get_method):
     """Created collection_info object given discovery doc get_method."""
-    method_id = get_method['id']
-    match = _METHOD_ID_RE.match(method_id)
-    if match:
-      collection_name = match.group('collection')
-      # Remove api name from collection. It might not match passed in, or
-      # even api name in url. We choose to use api name as defined by url.
-      collection_name = collection_name.split('.', 1)[1]
-      flat_path = get_method.get('flatPath')
-      path = get_method.get('path')
-      return self._MakeResourceCollection(
-          api_version, collection_name, path, flat_path)
+    collection_name = _ExtractCollectionName(get_method['id'])
+    # Remove api name from collection. It might not match passed in, or
+    # even api name in url. We choose to use api name as defined by url.
+    collection_name = collection_name.split('.', 1)[1]
+    flat_path = get_method.get('flatPath')
+    path = get_method.get('path')
+    return self._MakeResourceCollection(
+        api_version, collection_name, path, flat_path)
 
   def _MakeResourceCollection(self, api_version,
                               collection_name, path, flat_path=None):
@@ -234,6 +236,17 @@ class DiscoveryDoc(object):
         self.api_name, api_version, base_url, self.docs_url,
         collection_name, path, {}, resource_util.GetParamsFromPath(path),
         enable_uri_parsing)
+
+
+def _ExtractCollectionName(method_id):
+  """Extract the name of the collection from a method ID."""
+  match = _METHOD_ID_RE.match(method_id)
+  if match:
+    return match.group('collection')
+  else:
+    raise NoMatchingMethodError(
+        'Method {0} does not match regexp {1}.'
+        .format(method_id, _METHOD_ID_RE_RAW))
 
 
 def _GetParentCollection(collection_info):

@@ -20,6 +20,9 @@ class ActiveDirectory(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. The state of the AD.
 
+  Messages:
+    LabelsValue: Labels for the active directory.
+
   Fields:
     aesEncryption: If enabled, AES encryption will be enabled for SMB
       communication.
@@ -34,6 +37,7 @@ class ActiveDirectory(_messages.Message):
       Controller (DC) will be encrypted.
     kdcHostname: Name of the active directory machine. (ad_name on SDE)
     kdcIp: KDC server IP address for the active directory machine.
+    labels: Labels for the active directory.
     ldapSigning: Specifies whether or not the LDAP traffic needs to be signed.
     name: Output only. The resource name of the active directory. Format: `pro
       jects/{project_number}/locations/{location_id}/activedirectories/{active
@@ -71,6 +75,30 @@ class ActiveDirectory(_messages.Message):
     DELETING = 5
     ERROR = 6
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels for the active directory.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   aesEncryption = _messages.BooleanField(1)
   backupOperators = _messages.StringField(2, repeated=True)
   createTime = _messages.StringField(3)
@@ -80,16 +108,17 @@ class ActiveDirectory(_messages.Message):
   encryptDcConnections = _messages.BooleanField(7)
   kdcHostname = _messages.StringField(8)
   kdcIp = _messages.StringField(9)
-  ldapSigning = _messages.BooleanField(10)
-  name = _messages.StringField(11)
-  netBios = _messages.StringField(12)
-  nfsUsersWithLdap = _messages.BooleanField(13)
-  organizationalUnit = _messages.StringField(14)
-  password = _messages.StringField(15)
-  securityOperators = _messages.StringField(16, repeated=True)
-  site = _messages.StringField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  username = _messages.StringField(19)
+  labels = _messages.MessageField('LabelsValue', 10)
+  ldapSigning = _messages.BooleanField(11)
+  name = _messages.StringField(12)
+  netBios = _messages.StringField(13)
+  nfsUsersWithLdap = _messages.BooleanField(14)
+  organizationalUnit = _messages.StringField(15)
+  password = _messages.StringField(16)
+  securityOperators = _messages.StringField(17, repeated=True)
+  site = _messages.StringField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  username = _messages.StringField(20)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -522,16 +551,14 @@ class NetappProjectsLocationsStoragepoolsCreateRequest(_messages.Message):
   r"""A NetappProjectsLocationsStoragepoolsCreateRequest object.
 
   Fields:
-    name: Required. Name of the requesting storage pool If auto-generating
-      Name server-side, remove this field and name from the method_signature
-      of Create RPC
     parent: Required. Value for parent.
     storagePool: A StoragePool resource to be passed as the request body.
+    storagePoolId: Required. ID of storage pool to create.
   """
 
-  name = _messages.StringField(1)
-  parent = _messages.StringField(2, required=True)
-  storagePool = _messages.MessageField('StoragePool', 3)
+  parent = _messages.StringField(1, required=True)
+  storagePool = _messages.MessageField('StoragePool', 2)
+  storagePoolId = _messages.StringField(3)
 
 
 class NetappProjectsLocationsStoragepoolsDeleteRequest(_messages.Message):
@@ -578,7 +605,9 @@ class NetappProjectsLocationsStoragepoolsPatchRequest(_messages.Message):
   r"""A NetappProjectsLocationsStoragepoolsPatchRequest object.
 
   Fields:
-    name: Required. Name of the storage pool
+    name: Output only. The resource name of the storage pool. Format: `project
+      s/{project_number}/locations/{location_id}/storagepools/{storage_pool_id
+      }`.
     storagePool: A StoragePool resource to be passed as the request body.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the StoragePool resource by the update. The fields
@@ -596,16 +625,14 @@ class NetappProjectsLocationsVolumesCreateRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesCreateRequest object.
 
   Fields:
-    name: Required. Name of the requesting volume If auto-generating Name
-      server-side, remove this field and name from the method_signature of
-      Create RPC
     parent: Required. Value for parent.
     volume: A Volume resource to be passed as the request body.
+    volumeId: Required. ID of the volume to create.
   """
 
-  name = _messages.StringField(1)
-  parent = _messages.StringField(2, required=True)
-  volume = _messages.MessageField('Volume', 3)
+  parent = _messages.StringField(1, required=True)
+  volume = _messages.MessageField('Volume', 2)
+  volumeId = _messages.StringField(3)
 
 
 class NetappProjectsLocationsVolumesDeleteRequest(_messages.Message):
@@ -655,7 +682,8 @@ class NetappProjectsLocationsVolumesPatchRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesPatchRequest object.
 
   Fields:
-    name: Required. Name of the volume
+    name: Output only. The resource name of the volume. Format:
+      `projects/{project_number}/locations/{location_id}/volumes/{volume_id}`.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the Volume resource by the update. The fields specified
       in the update_mask are relative to the resource, not the full request. A
@@ -920,6 +948,27 @@ class SimpleExportPolicyRule(_messages.Message):
     accessType: Access type (ReadWrite, ReadOnly, None)
     allowedClients: List of allowed clients IP addresses
     hasRootAccess: Whether Unix root access will be granted.
+    kerberos5ReadOnly: If enabled (true) the rule defines a read only access
+      for clients matching the 'allowedClients' specification. It enables nfs
+      clients to mount using 'authentication' kerberos security mode.
+    kerberos5ReadWrite: If enabled (true) the rule defines read and write
+      access for clients matching the 'allowedClients' specification. It
+      enables nfs clients to mount using 'authentication' kerberos security
+      mode. The 'kerberos5ReadOnly' value be ignored if this is enabled.
+    kerberos5iReadOnly: If enabled (true) the rule defines a read only access
+      for clients matching the 'allowedClients' specification. It enables nfs
+      clients to mount using 'integrity' kerberos security mode.
+    kerberos5iReadWrite: If enabled (true) the rule defines read and write
+      access for clients matching the 'allowedClients' specification. It
+      enables nfs clients to mount using 'integrity' kerberos security mode.
+      The 'kerberos5iReadOnly' value be ignored if this is enabled.
+    kerberos5pReadOnly: If enabled (true) the rule defines a read only access
+      for clients matching the 'allowedClients' specification. It enables nfs
+      clients to mount using 'privacy' kerberos security mode.
+    kerberos5pReadWrite: If enabled (true) the rule defines read and write
+      access for clients matching the 'allowedClients' specification. It
+      enables nfs clients to mount using 'privacy' kerberos security mode. The
+      'kerberos5pReadOnly' value be ignored if this is enabled.
     nfsV3: NFS V3 protocol
     nfsV4: NFS V4 protocol
   """
@@ -941,8 +990,14 @@ class SimpleExportPolicyRule(_messages.Message):
   accessType = _messages.EnumField('AccessTypeValueValuesEnum', 1)
   allowedClients = _messages.StringField(2)
   hasRootAccess = _messages.StringField(3)
-  nfsV3 = _messages.BooleanField(4)
-  nfsV4 = _messages.BooleanField(5)
+  kerberos5ReadOnly = _messages.BooleanField(4)
+  kerberos5ReadWrite = _messages.BooleanField(5)
+  kerberos5iReadOnly = _messages.BooleanField(6)
+  kerberos5iReadWrite = _messages.BooleanField(7)
+  kerberos5pReadOnly = _messages.BooleanField(8)
+  kerberos5pReadWrite = _messages.BooleanField(9)
+  nfsV3 = _messages.BooleanField(10)
+  nfsV4 = _messages.BooleanField(11)
 
 
 class Snapshot(_messages.Message):
@@ -1168,7 +1223,9 @@ class StoragePool(_messages.Message):
     createTime: Output only. Create time of the storage pool
     description: Description of the storage pool
     labels: Labels as key value pairs
-    name: Required. Name of the storage pool
+    name: Output only. The resource name of the storage pool. Format: `project
+      s/{project_number}/locations/{location_id}/storagepools/{storage_pool_id
+      }`.
     serviceLevel: Required. Service level of the storage pool
     state: Output only. State of the storage pool
     stateDetails: Output only. State details of the storage pool
@@ -1267,7 +1324,8 @@ class Volume(_messages.Message):
     labels: Labels as key value pairs
     ldapEnabled: Flag indicating if the volume is NFS LDAP enabled or not.
     mountOptions: Output only. Mount options of this volume
-    name: Required. Name of the volume
+    name: Output only. The resource name of the volume. Format:
+      `projects/{project_number}/locations/{location_id}/volumes/{volume_id}`.
     network: Required. VPC Network name
     protocols: Required. Protocols required for the volume
     psaRange: Name of the Private Service Access allocated range. This is
@@ -1289,6 +1347,7 @@ class Volume(_messages.Message):
       will be created with. Applicable for NFS protocol types only.
     usedGib: Output only. Used capacity in GIB of the volume. This is not
       realtime usage, periodically computed by SDE.
+    volumeId: Output only. The ID of the volume.
   """
 
   class ProtocolsValueListEntryValuesEnum(_messages.Enum):
@@ -1424,6 +1483,7 @@ class Volume(_messages.Message):
   storagePoolName = _messages.StringField(23)
   unixPermissions = _messages.StringField(24)
   usedGib = _messages.IntegerField(25)
+  volumeId = _messages.StringField(26)
 
 
 class WeeklySchedule(_messages.Message):

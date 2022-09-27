@@ -53,6 +53,19 @@ def AddOperationArgToParser(parser):
       )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
+def AddSubnetArgToParser(parser):
+  """Sets up an argument for the subnet resource."""
+
+  address_data = yaml_data.ResourceYAMLData.FromPath('vmware.subnet')
+  resource_spec = concepts.ResourceSpec.FromYaml(address_data.GetData())
+
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name='subnet',
+      concept_spec=resource_spec,
+      required=True,
+      group_help='subnet.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
 
 def AddClusterArgToParser(parser, positional=False):
   """Sets up an argument for the cluster resource."""

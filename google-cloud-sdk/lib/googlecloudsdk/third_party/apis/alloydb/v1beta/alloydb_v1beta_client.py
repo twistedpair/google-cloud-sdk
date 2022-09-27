@@ -591,7 +591,7 @@ class AlloydbV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""When adding a new API method, make sure to update the rate quota mapping to start charging for it correctly. LINT.IfChange Lists Clusters in a given project and location.
+      r"""Lists Clusters in a given project and location.
 
       Args:
         request: (AlloydbProjectsLocationsClustersListRequest) input message

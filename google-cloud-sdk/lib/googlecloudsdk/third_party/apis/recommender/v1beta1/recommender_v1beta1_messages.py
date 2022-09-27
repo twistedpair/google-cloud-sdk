@@ -113,12 +113,14 @@ class GoogleCloudRecommenderV1beta1Insight(_messages.Message):
       SECURITY: The insight is related to security.
       PERFORMANCE: The insight is related to performance.
       MANAGEABILITY: This insight is related to manageability.
+      SUSTAINABILITY: The insight is related to sustainability.
     """
     CATEGORY_UNSPECIFIED = 0
     COST = 1
     SECURITY = 2
     PERFORMANCE = 3
     MANAGEABILITY = 4
+    SUSTAINABILITY = 5
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Insight's severity.
@@ -1137,6 +1139,23 @@ class GoogleTypeMoney(_messages.Message):
   units = _messages.IntegerField(3)
 
 
+class RecommenderBillingAccountsLocationsInsightTypesGetConfigRequest(_messages.Message):
+  r"""A RecommenderBillingAccountsLocationsInsightTypesGetConfigRequest
+  object.
+
+  Fields:
+    name: Required. Name of the InsightTypeConfig to get. Acceptable formats:
+      * `projects/[PROJECT_NUMBER]/locations/[LOCATION]/insightTypes/[INSIGHT_
+      TYPE_ID]/config` * `projects/[PROJECT_ID]/locations/[LOCATION]/insightTy
+      pes/[INSIGHT_TYPE_ID]/config` * `organizations/[ORGANIZATION_ID]/locatio
+      ns/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config` * `billingAccounts/
+      [BILLING_ACCOUNT_ID]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]
+      /config`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class RecommenderBillingAccountsLocationsInsightTypesInsightsGetRequest(_messages.Message):
   r"""A RecommenderBillingAccountsLocationsInsightTypesInsightsGetRequest
   object.
@@ -1200,6 +1219,44 @@ class RecommenderBillingAccountsLocationsInsightTypesInsightsMarkAcceptedRequest
 
   googleCloudRecommenderV1beta1MarkInsightAcceptedRequest = _messages.MessageField('GoogleCloudRecommenderV1beta1MarkInsightAcceptedRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class RecommenderBillingAccountsLocationsInsightTypesUpdateConfigRequest(_messages.Message):
+  r"""A RecommenderBillingAccountsLocationsInsightTypesUpdateConfigRequest
+  object.
+
+  Fields:
+    googleCloudRecommenderV1beta1InsightTypeConfig: A
+      GoogleCloudRecommenderV1beta1InsightTypeConfig resource to be passed as
+      the request body.
+    name: Name of insight type config. Eg, projects/[PROJECT_NUMBER]/locations
+      /[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config
+    updateMask: The list of fields to be updated.
+    validateOnly: If true, validate the request and preview the change, but do
+      not actually update it.
+  """
+
+  googleCloudRecommenderV1beta1InsightTypeConfig = _messages.MessageField('GoogleCloudRecommenderV1beta1InsightTypeConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class RecommenderBillingAccountsLocationsRecommendersGetConfigRequest(_messages.Message):
+  r"""A RecommenderBillingAccountsLocationsRecommendersGetConfigRequest
+  object.
+
+  Fields:
+    name: Required. Name of the Recommendation Config to get. Acceptable
+      formats: * `projects/[PROJECT_NUMBER]/locations/[LOCATION]/recommenders/
+      [RECOMMENDER_ID]/config` * `projects/[PROJECT_ID]/locations/[LOCATION]/r
+      ecommenders/[RECOMMENDER_ID]/config` * `organizations/[ORGANIZATION_ID]/
+      locations/[LOCATION]/recommenders/[RECOMMENDER_ID]/config` * `billingAcc
+      ounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION]/recommenders/[RECOMMENDE
+      R_ID]/config`
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class RecommenderBillingAccountsLocationsRecommendersRecommendationsGetRequest(_messages.Message):
@@ -1296,6 +1353,27 @@ class RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkSucceede
 
   googleCloudRecommenderV1beta1MarkRecommendationSucceededRequest = _messages.MessageField('GoogleCloudRecommenderV1beta1MarkRecommendationSucceededRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class RecommenderBillingAccountsLocationsRecommendersUpdateConfigRequest(_messages.Message):
+  r"""A RecommenderBillingAccountsLocationsRecommendersUpdateConfigRequest
+  object.
+
+  Fields:
+    googleCloudRecommenderV1beta1RecommenderConfig: A
+      GoogleCloudRecommenderV1beta1RecommenderConfig resource to be passed as
+      the request body.
+    name: Name of recommender config. Eg, projects/[PROJECT_NUMBER]/locations/
+      [LOCATION]/recommenders/[RECOMMENDER_ID]/config
+    updateMask: The list of fields to be updated.
+    validateOnly: If true, validate the request and preview the change, but do
+      not actually update it.
+  """
+
+  googleCloudRecommenderV1beta1RecommenderConfig = _messages.MessageField('GoogleCloudRecommenderV1beta1RecommenderConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class RecommenderFoldersLocationsInsightTypesInsightsGetRequest(_messages.Message):
@@ -1462,10 +1540,12 @@ class RecommenderOrganizationsLocationsInsightTypesGetConfigRequest(_messages.Me
 
   Fields:
     name: Required. Name of the InsightTypeConfig to get. Acceptable formats:
-      * `projects/[PROJECT_NUMBER]/locations/global/recommenders/[INSIGHT_TYPE
-      _ID]/config` * `projects/[PROJECT_ID]/locations/global/recommenders/[INS
-      IGHT_TYPE_ID]/config` * `organizations/[ORGANIZATION_ID]/locations/globa
-      l/recommenders/[INSIGHT_TYPE_ID]/config`
+      * `projects/[PROJECT_NUMBER]/locations/[LOCATION]/insightTypes/[INSIGHT_
+      TYPE_ID]/config` * `projects/[PROJECT_ID]/locations/[LOCATION]/insightTy
+      pes/[INSIGHT_TYPE_ID]/config` * `organizations/[ORGANIZATION_ID]/locatio
+      ns/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config` * `billingAccounts/
+      [BILLING_ACCOUNT_ID]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]
+      /config`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1565,7 +1645,9 @@ class RecommenderOrganizationsLocationsRecommendersGetConfigRequest(_messages.Me
       formats: * `projects/[PROJECT_NUMBER]/locations/[LOCATION]/recommenders/
       [RECOMMENDER_ID]/config` * `projects/[PROJECT_ID]/locations/[LOCATION]/r
       ecommenders/[RECOMMENDER_ID]/config` * `organizations/[ORGANIZATION_ID]/
-      locations/[LOCATION]/recommenders/[RECOMMENDER_ID]/config`
+      locations/[LOCATION]/recommenders/[RECOMMENDER_ID]/config` * `billingAcc
+      ounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION]/recommenders/[RECOMMENDE
+      R_ID]/config`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1692,10 +1774,12 @@ class RecommenderProjectsLocationsInsightTypesGetConfigRequest(_messages.Message
 
   Fields:
     name: Required. Name of the InsightTypeConfig to get. Acceptable formats:
-      * `projects/[PROJECT_NUMBER]/locations/global/recommenders/[INSIGHT_TYPE
-      _ID]/config` * `projects/[PROJECT_ID]/locations/global/recommenders/[INS
-      IGHT_TYPE_ID]/config` * `organizations/[ORGANIZATION_ID]/locations/globa
-      l/recommenders/[INSIGHT_TYPE_ID]/config`
+      * `projects/[PROJECT_NUMBER]/locations/[LOCATION]/insightTypes/[INSIGHT_
+      TYPE_ID]/config` * `projects/[PROJECT_ID]/locations/[LOCATION]/insightTy
+      pes/[INSIGHT_TYPE_ID]/config` * `organizations/[ORGANIZATION_ID]/locatio
+      ns/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config` * `billingAccounts/
+      [BILLING_ACCOUNT_ID]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]
+      /config`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1791,7 +1875,9 @@ class RecommenderProjectsLocationsRecommendersGetConfigRequest(_messages.Message
       formats: * `projects/[PROJECT_NUMBER]/locations/[LOCATION]/recommenders/
       [RECOMMENDER_ID]/config` * `projects/[PROJECT_ID]/locations/[LOCATION]/r
       ecommenders/[RECOMMENDER_ID]/config` * `organizations/[ORGANIZATION_ID]/
-      locations/[LOCATION]/recommenders/[RECOMMENDER_ID]/config`
+      locations/[LOCATION]/recommenders/[RECOMMENDER_ID]/config` * `billingAcc
+      ounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION]/recommenders/[RECOMMENDE
+      R_ID]/config`
   """
 
   name = _messages.StringField(1, required=True)

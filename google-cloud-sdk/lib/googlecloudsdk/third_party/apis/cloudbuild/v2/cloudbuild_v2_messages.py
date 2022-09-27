@@ -247,6 +247,32 @@ class BatchCreateBitbucketServerConnectedRepositoriesResponseMetadata(_messages.
   createTime = _messages.StringField(3)
 
 
+class BatchCreateGitLabConnectedRepositoriesResponse(_messages.Message):
+  r"""Response of BatchCreateGitLabConnectedRepositories RPC method.
+
+  Fields:
+    gitlabConnectedRepositories: The GitLab connected repository requests'
+      responses.
+  """
+
+  gitlabConnectedRepositories = _messages.MessageField('GitLabConnectedRepository', 1, repeated=True)
+
+
+class BatchCreateGitLabConnectedRepositoriesResponseMetadata(_messages.Message):
+  r"""Metadata for `BatchCreateGitLabConnectedRepositories` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    config: The name of the `GitLabConfig` that added connected repositories.
+      Format: `projects/{project}/locations/{location}/gitLabConfigs/{config}`
+    createTime: Time the operation was created.
+  """
+
+  completeTime = _messages.StringField(1)
+  config = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -1086,6 +1112,37 @@ class CloudbuildProjectsLocationsConnectionsProcessWebhookRequest(_messages.Mess
   webhookKey = _messages.StringField(3)
 
 
+class CloudbuildProjectsLocationsConnectionsRepositoriesAccessReadTokenRequest(_messages.Message):
+  r"""A
+  CloudbuildProjectsLocationsConnectionsRepositoriesAccessReadTokenRequest
+  object.
+
+  Fields:
+    fetchReadTokenRequest: A FetchReadTokenRequest resource to be passed as
+      the request body.
+    repository: Required. The resource name of the repository in the format
+      `projects/*/locations/*/connections/*/repositories/*`.
+  """
+
+  fetchReadTokenRequest = _messages.MessageField('FetchReadTokenRequest', 1)
+  repository = _messages.StringField(2, required=True)
+
+
+class CloudbuildProjectsLocationsConnectionsRepositoriesAccessReadWriteTokenRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsConnectionsRepositoriesAccessReadWriteToken
+  Request object.
+
+  Fields:
+    fetchReadWriteTokenRequest: A FetchReadWriteTokenRequest resource to be
+      passed as the request body.
+    repository: Required. The resource name of the repository in the format
+      `projects/*/locations/*/connections/*/repositories/*`.
+  """
+
+  fetchReadWriteTokenRequest = _messages.MessageField('FetchReadWriteTokenRequest', 1)
+  repository = _messages.StringField(2, required=True)
+
+
 class CloudbuildProjectsLocationsConnectionsRepositoriesCreateRequest(_messages.Message):
   r"""A CloudbuildProjectsLocationsConnectionsRepositoriesCreateRequest
   object.
@@ -1137,15 +1194,20 @@ class CloudbuildProjectsLocationsConnectionsRepositoriesListRequest(_messages.Me
   r"""A CloudbuildProjectsLocationsConnectionsRepositoriesListRequest object.
 
   Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Expressions must follow API improvement proposal
+      [AIP-160](https://google.aip.dev/160). e.g.
+      `remote_uri:"https://github.com*"`.
     pageSize: Number of results to return in the list.
     pageToken: Page start.
     parent: Required. The parent, which owns this collection of Repositories.
       Format: `projects/*/locations/*/connections/*`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class CloudbuildProjectsLocationsConnectionsSetIamPolicyRequest(_messages.Message):
@@ -1686,6 +1748,21 @@ class CreateGitHubEnterpriseConfigOperationMetadata(_messages.Message):
   githubEnterpriseConfig = _messages.StringField(3)
 
 
+class CreateGitLabConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `CreateGitLabConfig` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    gitlabConfig: The resource name of the GitLabConfig to be created. Format:
+      `projects/{project}/locations/{location}/gitlabConfigs/{id}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  gitlabConfig = _messages.StringField(3)
+
+
 class CreateWorkerPoolOperationMetadata(_messages.Message):
   r"""Metadata for the `CreateWorkerPool` operation.
 
@@ -1731,6 +1808,21 @@ class DeleteGitHubEnterpriseConfigOperationMetadata(_messages.Message):
   completeTime = _messages.StringField(1)
   createTime = _messages.StringField(2)
   githubEnterpriseConfig = _messages.StringField(3)
+
+
+class DeleteGitLabConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `DeleteGitLabConfig` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    gitlabConfig: The resource name of the GitLabConfig to be created. Format:
+      `projects/{project}/locations/{location}/gitlabConfigs/{id}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  gitlabConfig = _messages.StringField(3)
 
 
 class DeleteWorkerPoolOperationMetadata(_messages.Message):
@@ -1955,6 +2047,40 @@ class FetchLinkableRepositoriesResponse(_messages.Message):
   repositories = _messages.MessageField('Repository', 2, repeated=True)
 
 
+class FetchReadTokenRequest(_messages.Message):
+  r"""Message for fetching SCM read token."""
+
+
+class FetchReadTokenResponse(_messages.Message):
+  r"""Message for responding to get read token.
+
+  Fields:
+    expirationTime: Expiration timestamp. Can be empty if unknown or non-
+      expiring.
+    token: The token content.
+  """
+
+  expirationTime = _messages.StringField(1)
+  token = _messages.StringField(2)
+
+
+class FetchReadWriteTokenRequest(_messages.Message):
+  r"""Message for fetching SCM read/write token."""
+
+
+class FetchReadWriteTokenResponse(_messages.Message):
+  r"""Message for responding to get read/write token.
+
+  Fields:
+    expirationTime: Expiration timestamp. Can be empty if unknown or non-
+      expiring.
+    token: The token content.
+  """
+
+  expirationTime = _messages.StringField(1)
+  token = _messages.StringField(2)
+
+
 class FileHashes(_messages.Message):
   r"""Container message for hashes of byte content of files, used in
   SourceProvenance messages to verify integrity of source input to the build.
@@ -2050,6 +2176,38 @@ class GitHubEnterpriseConfig(_messages.Message):
   serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 11)
   sslCa = _messages.StringField(12)
   webhookSecretSecretVersion = _messages.StringField(13)
+
+
+class GitLabConnectedRepository(_messages.Message):
+  r"""GitLabConnectedRepository represents a GitLab connected repository
+  request response.
+
+  Fields:
+    parent: The name of the `GitLabConfig` that added connected repository.
+      Format: `projects/{project}/locations/{location}/gitLabConfigs/{config}`
+    repo: The GitLab repositories to connect.
+    status: Output only. The status of the repo connection request.
+  """
+
+  parent = _messages.StringField(1)
+  repo = _messages.MessageField('GitLabRepositoryId', 2)
+  status = _messages.MessageField('Status', 3)
+
+
+class GitLabRepositoryId(_messages.Message):
+  r"""GitLabRepositoryId identifies a specific repository hosted on GitLab.com
+  or GitLabEnterprise
+
+  Fields:
+    id: Required. Identifier for the repository. example: "namespace/project-
+      slug", namespace is usually the username or group ID
+    webhookId: Output only. The ID of the webhook that was created for
+      receiving events from this repo. We only create and manage a single
+      webhook for each repo.
+  """
+
+  id = _messages.StringField(1)
+  webhookId = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GitRef(_messages.Message):
@@ -4338,6 +4496,21 @@ class UpdateGitHubEnterpriseConfigOperationMetadata(_messages.Message):
   githubEnterpriseConfig = _messages.StringField(3)
 
 
+class UpdateGitLabConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `UpdateGitLabConfig` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    gitlabConfig: The resource name of the GitLabConfig to be created. Format:
+      `projects/{project}/locations/{location}/gitlabConfigs/{id}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  gitlabConfig = _messages.StringField(3)
+
+
 class UpdateWorkerPoolOperationMetadata(_messages.Message):
   r"""Metadata for the `UpdateWorkerPool` operation.
 
@@ -4500,7 +4673,7 @@ class Workflow(_messages.Message):
     annotations: User annotations. See https://google.aip.dev/128#annotations
     bundle: A Tekton Bundle is an OCI Image that Tekton understands. OCI is
       the spec for container images that docker and others (such as Tekton
-      Bundles) follow.
+      Bundles) follow. This field deprecated; please use `ref` instead.
     createTime: Output only. Server assigned timestamp for when the workflow
       was created.
     deleteTime: Output only. Server assigned timestamp for when the workflow
@@ -4513,6 +4686,7 @@ class Workflow(_messages.Message):
     params: List of parameters.
     pipelineSpec: Fields from both the Workflow and the PipelineSpec will be
       used to form the full PipelineRun.
+    ref: PipelineRef refer to a specific instance of a Pipeline.
     resources: Resources referenceable within a workflow.
     secrets: Pairs a secret environment variable with a SecretVersion in
       Secret Manager.
@@ -4610,13 +4784,14 @@ class Workflow(_messages.Message):
   options = _messages.MessageField('WorkflowOptions', 8)
   params = _messages.MessageField('ParamSpec', 9, repeated=True)
   pipelineSpec = _messages.MessageField('PipelineSpec', 10)
-  resources = _messages.MessageField('ResourcesValue', 11)
-  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 12, repeated=True)
-  serviceAccount = _messages.StringField(13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
-  workflowTriggers = _messages.MessageField('WorkflowTrigger', 16, repeated=True)
-  workspaces = _messages.MessageField('WorkspaceBinding', 17, repeated=True)
+  ref = _messages.MessageField('PipelineRef', 11)
+  resources = _messages.MessageField('ResourcesValue', 12)
+  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 13, repeated=True)
+  serviceAccount = _messages.StringField(14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+  workflowTriggers = _messages.MessageField('WorkflowTrigger', 17, repeated=True)
+  workspaces = _messages.MessageField('WorkspaceBinding', 18, repeated=True)
 
 
 class WorkflowOptions(_messages.Message):

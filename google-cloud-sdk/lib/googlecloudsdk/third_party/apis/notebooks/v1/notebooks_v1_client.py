@@ -348,6 +348,33 @@ class NotebooksV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Diagnose(self, request, global_params=None):
+      r"""Creates a Diagnostic File and runs Diagnostic Tool given an Instance.
+
+      Args:
+        request: (NotebooksProjectsLocationsInstancesDiagnoseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Diagnose')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Diagnose.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:diagnose',
+        http_method='POST',
+        method_id='notebooks.projects.locations.instances.diagnose',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:diagnose',
+        request_field='diagnoseInstanceRequest',
+        request_type_name='NotebooksProjectsLocationsInstancesDiagnoseRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Instance.
 
@@ -1093,6 +1120,33 @@ class NotebooksV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='NotebooksProjectsLocationsRuntimesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Diagnose(self, request, global_params=None):
+      r"""Creates a Diagnostic File and runs Diagnostic Tool given a Runtime.
+
+      Args:
+        request: (NotebooksProjectsLocationsRuntimesDiagnoseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Diagnose')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Diagnose.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}:diagnose',
+        http_method='POST',
+        method_id='notebooks.projects.locations.runtimes.diagnose',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:diagnose',
+        request_field='diagnoseRuntimeRequest',
+        request_type_name='NotebooksProjectsLocationsRuntimesDiagnoseRequest',
         response_type_name='Operation',
         supports_download=False,
     )

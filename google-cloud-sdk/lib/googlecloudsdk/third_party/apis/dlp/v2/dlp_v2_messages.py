@@ -6851,7 +6851,8 @@ class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
     resourceLabels: The labels applied to the resource at the time the profile
       was generated.
     resourceVisibility: How broadly a resource has been shared.
-    rowCount: Number of rows in the table when the profile was generated.
+    rowCount: Number of rows in the table when the profile was generated. This
+      will not be populated for BigLake tables.
     scannedColumnCount: The number of columns profiled in the table.
     sensitivityScore: The sensitivity score of this table.
     state: State of a profile.

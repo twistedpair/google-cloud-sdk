@@ -545,7 +545,7 @@ class CreateInstanceConfigMetadata(_messages.Message):
 
   cancelTime = _messages.StringField(1)
   instanceConfig = _messages.MessageField('InstanceConfig', 2)
-  progress = _messages.MessageField('OperationProgress', 3)
+  progress = _messages.MessageField('InstanceOperationProgress', 3)
 
 
 class CreateInstanceConfigRequest(_messages.Message):
@@ -1664,6 +1664,23 @@ class InstanceConfig(_messages.Message):
   reconciling = _messages.BooleanField(10)
   replicas = _messages.MessageField('ReplicaInfo', 11, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 12)
+
+
+class InstanceOperationProgress(_messages.Message):
+  r"""Encapsulates progress related information for a Cloud Spanner long
+  running instance operations.
+
+  Fields:
+    endTime: If set, the time at which this operation failed or was completed
+      successfully.
+    progressPercent: Percent completion of the operation. Values are between 0
+      and 100 inclusive.
+    startTime: Time the request was received.
+  """
+
+  endTime = _messages.StringField(1)
+  progressPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(3)
 
 
 class KeyRange(_messages.Message):
@@ -3258,10 +3275,18 @@ class ResultSetMetadata(_messages.Message):
       "code": "STRING" } }, ]
     transaction: If the read or SQL query began a transaction as a side-
       effect, the information about the new transaction is yielded here.
+    undeclaredParameters: A SQL query can be parameterized. In PLAN mode,
+      these parameters can be undeclared. This indicates the field names and
+      types for those undeclared parameters in the SQL query. For example, a
+      SQL query like `"SELECT * FROM Users where UserId = @userId and UserName
+      = @userName "` could return a `undeclared_parameters` value like:
+      "fields": [ { "name": "UserId", "type": { "code": "INT64" } }, { "name":
+      "UserName", "type": { "code": "STRING" } }, ]
   """
 
   rowType = _messages.MessageField('StructType', 1)
   transaction = _messages.MessageField('Transaction', 2)
+  undeclaredParameters = _messages.MessageField('StructType', 3)
 
 
 class ResultSetStats(_messages.Message):
@@ -5498,7 +5523,7 @@ class UpdateInstanceConfigMetadata(_messages.Message):
 
   cancelTime = _messages.StringField(1)
   instanceConfig = _messages.MessageField('InstanceConfig', 2)
-  progress = _messages.MessageField('OperationProgress', 3)
+  progress = _messages.MessageField('InstanceOperationProgress', 3)
 
 
 class UpdateInstanceConfigRequest(_messages.Message):

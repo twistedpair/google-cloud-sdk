@@ -48,7 +48,7 @@ class AddressGroup(_messages.Message):
       resource.
 
   Fields:
-    capacity: Optional. Capacity of the Address Group, default value is 1000.
+    capacity: Required. Capacity of the Address Group
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. Free-text description of the resource.
     items: Optional. List of items.

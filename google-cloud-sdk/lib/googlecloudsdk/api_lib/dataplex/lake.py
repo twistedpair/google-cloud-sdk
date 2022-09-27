@@ -112,3 +112,12 @@ def WaitForOperation(operation):
   return dataplex_api.WaitForOperation(
       operation,
       dataplex_api.GetClientInstance().projects_locations_lakes)
+
+
+def WaitForLongOperation(operation):
+  """Waits for the given google.longrunning.Operation to complete."""
+  return dataplex_api.WaitForOperation(
+      operation,
+      dataplex_api.GetClientInstance().projects_locations_lakes,
+      sleep_ms=10000,
+      pre_start_sleep_ms=120000)

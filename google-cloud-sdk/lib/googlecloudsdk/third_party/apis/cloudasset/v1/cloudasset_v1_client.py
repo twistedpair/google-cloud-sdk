@@ -565,6 +565,33 @@ class CloudassetV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def AnalyzeOrgPolicyGovernedAssets(self, request, global_params=None):
+      r"""Analyzes organization policies governed assets (GCP resources or policies) under a scope. This RPC supports custom constraints and the following 10 canned constraints: * storage.uniformBucketLevelAccess * iam.disableServiceAccountKeyCreation * iam.allowedPolicyMemberDomains * compute.vmExternalIpAccess * appengine.enforceServiceAccountActAsCheck * gcp.resourceLocations * compute.trustedImageProjects * compute.skipDefaultNetworkCreation * compute.requireOsLogin * compute.disableNestedVirtualization This RPC only returns either: * resources of types supported by [searchable asset types](https://cloud.google.com/asset-inventory/docs/supported-asset-types#searchable_asset_types), or * IAM policies.
+
+      Args:
+        request: (CloudassetAnalyzeOrgPolicyGovernedAssetsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnalyzeOrgPolicyGovernedAssetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('AnalyzeOrgPolicyGovernedAssets')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AnalyzeOrgPolicyGovernedAssets.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/{v1Id}/{v1Id1}:analyzeOrgPolicyGovernedAssets',
+        http_method='GET',
+        method_id='cloudasset.analyzeOrgPolicyGovernedAssets',
+        ordered_params=['scope'],
+        path_params=['scope'],
+        query_params=['constraint', 'filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+scope}:analyzeOrgPolicyGovernedAssets',
+        request_field='',
+        request_type_name='CloudassetAnalyzeOrgPolicyGovernedAssetsRequest',
+        response_type_name='AnalyzeOrgPolicyGovernedAssetsResponse',
+        supports_download=False,
+    )
+
     def AnalyzeOrgPolicyGovernedContainers(self, request, global_params=None):
       r"""Analyzes organization policies governed containers (projects, folders or organization) under a scope.
 
@@ -593,7 +620,7 @@ class CloudassetV1(base_api.BaseApiClient):
     )
 
     def AnalyzeOrgPolicyGovernedResources(self, request, global_params=None):
-      r"""Analyzes organization policies governed resources under a scope.
+      r"""Analyzes organization policies governed resources under a scope. This RPC only returns resources of types supported by [searchable asset types](https://cloud.google.com/asset-inventory/docs/supported-asset-types#searchable_asset_types).
 
       Args:
         request: (CloudassetAnalyzeOrgPolicyGovernedResourcesRequest) input message

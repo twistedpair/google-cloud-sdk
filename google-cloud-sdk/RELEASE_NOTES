@@ -5,6 +5,97 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 404.0.0 (2022-09-27)
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.8 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard>.
+*   Updated `gcloud app instances ssh` to explicitly error when attempting to
+    SSH to an instance without an external IP.
+
+### Assured Workloads
+
+* Promoted `gcloud assured workloads violations` commands to GA.
+  This command provides the ability to create new Assured Workloads environment resources.
+
+### Batch
+
+* Improved error message formats for `gcloud batch jobs submit` unparsable json config file,  `gcloud batch jobs describe` job and `gcloud batch tasks describe` task that does not exist.
+* Added new `batch/location` property that can be used to set a default location. To set the properties, run `gcloud config set batch/location LOCATION`.
+
+### BigQuery
+
+*   Add support for storage_billing_model flag for datasets.
+*   Allow users to log in with pluggable-auth based external account
+    credentials.
+*   Add support for configuring the access token lifetime for service account
+    impersonation when using external account credentials.
+*   Add session support for load jobs.
+
+### Cloud Asset Inventory
+
+*   Added `--saved-analysis-query` option to `gcloud asset analyze-iam-policy`, which runs a saved analysis query when specified.
+*   Added `gcloud asset saved-queries` commands, which creates, retrieves, updates and deletes saved queries in a specified project, folder or organization.
+
+### Cloud Memorystore
+
+*   Added `--maintenance-version` flag to `gcloud beta redis instances update`
+    to allow updating a maintenance version when updating an instance.
+
+### Cloud Storage
+
+*   Added `storage/key_store_path` property for encryption/decryption keys.
+* Updated gsutil component to 5.14.
+
+### Compute Engine
+
+* Promoted `--region` for `gcloud compute ssl-policies` to GA.
+
+### Eventarc
+
+* Updated `gcloud eventarc triggers list` to return the locations of triggers.
+
+### Identity and Access Management
+
+* Fixed bug that occurs when switching external account credentials.
+
+### Kubernetes Engine
+
+* Adds new kubectl v1.25 for GKE rapid channel.
+* Removes old kubectl v1.19.
+* Updates default kubectl from 1.22.12 to 1.22.14.
+* Additional kubectl versions:
+  * kubectl.1.20 (1.20.15)
+  * kubectl.1.21 (1.21.14)
+  * kubectl.1.22 (1.22.14)
+  * kubectl.1.23 (1.23.11)
+  * kubectl.1.24 (1.24.5)
+  * kubectl.1.25 (1.25.1)
+
+### Managed Active Directory
+
+*   Added support for `gcloud beta active-directory domains migration` for
+    enabling existing domain migration.
+
+### Policy Troubleshooter
+
+*   Updated `gcloud policy-troubleshoot iam` beta and GA Command to use V2Alpha1 API.
+
+### Stackdriver Monitoring
+
+*   Added `--validate-only` flag to `gcloud monitoring dashboards create` to
+    allow validating dashboards without saving.
+
+### Terraform
+
+*   Fixed issue where http proxy environment variables were not used in `gcloud
+    beta terraform vet`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 403.0.0 (2022-09-20)
 
 ### Breaking Changes

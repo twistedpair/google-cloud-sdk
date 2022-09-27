@@ -679,6 +679,10 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class LoadSnapshotResponse(_messages.Message):
+  r"""Response to LoadSnapshotRequest."""
+
+
 class MaintenanceWindow(_messages.Message):
   r"""The configuration settings for Cloud Composer maintenance window. The
   following example: ``` { "startTime":"2019-08-01T01:00:00Z"
@@ -1058,6 +1062,19 @@ class PrivateEnvironmentConfig(_messages.Message):
   privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 7)
   webServerIpv4CidrBlock = _messages.StringField(8)
   webServerIpv4ReservedRange = _messages.StringField(9)
+
+
+class SaveSnapshotResponse(_messages.Message):
+  r"""Response to SaveSnapshotRequest.
+
+  Fields:
+    snapshotPath: The fully-resolved Cloud Storage path of the created
+      snapshot, e.g.: "gs://my-
+      bucket/snapshots/project_location_environment_timestamp". This field is
+      populated only if the snapshot creation was successful.
+  """
+
+  snapshotPath = _messages.StringField(1)
 
 
 class SchedulerResource(_messages.Message):

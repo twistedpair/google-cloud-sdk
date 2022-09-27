@@ -21,7 +21,9 @@ from __future__ import unicode_literals
 import contextlib
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 from six.moves import urllib
 
 _API_NAME = 'speech'
@@ -49,34 +51,48 @@ class SpeechV2Client(object):
     self._net_loc = urllib.parse.urlsplit(client_class.BASE_URL).netloc
     self._messages = apis.GetMessagesModule(_API_NAME, _API_VERSION)
 
+    self._resource_parser = resources.Registry()
+    self._resource_parser.RegisterApiByName(_API_NAME, _API_VERSION)
+
   def _RecognizerServiceForLocation(self, location):
     with _OverrideEndpoint('https://{}-{}/'.format(location, self._net_loc)):
       client = apis.GetClientInstance(_API_NAME, _API_VERSION)
     return client.projects_locations_recognizers
 
-  def Create(self,
-             resource,
-             display_name,
-             model,
-             language_codes,
-             profanity_filter=False,
-             enable_word_time_offsets=False,
-             enable_word_confidence=False,
-             enable_automatic_punctuation=False,
-             enable_spoken_punctuation=False,
-             enable_spoken_emojis=False):
-    """Call API create method with provided arguments."""
+  def _OperationsServiceForLocation(self, location):
+    with _OverrideEndpoint('https://{}-{}/'.format(location, self._net_loc)):
+      client = apis.GetClientInstance(_API_NAME, _API_VERSION)
+    return client.projects_locations_operations
+
+  def CreateRecognizer(self,
+                       resource,
+                       display_name,
+                       model,
+                       language_codes,
+                       profanity_filter=False,
+                       enable_word_time_offsets=False,
+                       enable_word_confidence=False,
+                       enable_automatic_punctuation=False,
+                       enable_spoken_punctuation=False,
+                       enable_spoken_emojis=False):
+    """Call API CreateRecognizer method with provided arguments."""
     recognizer = self._messages.Recognizer(
         displayName=display_name, model=model, languageCodes=language_codes)
     recognizer.defaultRecognitionConfig = self._messages.RecognitionConfig()
-    recognizer.defaultRecognitionConfig.features = self._messages.RecognitionFeatures(
-    )
-    recognizer.defaultRecognitionConfig.features.profanityFilter = profanity_filter
-    recognizer.defaultRecognitionConfig.features.enableWordTimeOffsets = enable_word_time_offsets
-    recognizer.defaultRecognitionConfig.features.enableWordConfidence = enable_word_confidence
-    recognizer.defaultRecognitionConfig.features.enableAutomaticPunctuation = enable_automatic_punctuation
-    recognizer.defaultRecognitionConfig.features.enableSpokenPunctuation = enable_spoken_punctuation
-    recognizer.defaultRecognitionConfig.features.enableSpokenEmojis = enable_spoken_emojis
+    recognizer.defaultRecognitionConfig.features = (
+        self._messages.RecognitionFeatures())
+    recognizer.defaultRecognitionConfig.features.profanityFilter = (
+        profanity_filter)
+    recognizer.defaultRecognitionConfig.features.enableWordTimeOffsets = (
+        enable_word_time_offsets)
+    recognizer.defaultRecognitionConfig.features.enableWordConfidence = (
+        enable_word_confidence)
+    recognizer.defaultRecognitionConfig.features.enableAutomaticPunctuation = (
+        enable_automatic_punctuation)
+    recognizer.defaultRecognitionConfig.features.enableSpokenPunctuation = (
+        enable_spoken_punctuation)
+    recognizer.defaultRecognitionConfig.features.enableSpokenEmojis = (
+        enable_spoken_emojis)
 
     request = self._messages.SpeechProjectsLocationsRecognizersCreateRequest(
         parent=resource.Parent().RelativeName(),
@@ -85,19 +101,19 @@ class SpeechV2Client(object):
     return self._RecognizerServiceForLocation(
         location=resource.Parent().Name()).Create(request)
 
-  def Get(self, resource):
+  def GetRecognizer(self, resource):
     request = self._messages.SpeechProjectsLocationsRecognizersGetRequest(
         name=resource.RelativeName())
     return self._RecognizerServiceForLocation(
         location=resource.Parent().Name()).Get(request)
 
-  def Delete(self, resource):
+  def DeleteRecognizer(self, resource):
     request = self._messages.SpeechProjectsLocationsRecognizersDeleteRequest(
         name=resource.RelativeName())
     return self._RecognizerServiceForLocation(
         location=resource.Parent().Name()).Delete(request)
 
-  def List(self, location_resource, limit=None, page_size=None):
+  def ListRecognizers(self, location_resource, limit=None, page_size=None):
     request = self._messages.SpeechProjectsLocationsRecognizersListRequest(
         parent=location_resource.RelativeName())
     if page_size:
@@ -110,19 +126,19 @@ class SpeechV2Client(object):
         batch_size=page_size,
         field='recognizers')
 
-  def Update(self,
-             resource,
-             display_name=None,
-             model=None,
-             language_codes=None,
-             profanity_filter=None,
-             enable_word_time_offsets=None,
-             enable_word_confidence=None,
-             enable_automatic_punctuation=None,
-             enable_spoken_punctuation=None,
-             enable_spoken_emojis=None):
-    """Call API update method with provided arguments."""
-    recognizer = self.Get(resource)
+  def UpdateRecognizer(self,
+                       resource,
+                       display_name=None,
+                       model=None,
+                       language_codes=None,
+                       profanity_filter=None,
+                       enable_word_time_offsets=None,
+                       enable_word_confidence=None,
+                       enable_automatic_punctuation=None,
+                       enable_spoken_punctuation=None,
+                       enable_spoken_emojis=None):
+    """Call API UpdateRecognizer method with provided arguments."""
+    recognizer = self._messages.Recognizer()
     update_mask = []
     if display_name is not None:
       recognizer.displayName = display_name
@@ -134,13 +150,9 @@ class SpeechV2Client(object):
       recognizer.languageCodes = language_codes
       update_mask.append('language_codes')
 
-    if recognizer.defaultRecognitionConfig is None:
-      recognizer.defaultRecognitionConfig = self._messages.RecognitionConfig()
-
-    if recognizer.defaultRecognitionConfig.features is None:
-      recognizer.defaultRecognitionConfig.features = (
-          self._messages.RecognitionFeatures())
-
+    recognizer.defaultRecognitionConfig = self._messages.RecognitionConfig()
+    recognizer.defaultRecognitionConfig.features = (
+        self._messages.RecognitionFeatures())
     features = recognizer.defaultRecognitionConfig.features
 
     if profanity_filter is not None:
@@ -178,3 +190,34 @@ class SpeechV2Client(object):
         updateMask=','.join(update_mask))
     return self._RecognizerServiceForLocation(
         location=resource.Parent().Name()).Patch(request)
+
+  def GetOperationRef(self, operation):
+    """Converts an Operation to a Resource."""
+    return self._resource_parser.ParseRelativeName(
+        operation.name, 'speech.projects.locations.operations')
+
+  def WaitForRecognizerOperation(self, location, operation_ref, message):
+    """Waits for a Recognizer operation to complete.
+
+    Polls the Speech Operation service until the operation completes, fails, or
+      max_wait_ms elapses.
+
+    Args:
+      location: The location of the resource.
+      operation_ref: A Resource created by GetOperationRef describing the
+        Operation.
+      message: The message to display to the user while they wait.
+
+    Returns:
+      An Endpoint entity.
+    """
+    poller = waiter.CloudOperationPoller(
+        result_service=self._RecognizerServiceForLocation(location),
+        operation_service=self._OperationsServiceForLocation(location))
+
+    return waiter.WaitFor(
+        poller=poller,
+        operation_ref=operation_ref,
+        message=message,
+        pre_start_sleep_ms=100,
+        max_wait_ms=20000)

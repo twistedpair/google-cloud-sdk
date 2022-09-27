@@ -791,7 +791,6 @@ def AddSizeFlag(parser):
       '--size',
       help=('New size for a given GCE node pool.'),
       type=int,
-      hidden=True,
       required=True)
 
 
@@ -806,7 +805,6 @@ def AddGracefulDecommissionTimeoutFlag(parser):
       help=(
           'Graceful decommission timeout for a given GCE node pool scale down resize.'
       ),
-      hidden=True,
       required=False)
 
 

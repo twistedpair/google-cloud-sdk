@@ -18,21 +18,23 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
-
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.calliope import exceptions as gcloud_exceptions
 from googlecloudsdk.command_lib.asset import utils as asset_utils
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import repeated
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import times
-
 import six
+
 
 API_NAME = 'cloudasset'
 DEFAULT_API_VERSION = 'v1'
@@ -247,6 +249,8 @@ def MakeAnalyzeIamPolicyHttpRequests(args,
 
   expand_roles = args.expand_roles if args.expand_roles else None
 
+  saved_analysis_query = args.saved_analysis_query if args.saved_analysis_query else None
+
   analyze_service_account_impersonation = args.analyze_service_account_impersonation if args.analyze_service_account_impersonation else None
 
   output_resource_edges = None
@@ -288,6 +292,7 @@ def MakeAnalyzeIamPolicyHttpRequests(args,
           analysisQuery_conditionContext_accessTime=access_time,
           executionTimeout=execution_timeout,
           scope=parent,
+          savedAnalysisQuery=saved_analysis_query,
       ))
   if not args.show_response:
     return _RenderResponseforAnalyzeIamPolicy(
@@ -394,6 +399,147 @@ class AssetExportClient(object):
       raise exceptions.HttpException(
           permission_deny, error_format='{error_info}')
     return operation
+
+
+class AssetSavedQueriesClient(object):
+  """Client for asset saved queries."""
+
+  def DictKeysToString(self, keys):
+    return ', '.join(list(keys))
+
+  def GetQueryContentFromFile(self, file_path):
+    """Returns a message populated from the JSON or YAML file on the specified filepath."""
+    file_content = yaml.load_path(file_path)
+    try:
+      query_type_str = next(iter(file_content.keys()))
+    except:
+      raise gcloud_exceptions.BadFileException(
+          'Query file [{0}] is not a properly formatted YAML or JSON '
+          'query file. Supported query type: {1}.'.format(
+              file_path,
+              self.DictKeysToString(self.supported_query_types.keys())))
+    if query_type_str not in self.supported_query_types.keys():
+      raise Exception(
+          'query type {0} not supported. supported query type: {1}'.format(
+              query_type_str,
+              self.DictKeysToString(self.supported_query_types.keys())))
+    query_content = file_content[query_type_str]
+    try:
+      query_obj = encoding.PyValueToMessage(
+          self.supported_query_types[query_type_str], query_content)
+    except:
+      # Raised when the input file is not properly formatted YAML policy file.
+      raise gcloud_exceptions.BadFileException(
+          'Query file [{0}] is not a properly formatted YAML or JSON '
+          'query file.'.format(file_path))
+
+    return query_obj
+
+  def __init__(self, parent, api_version=DEFAULT_API_VERSION):
+    self.parent = parent
+    self.message_module = GetMessages(api_version)
+    # see http://shortn/_EfHOLKMDEA for saved query services impl for debugging
+    self.service = GetClient(api_version).savedQueries
+    self.supported_query_types = {
+        'IamPolicyAnalysisQuery': self.message_module.IamPolicyAnalysisQuery
+    }
+
+  def GetLabelsObject(self, labels_str):
+    """Convert string to LabelsValue."""
+    if labels_str:
+      # labels string should have meaningful values for it to be processed
+      try:
+        label_dic = {}
+        for pair in labels_str.split(','):
+          k, v = pair.split('=')
+          label_dic[k] = v
+        labels = self.message_module.SavedQuery.LabelsValue()
+        props = []
+        for k, v in label_dic.items():
+          props.append(labels.AdditionalProperty(key=k, value=v))
+        labels.additionalProperties = props
+        return labels
+      except:
+        raise gcloud_exceptions.InvalidArgumentException(
+            '--labels',
+            'Labels should be the following format: \"key1=val1,key2val2\".')
+    return None
+
+  def Create(self, args):
+    """Create a SavedQuery."""
+    query_obj = self.GetQueryContentFromFile(
+        args.query_file_path)
+    saved_query_content = self.message_module.QueryContent(
+        iamPolicyAnalysisQuery=query_obj)
+    arg_labels = self.GetLabelsObject(args.labels)
+    saved_query = self.message_module.SavedQuery(
+        content=saved_query_content,
+        description=args.description,
+        labels=arg_labels)
+
+    request_message = self.message_module.CloudassetSavedQueriesCreateRequest(
+        parent=self.parent, savedQuery=saved_query, savedQueryId=args.query_id)
+    return self.service.Create(request_message)
+
+  def Describe(self, args):
+    """Describe a saved query."""
+    request_message = self.message_module.CloudassetSavedQueriesGetRequest(
+        name='{}/savedQueries/{}'.format(self.parent, args.query_id))
+    return self.service.Get(request_message)
+
+  def Delete(self, args):
+    """Delete a saved query."""
+    request_message = self.message_module.CloudassetSavedQueriesDeleteRequest(
+        name='{}/savedQueries/{}'.format(self.parent, args.query_id))
+    self.service.Delete(request_message)
+
+  def List(self):
+    """List saved queries under a parent."""
+    request_message = self.message_module.CloudassetSavedQueriesListRequest(
+        parent=self.parent)
+    return self.service.List(request_message)
+
+  def GetUpdatedLabels(self, args):
+    """Get the updated labels from args."""
+    labels_diff = labels_util.Diff.FromUpdateArgs(args)
+    labels = self.message_module.SavedQuery.LabelsValue()
+    if labels_diff.MayHaveUpdates():
+      orig_resource = self.Describe(args)
+      labels_update = labels_diff.Apply(
+          self.message_module.SavedQuery.LabelsValue, orig_resource.labels)
+      if labels_update.needs_update:
+        labels = labels_update.labels
+        return labels, True
+    return labels, False
+
+  def Update(self, args):
+    """Update a saved query."""
+    update_mask = ''
+    saved_query_content = None
+    if args.query_file_path:
+      query_obj = self.GetQueryContentFromFile(
+          args.query_file_path)
+      update_mask += 'content'
+      saved_query_content = self.message_module.QueryContent(
+          iamPolicyAnalysisQuery=query_obj)
+    updated_description = None
+    if args.description:
+      updated_description = args.description
+      update_mask += ',description'
+
+    updated_labels, has_update = self.GetUpdatedLabels(args)
+    if has_update:
+      update_mask += ',labels'
+    saved_query = self.message_module.SavedQuery(
+        content=saved_query_content,
+        description=updated_description,
+        labels=updated_labels,
+    )
+    request_message = self.message_module.CloudassetSavedQueriesPatchRequest(
+        name='{}/savedQueries/{}'.format(self.parent, args.query_id),
+        savedQuery=saved_query,
+        updateMask=update_mask)
+    return self.service.Patch(request_message)
 
 
 class AssetFeedClient(object):
@@ -749,9 +895,16 @@ class AssetQueryClient(object):
     timeout = None
     if args.IsSpecified('timeout'):
       timeout = six.text_type(args.timeout) + 's'
+
     output_config = None
-    bigquery_table = args.CONCEPTS.bigquery_table.Parse()
-    if bigquery_table:
+    if args.IsSpecified('bigquery_table'):
+      bigquery_table = args.CONCEPTS.bigquery_table.Parse()
+      if not bigquery_table:
+        raise gcloud_exceptions.InvalidArgumentException(
+            '--bigquery-table',
+            '--bigquery-table should have the format of `projects/<ProjectId>/datasets/<DatasetId>/tables/<TableId>`'
+        )
+
       write_disposition = None
       if args.IsSpecified('write_disposition'):
         write_disposition = args.write_disposition.replace('-', '_')

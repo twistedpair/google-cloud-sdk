@@ -110,58 +110,6 @@
     }
   },
   "schemas": {
-    "ListLocationsResponse": {
-      "id": "ListLocationsResponse",
-      "description": "The response message for Locations.ListLocations.",
-      "type": "object",
-      "properties": {
-        "locations": {
-          "description": "A list of locations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "Location"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
-        }
-      }
-    },
-    "Location": {
-      "id": "Location",
-      "description": "A resource that represents Google Cloud Platform location.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
-          "type": "string"
-        },
-        "locationId": {
-          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
-          "type": "string"
-        },
-        "labels": {
-          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "metadata": {
-          "description": "Service-specific metadata. For example the available capacity at the given location.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
     "GoogleLongrunningListOperationsResponse": {
       "id": "GoogleLongrunningListOperationsResponse",
       "description": "The response message for Operations.ListOperations.",
@@ -256,6 +204,58 @@
       "properties": {
       }
     },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
     "ListServiceInstancesResponse": {
       "id": "ListServiceInstancesResponse",
       "description": "Response for ListServiceInstances.",
@@ -323,16 +323,16 @@
         }
       }
     },
-    "ListConnectionPoliciesResponse": {
-      "id": "ListConnectionPoliciesResponse",
-      "description": "Response for ListConnectionPolicies.",
+    "ListServiceConnectionPoliciesResponse": {
+      "id": "ListServiceConnectionPoliciesResponse",
+      "description": "Response for ListServiceConnectionPolicies.",
       "type": "object",
       "properties": {
-        "connectionPolicies": {
-          "description": "ConnectionPolicies to be returned.",
+        "serviceConnectionPolicies": {
+          "description": "ServiceConnectionPolicies to be returned.",
           "type": "array",
           "items": {
-            "$ref": "ConnectionPolicy"
+            "$ref": "ServiceConnectionPolicy"
           }
         },
         "nextPageToken": {
@@ -348,13 +348,13 @@
         }
       }
     },
-    "ConnectionPolicy": {
-      "id": "ConnectionPolicy",
-      "description": "The ConnectionPolicy resource. Next id: 8",
+    "ServiceConnectionPolicy": {
+      "id": "ServiceConnectionPolicy",
+      "description": "The ServiceConnectionPolicy resource. Next id: 8",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. The name of a ConnectionPolicy. Format: projects\/{project}\/locations\/{location}\/connectionPolicies\/{connection_policy} See: https:\/\/google.aip.dev\/122#fields-representing-resource-names",
+          "description": "Immutable. The name of a ServiceConnectionPolicy. Format: projects\/{project}\/locations\/{location}\/serviceConnectionPolicies\/{service_connection_policy} See: https:\/\/google.aip.dev\/122#fields-representing-resource-names",
           "type": "string"
         },
         "createTime": {
@@ -1486,12 +1486,12 @@
                 }
               }
             },
-            "connectionPolicies": {
+            "serviceConnectionPolicies": {
               "methods": {
                 "list": {
-                  "id": "networkconnectivity.projects.locations.connectionPolicies.list",
-                  "path": "v1alpha1/{+parent}/connectionPolicies",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/connectionPolicies",
+                  "id": "networkconnectivity.projects.locations.serviceConnectionPolicies.list",
+                  "path": "v1alpha1/{+parent}/serviceConnectionPolicies",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceConnectionPolicies",
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
@@ -1527,22 +1527,22 @@
                     "parent"
                   ],
                   "response": {
-                    "$ref": "ListConnectionPoliciesResponse"
+                    "$ref": "ListServiceConnectionPoliciesResponse"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists ConnectionPolicies in a given project and location."
+                  "description": "Lists ServiceConnectionPolicies in a given project and location."
                 },
                 "get": {
-                  "id": "networkconnectivity.projects.locations.connectionPolicies.get",
+                  "id": "networkconnectivity.projects.locations.serviceConnectionPolicies.get",
                   "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/connectionPolicies/{connectionPoliciesId}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceConnectionPolicies/{serviceConnectionPoliciesId}",
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the ConnectionPolicy to get.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionPolicies\/[^\/]+$",
+                      "description": "Required. Name of the ServiceConnectionPolicy to get.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serviceConnectionPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1552,28 +1552,28 @@
                     "name"
                   ],
                   "response": {
-                    "$ref": "ConnectionPolicy"
+                    "$ref": "ServiceConnectionPolicy"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single ConnectionPolicy."
+                  "description": "Gets details of a single ServiceConnectionPolicy."
                 },
                 "create": {
-                  "id": "networkconnectivity.projects.locations.connectionPolicies.create",
-                  "path": "v1alpha1/{+parent}/connectionPolicies",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/connectionPolicies",
+                  "id": "networkconnectivity.projects.locations.serviceConnectionPolicies.create",
+                  "path": "v1alpha1/{+parent}/serviceConnectionPolicies",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceConnectionPolicies",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource's name of the ConnectionPolicy.",
+                      "description": "Required. The parent resource's name of the ServiceConnectionPolicy.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
-                    "connectionPolicyId": {
-                      "description": "Optional. Resource ID (i.e. 'foo' in '[...]\/projects\/p\/locations\/l\/connectionPolicies\/foo') See https:\/\/google.aip.dev\/122#resource-id-segments Unique per location.",
+                    "serviceConnectionPolicyId": {
+                      "description": "Optional. Resource ID (i.e. 'foo' in '[...]\/projects\/p\/locations\/l\/serviceConnectionPolicies\/foo') See https:\/\/google.aip.dev\/122#resource-id-segments Unique per location.",
                       "location": "query",
                       "type": "string"
                     },
@@ -1587,7 +1587,7 @@
                     "parent"
                   ],
                   "request": {
-                    "$ref": "ConnectionPolicy"
+                    "$ref": "ServiceConnectionPolicy"
                   },
                   "response": {
                     "$ref": "GoogleLongrunningOperation"
@@ -1595,23 +1595,23 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new ConnectionPolicy in a given project and location."
+                  "description": "Creates a new ServiceConnectionPolicy in a given project and location."
                 },
                 "patch": {
-                  "id": "networkconnectivity.projects.locations.connectionPolicies.patch",
+                  "id": "networkconnectivity.projects.locations.serviceConnectionPolicies.patch",
                   "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/connectionPolicies/{connectionPoliciesId}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceConnectionPolicies/{serviceConnectionPoliciesId}",
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Immutable. The name of a ConnectionPolicy. Format: projects\/{project}\/locations\/{location}\/connectionPolicies\/{connection_policy} See: https:\/\/google.aip.dev\/122#fields-representing-resource-names",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionPolicies\/[^\/]+$",
+                      "description": "Immutable. The name of a ServiceConnectionPolicy. Format: projects\/{project}\/locations\/{location}\/serviceConnectionPolicies\/{service_connection_policy} See: https:\/\/google.aip.dev\/122#fields-representing-resource-names",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serviceConnectionPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the ConnectionPolicy resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the ServiceConnectionPolicy resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1626,7 +1626,7 @@
                     "name"
                   ],
                   "request": {
-                    "$ref": "ConnectionPolicy"
+                    "$ref": "ServiceConnectionPolicy"
                   },
                   "response": {
                     "$ref": "GoogleLongrunningOperation"
@@ -1634,17 +1634,17 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the parameters of a single ConnectionPolicy."
+                  "description": "Updates the parameters of a single ServiceConnectionPolicy."
                 },
                 "delete": {
-                  "id": "networkconnectivity.projects.locations.connectionPolicies.delete",
+                  "id": "networkconnectivity.projects.locations.serviceConnectionPolicies.delete",
                   "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/connectionPolicies/{connectionPoliciesId}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceConnectionPolicies/{serviceConnectionPoliciesId}",
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the ConnectionPolicy to delete.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionPolicies\/[^\/]+$",
+                      "description": "Required. The name of the ServiceConnectionPolicy to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serviceConnectionPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1664,17 +1664,17 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a single ConnectionPolicy."
+                  "description": "Deletes a single ServiceConnectionPolicy."
                 },
                 "setIamPolicy": {
-                  "id": "networkconnectivity.projects.locations.connectionPolicies.setIamPolicy",
+                  "id": "networkconnectivity.projects.locations.serviceConnectionPolicies.setIamPolicy",
                   "path": "v1alpha1/{+resource}:setIamPolicy",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/connectionPolicies/{connectionPoliciesId}:setIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceConnectionPolicies/{serviceConnectionPoliciesId}:setIamPolicy",
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionPolicies\/[^\/]+$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serviceConnectionPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1695,14 +1695,14 @@
                   "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
                 },
                 "getIamPolicy": {
-                  "id": "networkconnectivity.projects.locations.connectionPolicies.getIamPolicy",
+                  "id": "networkconnectivity.projects.locations.serviceConnectionPolicies.getIamPolicy",
                   "path": "v1alpha1/{+resource}:getIamPolicy",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/connectionPolicies/{connectionPoliciesId}:getIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceConnectionPolicies/{serviceConnectionPoliciesId}:getIamPolicy",
                   "httpMethod": "GET",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionPolicies\/[^\/]+$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serviceConnectionPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1726,14 +1726,14 @@
                   "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
                 },
                 "testIamPermissions": {
-                  "id": "networkconnectivity.projects.locations.connectionPolicies.testIamPermissions",
+                  "id": "networkconnectivity.projects.locations.serviceConnectionPolicies.testIamPermissions",
                   "path": "v1alpha1/{+resource}:testIamPermissions",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/connectionPolicies/{connectionPoliciesId}:testIamPermissions",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceConnectionPolicies/{serviceConnectionPoliciesId}:testIamPermissions",
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionPolicies\/[^\/]+$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serviceConnectionPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"

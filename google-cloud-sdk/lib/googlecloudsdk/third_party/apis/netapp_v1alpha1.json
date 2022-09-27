@@ -234,7 +234,8 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Name of the storage pool",
+          "description": "Output only. The resource name of the storage pool. Format: `projects\/{project_number}\/locations\/{location_id}\/storagepools\/{storage_pool_id}`.",
+          "readOnly": true,
           "type": "string"
         },
         "serviceLevel": {
@@ -342,7 +343,13 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Name of the volume",
+          "description": "Output only. The resource name of the volume. Format: `projects\/{project_number}\/locations\/{location_id}\/volumes\/{volume_id}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "volumeId": {
+          "description": "Output only. The ID of the volume.",
+          "readOnly": true,
           "type": "string"
         },
         "state": {
@@ -588,6 +595,30 @@
         },
         "nfsV4": {
           "description": "NFS V4 protocol",
+          "type": "boolean"
+        },
+        "kerberos5ReadOnly": {
+          "description": "If enabled (true) the rule defines a read only access for clients matching the 'allowedClients' specification. It enables nfs clients to mount using 'authentication' kerberos security mode.",
+          "type": "boolean"
+        },
+        "kerberos5ReadWrite": {
+          "description": "If enabled (true) the rule defines read and write access for clients matching the 'allowedClients' specification. It enables nfs clients to mount using 'authentication' kerberos security mode. The 'kerberos5ReadOnly' value be ignored if this is enabled.",
+          "type": "boolean"
+        },
+        "kerberos5iReadOnly": {
+          "description": "If enabled (true) the rule defines a read only access for clients matching the 'allowedClients' specification. It enables nfs clients to mount using 'integrity' kerberos security mode.",
+          "type": "boolean"
+        },
+        "kerberos5iReadWrite": {
+          "description": "If enabled (true) the rule defines read and write access for clients matching the 'allowedClients' specification. It enables nfs clients to mount using 'integrity' kerberos security mode. The 'kerberos5iReadOnly' value be ignored if this is enabled.",
+          "type": "boolean"
+        },
+        "kerberos5pReadOnly": {
+          "description": "If enabled (true) the rule defines a read only access for clients matching the 'allowedClients' specification. It enables nfs clients to mount using 'privacy' kerberos security mode.",
+          "type": "boolean"
+        },
+        "kerberos5pReadWrite": {
+          "description": "If enabled (true) the rule defines read and write access for clients matching the 'allowedClients' specification. It enables nfs clients to mount using 'privacy' kerberos security mode. The 'kerberos5pReadOnly' value be ignored if this is enabled.",
           "type": "boolean"
         }
       }
@@ -978,6 +1009,13 @@
         "encryptDcConnections": {
           "description": "If enabled, traffic between the SMB server to Domain Controller (DC) will be encrypted.",
           "type": "boolean"
+        },
+        "labels": {
+          "description": "Labels for the active directory.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1336,8 +1374,8 @@
                       "required": true,
                       "type": "string"
                     },
-                    "name": {
-                      "description": "Required. Name of the requesting storage pool If auto-generating Name server-side, remove this field and name from the method_signature of Create RPC",
+                    "storagePoolId": {
+                      "description": "Required. ID of storage pool to create.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1388,7 +1426,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the storage pool",
+                      "description": "Output only. The resource name of the storage pool. Format: `projects\/{project_number}\/locations\/{location_id}\/storagepools\/{storage_pool_id}`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/storagepools\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1528,8 +1566,8 @@
                       "required": true,
                       "type": "string"
                     },
-                    "name": {
-                      "description": "Required. Name of the requesting volume If auto-generating Name server-side, remove this field and name from the method_signature of Create RPC",
+                    "volumeId": {
+                      "description": "Required. ID of the volume to create.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1555,7 +1593,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the volume",
+                      "description": "Output only. The resource name of the volume. Format: `projects\/{project_number}\/locations\/{location_id}\/volumes\/{volume_id}`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
                       "location": "path",
                       "required": true,

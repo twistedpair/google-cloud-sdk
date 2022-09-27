@@ -92,7 +92,8 @@ def CreateDiskMessages(args,
                        support_persistent_attached_disks=True,
                        support_replica_zones=False,
                        use_disk_type_uri=True,
-                       support_multi_writer=False):
+                       support_multi_writer=False,
+                       support_provisioned_throughput=False):
   """Creates disk messages for a single instance."""
 
   container_mount_disk = []
@@ -130,7 +131,8 @@ def CreateDiskMessages(args,
           enable_image_csek=support_image_csek,
           support_replica_zones=support_replica_zones,
           use_disk_type_uri=use_disk_type_uri,
-          support_multi_writer=support_multi_writer))
+          support_multi_writer=support_multi_writer,
+          support_provisioned_throughput=support_provisioned_throughput))
 
   local_nvdimms = []
   if support_nvdimm:
@@ -261,7 +263,8 @@ def CreatePersistentCreateDiskMessages(compute_client,
                                        support_replica_zones=False,
                                        use_disk_type_uri=True,
                                        support_multi_writer=False,
-                                       support_image_family_scope=False):
+                                       support_image_family_scope=False,
+                                       support_provisioned_throughput=False):
   """Returns a list of AttachedDisk messages for newly creating disks.
 
   Args:
@@ -294,6 +297,8 @@ def CreatePersistentCreateDiskMessages(compute_client,
     use_disk_type_uri: True to use disk type URI, False if naked type.
     support_multi_writer: True if we allow multiple instances to write to disk.
     support_image_family_scope: True if the zonal image views are supported.
+    support_provisioned_throughput: True if the provisioned throughput is
+      supported
 
   Returns:
     list of API messages for attached disks
@@ -404,6 +409,10 @@ def CreatePersistentCreateDiskMessages(compute_client,
     if provisioned_iops:
       initialize_params.provisionedIops = provisioned_iops
 
+    if support_provisioned_throughput:
+      provisioned_throughput = disk.get('provisioned-throughput')
+      initialize_params.provisionedThroughput = provisioned_throughput
+
     disk_architecture = disk.get('architecture')
     if disk_architecture:
       initialize_params.architecture = messages.AttachedDiskInitializeParams.ArchitectureValueValuesEnum(
@@ -446,7 +455,8 @@ def CreateDefaultBootAttachedDiskMessage(compute_client,
                                          enable_kms=False,
                                          snapshot_uri=None,
                                          use_disk_type_uri=True,
-                                         disk_provisioned_iops=None):
+                                         disk_provisioned_iops=None,
+                                         disk_provisioned_throughput=None):
   """Returns an AttachedDisk message for creating a new boot disk."""
   messages = compute_client.messages
   compute = compute_client.apitools_client
@@ -517,6 +527,9 @@ def CreateDefaultBootAttachedDiskMessage(compute_client,
 
   if disk_provisioned_iops is not None:
     initialize_params.provisionedIops = disk_provisioned_iops
+
+  if disk_provisioned_throughput is not None:
+    initialize_params.provisionedThroughput = disk_provisioned_throughput
 
   if snapshot_uri:
     initialize_params.sourceImage = None

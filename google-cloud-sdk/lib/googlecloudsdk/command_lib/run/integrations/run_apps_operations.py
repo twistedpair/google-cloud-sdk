@@ -25,12 +25,12 @@ import json
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as api_exceptions
+from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.run.integrations import api_utils
 from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.run import connection_context
 from googlecloudsdk.command_lib.run import exceptions
-from googlecloudsdk.command_lib.run import flags as run_flags
 from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.run.integrations import flags
 from googlecloudsdk.command_lib.run.integrations import integration_list_printer
@@ -798,8 +798,9 @@ class RunAppsOperations(object):
     Raises:
       exceptions.ServiceNotFoundError: when a Cloud Run service doesn't exist.
     """
-    conn_context = connection_context.GetConnectionContext(
-        {'region', self._region}, run_flags.Product.RUN)
+    conn_context = connection_context.RegionalConnectionContext(
+        self._region, global_methods.SERVERLESS_API_NAME,
+        global_methods.SERVERLESS_API_VERSION)
     with serverless_operations.Connect(conn_context) as client:
       for name in service_names:
         service_ref = self.GetServiceRef(name)

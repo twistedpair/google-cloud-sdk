@@ -141,7 +141,11 @@ def ConstructPatch(is_composer_v1,
                    release_track=base.ReleaseTrack.GA,
                    triggerer_cpu=None,
                    triggerer_memory_gb=None,
-                   triggerer_count=None):
+                   triggerer_count=None,
+                   enable_scheduled_snapshot_creation=None,
+                   snapshot_location=None,
+                   snapshot_schedule_timezone=None,
+                   snapshot_creation_schedule=None):
   """Constructs an environment patch.
 
   Args:
@@ -214,17 +218,25 @@ def ConstructPatch(is_composer_v1,
       be enabled
     master_authorized_networks: iterable(string) or None, iterable of master
       authorized networks.
-    airflow_database_retention_days: Optional[int], the number of retention
-      days for airflow database data retention mechanism. Infinite retention
-      will be applied in case `0` or no integer is provided.
+    airflow_database_retention_days: Optional[int], the number of retention days
+      for airflow database data retention mechanism. Infinite retention will be
+      applied in case `0` or no integer is provided.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
       which Composer client library will be used.
     triggerer_cpu: float or None, CPU allocated to Airflow triggerer. Can be
-        specified only in Airflow 2.2.x and greater.
+      specified only in Airflow 2.2.x and greater.
     triggerer_memory_gb: float or None, memory allocated to Airflow triggerer.
-        Can be specified only in Airflow 2.2.x and greater.
-    triggerer_count: int or None, number of triggerers in the Environment.
-        Can be specified only in Airflow 2.2.x and greater
+      Can be specified only in Airflow 2.2.x and greater.
+    triggerer_count: int or None, number of triggerers in the Environment. Can
+      be specified only in Airflow 2.2.x and greater
+    enable_scheduled_snapshot_creation: bool, whether the automatic snapshot
+      creation should be enabled
+    snapshot_location: str, a Cloud Storage location used to store automatically
+      created snapshots
+    snapshot_schedule_timezone: str, time zone that sets the context to
+      interpret snapshot_creation_schedule.
+    snapshot_creation_schedule: str, cron expression that specifies when
+      snapshots will be created
 
   Returns:
     (str, Environment), the field mask and environment to use for update.
@@ -281,6 +293,12 @@ def ConstructPatch(is_composer_v1,
     return _ConstructMasterAuthorizedNetworksTypePatch(
         master_authorized_networks_enabled, master_authorized_networks,
         release_track)
+  if enable_scheduled_snapshot_creation is not None:
+    return _ConstructScheduledSnapshotPatch(enable_scheduled_snapshot_creation,
+                                            snapshot_creation_schedule,
+                                            snapshot_location,
+                                            snapshot_schedule_timezone,
+                                            release_track)
   if airflow_database_retention_days is not None:
     return _ConstructAirflowDatabaseRetentionDaysPatch(
         airflow_database_retention_days, release_track)
@@ -512,6 +530,41 @@ def _ConstructEnvVariablesPatch(env_ref,
                                           _BuildEnv))
 
 
+def _ConstructScheduledSnapshotPatch(enable_scheduled_snapshot_creation,
+                                     snapshot_creation_schedule,
+                                     snapshot_location,
+                                     snapshot_schedule_timezone,
+                                     release_track=base.ReleaseTrack.GA):
+  """Constructs an environment patch for environment image version.
+
+  Args:
+    enable_scheduled_snapshot_creation: bool, whether the automatic snapshot
+      creation should be enabled
+    snapshot_creation_schedule: str, cron expression that specifies when
+      snapshots will be created
+    snapshot_location: str, a Cloud Storage location used to store automatically
+      created snapshots
+    snapshot_schedule_timezone: str, time zone that sets the context to
+      interpret snapshot_creation_schedule.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+      which Composer client library will be used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+  config = messages.EnvironmentConfig(
+      recoveryConfig=messages.RecoveryConfig(
+          scheduledSnapshotsConfig=messages.ScheduledSnapshotsConfig(
+              enabled=enable_scheduled_snapshot_creation,
+              snapshotCreationSchedule=snapshot_creation_schedule,
+              snapshotLocation=snapshot_location,
+              timeZone=snapshot_schedule_timezone)))
+
+  return 'config.recovery_config.scheduled_snapshots_config', messages.Environment(
+      config=config)
+
+
 def _ConstructImageVersionPatch(update_image_version,
                                 release_track=base.ReleaseTrack.GA):
   """Constructs an environment patch for environment image version.
@@ -618,12 +671,13 @@ def _ConstructMasterAuthorizedNetworksTypePatch(enabled, networks,
       config=config)
 
 
-def _ConstructAutoscalingPatch(
-    scheduler_cpu, worker_cpu, web_server_cpu, scheduler_memory_gb,
-    worker_memory_gb, web_server_memory_gb, scheduler_storage_gb,
-    worker_storage_gb, web_server_storage_gb, worker_min_count,
-    worker_max_count, scheduler_count, release_track, triggerer_cpu,
-    triggerer_memory_gb, triggerer_count):
+def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
+                               scheduler_memory_gb, worker_memory_gb,
+                               web_server_memory_gb, scheduler_storage_gb,
+                               worker_storage_gb, web_server_storage_gb,
+                               worker_min_count, worker_max_count,
+                               scheduler_count, release_track, triggerer_cpu,
+                               triggerer_memory_gb, triggerer_count):
   """Constructs an environment patch for Airflow web server machine type.
 
   Args:
@@ -654,11 +708,12 @@ def _ConstructAutoscalingPatch(
     release_track: base.ReleaseTrack, the release track of command. It dictates
       which Composer client library is used.
     triggerer_cpu: float or None, CPU allocated to Airflow triggerer. Can be
-        specified only in Airflow 2.2.x and greater.
+      specified only in Airflow 2.2.x and greater.
     triggerer_memory_gb: float or None, memory allocated to Airflow triggerer.
-        Can be specified only in Airflow 2.2.x and greater.
-    triggerer_count: int or None, number of triggerers in the Environment.
-      Can be specified only in Airflow 2.2.x and greater
+      Can be specified only in Airflow 2.2.x and greater.
+    triggerer_count: int or None, number of triggerers in the Environment. Can
+      be specified only in Airflow 2.2.x and greater
+
   Returns:
     (str, Environment), the field mask and environment to use for update.
   """
@@ -684,9 +739,7 @@ def _ConstructAutoscalingPatch(
                                                 triggerer_cpu or
                                                 triggerer_memory_gb):
     workload_resources['triggerer'] = messages.TriggererResource(
-        cpu=triggerer_cpu,
-        memoryGb=triggerer_memory_gb,
-        count=triggerer_count)
+        cpu=triggerer_cpu, memoryGb=triggerer_memory_gb, count=triggerer_count)
 
   config = messages.EnvironmentConfig(
       workloadsConfig=messages.WorkloadsConfig(**workload_resources))
@@ -695,8 +748,8 @@ def _ConstructAutoscalingPatch(
       worker_memory_gb, web_server_memory_gb, scheduler_storage_gb,
       worker_storage_gb, web_server_storage_gb, worker_min_count,
       worker_max_count
-  ]) and (release_track == base.ReleaseTrack.GA or all(
-      [triggerer_count, triggerer_cpu, triggerer_memory_gb])):
+  ]) and (release_track == base.ReleaseTrack.GA or
+          all([triggerer_count, triggerer_cpu, triggerer_memory_gb])):
     return 'config.workloads_config', messages.Environment(config=config)
   else:
     mask = []

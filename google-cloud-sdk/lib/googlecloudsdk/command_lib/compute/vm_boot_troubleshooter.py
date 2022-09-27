@@ -27,11 +27,19 @@ _API_COMPUTE_CLIENT_NAME = 'compute'
 _API_CLIENT_VERSION_V1 = 'v1'
 
 VM_BOOT_PATTERNS = [
-    'Failed to load image',
     'Security Violation',
+
+    # GRUB not being able to find image.
+    'Failed to load image',
+
+    # OS emergency mode (emergency.target in systemd).
     'You are now being dropped into an emergency shell',
-    'Started Emergency Shell',
-    'Reached target Emergency Mode',
+    'You are in (rescue|emergency) mode',
+    r'Started \x1b?\[?.*Emergency Shell',
+    r'Reached target \x1b?\[?.*Emergency Mode',
+
+    # GRUB emergency shell.
+    'Minimal BASH-like line editing is supported',
 ]
 
 VM_BOOT_MESSAGE = (

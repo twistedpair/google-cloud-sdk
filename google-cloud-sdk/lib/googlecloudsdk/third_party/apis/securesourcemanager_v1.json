@@ -504,7 +504,8 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Optional. A unique identifier for an SSH key. The name should be of the format: projects\/{project}\/locations\/{location_id}\/instances\/{instance_id}\/sshkeys\/{sshkey_id}",
+          "description": "Output only. A unique identifier for an SSH key. The name should be of the format: projects\/{project}\/locations\/{location_id}\/instances\/{instance_id}\/sshkeys\/{sshkey_id}",
+          "readOnly": true,
           "type": "string"
         },
         "owner": {
@@ -1319,7 +1320,7 @@
                           "type": "string"
                         },
                         "sshkeyId": {
-                          "description": "Required. The ID to use for the SSH key, which will become the final component of the SSH key's resource name. This value should be 4-63 characters, and valid characters are \/a-z-\/.",
+                          "description": "Optional. This field is no longer used. IDs will be assigned by the API itself.",
                           "location": "query",
                           "type": "string"
                         }

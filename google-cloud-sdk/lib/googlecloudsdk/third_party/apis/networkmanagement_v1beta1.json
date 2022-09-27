@@ -797,7 +797,7 @@
             "PEERING_SUBNET",
             "PEERING_STATIC",
             "PEERING_DYNAMIC",
-            "POLICY_BASED_ROUTE"
+            "POLICY_BASED"
           ]
         },
         "nextHopType": {
@@ -1128,7 +1128,8 @@
             "Aborted because the destination endpoint could not be found.",
             "Aborted because the destination network does not match the destination endpoint.",
             "Aborted because the test scenario is not supported.",
-            "Aborted because the source and destination resources have no common IP version."
+            "Aborted because the source and destination resources have no common IP version.",
+            "Aborted because the connection between the control plane and the node of the source cluster is initiated by the node and managed by the Konnectivity proxy."
           ],
           "enum": [
             "CAUSE_UNSPECIFIED",
@@ -1147,7 +1148,8 @@
             "DESTINATION_ENDPOINT_NOT_FOUND",
             "MISMATCHED_DESTINATION_NETWORK",
             "UNSUPPORTED",
-            "MISMATCHED_IP_VERSION"
+            "MISMATCHED_IP_VERSION",
+            "GKE_KONNECTIVITY_PROXY_UNSUPPORTED"
           ]
         },
         "resourceUri": {

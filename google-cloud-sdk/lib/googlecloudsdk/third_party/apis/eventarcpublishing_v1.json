@@ -150,6 +150,13 @@
               "description": "Properties of the object. Contains field @type with type URL."
             }
           }
+        },
+        "textEvents": {
+          "description": "The text representation of events to publish. CloudEvent v1.0 in JSON format is the only allowed type. Refer to https:\/\/github.com\/cloudevents\/spec\/blob\/v1.0.2\/cloudevents\/formats\/json-format.md for specification.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

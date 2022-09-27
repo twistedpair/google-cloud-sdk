@@ -245,6 +245,34 @@ def CreateUpdateRequest(workload,
         updateMask=update_mask)
 
 
+def CreateAcknowledgeRequest(name, comment, release_track=ReleaseTrack.GA):
+  """Construct an Assured Workload Violation Acknowledgement Request.
+
+  Args:
+    name: str, the name for the Assured Workloads violation being described in
+      the form:
+      organizations/{ORG_ID}/locations/{LOCATION}/workloads/{WORKLOAD_ID}/violations/{VIOLATION_ID}.
+    comment: str, the business justification which the user wants to add while
+      acknowledging a violation.
+    release_track: ReleaseTrack, gcloud release track being used
+
+  Returns:
+    A populated Assured Workloads Violation Acknowledgement Request.
+  """
+  messages = util.GetMessagesModule(release_track)
+  if release_track == ReleaseTrack.GA:
+    return messages.AssuredworkloadsOrganizationsLocationsWorkloadsViolationsAcknowledgeRequest(
+        googleCloudAssuredworkloadsV1AcknowledgeViolationRequest=messages
+        .GoogleCloudAssuredworkloadsV1AcknowledgeViolationRequest(
+            comment=comment),
+        name=name)
+  else:
+    return messages.AssuredworkloadsOrganizationsLocationsWorkloadsViolationsAcknowledgeRequest(
+        googleCloudAssuredworkloadsV1beta1AcknowledgeViolationRequest=messages
+        .GoogleCloudAssuredworkloadsV1beta1AcknowledgeViolationRequest(
+            comment=comment),
+        name=name)
+
 WORKLOAD_MAP = {
     ReleaseTrack.ALPHA:
         GetMessages(ReleaseTrack.ALPHA

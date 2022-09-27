@@ -71,6 +71,9 @@ class AbortInfo(_messages.Message):
       UNSUPPORTED: Aborted because the test scenario is not supported.
       MISMATCHED_IP_VERSION: Aborted because the source and destination
         resources have no common IP version.
+      GKE_KONNECTIVITY_PROXY_UNSUPPORTED: Aborted because the connection
+        between the control plane and the node of the source cluster is
+        initiated by the node and managed by the Konnectivity proxy.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_NETWORK = 1
@@ -89,6 +92,7 @@ class AbortInfo(_messages.Message):
     MISMATCHED_DESTINATION_NETWORK = 14
     UNSUPPORTED = 15
     MISMATCHED_IP_VERSION = 16
+    GKE_KONNECTIVITY_PROXY_UNSUPPORTED = 17
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   projectsMissingPermission = _messages.StringField(2, repeated=True)
@@ -1801,7 +1805,7 @@ class RouteInfo(_messages.Message):
       PEERING_SUBNET: A subnet route received from peering network.
       PEERING_STATIC: A static route received from peering network.
       PEERING_DYNAMIC: A dynamic route received from peering network.
-      POLICY_BASED_ROUTE: Policy based route.
+      POLICY_BASED: Policy based route.
     """
     ROUTE_TYPE_UNSPECIFIED = 0
     SUBNET = 1
@@ -1810,7 +1814,7 @@ class RouteInfo(_messages.Message):
     PEERING_SUBNET = 4
     PEERING_STATIC = 5
     PEERING_DYNAMIC = 6
-    POLICY_BASED_ROUTE = 7
+    POLICY_BASED = 7
 
   destIpRange = _messages.StringField(1)
   destPortRanges = _messages.StringField(2, repeated=True)

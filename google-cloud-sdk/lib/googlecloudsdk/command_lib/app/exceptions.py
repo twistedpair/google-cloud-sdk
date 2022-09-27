@@ -161,3 +161,14 @@ class UnknownSourceError(exceptions.Error):
 
 class NotSupportedPy3Exception(exceptions.Error):
   """Commands that do not support python3."""
+
+
+class InvalidInstanceIpModeError(exceptions.Error):
+  """Deployment has the wrong network instance Ip mode."""
+
+  def __init__(self, instance_ip_mode):
+    self.instance_ip_mode = instance_ip_mode
+
+  def __str__(self):
+    return ('Deployments with [{}] instance ip mode do not support this '
+            'operation.'.format(self.instance_ip_mode))

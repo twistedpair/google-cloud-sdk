@@ -328,7 +328,7 @@
           }
         },
         "capacity": {
-          "description": "Optional. Capacity of the Address Group, default value is 1000.",
+          "description": "Required. Capacity of the Address Group",
           "type": "integer",
           "format": "int32"
         },

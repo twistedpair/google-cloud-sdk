@@ -59,7 +59,6 @@ def GetWorkloadResourceSpec():
 def GetViolationResourceSpec():
   return concepts.ResourceSpec(
       'assuredworkloads.organizations.locations.workloads.violations',
-      api_version='v1beta1',
       resource_name='violation',
       violationsId=ViolationAttributeConfig(),
       workloadsId=WorkloadAttributeConfig(),

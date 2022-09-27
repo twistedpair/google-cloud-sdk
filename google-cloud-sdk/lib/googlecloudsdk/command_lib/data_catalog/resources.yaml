@@ -55,20 +55,6 @@ entry_group:
   - *location
   - &entry_group
     parameter_name: entryGroupsId
-    attribute_name: entry-group
-    help: |
-      Entry group of the {resource}.
-
-# TODO(b/124305522): Delete this and just use entry_group
-positional_entry_group:
-  name: entry group
-  collection: datacatalog.projects.locations.entryGroups
-  request_id_field: entryGroupId
-  disable_auto_completers: true
-  attributes:
-  - *project
-  - *location
-  - parameter_name: entryGroupsId
     attribute_name: entry_group
     help: |
       Entry group of the {resource}.

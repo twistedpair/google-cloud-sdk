@@ -1344,8 +1344,7 @@ class WorkstationCluster(_messages.Message):
       proceeding.
     name: Full name of this resource.
     network: Name of the Compute Engine network in which instances associated
-      with this cluster will be created. Must be in the same project as this
-      cluster.
+      with this cluster will be created.
     privateClusterConfig: Configuration for private cluster.
     reconciling: Output only. Indicates whether this resource is currently
       being updated to match its intended state.

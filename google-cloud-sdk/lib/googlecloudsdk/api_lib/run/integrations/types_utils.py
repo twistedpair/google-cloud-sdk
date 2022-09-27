@@ -36,50 +36,6 @@ LATEST_DEPLOYMENT_FIELD = 'latestDeployment'
 _INTEGRATION_TYPES = frozenset([
     frozendict({
         INTEGRATION_TYPE:
-            'custom-domain',
-        RESOURCE_TYPE:
-            'router',
-        'description':
-            'Configure a custom domain for Cloud Run services with Google Cloud '
-            'Load Balancer.',
-        'example_command':
-            '$ gcloud {track} run integrations create --service=[SERVICE] '
-            '--type=custom-domain --parameters=domain=example.com',
-        'visible': True,
-        'parameters':
-            frozendict({
-                'domain':
-                    frozendict({
-                        'description':
-                            'The domain to configure for your Cloud Run service. This '
-                            'must be a domain you can configure DNS for.',
-                        'type': 'domain',
-                        'required': True,
-                        'update_allowed': False,
-                    }),
-                'paths':
-                    frozendict({
-                        'description':
-                            'The paths at the domain for your Cloud Run service. '
-                            'Defaults to "/" if not specified. (e.g. "/foo/*" for '
-                            '"example.com/foo/*")',
-                        'type': 'path_matcher',
-                    }),
-                'dns-zone':
-                    frozendict({
-                        'description':
-                            'The ID of the Cloud DNS Zone already configured for this '
-                            'domain. If not specified, manual DNS configuration is '
-                            'expected.',
-                        'type': 'string',
-                        'hidden': True,
-                    }),
-            }),
-        'required_apis':
-            frozenset({'compute.googleapis.com'}),
-    }),
-    frozendict({
-        INTEGRATION_TYPE:
             'custom-domains',
         RESOURCE_TYPE:
             'router',
@@ -328,6 +284,8 @@ def GetIntegrationFromResource(resource_config):
   config = resource_config[resource_type]
   match = None
   for integration_type in _INTEGRATION_TYPES:
+    if not _IntegrationVisible(integration_type):
+      continue
     if integration_type.get(RESOURCE_TYPE, None) == resource_type:
       must_have_field = integration_type.get(REQUIRED_FIELD, None)
       if must_have_field:

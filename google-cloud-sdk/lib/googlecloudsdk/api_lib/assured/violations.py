@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.assured import message_util
 from googlecloudsdk.api_lib.assured import util
 from googlecloudsdk.core import resources
 
@@ -65,11 +66,11 @@ class ViolationsClient(object):
         batch_size_attribute=None)
 
   def Describe(self, name):
-    """Describe an existing Assured Workloads Compliance Violation.
+    """Describe an existing Assured Workloads compliance violation.
 
     Args:
-      name: str, the name for the Assured Workloads Violation being described
-        in the form:
+      name: str, the name for the Assured Workloads Violation being described in
+        the form:
         organizations/{ORG_ID}/locations/{LOCATION}/workloads/{WORKLOAD_ID}/violations/{VIOLATION_ID}.
 
     Returns:
@@ -79,3 +80,21 @@ class ViolationsClient(object):
         name=name)
     return self.client.organizations_locations_workloads_violations.Get(
         describe_req)
+
+  def Acknowledge(self, name, comment):
+    """Acknowledge an existing Assured Workloads compliance violation.
+
+    Args:
+      name: str, the name for the Assured Workloads violation being described in
+        the form:
+        organizations/{ORG_ID}/locations/{LOCATION}/workloads/{WORKLOAD_ID}/violations/{VIOLATION_ID}.
+      comment: str, the business justification which the user wants to add while
+        acknowledging a violation.
+
+    Returns:
+      Specified Assured Workloads Violation.
+    """
+    acknowledgement_req = message_util.CreateAcknowledgeRequest(
+        name, comment, self._release_track)
+    return self.client.organizations_locations_workloads_violations.Acknowledge(
+        acknowledgement_req)

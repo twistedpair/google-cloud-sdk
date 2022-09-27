@@ -284,7 +284,8 @@ def AddCommonBulkInsertArgs(parser,
                             support_max_run_duration=False,
                             support_enable_target_shape=False,
                             add_zone_region_flags=True,
-                            support_confidential_compute_type=False):
+                            support_confidential_compute_type=False,
+                            support_provisioned_throughput=False):
   """Register parser args common to all tracks."""
   metadata_utils.AddMetadataArgs(parser)
   AddDiskArgsForBulk(parser)
@@ -295,7 +296,8 @@ def AddCommonBulkInsertArgs(parser,
       source_snapshot_csek=snapshot_csek,
       image_csek=image_csek,
       include_name=False,
-      support_boot=True)
+      support_boot=True,
+      support_provisioned_throughput=support_provisioned_throughput)
   instances_flags.AddCanIpForwardArgs(parser)
   instances_flags.AddAcceleratorArgs(parser)
   instances_flags.AddMachineTypeArgs(parser)

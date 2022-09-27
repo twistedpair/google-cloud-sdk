@@ -48,15 +48,6 @@ _TLS_VERSION_MAP = {
 }
 
 
-class LegacySslPoliciesCompleter(compute_completers.ListCommandCompleter):
-
-  def __init__(self, **kwargs):
-    super(LegacySslPoliciesCompleter, self).__init__(
-        collection='compute.sslPolicies',
-        list_command='compute ssl-policies list --uri',
-        **kwargs)
-
-
 class GlobalSslPoliciesCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
@@ -89,7 +80,7 @@ def GetSslPolicyArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       name='SSL_POLICY',
       resource_name='SSL policy',
-      completer=LegacySslPoliciesCompleter,
+      completer=SslPoliciesCompleter,
       plural=plural,
       custom_plural='SSL policies',
       required=required,
@@ -101,7 +92,7 @@ def GetSslPolicyArgumentForOtherResource(proxy_type, required=False):
   return compute_flags.ResourceArgument(
       name='--ssl-policy',
       resource_name='SSL policy',
-      completer=LegacySslPoliciesCompleter,
+      completer=SslPoliciesCompleter,
       plural=False,
       required=required,
       global_collection='compute.sslPolicies',
@@ -178,12 +169,12 @@ def GetProfileFlag(default=None):
               'Compatible profile. Allows the broadest set of clients, even '
               'those which support only out-of-date SSL features, to negotiate '
               'SSL with the load balancer.'),
-          'MODERN': (
-              'Modern profile. Supports a wide set of SSL features, allowing '
-              'modern clients to negotiate SSL.'),
-          'RESTRICTED': (
-              'Restricted profile. Supports a reduced set of SSL features, '
-              'intended to meet stricter compliance requirements.'),
+          'MODERN':
+              ('Modern profile. Supports a wide set of SSL features, allowing '
+               'modern clients to negotiate SSL.'),
+          'RESTRICTED':
+              ('Restricted profile. Supports a reduced set of SSL features, '
+               'intended to meet stricter compliance requirements.'),
           'CUSTOM': (
               'Custom profile. Allows customization by selecting only the '
               'features which are required. The list of all available features '

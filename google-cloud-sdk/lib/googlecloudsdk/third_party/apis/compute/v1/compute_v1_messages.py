@@ -673,6 +673,9 @@ class Address(_messages.Message):
     IpVersionValueValuesEnum: The IP version that will be used by this
       address. Valid options are IPV4 or IPV6. This can only be specified for
       a global address.
+    Ipv6EndpointTypeValueValuesEnum: The endpoint type of this address, which
+      should be VM or NETLB. This is used for deciding which type of endpoint
+      this address can be used after the external IPv6 address reservation.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this address and can only take the following values: PREMIUM
       or STANDARD. Internal IP addresses are always Premium Tier; global
@@ -713,6 +716,9 @@ class Address(_messages.Message):
       is defined by the server.
     ipVersion: The IP version that will be used by this address. Valid options
       are IPV4 or IPV6. This can only be specified for a global address.
+    ipv6EndpointType: The endpoint type of this address, which should be VM or
+      NETLB. This is used for deciding which type of endpoint this address can
+      be used after the external IPv6 address reservation.
     kind: [Output Only] Type of the resource. Always compute#address for
       addresses.
     name: Name of the resource. Provided by the client when the resource is
@@ -791,6 +797,18 @@ class Address(_messages.Message):
     IPV4 = 0
     IPV6 = 1
     UNSPECIFIED_VERSION = 2
+
+  class Ipv6EndpointTypeValueValuesEnum(_messages.Enum):
+    r"""The endpoint type of this address, which should be VM or NETLB. This
+    is used for deciding which type of endpoint this address can be used after
+    the external IPv6 address reservation.
+
+    Values:
+      NETLB: Reserved IPv6 address can be used on network load balancer.
+      VM: Reserved IPv6 address can be used on VM.
+    """
+    NETLB = 0
+    VM = 1
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     r"""This signifies the networking tier used for configuring this address
@@ -882,17 +900,18 @@ class Address(_messages.Message):
   description = _messages.StringField(4)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 6)
-  kind = _messages.StringField(7, default='compute#address')
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 10)
-  prefixLength = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 12)
-  region = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  subnetwork = _messages.StringField(16)
-  users = _messages.StringField(17, repeated=True)
+  ipv6EndpointType = _messages.EnumField('Ipv6EndpointTypeValueValuesEnum', 7)
+  kind = _messages.StringField(8, default='compute#address')
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 11)
+  prefixLength = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 13)
+  region = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  subnetwork = _messages.StringField(17)
+  users = _messages.StringField(18, repeated=True)
 
 
 class AddressAggregatedList(_messages.Message):
@@ -31637,7 +31656,17 @@ class ForwardingRule(_messages.Message):
       is in auto subnet mode, this field is optional. However, a subnetwork
       must be specified if the network is in custom subnet mode or when
       creating external forwarding rule with IPv6.
-    target: A string attribute.
+    target: The URL of the target resource to receive the matched traffic. For
+      regional forwarding rules, this target must be in the same region as the
+      forwarding rule. For global forwarding rules, this target must be a
+      global load balancing resource. The forwarded traffic must be of a type
+      appropriate to the target object. For more information, see the "Target"
+      column in [Port specifications](https://cloud.google.com/load-
+      balancing/docs/forwarding-rule-concepts#ip_address_specifications). For
+      Private Service Connect forwarding rules that forward traffic to Google
+      APIs, provide the name of a supported Google API bundle: - vpc-sc - APIs
+      that support VPC Service Controls. - all-apis - All supported Google
+      APIs.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -55630,13 +55659,17 @@ class RouterStatusBgpPeerStatus(_messages.Message):
   Fields:
     advertisedRoutes: Routes that were advertised to the remote BGP peer
     bfdStatus: A BfdStatus attribute.
+    enableIpv6: Enable IPv6 traffic over BGP Peer. If not specified, it is
+      disabled by default.
     ipAddress: IP address of the local BGP interface.
+    ipv6NexthopAddress: IPv6 address of the local BGP interface.
     linkedVpnTunnel: URL of the VPN tunnel that this BGP peer controls.
     md5AuthEnabled: Informs whether MD5 authentication is enabled on this BGP
       peer.
     name: Name of this BGP peer. Unique within the Routers resource.
     numLearnedRoutes: Number of routes learned from the remote BGP Peer.
     peerIpAddress: IP address of the remote BGP interface.
+    peerIpv6NexthopAddress: IPv6 address of the remote BGP interface.
     routerApplianceInstance: [Output only] URI of the VM instance that is used
       as third-party router appliances such as Next Gen Firewalls, Virtual
       Routers, or Router Appliances. The VM instance is the peer side of the
@@ -55676,18 +55709,21 @@ class RouterStatusBgpPeerStatus(_messages.Message):
 
   advertisedRoutes = _messages.MessageField('Route', 1, repeated=True)
   bfdStatus = _messages.MessageField('BfdStatus', 2)
-  ipAddress = _messages.StringField(3)
-  linkedVpnTunnel = _messages.StringField(4)
-  md5AuthEnabled = _messages.BooleanField(5)
-  name = _messages.StringField(6)
-  numLearnedRoutes = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(8)
-  routerApplianceInstance = _messages.StringField(9)
-  state = _messages.StringField(10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  statusReason = _messages.EnumField('StatusReasonValueValuesEnum', 12)
-  uptime = _messages.StringField(13)
-  uptimeSeconds = _messages.StringField(14)
+  enableIpv6 = _messages.BooleanField(3)
+  ipAddress = _messages.StringField(4)
+  ipv6NexthopAddress = _messages.StringField(5)
+  linkedVpnTunnel = _messages.StringField(6)
+  md5AuthEnabled = _messages.BooleanField(7)
+  name = _messages.StringField(8)
+  numLearnedRoutes = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(10)
+  peerIpv6NexthopAddress = _messages.StringField(11)
+  routerApplianceInstance = _messages.StringField(12)
+  state = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  statusReason = _messages.EnumField('StatusReasonValueValuesEnum', 15)
+  uptime = _messages.StringField(16)
+  uptimeSeconds = _messages.StringField(17)
 
 
 class RouterStatusNatStatus(_messages.Message):

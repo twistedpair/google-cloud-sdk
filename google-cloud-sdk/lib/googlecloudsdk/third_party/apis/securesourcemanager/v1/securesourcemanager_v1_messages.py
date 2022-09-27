@@ -1020,9 +1020,8 @@ class SecuresourcemanagerProjectsLocationsInstancesSshkeysCreateRequest(_message
       the form `projects/{project_number}/locations/{location_id}/instances/{i
       nstance_id}`
     sshKey: A SshKey resource to be passed as the request body.
-    sshkeyId: Required. The ID to use for the SSH key, which will become the
-      final component of the SSH key's resource name. This value should be
-      4-63 characters, and valid characters are /a-z-/.
+    sshkeyId: Optional. This field is no longer used. IDs will be assigned by
+      the API itself.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1344,9 +1343,9 @@ class SshKey(_messages.Message):
       the client has an up-to-date value before proceeding.
     labels: Optional. Labels are attributes that can be set and used by both
       the user and Secure Source Manager.
-    name: Optional. A unique identifier for an SSH key. The name should be of
-      the format: projects/{project}/locations/{location_id}/instances/{instan
-      ce_id}/sshkeys/{sshkey_id}
+    name: Output only. A unique identifier for an SSH key. The name should be
+      of the format: projects/{project}/locations/{location_id}/instances/{ins
+      tance_id}/sshkeys/{sshkey_id}
     owner: Immutable. Email of the SSH key owner. This by default is the SSH
       key creator, but users with the canActAs permission on a service account
       can also set the owner of the SSH key to that service account.

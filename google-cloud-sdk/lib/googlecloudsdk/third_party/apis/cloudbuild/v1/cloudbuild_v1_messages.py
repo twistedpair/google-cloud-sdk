@@ -187,6 +187,43 @@ class BatchCreateBitbucketServerConnectedRepositoriesResponseMetadata(_messages.
   createTime = _messages.StringField(3)
 
 
+class BatchCreateGitLabConnectedRepositoriesRequest(_messages.Message):
+  r"""RPC request object accepted by BatchCreateGitLabConnectedRepositories
+  RPC method.
+
+  Fields:
+    requests: Required. Requests to connect GitLab repositories.
+  """
+
+  requests = _messages.MessageField('CreateGitLabConnectedRepositoryRequest', 1, repeated=True)
+
+
+class BatchCreateGitLabConnectedRepositoriesResponse(_messages.Message):
+  r"""Response of BatchCreateGitLabConnectedRepositories RPC method.
+
+  Fields:
+    gitlabConnectedRepositories: The GitLab connected repository requests'
+      responses.
+  """
+
+  gitlabConnectedRepositories = _messages.MessageField('GitLabConnectedRepository', 1, repeated=True)
+
+
+class BatchCreateGitLabConnectedRepositoriesResponseMetadata(_messages.Message):
+  r"""Metadata for `BatchCreateGitLabConnectedRepositories` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    config: The name of the `GitLabConfig` that added connected repositories.
+      Format: `projects/{project}/locations/{location}/gitLabConfigs/{config}`
+    createTime: Time the operation was created.
+  """
+
+  completeTime = _messages.StringField(1)
+  config = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+
+
 class BitbucketServerConfig(_messages.Message):
   r"""BitbucketServerConfig represents the configuration for a Bitbucket
   Server.
@@ -1797,6 +1834,22 @@ class CloudbuildProjectsLocationsBuildsListRequest(_messages.Message):
   projectId = _messages.StringField(5)
 
 
+class CloudbuildProjectsLocationsGitLabConfigsConnectedRepositoriesBatchCreateRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsGitLabConfigsConnectedRepositoriesBatchCrea
+  teRequest object.
+
+  Fields:
+    batchCreateGitLabConnectedRepositoriesRequest: A
+      BatchCreateGitLabConnectedRepositoriesRequest resource to be passed as
+      the request body.
+    parent: The name of the `GitLabConfig` that adds connected repositories.
+      Format: `projects/{project}/locations/{location}/gitLabConfigs/{config}`
+  """
+
+  batchCreateGitLabConnectedRepositoriesRequest = _messages.MessageField('BatchCreateGitLabConnectedRepositoriesRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class CloudbuildProjectsLocationsGitLabConfigsCreateRequest(_messages.Message):
   r"""A CloudbuildProjectsLocationsGitLabConfigsCreateRequest object.
 
@@ -1871,6 +1924,42 @@ class CloudbuildProjectsLocationsGitLabConfigsPatchRequest(_messages.Message):
   gitLabConfig = _messages.MessageField('GitLabConfig', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class CloudbuildProjectsLocationsGitLabConfigsRemoveGitLabConnectedRepositoryRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsGitLabConfigsRemoveGitLabConnectedRepositor
+  yRequest object.
+
+  Fields:
+    config: Required. The name of the `GitLabConfig` to remove a connected
+      repository. Format:
+      `projects/{project}/locations/{location}/gitLabConfigs/{config}`
+    removeGitLabConnectedRepositoryRequest: A
+      RemoveGitLabConnectedRepositoryRequest resource to be passed as the
+      request body.
+  """
+
+  config = _messages.StringField(1, required=True)
+  removeGitLabConnectedRepositoryRequest = _messages.MessageField('RemoveGitLabConnectedRepositoryRequest', 2)
+
+
+class CloudbuildProjectsLocationsGitLabConfigsReposListRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsGitLabConfigsReposListRequest object.
+
+  Fields:
+    pageSize: The maximum number of repositories to return. The service may
+      return fewer than this value.
+    pageToken: A page token, received from a previous
+      ListGitLabRepositoriesRequest` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListGitLabRepositoriesRequest` must match the call that provided the
+      page token.
+    parent: Required. Name of the parent resource.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class CloudbuildProjectsLocationsGithubEnterpriseConfigsCreateRequest(_messages.Message):
@@ -2538,6 +2627,20 @@ class CreateGitLabConfigOperationMetadata(_messages.Message):
   gitlabConfig = _messages.StringField(3)
 
 
+class CreateGitLabConnectedRepositoryRequest(_messages.Message):
+  r"""Request to connect a repository from a connected GitLab host.
+
+  Fields:
+    gitlabConnectedRepository: Required. The GitLab repository to connect.
+    parent: Required. The name of the `GitLabConfig` that adds connected
+      repository. Format:
+      `projects/{project}/locations/{location}/gitLabConfigs/{config}`
+  """
+
+  gitlabConnectedRepository = _messages.MessageField('GitLabConnectedRepository', 1)
+  parent = _messages.StringField(2)
+
+
 class CreateWorkerPoolOperationMetadata(_messages.Message):
   r"""Metadata for the `CreateWorkerPool` operation.
 
@@ -2932,6 +3035,22 @@ class GitLabConfig(_messages.Message):
   webhookKey = _messages.StringField(7)
 
 
+class GitLabConnectedRepository(_messages.Message):
+  r"""GitLabConnectedRepository represents a GitLab connected repository
+  request response.
+
+  Fields:
+    parent: The name of the `GitLabConfig` that added connected repository.
+      Format: `projects/{project}/locations/{location}/gitLabConfigs/{config}`
+    repo: The GitLab repositories to connect.
+    status: Output only. The status of the repo connection request.
+  """
+
+  parent = _messages.StringField(1)
+  repo = _messages.MessageField('GitLabRepositoryId', 2)
+  status = _messages.MessageField('Status', 3)
+
+
 class GitLabEnterpriseConfig(_messages.Message):
   r"""GitLabEnterpriseConfig represents the configuration for a
   GitLabEnterprise integration.
@@ -2968,6 +3087,24 @@ class GitLabEventsConfig(_messages.Message):
   projectNamespace = _messages.StringField(3)
   pullRequest = _messages.MessageField('PullRequestFilter', 4)
   push = _messages.MessageField('PushFilter', 5)
+
+
+class GitLabRepository(_messages.Message):
+  r"""Proto Representing a GitLabRepository
+
+  Fields:
+    browseUri: Link to the browse repo page on the GitLab instance
+    description: Description of the repository
+    displayName: Display name of the repository
+    name: The resource name of the repository
+    repositoryId: Identifier for a repository
+  """
+
+  browseUri = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  repositoryId = _messages.MessageField('GitLabRepositoryId', 5)
 
 
 class GitLabRepositoryId(_messages.Message):
@@ -3442,6 +3579,19 @@ class ListGitLabConfigsResponse(_messages.Message):
   """
 
   gitlabConfigs = _messages.MessageField('GitLabConfig', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListGitLabRepositoriesResponse(_messages.Message):
+  r"""RPC response object returned by the ListGitLabRepositories RPC method.
+
+  Fields:
+    gitlabRepositories: List of GitLab repositories
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  gitlabRepositories = _messages.MessageField('GitLabRepository', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -3942,6 +4092,17 @@ class RemoveBitbucketServerConnectedRepositoryRequest(_messages.Message):
   """
 
   connectedRepository = _messages.MessageField('BitbucketServerRepositoryId', 1)
+
+
+class RemoveGitLabConnectedRepositoryRequest(_messages.Message):
+  r"""RPC request object accepted by RemoveGitLabConnectedRepository RPC
+  method.
+
+  Fields:
+    connectedRepository: The connected repository to remove.
+  """
+
+  connectedRepository = _messages.MessageField('GitLabRepositoryId', 1)
 
 
 class RepoSource(_messages.Message):

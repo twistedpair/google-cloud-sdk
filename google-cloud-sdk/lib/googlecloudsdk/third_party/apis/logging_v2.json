@@ -3813,7 +3813,7 @@
                           "type": "string"
                         },
                         "viewId": {
-                          "description": "Required. The id to use for this view.",
+                          "description": "Required. A client-assigned identifier such as \"my-view\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
                           "location": "query",
                           "type": "string"
                         }
@@ -5297,7 +5297,7 @@
                           "type": "string"
                         },
                         "viewId": {
-                          "description": "Required. The id to use for this view.",
+                          "description": "Required. A client-assigned identifier such as \"my-view\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
                           "location": "query",
                           "type": "string"
                         }
@@ -6588,7 +6588,7 @@
                           "type": "string"
                         },
                         "viewId": {
-                          "description": "Required. The id to use for this view.",
+                          "description": "Required. A client-assigned identifier such as \"my-view\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
                           "location": "query",
                           "type": "string"
                         }
@@ -7844,7 +7844,7 @@
                           "type": "string"
                         },
                         "viewId": {
-                          "description": "Required. The id to use for this view.",
+                          "description": "Required. A client-assigned identifier such as \"my-view\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
                           "location": "query",
                           "type": "string"
                         }
@@ -8652,7 +8652,7 @@
                       "type": "string"
                     },
                     "viewId": {
-                      "description": "Required. The id to use for this view.",
+                      "description": "Required. A client-assigned identifier such as \"my-view\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
                       "location": "query",
                       "type": "string"
                     }
