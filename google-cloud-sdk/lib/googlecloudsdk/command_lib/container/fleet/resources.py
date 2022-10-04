@@ -29,13 +29,13 @@ from googlecloudsdk.command_lib.container.fleet import api_util
 from googlecloudsdk.command_lib.container.fleet import util as cmd_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 
 def PromptForMembership(flag='--membership',
-                        message='Please specify a membership:\n'):
+                        message='Please specify a membership:\n',
+                        cancel=True):
   """Prompt the user for a membership from a list of memberships in the fleet.
 
   This method is referenced by fleet and feature commands as a fallthrough
@@ -44,6 +44,7 @@ def PromptForMembership(flag='--membership',
   Args:
     flag: The name of the membership flag, used in the error message
     message: The message given to the user describing the prompt.
+    cancel: Whether to include a "cancel" option.
 
   Returns:
     The membership specified by the user (str), or None if unable to prompt.
@@ -55,14 +56,16 @@ def PromptForMembership(flag='--membership',
   if console_io.CanPrompt():
     all_memberships, unreachable = api_util.ListMembershipsFull()
     if unreachable:
-      log.status.Print(
-          'Locations {} are currently unavailable.'.format(unreachable))
+      raise exceptions.Error(
+          ('Locations {} are currently unreachable. Please specify '
+           'memberships using `--location` or the full resource name '
+           '(projects/*/locations/*/memberships/*)').format(unreachable))
     if not all_memberships:
       raise exceptions.Error('No Memberships available in the fleet.')
     idx = console_io.PromptChoice(
         MembershipPartialNames(all_memberships),
         message=message,
-        cancel_option=True)
+        cancel_option=cancel)
     return all_memberships[idx] if idx is not None else None
   else:
     raise calliope_exceptions.RequiredArgumentException(
@@ -205,7 +208,7 @@ def SearchMembershipResource(args):
   # Search all memberships for specified membership
   found = []
   for existing_membership in all_memberships:
-    if arg_membership in existing_membership:
+    if arg_membership == util.MembershipShortname(existing_membership):
       found.append(existing_membership)
   if not found:
     raise exceptions.Error(
@@ -254,7 +257,8 @@ def SearchMembershipResourcesPlural(args):
     # Search all memberships for specified membership
     found = []
     for existing_membership in all_memberships:
-      if arg_membership in existing_membership:
+      if arg_membership == util.MembershipShortname(
+          existing_membership) or arg_membership == existing_membership:
         found.append(existing_membership)
     if not found:
       raise exceptions.Error(

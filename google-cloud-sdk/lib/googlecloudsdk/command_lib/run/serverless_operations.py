@@ -14,7 +14,6 @@
 # limitations under the License.
 
 # pylint: disable=raise-missing-from
-
 """Allows you to write surfaces in terms of logical Serverless operations."""
 
 from __future__ import absolute_import
@@ -1074,41 +1073,15 @@ class ServerlessOperations(object):
           aborted_message='aborted')
 
     if repo_to_create:
-      tracker.StartStage(stages.CREATE_REPO)
-      tracker.UpdateHeaderMessage('Creating Container Repository.')
-      artifact_registry.CreateRepository(repo_to_create)
-      tracker.CompleteStage(stages.CREATE_REPO)
+      self._CreateRepository(tracker, repo_to_create)
 
     if build_source is not None:
-      tracker.StartStage(stages.UPLOAD_SOURCE)
-      tracker.UpdateHeaderMessage('Uploading sources.')
-      build_messages = cloudbuild_util.GetMessagesModule()
-      build_config = submit_util.CreateBuildConfig(
-          build_image,
-          False,
-          build_messages,
-          None,
-          None,
-          True,
-          False,
-          build_source,
-          None,
-          None,
-          None,
-          None,
-          None,
-          None,
-          build_pack,
-          hide_logs=True)
-      tracker.CompleteStage(stages.UPLOAD_SOURCE)
-
+      build_messages, build_config = self._UploadSource(tracker, build_image,
+                                                        build_source,
+                                                        build_pack)
       build_op_ref, build_log_url = self._BuildFromSource(
           tracker, build_messages, build_config)
-      client = cloudbuild_util.GetClientInstance()
-      poller = waiter.CloudOperationPoller(client.projects_builds,
-                                           client.operations)
-      operation = waiter.PollUntilDone(poller, build_op_ref)
-      response_dict = encoding.MessageToPyValue(operation.response)
+      response_dict = self._PollUntilBuildCompletes(build_op_ref)
       if response_dict and response_dict['status'] != 'SUCCESS':
         tracker.FailStage(
             stages.BUILD_READY,
@@ -1409,6 +1382,73 @@ class ServerlessOperations(object):
       response = self._client.namespaces_domainmappings.Get(request)
     return domain_mapping.DomainMapping(response, messages)
 
+  def DeployJob(self,
+                job_ref,
+                config_changes,
+                tracker=None,
+                asyn=False,
+                build_image=None,
+                build_pack=None,
+                build_source=None,
+                repo_to_create=None,
+                prefetch=None):
+    """Deploy to create a new Cloud Run Job or to update an existing one.
+
+    Args:
+      job_ref: Resource, the job to create or update.
+      config_changes: list, objects that implement Adjust().
+      tracker: StagedProgressTracker, to report on the progress of releasing.
+      asyn: bool, if True, return without waiting for the job to be updated.
+      build_image: The build image reference to the build.
+      build_pack: The build pack reference to the build.
+      build_source: The build source reference to the build.
+      repo_to_create: Optional
+        googlecloudsdk.command_lib.artifacts.docker_util.DockerRepo defining a
+        repository to be created.
+      prefetch: the job, pre-fetched for DeployJob. `None` indicates a
+        nonexistant job so the job has to be created, else this is for an
+        update.
+
+    Returns:
+      A job.Job object.
+    """
+    if tracker is None:
+      tracker = progress_tracker.NoOpStagedProgressTracker(
+          stages.JobStages(
+              include_build=build_source is not None,
+              include_create_repo=repo_to_create is not None),
+          interruptable=True,
+          aborted_message='aborted')
+
+    if repo_to_create:
+      self._CreateRepository(tracker, repo_to_create)
+
+    if build_source is not None:
+      build_messages, build_config = self._UploadSource(tracker, build_image,
+                                                        build_source,
+                                                        build_pack)
+      build_op_ref, build_log_url = self._BuildFromSource(
+          tracker, build_messages, build_config)
+      response_dict = self._PollUntilBuildCompletes(build_op_ref)
+      if response_dict and response_dict['status'] != 'SUCCESS':
+        tracker.FailStage(
+            stages.BUILD_READY,
+            None,
+            message='Container build failed and '
+            'logs are available at [{build_log_url}].'.format(
+                build_log_url=build_log_url))
+        return
+      else:
+        tracker.CompleteStage(stages.BUILD_READY)
+        image_digest = response_dict['results']['images'][0]['digest']
+        config_changes.append(_AddDigestToImageChange(image_digest))
+
+    is_create = not prefetch
+    if is_create:
+      return self.CreateJob(job_ref, config_changes, tracker, asyn)
+    else:
+      return self.UpdateJob(job_ref, config_changes, tracker, asyn)
+
   def CreateJob(self, job_ref, config_changes, tracker=None, asyn=False):
     """Create a new Cloud Run Job.
 
@@ -1632,8 +1672,7 @@ class ServerlessOperations(object):
         self._client.namespaces_executions.Delete(request)
     except api_exceptions.HttpNotFoundError:
       raise serverless_exceptions.ExecutionNotFoundError(
-          'Execution [{}] could not be found.'.format(
-              execution_ref.Name()))
+          'Execution [{}] could not be found.'.format(execution_ref.Name()))
 
   def CancelExecution(self, execution_ref):
     """Cancel the provided Execution.
@@ -1710,3 +1749,42 @@ class ServerlessOperations(object):
     response = self._client.projects_locations_services.TestIamPermissions(
         request)
     return set(NEEDED_IAM_PERMISSIONS).issubset(set(response.permissions))
+
+  def _CreateRepository(self, tracker, repo_to_create):
+    """Create an artifact repository."""
+    tracker.StartStage(stages.CREATE_REPO)
+    tracker.UpdateHeaderMessage('Creating Container Repository.')
+    artifact_registry.CreateRepository(repo_to_create)
+    tracker.CompleteStage(stages.CREATE_REPO)
+
+  def _UploadSource(self, tracker, build_image, build_source, build_pack):
+    """Upload the provided build source and prepare build config for cloud build."""
+    tracker.StartStage(stages.UPLOAD_SOURCE)
+    tracker.UpdateHeaderMessage('Uploading sources.')
+    build_messages = cloudbuild_util.GetMessagesModule()
+    build_config = submit_util.CreateBuildConfig(
+        build_image,
+        False,  # no_cache
+        build_messages,
+        None,  # substitutions
+        None,  # arg_config
+        True,  # is_specified_source
+        False,  # no_source
+        build_source,
+        None,  # gcs_source_staging_dir
+        None,  # ignore_file
+        None,  # arg_gcs_log_dir
+        None,  # arg_machine_type
+        None,  # arg_disk_size
+        None,  # arg_worker_pool
+        build_pack,
+        hide_logs=True)
+    tracker.CompleteStage(stages.UPLOAD_SOURCE)
+    return build_messages, build_config
+
+  def _PollUntilBuildCompletes(self, build_op_ref):
+    client = cloudbuild_util.GetClientInstance()
+    poller = waiter.CloudOperationPoller(client.projects_builds,
+                                         client.operations)
+    operation = waiter.PollUntilDone(poller, build_op_ref)
+    return encoding.MessageToPyValue(operation.response)

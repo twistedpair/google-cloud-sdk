@@ -188,10 +188,17 @@ def _thread_worker(task_queue, task_output_queue, task_status_queue,
       task_execution_error = exception
       log.error(exception)
       log.debug(exception, exc_info=sys.exc_info())
-      if task_wrapper.task.report_error:
+
+      if isinstance(exception, errors.FatalError):
         task_output = task.Output(
             additional_task_iterators=None,
             messages=[task.Message(topic=task.Topic.FATAL_ERROR, payload={})])
+      elif task_wrapper.task.change_exit_code:
+        task_output = task.Output(
+            additional_task_iterators=None,
+            messages=[
+                task.Message(topic=task.Topic.CHANGE_EXIT_CODE, payload={})
+            ])
       else:
         task_output = None
     # pylint: enable=broad-except
@@ -378,6 +385,7 @@ class TaskGraphExecutor:
     self.thread_exception = None
     self.thread_exception_lock = threading.Lock()
 
+    self._accepting_new_tasks = True
     self._exit_code = 0
 
   def _add_worker_process(self):
@@ -393,7 +401,7 @@ class TaskGraphExecutor:
     and adding them to self._executable_tasks.
     """
 
-    while True:
+    while self._accepting_new_tasks:
       try:
         task_object = next(self._task_iterator)
       except StopIteration:
@@ -441,8 +449,12 @@ class TaskGraphExecutor:
       executed_task_wrapper, task_output = output
       if task_output and task_output.messages:
         for message in task_output.messages:
-          if message.topic == task.Topic.FATAL_ERROR:
+          if message.topic in (task.Topic.CHANGE_EXIT_CODE,
+                               task.Topic.FATAL_ERROR):
             self._exit_code = 1
+            if message.topic == task.Topic.FATAL_ERROR:
+              self._accepting_new_tasks = False
+
       submittable_tasks = self._task_graph.update_from_executed_task(
           executed_task_wrapper, task_output)
 

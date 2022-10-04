@@ -27,7 +27,7 @@ from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
-from googlecloudsdk.third_party.apis import apis_map
+from googlecloudsdk.generated_clients.apis import apis_map
 
 import six
 from six.moves.urllib.parse import urlparse

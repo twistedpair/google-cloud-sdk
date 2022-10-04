@@ -34,6 +34,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as cloud_resources
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import times
 import six
@@ -848,7 +849,6 @@ class UpdateClusterOptions(object):
       enable_master_authorized_networks=None,
       master_authorized_networks=None,
       enable_pod_security_policy=None,
-      enable_binauthz=None,
       enable_vertical_pod_autoscaling=None,
       enable_experimental_vertical_pod_autoscaling=None,
       enable_intra_node_visibility=None,
@@ -924,6 +924,8 @@ class UpdateClusterOptions(object):
       stack_type=None,
       gateway_api=None,
       logging_variant=None,
+      additional_pod_ipv4_ranges=None,
+      removed_additional_pod_ipv4_ranges=None
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -958,7 +960,6 @@ class UpdateClusterOptions(object):
     self.enable_master_authorized_networks = enable_master_authorized_networks
     self.master_authorized_networks = master_authorized_networks
     self.enable_pod_security_policy = enable_pod_security_policy
-    self.enable_binauthz = enable_binauthz
     self.enable_vertical_pod_autoscaling = enable_vertical_pod_autoscaling
     self.enable_experimental_vertical_pod_autoscaling = enable_experimental_vertical_pod_autoscaling
     self.security_profile = security_profile
@@ -1035,6 +1036,8 @@ class UpdateClusterOptions(object):
     self.stack_type = stack_type
     self.gateway_api = gateway_api
     self.logging_variant = logging_variant
+    self.additional_pod_ipv4_ranges = additional_pod_ipv4_ranges
+    self.removed_additional_pod_ipv4_ranges = removed_additional_pod_ipv4_ranges
 
 
 class SetMasterAuthOptions(object):
@@ -1892,6 +1895,10 @@ class APIAdapter(object):
               variant=VariantConfigEnumFromString(self.messages,
                                                   options.logging_variant)))
 
+    if options.enable_cost_allocation:
+      cluster.costManagementConfig = self.messages.CostManagementConfig(
+          enabled=True)
+
     return cluster
 
   def ParseNodeConfig(self, options):
@@ -2093,7 +2100,9 @@ class APIAdapter(object):
                              ('services-secondary-range-name',
                               options.services_secondary_range_name),
                              ('disable-pod-cidr-overprovision',
-                              options.disable_pod_cidr_overprovision)]
+                              options.disable_pod_cidr_overprovision),
+                             ('stack-type', options.stack_type),
+                             ('ipv6-access-type', options.ipv6_access_type)]
     if not options.enable_ip_alias:
       for name, opt in ip_alias_only_options:
         if opt:
@@ -2130,6 +2139,14 @@ class APIAdapter(object):
             disable=options.disable_pod_cidr_overprovision)
       if options.tpu_ipv4_cidr:
         policy.tpuIpv4CidrBlock = options.tpu_ipv4_cidr
+      if options.stack_type is not None:
+        policy.stackType = util.GetCreateStackTypeMapper(
+            self.messages, hidden=True).GetEnumForChoice(options.stack_type)
+      if options.ipv6_access_type is not None:
+        policy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
+            self.messages, hidden=True).GetEnumForChoice(
+                options.ipv6_access_type)
+
       cluster.clusterIpv4Cidr = None
       cluster.ipAllocationPolicy = policy
     elif options.enable_ip_alias is not None:
@@ -2754,11 +2771,6 @@ class APIAdapter(object):
           enabled=options.enable_pod_security_policy)
       update = self.messages.ClusterUpdate(
           desiredPodSecurityPolicyConfig=config)
-    elif options.enable_binauthz is not None:
-      binary_authorization = self.messages.BinaryAuthorization(
-          enabled=options.enable_binauthz)
-      update = self.messages.ClusterUpdate(
-          desiredBinaryAuthorization=binary_authorization)
     elif options.enable_vertical_pod_autoscaling is not None:
       vertical_pod_autoscaling = self.messages.VerticalPodAutoscaling(
           enabled=options.enable_vertical_pod_autoscaling)
@@ -2954,6 +2966,28 @@ class APIAdapter(object):
                                               options.logging_variant))
       update = self.messages.ClusterUpdate(
           desiredNodePoolLoggingConfig=logging_config)
+
+    if options.additional_pod_ipv4_ranges:
+      additional_pod_ranges = self.messages.AdditionalPodRangesConfig(
+          podRangeNames=options.additional_pod_ipv4_ranges)
+      update = self.messages.ClusterUpdate(
+          additionalPodRangesConfig=additional_pod_ranges)
+    if options.removed_additional_pod_ipv4_ranges:
+      removed_additional_pod_ranges = self.messages.AdditionalPodRangesConfig(
+          podRangeNames=options.removed_additional_pod_ipv4_ranges)
+      update = self.messages.ClusterUpdate(
+          removedAdditionalPodRangesConfig=removed_additional_pod_ranges)
+
+    if options.stack_type is not None:
+      update = self.messages.ClusterUpdate(
+          desiredStackType=util.GetUpdateStackTypeMapper(
+              self.messages, hidden=True).GetEnumForChoice(options.stack_type))
+
+    if options.enable_cost_allocation is not None:
+      update = self.messages.ClusterUpdate(
+          desiredCostManagementConfig=self.messages.CostManagementConfig(
+              enabled=options.enable_cost_allocation))
+
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -4215,19 +4249,44 @@ class APIAdapter(object):
     return self.ParseOperation(op.name, cluster_ref.zone)
 
   def ModifyBinaryAuthorization(self, cluster_ref, existing_binauthz_config,
-                                binauthz_evaluation_mode, binauthz_policy):
-    """Updates binauthz evaluation mode and policy."""
+                                enable_binauthz, binauthz_evaluation_mode,
+                                binauthz_policy):
+    """Updates the binary_authorization message."""
+
+    # If the --(no-)binauthz-enabled flag is present the evaluation mode and
+    # policy fields are set to None (if the user is enabling binauthz and
+    # is currently using a platform policy evaluation mode the user is prompted
+    # before performing this action). If either the --binauthz-evaluation-mode
+    # or --binauthz-policy flag are passed the enabled field is set to False and
+    # existing fields not overridden by a flag are preserved.
     if existing_binauthz_config is not None:
       binary_authorization = self.messages.BinaryAuthorization(
           evaluationMode=existing_binauthz_config.evaluationMode,
           policy=existing_binauthz_config.policy)
     else:
       binary_authorization = self.messages.BinaryAuthorization()
-    if binauthz_evaluation_mode is not None:
-      binary_authorization.evaluationMode = self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
-          binauthz_evaluation_mode)
-    if binauthz_policy is not None:
-      binary_authorization.policy = binauthz_policy
+
+    if enable_binauthz is not None:
+      if enable_binauthz and binary_authorization.evaluationMode not in set(
+          [
+              self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
+                  'EVALUATION_MODE_UNSPECIFIED'),
+              self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
+                  'DISABLED'),
+              self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
+                  'PROJECT_SINGLETON_POLICY_ENFORCE'),
+          ]):
+        console_io.PromptContinue(
+            message='This will cause the current version of Binary Authorization to be downgraded (not recommended).',
+            cancel_on_no=True)
+      binary_authorization = self.messages.BinaryAuthorization(
+          enabled=enable_binauthz)
+    else:
+      if binauthz_evaluation_mode is not None:
+        binary_authorization.evaluationMode = self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
+            binauthz_evaluation_mode)
+      if binauthz_policy is not None:
+        binary_authorization.policy = binauthz_policy
     update = self.messages.ClusterUpdate(
         desiredBinaryAuthorization=binary_authorization)
     op = self.client.projects_locations_clusters.Update(
@@ -4504,11 +4563,6 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredCostManagementConfig=self.messages.CostManagementConfig(
               enabled=options.enable_cost_allocation))
-
-    if options.stack_type is not None:
-      update = self.messages.ClusterUpdate(
-          desiredStackType=util.GetUpdateStackTypeMapper(
-              self.messages, hidden=True).GetEnumForChoice(options.stack_type))
 
     if not update:
       # if reached here, it's possible:
@@ -5034,11 +5088,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           desiredDatapathProvider=(
               self.messages.ClusterUpdate.DesiredDatapathProviderValueValuesEnum
               .ADVANCED_DATAPATH))
-
-    if options.stack_type is not None:
-      update = self.messages.ClusterUpdate(
-          desiredStackType=util.GetUpdateStackTypeMapper(
-              self.messages, hidden=True).GetEnumForChoice(options.stack_type))
 
     if not update:
       # if reached here, it's possible:

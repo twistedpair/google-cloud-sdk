@@ -40,7 +40,7 @@ def SetMetadata(messages,
 
   Args:
    messages: module containing the definitions of messages for Cloud Deploy.
-   message: message in googlecloudsdk.third_party.apis.clouddeploy.
+   message: message in googlecloudsdk.generated_clients.apis.clouddeploy.
    resource_type: ResourceType enum, the type of the resource to be updated,
      which is defined in the API proto.
    annotations: dict[str,str], a dict of annotation (key,value) pairs that allow

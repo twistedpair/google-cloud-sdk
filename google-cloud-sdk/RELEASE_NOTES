@@ -5,6 +5,87 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 405.0.0 (2022-10-04)
+
+### Google Cloud CLI
+
+* Fixed issue where revoking impersonated ADC credentials caused a crash.
+* Fixed issue where it was not possible to set a logging configuration when
+  creating a regional backend service in alpha and beta.
+
+### Anthos Multi-Cloud
+
+*   Added `--tags` flag to `gcloud container aws clusters update` to
+    update the tags assigned to control plane replicas.
+*   Added `--clear-tags` flag to `gcloud container aws clusters update`
+    to clear the tags assigned to control plane replicas.
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.9 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard>.
+* Fixed <https://github.com/GoogleCloudPlatform/app-maven-plugin/issues/480>.
+
+###  Artifact Registry
+
+* Automatically creates missing repos for `gcloud beta artifacts settings enable-upgrade-redirection` command.
+
+### Batch
+
+* Promoted `gcloud batch` to GA track.
+
+### Cloud Dataplex
+
+*   Updated `gcloud dataplex tasks create` to support scheduling notebooks.
+
+### Cloud Firestore
+
+* Promoted `gcloud firestore fields ttls` command group to GA.
+
+###  Cloud Spanner
+
+* Promoted `gcloud spanner instance-configs [create|update|delete]` to GA.
+
+### Cloud SQL
+
+* Promoted `--time-zone` flag of `gcloud sql instances create` command to GA.
+* Provided a helpful error message when Cloud SQL Proxy fails to start during `gcloud sql connect` command.
+
+### Cloud Run
+
+* Added `gcloud beta run jobs replace` to deploy a job from yaml.
+
+### Compute Engine
+
+* Added ubuntu-2204 and windows-11-x64-byol options to `--os` flag for:
+  * `gcloud compute images import` in GA,
+  * `gcloud compute instances import` in GA
+  * `gcloud compute machine-images import` in GA
+* Updated `gcloud compute instance-templates create` not to crash if `instantiate-from` value is not specified in `--configure-disk` when using `--source-instance` flag.
+* Promoted `--md5-authentication-key` flag of `gcloud compute routers add-bgp-peer` to GA.
+* Promoted `--md5-authentication-key` and `--clear-md5-authentication-key` flags of `gcloud compute routers update-bgp-peer` to GA.
+
+### Firebase Test Lab
+
+*   Delayed displaying information about the number of devices used until after
+    all executions are created.
+
+### Identity and Access Management
+
+* Fixed an issue that would cause the Google Cloud CLI to crash when using invalid External Account Credentials.
+
+### Kubernetes Engine
+
+*   Added a prompt when passing `--enable-binauthz` to `gcloud container
+    clusters update` that acknowledges the current version of Binary
+    Authorization will be downgraded.
+*   Promoted `--enable-cost-allocation` flag of `gcloud container clusters create` to GA.
+*   Promoted `--enable-cost-allocation` flag of `gcloud container clusters update` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 404.0.0 (2022-09-27)
 
 ### App Engine

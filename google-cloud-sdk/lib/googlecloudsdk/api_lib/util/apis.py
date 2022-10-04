@@ -29,7 +29,7 @@ from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import gapic_util
 from googlecloudsdk.core import properties
-from googlecloudsdk.third_party.apis import apis_map
+from googlecloudsdk.generated_clients.apis import apis_map
 
 import six
 

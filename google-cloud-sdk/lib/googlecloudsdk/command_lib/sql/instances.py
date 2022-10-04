@@ -412,6 +412,9 @@ class _BaseInstances(object):
         sql_messages, args.audit_bucket_path, args.audit_retention_interval,
         args.audit_upload_interval)
 
+    if args.time_zone is not None:
+      settings.timeZone = args.time_zone
+
     # BETA args.
     if _IsBetaOrNewer(release_track):
       settings.userLabels = labels_util.ParseCreateArgs(
@@ -424,8 +427,7 @@ class _BaseInstances(object):
 
     # ALPHA args.
     if _IsAlpha(release_track):
-      if args.time_zone is not None:
-        settings.timeZone = args.time_zone
+      pass
 
     return settings
 

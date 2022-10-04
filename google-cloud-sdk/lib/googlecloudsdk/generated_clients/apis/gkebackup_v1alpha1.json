@@ -1,0 +1,2961 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "gkebackup:v1alpha1",
+  "name": "gkebackup",
+  "canonicalName": "Backup for GKE",
+  "version": "v1alpha1",
+  "revision": "0",
+  "title": "Backup for GKE API",
+  "description": "",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/kubernetes-engine",
+  "protocol": "rest",
+  "rootUrl": "https://gkebackup.googleapis.com/",
+  "mtlsRootUrl": "https://gkebackup.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://gkebackup.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
+  "schemas": {
+    "GoogleLongrunningListOperationsResponse": {
+      "id": "GoogleLongrunningListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleLongrunningOperation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleLongrunningOperation": {
+      "id": "GoogleLongrunningOperation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "GoogleRpcStatus"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "GoogleRpcStatus": {
+      "id": "GoogleRpcStatus",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleLongrunningCancelOperationRequest": {
+      "id": "GoogleLongrunningCancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListBackupPlansResponse": {
+      "id": "ListBackupPlansResponse",
+      "description": "Response for listing BackupPlans.",
+      "type": "object",
+      "properties": {
+        "backupPlans": {
+          "description": "The list of backupPlans.",
+          "type": "array",
+          "items": {
+            "$ref": "BackupPlan"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, it means there is no subsequent page.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "BackupPlan": {
+      "id": "BackupPlan",
+      "description": "BackupPlan resource type Next id: 13",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The full name of the BackupPlan resource. Format: projects\/*\/locations\/*\/backupPlans\/*",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. [Output Only] Server generated global unique identifier of [UUID](https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier) format.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. [Output Only] The timestamp when this BackupPlan resource was created which can be converted to and from [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. [Output Only] The timestamp when this BackupPlan resource was last updated which can be converted to and from [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "description": {
+          "description": "User specified descriptive string for this BackupPlan.",
+          "type": "string"
+        },
+        "cluster": {
+          "description": "Required. Immutable. GCP resource name of the source cluster for this BackupPlan Possible formats: 1. projects\/*\/locations\/*\/clusters\/* 2. projects\/*\/zones\/*\/clusters\/*",
+          "type": "string"
+        },
+        "retentionPolicy": {
+          "description": "RetentionPolicy governs lifecycle of Backups created under this plan.",
+          "$ref": "RetentionPolicy"
+        },
+        "labels": {
+          "description": "A set of custom labels supplied by user.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "backupSchedule": {
+          "description": "Defines scheduled Backup creation under this BackupPlan.",
+          "$ref": "Schedule"
+        },
+        "etag": {
+          "description": "Output only. `etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a backup plan from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform backup plan updates in order to avoid race conditions: An `etag` is returned in the response to `GetBackupPlan`, and systems are expected to put that etag in the request to `UpdateBackupPlan` to ensure that their change will be applied to the same version.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deactivated": {
+          "description": "A flag indicates whether the plan has been deactivated. Setting this field to \u2018True\u2019 locks the plan such that no further updates will be allowed, including the deactivated field. It also prevents new Backups from being created under this plan, both manually or scheduled. Default to \u2018False\u2019.",
+          "type": "boolean"
+        },
+        "backupConfig": {
+          "description": "Defines backup configuration of this BackupPlan.",
+          "$ref": "BackupConfig"
+        }
+      }
+    },
+    "RetentionPolicy": {
+      "id": "RetentionPolicy",
+      "description": "RentionPolicy is an inner message type to define: 1. When to automatically delete Backups created under this BackupPlan 2. A plan level minimum Backup retain days which blocks deletion 3. Lock to disallow any policy updates",
+      "type": "object",
+      "properties": {
+        "backupDeleteLockDays": {
+          "description": "Number of days during which deletion of a Backup created under this BackupPlan will be blocked. Default to 0. This field MUST be an int value between 0-90(inclusive). A Backup created under this BackupPlan will NOT be deletable until it reaches Backup's create_time + backup_delete_lock_days. Updating this field of a BackupPlan does NOT affect existing Backups under it. Backups created AFTER a successful update will automatically pick up the new value.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "backupRetainDays": {
+          "description": "Number of days after which the service will delete a Backup. If specified, a Backup created under this BackupPlan will be automatically deleted after its age reaches create_time + backup_retain_days. If not specified, Backups created under this BackupPlan will NOT be subject to automatic deletion. Updating this field does NOT affect existing Backups under it. Backups created AFTER a successful update will automatically pick up the new value. NOTE: Specifying a backup_retain_days smaller than backup_delete_lock_days at creation\/updating time will be considered as invalid, and the request will be rejected immediately.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "locked": {
+          "description": "A flag denotes that the retention policy of this BackupPlan is locked. If set to True, no further update is allowed on this policy, including the 'locked' field itself. Default to False.",
+          "type": "boolean"
+        }
+      }
+    },
+    "Schedule": {
+      "id": "Schedule",
+      "description": "Schedule, an inner message type defines a cron schedule.",
+      "type": "object",
+      "properties": {
+        "cronSchedule": {
+          "description": "A cron style string schedule on which an operation will be executed.",
+          "type": "string"
+        },
+        "paused": {
+          "description": "A flag to toggle scheduled operation. If set to True, the scheduled operation will be inactive. Default to True.",
+          "type": "boolean"
+        }
+      }
+    },
+    "BackupConfig": {
+      "id": "BackupConfig",
+      "description": "BackupConfig, an inner message type defines the configuration of creating a backup from this BackupPlan",
+      "type": "object",
+      "properties": {
+        "allNamespaces": {
+          "description": "If set to true, backup whole cluster",
+          "type": "boolean"
+        },
+        "selectedNamespaces": {
+          "description": "If set, backup the list of namespaces",
+          "$ref": "Namespaces"
+        },
+        "selectedApplications": {
+          "description": "If set, backup the list of applications",
+          "$ref": "NamespacedNames"
+        },
+        "includeVolumeData": {
+          "description": "A boolean flag specifies whether volume data should be backed up If unset, the default is false",
+          "type": "boolean"
+        },
+        "includeSecrets": {
+          "description": "A boolean flag specifies whether secrets should be backed up If unset, the default is false",
+          "type": "boolean"
+        },
+        "encryptionKey": {
+          "description": "Custom encryption key. For preview, support GCP KMS only.",
+          "$ref": "EncryptionKey"
+        }
+      }
+    },
+    "Namespaces": {
+      "id": "Namespaces",
+      "description": "Namespaces, list of namespaces",
+      "type": "object",
+      "properties": {
+        "namespaces": {
+          "description": "namespaces",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "NamespacedNames": {
+      "id": "NamespacedNames",
+      "description": "NamespacedNames Next id: 2",
+      "type": "object",
+      "properties": {
+        "namespacedNames": {
+          "description": "a list of namespaced names in Kubernetes",
+          "type": "array",
+          "items": {
+            "$ref": "NamespacedName"
+          }
+        }
+      }
+    },
+    "NamespacedName": {
+      "id": "NamespacedName",
+      "description": "NamespacedName Next id: 3",
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "description": "the namespace of the resource in Kubernetes",
+          "type": "string"
+        },
+        "name": {
+          "description": "the name of the resource in Kubernetes",
+          "type": "string"
+        }
+      }
+    },
+    "EncryptionKey": {
+      "id": "EncryptionKey",
+      "description": "Encryption key. For preview, support GCP KMS only.",
+      "type": "object",
+      "properties": {
+        "gcpKmsEncryptionKey": {
+          "description": "Google KMS encryption key in the format: projects\/\/locations\/\/keyRings\/\/cryptoKeys\/",
+          "type": "string"
+        }
+      }
+    },
+    "GetClusterConfigUploadUrlResponse": {
+      "id": "GetClusterConfigUploadUrlResponse",
+      "description": "Response which contains a target location for the backup's cluster configuration.",
+      "type": "object",
+      "properties": {
+        "signedUrl": {
+          "description": "Required. signed_url which will be used by the agent to upload cluster config.",
+          "type": "string"
+        }
+      }
+    },
+    "SubmitClusterConfigRequest": {
+      "id": "SubmitClusterConfigRequest",
+      "description": "Request for submitting cluster configuration once an agent is done with uploading.",
+      "type": "object",
+      "properties": {
+        "resourceCount": {
+          "description": "Required. Total number of resources backed up.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "podCount": {
+          "description": "Total number of pods backed up.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GetClusterConfigDownloadUrlResponse": {
+      "id": "GetClusterConfigDownloadUrlResponse",
+      "description": "Response which contains a source location of the backup's cluster configuration.",
+      "type": "object",
+      "properties": {
+        "signedUrl": {
+          "description": "Required. signed_url which will be used by the agent to download cluster config.",
+          "type": "string"
+        }
+      }
+    },
+    "ListRestoresResponse": {
+      "id": "ListRestoresResponse",
+      "description": "Response of ListingRestoresRequest.",
+      "type": "object",
+      "properties": {
+        "restores": {
+          "description": "The list of restore resources within the parent.",
+          "type": "array",
+          "items": {
+            "$ref": "Restore"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the `ListRestoresRequest` method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Restore": {
+      "id": "Restore",
+      "description": "Restore presents the user's intention and action to perform a restore from a backup. Next id: 18",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The full name of the Restore resource. Format: projects\/{project}\/locations\/{location}\/restores\/{restore}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. [Output Only] Server generated global unique identifier of [UUID](https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier) format.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. [Output Only] The timestamp when this Restore resource was created which can be converted to and from [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. [Output Only] The timestamp when this Restore resource was last updated which can be converted to and from [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "backup": {
+          "description": "Required. Immutable. Full name of the Backup resource this Restore resource used to restore from. Format: projects\/*\/locations\/*\/backupPlans\/*\/backups\/*.",
+          "type": "string"
+        },
+        "cluster": {
+          "description": "Required. Immutable. Name of the cluster this restore targets at. Possible formats: 1. projects\/*\/locations\/*\/clusters\/* 2. projects\/*\/zones\/*\/clusters\/*",
+          "type": "string"
+        },
+        "restoreConfig": {
+          "description": "Required. Immutable. Configuration of the restore.",
+          "$ref": "RestoreConfig"
+        },
+        "labels": {
+          "description": "GCP Labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "state": {
+          "description": "The current state of the restore.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified, default value",
+            "Restore resource has been created",
+            "Restore is in progress",
+            "Restore succeeded",
+            "Restore failed",
+            "Restore is being deleted"
+          ],
+          "enum": [
+            "RESTORE_STATE_UNSPECIFIED",
+            "CREATING",
+            "IN_PROGRESS",
+            "SUCCEEDED",
+            "FAILED",
+            "DELETING"
+          ]
+        },
+        "stateReason": {
+          "description": "Human-readable description of why the restore is in the 'State'.",
+          "type": "string"
+        },
+        "completeTime": {
+          "description": "Output only. End time of the restore process.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "resourcesRestoredCount": {
+          "description": "Number of resources restored in this restore action.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "resourcesExcludedCount": {
+          "description": "Number of resources excluded in this restore action.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "resourcesFailedCount": {
+          "description": "Number of resources failed to be restored in this restore action.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "restoredVolumesCount": {
+          "description": "Number of volumes restored in this restore action.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "etag": {
+          "description": "Output only. `etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a restore from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform restore updates in order to avoid race conditions: An `etag` is returned in the response to `GetRestore`, and systems are expected to put that etag in the request to `UpdateRestore` to ensure that their change will be applied to the same version.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "User specified descriptive string for this Restore.",
+          "type": "string"
+        }
+      }
+    },
+    "RestoreConfig": {
+      "id": "RestoreConfig",
+      "description": "Configuration of a restore. Next id: 9",
+      "type": "object",
+      "properties": {
+        "volumeDataRestorePolicy": {
+          "description": "volume_data_restore_policy specifies the policy to use for volume data restoration. Default to \"NO_VOLUME_DATA_RESTORATION\" if not specified.",
+          "type": "string",
+          "enumDescriptions": [
+            "unspecified, default value",
+            "RESTORE_VOLUME_DATA_FROM_BACKUP means a new PV will be restored using the corresponding volume backup data in the Backup.",
+            "REUSE_VOLUME_HANDLE_FROM_BACKUP means a PV will be pre-provisioned using the volume handle of the original PV in the Backup.",
+            "NO_VOLUME_DATA_RESTORATION means PV will not be restored. The restoration will ONLY restore selected PVCs and expects corresponding Kubernetes controllers to either dynamically provision blank PVs or bind them to pre-provisioned PVs created out-of-band."
+          ],
+          "enum": [
+            "VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED",
+            "RESTORE_VOLUME_DATA_FROM_BACKUP",
+            "REUSE_VOLUME_HANDLE_FROM_BACKUP",
+            "NO_VOLUME_DATA_RESTORATION"
+          ]
+        },
+        "clusterResourceConflictPolicy": {
+          "description": "cluster_resource_conflict_policy specifies the policy to resolve conflicts when restore cluster-scoped resources. Not specifying this field or specifying it to CLUSTER_RESOURCE_CONFLICT_POLICY_UNSPECIFIED but with cluster_resource_restore_scope specified invalidates the request immediately.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "USE_EXISTING_VERSION means to use the existing version in target cluster. No conflict will be reported and the final state of the Restore will not be affected.",
+            "UseBackupVersion will cause the controller to delete the existing version in the target cluster and recreate it from the one in Backup. This is a dangerous option which could cause unintentional data loss if used in-appropriately.(For example, deletion of a CRD causes K8s to delete all CRs of that CRD type)."
+          ],
+          "enum": [
+            "CLUSTER_RESOURCE_CONFLICT_POLICY_UNSPECIFIED",
+            "USE_EXISTING_VERSION",
+            "USE_BACKUP_VERSION"
+          ]
+        },
+        "namespacedResourceRestoreMode": {
+          "description": "namespaced_resource_restore_mode specifies the restoration mode for namespaced resources. Not specifying this field or specifying it to NAMESPACED_RESOURCE_RESTORE_MODE_UNSPECIFIED with namespaced_resource_restore_scope specified immediately invalidates this request.",
+          "type": "string",
+          "enumDescriptions": [
+            "mode unspecified",
+            "DELETE_AND_RESTORE means existing top level resources specified to restore(Top level resources are either Namespaces or ProtectedApplications) AND resources underneath them will be deleted before restoration. Note that this mode could cause data loss as it deletes existing resources from the target cluster. A typical scenario to use this mode in Restore would be rollback a problematic upgrade to the previously saved state.",
+            "FAIL_ON_CONFLICT means the restoration will fail when it encounters a conflict. Existence checks at Namespace or ProtectedApplication level will happen before restoration. If ANY to-be-restored application or namespace exists in the target target cluster, the Restore fails immediately. If conflict happened AFTER successful existence checks, i.e., a to-be-restored resource of a workload\/namespace gets created by another process or manually, a conflict will be reported."
+          ],
+          "enum": [
+            "NAMESPACED_RESOURCE_RESTORE_MODE_UNSPECIFIED",
+            "DELETE_AND_RESTORE",
+            "FAIL_ON_CONFLICT"
+          ]
+        },
+        "clusterResourceRestoreScope": {
+          "description": "cluster_resource_restore_scope specifies the non-namespaced resources to be restored. Not specifying it means NO cluster resource will be restored.",
+          "$ref": "ClusterResourceRestoreScope"
+        },
+        "allNamespaces": {
+          "description": "Restore all namespaced resources in the backup if set to \"True\". Specifying this field to \"False\" invalidates this request.",
+          "type": "boolean"
+        },
+        "selectedNamespaces": {
+          "description": "A list of selected namespaces to restore. Only thoes resources with original namespace as one of the specified in the list will be restored. Note that specifying an empty string(i.e., \"\") in this list does NOT mean to restore cluster(non-namespaced) resources. To restore cluster resources, see \"cluster_resource_restore_scope\".",
+          "$ref": "Namespaces"
+        },
+        "selectedApplications": {
+          "description": "A list of selected applications to restore. Only thoes namespaced resources which belong to one of the listed application will be restored.",
+          "$ref": "NamespacedNames"
+        },
+        "substitutionRules": {
+          "description": "Rules to substitute values in the backed-up K8s resources during restore. An empty list means no substitution will happen. Substitution rules are applied sequentially in the order defined. This order matters, as changes made by a rule may impact the matching logic of the subsequent rule.",
+          "type": "array",
+          "items": {
+            "$ref": "SubstitutionRule"
+          }
+        }
+      }
+    },
+    "ClusterResourceRestoreScope": {
+      "id": "ClusterResourceRestoreScope",
+      "description": "ClusterResourceRestoreScope specifies the selection of non-namespaced resources for restoration.",
+      "type": "object",
+      "properties": {
+        "selectedGroupKinds": {
+          "description": "A list of GroupKinds, a non-namespaces resource MUST be one of the GroupKind specified in the list to be restored. An empty list suggests NO cluster resources will be restored. NOTE: PersistentVolume resources, though are non-namespaced, will be handled separately. See VolumeDataRestorePolicy for details. Specifying PersistentVolume GroupKind in this list does NOT affect whether or not a PersistentVolume and its data will be restored.",
+          "type": "array",
+          "items": {
+            "$ref": "GroupKind"
+          }
+        }
+      }
+    },
+    "GroupKind": {
+      "id": "GroupKind",
+      "description": "GroupKind, a direct map to Kubernetes [GroupKind](https:\/\/godoc.org\/k8s.io\/apimachinery\/pkg\/runtime\/schema#GroupKind)",
+      "type": "object",
+      "properties": {
+        "resourceGroup": {
+          "description": "API group string of a Kubernetes resource for example: \"apps\", \"apiextensions.k8s.io\", \"storage.k8s.io\" Note: use empty string for core API group",
+          "type": "string"
+        },
+        "resourceKind": {
+          "description": "Kind of a Kubernetes resource for example: \"PersistentVolumeClaim\", \"StatefulSet\", \"Deployment\"",
+          "type": "string"
+        }
+      }
+    },
+    "SubstitutionRule": {
+      "id": "SubstitutionRule",
+      "description": "substitution rule",
+      "type": "object",
+      "properties": {
+        "targetNamespaces": {
+          "description": "target_namespaces, specifies a list of namespaces this substitution rule targets at. A to-be-restored resource MUST be in one of the listed namespaces originally to be considered as a substitution candidate. For non-namespaced resources, an empty string(\"\") MUST be specified. If empty, all resources in any namespace(including non-namespaced) will be considered.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "targetGroupKinds": {
+          "description": "target_group_kinds, specifies a list of GroupKinds this substitution rule targets at. A to-be-restored resource MUST be one of the listed GroupKinds to be considered as a substitution candidate. If empty, all resources will be considered. Note that a resource MUST satisfy both the target_namespaces requirement AND the target_group_kinds requirement to be considered as a substitution candidate.",
+          "type": "array",
+          "items": {
+            "$ref": "GroupKind"
+          }
+        },
+        "targetJsonPath": {
+          "description": "Required. target_json_path is the string representation of a JSON Path which leads to the field(s) in the resource's JSON format for substitution. For example: \"{..namespace}\", \"{$.metadata.name}\". An invalid target_json_path will cause the system to ignore this substitution rule.",
+          "type": "string"
+        },
+        "originalValuePattern": {
+          "description": "original_value_pattern is a regex pattern string which will be used to match the JSON field value found from supplied \"target_json_path\". If the found field's value matches the regex pattern, the original value will be substituted with the specified \"new_value\". Otherwise, substitution will not happen. If this field is not specified, any fields found in this resources using \"target_json_path\" will be substituted with the specified \"new_value\". NOTE: empty string is a legit regex pattern, and will be treated the same as any other strings.",
+          "type": "string"
+        },
+        "newValue": {
+          "description": "new_value specifies the desired value in string to substitute to. If unspecified, it is treated as empty string \"\". Empty string is a valid use case for removing existing value.",
+          "type": "string"
+        }
+      }
+    },
+    "ListBackupsResponse": {
+      "id": "ListBackupsResponse",
+      "description": "Response of ListBackupsRequest.",
+      "type": "object",
+      "properties": {
+        "backups": {
+          "description": "The list of restore resources within the parent.",
+          "type": "array",
+          "items": {
+            "$ref": "Backup"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the `ListBackupsResponse` method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        }
+      }
+    },
+    "Backup": {
+      "id": "Backup",
+      "description": "Backup resource Next id: 28",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The fully qualified name of the Backup. projects\/*\/locations\/*\/backupPlans\/*\/backups\/*",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. [Output Only] Server generated global unique identifier of [UUID4](https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier)",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. [Output Only] The timestamp when this Backup resource was created which can be converted to and from [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. [Output Only] The timestamp when this BackupPlan resource was last updated which can be converted to and from [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "manual": {
+          "description": "Output only. manual, a boolean flag suggests whether this Backup resource has been created manually. \"True\" suggests this backup has been created manually, \"False\" suggests this backup has been created automatically from the BackupPlan's schedule.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "labels": {
+          "description": "A set of custom labels supplied by user.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "deleteLockDays": {
+          "description": "delete_lock_days specifies the number of days from the create_time of this Backup before which deletion will be blocked. For automatically created Backup from schedule, this field will be set to the BackupPlan.RetentionPolicy.backup_delete_block_days. Manual creation of a Backup with this field unspecified causes the service to use the value of BackupPlan.RetentionPolicy.backup_delete_block_days. Creation of a Backup with this field set to a value SMALLER than BackupPlan.RetentionPolicy.backup_delete_block_days results in an invalid response from the service. This field MUST be an int value between 0-90(inclusive). This field may only be INCREASED in an Update request, or an invalid response will be returned by the service. Note that this field ONLY applies to Backups with a SUCCEEDED state. Default to 0.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "deleteLockExpireTime": {
+          "description": "Output only. delete_lock_expire_time suggest the timestamp after which the deletion lock will expire. It's an output only field calculated from create_time + delete_lock_days, and will be updated accordingly when a Backup's delete_lock_days field has been updated. Note that this field ONLY applies to Backups with a SUCCEEDED state.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "retainDays": {
+          "description": "retain_days specifies the desired number of days from the create_time of this Backup after which it will be automatically deleted. If not specified or set to 0, it means the Backup will NOT be automatically deleted. For automatically created Backup from schedule, this field will be set to the BackupPlan.RetentionPolicy.backup_retain_days. Manual creation of a Backup with this field unspecified causes the service to use the value of BackupPlan.RetentionPolicy.backup_retain_days. Creation of a Backup with this field set to a value SMALLER than delete_lock_days results in an invalid response from the service. This field may ONLY be increased in an Update request, or an invalid response will be returned by the service immediately. Default to 0.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "retainExpireTime": {
+          "description": "Output only. retain_expire_time suggest the timestamp after which the Backup will be automatically deleted. It's an output only field calculated from create_time + retain_days, and will be updated accordingly when a Backup's retain_days field has been updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "encryptionKey": {
+          "description": "Output only. encryption key, immutable.",
+          "readOnly": true,
+          "$ref": "EncryptionKey"
+        },
+        "allNamespaces": {
+          "description": "Output only. If set to true, all namespaces backup",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "selectedNamespaces": {
+          "description": "Output only. If set, the list of namespaces backed up",
+          "readOnly": true,
+          "$ref": "Namespaces"
+        },
+        "selectedApplications": {
+          "description": "Output only. If set, the list of applications backed up",
+          "readOnly": true,
+          "$ref": "NamespacedNames"
+        },
+        "containsVolumeData": {
+          "description": "Output only. A boolean flag specifies whether volume data has been backed up",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "containsSecrets": {
+          "description": "Output only. A boolean flag specifies whether secrets has been backed up",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "clusterMetadata": {
+          "description": "cluster metadata",
+          "$ref": "ClusterMetadata"
+        },
+        "state": {
+          "description": "Current state of the Backup",
+          "type": "string",
+          "enumDescriptions": [
+            "BACKUP_STATE_UNSPECIFIED",
+            "CREATING",
+            "IN_PROGRESS",
+            "SUCCEEDED",
+            "FAILED",
+            "Backup"
+          ],
+          "enum": [
+            "BACKUP_STATE_UNSPECIFIED",
+            "CREATING",
+            "IN_PROGRESS",
+            "SUCCEEDED",
+            "FAILED",
+            "DELETING"
+          ]
+        },
+        "stateReason": {
+          "description": "Human-readable description of why the backup is in the current 'state'.",
+          "type": "string"
+        },
+        "completeTime": {
+          "description": "Output only. Completion time of the Backup",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "resourceCount": {
+          "description": "Output only. total number of resources backed up",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "volumeCount": {
+          "description": "total number of volumes backed up",
+          "type": "integer",
+          "format": "int32"
+        },
+        "sizeBytes": {
+          "description": "Output only. total size in bytes",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "etag": {
+          "description": "Output only. `etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a backup from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform backup updates in order to avoid race conditions: An `etag` is returned in the response to `GetBackup`, and systems are expected to put that etag in the request to `UpdateBackup` to ensure that their change will be applied to the same version.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "User specified descriptive string for this Backup.",
+          "type": "string"
+        },
+        "podCount": {
+          "description": "Output only. total number of pods backed up.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "clusterConfigSizeBytes": {
+          "description": "Output only. cluster config backup size in bytes.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ClusterMetadata": {
+      "id": "ClusterMetadata",
+      "description": "ClusterMetadata",
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "description": "Output only. source cluster from where the Backup has been created from Possible formats: 1. projects\/*\/locations\/*\/clusters\/* 2. projects\/*\/zones\/*\/clusters\/*",
+          "readOnly": true,
+          "type": "string"
+        },
+        "k8sVersion": {
+          "description": "kubernetes server version",
+          "type": "string"
+        },
+        "backupCrdVersions": {
+          "description": "gke\/anthos backup crd versions",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "gkeVersion": {
+          "description": "gke version",
+          "type": "string"
+        },
+        "anthosVersion": {
+          "description": "anthos version",
+          "type": "string"
+        }
+      }
+    },
+    "ListVolumeBackupsResponse": {
+      "id": "ListVolumeBackupsResponse",
+      "description": "Response of ListVolumeBackupRequest.",
+      "type": "object",
+      "properties": {
+        "volumeBackups": {
+          "description": "The list of VolumeBackups resources within the parent.",
+          "type": "array",
+          "items": {
+            "$ref": "VolumeBackup"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the `ListVolumeBackupsResponse` method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        }
+      }
+    },
+    "VolumeBackup": {
+      "id": "VolumeBackup",
+      "description": "Represent a VolumeBackup Resource as a part of a Backup. Next id: 14",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Full name of the volume backup which should be unique within the Backup. The name will have a format: projects\/*\/locations\/*\/backupPlans\/*\/backups\/*\/volumeBackups\/* The last segment of the name will have a format: 'pvc-'.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. [Output Only] Server generated global unique identifier of [UUID](https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier) format.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. [Output Only] The timestamp when this VolumeBackup resource was created which can be converted to and from [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. [Output Only] The timestamp when this VolumeBackup resource was last updated which can be converted to and from [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "sourcePvc": {
+          "description": "Required. Immutable. The reference of the source PVC that the volume backup is taken from.",
+          "$ref": "NamespacedName"
+        },
+        "volumeBackupHandle": {
+          "description": "An underlying volume backup handle, which uniquely identifies volume backup inside a volume backup repository. This handle doesn't have a unified format and is treated as an opaque string.",
+          "type": "string"
+        },
+        "format": {
+          "description": "Required. Immutable. A volume backup format, like PD, Portable, etc.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value, not specified.",
+            "GCP persistent disk snapshot based volume backup."
+          ],
+          "enum": [
+            "VOLUME_BACKUP_FORMAT_NOT_SPECIFIED",
+            "GCE_PERSISTENT_DISK"
+          ]
+        },
+        "storageBytes": {
+          "description": "The size of the volume backup in the backup storage. For incremental backups this value may dynamically change if one of the previous volume backups was deleted.",
+          "type": "string",
+          "format": "int64"
+        },
+        "diskSizeBytes": {
+          "description": "The minimum size of the disk to which this volume backup can be restored.",
+          "type": "string",
+          "format": "int64"
+        },
+        "completeTime": {
+          "description": "Output only. [Output Only] The timestamp when this VolumeBackup resource was completed in the text format of [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Current state of the volume backup.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value, not specified",
+            "A volume for the backup was identified and backup process is about to start.",
+            "A volume is being snapshotted.",
+            "A volume snapshot is being uploaded.",
+            "A volume backup ready.",
+            "A volume backup failed.",
+            "A volume backup is being deleted."
+          ],
+          "enum": [
+            "VOLUME_BACKUP_STATE_NOT_SPECIFIED",
+            "CREATING",
+            "SNAPSHOTTING",
+            "UPLOADING",
+            "SUCCEEDED",
+            "FAILED",
+            "DELETING"
+          ]
+        },
+        "stateMessage": {
+          "description": "A human readable message explaining why the VolumeBackup is in current state",
+          "type": "string"
+        },
+        "etag": {
+          "description": "Output only. `etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a volume backup from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform volume backup updates in order to avoid race conditions: An `etag` is returned in the response to `GetVolumeBackup', and systems are expected to put that etag in the request to `UpdateVolumeBackup` to ensure that their change will be applied to the same version.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "ListVolumeRestoresResponse": {
+      "id": "ListVolumeRestoresResponse",
+      "description": "Response of ListVolumeRestoresRequest.",
+      "type": "object",
+      "properties": {
+        "volumeRestores": {
+          "description": "The list of VolumeRestores resources within the parent.",
+          "type": "array",
+          "items": {
+            "$ref": "VolumeRestore"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the `ListVolumeRestoresResponse` method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        }
+      }
+    },
+    "VolumeRestore": {
+      "id": "VolumeRestore",
+      "description": "Represents a state of a volume restoration from a backup. Next id: 11",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Full name of the volume restore which should be unique within the Restore. The name will have a format: projects\/*\/locations\/*\/restores\/*\/volumeRestores\/* The last segment of the name will have a format: 'pvc-'.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. [Output Only] Server generated global unique identifier of [UUID](https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier) format.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. [Output Only] The timestamp when this volume restore was started in the text format of [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. [Output Only] The timestamp when this volume restore was last updated in the text format of [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "targetPvc": {
+          "description": "Immutable. The reference of the target PVC to be restored.",
+          "$ref": "NamespacedName"
+        },
+        "volumeBackup": {
+          "description": "Immutable. The full name of the volume backup from which the volume is being restored. Format: projects\/*\/locations\/*\/backupPlans\/*\/backups\/*\/volumeBackups\/*",
+          "type": "string"
+        },
+        "completeTime": {
+          "description": "Output only. [Output Only] The timestamp when this volume restore was completed in the text format of [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Current state of the volume restoration.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value, not specified",
+            "A volume for the restore was identified and restore process is about to start.",
+            "A volume is being restored.",
+            "A volume has been restored.",
+            "A volume restoration failed.",
+            "A volume restoration is being deleted"
+          ],
+          "enum": [
+            "VOLUME_RESTORE_STATE_NOT_SPECIFIED",
+            "CREATING",
+            "RESTORING",
+            "SUCCEEDED",
+            "FAILED",
+            "DELETING"
+          ]
+        },
+        "stateMessage": {
+          "description": "A human readable description of the current state.",
+          "type": "string"
+        },
+        "etag": {
+          "description": "Output only. `etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a volume restore from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform volume restore updates in order to avoid race conditions: An `etag` is returned in the response to `GetVolumeRestore', and systems are expected to put that etag in the request to `UpdateVolumeRestore` to ensure that their change will be applied to the same version.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "SetIamPolicyRequest": {
+      "id": "SetIamPolicyRequest",
+      "description": "Request message for `SetIamPolicy` method.",
+      "type": "object",
+      "properties": {
+        "policy": {
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Cloud Platform services (such as Projects) might reject them.",
+          "$ref": "Policy"
+        },
+        "updateMask": {
+          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only the fields in the mask will be modified. If no mask is provided, the following default mask is used: `paths: \"bindings, etag\"`",
+          "type": "string",
+          "format": "google-fieldmask"
+        }
+      }
+    },
+    "Policy": {
+      "id": "Policy",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Specifies the format of the policy. Valid values are `0`, `1`, and `3`. Requests that specify an invalid value are rejected. Any operation that affects conditional role bindings must specify version `3`. This requirement applies to the following operations: * Getting a policy that includes a conditional role binding * Adding a conditional role binding to a policy * Changing a conditional role binding in a policy * Removing any role binding, with or without a condition, from a policy that includes conditions **Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost. If a policy does not include any conditions, operations on that policy may specify any valid version or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "type": "integer",
+          "format": "int32"
+        },
+        "bindings": {
+          "description": "Associates a list of `members` to a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one member.",
+          "type": "array",
+          "items": {
+            "$ref": "Binding"
+          }
+        },
+        "auditConfigs": {
+          "description": "Specifies cloud audit logging configuration for this policy.",
+          "type": "array",
+          "items": {
+            "$ref": "AuditConfig"
+          }
+        },
+        "etag": {
+          "description": "`etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a policy from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform policy updates in order to avoid race conditions: An `etag` is returned in the response to `getIamPolicy`, and systems are expected to put that etag in the request to `setIamPolicy` to ensure that their change will be applied to the same version of the policy. **Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "Binding": {
+      "id": "Binding",
+      "description": "Associates `members` with a `role`.",
+      "type": "object",
+      "properties": {
+        "role": {
+          "description": "Role that is assigned to `members`. For example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
+          "type": "string"
+        },
+        "members": {
+          "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "condition": {
+          "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "$ref": "Expr"
+        }
+      }
+    },
+    "Expr": {
+      "id": "Expr",
+      "description": "Represents a textual expression in the Common Expression Language (CEL) syntax. CEL is a C-like expression language. The syntax and semantics of CEL are documented at https:\/\/github.com\/google\/cel-spec. Example (Comparison): title: \"Summary size limit\" description: \"Determines if a summary is less than 100 chars\" expression: \"document.summary.size() < 100\" Example (Equality): title: \"Requestor is owner\" description: \"Determines if requestor is the document owner\" expression: \"document.owner == request.auth.claims.email\" Example (Logic): title: \"Public documents\" description: \"Determine whether the document should be publicly visible\" expression: \"document.type != 'private' && document.type != 'internal'\" Example (Data Manipulation): title: \"Notification string\" description: \"Create a notification string with a timestamp.\" expression: \"'New message received at ' + string(document.create_time)\" The exact variables and functions that may be referenced within an expression are determined by the service that evaluates it. See the service documentation for additional information.",
+      "type": "object",
+      "properties": {
+        "expression": {
+          "description": "Textual representation of an expression in Common Expression Language syntax.",
+          "type": "string"
+        },
+        "title": {
+          "description": "Optional. Title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. Description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.",
+          "type": "string"
+        },
+        "location": {
+          "description": "Optional. String indicating the location of the expression for error reporting, e.g. a file name and a position in the file.",
+          "type": "string"
+        }
+      }
+    },
+    "AuditConfig": {
+      "id": "AuditConfig",
+      "description": "Specifies the audit configuration for a service. The configuration determines which permission types are logged, and what identities, if any, are exempted from logging. An AuditConfig must have one or more AuditLogConfigs. If there are AuditConfigs for both `allServices` and a specific service, the union of the two AuditConfigs is used for that service: the log_types specified in each AuditConfig are enabled, and the exempted_members in each AuditLogConfig are exempted. Example Policy with multiple AuditConfigs: { \"audit_configs\": [ { \"service\": \"allServices\", \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\", \"exempted_members\": [ \"user:jose@example.com\" ] }, { \"log_type\": \"DATA_WRITE\" }, { \"log_type\": \"ADMIN_READ\" } ] }, { \"service\": \"sampleservice.googleapis.com\", \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\" }, { \"log_type\": \"DATA_WRITE\", \"exempted_members\": [ \"user:aliya@example.com\" ] } ] } ] } For sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging, and aliya@example.com from DATA_WRITE logging.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "Specifies a service that will be enabled for audit logging. For example, `storage.googleapis.com`, `cloudsql.googleapis.com`. `allServices` is a special value that covers all services.",
+          "type": "string"
+        },
+        "auditLogConfigs": {
+          "description": "The configuration for logging of each type of permission.",
+          "type": "array",
+          "items": {
+            "$ref": "AuditLogConfig"
+          }
+        }
+      }
+    },
+    "AuditLogConfig": {
+      "id": "AuditLogConfig",
+      "description": "Provides the configuration for logging a type of permissions. Example: { \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\", \"exempted_members\": [ \"user:jose@example.com\" ] }, { \"log_type\": \"DATA_WRITE\" } ] } This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from DATA_READ logging.",
+      "type": "object",
+      "properties": {
+        "logType": {
+          "description": "The log type that this config enables.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default case. Should never be this.",
+            "Admin reads. Example: CloudIAM getIamPolicy",
+            "Data writes. Example: CloudSQL Users create",
+            "Data reads. Example: CloudSQL Users list"
+          ],
+          "enum": [
+            "LOG_TYPE_UNSPECIFIED",
+            "ADMIN_READ",
+            "DATA_WRITE",
+            "DATA_READ"
+          ]
+        },
+        "exemptedMembers": {
+          "description": "Specifies the identities that do not cause logging for this type of permission. Follows the same format of Binding.members.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TestIamPermissionsRequest": {
+      "id": "TestIamPermissionsRequest",
+      "description": "Request message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as '*' or 'storage.*') are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TestIamPermissionsResponse": {
+      "id": "TestIamPermissionsResponse",
+      "description": "Response message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "A subset of `TestPermissionsRequest.permissions` that the caller is allowed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "resources": {
+        "locations": {
+          "methods": {
+            "list": {
+              "id": "gkebackup.projects.locations.list",
+              "path": "v1alpha1/{+name}/locations",
+              "flatPath": "v1alpha1/projects/{projectsId}/locations",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ListLocationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists information about the supported locations for this service."
+            },
+            "get": {
+              "id": "gkebackup.projects.locations.get",
+              "path": "v1alpha1/{+name}",
+              "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Location"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets information about a location."
+            }
+          }
+          ,
+          "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "gkebackup.projects.locations.operations.list",
+                  "path": "v1alpha1/{+name}/operations",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "gkebackup.projects.locations.operations.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
+                "delete": {
+                  "id": "gkebackup.projects.locations.operations.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                },
+                "cancel": {
+                  "id": "gkebackup.projects.locations.operations.cancel",
+                  "path": "v1alpha1/{+name}:cancel",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleLongrunningCancelOperationRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                }
+              }
+            },
+            "backupPlans": {
+              "methods": {
+                "list": {
+                  "id": "gkebackup.projects.locations.backupPlans.list",
+                  "path": "v1alpha1/{+parent}/backupPlans",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource name Format: projects\/{project}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "If not specified, a default value will be chosen by the service. Regardless of the page_size value, the response may include a partial list and a caller should only rely on response's next_page_token to determine if there are more instances left to be queried.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous `ListBackupPlans` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListBackupPlan` must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Sort results.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListBackupPlansResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists BackupPlans in a given project and location."
+                },
+                "get": {
+                  "id": "gkebackup.projects.locations.backupPlans.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Fully qualified BackupPlan name. Format: projects\/{project}\/locations\/{location}\/backupPlans\/{backup_plan} The {backup_plan} can either be the user specified backup plan name or the server generated UID for this BackupPlan",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "BackupPlan"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "GetBackupPlan gets details of a single BackupPlan."
+                },
+                "create": {
+                  "id": "gkebackup.projects.locations.backupPlans.create",
+                  "path": "v1alpha1/{+parent}/backupPlans",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent resource container. Format: projects\/{project}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "backupPlanId": {
+                      "description": "Required. The client provided name when a BackupPlan resource is created. The name MUST satisfy ALL requirements listed below: a. be unique within the location to which the BackupPlan is created. b. be 1-63 characters long c. comply with [RFC1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt) . d. matches the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "BackupPlan"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "CreateBackupPlan creates a new BackupPlan in a given project and location."
+                },
+                "patch": {
+                  "id": "gkebackup.projects.locations.backupPlans.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The full name of the BackupPlan resource. Format: projects\/*\/locations\/*\/backupPlans\/*",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the backupPlan resource by this update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "etag": {
+                      "description": "etag, if provided, it must match the server's etag for the update to happen.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "BackupPlan"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "UpdateBackupPlan updates a BackupPlan."
+                },
+                "delete": {
+                  "id": "gkebackup.projects.locations.backupPlans.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Fully qualified BackupPlan name. Format: projects\/{project}\/locations\/{location}\/backupPlans\/{backup_plan} The {backup_plan} can either be the user specified backup plan name or the server generated UID for this BackupPlan",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "etag": {
+                      "description": "etag, if provided, it must match the server's etag for the delete to happen.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "DeleteBackupPlan deletes a single BackupPlan."
+                },
+                "setIamPolicy": {
+                  "id": "gkebackup.projects.locations.backupPlans.setIamPolicy",
+                  "path": "v1alpha1/{+resource}:setIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "gkebackup.projects.locations.backupPlans.getIamPolicy",
+                  "path": "v1alpha1/{+resource}:getIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "gkebackup.projects.locations.backupPlans.testIamPermissions",
+                  "path": "v1alpha1/{+resource}:testIamPermissions",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+              ,
+              "resources": {
+                "backups": {
+                  "methods": {
+                    "getClusterConfigUploadUrl": {
+                      "id": "gkebackup.projects.locations.backupPlans.backups.getClusterConfigUploadUrl",
+                      "path": "v1alpha1/{+backup}:getClusterConfigUploadUrl",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}:getClusterConfigUploadUrl",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "backup": {
+                          "description": "Required. Full name of the Backup resource. Format: projects\/{project}\/locations\/{location}\/backupPlans\/{backup_plan}\/backups\/{backup} The {backup} field can either be the user specified Backup name or the server generated UID for this backup.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+\/backups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "backup"
+                      ],
+                      "response": {
+                        "$ref": "GetClusterConfigUploadUrlResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "GetClusterConfigUploadUrl returns a signed URL which represents a target bucket\/object where the agent will upload the cluster configuration. https:\/\/cloud.google.com\/storage\/docs\/access-control\/signed-urls."
+                    },
+                    "submitClusterConfig": {
+                      "id": "gkebackup.projects.locations.backupPlans.backups.submitClusterConfig",
+                      "path": "v1alpha1/{+backup}:submitClusterConfig",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}:submitClusterConfig",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "backup": {
+                          "description": "Required. Full name of the Backup resource. Format: projects\/{project}\/locations\/{location}\/backupPlans\/{backup_plan}\/backups\/{backup} The {backup} field can either be the user specified Backup name or the server generated UID for this backup.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+\/backups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "backup"
+                      ],
+                      "request": {
+                        "$ref": "SubmitClusterConfigRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "SubmitClusterConfig is called by the cluster agent when it finishes upload."
+                    },
+                    "getClusterConfigDownloadUrl": {
+                      "id": "gkebackup.projects.locations.backupPlans.backups.getClusterConfigDownloadUrl",
+                      "path": "v1alpha1/{+backup}:getClusterConfigDownloadUrl",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}:getClusterConfigDownloadUrl",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "backup": {
+                          "description": "Required. Full name of the Backup resource. Format: projects\/{project}\/locations\/{location}\/backupPlans\/{backup_plan}\/backups\/{backup} The {backup} field can either be the user specified Backup name or the server generated UID for this backup.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+\/backups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "backup"
+                      ],
+                      "response": {
+                        "$ref": "GetClusterConfigDownloadUrlResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "GetClusterConfigDownloadUrl returns a signed URL which represents the backup's cluster configuration which can be used by the cluster agent to download the configuration. https:\/\/cloud.google.com\/storage\/docs\/access-control\/signed-urls."
+                    },
+                    "list": {
+                      "id": "gkebackup.projects.locations.backupPlans.backups.list",
+                      "path": "v1alpha1/{+parent}/backups",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Parent BackupPlan container. Format: projects\/{project}\/locations\/{location}\/backupPlans\/{backup_plan}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "If not specified, a default value will be chosen by the service. Regardless of the page_size value, the response may include a partial list and a caller should only rely on response's next_page_token to determine if there are more instances left to be queried.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Token returned by previous call to `ListBackupsRequest` which specifies the position in the list from where to continue listing the resources.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "List filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Sort results.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListBackupsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "ListBackups lists Backups under a given BackupPlan."
+                    },
+                    "get": {
+                      "id": "gkebackup.projects.locations.backupPlans.backups.get",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Full name of the Backup resource. Format: projects\/{project}\/locations\/{location}\/backupPlans\/{backup_plan}\/backups\/{backup} The {backup} field can either be the user specified Backup name or the server generated UID for this backup.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+\/backups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Backup"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "GetBackup gets details of a Backup."
+                    },
+                    "create": {
+                      "id": "gkebackup.projects.locations.backupPlans.backups.create",
+                      "path": "v1alpha1/{+parent}/backups",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Parent BackupPlan container to create Backup in. Format: projects\/{project}\/locations\/{location}\/backupPlans\/{backup_plan}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "backupId": {
+                          "description": "The client provided name when a Backup resource is created. The name MUST satisfy ALL requirements listed below: a. be unique within the BackupPlan to which the Backup is created. b. be 1-63 characters long c. comply with [RFC1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt) . d. matches the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Backup"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "CreateBackup creates a Backup in the given BackupPlan."
+                    },
+                    "patch": {
+                      "id": "gkebackup.projects.locations.backupPlans.backups.patch",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. The fully qualified name of the Backup. projects\/*\/locations\/*\/backupPlans\/*\/backups\/*",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+\/backups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Fields to be updated.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "etag": {
+                          "description": "etag, if provided, it must match the server's etag for the update to happen.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "Backup"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "UpdateBackup updates details of a Backup."
+                    },
+                    "delete": {
+                      "id": "gkebackup.projects.locations.backupPlans.backups.delete",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the Backup resource. Format: projects\/{project}\/locations\/{location}\/backupPlans\/{backup_plan}\/backups\/{backup} The {backup} field can either be the user specified Backup name or the server generated UID for this backup.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+\/backups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "etag": {
+                          "description": "etag, if provided, it must match the server's etag for the delete to happen.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "force": {
+                          "description": "If set to true, any volumeBackups from this backup will also be deleted. Otherwise, the request will only succeed if the backup has no volumeBackup. (Per API guideline https:\/\/google.aip.dev\/135#cascading-delete)",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "DeleteBackup deletes a single Backup."
+                    },
+                    "setIamPolicy": {
+                      "id": "gkebackup.projects.locations.backupPlans.backups.setIamPolicy",
+                      "path": "v1alpha1/{+resource}:setIamPolicy",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+\/backups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                    },
+                    "getIamPolicy": {
+                      "id": "gkebackup.projects.locations.backupPlans.backups.getIamPolicy",
+                      "path": "v1alpha1/{+resource}:getIamPolicy",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}:getIamPolicy",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+\/backups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                    },
+                    "testIamPermissions": {
+                      "id": "gkebackup.projects.locations.backupPlans.backups.testIamPermissions",
+                      "path": "v1alpha1/{+resource}:testIamPermissions",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}:testIamPermissions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+\/backups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "TestIamPermissionsRequest"
+                      },
+                      "response": {
+                        "$ref": "TestIamPermissionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "volumeBackups": {
+                      "methods": {
+                        "list": {
+                          "id": "gkebackup.projects.locations.backupPlans.backups.volumeBackups.list",
+                          "path": "v1alpha1/{+parent}/volumeBackups",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}/volumeBackups",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. Format: projects\/{project}\/locations\/{location}\/backupPlans\/{backup_plan}\/backups\/{backup} The {backup} field can either be the user specified Backup name or the server generated UID for this backup.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+\/backups\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "If not specified, a default value will be chosen by the service. Regardless of the page_size value, the response may include a partial list and a caller should only rely on response's next_page_token to determine if there are more instances left to be queried.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "Token returned by previous call to ListVolumeBackupsRequest`which specifies the position in the list from where to continue listing the resources.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "List filter.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "orderBy": {
+                              "description": "Sort results.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListVolumeBackupsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "ListVolumeBackups lists VolumeBackups under a given Backup."
+                        },
+                        "get": {
+                          "id": "gkebackup.projects.locations.backupPlans.backups.volumeBackups.get",
+                          "path": "v1alpha1/{+name}",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}/volumeBackups/{volumeBackupsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. Full name of the VolumeBackup resource. Format: projects\/{project}\/locations\/{location}\/backupPlans\/{backup_plan}\/backups\/{backup}\/volumeBackups\/{volume_backup} The {volume_backup} field can either be the user specified Backup name or the server generated UID for this volume backup.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+\/backups\/[^\/]+\/volumeBackups\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "VolumeBackup"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "GetVolumeBackup gets details of a VolumeBackup."
+                        },
+                        "create": {
+                          "id": "gkebackup.projects.locations.backupPlans.backups.volumeBackups.create",
+                          "path": "v1alpha1/{+parent}/volumeBackups",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}/volumeBackups",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The Backup to create VolumeBackup in. Format: projects\/{project}\/locations\/{location}\/backupPlans\/{backup_plan}\/backups\/{backup} The {backup} field can either be the user specified Backup name or the server generated UID for this backup.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+\/backups\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "volumeBackupId": {
+                              "description": "Required. The client provided name when a VolumeBackup resource is created. The name MUST satisfy ALL requirements listed below: a. be unique within the Backup to which the VolumeBackup is created. b. be 1-63 characters long c. comply with [RFC1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt) . d. matches the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "VolumeBackup"
+                          },
+                          "response": {
+                            "$ref": "GoogleLongrunningOperation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "CreateVolumeBackup creates a VolumeBackup under the given Backup."
+                        },
+                        "patch": {
+                          "id": "gkebackup.projects.locations.backupPlans.backups.volumeBackups.patch",
+                          "path": "v1alpha1/{+name}",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}/volumeBackups/{volumeBackupsId}",
+                          "httpMethod": "PATCH",
+                          "parameters": {
+                            "name": {
+                              "description": "Output only. Full name of the volume backup which should be unique within the Backup. The name will have a format: projects\/*\/locations\/*\/backupPlans\/*\/backups\/*\/volumeBackups\/* The last segment of the name will have a format: 'pvc-'.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+\/backups\/[^\/]+\/volumeBackups\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "updateMask": {
+                              "description": "Optional. Field mask is used to specify the fields to be overwritten in the volume backup resource by this update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten. Fields to be updated.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            },
+                            "etag": {
+                              "description": "etag, if provided, it must match the server's etag for the update to happen.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "VolumeBackup"
+                          },
+                          "response": {
+                            "$ref": "GoogleLongrunningOperation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "UpdateVolumeBackup updates the details of a VolumeBackup."
+                        },
+                        "setIamPolicy": {
+                          "id": "gkebackup.projects.locations.backupPlans.backups.volumeBackups.setIamPolicy",
+                          "path": "v1alpha1/{+resource}:setIamPolicy",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}/volumeBackups/{volumeBackupsId}:setIamPolicy",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+\/backups\/[^\/]+\/volumeBackups\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "resource"
+                          ],
+                          "request": {
+                            "$ref": "SetIamPolicyRequest"
+                          },
+                          "response": {
+                            "$ref": "Policy"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                        },
+                        "getIamPolicy": {
+                          "id": "gkebackup.projects.locations.backupPlans.backups.volumeBackups.getIamPolicy",
+                          "path": "v1alpha1/{+resource}:getIamPolicy",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}/volumeBackups/{volumeBackupsId}:getIamPolicy",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+\/backups\/[^\/]+\/volumeBackups\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "options.requestedPolicyVersion": {
+                              "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            }
+                          },
+                          "parameterOrder": [
+                            "resource"
+                          ],
+                          "response": {
+                            "$ref": "Policy"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                        },
+                        "testIamPermissions": {
+                          "id": "gkebackup.projects.locations.backupPlans.backups.volumeBackups.testIamPermissions",
+                          "path": "v1alpha1/{+resource}:testIamPermissions",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}/volumeBackups/{volumeBackupsId}:testIamPermissions",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backupPlans\/[^\/]+\/backups\/[^\/]+\/volumeBackups\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "resource"
+                          ],
+                          "request": {
+                            "$ref": "TestIamPermissionsRequest"
+                          },
+                          "response": {
+                            "$ref": "TestIamPermissionsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "restores": {
+              "methods": {
+                "list": {
+                  "id": "gkebackup.projects.locations.restores.list",
+                  "path": "v1alpha1/{+parent}/restores",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/restores",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent owns the collection of Restore resources. Format: projects\/{project}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "If not specified, a default value will be chosen by the service. Regardless of the page_size value, the response may include a partial list and a caller should only rely on response's next_page_token to determine if there are more instances left to be queried.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Token returned by previous call to `ListRestoresRequest` which specifies the position in the list from where to continue listing the resources.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Sort results.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListRestoresResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "ListRestores lists Restores in a given project and location."
+                },
+                "get": {
+                  "id": "gkebackup.projects.locations.restores.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/restores/{restoresId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the restore resource. Format: projects\/{project}\/locations\/{location}\/restores\/{restore} The {restore} can either be the user specified restore name or the server generated UID for this restore",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/restores\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Restore"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "GetRestore gets details of a single Restore."
+                },
+                "create": {
+                  "id": "gkebackup.projects.locations.restores.create",
+                  "path": "v1alpha1/{+parent}/restores",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/restores",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent resource container. Format: projects\/{project}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "restoreId": {
+                      "description": "Required. The client provided name when a Restore resource is created. The name MUST satisfy ALL requirements listed below: a. be unique within the project to which the restore is created. b. be 1-63 characters long c. comply with [RFC1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt) . d. matches the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Restore"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "CreateRestore creates a new Restore in a given project and location."
+                },
+                "patch": {
+                  "id": "gkebackup.projects.locations.restores.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/restores/{restoresId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The full name of the Restore resource. Format: projects\/{project}\/locations\/{location}\/restores\/{restore}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/restores\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Field mask is used to specify the fields to be overwritten in the Restore resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "etag": {
+                      "description": "etag, if provided, it must match the server's etag for the update to happen.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Restore"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "UpdateRestore updates the parameters of a single Restore."
+                },
+                "delete": {
+                  "id": "gkebackup.projects.locations.restores.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/restores/{restoresId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Full name of the Restore Format: projects\/{project}\/locations\/{location}\/restores\/{restore} The {restore} can either be the user specified restore name or the server generated UID for this restore",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/restores\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "etag": {
+                      "description": "etag, if provided, it must match the server's etag for delete to happen.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "force": {
+                      "description": "If set to true, any volumeRestores from this restore will also be deleted. Otherwise, the request will only succeed if the restore has no volumeRestore. (Per API guideline https:\/\/google.aip.dev\/135#cascading-delete)",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "DeleteRestore deletes a single Restore."
+                },
+                "setIamPolicy": {
+                  "id": "gkebackup.projects.locations.restores.setIamPolicy",
+                  "path": "v1alpha1/{+resource}:setIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/restores/{restoresId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/restores\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "gkebackup.projects.locations.restores.getIamPolicy",
+                  "path": "v1alpha1/{+resource}:getIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/restores/{restoresId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/restores\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "gkebackup.projects.locations.restores.testIamPermissions",
+                  "path": "v1alpha1/{+resource}:testIamPermissions",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/restores/{restoresId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/restores\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+              ,
+              "resources": {
+                "volumeRestores": {
+                  "methods": {
+                    "list": {
+                      "id": "gkebackup.projects.locations.restores.volumeRestores.list",
+                      "path": "v1alpha1/{+parent}/volumeRestores",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/restores/{restoresId}/volumeRestores",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Format: projects\/{project}\/locations\/{location}\/restores\/{restore} The {restore} field can either be the user specified Restore name or the server generated UID for this restore.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/restores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "If not specified, a default value will be chosen by the service. Regardless of the page_size value, the response may include a partial list and a caller should only rely on response's next_page_token to determine if there are more instances left to be queried.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Token returned by previous call to ListVolumeRestoresRequest`which specifies the position in the list from where to continue listing the resources.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "List filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Sort results.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListVolumeRestoresResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "ListVolumeRestores lists VolumeRestores under a given Restore."
+                    },
+                    "get": {
+                      "id": "gkebackup.projects.locations.restores.volumeRestores.get",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/restores/{restoresId}/volumeRestores/{volumeRestoresId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Full name of the VolumeRestore resource. Format: projects\/{project}\/locations\/{location}\/restores\/{restore}\/volumeRestores\/{volume_restore} The {volume_restore} field can either be the user specified VolumeRestore name or the server generated UID for this volume restore.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/restores\/[^\/]+\/volumeRestores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "VolumeRestore"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "GetVolumeRestore gets details of a VolumeRestore."
+                    },
+                    "create": {
+                      "id": "gkebackup.projects.locations.restores.volumeRestores.create",
+                      "path": "v1alpha1/{+parent}/volumeRestores",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/restores/{restoresId}/volumeRestores",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The Restore to create VolumeRestore in. Format: projects\/{project}\/locations\/{location}\/restores\/{restore} The {restore} field can either be the user specified Restore name or the server generated UID for this restore.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/restores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "volumeRestoreId": {
+                          "description": "Required. The client provided name when a VolumeRestore resource is created. The name MUST satisfy ALL requirements listed below: a. be unique within the Restore to which the VolumeRestore is created. b. be 1-63 characters long c. comply with [RFC1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt) . d. matches the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "VolumeRestore"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "CreateVolumeRestore creates a VolumeRestore under the given Restore."
+                    },
+                    "patch": {
+                      "id": "gkebackup.projects.locations.restores.volumeRestores.patch",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/restores/{restoresId}/volumeRestores/{volumeRestoresId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. Full name of the volume restore which should be unique within the Restore. The name will have a format: projects\/*\/locations\/*\/restores\/*\/volumeRestores\/* The last segment of the name will have a format: 'pvc-'.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/restores\/[^\/]+\/volumeRestores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Fields to be updated.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "etag": {
+                          "description": "etag, if provided, it must match the server's etag for the update to happen.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "VolumeRestore"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "UpdateVolumeRestore updates details of a VolumeRestore."
+                    },
+                    "setIamPolicy": {
+                      "id": "gkebackup.projects.locations.restores.volumeRestores.setIamPolicy",
+                      "path": "v1alpha1/{+resource}:setIamPolicy",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/restores/{restoresId}/volumeRestores/{volumeRestoresId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/restores\/[^\/]+\/volumeRestores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                    },
+                    "getIamPolicy": {
+                      "id": "gkebackup.projects.locations.restores.volumeRestores.getIamPolicy",
+                      "path": "v1alpha1/{+resource}:getIamPolicy",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/restores/{restoresId}/volumeRestores/{volumeRestoresId}:getIamPolicy",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/restores\/[^\/]+\/volumeRestores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                    },
+                    "testIamPermissions": {
+                      "id": "gkebackup.projects.locations.restores.volumeRestores.testIamPermissions",
+                      "path": "v1alpha1/{+resource}:testIamPermissions",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/restores/{restoresId}/volumeRestores/{volumeRestoresId}:testIamPermissions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/restores\/[^\/]+\/volumeRestores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "TestIamPermissionsRequest"
+                      },
+                      "response": {
+                        "$ref": "TestIamPermissionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

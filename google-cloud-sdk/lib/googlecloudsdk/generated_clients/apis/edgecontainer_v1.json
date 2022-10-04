@@ -1,0 +1,1721 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "edgecontainer:v1",
+  "name": "edgecontainer",
+  "canonicalName": "Edge Container",
+  "version": "v1",
+  "revision": "0",
+  "title": "Distributed Cloud Edge Container API",
+  "description": "",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/edge-cloud",
+  "protocol": "rest",
+  "rootUrl": "https://edgecontainer.googleapis.com/",
+  "mtlsRootUrl": "https://edgecontainer.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://edgecontainer.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
+  "schemas": {
+    "ListOperationsResponse": {
+      "id": "ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CancelOperationRequest": {
+      "id": "CancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListClustersResponse": {
+      "id": "ListClustersResponse",
+      "description": "List of clusters in a location.",
+      "type": "object",
+      "properties": {
+        "clusters": {
+          "description": "Clusters in the location.",
+          "type": "array",
+          "items": {
+            "$ref": "Cluster"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve next page of results.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Cluster": {
+      "id": "Cluster",
+      "description": "A Google Distributed Cloud Edge Kubernetes cluster.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The resource name of the cluster.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the cluster was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the cluster was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels associated with this resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "fleet": {
+          "description": "Optional. Fleet configuration.",
+          "$ref": "Fleet"
+        },
+        "networking": {
+          "description": "Required. Cluster-wide networking configuration.",
+          "$ref": "ClusterNetworking"
+        },
+        "authorization": {
+          "description": "Required. Immutable. RBAC policy that will be applied and managed by GEC.",
+          "$ref": "Authorization"
+        },
+        "defaultMaxPodsPerNode": {
+          "description": "Optional. The default maximum number of pods per node used if a maximum value is not specified explicitly for a node pool in this cluster. If unspecified, the Kubernetes default value will be used.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "endpoint": {
+          "description": "Output only. The IP address of the Kubernetes API server.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "clusterCaCertificate": {
+          "description": "Output only. The PEM-encoded public certificate of the cluster's CA.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "maintenancePolicy": {
+          "description": "Optional. Cluster-wide maintenance policy configuration.",
+          "$ref": "MaintenancePolicy"
+        }
+      }
+    },
+    "Fleet": {
+      "id": "Fleet",
+      "description": "Fleet related configuration. Fleets are a Google Cloud concept for logically organizing clusters, letting you use and manage multi-cluster capabilities and apply consistent policies across your systems.",
+      "type": "object",
+      "properties": {
+        "project": {
+          "description": "Required. The name of the Fleet host project where this cluster will be registered. Project names are formatted as `projects\/`.",
+          "type": "string"
+        },
+        "membership": {
+          "description": "Output only. The name of the managed Hub Membership resource associated to this cluster. Membership names are formatted as `projects\/\/locations\/global\/membership\/`.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "ClusterNetworking": {
+      "id": "ClusterNetworking",
+      "description": "Cluster-wide networking configuration.",
+      "type": "object",
+      "properties": {
+        "clusterIpv4CidrBlocks": {
+          "description": "Required. All pods in the cluster are assigned an RFC1918 IPv4 address from these blocks. Only a single block is supported. This field cannot be changed after creation.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "servicesIpv4CidrBlocks": {
+          "description": "Required. All services in the cluster are assigned an RFC1918 IPv4 address from these blocks. Only a single block is supported. This field cannot be changed after creation.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Authorization": {
+      "id": "Authorization",
+      "description": "RBAC policy that will be applied and managed by GEC.",
+      "type": "object",
+      "properties": {
+        "adminUsers": {
+          "description": "Required. User that will be granted the cluster-admin role on the cluster, providing full access to the cluster. Currently, this is a singular field, but will be expanded to allow multiple admins in the future.",
+          "$ref": "ClusterUser"
+        }
+      }
+    },
+    "ClusterUser": {
+      "id": "ClusterUser",
+      "description": "A user principal for an RBAC policy.",
+      "type": "object",
+      "properties": {
+        "username": {
+          "description": "Required. An active Google username.",
+          "type": "string"
+        }
+      }
+    },
+    "MaintenancePolicy": {
+      "id": "MaintenancePolicy",
+      "description": "Maintenance policy configuration.",
+      "type": "object",
+      "properties": {
+        "window": {
+          "description": "Specifies the maintenance window in which maintenance may be performed.",
+          "$ref": "MaintenanceWindow"
+        }
+      }
+    },
+    "MaintenanceWindow": {
+      "id": "MaintenanceWindow",
+      "description": "Maintenance window configuration",
+      "type": "object",
+      "properties": {
+        "recurringWindow": {
+          "description": "Configuration of a recurring maintenance window.",
+          "$ref": "RecurringTimeWindow"
+        }
+      }
+    },
+    "RecurringTimeWindow": {
+      "id": "RecurringTimeWindow",
+      "description": "Represents an arbitrary window of time that recurs.",
+      "type": "object",
+      "properties": {
+        "window": {
+          "description": "The window of the first recurrence.",
+          "$ref": "TimeWindow"
+        },
+        "recurrence": {
+          "description": "An RRULE (https:\/\/tools.ietf.org\/html\/rfc5545#section-3.8.5.3) for how this window recurs. They go on for the span of time between the start and end time.",
+          "type": "string"
+        }
+      }
+    },
+    "TimeWindow": {
+      "id": "TimeWindow",
+      "description": "Represents an arbitrary window of time.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "The time that the window first starts.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The time that the window ends. The end time must take place after the start time.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GenerateAccessTokenResponse": {
+      "id": "GenerateAccessTokenResponse",
+      "description": "An access token for a cluster.",
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "description": "Output only. Access token to authenticate to k8s api-server.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "expireTime": {
+          "description": "Output only. Timestamp at which the token will expire.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ListNodePoolsResponse": {
+      "id": "ListNodePoolsResponse",
+      "description": "List of node pools in a cluster.",
+      "type": "object",
+      "properties": {
+        "nodePools": {
+          "description": "Node pools in the cluster.",
+          "type": "array",
+          "items": {
+            "$ref": "NodePool"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve next page of results.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "NodePool": {
+      "id": "NodePool",
+      "description": "A set of Kubernetes nodes in a cluster with common configuration and specification.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The resource name of the node pool.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the node pool was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the node pool was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels associated with this resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "nodeLocation": {
+          "description": "Name of the Google Distributed Cloud Edge zone where this node pool will be created. For example: `us-central1-edge-customer-a`.",
+          "type": "string"
+        },
+        "nodeCount": {
+          "description": "Required. The number of nodes in the pool.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "machineFilter": {
+          "description": "Only machines matching this filter will be allowed to join the node pool. The filtering language accepts strings like \"name=\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+          "type": "string"
+        },
+        "localDiskEncryption": {
+          "description": "Optional. Local disk encryption options. This field is only used when enabling CMEK support.",
+          "$ref": "LocalDiskEncryption"
+        }
+      }
+    },
+    "LocalDiskEncryption": {
+      "id": "LocalDiskEncryption",
+      "description": "Configuration for CMEK support for edge machine local disk encryption.",
+      "type": "object",
+      "properties": {
+        "kmsKey": {
+          "description": "Immutable. The Cloud KMS CryptoKey e.g. projects\/{project}\/locations\/{location}\/keyRings\/{keyRing}\/cryptoKeys\/{cryptoKey} to use for protecting node local disks. If not specified, a Google-managed key will be used instead.",
+          "type": "string"
+        },
+        "kmsKeyActiveVersion": {
+          "description": "Output only. The Cloud KMS CryptoKeyVersion currently in use for protecting node local disks. Only applicable if kms_key is set.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "kmsKeyState": {
+          "description": "Output only. Availability of the Cloud KMS CryptoKey. If not `KEY_AVAILABLE`, then nodes may go offline as they cannot access their local data. This can be caused by a lack of permissions to use the key, or if the key is disabled or deleted.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "The key is available for use, and dependent resources should be accessible.",
+            "The key is unavailable for an unspecified reason. Dependent resources may be inaccessible."
+          ],
+          "enum": [
+            "KMS_KEY_STATE_UNSPECIFIED",
+            "KMS_KEY_STATE_KEY_AVAILABLE",
+            "KMS_KEY_STATE_KEY_UNAVAILABLE"
+          ]
+        },
+        "kmsStatus": {
+          "description": "Output only. Error status returned by Cloud KMS when using this key. This field may be populated only if `kms_key_state` is not `KMS_KEY_STATE_KEY_AVAILABLE`. If populated, this field contains the error status reported by Cloud KMS.",
+          "readOnly": true,
+          "$ref": "Status"
+        }
+      }
+    },
+    "ListMachinesResponse": {
+      "id": "ListMachinesResponse",
+      "description": "List of machines in a site.",
+      "type": "object",
+      "properties": {
+        "machines": {
+          "description": "Machines in the site.",
+          "type": "array",
+          "items": {
+            "$ref": "Machine"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve next page of results.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Machine": {
+      "id": "Machine",
+      "description": "A Google Distributed Cloud Edge machine capable of acting as a Kubernetes node.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The resource name of the machine.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the node pool was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the node pool was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels associated with this resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "hostedNode": {
+          "description": "Canonical resource name of the node that this machine is responsible for hosting e.g. projects\/{project}\/locations\/{location}\/clusters\/{cluster_id}\/nodePools\/{pool_id}\/{node}, Or empty if the machine is not assigned to assume the role of a node.",
+          "type": "string"
+        },
+        "zone": {
+          "description": "The Google Distributed Cloud Edge zone of this machine.",
+          "type": "string"
+        },
+        "disabled": {
+          "description": "Output only. Whether the machine is disabled. If disabled, the machine is unable to enter service.",
+          "readOnly": true,
+          "type": "boolean"
+        }
+      }
+    },
+    "ListVpnConnectionsResponse": {
+      "id": "ListVpnConnectionsResponse",
+      "description": "List of VPN connections in a location.",
+      "type": "object",
+      "properties": {
+        "vpnConnections": {
+          "description": "VpnConnections in the location.",
+          "type": "array",
+          "items": {
+            "$ref": "VpnConnection"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve next page of results.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "VpnConnection": {
+      "id": "VpnConnection",
+      "description": "A VPN connection .",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The resource name of VPN connection",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the VPN connection was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the VPN connection was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels associated with this resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "natGatewayIp": {
+          "description": "NAT gateway IP, or WAN IP address. If a customer has multiple NAT IPs, the customer needs to configure NAT such that only one external IP maps to the GMEC Anthos cluster. This is empty if NAT is not used.",
+          "type": "string"
+        },
+        "bgpRoutingMode": {
+          "description": "Dynamic routing mode of the VPC network, `regional` or `global`.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown.",
+            "Regional mode.",
+            "Global mode."
+          ],
+          "enum": [
+            "BGP_ROUTING_MODE_UNSPECIFIED",
+            "REGIONAL",
+            "GLOBAL"
+          ]
+        },
+        "cluster": {
+          "description": "The canonical Cluster name to connect to. It is in the form of projects\/{project}\/locations\/{location}\/clusters\/{cluster}.",
+          "type": "string"
+        },
+        "vpc": {
+          "description": "The network ID of VPC to connect to.",
+          "type": "string"
+        },
+        "vpcProject": {
+          "description": "Optional. Project detail of the VPC network. Required if VPC is in a different project than the cluster project.",
+          "$ref": "VpcProject"
+        },
+        "enableHighAvailability": {
+          "description": "Whether this VPN connection has HA enabled on cluster side. If enabled, when creating VPN connection we will attempt to use 2 ANG floating IPs.",
+          "type": "boolean"
+        },
+        "details": {
+          "description": "Output only. The created connection details.",
+          "readOnly": true,
+          "$ref": "Details"
+        }
+      }
+    },
+    "VpcProject": {
+      "id": "VpcProject",
+      "description": "Project detail of the VPC network.",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "description": "The project of the VPC to connect to. If not specified, it is the same as the cluster project.",
+          "type": "string"
+        },
+        "serviceAccount": {
+          "description": "Optional. The service account in the VPC project configured by user. It is used to create\/delete Cloud Router and Cloud HA VPNs for VPN connection. If this SA is changed during\/after a VPN connection is created, you need to remove the Cloud Router and Cloud VPN resources in |project_id|.",
+          "type": "string"
+        }
+      }
+    },
+    "Details": {
+      "id": "Details",
+      "description": "The created connection details.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "The state of this connection.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown.",
+            "Connected.",
+            "Still connecting.",
+            "Error occurred."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "STATE_CONNECTED",
+            "STATE_CONNECTING",
+            "STATE_ERROR"
+          ]
+        },
+        "error": {
+          "description": "The error message. This is only populated when state=ERROR.",
+          "type": "string"
+        },
+        "cloudRouter": {
+          "description": "The Cloud Router info.",
+          "$ref": "CloudRouter"
+        },
+        "cloudVpns": {
+          "description": "Each connection has multiple Cloud VPN gateways.",
+          "type": "array",
+          "items": {
+            "$ref": "CloudVpn"
+          }
+        }
+      }
+    },
+    "CloudRouter": {
+      "id": "CloudRouter",
+      "description": "The Cloud Router info.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The created Cloud Router name.",
+          "type": "string"
+        }
+      }
+    },
+    "CloudVpn": {
+      "id": "CloudVpn",
+      "description": "The Cloud VPN info.",
+      "type": "object",
+      "properties": {
+        "gateway": {
+          "description": "The created Cloud VPN gateway name.",
+          "type": "string"
+        }
+      }
+    },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Long-running operation metadata for Edge Container API methods.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "The time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The time the operation finished running.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Server-defined resource path for the target of the operation.",
+          "type": "string"
+        },
+        "verb": {
+          "description": "The verb executed by the operation.",
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Human-readable status of the operation, if any.",
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "API version used to start the operation.",
+          "type": "string"
+        }
+      }
+    },
+    "LocationMetadata": {
+      "id": "LocationMetadata",
+      "description": "Metadata for a given google.cloud.location.Location.",
+      "type": "object",
+      "properties": {
+        "availableZones": {
+          "description": "The set of available Google Distributed Cloud Edge zones in the location. The map is keyed by the lowercase ID of each zone.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ZoneMetadata"
+          }
+        }
+      }
+    },
+    "ZoneMetadata": {
+      "id": "ZoneMetadata",
+      "description": "A Google Distributed Cloud Edge zone where edge machines are located.",
+      "type": "object",
+      "properties": {
+        "quota": {
+          "description": "Quota for resources in this zone.",
+          "type": "array",
+          "items": {
+            "$ref": "Quota"
+          }
+        }
+      }
+    },
+    "Quota": {
+      "id": "Quota",
+      "description": "Represents quota for Edge Container resources.",
+      "type": "object",
+      "properties": {
+        "metric": {
+          "description": "Name of the quota metric.",
+          "type": "string"
+        },
+        "limit": {
+          "description": "Quota limit for this metric.",
+          "type": "number",
+          "format": "double"
+        },
+        "usage": {
+          "description": "Current usage of this metric.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "resources": {
+        "locations": {
+          "methods": {
+            "list": {
+              "id": "edgecontainer.projects.locations.list",
+              "path": "v1/{+name}/locations",
+              "flatPath": "v1/projects/{projectsId}/locations",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ListLocationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists information about the supported locations for this service."
+            },
+            "get": {
+              "id": "edgecontainer.projects.locations.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Location"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets information about a location."
+            }
+          }
+          ,
+          "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "edgecontainer.projects.locations.operations.list",
+                  "path": "v1/{+name}/operations",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "edgecontainer.projects.locations.operations.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
+                "delete": {
+                  "id": "edgecontainer.projects.locations.operations.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                },
+                "cancel": {
+                  "id": "edgecontainer.projects.locations.operations.cancel",
+                  "path": "v1/{+name}:cancel",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CancelOperationRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                }
+              }
+            },
+            "clusters": {
+              "methods": {
+                "list": {
+                  "id": "edgecontainer.projects.locations.clusters.list",
+                  "path": "v1/{+parent}/clusters",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent location, which owns this collection of clusters.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of resources to list.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token received from previous list request. A page token received from previous list request.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Only resources matching this filter will be listed.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Specifies the order in which resources will be listed.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListClustersResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Clusters in a given project and location."
+                },
+                "get": {
+                  "id": "edgecontainer.projects.locations.clusters.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the cluster.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Cluster"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single Cluster."
+                },
+                "create": {
+                  "id": "edgecontainer.projects.locations.clusters.create",
+                  "path": "v1/{+parent}/clusters",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent location where this cluster will be created.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clusterId": {
+                      "description": "Required. A client-specified unique identifier for the cluster.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if `request_id` is provided.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Cluster"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new Cluster in a given project and location."
+                },
+                "patch": {
+                  "id": "edgecontainer.projects.locations.clusters.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the cluster.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Field mask is used to specify the fields to be overwritten in the Cluster resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "requestId": {
+                      "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if `request_id` is provided.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Cluster"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single Cluster."
+                },
+                "delete": {
+                  "id": "edgecontainer.projects.locations.clusters.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the cluster.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if `request_id` is provided.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single Cluster."
+                },
+                "generateAccessToken": {
+                  "id": "edgecontainer.projects.locations.clusters.generateAccessToken",
+                  "path": "v1/{+cluster}:generateAccessToken",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:generateAccessToken",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "cluster": {
+                      "description": "Required. The resource name of the cluster.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "cluster"
+                  ],
+                  "response": {
+                    "$ref": "GenerateAccessTokenResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Generates an access token for a Cluster."
+                }
+              }
+              ,
+              "resources": {
+                "nodePools": {
+                  "methods": {
+                    "list": {
+                      "id": "edgecontainer.projects.locations.clusters.nodePools.list",
+                      "path": "v1/{+parent}/nodePools",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent cluster, which owns this collection of node pools.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of resources to list.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token received from previous list request.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Only resources matching this filter will be listed.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Specifies the order in which resources will be listed.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListNodePoolsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists NodePools in a given project and location."
+                    },
+                    "get": {
+                      "id": "edgecontainer.projects.locations.clusters.nodePools.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the node pool.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "NodePool"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single NodePool."
+                    },
+                    "create": {
+                      "id": "edgecontainer.projects.locations.clusters.nodePools.create",
+                      "path": "v1/{+parent}/nodePools",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent cluster where this node pool will be created.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "nodePoolId": {
+                          "description": "Required. A client-specified unique identifier for the node pool.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if `request_id` is provided.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "NodePool"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new NodePool in a given project and location."
+                    },
+                    "patch": {
+                      "id": "edgecontainer.projects.locations.clusters.nodePools.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the node pool.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Field mask is used to specify the fields to be overwritten in the NodePool resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "requestId": {
+                          "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if `request_id` is provided.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "NodePool"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the parameters of a single NodePool."
+                    },
+                    "delete": {
+                      "id": "edgecontainer.projects.locations.clusters.nodePools.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the node pool.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if `request_id` is provided.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a single NodePool."
+                    }
+                  }
+                }
+              }
+            },
+            "machines": {
+              "methods": {
+                "list": {
+                  "id": "edgecontainer.projects.locations.machines.list",
+                  "path": "v1/{+parent}/machines",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/machines",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent site, which owns this collection of machines.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of resources to list.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token received from previous list request.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Only resources matching this filter will be listed.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Specifies the order in which resources will be listed.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListMachinesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Machines in a given project and location."
+                },
+                "get": {
+                  "id": "edgecontainer.projects.locations.machines.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/machines/{machinesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the machine.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/machines\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Machine"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single Machine."
+                }
+              }
+            },
+            "vpnConnections": {
+              "methods": {
+                "list": {
+                  "id": "edgecontainer.projects.locations.vpnConnections.list",
+                  "path": "v1/{+parent}/vpnConnections",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vpnConnections",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent location, which owns this collection of VPN connections.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of resources to list.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token received from previous list request.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Only resources matching this filter will be listed.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Specifies the order in which resources will be listed.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListVpnConnectionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists VPN connections in a given project and location."
+                },
+                "get": {
+                  "id": "edgecontainer.projects.locations.vpnConnections.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vpnConnections/{vpnConnectionsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the vpn connection.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vpnConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "VpnConnection"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single VPN connection."
+                },
+                "create": {
+                  "id": "edgecontainer.projects.locations.vpnConnections.create",
+                  "path": "v1/{+parent}/vpnConnections",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vpnConnections",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent location where this vpn connection will be created.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "vpnConnectionId": {
+                      "description": "Required. The VPN connection identifier.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if `request_id` is provided.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "VpnConnection"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new VPN connection in a given project and location."
+                },
+                "delete": {
+                  "id": "edgecontainer.projects.locations.vpnConnections.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vpnConnections/{vpnConnectionsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the vpn connection.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vpnConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if `request_id` is provided.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single VPN connection."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

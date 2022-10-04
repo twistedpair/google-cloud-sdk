@@ -1,0 +1,318 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "eventarcpublishing:v1",
+  "name": "eventarcpublishing",
+  "canonicalName": "Eventarcpublishing",
+  "version": "v1",
+  "revision": "0",
+  "title": "Eventarc Publishing API",
+  "description": "",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/eventarc",
+  "protocol": "rest",
+  "rootUrl": "https://eventarcpublishing.googleapis.com/",
+  "mtlsRootUrl": "https://eventarcpublishing.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://eventarcpublishing.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
+  "schemas": {
+    "GoogleCloudEventarcPublishingV1PublishChannelConnectionEventsRequest": {
+      "id": "GoogleCloudEventarcPublishingV1PublishChannelConnectionEventsRequest",
+      "description": "The request message for the PublishChannelConnectionEvents method.",
+      "type": "object",
+      "properties": {
+        "events": {
+          "description": "The CloudEvents v1.0 events to publish. No other types are allowed.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "GoogleCloudEventarcPublishingV1PublishChannelConnectionEventsResponse": {
+      "id": "GoogleCloudEventarcPublishingV1PublishChannelConnectionEventsResponse",
+      "description": "The response message for the PublishChannelConnectionEvents method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudEventarcPublishingV1PublishEventsRequest": {
+      "id": "GoogleCloudEventarcPublishingV1PublishEventsRequest",
+      "description": "The request message for the PublishEvents method.",
+      "type": "object",
+      "properties": {
+        "events": {
+          "description": "The CloudEvents v1.0 events to publish. No other types are allowed.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        },
+        "textEvents": {
+          "description": "The text representation of events to publish. CloudEvent v1.0 in JSON format is the only allowed type. Refer to https:\/\/github.com\/cloudevents\/spec\/blob\/v1.0.2\/cloudevents\/formats\/json-format.md for specification.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudEventarcPublishingV1PublishEventsResponse": {
+      "id": "GoogleCloudEventarcPublishingV1PublishEventsResponse",
+      "description": "The response message for the PublishEvents method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "IoCloudeventsV1CloudEvent": {
+      "id": "IoCloudeventsV1CloudEvent",
+      "description": "-- CloudEvent Context Attributes",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Required Attributes",
+          "type": "string"
+        },
+        "source": {
+          "description": "URI-reference",
+          "type": "string"
+        },
+        "specVersion": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "attributes": {
+          "description": "Optional & Extension Attributes",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "IoCloudeventsV1CloudEventCloudEventAttributeValue"
+          }
+        },
+        "binaryData": {
+          "type": "string",
+          "format": "byte"
+        },
+        "textData": {
+          "type": "string"
+        },
+        "protoData": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "IoCloudeventsV1CloudEventCloudEventAttributeValue": {
+      "id": "IoCloudeventsV1CloudEventCloudEventAttributeValue",
+      "type": "object",
+      "properties": {
+        "ceBoolean": {
+          "type": "boolean"
+        },
+        "ceInteger": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ceString": {
+          "type": "string"
+        },
+        "ceBytes": {
+          "type": "string",
+          "format": "byte"
+        },
+        "ceUri": {
+          "type": "string"
+        },
+        "ceUriRef": {
+          "type": "string"
+        },
+        "ceTimestamp": {
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "resources": {
+        "locations": {
+          "resources": {
+            "channelConnections": {
+              "methods": {
+                "publishEvents": {
+                  "id": "eventarcpublishing.projects.locations.channelConnections.publishEvents",
+                  "path": "v1/{+channelConnection}:publishEvents",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/channelConnections/{channelConnectionsId}:publishEvents",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "channelConnection": {
+                      "description": "The channel_connection that the events are published from. For example: `projects\/{partner_project_id}\/locations\/{location}\/channelConnections\/{channel_connection_id}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/channelConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "channelConnection"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudEventarcPublishingV1PublishChannelConnectionEventsRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudEventarcPublishingV1PublishChannelConnectionEventsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Publish events to a ChannelConnection in a partner's project."
+                }
+              }
+            },
+            "channels": {
+              "methods": {
+                "publishEvents": {
+                  "id": "eventarcpublishing.projects.locations.channels.publishEvents",
+                  "path": "v1/{+channel}:publishEvents",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/channels/{channelsId}:publishEvents",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "channel": {
+                      "description": "The full name of the channel to publish to. For example: `projects\/{project}\/locations\/{location}\/channels\/{channel-id}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/channels\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "channel"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudEventarcPublishingV1PublishEventsRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudEventarcPublishingV1PublishEventsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Publish events to a subscriber's channel."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

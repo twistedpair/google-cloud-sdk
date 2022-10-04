@@ -2321,11 +2321,11 @@ def AddExecuteNowFlag(parser):
       help='Execute the job immediately after creation.')
 
 
-def AddSourceAndImageFlags(parser):
+def AddSourceAndImageFlags(parser, image='gcr.io/cloudrun/hello:latest'):
   """Add deploy source flags, an image or a source for build."""
   group = parser.add_mutually_exclusive_group()
 
-  AddImageArg(group, required=False)
+  AddImageArg(group, required=False, image=image)
   group.add_argument(
       '--source',
       help='The location of the source to build. If a Dockerfile is present in '

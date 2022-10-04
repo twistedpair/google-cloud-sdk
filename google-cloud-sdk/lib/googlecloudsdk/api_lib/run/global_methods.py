@@ -146,7 +146,7 @@ def ListClusters(location=None, project=None):
       property.
 
   Returns:
-    List of googlecloudsdk.third_party.apis.container.CONTAINER_API_VERSION
+    List of googlecloudsdk.generated_clients.apis.container.CONTAINER_API_VERSION
     import container_CONTAINER_API_VERSION_messages.Cluster objects
   """
   container_api = container_api_adapter.NewAPIAdapter(CONTAINER_API_VERSION)

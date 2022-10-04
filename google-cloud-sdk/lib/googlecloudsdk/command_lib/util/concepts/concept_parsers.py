@@ -61,7 +61,8 @@ class ConceptParser(object):
 
   @classmethod
   def ForResource(cls, name, resource_spec, group_help, required=False,
-                  flag_name_overrides=None, plural=False, prefixes=False,
+                  hidden=False, flag_name_overrides=None,
+                  plural=False, prefixes=False,
                   group=None, command_level_fallthroughs=None):
     """Constructs a ConceptParser for a single resource argument.
 
@@ -74,6 +75,7 @@ class ConceptParser(object):
       group_help: str, the help text for the entire arg group.
       required: bool, whether the main argument should be required for the
         command.
+      hidden: bool, whether or not the resource is hidden.
       flag_name_overrides: {str: str}, dict of attribute names to the desired
         flag name. To remove a flag altogether, use '' as its rename value.
       plural: bool, True if the resource will be parsed as a list, False
@@ -99,7 +101,8 @@ class ConceptParser(object):
         flag_name_overrides=flag_name_overrides or {},
         plural=plural,
         prefixes=prefixes,
-        group=group)
+        group=group,
+        hidden=hidden)
     fallthroughs_map = {}
     UpdateFallthroughsMap(fallthroughs_map, name, command_level_fallthroughs)
     for attribute_name, fallthroughs in six.iteritems(

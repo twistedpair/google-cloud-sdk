@@ -19,9 +19,8 @@ from __future__ import unicode_literals
 
 import argparse
 
-from googlecloudsdk.command_lib.container.fleet import api_util
-from googlecloudsdk.command_lib.container.fleet import resources
 from googlecloudsdk.command_lib.container.fleet.features import base
+from googlecloudsdk.command_lib.projects import util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.console import console_io
 
@@ -33,6 +32,19 @@ ENFORCEMENT_ACTION_LABEL_MAP = {
     'ENFORCEMENT_ACTION_WARN': 'WARN'
 }
 
+INSTALL_SPEC_LABEL_MAP = {
+    'INSTALL_SPEC_ENABLED': 'ENABLED',
+    'INSTALL_SPEC_NOT_INSTALLED': 'NOT_INSTALLED',
+    'INSTALL_SPEC_SUSPENDED': 'SUSPENDED',
+    'INSTALL_SPEC_UNSPECIFIED': 'UNSPECIFIED',
+}
+
+
+def get_install_spec_label(install_spec):
+  if install_spec in INSTALL_SPEC_LABEL_MAP:
+    return INSTALL_SPEC_LABEL_MAP[install_spec]
+  return INSTALL_SPEC_LABEL_MAP['INSTALL_SPEC_UNSPECIFIED']
+
 
 def get_enforcement_action_label(enforcement_action):
   if enforcement_action in ENFORCEMENT_ACTION_LABEL_MAP:
@@ -43,7 +55,7 @@ def get_enforcement_action_label(enforcement_action):
 def select_memberships(args):
   """Returns a list of memberships to which to apply the command, given the arguments.
 
-  This will be deleted and replaced with select_memberships_full when
+  This will be deleted and replaced with resources.ParseMemberships when
   regionalization is ready.
 
   Args:
@@ -77,41 +89,6 @@ def select_memberships(args):
   return memberships
 
 
-def select_memberships_full(args):
-  """Returns a list of memberships to which to apply the command, given the arguments.
-
-  Args:
-    args: object containing arguments passed as flags with the command
-
-  Returns:
-    memberships: A list of membership name strings
-  """
-  memberships = []
-  all_memberships, _ = api_util.ListMembershipsFull()
-  if not all_memberships:
-    raise exceptions.Error('A membership is required for this command.')
-
-  if args.all_memberships:
-    memberships = all_memberships
-  elif args.memberships:
-    memberships = resources.PluralMembershipsResourceNames(args)
-  else:
-    membership = resources.PromptForMembership(flag='memberships')
-    if membership:
-      memberships.append(membership)
-
-  if not memberships:
-    raise exceptions.Error('A membership is required for this command.')
-
-  for membership in memberships:
-    if membership not in all_memberships:
-      raise exceptions.Error('Membership {} not found.'.format(membership))
-
-  if len(resources.GetMembershipProjects(memberships)) > 1:
-    raise base.CrossProjectError(resources.GetMembershipProjects(memberships))
-  return memberships
-
-
 def set_poco_hub_config_parameters_from_args(args, messages):
   """Returns a Policy Controller Hub Config object with parameters as passed in the command flags.
 
@@ -142,6 +119,27 @@ def validate_args(args):
     raise exceptions.Error(
         'Both exemptable-namespaces and no-exemptable-namespaces ' +
         'cannot be used in the same command')
+
+
+def convert_membership_from_project_id_to_number(membership_path):
+  """Converts the passed in membership path with project IDs to membership path with project numbers.
+
+  Args:
+    membership_path: membership path string in the form of
+      projects/{project_id}/locations/{location}/memberships/{membership_id}
+
+  Returns:
+    membership_path: membership path string in the form of
+      projects/{project_number}/locations/{location}/memberships/{membership_id}
+  """
+  splits = membership_path.split('/')
+  if len(splits) != 6 or splits[0] != 'projects' or splits[
+      2] != 'locations' or splits[4] != 'memberships':
+    raise exceptions.Error(
+        '{} is not a valid membership path'.format(membership_path))
+  project_number = util.GetProjectNumber(splits[1])
+  return 'projects/{}/locations/{}/memberships/{}'.format(
+      project_number, splits[3], splits[5])
 
 
 def merge_args_with_poco_hub_config(args, poco_hub_config, messages):

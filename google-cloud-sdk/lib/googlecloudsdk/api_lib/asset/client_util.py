@@ -968,6 +968,20 @@ class OrgPolicyAnalyzerClient(object):
         current_token_attribute='pageToken',
         next_token_attribute='nextPageToken')
 
+  def AnalyzeOrgPolicyGovernedAssets(self, args):
+    """Calls AnalyzeOrgPolicyGovernedAssets method."""
+    request = self.message_module.CloudassetAnalyzeOrgPolicyGovernedAssetsRequest(
+        scope=args.scope, constraint=args.constraint)
+    return list_pager.YieldFromList(
+        self.service,
+        request,
+        method='AnalyzeOrgPolicyGovernedAssets',
+        field='governedAssets',
+        batch_size=args.page_size or self._DEFAULT_PAGE_SIZE,
+        batch_size_attribute='pageSize',
+        current_token_attribute='pageToken',
+        next_token_attribute='nextPageToken')
+
   def AnalyzeOrgPolicyGovernedContainers(self, args):
     """Calls AnalyzeOrgPolicyGovernedContainers method."""
     request = self.message_module.CloudassetAnalyzeOrgPolicyGovernedContainersRequest(

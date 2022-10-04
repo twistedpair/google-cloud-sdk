@@ -362,6 +362,33 @@ def AddTags(parser, noun):
       help=help_text)
 
 
+def AddClearTags(parser, noun):
+  """Adds flag for clearing the tags.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+    noun: The resource type to which the flag is applicable.
+  """
+
+  parser.add_argument(
+      '--clear-tags',
+      action='store_true',
+      default=None,
+      help='Clear any tags associated with the {}\'s nodes. '.format(noun))
+
+
+def AddTagsForUpdate(parser, noun):
+  """Adds tags related flags for update.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+    noun: The resource type to which the flags are applicable.
+  """
+  group = parser.add_group('Tags', mutex=True)
+  AddTags(group, noun)
+  AddClearTags(group, noun)
+
+
 def GetTags(args):
   return getattr(args, 'tags', None) or {}
 

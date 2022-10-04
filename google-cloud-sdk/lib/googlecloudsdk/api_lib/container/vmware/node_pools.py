@@ -19,20 +19,19 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.container.vmware import client
 
 
-class NodePoolsClient(object):
+class NodePoolsClient(client.ClientBase):
   """Client for node pools in Anthos clusters on VMware API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or apis.GetClientInstance('gkeonprem', 'v1')
-    self.messages = messages or self.client.MESSAGES_MODULE
-    self._service = self.client.projects_locations_vmwareClusters_vmwareNodePools
+  def __init__(self, **kwargs):
+    super(NodePoolsClient, self).__init__(**kwargs)
+    self._service = self._client.projects_locations_vmwareClusters_vmwareNodePools
 
   def List(self, location_ref, limit=None, page_size=100):
     """Lists Node Pools in the Anthos clusters on VMware API."""
-    list_req = self.messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsListRequest(
+    list_req = self._messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsListRequest(
         parent=location_ref.RelativeName())
     return list_pager.YieldFromList(
         self._service,
@@ -43,19 +42,13 @@ class NodePoolsClient(object):
         batch_size_attribute='pageSize',
     )
 
-  def Describe(self, resource_ref):
-    """Gets a gkeonprem node pool API resource."""
-    req = self.messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsGetRequest(
-        name=resource_ref.RelativeName())
-    return self._service.Get(req)
-
   def Delete(self,
              resource_ref,
              allow_missing=False,
              etag=None,
              validate_only=False):
     """Deletes a gkeonprem node pool API resource."""
-    req = self.messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsDeleteRequest(
+    req = self._messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsDeleteRequest(
         allowMissing=allow_missing,
         etag=etag,
         name=resource_ref.RelativeName(),
@@ -73,18 +66,18 @@ class NodePoolsClient(object):
       validate_only=False,
   ):
     """Creates a gkeonprem node pool API resource."""
-    vmware_node_pool = self.messages.VmwareNodePool(
+    vmware_node_pool = self._messages.VmwareNodePool(
         name=resource_ref.RelativeName(),
-        config=self.messages.VmwareNodeConfig(
+        config=self._messages.VmwareNodeConfig(
             imageType=image_type,
             replicas=replicas,
             enableLoadBalancer=enable_load_balancer,
         ),
-        nodePoolAutoscaling=self.messages.VmwareNodePoolAutoscalingConfig(
+        nodePoolAutoscaling=self._messages.VmwareNodePoolAutoscalingConfig(
             minReplicas=min_replicas,
             maxReplicas=max_replicas,
         ))
-    req = self.messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsCreateRequest(
+    req = self._messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsCreateRequest(
         parent=resource_ref.Parent().RelativeName(),
         validateOnly=validate_only,
         vmwareNodePool=vmware_node_pool,

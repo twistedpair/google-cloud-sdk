@@ -1447,6 +1447,9 @@ def GetIamOutputFileValidator():
   """Checks if the output file is writable."""
 
   def IsWritable(value):
+    # If output is stdout ('-') then it is writable.
+    if value == '-':
+      return value
     try:
       with files.FileWriter(value, private=True) as f:
         f.close()

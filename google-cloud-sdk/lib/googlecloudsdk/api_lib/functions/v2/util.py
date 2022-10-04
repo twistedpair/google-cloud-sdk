@@ -25,6 +25,7 @@ from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 import frozendict
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
+from googlecloudsdk.api_lib.cloudresourcemanager import projects_util as projects_api_util
 from googlecloudsdk.api_lib.functions.v2 import exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base as calliope_base
@@ -361,12 +362,111 @@ def PromptToBindRoleIfMissing(sa_email, role, reason=''):
 
   bind = console_io.CanPrompt() and console_io.PromptContinue(
       prompt_string='\nBind the role [{}] to service account [{}]?'.format(
-          role, sa_email),
-      cancel_on_no=False)
-  if bind:
-    project_ref = projects_util.ParseProject(GetProject())
-    member = 'serviceAccount:{}'.format(sa_email)
+          role, sa_email))
+  if not bind:
+    log.warning('Manual binding of above role may be necessary.\n')
+    return
+
+  project_ref = projects_util.ParseProject(GetProject())
+  member = 'serviceAccount:{}'.format(sa_email)
+  try:
     projects_api.AddIamPolicyBinding(project_ref, member, role)
     log.status.Print('Role successfully bound.\n')
-  else:
-    log.warning('Manual binding of above role may be necessary.\n')
+  except apitools_exceptions.HttpForbiddenError:
+    log.warning(
+        'Your account does not have permission to add roles to the service '
+        'account [%s]. If the deployment fails, ensure [%s] has the role '
+        '[%s] before retrying.', sa_email, sa_email, role)
+
+
+def _LookupAuditConfig(iam_policy, service):
+  """Returns the audit config for the given service if it exists."""
+  # iam_policy.auditConfigs structure:
+  # list[<AuditConfig
+  #       auditLogConfigs=[<AuditLogConfig<logType=...>, ...],
+  #       service='foo.googleapis.com'>...]
+  for ac in iam_policy.auditConfigs:
+    if ac.service == service:
+      return ac
+
+  return None
+
+
+_rm_messages = projects_api_util.GetMessages()
+
+_LOG_TYPES = frozenset([
+    _rm_messages.AuditLogConfig.LogTypeValueValuesEnum.ADMIN_READ,
+    _rm_messages.AuditLogConfig.LogTypeValueValuesEnum.DATA_READ,
+    _rm_messages.AuditLogConfig.LogTypeValueValuesEnum.DATA_WRITE,
+])
+
+
+def HasDataAccessAuditLogsFullyEnabled(service):
+  # type(str) -> bool
+  """Returns whether audit logs are fully enabled for the given service.
+
+  Args:
+    service: The service to look up. E.g.: foo.googleapis.com.
+
+  Returns:
+    whether audit logs are fully enabled for the given service.
+  """
+  iam_policy = projects_api.GetIamPolicy(
+      projects_util.ParseProject(GetProject()))
+  audit_config = _LookupAuditConfig(iam_policy, service)
+  enabled_log_types = ([] if not audit_config else
+                       [lc.logType for lc in audit_config.auditLogConfigs])
+
+  return all([lt in enabled_log_types for lt in _LOG_TYPES])
+
+
+def PromptToEnableDataAccessAuditLogs(service):
+  # type: (str) -> None
+  """Prompts to enable Data Access audit logs for the given service.
+
+  If the console cannot prompt, a warning is logged instead.
+
+  Args:
+    service: The service to enable Data Access audit logs for.
+  """
+  if HasDataAccessAuditLogsFullyEnabled(service):
+    return
+
+  project = GetProject()
+  log.status.Print(
+      'Some Data Access audit logs are disabled for [{}]: '
+      'https://console.cloud.google.com/iam-admin/audit?project={}'.format(
+          service, project))
+
+  enable = console_io.CanPrompt() and console_io.PromptContinue(
+      prompt_string='\nEnable all Data Access audit logs for [{}]?'.format(
+          service))
+  if not enable:
+    log.warning(
+        'Manual enablement of Data Access audit logs may be necessary.\n')
+    return
+
+  project_ref = projects_util.ParseProject(project)
+  policy = projects_api.GetIamPolicy(project_ref)
+
+  audit_config = _LookupAuditConfig(policy, service)
+
+  # Create the audit config for the service if missing
+  if not audit_config:
+    audit_config = _rm_messages.AuditConfig(service=service, auditLogConfigs=[])
+    policy.auditConfigs.append(audit_config)
+
+  # Create log configs for any missing log types:
+  enabled_log_types = [lc.logType for lc in audit_config.auditLogConfigs]
+  log_types_to_enable = [lt for lt in _LOG_TYPES if lt not in enabled_log_types]
+  audit_config.auditLogConfigs.extend(
+      [_rm_messages.AuditLogConfig(logType=lt) for lt in log_types_to_enable])
+
+  try:
+    projects_api.SetIamPolicy(project_ref, policy, update_mask='auditConfigs')
+    log.status.Print('Data Access audit logs successfully enabled.')
+  except apitools_exceptions.HttpForbiddenError:
+    log.warning(
+        'Your account does not have permission to enable Data Access audit '
+        'logs for the service [%s]. If the deployment fails, ensure audit '
+        'logs are enabled for service [%s] before retrying', service, service)

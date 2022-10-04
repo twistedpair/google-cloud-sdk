@@ -1,0 +1,4328 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "securitycenter:v1beta2",
+  "name": "securitycenter",
+  "canonicalName": "Security Command Center",
+  "version": "v1beta2",
+  "revision": "0",
+  "title": "Security Command Center API",
+  "description": "Security Command Center API provides access to temporal views of assets and findings within an organization.",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/security-command-center",
+  "protocol": "rest",
+  "rootUrl": "https://securitycenter.googleapis.com/",
+  "mtlsRootUrl": "https://securitycenter.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://securitycenter.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
+  "schemas": {
+    "OnboardingState": {
+      "id": "OnboardingState",
+      "description": "Resource capturing onboarding information for a given CRM resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the OnboardingState. Format: organizations\/{organization}\/onboardingState Format: folders\/{folder}\/onboardingState Format: projects\/{project}\/onboardingState",
+          "type": "string"
+        },
+        "onboardingLevel": {
+          "description": "Describes the level a given organization, folder, or project is onboarded with SCC. If the resource wasn't onboarded, NOT_FOUND would have been thrown.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unused.",
+            "This resource is onboarded at the project level. Only possible for projects.",
+            "This resource is onboarded at the organization level. Possible for organizations, folders, and projects."
+          ],
+          "enum": [
+            "ONBOARDING_LEVEL_UNSPECIFIED",
+            "ONBOARDING_LEVEL_PROJECT",
+            "ONBOARDING_LEVEL_ORGANIZATION"
+          ]
+        }
+      }
+    },
+    "SecurityCenterSettings": {
+      "id": "SecurityCenterSettings",
+      "description": "Resource capturing the settings for Security Center.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the SecurityCenterSettings. Format: organizations\/{organization}\/securityCenterSettings Format: folders\/{folder}\/securityCenterSettings Format: projects\/{project}\/securityCenterSettings",
+          "type": "string"
+        },
+        "orgServiceAccount": {
+          "description": "Output only. The organization level service account to be used for security center components.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "logSinkProject": {
+          "description": "The resource name of the project to send logs to. This project must be part of the organization this resource resides in. The format is `projects\/{project_id}`. An empty value disables logging. This value is only referenced by services that support log sink. Please refer to the documentation for an updated list of compatible services. This may only be specified for organization level onboarding.",
+          "type": "string"
+        },
+        "onboardingTime": {
+          "description": "Output only. Timestamp of when the customer organization was onboarded to SCC.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "Subscription": {
+      "id": "Subscription",
+      "description": "Resource capturing the state of an organization's subscription.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the subscription. Format: organizations\/{organization}\/subscription",
+          "type": "string"
+        },
+        "tier": {
+          "description": "The tier of SCC features this organization currently has access to.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "The standard tier.",
+            "The premium tier."
+          ],
+          "enum": [
+            "TIER_UNSPECIFIED",
+            "STANDARD",
+            "PREMIUM"
+          ]
+        },
+        "details": {
+          "description": "The details of the most recent active subscription. If there has never been a subscription this will be empty.",
+          "$ref": "Details"
+        }
+      }
+    },
+    "Details": {
+      "id": "Details",
+      "description": "Details of a subscription.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "The time the subscription has or will start.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The time the subscription has or will end.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "type": {
+          "description": "The type of subscription",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "The standard subscription.",
+            "The trial subscription.",
+            "The alpha subscription.",
+            "The demo subscription for channel partners."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "STANDARD",
+            "TRIAL",
+            "ALPHA",
+            "DEMO"
+          ]
+        }
+      }
+    },
+    "ContainerThreatDetectionSettings": {
+      "id": "ContainerThreatDetectionSettings",
+      "description": "Resource capturing the settings for the Container Threat Detection service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the ContainerThreatDetectionSettings. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+          "type": "string"
+        },
+        "serviceEnablementState": {
+          "description": "The state of enablement for the service at its level of the resource hierarchy. A DISABLED state will override all module enablement_states to DISABLED.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "State is inherited from the parent resource.",
+            "State is enabled.",
+            "State is disabled."
+          ],
+          "enum": [
+            "ENABLEMENT_STATE_UNSPECIFIED",
+            "INHERITED",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "modules": {
+          "description": "The configurations including the state of enablement for the service's different modules. The absence of a module in the map implies its configuration is inherited from its parent's.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "Config"
+          }
+        },
+        "serviceAccount": {
+          "description": "Output only. The service account used by Container Threat Detection for scanning. Service accounts are scoped at the project level meaning this field will be empty at any level above a project.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. The time the settings were last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "Config": {
+      "id": "Config",
+      "description": "Configuration of a module.",
+      "type": "object",
+      "properties": {
+        "moduleEnablementState": {
+          "description": "The state of enablement for the module at its level of the resource hierarchy.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "State is inherited from the parent resource.",
+            "State is enabled.",
+            "State is disabled."
+          ],
+          "enum": [
+            "ENABLEMENT_STATE_UNSPECIFIED",
+            "INHERITED",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "value": {
+          "description": "The configuration value for the module. The absence of this field implies its inheritance from the parent.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        }
+      }
+    },
+    "EventThreatDetectionSettings": {
+      "id": "EventThreatDetectionSettings",
+      "description": "Resource capturing the settings for the Event Threat Detection service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the EventThreatDetectionSettings. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+          "type": "string"
+        },
+        "serviceEnablementState": {
+          "description": "The state of enablement for the service at its level of the resource hierarchy. A DISABLED state will override all module enablement_states to DISABLED.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "State is inherited from the parent resource.",
+            "State is enabled.",
+            "State is disabled."
+          ],
+          "enum": [
+            "ENABLEMENT_STATE_UNSPECIFIED",
+            "INHERITED",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "modules": {
+          "description": "The configurations including the state of enablement for the service's different modules. The absence of a module in the map implies its configuration is inherited from its parent's.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "Config"
+          }
+        },
+        "updateTime": {
+          "description": "Output only. The time the settings were last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "SecurityHealthAnalyticsSettings": {
+      "id": "SecurityHealthAnalyticsSettings",
+      "description": "Resource capturing the settings for the Security Health Analytics service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the SecurityHealthAnalyticsSettings. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+          "type": "string"
+        },
+        "serviceEnablementState": {
+          "description": "The state of enablement for the service at its level of the resource hierarchy. A DISABLED state will override all module enablement_states to DISABLED.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "State is inherited from the parent resource.",
+            "State is enabled.",
+            "State is disabled."
+          ],
+          "enum": [
+            "ENABLEMENT_STATE_UNSPECIFIED",
+            "INHERITED",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "modules": {
+          "description": "The configurations including the state of enablement for the service's different modules. The absence of a module in the map implies its configuration is inherited from its parent's.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "Config"
+          }
+        },
+        "serviceAccount": {
+          "description": "Output only. The service account used by Security Health Analytics detectors.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. The time the settings were last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "VirtualMachineThreatDetectionSettings": {
+      "id": "VirtualMachineThreatDetectionSettings",
+      "description": "Resource capturing the settings for the Virtual Machine Threat Detection service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the VirtualMachineThreatDetectionSettings. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+          "type": "string"
+        },
+        "serviceEnablementState": {
+          "description": "The state of enablement for the service at its level of the resource hierarchy. A DISABLED state will override all module enablement_states to DISABLED.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "State is inherited from the parent resource.",
+            "State is enabled.",
+            "State is disabled."
+          ],
+          "enum": [
+            "ENABLEMENT_STATE_UNSPECIFIED",
+            "INHERITED",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "modules": {
+          "description": "The configurations including the state of enablement for the service's different modules. The absence of a module in the map implies its configuration is inherited from its parent's.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "Config"
+          }
+        },
+        "serviceAccount": {
+          "description": "Output only. The service account used by Virtual Machine Threat Detection detectors.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. The time the settings were last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "RapidVulnerabilityDetectionSettings": {
+      "id": "RapidVulnerabilityDetectionSettings",
+      "description": "Resource capturing the settings for the Rapid Vulnerability Detection service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the RapidVulnerabilityDetectionSettings. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+          "type": "string"
+        },
+        "serviceEnablementState": {
+          "description": "The state of enablement for the service at its level of the resource hierarchy. A DISABLED state will override all module enablement_states to DISABLED.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "State is inherited from the parent resource.",
+            "State is enabled.",
+            "State is disabled."
+          ],
+          "enum": [
+            "ENABLEMENT_STATE_UNSPECIFIED",
+            "INHERITED",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "modules": {
+          "description": "The configurations including the state of enablement for the service's different modules. The absence of a module in the map implies its configuration is inherited from its parent's.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "Config"
+          }
+        },
+        "updateTime": {
+          "description": "Output only. The time the settings were last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "WebSecurityScannerSettings": {
+      "id": "WebSecurityScannerSettings",
+      "description": "Resource capturing the settings for the Web Security Scanner service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the WebSecurityScannerSettings. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+          "type": "string"
+        },
+        "serviceEnablementState": {
+          "description": "The state of enablement for the service at its level of the resource hierarchy. A DISABLED state will override all module enablement_states to DISABLED.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "State is inherited from the parent resource.",
+            "State is enabled.",
+            "State is disabled."
+          ],
+          "enum": [
+            "ENABLEMENT_STATE_UNSPECIFIED",
+            "INHERITED",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "modules": {
+          "description": "The configurations including the state of enablement for the service's different modules. The absence of a module in the map implies its configuration is inherited from its parent's.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "Config"
+          }
+        },
+        "updateTime": {
+          "description": "Output only. The time the settings were last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1beta1RunAssetDiscoveryResponse": {
+      "id": "GoogleCloudSecuritycenterV1beta1RunAssetDiscoveryResponse",
+      "description": "Response of asset discovery run",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "The state of an asset discovery run.",
+          "type": "string",
+          "enumDescriptions": [
+            "Asset discovery run state was unspecified.",
+            "Asset discovery run completed successfully.",
+            "Asset discovery run was cancelled with tasks still pending, as another run for the same organization was started with a higher priority.",
+            "Asset discovery run was killed and terminated."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "COMPLETED",
+            "SUPERSEDED",
+            "TERMINATED"
+          ]
+        },
+        "duration": {
+          "description": "The duration between asset discovery run start and end",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1BulkMuteFindingsResponse": {
+      "id": "GoogleCloudSecuritycenterV1BulkMuteFindingsResponse",
+      "description": "The response to a BulkMute request. Contains the LRO information.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudSecuritycenterV1ExposedResource": {
+      "id": "GoogleCloudSecuritycenterV1ExposedResource",
+      "description": "A resource that is exposed as a result of a finding.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudSecuritycenterV1ExposurePath": {
+      "id": "GoogleCloudSecuritycenterV1ExposurePath",
+      "description": "A path that an attacker could take to reach an exposed resource.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudSecuritycenterV1ExternalSystem": {
+      "id": "GoogleCloudSecuritycenterV1ExternalSystem",
+      "description": "Representation of third party SIEM\/SOAR fields within SCC.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "External System Name e.g. jira, demisto, etc. e.g.: `organizations\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira` `folders\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira` `projects\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira`",
+          "type": "string"
+        },
+        "assignees": {
+          "description": "References primary\/secondary etc assignees in the external system.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "externalUid": {
+          "description": "Identifier that's used to track the given finding in the external system.",
+          "type": "string"
+        },
+        "status": {
+          "description": "Most recent status of the corresponding finding's ticket\/tracker in the external system.",
+          "type": "string"
+        },
+        "externalSystemUpdateTime": {
+          "description": "The most recent time when the corresponding finding's ticket\/tracker was updated in the external system.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1MuteConfig": {
+      "id": "GoogleCloudSecuritycenterV1MuteConfig",
+      "description": "A mute config is a Cloud SCC resource that contains the configuration to mute create\/update events of findings.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "This field will be ignored if provided on config creation. Format \"organizations\/{organization}\/muteConfigs\/{mute_config}\" \"folders\/{folder}\/muteConfigs\/{mute_config}\" \"projects\/{project}\/muteConfigs\/{mute_config}\"",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The human readable name to be displayed for the mute config.",
+          "type": "string"
+        },
+        "description": {
+          "description": "A description of the mute config.",
+          "type": "string"
+        },
+        "filter": {
+          "description": "Required. An expression that defines the filter to apply across create\/update events of findings. While creating a filter string, be mindful of the scope in which the mute configuration is being created. E.g., If a filter contains project = X but is created under the project = Y scope, it might not match any findings. The following field and operator combinations are supported: * severity: `=`, `:` * category: `=`, `:` * resource.name: `=`, `:` * resource.project_name: `=`, `:` * resource.project_display_name: `=`, `:` * resource.folders.resource_folder: `=`, `:` * resource.parent_name: `=`, `:` * resource.parent_display_name: `=`, `:` * resource.type: `=`, `:` * finding_class: `=`, `:` * indicator.ip_addresses: `=`, `:` * indicator.domains: `=`, `:`",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time at which the mute config was created. This field is set by the server and will be ignored if provided on config creation.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The most recent time at which the mute config was updated. This field is set by the server and will be ignored if provided on config creation or update.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "mostRecentEditor": {
+          "description": "Output only. Email address of the user who last edited the mute config. This field is set by the server and will be ignored if provided on config creation or update.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1BigQueryExport": {
+      "id": "GoogleCloudSecuritycenterV1BigQueryExport",
+      "description": "Configures how to deliver Findings to BigQuery Instance.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The relative resource name of this export. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name. Example format: \"organizations\/{organization_id}\/bigQueryExports\/{export_id}\" Example format: \"folders\/{folder_id}\/bigQueryExports\/{export_id}\" Example format: \"projects\/{project_id}\/bigQueryExports\/{export_id}\" This field is provided in responses, and is ignored when provided in create requests.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The description of the export (max of 1024 characters).",
+          "type": "string"
+        },
+        "filter": {
+          "description": "Expression that defines the filter to apply across create\/update events of findings. The expression is a list of zero or more restrictions combined via logical operators `AND` and `OR`. Parentheses are supported, and `OR` has higher precedence than `AND`. Restrictions have the form ` ` and may have a `-` character in front of them to indicate negation. The fields map to those defined in the corresponding resource. The supported operators are: * `=` for all value types. * `>`, `<`, `>=`, `<=` for integer values. * `:`, meaning substring matching, for strings. The supported value types are: * string literals in quotes. * integer literals without quotes. * boolean literals `true` and `false` without quotes.",
+          "type": "string"
+        },
+        "dataset": {
+          "description": "The dataset to write findings' updates to. Its format is \"projects\/[project_id]\/datasets\/[bigquery_dataset_id]\". BigQuery Dataset unique ID must contain only letters (a-z, A-Z), numbers (0-9), or underscores (_).",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time at which the big query export was created. This field is set by the server and will be ignored if provided on export on creation.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The most recent time at which the big export was updated. This field is set by the server and will be ignored if provided on export creation or update.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "mostRecentEditor": {
+          "description": "Output only. Email address of the user who last edited the big query export. This field is set by the server and will be ignored if provided on export creation or update.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "principal": {
+          "description": "Output only. The service account that needs permission to create table, upload data to the big query dataset.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1NotificationMessage": {
+      "id": "GoogleCloudSecuritycenterV1NotificationMessage",
+      "description": "Cloud SCC's Notification",
+      "type": "object",
+      "properties": {
+        "notificationConfigName": {
+          "description": "Name of the notification config that generated current notification.",
+          "type": "string"
+        },
+        "finding": {
+          "description": "If it's a Finding based notification config, this field will be populated.",
+          "$ref": "Finding"
+        },
+        "resource": {
+          "description": "The Cloud resource tied to this notification's Finding.",
+          "$ref": "GoogleCloudSecuritycenterV1Resource"
+        }
+      }
+    },
+    "Finding": {
+      "id": "Finding",
+      "description": "Security Command Center finding. A finding is a record of assessment data like security, risk, health, or privacy, that is ingested into Security Command Center for presentation, notification, analysis, policy testing, and enforcement. For example, a cross-site scripting (XSS) vulnerability in an App Engine application is a finding.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The relative resource name of this finding. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\"",
+          "type": "string"
+        },
+        "parent": {
+          "description": "The relative resource name of the source the finding belongs to. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name This field is immutable after creation time. For example: \"organizations\/{organization_id}\/sources\/{source_id}\"",
+          "type": "string"
+        },
+        "resourceName": {
+          "description": "For findings on Google Cloud resources, the full resource name of the Google Cloud resource this finding is for. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name When the finding is for a non-Google Cloud resource, the resourceName can be a customer or partner defined string. This field is immutable after creation time.",
+          "type": "string"
+        },
+        "state": {
+          "description": "The state of the finding.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state.",
+            "The finding requires attention and has not been addressed yet.",
+            "The finding has been fixed, triaged as a non-issue or otherwise addressed and is no longer active."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "INACTIVE"
+          ]
+        },
+        "category": {
+          "description": "The additional taxonomy group within findings from a given source. This field is immutable after creation time. Example: \"XSS_FLASH_INJECTION\"",
+          "type": "string"
+        },
+        "externalUri": {
+          "description": "The URI that, if available, points to a web page outside of Security Command Center where additional information about the finding can be found. This field is guaranteed to be either empty or a well formed URL.",
+          "type": "string"
+        },
+        "sourceProperties": {
+          "description": "Source specific properties. These properties are managed by the source that writes the finding. The key names in the source_properties map must be between 1 and 255 characters, and must start with a letter and contain alphanumeric characters or underscores only.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any"
+          }
+        },
+        "securityMarks": {
+          "description": "Output only. User specified security marks. These marks are entirely managed by the user and come from the SecurityMarks resource that belongs to the finding.",
+          "readOnly": true,
+          "$ref": "SecurityMarks"
+        },
+        "eventTime": {
+          "description": "The time the finding was first detected. If an existing finding is updated, then this is the time the update occurred. For example, if the finding represents an open firewall, this property captures the time the detector believes the firewall became open. The accuracy is determined by the detector. If the finding is later resolved, then this time reflects when the finding was resolved. This must not be set to a value greater than the current timestamp.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "createTime": {
+          "description": "The time at which the finding was created in Security Command Center.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "severity": {
+          "description": "The severity of the finding. This field is managed by the source that writes the finding.",
+          "type": "string",
+          "enumDescriptions": [
+            "This value is used for findings when a source doesn't write a severity value.",
+            "Vulnerability: A critical vulnerability is easily discoverable by an external actor, exploitable, and results in the direct ability to execute arbitrary code, exfiltrate data, and otherwise gain additional access and privileges to cloud resources and workloads. Examples include publicly accessible unprotected user data, public SSH access with weak or no passwords, etc. Threat: Indicates a threat that is able to access, modify, or delete data or execute unauthorized code within existing resources.",
+            "Vulnerability: A high risk vulnerability can be easily discovered and exploited in combination with other vulnerabilities in order to gain direct access and the ability to execute arbitrary code, exfiltrate data, and otherwise gain additional access and privileges to cloud resources and workloads. An example is a database with weak or no passwords that is only accessible internally. This database could easily be compromised by an actor that had access to the internal network. Threat: Indicates a threat that is able to create new computational resources in an environment but not able to access data or execute code in existing resources.",
+            "Vulnerability: A medium risk vulnerability could be used by an actor to gain access to resources or privileges that enable them to eventually (through multiple steps or a complex exploit) gain access and the ability to execute arbitrary code or exfiltrate data. An example is a service account with access to more projects than it should have. If an actor gains access to the service account, they could potentially use that access to manipulate a project the service account was not intended to. Threat: Indicates a threat that is able to cause operational impact but may not access data or execute unauthorized code.",
+            "Vulnerability: A low risk vulnerability hampers a security organization's ability to detect vulnerabilities or active threats in their deployment, or prevents the root cause investigation of security issues. An example is monitoring and logs being disabled for resource configurations and access. Threat: Indicates a threat that has obtained minimal access to an environment but is not able to access data, execute code, or create resources."
+          ],
+          "enum": [
+            "SEVERITY_UNSPECIFIED",
+            "CRITICAL",
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ]
+        },
+        "canonicalName": {
+          "description": "The canonical name of the finding. It's either \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\", \"folders\/{folder_id}\/sources\/{source_id}\/findings\/{finding_id}\" or \"projects\/{project_number}\/sources\/{source_id}\/findings\/{finding_id}\", depending on the closest CRM ancestor of the resource associated with the finding.",
+          "type": "string"
+        },
+        "mute": {
+          "description": "Indicates the mute state of a finding (either muted, unmuted or undefined). Unlike other attributes of a finding, a finding provider shouldn't set the value of mute.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Finding has been muted.",
+            "Finding has been unmuted.",
+            "Finding has never been muted\/unmuted."
+          ],
+          "enum": [
+            "MUTE_UNSPECIFIED",
+            "MUTED",
+            "UNMUTED",
+            "UNDEFINED"
+          ]
+        },
+        "findingClass": {
+          "description": "The class of the finding.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified finding class.",
+            "Describes unwanted or malicious activity.",
+            "Describes a potential weakness in software that increases risk to Confidentiality & Integrity & Availability.",
+            "Describes a potential weakness in cloud resource\/asset configuration that increases risk.",
+            "Describes a security observation that is for informational purposes.",
+            "Describes an error that prevents some SCC functionality."
+          ],
+          "enum": [
+            "FINDING_CLASS_UNSPECIFIED",
+            "THREAT",
+            "VULNERABILITY",
+            "MISCONFIGURATION",
+            "OBSERVATION",
+            "SCC_ERROR"
+          ]
+        },
+        "indicator": {
+          "description": "Represents what's commonly known as an Indicator of compromise (IoC) in computer forensics. This is an artifact observed on a network or in an operating system that, with high confidence, indicates a computer intrusion. Reference: https:\/\/en.wikipedia.org\/wiki\/Indicator_of_compromise",
+          "$ref": "Indicator"
+        },
+        "vulnerability": {
+          "description": "Represents vulnerability specific fields like cve, cvss scores etc. CVE stands for Common Vulnerabilities and Exposures (https:\/\/cve.mitre.org\/about\/)",
+          "$ref": "Vulnerability"
+        },
+        "muteUpdateTime": {
+          "description": "Output only. The most recent time this finding was muted or unmuted.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "externalSystems": {
+          "description": "Output only. Third party SIEM\/SOAR fields within SCC, contains external system information and external system finding fields.",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudSecuritycenterV1ExternalSystem"
+          }
+        },
+        "mitreAttack": {
+          "description": "MITRE ATT&CK tactics and techniques related to this finding. See: https:\/\/attack.mitre.org",
+          "$ref": "MitreAttack"
+        },
+        "access": {
+          "description": "Access details associated to the Finding, such as more information on the caller, which method was accessed, from where, etc.",
+          "$ref": "Access"
+        },
+        "connections": {
+          "description": "Contains information about the IP connection associated with the finding.",
+          "type": "array",
+          "items": {
+            "$ref": "Connection"
+          }
+        },
+        "muteInitiator": {
+          "description": "First known as mute_annotation. Records additional information about the mute operation e.g. mute config that muted the finding, user who muted the finding, etc. Unlike other attributes of a finding, a finding provider shouldn't set the value of mute.",
+          "type": "string"
+        },
+        "processes": {
+          "description": "Represents operating system processes associated with the Finding.",
+          "type": "array",
+          "items": {
+            "$ref": "Process"
+          }
+        },
+        "contacts": {
+          "description": "Output only. Map containing the points of contact for the given finding. The key represents the type of contact, while the value contains a list of all the contacts that pertain. Please refer to: https:\/\/cloud.google.com\/resource-manager\/docs\/managing-notification-contacts#notification-categories { \"security\": { \"contacts\": [ { \"email\": \"person1@company.com\" }, { \"email\": \"person2@company.com\" } ] } }",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ContactDetails"
+          }
+        },
+        "compliances": {
+          "description": "Contains compliance information for security standards associated to the finding.",
+          "type": "array",
+          "items": {
+            "$ref": "Compliance"
+          }
+        },
+        "parentDisplayName": {
+          "description": "Output only. The human readable display name of the finding source such as \"Event Threat Detection\" or \"Security Health Analytics\".",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "Contains more detail about the finding.",
+          "type": "string"
+        },
+        "exfiltration": {
+          "description": "Represents exfiltration associated with the Finding.",
+          "$ref": "Exfiltration"
+        },
+        "iamBindings": {
+          "description": "Represents IAM bindings associated with the Finding.",
+          "type": "array",
+          "items": {
+            "$ref": "IamBinding"
+          }
+        },
+        "nextSteps": {
+          "description": "Next steps associate to the finding.",
+          "type": "string"
+        },
+        "containers": {
+          "description": "Containers associated with the finding. containers provides information for both Kubernetes and non-Kubernetes containers.",
+          "type": "array",
+          "items": {
+            "$ref": "Container"
+          }
+        },
+        "kubernetes": {
+          "description": "Kubernetes resources associated with the finding.",
+          "$ref": "Kubernetes"
+        },
+        "database": {
+          "description": "Database associated with the finding.",
+          "$ref": "Database"
+        }
+      }
+    },
+    "SecurityMarks": {
+      "id": "SecurityMarks",
+      "description": "User specified security marks that are attached to the parent Security Command Center resource. Security marks are scoped within a Security Command Center organization -- they can be modified and viewed by all users who have proper permissions on the organization.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The relative resource name of the SecurityMarks. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Examples: \"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\" \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\".",
+          "type": "string"
+        },
+        "marks": {
+          "description": "Mutable user specified security marks belonging to the parent resource. Constraints are as follows: * Keys and values are treated as case insensitive * Keys must be between 1 - 256 characters (inclusive) * Keys must be letters, numbers, underscores, or dashes * Values have leading and trailing whitespace trimmed, remaining characters must be between 1 - 4096 characters (inclusive)",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "canonicalName": {
+          "description": "The canonical name of the marks. Examples: \"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\" \"folders\/{folder_id}\/assets\/{asset_id}\/securityMarks\" \"projects\/{project_number}\/assets\/{asset_id}\/securityMarks\" \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\" \"folders\/{folder_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\" \"projects\/{project_number}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\"",
+          "type": "string"
+        }
+      }
+    },
+    "Indicator": {
+      "id": "Indicator",
+      "description": "Represents what's commonly known as an Indicator of compromise (IoC) in computer forensics. This is an artifact observed on a network or in an operating system that, with high confidence, indicates a computer intrusion. Reference: https:\/\/en.wikipedia.org\/wiki\/Indicator_of_compromise",
+      "type": "object",
+      "properties": {
+        "ipAddresses": {
+          "description": "List of ip addresses associated to the Finding.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "domains": {
+          "description": "List of domains associated to the Finding.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "signatures": {
+          "description": "The list of matched signatures indicating that the given process is present in the environment.",
+          "type": "array",
+          "items": {
+            "$ref": "ProcessSignature"
+          }
+        },
+        "uris": {
+          "description": "The list of URIs associated to the Findings.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ProcessSignature": {
+      "id": "ProcessSignature",
+      "description": "Indicates what signature matched this process.",
+      "type": "object",
+      "properties": {
+        "memoryHashSignature": {
+          "description": "Signature indicating that a binary family was matched.",
+          "$ref": "MemoryHashSignature"
+        },
+        "yaraRuleSignature": {
+          "description": "Signature indicating that a YARA rule was matched.",
+          "$ref": "YaraRuleSignature"
+        }
+      }
+    },
+    "MemoryHashSignature": {
+      "id": "MemoryHashSignature",
+      "description": "A signature corresponding to memory page hashes.",
+      "type": "object",
+      "properties": {
+        "binaryFamily": {
+          "description": "The binary family.",
+          "type": "string"
+        },
+        "detections": {
+          "description": "The list of memory hash detections contributing to the binary family match.",
+          "type": "array",
+          "items": {
+            "$ref": "Detection"
+          }
+        }
+      }
+    },
+    "Detection": {
+      "id": "Detection",
+      "description": "Memory hash detection contributing to the binary family match.",
+      "type": "object",
+      "properties": {
+        "binary": {
+          "description": "The name of the binary associated with the memory hash signature detection.",
+          "type": "string"
+        },
+        "percentPagesMatched": {
+          "description": "The percentage of memory page hashes in the signature that were matched.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "YaraRuleSignature": {
+      "id": "YaraRuleSignature",
+      "description": "A signature corresponding to a YARA rule.",
+      "type": "object",
+      "properties": {
+        "yaraRule": {
+          "description": "The name of the YARA rule.",
+          "type": "string"
+        }
+      }
+    },
+    "Vulnerability": {
+      "id": "Vulnerability",
+      "description": "Refers to common vulnerability fields e.g. cve, cvss, cwe etc.",
+      "type": "object",
+      "properties": {
+        "cve": {
+          "description": "CVE stands for Common Vulnerabilities and Exposures (https:\/\/cve.mitre.org\/about\/)",
+          "$ref": "Cve"
+        }
+      }
+    },
+    "Cve": {
+      "id": "Cve",
+      "description": "CVE stands for Common Vulnerabilities and Exposures. More information: https:\/\/cve.mitre.org",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The unique identifier for the vulnerability. e.g. CVE-2021-34527",
+          "type": "string"
+        },
+        "references": {
+          "description": "Additional information about the CVE. e.g. https:\/\/cve.mitre.org\/cgi-bin\/cvename.cgi?name=CVE-2021-34527",
+          "type": "array",
+          "items": {
+            "$ref": "Reference"
+          }
+        },
+        "cvssv3": {
+          "description": "Describe Common Vulnerability Scoring System specified at https:\/\/www.first.org\/cvss\/v3.1\/specification-document",
+          "$ref": "Cvssv3"
+        },
+        "upstreamFixAvailable": {
+          "description": "Whether upstream fix is available for the CVE.",
+          "type": "boolean"
+        }
+      }
+    },
+    "Reference": {
+      "id": "Reference",
+      "description": "Additional Links",
+      "type": "object",
+      "properties": {
+        "source": {
+          "description": "Source of the reference e.g. NVD",
+          "type": "string"
+        },
+        "uri": {
+          "description": "Uri for the mentioned source e.g. https:\/\/cve.mitre.org\/cgi-bin\/cvename.cgi?name=CVE-2021-34527.",
+          "type": "string"
+        }
+      }
+    },
+    "Cvssv3": {
+      "id": "Cvssv3",
+      "description": "Common Vulnerability Scoring System version 3.",
+      "type": "object",
+      "properties": {
+        "baseScore": {
+          "description": "The base score is a function of the base metric scores.",
+          "type": "number",
+          "format": "double"
+        },
+        "attackVector": {
+          "description": "Base Metrics Represents the intrinsic characteristics of a vulnerability that are constant over time and across user environments. This metric reflects the context by which vulnerability exploitation is possible.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "The vulnerable component is bound to the network stack and the set of possible attackers extends beyond the other options listed below, up to and including the entire Internet.",
+            "The vulnerable component is bound to the network stack, but the attack is limited at the protocol level to a logically adjacent topology.",
+            "The vulnerable component is not bound to the network stack and the attacker's path is via read\/write\/execute capabilities.",
+            "The attack requires the attacker to physically touch or manipulate the vulnerable component."
+          ],
+          "enum": [
+            "ATTACK_VECTOR_UNSPECIFIED",
+            "ATTACK_VECTOR_NETWORK",
+            "ATTACK_VECTOR_ADJACENT",
+            "ATTACK_VECTOR_LOCAL",
+            "ATTACK_VECTOR_PHYSICAL"
+          ]
+        },
+        "attackComplexity": {
+          "description": "This metric describes the conditions beyond the attacker's control that must exist in order to exploit the vulnerability.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "Specialized access conditions or extenuating circumstances do not exist. An attacker can expect repeatable success when attacking the vulnerable component.",
+            "A successful attack depends on conditions beyond the attacker's control. That is, a successful attack cannot be accomplished at will, but requires the attacker to invest in some measurable amount of effort in preparation or execution against the vulnerable component before a successful attack can be expected."
+          ],
+          "enum": [
+            "ATTACK_COMPLEXITY_UNSPECIFIED",
+            "ATTACK_COMPLEXITY_LOW",
+            "ATTACK_COMPLEXITY_HIGH"
+          ]
+        },
+        "privilegesRequired": {
+          "description": "This metric describes the level of privileges an attacker must possess before successfully exploiting the vulnerability.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "The attacker is unauthorized prior to attack, and therefore does not require any access to settings or files of the vulnerable system to carry out an attack.",
+            "The attacker requires privileges that provide basic user capabilities that could normally affect only settings and files owned by a user. Alternatively, an attacker with Low privileges has the ability to access only non-sensitive resources.",
+            "The attacker requires privileges that provide significant (e.g., administrative) control over the vulnerable component allowing access to component-wide settings and files."
+          ],
+          "enum": [
+            "PRIVILEGES_REQUIRED_UNSPECIFIED",
+            "PRIVILEGES_REQUIRED_NONE",
+            "PRIVILEGES_REQUIRED_LOW",
+            "PRIVILEGES_REQUIRED_HIGH"
+          ]
+        },
+        "userInteraction": {
+          "description": "This metric captures the requirement for a human user, other than the attacker, to participate in the successful compromise of the vulnerable component.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "The vulnerable system can be exploited without interaction from any user.",
+            "Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited."
+          ],
+          "enum": [
+            "USER_INTERACTION_UNSPECIFIED",
+            "USER_INTERACTION_NONE",
+            "USER_INTERACTION_REQUIRED"
+          ]
+        },
+        "scope": {
+          "description": "The Scope metric captures whether a vulnerability in one vulnerable component impacts resources in components beyond its security scope.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "An exploited vulnerability can only affect resources managed by the same security authority.",
+            "An exploited vulnerability can affect resources beyond the security scope managed by the security authority of the vulnerable component."
+          ],
+          "enum": [
+            "SCOPE_UNSPECIFIED",
+            "SCOPE_UNCHANGED",
+            "SCOPE_CHANGED"
+          ]
+        },
+        "confidentialityImpact": {
+          "description": "This metric measures the impact to the confidentiality of the information resources managed by a software component due to a successfully exploited vulnerability.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "High impact.",
+            "Low impact.",
+            "No impact."
+          ],
+          "enum": [
+            "IMPACT_UNSPECIFIED",
+            "IMPACT_HIGH",
+            "IMPACT_LOW",
+            "IMPACT_NONE"
+          ]
+        },
+        "integrityImpact": {
+          "description": "This metric measures the impact to integrity of a successfully exploited vulnerability.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "High impact.",
+            "Low impact.",
+            "No impact."
+          ],
+          "enum": [
+            "IMPACT_UNSPECIFIED",
+            "IMPACT_HIGH",
+            "IMPACT_LOW",
+            "IMPACT_NONE"
+          ]
+        },
+        "availabilityImpact": {
+          "description": "This metric measures the impact to the availability of the impacted component resulting from a successfully exploited vulnerability.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "High impact.",
+            "Low impact.",
+            "No impact."
+          ],
+          "enum": [
+            "IMPACT_UNSPECIFIED",
+            "IMPACT_HIGH",
+            "IMPACT_LOW",
+            "IMPACT_NONE"
+          ]
+        }
+      }
+    },
+    "MitreAttack": {
+      "id": "MitreAttack",
+      "description": "MITRE ATT&CK tactics and techniques related to this finding. See: https:\/\/attack.mitre.org",
+      "type": "object",
+      "properties": {
+        "primaryTactic": {
+          "description": "The MITRE ATT&CK tactic most closely represented by this finding, if any.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified value.",
+            "TA0043",
+            "TA0042",
+            "TA0001",
+            "TA0002",
+            "TA0003",
+            "TA0004",
+            "TA0005",
+            "TA0006",
+            "TA0007",
+            "TA0008",
+            "TA0009",
+            "TA0011",
+            "TA0010",
+            "TA0040"
+          ],
+          "enum": [
+            "TACTIC_UNSPECIFIED",
+            "RECONNAISSANCE",
+            "RESOURCE_DEVELOPMENT",
+            "INITIAL_ACCESS",
+            "EXECUTION",
+            "PERSISTENCE",
+            "PRIVILEGE_ESCALATION",
+            "DEFENSE_EVASION",
+            "CREDENTIAL_ACCESS",
+            "DISCOVERY",
+            "LATERAL_MOVEMENT",
+            "COLLECTION",
+            "COMMAND_AND_CONTROL",
+            "EXFILTRATION",
+            "IMPACT"
+          ]
+        },
+        "primaryTechniques": {
+          "description": "The MITRE ATT&CK technique most closely represented by this finding, if any. primary_techniques is a repeated field because there are multiple levels of MITRE ATT&CK techniques. If the technique most closely represented by this finding is a sub-technique (e.g. `SCANNING_IP_BLOCKS`), both the sub-technique and its parent technique(s) will be listed (e.g. `SCANNING_IP_BLOCKS`, `ACTIVE_SCANNING`).",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Unspecified value.",
+              "T1595",
+              "T1595.001",
+              "T1105",
+              "T1106",
+              "T1129",
+              "T1059",
+              "T1059.004",
+              "T1496",
+              "T1090",
+              "T1090.002",
+              "T1090.003",
+              "T1568",
+              "T1552",
+              "T1078",
+              "T1078.003",
+              "T1078.004",
+              "T1498",
+              "T1069",
+              "T1069.003",
+              "T1567",
+              "T1567.002",
+              "T1098",
+              "T1098.004",
+              "T1543",
+              "T1539",
+              "T1578",
+              "T1190",
+              "T1556",
+              "T1485",
+              "T1484",
+              "T1562",
+              "T1046",
+              "T1134",
+              "T1548"
+            ],
+            "enum": [
+              "TECHNIQUE_UNSPECIFIED",
+              "ACTIVE_SCANNING",
+              "SCANNING_IP_BLOCKS",
+              "INGRESS_TOOL_TRANSFER",
+              "NATIVE_API",
+              "SHARED_MODULES",
+              "COMMAND_AND_SCRIPTING_INTERPRETER",
+              "UNIX_SHELL",
+              "RESOURCE_HIJACKING",
+              "PROXY",
+              "EXTERNAL_PROXY",
+              "MULTI_HOP_PROXY",
+              "DYNAMIC_RESOLUTION",
+              "UNSECURED_CREDENTIALS",
+              "VALID_ACCOUNTS",
+              "LOCAL_ACCOUNTS",
+              "CLOUD_ACCOUNTS",
+              "NETWORK_DENIAL_OF_SERVICE",
+              "PERMISSION_GROUPS_DISCOVERY",
+              "CLOUD_GROUPS",
+              "EXFILTRATION_OVER_WEB_SERVICE",
+              "EXFILTRATION_TO_CLOUD_STORAGE",
+              "ACCOUNT_MANIPULATION",
+              "SSH_AUTHORIZED_KEYS",
+              "CREATE_OR_MODIFY_SYSTEM_PROCESS",
+              "STEAL_WEB_SESSION_COOKIE",
+              "MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE",
+              "EXPLOIT_PUBLIC_FACING_APPLICATION",
+              "MODIFY_AUTHENTICATION_PROCESS",
+              "DATA_DESTRUCTION",
+              "DOMAIN_POLICY_MODIFICATION",
+              "IMPAIR_DEFENSES",
+              "NETWORK_SERVICE_DISCOVERY",
+              "ACCESS_TOKEN_MANIPULATION",
+              "ABUSE_ELEVATION_CONTROL_MECHANISM"
+            ]
+          }
+        },
+        "additionalTactics": {
+          "description": "Additional MITRE ATT&CK tactics related to this finding, if any.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Unspecified value.",
+              "TA0043",
+              "TA0042",
+              "TA0001",
+              "TA0002",
+              "TA0003",
+              "TA0004",
+              "TA0005",
+              "TA0006",
+              "TA0007",
+              "TA0008",
+              "TA0009",
+              "TA0011",
+              "TA0010",
+              "TA0040"
+            ],
+            "enum": [
+              "TACTIC_UNSPECIFIED",
+              "RECONNAISSANCE",
+              "RESOURCE_DEVELOPMENT",
+              "INITIAL_ACCESS",
+              "EXECUTION",
+              "PERSISTENCE",
+              "PRIVILEGE_ESCALATION",
+              "DEFENSE_EVASION",
+              "CREDENTIAL_ACCESS",
+              "DISCOVERY",
+              "LATERAL_MOVEMENT",
+              "COLLECTION",
+              "COMMAND_AND_CONTROL",
+              "EXFILTRATION",
+              "IMPACT"
+            ]
+          }
+        },
+        "additionalTechniques": {
+          "description": "Additional MITRE ATT&CK techniques related to this finding, if any, along with any of their respective parent techniques.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Unspecified value.",
+              "T1595",
+              "T1595.001",
+              "T1105",
+              "T1106",
+              "T1129",
+              "T1059",
+              "T1059.004",
+              "T1496",
+              "T1090",
+              "T1090.002",
+              "T1090.003",
+              "T1568",
+              "T1552",
+              "T1078",
+              "T1078.003",
+              "T1078.004",
+              "T1498",
+              "T1069",
+              "T1069.003",
+              "T1567",
+              "T1567.002",
+              "T1098",
+              "T1098.004",
+              "T1543",
+              "T1539",
+              "T1578",
+              "T1190",
+              "T1556",
+              "T1485",
+              "T1484",
+              "T1562",
+              "T1046",
+              "T1134",
+              "T1548"
+            ],
+            "enum": [
+              "TECHNIQUE_UNSPECIFIED",
+              "ACTIVE_SCANNING",
+              "SCANNING_IP_BLOCKS",
+              "INGRESS_TOOL_TRANSFER",
+              "NATIVE_API",
+              "SHARED_MODULES",
+              "COMMAND_AND_SCRIPTING_INTERPRETER",
+              "UNIX_SHELL",
+              "RESOURCE_HIJACKING",
+              "PROXY",
+              "EXTERNAL_PROXY",
+              "MULTI_HOP_PROXY",
+              "DYNAMIC_RESOLUTION",
+              "UNSECURED_CREDENTIALS",
+              "VALID_ACCOUNTS",
+              "LOCAL_ACCOUNTS",
+              "CLOUD_ACCOUNTS",
+              "NETWORK_DENIAL_OF_SERVICE",
+              "PERMISSION_GROUPS_DISCOVERY",
+              "CLOUD_GROUPS",
+              "EXFILTRATION_OVER_WEB_SERVICE",
+              "EXFILTRATION_TO_CLOUD_STORAGE",
+              "ACCOUNT_MANIPULATION",
+              "SSH_AUTHORIZED_KEYS",
+              "CREATE_OR_MODIFY_SYSTEM_PROCESS",
+              "STEAL_WEB_SESSION_COOKIE",
+              "MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE",
+              "EXPLOIT_PUBLIC_FACING_APPLICATION",
+              "MODIFY_AUTHENTICATION_PROCESS",
+              "DATA_DESTRUCTION",
+              "DOMAIN_POLICY_MODIFICATION",
+              "IMPAIR_DEFENSES",
+              "NETWORK_SERVICE_DISCOVERY",
+              "ACCESS_TOKEN_MANIPULATION",
+              "ABUSE_ELEVATION_CONTROL_MECHANISM"
+            ]
+          }
+        },
+        "version": {
+          "description": "The MITRE ATT&CK version referenced by the above fields. E.g. \"8\".",
+          "type": "string"
+        }
+      }
+    },
+    "Access": {
+      "id": "Access",
+      "description": "Represents an access event.",
+      "type": "object",
+      "properties": {
+        "principalEmail": {
+          "description": "Associated email, such as \"foo@google.com\". The email address of the authenticated user (or service account on behalf of third party principal) making the request. For third party identity callers, the `principal_subject` field is populated instead of this field. For privacy reasons, the principal email address is sometimes redacted. For more information, see [Caller identities in audit logs](https:\/\/cloud.google.com\/logging\/docs\/audit#user-id).",
+          "type": "string"
+        },
+        "callerIp": {
+          "description": "Caller's IP address, such as \"1.1.1.1\".",
+          "type": "string"
+        },
+        "callerIpGeo": {
+          "description": "The caller IP's geolocation, which identifies where the call came from.",
+          "$ref": "Geolocation"
+        },
+        "userAgentFamily": {
+          "description": "What kind of user agent is associated, e.g. operating system shells, embedded or stand-alone applications, etc.",
+          "type": "string"
+        },
+        "serviceName": {
+          "description": "This is the API service that the service account made a call to, e.g. \"iam.googleapis.com\"",
+          "type": "string"
+        },
+        "methodName": {
+          "description": "The method that the service account called, e.g. \"SetIamPolicy\".",
+          "type": "string"
+        },
+        "principalSubject": {
+          "description": "A string representing the principal_subject associated with the identity. As compared to `principal_email`, supports principals that aren't associated with email addresses, such as third party principals. For most identities, the format will be `principal:\/\/iam.googleapis.com\/{identity pool name}\/subjects\/{subject}` except for some GKE identities (GKE_WORKLOAD, FREEFORM, GKE_HUB_WORKLOAD) that are still in the legacy format `serviceAccount:{identity pool name}[{subject}]`",
+          "type": "string"
+        },
+        "serviceAccountKeyName": {
+          "description": "The name of the service account key used to create or exchange credentials for authenticating the service account making the request. This is a scheme-less URI full resource name. For example: \"\/\/iam.googleapis.com\/projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}\/keys\/{key}\" ",
+          "type": "string"
+        },
+        "serviceAccountDelegationInfo": {
+          "description": "Identity delegation history of an authenticated service account that makes the request. It contains information on the real authorities that try to access GCP resources by delegating on a service account. When multiple authorities are present, they are guaranteed to be sorted based on the original ordering of the identity delegation events.",
+          "type": "array",
+          "items": {
+            "$ref": "ServiceAccountDelegationInfo"
+          }
+        },
+        "username": {
+          "description": "A string representing a username. This is likely not an IAM principal. For instance, this may be the system user name if the finding is VM-related, or this may be some type of application login user name, depending on the type of finding.",
+          "type": "string"
+        }
+      }
+    },
+    "Geolocation": {
+      "id": "Geolocation",
+      "description": "Represents a geographical location for a given access.",
+      "type": "object",
+      "properties": {
+        "regionCode": {
+          "description": "A CLDR.",
+          "type": "string"
+        }
+      }
+    },
+    "ServiceAccountDelegationInfo": {
+      "id": "ServiceAccountDelegationInfo",
+      "description": "Identity delegation history of an authenticated service account.",
+      "type": "object",
+      "properties": {
+        "principalEmail": {
+          "description": "The email address of a Google account.",
+          "type": "string"
+        },
+        "principalSubject": {
+          "description": "A string representing the principal_subject associated with the identity. As compared to `principal_email`, supports principals that aren't associated with email addresses, such as third party principals. For most identities, the format will be `principal:\/\/iam.googleapis.com\/{identity pool name}\/subjects\/{subject}` except for some GKE identities (GKE_WORKLOAD, FREEFORM, GKE_HUB_WORKLOAD) that are still in the legacy format `serviceAccount:{identity pool name}[{subject}]`",
+          "type": "string"
+        }
+      }
+    },
+    "Connection": {
+      "id": "Connection",
+      "description": "Contains information about the IP connection associated with the finding.",
+      "type": "object",
+      "properties": {
+        "destinationIp": {
+          "description": "Destination IP address. Not present for sockets that are listening and not connected.",
+          "type": "string"
+        },
+        "destinationPort": {
+          "description": "Destination port. Not present for sockets that are listening and not connected.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "sourceIp": {
+          "description": "Source IP address.",
+          "type": "string"
+        },
+        "sourcePort": {
+          "description": "Source port.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "protocol": {
+          "description": "IANA Internet Protocol Number such as TCP(6) and UDP(17).",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified protocol (not HOPOPT).",
+            "Internet Control Message Protocol.",
+            "Transmission Control Protocol.",
+            "User Datagram Protocol.",
+            "Generic Routing Encapsulation.",
+            "Encap Security Payload."
+          ],
+          "enum": [
+            "PROTOCOL_UNSPECIFIED",
+            "ICMP",
+            "TCP",
+            "UDP",
+            "GRE",
+            "ESP"
+          ]
+        }
+      }
+    },
+    "Process": {
+      "id": "Process",
+      "description": "Represents an operating system process.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The process name visible in utilities like `top` and `ps`; it can be accessed via `\/proc\/[pid]\/comm` and changed with `prctl(PR_SET_NAME)`.",
+          "type": "string"
+        },
+        "binary": {
+          "description": "File information for the process executable.",
+          "$ref": "File"
+        },
+        "libraries": {
+          "description": "File information for libraries loaded by the process.",
+          "type": "array",
+          "items": {
+            "$ref": "File"
+          }
+        },
+        "script": {
+          "description": "When the process represents the invocation of a script, `binary` provides information about the interpreter while `script` provides information about the script file provided to the interpreter.",
+          "$ref": "File"
+        },
+        "args": {
+          "description": "Process arguments as JSON encoded strings.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "argumentsTruncated": {
+          "description": "True if `args` is incomplete.",
+          "type": "boolean"
+        },
+        "envVariables": {
+          "description": "Process environment variables.",
+          "type": "array",
+          "items": {
+            "$ref": "EnvironmentVariable"
+          }
+        },
+        "envVariablesTruncated": {
+          "description": "True if `env_variables` is incomplete.",
+          "type": "boolean"
+        },
+        "pid": {
+          "description": "The process id.",
+          "type": "string",
+          "format": "int64"
+        },
+        "parentPid": {
+          "description": "The parent process id.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "File": {
+      "id": "File",
+      "description": "File information about the related binary\/library used by an executable, or the script used by a script interpreter",
+      "type": "object",
+      "properties": {
+        "path": {
+          "description": "Absolute path of the file as a JSON encoded string.",
+          "type": "string"
+        },
+        "size": {
+          "description": "Size of the file in bytes.",
+          "type": "string",
+          "format": "int64"
+        },
+        "sha256": {
+          "description": "SHA256 hash of the first hashed_size bytes of the file encoded as a hex string. If hashed_size == size, sha256 represents the SHA256 hash of the entire file.",
+          "type": "string"
+        },
+        "hashedSize": {
+          "description": "The length in bytes of the file prefix that was hashed. If hashed_size == size, any hashes reported represent the entire file.",
+          "type": "string",
+          "format": "int64"
+        },
+        "partiallyHashed": {
+          "description": "True when the hash covers only a prefix of the file.",
+          "type": "boolean"
+        },
+        "contents": {
+          "description": "Prefix of the file contents as a JSON encoded string. (Currently only populated for Malicious Script Executed findings.)",
+          "type": "string"
+        }
+      }
+    },
+    "EnvironmentVariable": {
+      "id": "EnvironmentVariable",
+      "description": "EnvironmentVariable is a name-value pair to store environment variables for Process.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Environment variable name as a JSON encoded string.",
+          "type": "string"
+        },
+        "val": {
+          "description": "Environment variable value as a JSON encoded string.",
+          "type": "string"
+        }
+      }
+    },
+    "ContactDetails": {
+      "id": "ContactDetails",
+      "description": "The details pertaining to specific contacts",
+      "type": "object",
+      "properties": {
+        "contacts": {
+          "description": "A list of contacts",
+          "type": "array",
+          "items": {
+            "$ref": "Contact"
+          }
+        }
+      }
+    },
+    "Contact": {
+      "id": "Contact",
+      "description": "Representa a single contact's email address",
+      "type": "object",
+      "properties": {
+        "email": {
+          "description": "An email address e.g. \"person123@company.com\"",
+          "type": "string"
+        }
+      }
+    },
+    "Compliance": {
+      "id": "Compliance",
+      "description": "Contains compliance information about a security standard indicating unmet recommendations.",
+      "type": "object",
+      "properties": {
+        "standard": {
+          "description": "Refers to industry wide standards or benchmarks e.g. \"cis\", \"pci\", \"owasp\", etc.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Version of the standard\/benchmark e.g. 1.1",
+          "type": "string"
+        },
+        "ids": {
+          "description": "Policies within the standard\/benchmark e.g. A.12.4.1",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Exfiltration": {
+      "id": "Exfiltration",
+      "description": "Exfiltration represents a data exfiltration attempt of one or more sources to one or more targets. Sources represent the source of data that is exfiltrated, and Targets represents the destination the data was copied to.",
+      "type": "object",
+      "properties": {
+        "sources": {
+          "description": "If there are multiple sources, then the data is considered \"joined\" between them. For instance, BigQuery can join multiple tables, and each table would be considered a source.",
+          "type": "array",
+          "items": {
+            "$ref": "ExfilResource"
+          }
+        },
+        "targets": {
+          "description": "If there are multiple targets, each target would get a complete copy of the \"joined\" source data.",
+          "type": "array",
+          "items": {
+            "$ref": "ExfilResource"
+          }
+        }
+      }
+    },
+    "ExfilResource": {
+      "id": "ExfilResource",
+      "description": "Resource that has been exfiltrated or exfiltrated_to.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource's URI (https:\/\/google.aip.dev\/122#full-resource-names)",
+          "type": "string"
+        },
+        "components": {
+          "description": "Subcomponents of the asset that is exfiltrated - these could be URIs used during exfiltration, table names, databases, filenames, etc. For example, multiple tables may be exfiltrated from the same CloudSQL instance, or multiple files from the same Cloud Storage bucket.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "IamBinding": {
+      "id": "IamBinding",
+      "description": "Represents a particular IAM binding, which captures a member's role addition, removal, or state.",
+      "type": "object",
+      "properties": {
+        "action": {
+          "description": "The action that was performed on a Binding.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Addition of a Binding.",
+            "Removal of a Binding."
+          ],
+          "enum": [
+            "ACTION_UNSPECIFIED",
+            "ADD",
+            "REMOVE"
+          ]
+        },
+        "role": {
+          "description": "Role that is assigned to \"members\". For example, \"roles\/viewer\", \"roles\/editor\", or \"roles\/owner\".",
+          "type": "string"
+        },
+        "member": {
+          "description": "A single identity requesting access for a Cloud Platform resource, e.g. \"foo@google.com\".",
+          "type": "string"
+        }
+      }
+    },
+    "Container": {
+      "id": "Container",
+      "description": "Container associated with the finding.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Container name.",
+          "type": "string"
+        },
+        "uri": {
+          "description": "Container image URI provided when configuring a pod\/container. May identify a container image version using mutable tags.",
+          "type": "string"
+        },
+        "imageId": {
+          "description": "Optional container image id, when provided by the container runtime. Uniquely identifies the container image launched using a container image digest.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Container labels, as provided by the container runtime.",
+          "type": "array",
+          "items": {
+            "$ref": "Label"
+          }
+        }
+      }
+    },
+    "Label": {
+      "id": "Label",
+      "description": "Label represents a generic name=value label. Label has separate name and value fields to support filtering with contains().",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Label name.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Label value.",
+          "type": "string"
+        }
+      }
+    },
+    "Kubernetes": {
+      "id": "Kubernetes",
+      "description": "Kubernetes related attributes.",
+      "type": "object",
+      "properties": {
+        "pods": {
+          "description": "Kubernetes Pods associated with the finding. This field will contain Pod records for each container that is owned by a Pod.",
+          "type": "array",
+          "items": {
+            "$ref": "Pod"
+          }
+        },
+        "nodes": {
+          "description": "Provides Kubernetes Node information.",
+          "type": "array",
+          "items": {
+            "$ref": "Node"
+          }
+        },
+        "nodePools": {
+          "description": "GKE Node Pools associated with the finding. This field will contain NodePool information for each Node, when it is available.",
+          "type": "array",
+          "items": {
+            "$ref": "NodePool"
+          }
+        },
+        "roles": {
+          "description": "Provides Kubernetes role information for findings that involve Roles or ClusterRoles.",
+          "type": "array",
+          "items": {
+            "$ref": "Role"
+          }
+        },
+        "bindings": {
+          "description": "Provides Kubernetes role binding information for findings that involve RoleBindings or ClusterRoleBindings.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudSecuritycenterV1Binding"
+          }
+        },
+        "accessReviews": {
+          "description": "Provides information on any Kubernetes access reviews (i.e. privilege checks) relevant to the finding.",
+          "type": "array",
+          "items": {
+            "$ref": "AccessReview"
+          }
+        }
+      }
+    },
+    "Pod": {
+      "id": "Pod",
+      "description": "Kubernetes Pod.",
+      "type": "object",
+      "properties": {
+        "ns": {
+          "description": "Kubernetes Pod namespace.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Kubernetes Pod name.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Pod labels. For Kubernetes containers, these are applied to the container.",
+          "type": "array",
+          "items": {
+            "$ref": "Label"
+          }
+        },
+        "containers": {
+          "description": "Pod containers associated with this finding, if any.",
+          "type": "array",
+          "items": {
+            "$ref": "Container"
+          }
+        }
+      }
+    },
+    "Node": {
+      "id": "Node",
+      "description": "Kubernetes Nodes associated with the finding.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Full Resource name of the Compute Engine VM running the cluster node.",
+          "type": "string"
+        }
+      }
+    },
+    "NodePool": {
+      "id": "NodePool",
+      "description": "Provides GKE Node Pool information.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Kubernetes Node pool name.",
+          "type": "string"
+        },
+        "nodes": {
+          "description": "Nodes associated with the finding.",
+          "type": "array",
+          "items": {
+            "$ref": "Node"
+          }
+        }
+      }
+    },
+    "Role": {
+      "id": "Role",
+      "description": "Kubernetes Role or ClusterRole.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "Role type.",
+          "type": "string",
+          "enumDescriptions": [
+            "Role type is not specified.",
+            "Kubernetes Role.",
+            "Kubernetes ClusterRole."
+          ],
+          "enum": [
+            "KIND_UNSPECIFIED",
+            "ROLE",
+            "CLUSTER_ROLE"
+          ]
+        },
+        "ns": {
+          "description": "Role namespace.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Role name.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1Binding": {
+      "id": "GoogleCloudSecuritycenterV1Binding",
+      "description": "Represents a Kubernetes RoleBinding or ClusterRoleBinding.",
+      "type": "object",
+      "properties": {
+        "ns": {
+          "description": "Namespace for binding.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Name for binding.",
+          "type": "string"
+        },
+        "role": {
+          "description": "The Role or ClusterRole referenced by the binding.",
+          "$ref": "Role"
+        },
+        "subjects": {
+          "description": "Represents the subjects(s) bound to the role. Not always available for PATCH requests.",
+          "type": "array",
+          "items": {
+            "$ref": "Subject"
+          }
+        }
+      }
+    },
+    "Subject": {
+      "id": "Subject",
+      "description": "Represents a Kubernetes Subject.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "Authentication type for subject.",
+          "type": "string",
+          "enumDescriptions": [
+            "Authentication is not specified.",
+            "User with valid certificate.",
+            "Users managed by Kubernetes API with credentials stored as Secrets.",
+            "Collection of users."
+          ],
+          "enum": [
+            "AUTH_TYPE_UNSPECIFIED",
+            "USER",
+            "SERVICEACCOUNT",
+            "GROUP"
+          ]
+        },
+        "ns": {
+          "description": "Namespace for subject.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Name for subject.",
+          "type": "string"
+        }
+      }
+    },
+    "AccessReview": {
+      "id": "AccessReview",
+      "description": "Conveys information about a Kubernetes access review (e.g. kubectl auth can-i ...) that was involved in a finding.",
+      "type": "object",
+      "properties": {
+        "group": {
+          "description": "Group is the API Group of the Resource. \"*\" means all.",
+          "type": "string"
+        },
+        "ns": {
+          "description": "Namespace of the action being requested. Currently, there is no distinction between no namespace and all namespaces. Both are represented by \"\" (empty).",
+          "type": "string"
+        },
+        "name": {
+          "description": "Name is the name of the resource being requested. Empty means all.",
+          "type": "string"
+        },
+        "resource": {
+          "description": "Resource is the optional resource type requested. \"*\" means all.",
+          "type": "string"
+        },
+        "subresource": {
+          "description": "Subresource is the optional subresource type.",
+          "type": "string"
+        },
+        "verb": {
+          "description": "Verb is a Kubernetes resource API verb, like: get, list, watch, create, update, delete, proxy. \"*\" means all.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Version is the API Version of the Resource. \"*\" means all.",
+          "type": "string"
+        }
+      }
+    },
+    "Database": {
+      "id": "Database",
+      "description": "Represents database access information, such as queries. A database may be a sub-resource of an instance (as in the case of CloudSQL instances or Cloud Spanner instances), or the database instance itself. Some database resources may not have the full resource name populated because these resource types are not yet supported by Cloud Asset Inventory (e.g. CloudSQL databases). In these cases only the display name will be provided.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The full resource name of the database the user connected to, if it is supported by CAI. (https:\/\/google.aip.dev\/122#full-resource-names)",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The human readable name of the database the user connected to.",
+          "type": "string"
+        },
+        "userName": {
+          "description": "The username used to connect to the DB. This may not necessarily be an IAM principal, and has no required format.",
+          "type": "string"
+        },
+        "query": {
+          "description": "The SQL statement associated with the relevant access.",
+          "type": "string"
+        },
+        "grantees": {
+          "description": "The target usernames\/roles\/groups of a SQL privilege grant (not an IAM policy change).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1Resource": {
+      "id": "GoogleCloudSecuritycenterV1Resource",
+      "description": "Information related to the Google Cloud resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The full resource name of the resource. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The human readable name of the resource.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The full resource type of the resource.",
+          "type": "string"
+        },
+        "project": {
+          "description": "The full resource name of project that the resource belongs to.",
+          "type": "string"
+        },
+        "projectDisplayName": {
+          "description": "The project ID that the resource belongs to.",
+          "type": "string"
+        },
+        "parent": {
+          "description": "The full resource name of resource's parent.",
+          "type": "string"
+        },
+        "parentDisplayName": {
+          "description": "The human readable name of resource's parent.",
+          "type": "string"
+        },
+        "folders": {
+          "description": "Output only. Contains a Folder message for each folder in the assets ancestry. The first folder is the deepest nested folder, and the last folder is the folder directly under the Organization.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "Folder"
+          }
+        }
+      }
+    },
+    "Folder": {
+      "id": "Folder",
+      "description": "Message that contains the resource name and display name of a folder resource.",
+      "type": "object",
+      "properties": {
+        "resourceFolder": {
+          "description": "Full resource name of this folder. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name",
+          "type": "string"
+        },
+        "resourceFolderDisplayName": {
+          "description": "The user defined display name for this folder.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse": {
+      "id": "GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse",
+      "description": "Response of asset discovery run",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "The state of an asset discovery run.",
+          "type": "string",
+          "enumDescriptions": [
+            "Asset discovery run state was unspecified.",
+            "Asset discovery run completed successfully.",
+            "Asset discovery run was cancelled with tasks still pending, as another run for the same organization was started with a higher priority.",
+            "Asset discovery run was killed and terminated."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "COMPLETED",
+            "SUPERSEDED",
+            "TERMINATED"
+          ]
+        },
+        "duration": {
+          "description": "The duration between asset discovery run start and end",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1ResourceValueConfig": {
+      "id": "GoogleCloudSecuritycenterV1ResourceValueConfig",
+      "description": "A resource value config is a mapping configuration of user's tag values to resource values. Used by the attack path simulation.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name for the resource value config",
+          "type": "string"
+        },
+        "resourceValue": {
+          "description": "Required. Resource value level this expression represents",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecific value",
+            "High resource value",
+            "Medium resource value",
+            "Low resource value",
+            "No resource value, e.g. ignore these resources"
+          ],
+          "enum": [
+            "RESOURCE_VALUE_UNSPECIFIED",
+            "HIGH",
+            "MEDIUM",
+            "LOW",
+            "NONE"
+          ]
+        },
+        "tagValues": {
+          "description": "Required. Tag values combined with AND to check against. Values in the form \"tagValues\/123\" E.g. [ \"tagValues\/123\", \"tagValues\/456\", \"tagValues\/789\" ] https:\/\/cloud.google.com\/resource-manager\/docs\/tags\/tags-creating-and-managing",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1p1beta1NotificationMessage": {
+      "id": "GoogleCloudSecuritycenterV1p1beta1NotificationMessage",
+      "description": "Security Command Center's Notification",
+      "type": "object",
+      "properties": {
+        "notificationConfigName": {
+          "description": "Name of the notification config that generated current notification.",
+          "type": "string"
+        },
+        "finding": {
+          "description": "If it's a Finding based notification config, this field will be populated.",
+          "$ref": "GoogleCloudSecuritycenterV1p1beta1Finding"
+        },
+        "resource": {
+          "description": "The Cloud resource tied to the notification.",
+          "$ref": "GoogleCloudSecuritycenterV1p1beta1Resource"
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1p1beta1Finding": {
+      "id": "GoogleCloudSecuritycenterV1p1beta1Finding",
+      "description": "Security Command Center finding. A finding is a record of assessment data (security, risk, health or privacy) ingested into Security Command Center for presentation, notification, analysis, policy testing, and enforcement. For example, an XSS vulnerability in an App Engine application is a finding.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The relative resource name of this finding. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\"",
+          "type": "string"
+        },
+        "parent": {
+          "description": "The relative resource name of the source the finding belongs to. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name This field is immutable after creation time. For example: \"organizations\/{organization_id}\/sources\/{source_id}\"",
+          "type": "string"
+        },
+        "resourceName": {
+          "description": "For findings on Google Cloud resources, the full resource name of the Google Cloud resource this finding is for. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name When the finding is for a non-Google Cloud resource, the resourceName can be a customer or partner defined string. This field is immutable after creation time.",
+          "type": "string"
+        },
+        "state": {
+          "description": "The state of the finding.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state.",
+            "The finding requires attention and has not been addressed yet.",
+            "The finding has been fixed, triaged as a non-issue or otherwise addressed and is no longer active."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "INACTIVE"
+          ]
+        },
+        "category": {
+          "description": "The additional taxonomy group within findings from a given source. This field is immutable after creation time. Example: \"XSS_FLASH_INJECTION\"",
+          "type": "string"
+        },
+        "externalUri": {
+          "description": "The URI that, if available, points to a web page outside of Security Command Center where additional information about the finding can be found. This field is guaranteed to be either empty or a well formed URL.",
+          "type": "string"
+        },
+        "sourceProperties": {
+          "description": "Source specific properties. These properties are managed by the source that writes the finding. The key names in the source_properties map must be between 1 and 255 characters, and must start with a letter and contain alphanumeric characters or underscores only.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any"
+          }
+        },
+        "securityMarks": {
+          "description": "Output only. User specified security marks. These marks are entirely managed by the user and come from the SecurityMarks resource that belongs to the finding.",
+          "readOnly": true,
+          "$ref": "GoogleCloudSecuritycenterV1p1beta1SecurityMarks"
+        },
+        "eventTime": {
+          "description": "The time at which the event took place, or when an update to the finding occurred. For example, if the finding represents an open firewall it would capture the time the detector believes the firewall became open. The accuracy is determined by the detector. If the finding were to be resolved afterward, this time would reflect when the finding was resolved. Must not be set to a value greater than the current timestamp.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "createTime": {
+          "description": "The time at which the finding was created in Security Command Center.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "severity": {
+          "description": "The severity of the finding. This field is managed by the source that writes the finding.",
+          "type": "string",
+          "enumDescriptions": [
+            "No severity specified. The default value.",
+            "Critical severity.",
+            "High severity.",
+            "Medium severity.",
+            "Low severity."
+          ],
+          "enum": [
+            "SEVERITY_UNSPECIFIED",
+            "CRITICAL",
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ]
+        },
+        "canonicalName": {
+          "description": "The canonical name of the finding. It's either \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\", \"folders\/{folder_id}\/sources\/{source_id}\/findings\/{finding_id}\" or \"projects\/{project_number}\/sources\/{source_id}\/findings\/{finding_id}\", depending on the closest CRM ancestor of the resource associated with the finding.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1p1beta1SecurityMarks": {
+      "id": "GoogleCloudSecuritycenterV1p1beta1SecurityMarks",
+      "description": "User specified security marks that are attached to the parent Security Command Center resource. Security marks are scoped within a Security Command Center organization -- they can be modified and viewed by all users who have proper permissions on the organization.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The relative resource name of the SecurityMarks. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Examples: \"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\" \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\".",
+          "type": "string"
+        },
+        "marks": {
+          "description": "Mutable user specified security marks belonging to the parent resource. Constraints are as follows: * Keys and values are treated as case insensitive * Keys must be between 1 - 256 characters (inclusive) * Keys must be letters, numbers, underscores, or dashes * Values have leading and trailing whitespace trimmed, remaining characters must be between 1 - 4096 characters (inclusive)",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "canonicalName": {
+          "description": "The canonical name of the marks. Examples: \"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\" \"folders\/{folder_id}\/assets\/{asset_id}\/securityMarks\" \"projects\/{project_number}\/assets\/{asset_id}\/securityMarks\" \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\" \"folders\/{folder_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\" \"projects\/{project_number}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\"",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1p1beta1Resource": {
+      "id": "GoogleCloudSecuritycenterV1p1beta1Resource",
+      "description": "Information related to the Google Cloud resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The full resource name of the resource. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name",
+          "type": "string"
+        },
+        "project": {
+          "description": "The full resource name of project that the resource belongs to.",
+          "type": "string"
+        },
+        "projectDisplayName": {
+          "description": "The project id that the resource belongs to.",
+          "type": "string"
+        },
+        "parent": {
+          "description": "The full resource name of resource's parent.",
+          "type": "string"
+        },
+        "parentDisplayName": {
+          "description": "The human readable name of resource's parent.",
+          "type": "string"
+        },
+        "folders": {
+          "description": "Output only. Contains a Folder message for each folder in the assets ancestry. The first folder is the deepest nested folder, and the last folder is the folder directly under the Organization.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudSecuritycenterV1p1beta1Folder"
+          }
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1p1beta1Folder": {
+      "id": "GoogleCloudSecuritycenterV1p1beta1Folder",
+      "description": "Message that contains the resource name and display name of a folder resource.",
+      "type": "object",
+      "properties": {
+        "resourceFolder": {
+          "description": "Full resource name of this folder. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name",
+          "type": "string"
+        },
+        "resourceFolderDisplayName": {
+          "description": "The user defined display name for this folder.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudSecuritycenterV1p1beta1RunAssetDiscoveryResponse": {
+      "id": "GoogleCloudSecuritycenterV1p1beta1RunAssetDiscoveryResponse",
+      "description": "Response of asset discovery run",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "The state of an asset discovery run.",
+          "type": "string",
+          "enumDescriptions": [
+            "Asset discovery run state was unspecified.",
+            "Asset discovery run completed successfully.",
+            "Asset discovery run was cancelled with tasks still pending, as another run for the same organization was started with a higher priority.",
+            "Asset discovery run was killed and terminated."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "COMPLETED",
+            "SUPERSEDED",
+            "TERMINATED"
+          ]
+        },
+        "duration": {
+          "description": "The duration between asset discovery run start and end",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    }
+  },
+  "resources": {
+    "organizations": {
+      "methods": {
+        "getOnboardingState": {
+          "id": "securitycenter.organizations.getOnboardingState",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/onboardingState",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the OnboardingState to retrieve. Formats: * organizations\/{organization}\/onboardingState * folders\/{folder}\/onboardingState * projects\/{project}\/onboardingState",
+              "pattern": "^organizations\/[^\/]+\/onboardingState$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "OnboardingState"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Retrieve the OnboardingState of a resource."
+        },
+        "getSecurityCenterSettings": {
+          "id": "securitycenter.organizations.getSecurityCenterSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/securityCenterSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the SecurityCenterSettings to retrieve. Format: organizations\/{organization}\/securityCenterSettings Format: folders\/{folder}\/securityCenterSettings Format: projects\/{project}\/securityCenterSettings",
+              "pattern": "^organizations\/[^\/]+\/securityCenterSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "SecurityCenterSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the SecurityCenterSettings resource."
+        },
+        "getSubscription": {
+          "id": "securitycenter.organizations.getSubscription",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/subscription",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the subscription to retrieve. Format: organizations\/{organization}\/subscription",
+              "pattern": "^organizations\/[^\/]+\/subscription$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Subscription"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the Subscription resource."
+        },
+        "getContainerThreatDetectionSettings": {
+          "id": "securitycenter.organizations.getContainerThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/containerThreatDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the ContainerThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+              "pattern": "^organizations\/[^\/]+\/containerThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "ContainerThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the ContainerThreatDetectionSettings resource."
+        },
+        "updateContainerThreatDetectionSettings": {
+          "id": "securitycenter.organizations.updateContainerThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/containerThreatDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the ContainerThreatDetectionSettings. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+              "pattern": "^organizations\/[^\/]+\/containerThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "ContainerThreatDetectionSettings"
+          },
+          "response": {
+            "$ref": "ContainerThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the ContainerThreatDetectionSettings resource."
+        },
+        "getEventThreatDetectionSettings": {
+          "id": "securitycenter.organizations.getEventThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/eventThreatDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the EventThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+              "pattern": "^organizations\/[^\/]+\/eventThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "EventThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the EventThreatDetectionSettings resource."
+        },
+        "updateEventThreatDetectionSettings": {
+          "id": "securitycenter.organizations.updateEventThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/eventThreatDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the EventThreatDetectionSettings. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+              "pattern": "^organizations\/[^\/]+\/eventThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "EventThreatDetectionSettings"
+          },
+          "response": {
+            "$ref": "EventThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the EventThreatDetectionSettings resource."
+        },
+        "getSecurityHealthAnalyticsSettings": {
+          "id": "securitycenter.organizations.getSecurityHealthAnalyticsSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/securityHealthAnalyticsSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the SecurityHealthAnalyticsSettings to retrieve. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+              "pattern": "^organizations\/[^\/]+\/securityHealthAnalyticsSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "SecurityHealthAnalyticsSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the SecurityHealthAnalyticsSettings resource."
+        },
+        "updateSecurityHealthAnalyticsSettings": {
+          "id": "securitycenter.organizations.updateSecurityHealthAnalyticsSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/securityHealthAnalyticsSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the SecurityHealthAnalyticsSettings. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+              "pattern": "^organizations\/[^\/]+\/securityHealthAnalyticsSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "SecurityHealthAnalyticsSettings"
+          },
+          "response": {
+            "$ref": "SecurityHealthAnalyticsSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the SecurityHealthAnalyticsSettings resource."
+        },
+        "getVirtualMachineThreatDetectionSettings": {
+          "id": "securitycenter.organizations.getVirtualMachineThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/virtualMachineThreatDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the VirtualMachineThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+              "pattern": "^organizations\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the VirtualMachineThreatDetectionSettings resource."
+        },
+        "updateVirtualMachineThreatDetectionSettings": {
+          "id": "securitycenter.organizations.updateVirtualMachineThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/virtualMachineThreatDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the VirtualMachineThreatDetectionSettings. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+              "pattern": "^organizations\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "response": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the VirtualMachineThreatDetectionSettings resource."
+        },
+        "getRapidVulnerabilityDetectionSettings": {
+          "id": "securitycenter.organizations.getRapidVulnerabilityDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/rapidVulnerabilityDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the RapidVulnerabilityDetectionSettings to retrieve. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+              "pattern": "^organizations\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the RapidVulnerabilityDetectionSettings resource."
+        },
+        "updateRapidVulnerabilityDetectionSettings": {
+          "id": "securitycenter.organizations.updateRapidVulnerabilityDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/rapidVulnerabilityDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the RapidVulnerabilityDetectionSettings. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+              "pattern": "^organizations\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "response": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the RapidVulnerabilityDetectionSettings resource."
+        },
+        "getWebSecurityScannerSettings": {
+          "id": "securitycenter.organizations.getWebSecurityScannerSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/webSecurityScannerSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the WebSecurityScannerSettings to retrieve. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+              "pattern": "^organizations\/[^\/]+\/webSecurityScannerSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "WebSecurityScannerSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the WebSecurityScannerSettings resource."
+        },
+        "updateWebSecurityScannerSettings": {
+          "id": "securitycenter.organizations.updateWebSecurityScannerSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/webSecurityScannerSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the WebSecurityScannerSettings. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+              "pattern": "^organizations\/[^\/]+\/webSecurityScannerSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "WebSecurityScannerSettings"
+          },
+          "response": {
+            "$ref": "WebSecurityScannerSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the WebSecurityScannerSettings resource."
+        }
+      }
+      ,
+      "resources": {
+        "containerThreatDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.organizations.containerThreatDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/organizations/{organizationsId}/containerThreatDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the ContainerThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+                  "pattern": "^organizations\/[^\/]+\/containerThreatDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ContainerThreatDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective ContainerThreatDetectionSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "eventThreatDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.organizations.eventThreatDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/organizations/{organizationsId}/eventThreatDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the EventThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+                  "pattern": "^organizations\/[^\/]+\/eventThreatDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "EventThreatDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective EventThreatDetectionSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "securityHealthAnalyticsSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.organizations.securityHealthAnalyticsSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/organizations/{organizationsId}/securityHealthAnalyticsSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the SecurityHealthAnalyticsSettings to calculate. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+                  "pattern": "^organizations\/[^\/]+\/securityHealthAnalyticsSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "SecurityHealthAnalyticsSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective SecurityHealthAnalyticsSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "virtualMachineThreatDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.organizations.virtualMachineThreatDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/organizations/{organizationsId}/virtualMachineThreatDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the VirtualMachineThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+                  "pattern": "^organizations\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "VirtualMachineThreatDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "rapidVulnerabilityDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.organizations.rapidVulnerabilityDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/organizations/{organizationsId}/rapidVulnerabilityDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the RapidVulnerabilityDetectionSettings to calculate. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+                  "pattern": "^organizations\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "RapidVulnerabilityDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective RapidVulnerabilityDetectionSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "webSecurityScannerSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.organizations.webSecurityScannerSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/organizations/{organizationsId}/webSecurityScannerSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the WebSecurityScannerSettings to calculate. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+                  "pattern": "^organizations\/[^\/]+\/webSecurityScannerSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "WebSecurityScannerSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective WebSecurityScannerSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        }
+      }
+    },
+    "folders": {
+      "methods": {
+        "getOnboardingState": {
+          "id": "securitycenter.folders.getOnboardingState",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/onboardingState",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the OnboardingState to retrieve. Formats: * organizations\/{organization}\/onboardingState * folders\/{folder}\/onboardingState * projects\/{project}\/onboardingState",
+              "pattern": "^folders\/[^\/]+\/onboardingState$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "OnboardingState"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Retrieve the OnboardingState of a resource."
+        },
+        "getSecurityCenterSettings": {
+          "id": "securitycenter.folders.getSecurityCenterSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/securityCenterSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the SecurityCenterSettings to retrieve. Format: organizations\/{organization}\/securityCenterSettings Format: folders\/{folder}\/securityCenterSettings Format: projects\/{project}\/securityCenterSettings",
+              "pattern": "^folders\/[^\/]+\/securityCenterSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "SecurityCenterSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the SecurityCenterSettings resource."
+        },
+        "getContainerThreatDetectionSettings": {
+          "id": "securitycenter.folders.getContainerThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/containerThreatDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the ContainerThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+              "pattern": "^folders\/[^\/]+\/containerThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "ContainerThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the ContainerThreatDetectionSettings resource."
+        },
+        "updateContainerThreatDetectionSettings": {
+          "id": "securitycenter.folders.updateContainerThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/containerThreatDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the ContainerThreatDetectionSettings. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+              "pattern": "^folders\/[^\/]+\/containerThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "ContainerThreatDetectionSettings"
+          },
+          "response": {
+            "$ref": "ContainerThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the ContainerThreatDetectionSettings resource."
+        },
+        "getEventThreatDetectionSettings": {
+          "id": "securitycenter.folders.getEventThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/eventThreatDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the EventThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+              "pattern": "^folders\/[^\/]+\/eventThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "EventThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the EventThreatDetectionSettings resource."
+        },
+        "updateEventThreatDetectionSettings": {
+          "id": "securitycenter.folders.updateEventThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/eventThreatDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the EventThreatDetectionSettings. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+              "pattern": "^folders\/[^\/]+\/eventThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "EventThreatDetectionSettings"
+          },
+          "response": {
+            "$ref": "EventThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the EventThreatDetectionSettings resource."
+        },
+        "getSecurityHealthAnalyticsSettings": {
+          "id": "securitycenter.folders.getSecurityHealthAnalyticsSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/securityHealthAnalyticsSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the SecurityHealthAnalyticsSettings to retrieve. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+              "pattern": "^folders\/[^\/]+\/securityHealthAnalyticsSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "SecurityHealthAnalyticsSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the SecurityHealthAnalyticsSettings resource."
+        },
+        "updateSecurityHealthAnalyticsSettings": {
+          "id": "securitycenter.folders.updateSecurityHealthAnalyticsSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/securityHealthAnalyticsSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the SecurityHealthAnalyticsSettings. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+              "pattern": "^folders\/[^\/]+\/securityHealthAnalyticsSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "SecurityHealthAnalyticsSettings"
+          },
+          "response": {
+            "$ref": "SecurityHealthAnalyticsSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the SecurityHealthAnalyticsSettings resource."
+        },
+        "getVirtualMachineThreatDetectionSettings": {
+          "id": "securitycenter.folders.getVirtualMachineThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/virtualMachineThreatDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the VirtualMachineThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+              "pattern": "^folders\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the VirtualMachineThreatDetectionSettings resource."
+        },
+        "updateVirtualMachineThreatDetectionSettings": {
+          "id": "securitycenter.folders.updateVirtualMachineThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/virtualMachineThreatDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the VirtualMachineThreatDetectionSettings. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+              "pattern": "^folders\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "response": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the VirtualMachineThreatDetectionSettings resource."
+        },
+        "getRapidVulnerabilityDetectionSettings": {
+          "id": "securitycenter.folders.getRapidVulnerabilityDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/rapidVulnerabilityDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the RapidVulnerabilityDetectionSettings to retrieve. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+              "pattern": "^folders\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the RapidVulnerabilityDetectionSettings resource."
+        },
+        "updateRapidVulnerabilityDetectionSettings": {
+          "id": "securitycenter.folders.updateRapidVulnerabilityDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/rapidVulnerabilityDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the RapidVulnerabilityDetectionSettings. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+              "pattern": "^folders\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "response": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the RapidVulnerabilityDetectionSettings resource."
+        },
+        "getWebSecurityScannerSettings": {
+          "id": "securitycenter.folders.getWebSecurityScannerSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/webSecurityScannerSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the WebSecurityScannerSettings to retrieve. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+              "pattern": "^folders\/[^\/]+\/webSecurityScannerSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "WebSecurityScannerSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the WebSecurityScannerSettings resource."
+        },
+        "updateWebSecurityScannerSettings": {
+          "id": "securitycenter.folders.updateWebSecurityScannerSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/webSecurityScannerSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the WebSecurityScannerSettings. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+              "pattern": "^folders\/[^\/]+\/webSecurityScannerSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "WebSecurityScannerSettings"
+          },
+          "response": {
+            "$ref": "WebSecurityScannerSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the WebSecurityScannerSettings resource."
+        }
+      }
+      ,
+      "resources": {
+        "containerThreatDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.folders.containerThreatDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/folders/{foldersId}/containerThreatDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the ContainerThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+                  "pattern": "^folders\/[^\/]+\/containerThreatDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ContainerThreatDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective ContainerThreatDetectionSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "eventThreatDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.folders.eventThreatDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/folders/{foldersId}/eventThreatDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the EventThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+                  "pattern": "^folders\/[^\/]+\/eventThreatDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "EventThreatDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective EventThreatDetectionSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "securityHealthAnalyticsSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.folders.securityHealthAnalyticsSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/folders/{foldersId}/securityHealthAnalyticsSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the SecurityHealthAnalyticsSettings to calculate. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+                  "pattern": "^folders\/[^\/]+\/securityHealthAnalyticsSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "SecurityHealthAnalyticsSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective SecurityHealthAnalyticsSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "virtualMachineThreatDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.folders.virtualMachineThreatDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/folders/{foldersId}/virtualMachineThreatDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the VirtualMachineThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+                  "pattern": "^folders\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "VirtualMachineThreatDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "rapidVulnerabilityDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.folders.rapidVulnerabilityDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/folders/{foldersId}/rapidVulnerabilityDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the RapidVulnerabilityDetectionSettings to calculate. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+                  "pattern": "^folders\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "RapidVulnerabilityDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective RapidVulnerabilityDetectionSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "webSecurityScannerSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.folders.webSecurityScannerSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/folders/{foldersId}/webSecurityScannerSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the WebSecurityScannerSettings to calculate. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+                  "pattern": "^folders\/[^\/]+\/webSecurityScannerSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "WebSecurityScannerSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective WebSecurityScannerSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        }
+      }
+    },
+    "projects": {
+      "methods": {
+        "getOnboardingState": {
+          "id": "securitycenter.projects.getOnboardingState",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/onboardingState",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the OnboardingState to retrieve. Formats: * organizations\/{organization}\/onboardingState * folders\/{folder}\/onboardingState * projects\/{project}\/onboardingState",
+              "pattern": "^projects\/[^\/]+\/onboardingState$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "OnboardingState"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Retrieve the OnboardingState of a resource."
+        },
+        "getSecurityCenterSettings": {
+          "id": "securitycenter.projects.getSecurityCenterSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/securityCenterSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the SecurityCenterSettings to retrieve. Format: organizations\/{organization}\/securityCenterSettings Format: folders\/{folder}\/securityCenterSettings Format: projects\/{project}\/securityCenterSettings",
+              "pattern": "^projects\/[^\/]+\/securityCenterSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "SecurityCenterSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the SecurityCenterSettings resource."
+        },
+        "getContainerThreatDetectionSettings": {
+          "id": "securitycenter.projects.getContainerThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/containerThreatDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the ContainerThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+              "pattern": "^projects\/[^\/]+\/containerThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "ContainerThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the ContainerThreatDetectionSettings resource."
+        },
+        "updateContainerThreatDetectionSettings": {
+          "id": "securitycenter.projects.updateContainerThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/containerThreatDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the ContainerThreatDetectionSettings. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+              "pattern": "^projects\/[^\/]+\/containerThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "ContainerThreatDetectionSettings"
+          },
+          "response": {
+            "$ref": "ContainerThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the ContainerThreatDetectionSettings resource."
+        },
+        "getEventThreatDetectionSettings": {
+          "id": "securitycenter.projects.getEventThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/eventThreatDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the EventThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+              "pattern": "^projects\/[^\/]+\/eventThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "EventThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the EventThreatDetectionSettings resource."
+        },
+        "updateEventThreatDetectionSettings": {
+          "id": "securitycenter.projects.updateEventThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/eventThreatDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the EventThreatDetectionSettings. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+              "pattern": "^projects\/[^\/]+\/eventThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "EventThreatDetectionSettings"
+          },
+          "response": {
+            "$ref": "EventThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the EventThreatDetectionSettings resource."
+        },
+        "getSecurityHealthAnalyticsSettings": {
+          "id": "securitycenter.projects.getSecurityHealthAnalyticsSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/securityHealthAnalyticsSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the SecurityHealthAnalyticsSettings to retrieve. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+              "pattern": "^projects\/[^\/]+\/securityHealthAnalyticsSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "SecurityHealthAnalyticsSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the SecurityHealthAnalyticsSettings resource."
+        },
+        "updateSecurityHealthAnalyticsSettings": {
+          "id": "securitycenter.projects.updateSecurityHealthAnalyticsSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/securityHealthAnalyticsSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the SecurityHealthAnalyticsSettings. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+              "pattern": "^projects\/[^\/]+\/securityHealthAnalyticsSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "SecurityHealthAnalyticsSettings"
+          },
+          "response": {
+            "$ref": "SecurityHealthAnalyticsSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the SecurityHealthAnalyticsSettings resource."
+        },
+        "getVirtualMachineThreatDetectionSettings": {
+          "id": "securitycenter.projects.getVirtualMachineThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/virtualMachineThreatDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the VirtualMachineThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+              "pattern": "^projects\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the VirtualMachineThreatDetectionSettings resource."
+        },
+        "updateVirtualMachineThreatDetectionSettings": {
+          "id": "securitycenter.projects.updateVirtualMachineThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/virtualMachineThreatDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the VirtualMachineThreatDetectionSettings. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+              "pattern": "^projects\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "response": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the VirtualMachineThreatDetectionSettings resource."
+        },
+        "getRapidVulnerabilityDetectionSettings": {
+          "id": "securitycenter.projects.getRapidVulnerabilityDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/rapidVulnerabilityDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the RapidVulnerabilityDetectionSettings to retrieve. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+              "pattern": "^projects\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the RapidVulnerabilityDetectionSettings resource."
+        },
+        "updateRapidVulnerabilityDetectionSettings": {
+          "id": "securitycenter.projects.updateRapidVulnerabilityDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/rapidVulnerabilityDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the RapidVulnerabilityDetectionSettings. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+              "pattern": "^projects\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "response": {
+            "$ref": "RapidVulnerabilityDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the RapidVulnerabilityDetectionSettings resource."
+        },
+        "getWebSecurityScannerSettings": {
+          "id": "securitycenter.projects.getWebSecurityScannerSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/webSecurityScannerSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the WebSecurityScannerSettings to retrieve. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+              "pattern": "^projects\/[^\/]+\/webSecurityScannerSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "WebSecurityScannerSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the WebSecurityScannerSettings resource."
+        },
+        "updateWebSecurityScannerSettings": {
+          "id": "securitycenter.projects.updateWebSecurityScannerSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/webSecurityScannerSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the WebSecurityScannerSettings. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+              "pattern": "^projects\/[^\/]+\/webSecurityScannerSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "WebSecurityScannerSettings"
+          },
+          "response": {
+            "$ref": "WebSecurityScannerSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the WebSecurityScannerSettings resource."
+        }
+      }
+      ,
+      "resources": {
+        "locations": {
+          "resources": {
+            "clusters": {
+              "methods": {
+                "getContainerThreatDetectionSettings": {
+                  "id": "securitycenter.projects.locations.clusters.getContainerThreatDetectionSettings",
+                  "path": "v1beta2/{+name}",
+                  "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/containerThreatDetectionSettings",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the ContainerThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/containerThreatDetectionSettings$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ContainerThreatDetectionSettings"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get the ContainerThreatDetectionSettings resource."
+                },
+                "updateContainerThreatDetectionSettings": {
+                  "id": "securitycenter.projects.locations.clusters.updateContainerThreatDetectionSettings",
+                  "path": "v1beta2/{+name}",
+                  "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/containerThreatDetectionSettings",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the ContainerThreatDetectionSettings. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/containerThreatDetectionSettings$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The list of fields to be updated.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ContainerThreatDetectionSettings"
+                  },
+                  "response": {
+                    "$ref": "ContainerThreatDetectionSettings"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update the ContainerThreatDetectionSettings resource."
+                }
+              }
+              ,
+              "resources": {
+                "containerThreatDetectionSettings": {
+                  "methods": {
+                    "calculate": {
+                      "id": "securitycenter.projects.locations.clusters.containerThreatDetectionSettings.calculate",
+                      "path": "v1beta2/{+name}:calculate",
+                      "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/containerThreatDetectionSettings:calculate",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the ContainerThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/containerThreatDetectionSettings$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "ContainerThreatDetectionSettings"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Calculates the effective ContainerThreatDetectionSettings based on its level in the resource hierarchy and its settings."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "containerThreatDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.projects.containerThreatDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/projects/{projectsId}/containerThreatDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the ContainerThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/containerThreatDetectionSettings * folders\/{folder}\/containerThreatDetectionSettings * projects\/{project}\/containerThreatDetectionSettings * projects\/{project}\/locations\/{location}\/clusters\/{cluster}\/containerThreatDetectionSettings",
+                  "pattern": "^projects\/[^\/]+\/containerThreatDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ContainerThreatDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective ContainerThreatDetectionSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "eventThreatDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.projects.eventThreatDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/projects/{projectsId}/eventThreatDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the EventThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/eventThreatDetectionSettings * folders\/{folder}\/eventThreatDetectionSettings * projects\/{project}\/eventThreatDetectionSettings",
+                  "pattern": "^projects\/[^\/]+\/eventThreatDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "EventThreatDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective EventThreatDetectionSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "securityHealthAnalyticsSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.projects.securityHealthAnalyticsSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/projects/{projectsId}/securityHealthAnalyticsSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the SecurityHealthAnalyticsSettings to calculate. Formats: * organizations\/{organization}\/securityHealthAnalyticsSettings * folders\/{folder}\/securityHealthAnalyticsSettings * projects\/{project}\/securityHealthAnalyticsSettings",
+                  "pattern": "^projects\/[^\/]+\/securityHealthAnalyticsSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "SecurityHealthAnalyticsSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective SecurityHealthAnalyticsSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "virtualMachineThreatDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.projects.virtualMachineThreatDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/projects/{projectsId}/virtualMachineThreatDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the VirtualMachineThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+                  "pattern": "^projects\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "VirtualMachineThreatDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "rapidVulnerabilityDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.projects.rapidVulnerabilityDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/projects/{projectsId}/rapidVulnerabilityDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the RapidVulnerabilityDetectionSettings to calculate. Formats: * organizations\/{organization}\/rapidVulnerabilityDetectionSettings * folders\/{folder}\/rapidVulnerabilityDetectionSettings * projects\/{project}\/rapidVulnerabilityDetectionSettings",
+                  "pattern": "^projects\/[^\/]+\/rapidVulnerabilityDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "RapidVulnerabilityDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective RapidVulnerabilityDetectionSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "webSecurityScannerSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.projects.webSecurityScannerSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/projects/{projectsId}/webSecurityScannerSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the WebSecurityScannerSettings to calculate. Formats: * organizations\/{organization}\/webSecurityScannerSettings * folders\/{folder}\/webSecurityScannerSettings * projects\/{project}\/webSecurityScannerSettings",
+                  "pattern": "^projects\/[^\/]+\/webSecurityScannerSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "WebSecurityScannerSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective WebSecurityScannerSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

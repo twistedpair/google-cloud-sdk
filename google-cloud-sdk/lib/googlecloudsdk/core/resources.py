@@ -189,7 +189,7 @@ class _ResourceParser(object):
       relative_name: str, resource relative name.
       base_url: str, base url part of the api which manages this resource.
       subcollection: str, id of subcollection. See the api resource module
-          (googlecloudsdk/third_party/apis/API_NAME/API_VERSION/resources.py).
+          (googlecloudsdk/generated_clients/apis/API_NAME/API_VERSION/resources.py).
       url_unescape: bool, if true relative name parameters will be unescaped.
 
     Returns:

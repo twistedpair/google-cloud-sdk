@@ -2307,6 +2307,42 @@ Examples:
       help=help_text)
 
 
+def AddAdditionalPodIpv4RangesFlag(parser, hidden=True):
+  """Adds additional pod IPv4 ranges flag to parser."""
+
+  help_text = """\
+Additional IP ranges(by name) for pods that need to be added to the cluster.
+
+Examples:
+
+  $ {command} example-cluster --additional-pod-ipv4-ranges=range1,range2
+"""
+  parser.add_argument(
+      '--additional-pod-ipv4-ranges',
+      metavar='NAME',
+      hidden=hidden,
+      type=arg_parsers.ArgList(min_length=1),
+      help=help_text)
+
+
+def AddRemoveAdditionalPodIpv4RangesFlag(parser, hidden=True):
+  """Adds flag to remove additional pod IPv4 ranges to parser."""
+
+  help_text = """\
+Previously added additional pod ranges(by name) for pods that are to be removed from the cluster.
+
+Examples:
+
+  $ {command} example-cluster --remove-additional-pod-ipv4-ranges=range1,range2
+"""
+  parser.add_argument(
+      '--remove-additional-pod-ipv4-ranges',
+      metavar='NAME',
+      hidden=hidden,
+      type=arg_parsers.ArgList(min_length=1),
+      help=help_text)
+
+
 def AddDiskSizeFlag(parser):
   parser.add_argument(
       '--disk-size',
@@ -3336,15 +3372,19 @@ def AddStackTypeFlag(parser, hidden=False):
       choices=['ipv4', 'ipv4-ipv6'])
 
 
-def AddIpv6AccessTypeFlag(parser):
+def AddIpv6AccessTypeFlag(parser, hidden=False):
   """Adds --ipv6-access-type flag to the given parser.
 
   Args:
     parser: A given parser.
+    hidden: If true, suppress help text for added options.
   """
   help_text = "IPv6 access type of the subnetwork. Defaults to 'external'"
   parser.add_argument(
-      '--ipv6-access-type', help=help_text, choices=['external', 'internal'])
+      '--ipv6-access-type',
+      hidden=hidden,
+      help=help_text,
+      choices=['external', 'internal'])
 
 
 def AddEnableIntraNodeVisibilityFlag(parser, hidden=False):

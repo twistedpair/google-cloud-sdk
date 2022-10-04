@@ -90,3 +90,18 @@ operation:
     attribute_name: operation
     help: |
       The operation_id for the Operation Resource of Beyondcorp service.
+
+
+appgateway:
+  name: appgateway
+  collection: beyondcorp.projects.locations.appGateways
+  request_id_field: appGatewayId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - &appgateway
+    parameter_name: appGatewaysId
+    attribute_name: app_gateway
+    help: |
+      The gateway_id for the Gateway Resource of the Beyondcorp service.

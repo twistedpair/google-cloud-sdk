@@ -37,6 +37,7 @@ from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.calliope.arg_parsers import ArgumentTypeError
+from googlecloudsdk.command_lib.eventarc import types as trigger_types
 from googlecloudsdk.command_lib.functions import flags
 from googlecloudsdk.command_lib.functions import labels_util
 from googlecloudsdk.command_lib.functions import secrets_config
@@ -529,8 +530,7 @@ def _GetEventTrigger(args, messages, existing_function):
     event_trigger.retryPolicy = retry_policy
     updated_fields_set = updated_fields_set.union(retry_updated_field)
 
-  if (event_trigger and
-      event_trigger.eventType == api_util.EA_PUBSUB_MESSAGE_PUBLISHED):
+  if event_trigger and trigger_types.IsPubsubType(event_trigger.eventType):
     pubsub_sa = 'service-{}@gcp-sa-pubsub.iam.gserviceaccount.com'.format(
         projects_util.GetProjectNumber(api_util.GetProject()))
     if not api_util.HasRoleBinding(pubsub_sa,
@@ -541,6 +541,15 @@ def _GetEventTrigger(args, messages, existing_function):
           reason=('Pub/Sub needs this role to create identity tokens. '
                   'For more details, please see '
                   'https://cloud.google.com/pubsub/docs/push#authentication'))
+
+  if event_trigger and trigger_types.IsAuditLogType(event_trigger.eventType):
+    service_filter = [
+        f for f in event_trigger.eventFilters if f.attribute == 'serviceName'
+    ]
+    if service_filter:
+      service = service_filter[0].value
+      if not api_util.HasDataAccessAuditLogsFullyEnabled(service):
+        api_util.PromptToEnableDataAccessAuditLogs(service)
 
   return event_trigger, updated_fields_set
 

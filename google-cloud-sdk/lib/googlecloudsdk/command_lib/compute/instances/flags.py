@@ -1729,7 +1729,14 @@ def ValidateInstanceScheduling(args, support_max_run_duration=False):
   """Validates instance scheduling related flags."""
 
   if args.IsSpecified('instance_termination_action'):
-    if not args.IsSpecified('provisioning_model'):
+    if support_max_run_duration:
+      if not (args.IsSpecified('provisioning_model') or
+              args.IsSpecified('max_run_duration') or
+              args.IsSpecified('termination_time')):
+        raise exceptions.MinimumArgumentException([
+            '--provisioning-model', '--max-run-duration', '--termination-time'
+        ], 'required with argument `--instance-termination-action`.')
+    elif not args.IsSpecified('provisioning_model'):
       raise exceptions.RequiredArgumentException(
           '--provisioning-model',
           'required with argument `--instance-termination-action`.')

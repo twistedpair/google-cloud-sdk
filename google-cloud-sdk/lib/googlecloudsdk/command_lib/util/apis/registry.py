@@ -29,7 +29,7 @@ from googlecloudsdk.api_lib.util import resource
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.apis import apis_map
+from googlecloudsdk.generated_clients.apis import apis_map
 import six
 
 NAME_SEPARATOR = '.'

@@ -1,0 +1,565 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "securedlandingzone:v1beta",
+  "name": "securedlandingzone",
+  "canonicalName": "Secured Landing Zone",
+  "version": "v1beta",
+  "revision": "0",
+  "title": "Secured Landing Zone API",
+  "description": "",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/security-command-center/docs/concepts-secured-landing-zone-overview",
+  "protocol": "rest",
+  "rootUrl": "https://securedlandingzone.googleapis.com/",
+  "mtlsRootUrl": "https://securedlandingzone.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://securedlandingzone.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
+  "schemas": {
+    "GoogleLongrunningOperation": {
+      "id": "GoogleLongrunningOperation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "GoogleRpcStatus"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "GoogleRpcStatus": {
+      "id": "GoogleRpcStatus",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchRequest": {
+      "id": "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchRequest",
+      "description": "The request message for enabling Overwatch service for an organization in a region.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchResponse": {
+      "id": "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchResponse",
+      "description": "The response message for enabling Overwatch on an organization in a region.",
+      "type": "object",
+      "properties": {
+        "serviceAccount": {
+          "description": "Required. The service account created to grant the required permissions for the Overwatch service to remediate drifts.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudSecuredlandingzoneV1betaOverwatch": {
+      "id": "GoogleCloudSecuredlandingzoneV1betaOverwatch",
+      "description": "The Overwatch resource which holds all metadata related to an Overwatch instance.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The name of this Overwatch resource, in the format of organizations\/{org_id}\/locations\/{location_id}\/overwatches\/{overwatch_id}.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The operation state of Overwatch resource that decides if response actions will be taken upon receiving drift or threat signals. This field is mutable by using the ActivateOverwatch or SuspendOverwatch actions.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified operation state.",
+            "The Overwatch resource is suspended and no response actions are taken.",
+            "The Overwatch resource is active, and response actions will be taken based on the policies, when signals are received. This is the normal operating state.",
+            "The Overwatch resource is being created and not yet active.",
+            "The Overwatch resource is in the process of being deleted.",
+            "The Overwatch resource's blueprint state is being updated."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "SUSPENDED",
+            "ACTIVE",
+            "CREATING",
+            "DELETING",
+            "UPDATING"
+          ]
+        },
+        "planData": {
+          "description": "Input only. The terraform plan file passed as bytes.",
+          "type": "string",
+          "format": "byte"
+        },
+        "remediationServiceAccount": {
+          "description": "Output only. This service account will be used by the Overwatch service for remediating drifts.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Creation time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Update time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudSecuredlandingzoneV1betaActivateOverwatchRequest": {
+      "id": "GoogleCloudSecuredlandingzoneV1betaActivateOverwatchRequest",
+      "description": "The request message for activating an Overwatch resource.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudSecuredlandingzoneV1betaSuspendOverwatchRequest": {
+      "id": "GoogleCloudSecuredlandingzoneV1betaSuspendOverwatchRequest",
+      "description": "The request message for suspending an Overwatch resource.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudSecuredlandingzoneV1betaListOverwatchesResponse": {
+      "id": "GoogleCloudSecuredlandingzoneV1betaListOverwatchesResponse",
+      "description": "The response message for ListOverwatch.",
+      "type": "object",
+      "properties": {
+        "overwatches": {
+          "description": "List of Overwatch resources under the specified parent in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudSecuredlandingzoneV1betaOverwatch"
+          }
+        },
+        "nextPageToken": {
+          "description": "A pagination token to retrieve the next page of results, or empty if there are no more results.",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "resources": {
+    "organizations": {
+      "resources": {
+        "locations": {
+          "methods": {
+            "enableOverwatch": {
+              "id": "securedlandingzone.organizations.locations.enableOverwatch",
+              "path": "v1beta/{+organization}:enableOverwatch",
+              "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}:enableOverwatch",
+              "httpMethod": "POST",
+              "parameters": {
+                "organization": {
+                  "description": "Required. Organization for which Overwatch service has to be enabled. The format is organizations\/{org_id}\/locations\/{location_id}.",
+                  "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "organization"
+              ],
+              "request": {
+                "$ref": "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchRequest"
+              },
+              "response": {
+                "$ref": "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Enables the Secured Landing Zone Overwatch service for an organization in a region."
+            }
+          }
+          ,
+          "resources": {
+            "operations": {
+              "methods": {
+                "get": {
+                  "id": "securedlandingzone.organizations.locations.operations.get",
+                  "path": "v1beta/{+name}",
+                  "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                }
+              }
+            },
+            "overwatches": {
+              "methods": {
+                "create": {
+                  "id": "securedlandingzone.organizations.locations.overwatches.create",
+                  "path": "v1beta/{+parent}/overwatches",
+                  "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}/overwatches",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The name of the organization and region in which to create the Overwatch resource. The format is organizations\/{org_id}\/locations\/{location_id}.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "overwatchId": {
+                      "description": "Required. Unique id per organization per region for this overwatch instance.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudSecuredlandingzoneV1betaOverwatch"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Create a new overwatch resource."
+                },
+                "delete": {
+                  "id": "securedlandingzone.organizations.locations.overwatches.delete",
+                  "path": "v1beta/{+name}",
+                  "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}/overwatches/{overwatchesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the overwatch resource to delete. The format is organizations\/{org_id}\/locations\/{location_id}\/overwatches\/{overwatch_id}.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/overwatches\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Delete an overwatch resource."
+                },
+                "patch": {
+                  "id": "securedlandingzone.organizations.locations.overwatches.patch",
+                  "path": "v1beta/{+name}",
+                  "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}/overwatches/{overwatchesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The name of this Overwatch resource, in the format of organizations\/{org_id}\/locations\/{location_id}\/overwatches\/{overwatch_id}.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/overwatches\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. The FieldMask to use when updating the Overwatch. Only the fields specified here will be updated. This should not be empty. Updatable fields are: * blueprint_plan",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudSecuredlandingzoneV1betaOverwatch"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update the blueprint deployed resources of an overwatch resource."
+                },
+                "activate": {
+                  "id": "securedlandingzone.organizations.locations.overwatches.activate",
+                  "path": "v1beta/{+name}:activate",
+                  "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}/overwatches/{overwatchesId}:activate",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Overwatch resource to activate. The format is organizations\/{org_id}\/locations\/{location_id}\/overwatches\/{overwatch_id}.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/overwatches\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudSecuredlandingzoneV1betaActivateOverwatchRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudSecuredlandingzoneV1betaOverwatch"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Activate an overwatch resource. This sets the state to ACTIVE, response actions will now be taken against signals according to the playbook."
+                },
+                "suspend": {
+                  "id": "securedlandingzone.organizations.locations.overwatches.suspend",
+                  "path": "v1beta/{+name}:suspend",
+                  "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}/overwatches/{overwatchesId}:suspend",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Overwatch resource to suspend. The format is organizations\/{org_id}\/locations\/{location_id}\/overwatches\/{overwatch_id}.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/overwatches\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudSecuredlandingzoneV1betaSuspendOverwatchRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudSecuredlandingzoneV1betaOverwatch"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Suspend an overwatch resource. This sets the state to SUSPENDED, and will stop all future response actions."
+                },
+                "get": {
+                  "id": "securedlandingzone.organizations.locations.overwatches.get",
+                  "path": "v1beta/{+name}",
+                  "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}/overwatches/{overwatchesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the overwatch resource to get. The format is organizations\/{org_id}\/locations\/{location_id}\/overwatches\/{overwatch_id}.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/overwatches\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudSecuredlandingzoneV1betaOverwatch"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get an overwatch resource."
+                },
+                "list": {
+                  "id": "securedlandingzone.organizations.locations.overwatches.list",
+                  "path": "v1beta/{+parent}/overwatches",
+                  "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}/overwatches",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The name of the organization and region to list Overwatch resources. The format is organizations\/{org_id}\/locations\/{location_id}.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of results to return in a single response. Default is 50, minimum is 1 and maximum is 1000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. The value returned by the last `ListOverwatchRequest`; indicates that this is a continuation of the prior `ListOverwatchRequest` call and that the system should return the next page of data.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudSecuredlandingzoneV1betaListOverwatchesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List overwatch resources created under a parent resource."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

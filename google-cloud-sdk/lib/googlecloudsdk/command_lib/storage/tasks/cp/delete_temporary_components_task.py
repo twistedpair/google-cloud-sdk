@@ -21,7 +21,8 @@ from __future__ import unicode_literals
 import glob
 import os
 
-from googlecloudsdk.api_lib.storage import errors
+from googlecloudsdk.api_lib.storage import errors as api_errors
+from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
@@ -33,7 +34,7 @@ def _try_delete_and_return_permissions_error(component_url):
   """Attempts deleting component and returns any permissions errors."""
   try:
     delete_object_task.DeleteObjectTask(component_url, verbose=False).execute()
-  except errors.CloudApiError as e:
+  except api_errors.CloudApiError as e:
     status = getattr(e, 'status_code', None)
     if status == 403:
       return e
@@ -109,14 +110,15 @@ class DeleteTemporaryComponentsTask(task.Task):
 
     if permissions_error:
       log.error(
-          'Permissions error detected deleting object component.'
-          '\nTo disable parallel composite uploads, run:'
+          'Parallel composite upload failed: Permissions error detected while'
+          ' attempting to delete object component.'
+          '\n\nTo disable parallel composite uploads, run:'
           '\ngcloud config set storage/parallel_composite_upload_enabled False'
           '\n\nTo delete the temporary objects left over by this command,'
           ' switch to an account with appropriate permissions and run:'
           '\ngcloud storage rm {}'.format(' '.join(
               [url.url_string for url in component_urls])))
-      raise permissions_error
+      raise command_errors.FatalError(permissions_error)
 
     if component_urls:
       additional_task_iterators = [[

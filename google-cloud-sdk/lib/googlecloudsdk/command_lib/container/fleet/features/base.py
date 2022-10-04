@@ -253,7 +253,11 @@ def ParseMembership(args, prompt=False):
         flag, 'At least one membership is required for this command.')
 
 
-def ParseMembershipsPlural(args, prompt=False, allow_cross_project=False):
+def ParseMembershipsPlural(args,
+                           prompt=False,
+                           prompt_cancel=True,
+                           allow_cross_project=False,
+                           search=False):
   """Parses a list of membership resources from args.
 
   Allows for a `--memberships` flag and a `--all-memberships` flag.
@@ -262,7 +266,9 @@ def ParseMembershipsPlural(args, prompt=False, allow_cross_project=False):
     args: object containing arguments passed as flags with the command
     prompt: whether to prompt in console for a membership when none are provided
       in args
+    prompt_cancel: whether to include a 'cancel' option in the prompt
     allow_cross_project: whether to allow memberships from different projects
+    search: whether to check that the membership exists in the fleet
 
   Returns:
     memberships: A list of membership resource name strings
@@ -274,7 +280,7 @@ def ParseMembershipsPlural(args, prompt=False, allow_cross_project=False):
   memberships = []
 
   # If running for all memberships
-  if hasattr(args, 'all_memberships'):
+  if hasattr(args, 'all_memberships') and args.all_memberships:
     all_memberships, unreachable = api_util.ListMembershipsFull()
     if unreachable:
       raise exceptions.Error(
@@ -289,15 +295,15 @@ def ParseMembershipsPlural(args, prompt=False, allow_cross_project=False):
     if resources.MembershipLocationSpecified(args):
       memberships += resources.PluralMembershipsResourceNames(args)
     else:
-      memberships += resources.SearchMembershipResource(args, plural=True)
+      memberships += resources.SearchMembershipResourcesPlural(args)
 
   if memberships:
-    # Verify memberships
-    # @wenjung
-    # for membership in memberships:
-    #   if membership not in all_memberships:
-    #     raise exceptions.Error(
-    #         'Membership {} does not exist in the fleet.'.format(membership))
+    if search:
+      all_memberships, unreachable = api_util.ListMembershipsFull()
+      for membership in memberships:
+        if membership not in all_memberships:
+          raise exceptions.Error(
+              'Membership {} does not exist in the fleet.'.format(membership))
     if not allow_cross_project and len(
         resources.GetMembershipProjects(memberships)) > 1:
       raise CrossProjectError(resources.GetMembershipProjects(memberships))
@@ -310,7 +316,7 @@ def ParseMembershipsPlural(args, prompt=False, allow_cross_project=False):
     raise calliope_exceptions.RequiredArgumentException(
         flag, 'At least one membership is required for this command.')
 
-  membership = resources.PromptForMembership()
+  membership = resources.PromptForMembership(cancel=prompt_cancel)
   if membership:
     memberships.append(membership)
   else:

@@ -39,6 +39,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import devshell as c_devshell
+from googlecloudsdk.core.credentials import exceptions as c_exceptions
 from googlecloudsdk.core.credentials import introspect as c_introspect
 from googlecloudsdk.core.util import files
 from oauth2client import client
@@ -142,6 +143,13 @@ def IsExternalAccountUserCredentials(creds):
   if IsGoogleAuthCredentials(creds):
     return (CredentialTypeGoogleAuth.FromCredentials(creds) ==
             CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT_USER)
+  return False
+
+
+def IsImpersonatedAccountCredentials(creds):
+  if IsGoogleAuthCredentials(creds):
+    return (CredentialTypeGoogleAuth.FromCredentials(creds) ==
+            CredentialTypeGoogleAuth.IMPERSONATED_ACCOUNT)
   return False
 
 
@@ -1042,21 +1050,22 @@ def FromJsonGoogleAuth(json_value):
                      ) == 'urn:ietf:params:aws:token-type:aws4_request':
         # Check if configuration corresponds to an AWS credentials.
         from google.auth import aws  # pylint: disable=g-import-not-at-top
-        return aws.Credentials.from_info(
+        cred = aws.Credentials.from_info(
             json_key, scopes=config.CLOUDSDK_SCOPES)
       elif (json_key.get('credential_source') is not None and
             json_key.get('credential_source').get('executable') is not None):
         from google.auth import pluggable  # pylint: disable=g-import-not-at-top
-        return pluggable.Credentials.from_info(
+        cred = pluggable.Credentials.from_info(
             json_key, scopes=config.CLOUDSDK_SCOPES)
       else:
         from google.auth import identity_pool  # pylint: disable=g-import-not-at-top
-        return identity_pool.Credentials.from_info(
+        cred = identity_pool.Credentials.from_info(
             json_key, scopes=config.CLOUDSDK_SCOPES)
     except (ValueError, TypeError, google_auth_exceptions.RefreshError):
       raise InvalidCredentialsError(
           'The provided external account credentials are invalid or '
           'unsupported')
+    return WrapGoogleAuthExternalAccountRefresh(cred)
 
   if cred_type == CredentialTypeGoogleAuth.USER_ACCOUNT:
     json_key['token_uri'] = GetEffectiveTokenUri(json_key)
@@ -1074,6 +1083,31 @@ def FromJsonGoogleAuth(json_value):
   raise UnknownCredentialsType(
       'Google auth does not support deserialization of {} credentials.'.format(
           json_key['type']))
+
+
+def WrapGoogleAuthExternalAccountRefresh(cred):
+  """Returns a wrapped External Account credentials.
+
+  We wrap the refresh method to make sure that any errors raised can be caught
+  in a consistent way by downstream consumers.
+
+  Args:
+    cred: google.auth.credentials.Credentials
+
+  Returns:
+    google.auth.credentials.Credentials
+  """
+
+  orig_refresh = cred.refresh
+
+  def _WrappedRefresh(request):
+    try:
+      orig_refresh(request)
+    except (ValueError, TypeError, google_auth_exceptions.RefreshError) as e:
+      raise c_exceptions.TokenRefreshError(e)
+
+  cred.refresh = _WrappedRefresh
+  return cred
 
 
 def _GetSqliteStoreWithCache(sqlite_credential_file=None,

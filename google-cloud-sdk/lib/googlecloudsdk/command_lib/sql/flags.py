@@ -1277,7 +1277,6 @@ def AddSqlServerTimeZone(parser):
   parser.add_argument(
       '--time-zone',
       required=False,
-      hidden=True,
       help=(
           'Set a non-default time zone. '
           'Only available for SQL Server instances.'

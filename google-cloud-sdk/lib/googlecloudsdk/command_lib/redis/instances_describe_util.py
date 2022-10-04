@@ -23,6 +23,9 @@ def FormatResponse(response, _):
   modified_response = {}
   if response.authorizedNetwork:
     modified_response['authorizedNetwork'] = response.authorizedNetwork
+  if response.availableMaintenanceVersions:
+    modified_response[
+        'availableMaintenanceVersions'] = response.availableMaintenanceVersions
   if response.connectMode:
     modified_response['connectMode'] = response.connectMode
   if response.createTime:
@@ -35,6 +38,8 @@ def FormatResponse(response, _):
     modified_response['locationId'] = response.locationId
   if response.maintenanceSchedule:
     modified_response['maintenanceSchedule'] = response.maintenanceSchedule
+  if response.maintenanceVersion:
+    modified_response['maintenanceVersion'] = response.maintenanceVersion
   if response.memorySizeGb:
     modified_response['memorySizeGb'] = response.memorySizeGb
   if response.name:

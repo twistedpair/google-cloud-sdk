@@ -26,6 +26,10 @@ class Error(core_exceptions.Error):
   """Base exception for command_lib.storage modules."""
 
 
+class FatalError(Error):
+  """Error raised when future execution should stop."""
+
+
 class HashMismatchError(Error):
   """Error raised when hashes don't match after operation."""
 

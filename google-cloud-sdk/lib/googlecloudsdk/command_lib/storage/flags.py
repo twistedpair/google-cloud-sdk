@@ -225,6 +225,19 @@ def _get_optional_help_text(require_create_flags, flag_name):
   return optional_text_map[flag_name] if require_create_flags else ''
 
 
+def add_inventory_reports_metadata_fields_flag(parser,
+                                               require_create_flags=False):
+  parser.add_argument(
+      '--metadata-fields',
+      metavar='METADATA_FIELDS',
+      default=(
+          INVENTORY_REPORTS_METADATA_FIELDS if require_create_flags else None),
+      type=arg_parsers.ArgList(choices=INVENTORY_REPORTS_METADATA_FIELDS),
+      help=('Lists the metadata fields you want included in the inventory '
+            'report.' +
+            _get_optional_help_text(require_create_flags, 'metadata_fields')))
+
+
 def add_inventory_reports_flags(parser, require_create_flags=False):
   """Adds the flags for the inventory reports create and update commands.
 
@@ -261,15 +274,6 @@ def add_inventory_reports_flags(parser, require_create_flags=False):
       type=str,
       help='Sets the editable name of the report configuration.')
   parser.add_argument(
-      '--metadata-fields',
-      metavar='METADATA_FIELDS',
-      default=(
-          INVENTORY_REPORTS_METADATA_FIELDS if require_create_flags else None),
-      type=arg_parsers.ArgList(choices=INVENTORY_REPORTS_METADATA_FIELDS),
-      help=('Lists the metadata fields you want included in the inventory '
-            'report.' +
-            _get_optional_help_text(require_create_flags, 'metadata_fields')))
-  parser.add_argument(
       '--schedule-starts',
       type=arg_parsers.Day.Parse,
       metavar='START_DATE',
@@ -293,3 +297,5 @@ def add_inventory_reports_flags(parser, require_create_flags=False):
           'Sets date after which you want to stop generating inventory reports. '
           'For example, 2022-03-30.' +
           _get_optional_help_text(require_create_flags, 'end_date')))
+  if require_create_flags:
+    add_inventory_reports_metadata_fields_flag(parser, require_create_flags)

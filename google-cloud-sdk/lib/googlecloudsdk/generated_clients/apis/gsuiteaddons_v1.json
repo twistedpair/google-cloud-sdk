@@ -1,0 +1,986 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "gsuiteaddons:v1",
+  "name": "gsuiteaddons",
+  "canonicalName": "Gsuiteaddons",
+  "version": "v1",
+  "revision": "0",
+  "title": "Google Workspace Add-ons API",
+  "description": "",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://developers.google.com/workspace/add-ons/guides/alternate-runtimes",
+  "protocol": "rest",
+  "rootUrl": "https://gsuiteaddons.googleapis.com/",
+  "mtlsRootUrl": "https://gsuiteaddons.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://gsuiteaddons.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
+  "schemas": {
+    "GoogleCloudGsuiteaddonsV1Authorization": {
+      "id": "GoogleCloudGsuiteaddonsV1Authorization",
+      "description": "The authorization information used when invoking deployment endpoints.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The canonical full name of this resource. Example: `projects\/123\/authorization`",
+          "type": "string"
+        },
+        "serviceAccountEmail": {
+          "description": "The email address of the service account used to authenticate requests to add-on callback endpoints.",
+          "type": "string"
+        },
+        "oauthClientId": {
+          "description": "The OAuth client ID used to obtain OAuth access tokens for a user on the add-on's behalf.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudGsuiteaddonsV1Deployment": {
+      "id": "GoogleCloudGsuiteaddonsV1Deployment",
+      "description": "A Google Workspace Add-on deployment",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The deployment resource name. Example: `projects\/123\/deployments\/my_deployment`.",
+          "type": "string"
+        },
+        "oauthScopes": {
+          "description": "The list of Google OAuth scopes for which to request consent from the end user before executing an add-on endpoint.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "addOns": {
+          "description": "The Google Workspace Add-on configuration.",
+          "$ref": "GoogleCloudGsuiteaddonsV1AddOns"
+        },
+        "etag": {
+          "description": "This value is computed by the server based on the version of the deployment in storage, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudGsuiteaddonsV1AddOns": {
+      "id": "GoogleCloudGsuiteaddonsV1AddOns",
+      "description": "A Google Workspace Add-on configuration.",
+      "type": "object",
+      "properties": {
+        "common": {
+          "description": "Configuration that is common across all Google Workspace Add-ons.",
+          "$ref": "GoogleAppsScriptTypeCommonAddOnManifest"
+        },
+        "gmail": {
+          "description": "Gmail add-on configuration.",
+          "$ref": "GoogleAppsScriptTypeGmailGmailAddOnManifest"
+        },
+        "drive": {
+          "description": "Drive add-on configuration.",
+          "$ref": "GoogleAppsScriptTypeDriveDriveAddOnManifest"
+        },
+        "calendar": {
+          "description": "Calendar add-on configuration.",
+          "$ref": "GoogleAppsScriptTypeCalendarCalendarAddOnManifest"
+        },
+        "docs": {
+          "description": "Docs add-on configuration.",
+          "$ref": "GoogleAppsScriptTypeDocsDocsAddOnManifest"
+        },
+        "sheets": {
+          "description": "Sheets add-on configuration.",
+          "$ref": "GoogleAppsScriptTypeSheetsSheetsAddOnManifest"
+        },
+        "slides": {
+          "description": "Slides add-on configuration.",
+          "$ref": "GoogleAppsScriptTypeSlidesSlidesAddOnManifest"
+        },
+        "httpOptions": {
+          "description": "Options for sending requests to add-on HTTP endpoints",
+          "$ref": "GoogleAppsScriptTypeHttpOptions"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeCommonAddOnManifest": {
+      "id": "GoogleAppsScriptTypeCommonAddOnManifest",
+      "description": "Add-on configuration that is shared across all add-on host applications.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The display name of the add-on.",
+          "type": "string"
+        },
+        "logoUrl": {
+          "description": "Required. The URL for the logo image shown in the add-on toolbar.",
+          "type": "string"
+        },
+        "layoutProperties": {
+          "description": "Common layout properties for the add-on cards.",
+          "$ref": "GoogleAppsScriptTypeLayoutProperties"
+        },
+        "addOnWidgetSet": {
+          "description": "The widgets used in the add-on. If this field is not specified, the default set is used.",
+          "$ref": "GoogleAppsScriptTypeAddOnWidgetSet"
+        },
+        "useLocaleFromApp": {
+          "description": "Whether to pass locale information from host app.",
+          "type": "boolean"
+        },
+        "homepageTrigger": {
+          "description": "Defines an endpoint that will be executed in any context, in any host. Any cards generated by this function will always be available to the user, but might be eclipsed by contextual content when this add-on declares more targeted triggers.",
+          "$ref": "GoogleAppsScriptTypeHomepageExtensionPoint"
+        },
+        "universalActions": {
+          "description": "Defines a list of extension points in the universal action menu which serves as a settings menu for the add-on. The extension point can be a link URL to open or an endpoint to execute as a form submission.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleAppsScriptTypeUniversalActionExtensionPoint"
+          }
+        },
+        "openLinkUrlPrefixes": {
+          "description": "An OpenLink action can only use a URL with an `HTTPS`, `MAILTO` or `TEL` scheme. For `HTTPS` links, the URL must also [match](\/gmail\/add-ons\/concepts\/manifests#whitelisting_urls) one of the prefixes specified in the allowlist. If the prefix omits the scheme, `HTTPS` is assumed. `HTTP` links are automatically rewritten to `HTTPS` links.",
+          "type": "array",
+          "items": {
+            "type": "any"
+          }
+        }
+      }
+    },
+    "GoogleAppsScriptTypeLayoutProperties": {
+      "id": "GoogleAppsScriptTypeLayoutProperties",
+      "description": "Card layout properties shared across all add-on host applications.",
+      "type": "object",
+      "properties": {
+        "primaryColor": {
+          "description": "The primary color of the add-on. It sets the color of the toolbar. If no primary color is set, the default value provided by the framework is used.",
+          "type": "string"
+        },
+        "secondaryColor": {
+          "description": "The secondary color of the add-on. It sets the color of buttons. If the primary color is set but no secondary color is set, the secondary color is the same as the primary color. If neither primary color nor secondary color is set, the default value provided by the framework is used.",
+          "type": "string"
+        },
+        "useNewMaterialDesign": {
+          "description": "Enables material design for cards.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeAddOnWidgetSet": {
+      "id": "GoogleAppsScriptTypeAddOnWidgetSet",
+      "description": "The widget subset used by an add-on.",
+      "type": "object",
+      "properties": {
+        "usedWidgets": {
+          "description": "The list of widgets used in an add-on.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "The default widget set.",
+              "The date picker.",
+              "Styled buttons include filled buttons and deactivated buttons.",
+              "Persistent forms allow persisting form values during actions.",
+              "Fixed footer in a card.",
+              "Update the subject and recipients of a draft.",
+              "The grid widget.",
+              "A Gmail add-on action that applies to the add-on compose UI."
+            ],
+            "enum": [
+              "WIDGET_TYPE_UNSPECIFIED",
+              "DATE_PICKER",
+              "STYLED_BUTTONS",
+              "PERSISTENT_FORMS",
+              "FIXED_FOOTER",
+              "UPDATE_SUBJECT_AND_RECIPIENTS",
+              "GRID_WIDGET",
+              "ADDON_COMPOSE_UI_ACTION"
+            ]
+          }
+        }
+      }
+    },
+    "GoogleAppsScriptTypeHomepageExtensionPoint": {
+      "id": "GoogleAppsScriptTypeHomepageExtensionPoint",
+      "description": "Common format for declaring an add-on's homepage view.",
+      "type": "object",
+      "properties": {
+        "runFunction": {
+          "description": "Required. The endpoint to execute when this extension point is activated.",
+          "type": "string"
+        },
+        "enabled": {
+          "description": "Optional. If set to `false`, deactivates the homepage view in this context. Defaults to `true` if unset. If an add-on's custom homepage view is disabled, a generic overview card is provided for users instead.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeUniversalActionExtensionPoint": {
+      "id": "GoogleAppsScriptTypeUniversalActionExtensionPoint",
+      "description": "Format for declaring a universal action menu item extension point.",
+      "type": "object",
+      "properties": {
+        "label": {
+          "description": "Required. User-visible text that describes the action taken by activating this extension point, for example, \"Add a new contact.\"",
+          "type": "string"
+        },
+        "openLink": {
+          "description": "URL to be opened by the UniversalAction.",
+          "type": "string"
+        },
+        "runFunction": {
+          "description": "Endpoint to be run by the UniversalAction.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeGmailGmailAddOnManifest": {
+      "id": "GoogleAppsScriptTypeGmailGmailAddOnManifest",
+      "description": "Properties customizing the appearance and execution of a Gmail add-on.",
+      "type": "object",
+      "properties": {
+        "homepageTrigger": {
+          "description": "Defines an endpoint that will be executed in contexts that don't match a declared contextual trigger. Any cards generated by this function will always be available to the user, but may be eclipsed by contextual content when this add-on declares more targeted triggers. If present, this overrides the configuration from `addOns.common.homepageTrigger`.",
+          "$ref": "GoogleAppsScriptTypeHomepageExtensionPoint"
+        },
+        "contextualTriggers": {
+          "description": "Defines the set of conditions that trigger the add-on.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleAppsScriptTypeGmailContextualTrigger"
+          }
+        },
+        "universalActions": {
+          "description": "Defines a set of [universal actions](\/gmail\/add-ons\/how-tos\/universal-actions) for the add-on. The user triggers universal actions from the add-on toolbar menu.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleAppsScriptTypeGmailUniversalAction"
+          }
+        },
+        "composeTrigger": {
+          "description": "Defines the compose time trigger for a compose time add-on. This is the trigger that causes an add-on to take action when the user is composing an email. All compose time add-ons must have the `gmail.addons.current.action.compose` scope even though it might not edit the draft.",
+          "$ref": "GoogleAppsScriptTypeGmailComposeTrigger"
+        },
+        "authorizationCheckFunction": {
+          "description": "The name of an endpoint that verifies that the add-on has all the required third-party authorizations, by probing the third-party APIs. If the probe fails, the function should throw an exception to initiate the authorization flow. This function is called before each invocation of the add-on in order to ensure a smooth user experience.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeGmailContextualTrigger": {
+      "id": "GoogleAppsScriptTypeGmailContextualTrigger",
+      "description": "Defines a trigger that fires when the open email meets a specific criteria. When the trigger fires, it executes a specific endpoint, usually in order to create new cards and update the UI.",
+      "type": "object",
+      "properties": {
+        "unconditional": {
+          "description": "Unconditional triggers are executed when any mail message is opened.",
+          "$ref": "GoogleAppsScriptTypeGmailUnconditionalTrigger"
+        },
+        "onTriggerFunction": {
+          "description": "Required. The name of the endpoint to call when a message matches the trigger.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeGmailUnconditionalTrigger": {
+      "id": "GoogleAppsScriptTypeGmailUnconditionalTrigger",
+      "description": "A trigger that fires when any email message is opened.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleAppsScriptTypeGmailUniversalAction": {
+      "id": "GoogleAppsScriptTypeGmailUniversalAction",
+      "description": "An action that is always available in the add-on toolbar menu regardless of message context.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Required. User-visible text describing the action, for example, \"Add a new contact.\"",
+          "type": "string"
+        },
+        "openLink": {
+          "description": "A link that is opened by Gmail when the user triggers the action.",
+          "type": "string"
+        },
+        "runFunction": {
+          "description": "An endpoint that is called when the user triggers the action. See the [universal actions guide](\/gmail\/add-ons\/how-tos\/universal-actions) for details.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeGmailComposeTrigger": {
+      "id": "GoogleAppsScriptTypeGmailComposeTrigger",
+      "description": "A trigger that activates when user is composing an email.",
+      "type": "object",
+      "properties": {
+        "actions": {
+          "description": "Defines the set of actions for a compose time add-on. These are actions that users can trigger on a compose time add-on.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleAppsScriptTypeMenuItemExtensionPoint"
+          }
+        },
+        "draftAccess": {
+          "description": "Defines the level of data access when a compose time add-on is triggered.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value when nothing is set for draftAccess.",
+            "The compose trigger can't access any data of the draft when a compose add-on is triggered.",
+            "Gives the compose trigger the permission to access the metadata of the draft when a compose add-on is triggered. This includes the audience list, such as the To and Cc list of a draft message."
+          ],
+          "enum": [
+            "UNSPECIFIED",
+            "NONE",
+            "METADATA"
+          ]
+        }
+      }
+    },
+    "GoogleAppsScriptTypeMenuItemExtensionPoint": {
+      "id": "GoogleAppsScriptTypeMenuItemExtensionPoint",
+      "description": "Common format for declaring a menu item or button that appears within a host app.",
+      "type": "object",
+      "properties": {
+        "runFunction": {
+          "description": "Required. The endpoint to execute when this extension point is activated.",
+          "type": "string"
+        },
+        "label": {
+          "description": "Required. User-visible text that describes the action taken by activating this extension point. For example, \"Insert invoice.\"",
+          "type": "string"
+        },
+        "logoUrl": {
+          "description": "The URL for the logo image shown in the add-on toolbar. If not set, defaults to the add-on's primary logo URL.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeDriveDriveAddOnManifest": {
+      "id": "GoogleAppsScriptTypeDriveDriveAddOnManifest",
+      "description": "Properties customizing the appearance and execution of a Drive add-on.",
+      "type": "object",
+      "properties": {
+        "homepageTrigger": {
+          "description": "If present, this overrides the configuration from `addOns.common.homepageTrigger`.",
+          "$ref": "GoogleAppsScriptTypeHomepageExtensionPoint"
+        },
+        "onItemsSelectedTrigger": {
+          "description": "Corresponds to behavior that executes when items are selected in the relevant Drive view, such as the My Drive Doclist.",
+          "$ref": "GoogleAppsScriptTypeDriveDriveExtensionPoint"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeDriveDriveExtensionPoint": {
+      "id": "GoogleAppsScriptTypeDriveDriveExtensionPoint",
+      "description": "Common format for declaring a Drive add-on's triggers.",
+      "type": "object",
+      "properties": {
+        "runFunction": {
+          "description": "Required. The endpoint to execute when the extension point is activated.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeCalendarCalendarAddOnManifest": {
+      "id": "GoogleAppsScriptTypeCalendarCalendarAddOnManifest",
+      "description": "Properties customizing the appearance and execution of a Calendar add-on.",
+      "type": "object",
+      "properties": {
+        "homepageTrigger": {
+          "description": "Defines an endpoint that is executed in contexts that don't match a declared contextual trigger. Any cards generated by this function will always be available to the user, but might be eclipsed by contextual content when this add-on declares more targeted triggers. If present, this overrides the configuration from `addOns.common.homepageTrigger`.",
+          "$ref": "GoogleAppsScriptTypeHomepageExtensionPoint"
+        },
+        "conferenceSolution": {
+          "description": "Defines conference solutions provided by this add-on.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleAppsScriptTypeCalendarConferenceSolution"
+          }
+        },
+        "createSettingsUrlFunction": {
+          "description": "An endpoint to execute that creates a URL to the add-on's settings page.",
+          "type": "string"
+        },
+        "eventOpenTrigger": {
+          "description": "An endpoint that triggers when an event is opened to be viewed or edited.",
+          "$ref": "GoogleAppsScriptTypeCalendarCalendarExtensionPoint"
+        },
+        "eventUpdateTrigger": {
+          "description": "An endpoint that triggers when the open event is updated.",
+          "$ref": "GoogleAppsScriptTypeCalendarCalendarExtensionPoint"
+        },
+        "currentEventAccess": {
+          "description": "Defines the level of data access when an event add-on is triggered.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value when nothing is set for eventAccess.",
+            "Gives event triggers the permission to access the metadata of events, such as event ID and calendar ID.",
+            "Gives event triggers access to all provided event fields including the metadata, attendees, and conference data.",
+            "Gives event triggers access to the metadata of events and the ability to perform all actions, including adding attendees and setting conference data.",
+            "Gives event triggers access to all provided event fields including the metadata, attendees, and conference data and the ability to perform all actions."
+          ],
+          "enum": [
+            "UNSPECIFIED",
+            "METADATA",
+            "READ",
+            "WRITE",
+            "READ_WRITE"
+          ]
+        }
+      }
+    },
+    "GoogleAppsScriptTypeCalendarConferenceSolution": {
+      "id": "GoogleAppsScriptTypeCalendarConferenceSolution",
+      "description": "Defines conference related values.",
+      "type": "object",
+      "properties": {
+        "onCreateFunction": {
+          "description": "Required. The endpoint to call when conference data should be created.",
+          "type": "string"
+        },
+        "id": {
+          "description": "Required. IDs should be uniquely assigned across conference solutions within one add-on, otherwise the wrong conference solution might be used when the add-on is triggered. While you can change the display name of an add-on, the ID shouldn\u2019t be changed.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Required. The display name of the conference solution.",
+          "type": "string"
+        },
+        "logoUrl": {
+          "description": "Required. The URL for the logo image of the conference solution.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeCalendarCalendarExtensionPoint": {
+      "id": "GoogleAppsScriptTypeCalendarCalendarExtensionPoint",
+      "description": "Common format for declaring a calendar add-on's triggers.",
+      "type": "object",
+      "properties": {
+        "runFunction": {
+          "description": "Required. The endpoint to execute when this extension point is activated.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeDocsDocsAddOnManifest": {
+      "id": "GoogleAppsScriptTypeDocsDocsAddOnManifest",
+      "description": "Properties customizing the appearance and execution of a Google Docs add-on.",
+      "type": "object",
+      "properties": {
+        "homepageTrigger": {
+          "description": "If present, this overrides the configuration from `addOns.common.homepageTrigger`.",
+          "$ref": "GoogleAppsScriptTypeHomepageExtensionPoint"
+        },
+        "onFileScopeGrantedTrigger": {
+          "description": "Endpoint to execute when file scope authorization is granted for this document\/user pair.",
+          "$ref": "GoogleAppsScriptTypeDocsDocsExtensionPoint"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeDocsDocsExtensionPoint": {
+      "id": "GoogleAppsScriptTypeDocsDocsExtensionPoint",
+      "description": "Common format for declaring a Docs add-on's triggers.",
+      "type": "object",
+      "properties": {
+        "runFunction": {
+          "description": "Required. The endpoint to execute when this extension point is activated.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeSheetsSheetsAddOnManifest": {
+      "id": "GoogleAppsScriptTypeSheetsSheetsAddOnManifest",
+      "description": "Properties customizing the appearance and execution of a Google Sheets add-on.",
+      "type": "object",
+      "properties": {
+        "homepageTrigger": {
+          "description": "If present, this overrides the configuration from `addOns.common.homepageTrigger`.",
+          "$ref": "GoogleAppsScriptTypeHomepageExtensionPoint"
+        },
+        "onFileScopeGrantedTrigger": {
+          "description": "Endpoint to execute when file scope authorization is granted for this document\/user pair.",
+          "$ref": "GoogleAppsScriptTypeSheetsSheetsExtensionPoint"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeSheetsSheetsExtensionPoint": {
+      "id": "GoogleAppsScriptTypeSheetsSheetsExtensionPoint",
+      "description": "Common format for declaring a Sheets add-on's triggers.",
+      "type": "object",
+      "properties": {
+        "runFunction": {
+          "description": "Required. The endpoint to execute when this extension point is activated.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeSlidesSlidesAddOnManifest": {
+      "id": "GoogleAppsScriptTypeSlidesSlidesAddOnManifest",
+      "description": "Properties customizing the appearance and execution of a Google Slides add-on.",
+      "type": "object",
+      "properties": {
+        "homepageTrigger": {
+          "description": "If present, this overrides the configuration from `addOns.common.homepageTrigger`.",
+          "$ref": "GoogleAppsScriptTypeHomepageExtensionPoint"
+        },
+        "onFileScopeGrantedTrigger": {
+          "description": "Endpoint to execute when file scope authorization is granted for this document\/user pair.",
+          "$ref": "GoogleAppsScriptTypeSlidesSlidesExtensionPoint"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeSlidesSlidesExtensionPoint": {
+      "id": "GoogleAppsScriptTypeSlidesSlidesExtensionPoint",
+      "description": "Common format for declaring a Slides add-on's triggers.",
+      "type": "object",
+      "properties": {
+        "runFunction": {
+          "description": "Required. The endpoint to execute when this extension point is activated.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleAppsScriptTypeHttpOptions": {
+      "id": "GoogleAppsScriptTypeHttpOptions",
+      "description": "Options for sending requests to add-on `HTTP` endpoints.",
+      "type": "object",
+      "properties": {
+        "authorizationHeader": {
+          "description": "Configuration for the token sent in the `HTTP` Authorization header.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value, equivalent to `SYSTEM_ID_TOKEN`.",
+            "Send an ID token for the project-specific Google Workspace Add-on's system service account (default).",
+            "Send an ID token for the end user.",
+            "Do not send an Authentication header."
+          ],
+          "enum": [
+            "HTTP_AUTHORIZATION_HEADER_UNSPECIFIED",
+            "SYSTEM_ID_TOKEN",
+            "USER_ID_TOKEN",
+            "NONE"
+          ]
+        }
+      }
+    },
+    "GoogleCloudGsuiteaddonsV1ListDeploymentsResponse": {
+      "id": "GoogleCloudGsuiteaddonsV1ListDeploymentsResponse",
+      "description": "Response message to list deployments.",
+      "type": "object",
+      "properties": {
+        "deployments": {
+          "description": "The list of deployments for the given project.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudGsuiteaddonsV1Deployment"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleProtobufEmpty": {
+      "id": "GoogleProtobufEmpty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudGsuiteaddonsV1InstallDeploymentRequest": {
+      "id": "GoogleCloudGsuiteaddonsV1InstallDeploymentRequest",
+      "description": "Request message to install a deployment for testing.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudGsuiteaddonsV1UninstallDeploymentRequest": {
+      "id": "GoogleCloudGsuiteaddonsV1UninstallDeploymentRequest",
+      "description": "Request message to uninstall a test deployment.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudGsuiteaddonsV1InstallStatus": {
+      "id": "GoogleCloudGsuiteaddonsV1InstallStatus",
+      "description": "Install status of a test deployment.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The canonical full resource name of the deployment install status. Example: `projects\/123\/deployments\/my_deployment\/installStatus`.",
+          "type": "string"
+        },
+        "installed": {
+          "description": "True if the deployment is installed for the user.",
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "methods": {
+        "getAuthorization": {
+          "id": "gsuiteaddons.projects.getAuthorization",
+          "path": "v1/{+name}",
+          "flatPath": "v1/projects/{projectsId}/authorization",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. Name of the project for which to get the Google Workspace Add-on authorization information. Example: `projects\/my_project\/authorization`.",
+              "pattern": "^projects\/[^\/]+\/authorization$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "GoogleCloudGsuiteaddonsV1Authorization"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Gets the authorization information for deployments in a given project."
+        }
+      }
+      ,
+      "resources": {
+        "deployments": {
+          "methods": {
+            "create": {
+              "id": "gsuiteaddons.projects.deployments.create",
+              "path": "v1/{+parent}/deployments",
+              "flatPath": "v1/projects/{projectsId}/deployments",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Name of the project in which to create the deployment. Example: `projects\/my_project`.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "deploymentId": {
+                  "description": "Required. The ID to use for this deployment. The full name of the created resource will be `projects\/\/deployments\/`.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GoogleCloudGsuiteaddonsV1Deployment"
+              },
+              "response": {
+                "$ref": "GoogleCloudGsuiteaddonsV1Deployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Creates a deployment with the specified name and configuration."
+            },
+            "replaceDeployment": {
+              "id": "gsuiteaddons.projects.deployments.replaceDeployment",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/deployments/{deploymentsId}",
+              "httpMethod": "PUT",
+              "parameters": {
+                "name": {
+                  "description": "The deployment resource name. Example: `projects\/123\/deployments\/my_deployment`.",
+                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleCloudGsuiteaddonsV1Deployment"
+              },
+              "response": {
+                "$ref": "GoogleCloudGsuiteaddonsV1Deployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Creates or replaces a deployment with the specified name."
+            },
+            "get": {
+              "id": "gsuiteaddons.projects.deployments.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/deployments/{deploymentsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The full resource name of the deployment to get. Example: `projects\/my_project\/deployments\/my_deployment`.",
+                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudGsuiteaddonsV1Deployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets the deployment with the specified name."
+            },
+            "list": {
+              "id": "gsuiteaddons.projects.deployments.list",
+              "path": "v1/{+parent}/deployments",
+              "flatPath": "v1/projects/{projectsId}/deployments",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Name of the project in which to create the deployment. Example: `projects\/my_project`.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of deployments to return. The service might return fewer than this value. If unspecified, at most 1,000 deployments are returned. The maximum possible value is 1,000; values above 1,000 are changed to 1,000.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token, received from a previous `ListDeployments` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListDeployments` must match the call that provided the page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "GoogleCloudGsuiteaddonsV1ListDeploymentsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists all deployments in a particular project."
+            },
+            "delete": {
+              "id": "gsuiteaddons.projects.deployments.delete",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/deployments/{deploymentsId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. The full resource name of the deployment to delete. Example: `projects\/my_project\/deployments\/my_deployment`.",
+                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "etag": {
+                  "description": "The etag of the deployment to delete. If this is provided, it must match the server's etag.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleProtobufEmpty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Deletes the deployment with the given name."
+            },
+            "install": {
+              "id": "gsuiteaddons.projects.deployments.install",
+              "path": "v1/{+name}:install",
+              "flatPath": "v1/projects/{projectsId}/deployments/{deploymentsId}:install",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The full resource name of the deployment to install. Example: `projects\/my_project\/deployments\/my_deployment`.",
+                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleCloudGsuiteaddonsV1InstallDeploymentRequest"
+              },
+              "response": {
+                "$ref": "GoogleProtobufEmpty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Installs a deployment to your account for testing. For more information, see [Test your add-on](https:\/\/developers.google.com\/workspace\/add-ons\/guides\/alternate-runtimes#test_your_add-on)"
+            },
+            "uninstall": {
+              "id": "gsuiteaddons.projects.deployments.uninstall",
+              "path": "v1/{+name}:uninstall",
+              "flatPath": "v1/projects/{projectsId}/deployments/{deploymentsId}:uninstall",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The full resource name of the deployment to install. Example: `projects\/my_project\/deployments\/my_deployment`.",
+                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleCloudGsuiteaddonsV1UninstallDeploymentRequest"
+              },
+              "response": {
+                "$ref": "GoogleProtobufEmpty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Uninstalls a test deployment from the user\u2019s account. For more information, see [Test your add-on](https:\/\/developers.google.com\/workspace\/add-ons\/guides\/alternate-runtimes#test_your_add-on)."
+            },
+            "getInstallStatus": {
+              "id": "gsuiteaddons.projects.deployments.getInstallStatus",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/deployments/{deploymentsId}/installStatus",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The full resource name of the deployment. Example: `projects\/my_project\/deployments\/my_deployment\/installStatus`.",
+                  "pattern": "^projects\/[^\/]+\/deployments\/[^\/]+\/installStatus$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudGsuiteaddonsV1InstallStatus"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets the install status of a test deployment."
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

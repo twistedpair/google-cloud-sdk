@@ -41,11 +41,16 @@ import six
 
 
 class Topic(enum.Enum):
+  """Categorizes different task messages."""
   API_DOWNLOAD_RESULT = 'api_download_result'
   CRC32C = 'crc32c'
   CREATED_RESOURCE = 'created_resource'
   ERROR = 'error'
-  FATAL_ERROR = 'fatal_error'  # Error that should be reported to the user.
+  # Set exit code to 1.
+  CHANGE_EXIT_CODE = 'change_exit_code'
+  # Set exit code to 1 and sends signal not to process new tasks
+  # (for parallel execution).
+  FATAL_ERROR = 'fatal_error'
   MD5 = 'md5'
   UPLOADED_COMPONENT = 'uploaded_component'
 
@@ -91,20 +96,20 @@ class Task(six.with_metaclass(abc.ABCMeta, object)):
   """Abstract class to represent one command operation.
 
   Attributes:
+    change_exit_code (bool): If True, failure of this task should update the
+      exit_code to 1. Defaults to True.
     parallel_processing_key (Optional[Hashable]): Identifies a task during
       execution. If this value is not None, the executor will skip this task if
       another task being executed is using the same key. If this value is None,
       the executor will not skip any tasks based on it.
     received_messages (Iterable[Message]): Messages sent to this task
       by its dependencies.
-    report_error (bool): If True, failure of this task should be reported
-      by updating the exit_code to non-zero. Defaults to True.
   """
 
   def __init__(self):
+    self.change_exit_code = True
     self.parallel_processing_key = None
     self.received_messages = []
-    self.report_error = True
 
   @abc.abstractmethod
   def execute(self, task_status_queue=None):

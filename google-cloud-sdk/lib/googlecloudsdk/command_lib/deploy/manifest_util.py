@@ -159,7 +159,7 @@ def ProtoToManifest(resource, resource_ref, kind):
   The manifest can be applied by 'deploy apply' command.
 
   Args:
-    resource: message in googlecloudsdk.third_party.apis.clouddeploy.
+    resource: message in googlecloudsdk.generated_clients.apis.clouddeploy.
     resource_ref: cloud deploy resource object.
     kind: kind of the cloud deploy resource
 
@@ -193,9 +193,9 @@ def SetExecutionConfig(messages, target, execution_configs):
 
   Args:
     messages: module containing the definitions of messages for Cloud Deploy.
-    target:  googlecloudsdk.third_party.apis.clouddeploy.Target message.
+    target:  googlecloudsdk.generated_clients.apis.clouddeploy.Target message.
     execution_configs:
-      [googlecloudsdk.third_party.apis.clouddeploy.ExecutionConfig], list of
+      [googlecloudsdk.generated_clients.apis.clouddeploy.ExecutionConfig], list of
       ExecutionConfig messages.
 
   Raises:

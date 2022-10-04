@@ -736,9 +736,9 @@ STACK_TYPE must be one of:
   ipv4-ipv6
     Creates dual stack clusters.
 
-  $ gcloud alpha container clusters create \
+  $ gcloud container clusters create \
       --stack-type=ipv4
-  $ gcloud alpha container clusters create \
+  $ gcloud container clusters create \
       --stack-type=ipv4-ipv6
 """
   return arg_utils.ChoiceEnumMapper(
@@ -768,9 +768,9 @@ STACK_TYPE must be one of:
   ipv4-ipv6
     Changes clusters to dual stack clusters.
 
-  $ gcloud alpha container clusters update \
+  $ gcloud container clusters update \
       --stack-type=ipv4
-  $ gcloud alpha container clusters update \
+  $ gcloud container clusters update \
       --stack-type=ipv4-ipv6
 """
   return arg_utils.ChoiceEnumMapper(
@@ -807,9 +807,9 @@ IPV6_ACCESS_TYPE must be one of:
   external
     Default value. Creates a subnet with EXTERNAL IPv6 access type.
 
-  $ gcloud alpha container clusters create \
+  $ gcloud container clusters create \
       --ipv6-access-type=internal
-  $ gcloud alpha container clusters create \
+  $ gcloud container clusters create \
       --ipv6-access-type=external
 """
   return arg_utils.ChoiceEnumMapper(

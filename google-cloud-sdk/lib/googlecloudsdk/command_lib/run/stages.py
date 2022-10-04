@@ -86,14 +86,24 @@ def ServiceDependencies():
   return {SERVICE_ROUTES_READY: {SERVICE_CONFIGURATIONS_READY}}
 
 
-def JobStages(execute_now=False, include_completion=False):
+def JobStages(execute_now=False,
+              include_completion=False,
+              include_build=False,
+              include_create_repo=False):
+  """Returns the list of progress tracker Stages for Jobs."""
+  stages = []
+  if include_create_repo:
+    stages.append(_CreateRepoStage())
+  if include_build:
+    stages.append(_UploadSourceStage())
+    stages.append(_BuildContainerStage())
   if execute_now:
-    return ExecutionStages(include_completion)
-  return []
+    stages += ExecutionStages(include_completion)
+  return stages
 
 
 def ExecutionStages(include_completion=False):
-  """Returns the list of progress tracker Stages for Jobs."""
+  """Returns the list of progress tracker Stages for Executions."""
   stages = [
       progress_tracker.Stage(
           'Provisioning resources...', key=_RESOURCES_AVAILABLE)

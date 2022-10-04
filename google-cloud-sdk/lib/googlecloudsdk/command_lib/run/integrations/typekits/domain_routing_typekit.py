@@ -78,7 +78,7 @@ class DomainRoutingTypeKit(base.TypeKit):
         # Removing non-root route
         self._RemovePath(routes, path)
     elif 'remove-domain' in parameters:
-      domain = parameters['remove-domain']
+      domain = parameters['remove-domain'].lower()
       domain_config = self._FindDomainConfig(domains, domain)
       if domain_config is None:
         raise exceptions.ArgumentError(
@@ -206,4 +206,4 @@ class DomainRoutingTypeKit(base.TypeKit):
     path = '/*'
     if len(url_parts) == 2:
       path = '/' + url_parts[1]
-    return domain, path
+    return domain.lower(), path

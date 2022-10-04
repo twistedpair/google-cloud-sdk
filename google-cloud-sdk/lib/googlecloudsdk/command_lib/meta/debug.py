@@ -33,7 +33,7 @@ import site  # pylint: disable=unused-import
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
-from googlecloudsdk.third_party.apis import apis_map
+from googlecloudsdk.generated_clients.apis import apis_map
 
 
 ################################################################################

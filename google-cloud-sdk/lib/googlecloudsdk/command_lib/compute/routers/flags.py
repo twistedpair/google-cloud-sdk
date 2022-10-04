@@ -180,10 +180,7 @@ def AddInterfaceArgs(parser, for_update=False):
         help='The interface that is redundant to the current interface.')
 
 
-def AddBgpPeerArgs(parser,
-                   for_add_bgp_peer=False,
-                   is_update=False,
-                   support_md5_authentication_keys=False):
+def AddBgpPeerArgs(parser, for_add_bgp_peer=False, is_update=False):
   """Adds common arguments for managing BGP peers."""
 
   operation = 'updated'
@@ -313,19 +310,18 @@ def AddBgpPeerArgs(parser,
       'Google owned global unicast IPv6 address belonging to the range '
       '2600:2d00:0:2:0:0:0:0/64 or 2600:2d00:0:3:0:0:0:0/64.')
 
-  if support_md5_authentication_keys:
-    parser.add_argument(
-        '--md5-authentication-key',
-        type=str,
-        help='The MD5 authentication key for this BGP peer. Maximum length is '
-        '80 characters. Can contain only printable ASCII characters.')
+  parser.add_argument(
+      '--md5-authentication-key',
+      type=str,
+      help='The MD5 authentication key for this BGP peer. Maximum length is '
+      '80 characters. Can contain only printable ASCII characters.')
 
-    if is_update:
-      parser.add_argument(
-          '--clear-md5-authentication-key',
-          action='store_true',
-          default=None,
-          help='If specified, remove MD5 authentication from the BGP peer.')
+  if is_update:
+    parser.add_argument(
+        '--clear-md5-authentication-key',
+        action='store_true',
+        default=None,
+        help='If specified, remove MD5 authentication from the BGP peer.')
 
 
 def AddUpdateCustomAdvertisementArgs(parser, resource_str):

@@ -40,7 +40,7 @@ DISK_TYPE_HD_EXTREME = 'hyperdisk-extreme'
 DISK_TYPE_HD_THROUGHPUT = 'hyperdisk-throughput'
 
 # Provisioned IOPS for pd-extreme/cs-extreme disks
-MIN_PROVISIONED_IOPS = 10000
+MIN_PROVISIONED_IOPS = 2500
 MAX_PROVISIONED_IOPS = 300000
 DEFAULT_PROVISIONED_IOPS = 100000
 

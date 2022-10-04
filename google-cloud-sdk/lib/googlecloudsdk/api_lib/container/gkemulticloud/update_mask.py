@@ -71,7 +71,11 @@ AWS_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'annotations':
         'annotations',
     'clear_annotations':
-        'annotations'
+        'annotations',
+    'tags':
+        'control_plane.tags',
+    'clear_tags':
+        'control_plane.tags'
 }
 
 AWS_NODEPOOL_ARGS_TO_UPDATE_MASKS = {

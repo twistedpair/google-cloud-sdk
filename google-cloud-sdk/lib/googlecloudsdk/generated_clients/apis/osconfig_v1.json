@@ -1,0 +1,3782 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "osconfig:v1",
+  "name": "osconfig",
+  "canonicalName": "OS Config",
+  "version": "v1",
+  "revision": "0",
+  "title": "OS Config API",
+  "description": "OS management tools that can be used for patch management, patch compliance, and configuration management on VM instances.",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/compute/docs/osconfig/rest",
+  "protocol": "rest",
+  "rootUrl": "https://osconfig.googleapis.com/",
+  "mtlsRootUrl": "https://osconfig.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://osconfig.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
+  "schemas": {
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "CancelOperationRequest": {
+      "id": "CancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ExecutePatchJobRequest": {
+      "id": "ExecutePatchJobRequest",
+      "description": "A request message to initiate patching across Compute Engine instances.",
+      "type": "object",
+      "properties": {
+        "description": {
+          "description": "Description of the patch job. Length of the description is limited to 1024 characters.",
+          "type": "string"
+        },
+        "instanceFilter": {
+          "description": "Required. Instances to patch, either explicitly or filtered by some criteria such as zone or labels.",
+          "$ref": "PatchInstanceFilter"
+        },
+        "patchConfig": {
+          "description": "Patch configuration being applied. If omitted, instances are patched using the default configurations.",
+          "$ref": "PatchConfig"
+        },
+        "duration": {
+          "description": "Duration of the patch job. After the duration ends, the patch job times out.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "dryRun": {
+          "description": "If this patch is a dry-run only, instances are contacted but will do nothing.",
+          "type": "boolean"
+        },
+        "displayName": {
+          "description": "Display name for this patch job. This does not have to be unique.",
+          "type": "string"
+        },
+        "rollout": {
+          "description": "Rollout strategy of the patch job.",
+          "$ref": "PatchRollout"
+        }
+      }
+    },
+    "PatchInstanceFilter": {
+      "id": "PatchInstanceFilter",
+      "description": "A filter to target VM instances for patching. The targeted VMs must meet all criteria specified. So if both labels and zones are specified, the patch job targets only VMs with those labels and in those zones.",
+      "type": "object",
+      "properties": {
+        "all": {
+          "description": "Target all VM instances in the project. If true, no other criteria is permitted.",
+          "type": "boolean"
+        },
+        "groupLabels": {
+          "description": "Targets VM instances matching ANY of these GroupLabels. This allows targeting of disparate groups of VM instances.",
+          "type": "array",
+          "items": {
+            "$ref": "PatchInstanceFilterGroupLabel"
+          }
+        },
+        "zones": {
+          "description": "Targets VM instances in ANY of these zones. Leave empty to target VM instances in any zone.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "instances": {
+          "description": "Targets any of the VM instances specified. Instances are specified by their URI in the form `zones\/[ZONE]\/instances\/[INSTANCE_NAME]`, `projects\/[PROJECT_ID]\/zones\/[ZONE]\/instances\/[INSTANCE_NAME]`, or `https:\/\/www.googleapis.com\/compute\/v1\/projects\/[PROJECT_ID]\/zones\/[ZONE]\/instances\/[INSTANCE_NAME]`",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "instanceNamePrefixes": {
+          "description": "Targets VMs whose name starts with one of these prefixes. Similar to labels, this is another way to group VMs when targeting configs, for example prefix=\"prod-\".",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PatchInstanceFilterGroupLabel": {
+      "id": "PatchInstanceFilterGroupLabel",
+      "description": "Targets a group of VM instances by using their [assigned labels](https:\/\/cloud.google.com\/compute\/docs\/labeling-resources). Labels are key-value pairs. A `GroupLabel` is a combination of labels that is used to target VMs for a patch job. For example, a patch job can target VMs that have the following `GroupLabel`: `{\"env\":\"test\", \"app\":\"web\"}`. This means that the patch job is applied to VMs that have both the labels `env=test` and `app=web`.",
+      "type": "object",
+      "properties": {
+        "labels": {
+          "description": "Compute Engine instance labels that must be present for a VM instance to be targeted by this filter.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PatchConfig": {
+      "id": "PatchConfig",
+      "description": "Patch configuration specifications. Contains details on how to apply the patch(es) to a VM instance.",
+      "type": "object",
+      "properties": {
+        "rebootConfig": {
+          "description": "Post-patch reboot settings.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default behavior is DEFAULT.",
+            "The agent decides if a reboot is necessary by checking signals such as registry keys on Windows or `\/var\/run\/reboot-required` on APT based systems. On RPM based systems, a set of core system package install times are compared with system boot time.",
+            "Always reboot the machine after the update completes.",
+            "Never reboot the machine after the update completes."
+          ],
+          "enum": [
+            "REBOOT_CONFIG_UNSPECIFIED",
+            "DEFAULT",
+            "ALWAYS",
+            "NEVER"
+          ]
+        },
+        "apt": {
+          "description": "Apt update settings. Use this setting to override the default `apt` patch rules.",
+          "$ref": "AptSettings"
+        },
+        "yum": {
+          "description": "Yum update settings. Use this setting to override the default `yum` patch rules.",
+          "$ref": "YumSettings"
+        },
+        "goo": {
+          "description": "Goo update settings. Use this setting to override the default `goo` patch rules.",
+          "$ref": "GooSettings"
+        },
+        "zypper": {
+          "description": "Zypper update settings. Use this setting to override the default `zypper` patch rules.",
+          "$ref": "ZypperSettings"
+        },
+        "windowsUpdate": {
+          "description": "Windows update settings. Use this override the default windows patch rules.",
+          "$ref": "WindowsUpdateSettings"
+        },
+        "preStep": {
+          "description": "The `ExecStep` to run before the patch update.",
+          "$ref": "ExecStep"
+        },
+        "postStep": {
+          "description": "The `ExecStep` to run after the patch update.",
+          "$ref": "ExecStep"
+        },
+        "migInstancesAllowed": {
+          "description": "Allows the patch job to run on Managed instance groups (MIGs).",
+          "type": "boolean"
+        }
+      }
+    },
+    "AptSettings": {
+      "id": "AptSettings",
+      "description": "Apt patching is completed by executing `apt-get update && apt-get upgrade`. Additional options can be set to control how this is executed.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "By changing the type to DIST, the patching is performed using `apt-get dist-upgrade` instead.",
+          "type": "string",
+          "enumDescriptions": [
+            "By default, upgrade will be performed.",
+            "Runs `apt-get dist-upgrade`.",
+            "Runs `apt-get upgrade`."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "DIST",
+            "UPGRADE"
+          ]
+        },
+        "excludes": {
+          "description": "List of packages to exclude from update. These packages will be excluded",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclusivePackages": {
+          "description": "An exclusive list of packages to be updated. These are the only packages that will be updated. If these packages are not installed, they will be ignored. This field cannot be specified with any other patch configuration fields.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "YumSettings": {
+      "id": "YumSettings",
+      "description": "Yum patching is performed by executing `yum update`. Additional options can be set to control how this is executed. Note that not all settings are supported on all platforms.",
+      "type": "object",
+      "properties": {
+        "security": {
+          "description": "Adds the `--security` flag to `yum update`. Not supported on all platforms.",
+          "type": "boolean"
+        },
+        "minimal": {
+          "description": "Will cause patch to run `yum update-minimal` instead.",
+          "type": "boolean"
+        },
+        "excludes": {
+          "description": "List of packages to exclude from update. These packages are excluded by using the yum `--exclude` flag.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclusivePackages": {
+          "description": "An exclusive list of packages to be updated. These are the only packages that will be updated. If these packages are not installed, they will be ignored. This field must not be specified with any other patch configuration fields.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GooSettings": {
+      "id": "GooSettings",
+      "description": "Googet patching is performed by running `googet update`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ZypperSettings": {
+      "id": "ZypperSettings",
+      "description": "Zypper patching is performed by running `zypper patch`. See also https:\/\/en.opensuse.org\/SDB:Zypper_manual.",
+      "type": "object",
+      "properties": {
+        "withOptional": {
+          "description": "Adds the `--with-optional` flag to `zypper patch`.",
+          "type": "boolean"
+        },
+        "withUpdate": {
+          "description": "Adds the `--with-update` flag, to `zypper patch`.",
+          "type": "boolean"
+        },
+        "categories": {
+          "description": "Install only patches with these categories. Common categories include security, recommended, and feature.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "severities": {
+          "description": "Install only patches with these severities. Common severities include critical, important, moderate, and low.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "excludes": {
+          "description": "List of patches to exclude from update.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclusivePatches": {
+          "description": "An exclusive list of patches to be updated. These are the only patches that will be installed using 'zypper patch patch:' command. This field must not be used with any other patch configuration fields.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "WindowsUpdateSettings": {
+      "id": "WindowsUpdateSettings",
+      "description": "Windows patching is performed using the Windows Update Agent.",
+      "type": "object",
+      "properties": {
+        "classifications": {
+          "description": "Only apply updates of these windows update classifications. If empty, all updates are applied.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Invalid. If classifications are included, they must be specified.",
+              "\"A widely released fix for a specific problem that addresses a critical, non-security-related bug.\" [1]",
+              "\"A widely released fix for a product-specific, security-related vulnerability. Security vulnerabilities are rated by their severity. The severity rating is indicated in the Microsoft security bulletin as critical, important, moderate, or low.\" [1]",
+              "\"A widely released and frequent software update that contains additions to a product's definition database. Definition databases are often used to detect objects that have specific attributes, such as malicious code, phishing websites, or junk mail.\" [1]",
+              "\"Software that controls the input and output of a device.\" [1]",
+              "\"New product functionality that is first distributed outside the context of a product release and that is typically included in the next full product release.\" [1]",
+              "\"A tested, cumulative set of all hotfixes, security updates, critical updates, and updates. Additionally, service packs may contain additional fixes for problems that are found internally since the release of the product. Service packs my also contain a limited number of customer-requested design changes or features.\" [1]",
+              "\"A utility or feature that helps complete a task or set of tasks.\" [1]",
+              "\"A tested, cumulative set of hotfixes, security updates, critical updates, and updates that are packaged together for easy deployment. A rollup generally targets a specific area, such as security, or a component of a product, such as Internet Information Services (IIS).\" [1]",
+              "\"A widely released fix for a specific problem. An update addresses a noncritical, non-security-related bug.\" [1]"
+            ],
+            "enum": [
+              "CLASSIFICATION_UNSPECIFIED",
+              "CRITICAL",
+              "SECURITY",
+              "DEFINITION",
+              "DRIVER",
+              "FEATURE_PACK",
+              "SERVICE_PACK",
+              "TOOL",
+              "UPDATE_ROLLUP",
+              "UPDATE"
+            ]
+          }
+        },
+        "excludes": {
+          "description": "List of KBs to exclude from update.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclusivePatches": {
+          "description": "An exclusive list of kbs to be updated. These are the only patches that will be updated. This field must not be used with other patch configurations.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ExecStep": {
+      "id": "ExecStep",
+      "description": "A step that runs an executable for a PatchJob.",
+      "type": "object",
+      "properties": {
+        "linuxExecStepConfig": {
+          "description": "The ExecStepConfig for all Linux VMs targeted by the PatchJob.",
+          "$ref": "ExecStepConfig"
+        },
+        "windowsExecStepConfig": {
+          "description": "The ExecStepConfig for all Windows VMs targeted by the PatchJob.",
+          "$ref": "ExecStepConfig"
+        }
+      }
+    },
+    "ExecStepConfig": {
+      "id": "ExecStepConfig",
+      "description": "Common configurations for an ExecStep.",
+      "type": "object",
+      "properties": {
+        "localPath": {
+          "description": "An absolute path to the executable on the VM.",
+          "type": "string"
+        },
+        "gcsObject": {
+          "description": "A Cloud Storage object containing the executable.",
+          "$ref": "GcsObject"
+        },
+        "allowedSuccessCodes": {
+          "description": "Defaults to [0]. A list of possible return values that the execution can return to indicate a success.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "interpreter": {
+          "description": "The script interpreter to use to run the script. If no interpreter is specified the script will be executed directly, which will likely only succeed for scripts with [shebang lines] (https:\/\/en.wikipedia.org\/wiki\/Shebang_\\(Unix\\)).",
+          "type": "string",
+          "enumDescriptions": [
+            "If the interpreter is not specified, the value defaults to `NONE`.",
+            "Indicates that the file is run as follows on each operating system: + For Linux VMs, the file is ran as an executable and the interpreter might be parsed from the [shebang line](https:\/\/wikipedia.org\/wiki\/Shebang_(Unix)) of the file. + For Windows VM, this value is not supported.",
+            "Indicates that the file is run with `\/bin\/sh` on Linux and `cmd` on Windows.",
+            "Indicates that the file is run with PowerShell."
+          ],
+          "enum": [
+            "INTERPRETER_UNSPECIFIED",
+            "NONE",
+            "SHELL",
+            "POWERSHELL"
+          ]
+        }
+      }
+    },
+    "GcsObject": {
+      "id": "GcsObject",
+      "description": "Cloud Storage object representation.",
+      "type": "object",
+      "properties": {
+        "bucket": {
+          "description": "Required. Bucket of the Cloud Storage object.",
+          "type": "string"
+        },
+        "object": {
+          "description": "Required. Name of the Cloud Storage object.",
+          "type": "string"
+        },
+        "generationNumber": {
+          "description": "Required. Generation number of the Cloud Storage object. This is used to ensure that the ExecStep specified by this PatchJob does not change.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "PatchRollout": {
+      "id": "PatchRollout",
+      "description": "Patch rollout configuration specifications. Contains details on the concurrency control when applying patch(es) to all targeted VMs.",
+      "type": "object",
+      "properties": {
+        "mode": {
+          "description": "Mode of the patch rollout.",
+          "type": "string",
+          "enumDescriptions": [
+            "Mode must be specified.",
+            "Patches are applied one zone at a time. The patch job begins in the region with the lowest number of targeted VMs. Within the region, patching begins in the zone with the lowest number of targeted VMs. If multiple regions (or zones within a region) have the same number of targeted VMs, a tie-breaker is achieved by sorting the regions or zones in alphabetical order.",
+            "Patches are applied to VMs in all zones at the same time."
+          ],
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "ZONE_BY_ZONE",
+            "CONCURRENT_ZONES"
+          ]
+        },
+        "disruptionBudget": {
+          "description": "The maximum number (or percentage) of VMs per zone to disrupt at any given moment. The number of VMs calculated from multiplying the percentage by the total number of VMs in a zone is rounded up. During patching, a VM is considered disrupted from the time the agent is notified to begin until patching has completed. This disruption time includes the time to complete reboot and any post-patch steps. A VM contributes to the disruption budget if its patching operation fails either when applying the patches, running pre or post patch steps, or if it fails to respond with a success notification before timing out. VMs that are not running or do not have an active agent do not count toward this disruption budget. For zone-by-zone rollouts, if the disruption budget in a zone is exceeded, the patch job stops, because continuing to the next zone requires completion of the patch process in the previous zone. For example, if the disruption budget has a fixed value of `10`, and 8 VMs fail to patch in the current zone, the patch job continues to patch 2 VMs at a time until the zone is completed. When that zone is completed successfully, patching begins with 10 VMs at a time in the next zone. If 10 VMs in the next zone fail to patch, the patch job stops.",
+          "$ref": "FixedOrPercent"
+        }
+      }
+    },
+    "FixedOrPercent": {
+      "id": "FixedOrPercent",
+      "description": "Message encapsulating a value that can be either absolute (\"fixed\") or relative (\"percent\") to a value.",
+      "type": "object",
+      "properties": {
+        "fixed": {
+          "description": "Specifies a fixed value.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "percent": {
+          "description": "Specifies the relative value defined as a percentage, which will be multiplied by a reference value.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "PatchJob": {
+      "id": "PatchJob",
+      "description": "A high level representation of a patch job that is either in progress or has completed. Instance details are not included in the job. To paginate through instance details, use ListPatchJobInstanceDetails. For more information about patch jobs, see [Creating patch jobs](https:\/\/cloud.google.com\/compute\/docs\/os-patch-management\/create-patch-job).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Unique identifier for this patch job in the form `projects\/*\/patchJobs\/*`",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Display name for this patch job. This is not a unique identifier.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the patch job. Length of the description is limited to 1024 characters.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time this patch job was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Last time this patch job was updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "The current state of the PatchJob.",
+          "type": "string",
+          "enumDescriptions": [
+            "State must be specified.",
+            "The patch job was successfully initiated.",
+            "The patch job is looking up instances to run the patch on.",
+            "Instances are being patched.",
+            "Patch job completed successfully.",
+            "Patch job completed but there were errors.",
+            "The patch job was canceled.",
+            "The patch job timed out."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "STARTED",
+            "INSTANCE_LOOKUP",
+            "PATCHING",
+            "SUCCEEDED",
+            "COMPLETED_WITH_ERRORS",
+            "CANCELED",
+            "TIMED_OUT"
+          ]
+        },
+        "instanceFilter": {
+          "description": "Instances to patch.",
+          "$ref": "PatchInstanceFilter"
+        },
+        "patchConfig": {
+          "description": "Patch configuration being applied.",
+          "$ref": "PatchConfig"
+        },
+        "duration": {
+          "description": "Duration of the patch job. After the duration ends, the patch job times out.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "instanceDetailsSummary": {
+          "description": "Summary of instance details.",
+          "$ref": "PatchJobInstanceDetailsSummary"
+        },
+        "dryRun": {
+          "description": "If this patch job is a dry run, the agent reports that it has finished without running any updates on the VM instance.",
+          "type": "boolean"
+        },
+        "errorMessage": {
+          "description": "If this patch job failed, this message provides information about the failure.",
+          "type": "string"
+        },
+        "percentComplete": {
+          "description": "Reflects the overall progress of the patch job in the range of 0.0 being no progress to 100.0 being complete.",
+          "type": "number",
+          "format": "double"
+        },
+        "patchDeployment": {
+          "description": "Output only. Name of the patch deployment that created this patch job.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "rollout": {
+          "description": "Rollout strategy being applied.",
+          "$ref": "PatchRollout"
+        }
+      }
+    },
+    "PatchJobInstanceDetailsSummary": {
+      "id": "PatchJobInstanceDetailsSummary",
+      "description": "A summary of the current patch state across all instances that this patch job affects. Contains counts of instances in different states. These states map to `InstancePatchState`. List patch job instance details to see the specific states of each instance.",
+      "type": "object",
+      "properties": {
+        "pendingInstanceCount": {
+          "description": "Number of instances pending patch job.",
+          "type": "string",
+          "format": "int64"
+        },
+        "inactiveInstanceCount": {
+          "description": "Number of instances that are inactive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "notifiedInstanceCount": {
+          "description": "Number of instances notified about patch job.",
+          "type": "string",
+          "format": "int64"
+        },
+        "startedInstanceCount": {
+          "description": "Number of instances that have started.",
+          "type": "string",
+          "format": "int64"
+        },
+        "downloadingPatchesInstanceCount": {
+          "description": "Number of instances that are downloading patches.",
+          "type": "string",
+          "format": "int64"
+        },
+        "applyingPatchesInstanceCount": {
+          "description": "Number of instances that are applying patches.",
+          "type": "string",
+          "format": "int64"
+        },
+        "rebootingInstanceCount": {
+          "description": "Number of instances rebooting.",
+          "type": "string",
+          "format": "int64"
+        },
+        "succeededInstanceCount": {
+          "description": "Number of instances that have completed successfully.",
+          "type": "string",
+          "format": "int64"
+        },
+        "succeededRebootRequiredInstanceCount": {
+          "description": "Number of instances that require reboot.",
+          "type": "string",
+          "format": "int64"
+        },
+        "failedInstanceCount": {
+          "description": "Number of instances that failed.",
+          "type": "string",
+          "format": "int64"
+        },
+        "ackedInstanceCount": {
+          "description": "Number of instances that have acked and will start shortly.",
+          "type": "string",
+          "format": "int64"
+        },
+        "timedOutInstanceCount": {
+          "description": "Number of instances that exceeded the time out while applying the patch.",
+          "type": "string",
+          "format": "int64"
+        },
+        "prePatchStepInstanceCount": {
+          "description": "Number of instances that are running the pre-patch step.",
+          "type": "string",
+          "format": "int64"
+        },
+        "postPatchStepInstanceCount": {
+          "description": "Number of instances that are running the post-patch step.",
+          "type": "string",
+          "format": "int64"
+        },
+        "noAgentDetectedInstanceCount": {
+          "description": "Number of instances that do not appear to be running the agent. Check to ensure that the agent is installed, running, and able to communicate with the service.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "CancelPatchJobRequest": {
+      "id": "CancelPatchJobRequest",
+      "description": "Message for canceling a patch job.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListPatchJobsResponse": {
+      "id": "ListPatchJobsResponse",
+      "description": "A response message for listing patch jobs.",
+      "type": "object",
+      "properties": {
+        "patchJobs": {
+          "description": "The list of patch jobs.",
+          "type": "array",
+          "items": {
+            "$ref": "PatchJob"
+          }
+        },
+        "nextPageToken": {
+          "description": "A pagination token that can be used to get the next page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "ListPatchJobInstanceDetailsResponse": {
+      "id": "ListPatchJobInstanceDetailsResponse",
+      "description": "A response message for listing the instances details for a patch job.",
+      "type": "object",
+      "properties": {
+        "patchJobInstanceDetails": {
+          "description": "A list of instance status.",
+          "type": "array",
+          "items": {
+            "$ref": "PatchJobInstanceDetails"
+          }
+        },
+        "nextPageToken": {
+          "description": "A pagination token that can be used to get the next page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "PatchJobInstanceDetails": {
+      "id": "PatchJobInstanceDetails",
+      "description": "Patch details for a VM instance. For more information about reviewing VM instance details, see [Listing all VM instance details for a specific patch job](https:\/\/cloud.google.com\/compute\/docs\/os-patch-management\/manage-patch-jobs#list-instance-details).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The instance name in the form `projects\/*\/zones\/*\/instances\/*`",
+          "type": "string"
+        },
+        "instanceSystemId": {
+          "description": "The unique identifier for the instance. This identifier is defined by the server.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Current state of instance patch.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "The instance is not yet notified.",
+            "Instance is inactive and cannot be patched.",
+            "The instance is notified that it should be patched.",
+            "The instance has started the patching process.",
+            "The instance is downloading patches.",
+            "The instance is applying patches.",
+            "The instance is rebooting.",
+            "The instance has completed applying patches.",
+            "The instance has completed applying patches but a reboot is required.",
+            "The instance has failed to apply the patch.",
+            "The instance acked the notification and will start shortly.",
+            "The instance exceeded the time out while applying the patch.",
+            "The instance is running the pre-patch step.",
+            "The instance is running the post-patch step.",
+            "The service could not detect the presence of the agent. Check to ensure that the agent is installed, running, and able to communicate with the service."
+          ],
+          "enum": [
+            "PATCH_STATE_UNSPECIFIED",
+            "PENDING",
+            "INACTIVE",
+            "NOTIFIED",
+            "STARTED",
+            "DOWNLOADING_PATCHES",
+            "APPLYING_PATCHES",
+            "REBOOTING",
+            "SUCCEEDED",
+            "SUCCEEDED_REBOOT_REQUIRED",
+            "FAILED",
+            "ACKED",
+            "TIMED_OUT",
+            "RUNNING_PRE_PATCH_STEP",
+            "RUNNING_POST_PATCH_STEP",
+            "NO_AGENT_DETECTED"
+          ]
+        },
+        "failureReason": {
+          "description": "If the patch fails, this field provides the reason.",
+          "type": "string"
+        },
+        "attemptCount": {
+          "description": "The number of times the agent that the agent attempts to apply the patch.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "PatchDeployment": {
+      "id": "PatchDeployment",
+      "description": "Patch deployments are configurations that individual patch jobs use to complete a patch. These configurations include instance filter, package repository settings, and a schedule. For more information about creating and managing patch deployments, see [Scheduling patch jobs](https:\/\/cloud.google.com\/compute\/docs\/os-patch-management\/schedule-patch-jobs).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Unique name for the patch deployment resource in a project. The patch deployment name is in the form: `projects\/{project_id}\/patchDeployments\/{patch_deployment_id}`. This field is ignored when you create a new patch deployment.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. Description of the patch deployment. Length of the description is limited to 1024 characters.",
+          "type": "string"
+        },
+        "instanceFilter": {
+          "description": "Required. VM instances to patch.",
+          "$ref": "PatchInstanceFilter"
+        },
+        "patchConfig": {
+          "description": "Optional. Patch configuration that is applied.",
+          "$ref": "PatchConfig"
+        },
+        "duration": {
+          "description": "Optional. Duration of the patch. After the duration ends, the patch times out.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "oneTimeSchedule": {
+          "description": "Required. Schedule a one-time execution.",
+          "$ref": "OneTimeSchedule"
+        },
+        "recurringSchedule": {
+          "description": "Required. Schedule recurring executions.",
+          "$ref": "RecurringSchedule"
+        },
+        "createTime": {
+          "description": "Output only. Time the patch deployment was created. Timestamp is in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time the patch deployment was last updated. Timestamp is in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastExecuteTime": {
+          "description": "Output only. The last time a patch job was started by this deployment. Timestamp is in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "rollout": {
+          "description": "Optional. Rollout strategy of the patch job.",
+          "$ref": "PatchRollout"
+        },
+        "state": {
+          "description": "Output only. Current state of the patch deployment.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value is used if the state is omitted.",
+            "Active value means that patch deployment generates Patch Jobs.",
+            "Paused value means that patch deployment does not generate Patch jobs. Requires user action to move in and out from this state."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "PAUSED"
+          ]
+        }
+      }
+    },
+    "OneTimeSchedule": {
+      "id": "OneTimeSchedule",
+      "description": "Sets the time for a one time patch deployment. Timestamp is in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
+      "type": "object",
+      "properties": {
+        "executeTime": {
+          "description": "Required. The desired patch job execution time.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "RecurringSchedule": {
+      "id": "RecurringSchedule",
+      "description": "Sets the time for recurring patch deployments.",
+      "type": "object",
+      "properties": {
+        "timeZone": {
+          "description": "Required. Defines the time zone that `time_of_day` is relative to. The rules for daylight saving time are determined by the chosen time zone.",
+          "$ref": "TimeZone"
+        },
+        "startTime": {
+          "description": "Optional. The time that the recurring schedule becomes effective. Defaults to `create_time` of the patch deployment.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Optional. The end time at which a recurring patch deployment schedule is no longer active.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "timeOfDay": {
+          "description": "Required. Time of the day to run a recurring deployment.",
+          "$ref": "TimeOfDay"
+        },
+        "frequency": {
+          "description": "Required. The frequency unit of this recurring schedule.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid. A frequency must be specified.",
+            "Indicates that the frequency of recurrence should be expressed in terms of weeks.",
+            "Indicates that the frequency of recurrence should be expressed in terms of months.",
+            "Indicates that the frequency of recurrence should be expressed in terms of days."
+          ],
+          "enum": [
+            "FREQUENCY_UNSPECIFIED",
+            "WEEKLY",
+            "MONTHLY",
+            "DAILY"
+          ]
+        },
+        "weekly": {
+          "description": "Required. Schedule with weekly executions.",
+          "$ref": "WeeklySchedule"
+        },
+        "monthly": {
+          "description": "Required. Schedule with monthly executions.",
+          "$ref": "MonthlySchedule"
+        },
+        "lastExecuteTime": {
+          "description": "Output only. The time the last patch job ran successfully.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "nextExecuteTime": {
+          "description": "Output only. The time the next patch job is scheduled to run.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "TimeZone": {
+      "id": "TimeZone",
+      "description": "Represents a time zone from the [IANA Time Zone Database](https:\/\/www.iana.org\/time-zones).",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "IANA Time Zone Database time zone, e.g. \"America\/New_York\".",
+          "type": "string"
+        },
+        "version": {
+          "description": "Optional. IANA Time Zone Database version number, e.g. \"2019a\".",
+          "type": "string"
+        }
+      }
+    },
+    "TimeOfDay": {
+      "id": "TimeOfDay",
+      "description": "Represents a time of day. The date and time zone are either not significant or are specified elsewhere. An API may choose to allow leap seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.",
+      "type": "object",
+      "properties": {
+        "hours": {
+          "description": "Hours of day in 24 hour format. Should be from 0 to 23. An API may choose to allow the value \"24:00:00\" for scenarios like business closing time.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "minutes": {
+          "description": "Minutes of hour of day. Must be from 0 to 59.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "seconds": {
+          "description": "Seconds of minutes of the time. Must normally be from 0 to 59. An API may allow the value 60 if it allows leap-seconds.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "nanos": {
+          "description": "Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "WeeklySchedule": {
+      "id": "WeeklySchedule",
+      "description": "Represents a weekly schedule.",
+      "type": "object",
+      "properties": {
+        "dayOfWeek": {
+          "description": "Required. Day of the week.",
+          "type": "string",
+          "enumDescriptions": [
+            "The day of the week is unspecified.",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
+          ],
+          "enum": [
+            "DAY_OF_WEEK_UNSPECIFIED",
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY",
+            "FRIDAY",
+            "SATURDAY",
+            "SUNDAY"
+          ]
+        }
+      }
+    },
+    "MonthlySchedule": {
+      "id": "MonthlySchedule",
+      "description": "Represents a monthly schedule. An example of a valid monthly schedule is \"on the third Tuesday of the month\" or \"on the 15th of the month\".",
+      "type": "object",
+      "properties": {
+        "weekDayOfMonth": {
+          "description": "Required. Week day in a month.",
+          "$ref": "WeekDayOfMonth"
+        },
+        "monthDay": {
+          "description": "Required. One day of the month. 1-31 indicates the 1st to the 31st day. -1 indicates the last day of the month. Months without the target day will be skipped. For example, a schedule to run \"every month on the 31st\" will not run in February, April, June, etc.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "WeekDayOfMonth": {
+      "id": "WeekDayOfMonth",
+      "description": "Represents one week day in a month. An example is \"the 4th Sunday\".",
+      "type": "object",
+      "properties": {
+        "weekOrdinal": {
+          "description": "Required. Week number in a month. 1-4 indicates the 1st to 4th week of the month. -1 indicates the last week of the month.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "dayOfWeek": {
+          "description": "Required. A day of the week.",
+          "type": "string",
+          "enumDescriptions": [
+            "The day of the week is unspecified.",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
+          ],
+          "enum": [
+            "DAY_OF_WEEK_UNSPECIFIED",
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY",
+            "FRIDAY",
+            "SATURDAY",
+            "SUNDAY"
+          ]
+        },
+        "dayOffset": {
+          "description": "Optional. Represents the number of days before or after the given week day of month that the patch deployment is scheduled for. For example if `week_ordinal` and `day_of_week` values point to the second day of the month and this `day_offset` value is set to `3`, the patch deployment takes place three days after the second Tuesday of the month. If this value is negative, for example -5, the patches are deployed five days before before the second Tuesday of the month. Allowed values are in range [-30, 30].",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListPatchDeploymentsResponse": {
+      "id": "ListPatchDeploymentsResponse",
+      "description": "A response message for listing patch deployments.",
+      "type": "object",
+      "properties": {
+        "patchDeployments": {
+          "description": "The list of patch deployments.",
+          "type": "array",
+          "items": {
+            "$ref": "PatchDeployment"
+          }
+        },
+        "nextPageToken": {
+          "description": "A pagination token that can be used to get the next page of patch deployments.",
+          "type": "string"
+        }
+      }
+    },
+    "PausePatchDeploymentRequest": {
+      "id": "PausePatchDeploymentRequest",
+      "description": "A request message for pausing a patch deployment.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ResumePatchDeploymentRequest": {
+      "id": "ResumePatchDeploymentRequest",
+      "description": "A request message for resuming a patch deployment.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "OSPolicyAssignment": {
+      "id": "OSPolicyAssignment",
+      "description": "OS policy assignment is an API resource that is used to apply a set of OS policies to a dynamically targeted group of Compute Engine VM instances. An OS policy is used to define the desired state configuration for a Compute Engine VM instance through a set of configuration resources that provide capabilities such as installing or removing software packages, or executing a script. For more information, see [OS policy and OS policy assignment](https:\/\/cloud.google.com\/compute\/docs\/os-configuration-management\/working-with-os-policies).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name. Format: `projects\/{project_number}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment_id}` This field is ignored when you create an OS policy assignment.",
+          "type": "string"
+        },
+        "description": {
+          "description": "OS policy assignment description. Length of the description is limited to 1024 characters.",
+          "type": "string"
+        },
+        "osPolicies": {
+          "description": "Required. List of OS policies to be applied to the VMs.",
+          "type": "array",
+          "items": {
+            "$ref": "OSPolicy"
+          }
+        },
+        "instanceFilter": {
+          "description": "Required. Filter to select VMs.",
+          "$ref": "OSPolicyAssignmentInstanceFilter"
+        },
+        "rollout": {
+          "description": "Required. Rollout to deploy the OS policy assignment. A rollout is triggered in the following situations: 1) OSPolicyAssignment is created. 2) OSPolicyAssignment is updated and the update contains changes to one of the following fields: - instance_filter - os_policies 3) OSPolicyAssignment is deleted.",
+          "$ref": "OSPolicyAssignmentRollout"
+        },
+        "revisionId": {
+          "description": "Output only. The assignment revision ID A new revision is committed whenever a rollout is triggered for a OS policy assignment",
+          "readOnly": true,
+          "type": "string"
+        },
+        "revisionCreateTime": {
+          "description": "Output only. The timestamp that the revision was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "etag": {
+          "description": "The etag for this OS policy assignment. If this is provided on update, it must match the server's etag.",
+          "type": "string"
+        },
+        "rolloutState": {
+          "description": "Output only. OS policy assignment rollout state",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value",
+            "The rollout is in progress.",
+            "The rollout is being cancelled.",
+            "The rollout is cancelled.",
+            "The rollout has completed successfully."
+          ],
+          "enum": [
+            "ROLLOUT_STATE_UNSPECIFIED",
+            "IN_PROGRESS",
+            "CANCELLING",
+            "CANCELLED",
+            "SUCCEEDED"
+          ]
+        },
+        "baseline": {
+          "description": "Output only. Indicates that this revision has been successfully rolled out in this zone and new VMs will be assigned OS policies from this revision. For a given OS policy assignment, there is only one revision with a value of `true` for this field.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "deleted": {
+          "description": "Output only. Indicates that this revision deletes the OS policy assignment.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "reconciling": {
+          "description": "Output only. Indicates that reconciliation is in progress for the revision. This value is `true` when the `rollout_state` is one of: * IN_PROGRESS * CANCELLING",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "uid": {
+          "description": "Output only. Server generated unique id for the OS policy assignment resource.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicy": {
+      "id": "OSPolicy",
+      "description": "An OS policy defines the desired state configuration for a VM.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Required. The id of the OS policy with the following restrictions: * Must contain only lowercase letters, numbers, and hyphens. * Must start with a letter. * Must be between 1-63 characters. * Must end with a number or a letter. * Must be unique within the assignment.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Policy description. Length of the description is limited to 1024 characters.",
+          "type": "string"
+        },
+        "mode": {
+          "description": "Required. Policy mode",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid mode",
+            "This mode checks if the configuration resources in the policy are in their desired state. No actions are performed if they are not in the desired state. This mode is used for reporting purposes.",
+            "This mode checks if the configuration resources in the policy are in their desired state, and if not, enforces the desired state."
+          ],
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "VALIDATION",
+            "ENFORCEMENT"
+          ]
+        },
+        "resourceGroups": {
+          "description": "Required. List of resource groups for the policy. For a particular VM, resource groups are evaluated in the order specified and the first resource group that is applicable is selected and the rest are ignored. If none of the resource groups are applicable for a VM, the VM is considered to be non-compliant w.r.t this policy. This behavior can be toggled by the flag `allow_no_resource_group_match`",
+          "type": "array",
+          "items": {
+            "$ref": "OSPolicyResourceGroup"
+          }
+        },
+        "allowNoResourceGroupMatch": {
+          "description": "This flag determines the OS policy compliance status when none of the resource groups within the policy are applicable for a VM. Set this value to `true` if the policy needs to be reported as compliant even if the policy has nothing to validate or enforce.",
+          "type": "boolean"
+        }
+      }
+    },
+    "OSPolicyResourceGroup": {
+      "id": "OSPolicyResourceGroup",
+      "description": "Resource groups provide a mechanism to group OS policy resources. Resource groups enable OS policy authors to create a single OS policy to be applied to VMs running different operating Systems. When the OS policy is applied to a target VM, the appropriate resource group within the OS policy is selected based on the `OSFilter` specified within the resource group.",
+      "type": "object",
+      "properties": {
+        "inventoryFilters": {
+          "description": "List of inventory filters for the resource group. The resources in this resource group are applied to the target VM if it satisfies at least one of the following inventory filters. For example, to apply this resource group to VMs running either `RHEL` or `CentOS` operating systems, specify 2 items for the list with following values: inventory_filters[0].os_short_name='rhel' and inventory_filters[1].os_short_name='centos' If the list is empty, this resource group will be applied to the target VM unconditionally.",
+          "type": "array",
+          "items": {
+            "$ref": "OSPolicyInventoryFilter"
+          }
+        },
+        "resources": {
+          "description": "Required. List of resources configured for this resource group. The resources are executed in the exact order specified here.",
+          "type": "array",
+          "items": {
+            "$ref": "OSPolicyResource"
+          }
+        }
+      }
+    },
+    "OSPolicyInventoryFilter": {
+      "id": "OSPolicyInventoryFilter",
+      "description": "Filtering criteria to select VMs based on inventory details.",
+      "type": "object",
+      "properties": {
+        "osShortName": {
+          "description": "Required. The OS short name",
+          "type": "string"
+        },
+        "osVersion": {
+          "description": "The OS version Prefix matches are supported if asterisk(*) is provided as the last character. For example, to match all versions with a major version of `7`, specify the following value for this field `7.*` An empty string matches all OS versions.",
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicyResource": {
+      "id": "OSPolicyResource",
+      "description": "An OS policy resource is used to define the desired state configuration and provides a specific functionality like installing\/removing packages, executing a script etc. The system ensures that resources are always in their desired state by taking necessary actions if they have drifted from their desired state.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Required. The id of the resource with the following restrictions: * Must contain only lowercase letters, numbers, and hyphens. * Must start with a letter. * Must be between 1-63 characters. * Must end with a number or a letter. * Must be unique within the OS policy.",
+          "type": "string"
+        },
+        "pkg": {
+          "description": "Package resource",
+          "$ref": "OSPolicyResourcePackageResource"
+        },
+        "repository": {
+          "description": "Package repository resource",
+          "$ref": "OSPolicyResourceRepositoryResource"
+        },
+        "exec": {
+          "description": "Exec resource",
+          "$ref": "OSPolicyResourceExecResource"
+        },
+        "file": {
+          "description": "File resource",
+          "$ref": "OSPolicyResourceFileResource"
+        }
+      }
+    },
+    "OSPolicyResourcePackageResource": {
+      "id": "OSPolicyResourcePackageResource",
+      "description": "A resource that manages a system package.",
+      "type": "object",
+      "properties": {
+        "desiredState": {
+          "description": "Required. The desired state the agent should maintain for this package.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified is invalid.",
+            "Ensure that the package is installed.",
+            "The agent ensures that the package is not installed and uninstalls it if detected."
+          ],
+          "enum": [
+            "DESIRED_STATE_UNSPECIFIED",
+            "INSTALLED",
+            "REMOVED"
+          ]
+        },
+        "apt": {
+          "description": "A package managed by Apt.",
+          "$ref": "OSPolicyResourcePackageResourceAPT"
+        },
+        "deb": {
+          "description": "A deb package file.",
+          "$ref": "OSPolicyResourcePackageResourceDeb"
+        },
+        "yum": {
+          "description": "A package managed by YUM.",
+          "$ref": "OSPolicyResourcePackageResourceYUM"
+        },
+        "zypper": {
+          "description": "A package managed by Zypper.",
+          "$ref": "OSPolicyResourcePackageResourceZypper"
+        },
+        "rpm": {
+          "description": "An rpm package file.",
+          "$ref": "OSPolicyResourcePackageResourceRPM"
+        },
+        "googet": {
+          "description": "A package managed by GooGet.",
+          "$ref": "OSPolicyResourcePackageResourceGooGet"
+        },
+        "msi": {
+          "description": "An MSI package.",
+          "$ref": "OSPolicyResourcePackageResourceMSI"
+        }
+      }
+    },
+    "OSPolicyResourcePackageResourceAPT": {
+      "id": "OSPolicyResourcePackageResourceAPT",
+      "description": "A package managed by APT. - install: `apt-get update && apt-get -y install [name]` - remove: `apt-get -y remove [name]`",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Package name.",
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicyResourcePackageResourceDeb": {
+      "id": "OSPolicyResourcePackageResourceDeb",
+      "description": "A deb package file. dpkg packages only support INSTALLED state.",
+      "type": "object",
+      "properties": {
+        "source": {
+          "description": "Required. A deb package.",
+          "$ref": "OSPolicyResourceFile"
+        },
+        "pullDeps": {
+          "description": "Whether dependencies should also be installed. - install when false: `dpkg -i package` - install when true: `apt-get update && apt-get -y install package.deb`",
+          "type": "boolean"
+        }
+      }
+    },
+    "OSPolicyResourceFile": {
+      "id": "OSPolicyResourceFile",
+      "description": "A remote or local file.",
+      "type": "object",
+      "properties": {
+        "remote": {
+          "description": "A generic remote file.",
+          "$ref": "OSPolicyResourceFileRemote"
+        },
+        "gcs": {
+          "description": "A Cloud Storage object.",
+          "$ref": "OSPolicyResourceFileGcs"
+        },
+        "localPath": {
+          "description": "A local path within the VM to use.",
+          "type": "string"
+        },
+        "allowInsecure": {
+          "description": "Defaults to false. When false, files are subject to validations based on the file type: Remote: A checksum must be specified. Cloud Storage: An object generation number must be specified.",
+          "type": "boolean"
+        }
+      }
+    },
+    "OSPolicyResourceFileRemote": {
+      "id": "OSPolicyResourceFileRemote",
+      "description": "Specifies a file available via some URI.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Required. URI from which to fetch the object. It should contain both the protocol and path following the format `{protocol}:\/\/{location}`.",
+          "type": "string"
+        },
+        "sha256Checksum": {
+          "description": "SHA256 checksum of the remote file.",
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicyResourceFileGcs": {
+      "id": "OSPolicyResourceFileGcs",
+      "description": "Specifies a file available as a Cloud Storage Object.",
+      "type": "object",
+      "properties": {
+        "bucket": {
+          "description": "Required. Bucket of the Cloud Storage object.",
+          "type": "string"
+        },
+        "object": {
+          "description": "Required. Name of the Cloud Storage object.",
+          "type": "string"
+        },
+        "generation": {
+          "description": "Generation number of the Cloud Storage object.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "OSPolicyResourcePackageResourceYUM": {
+      "id": "OSPolicyResourcePackageResourceYUM",
+      "description": "A package managed by YUM. - install: `yum -y install package` - remove: `yum -y remove package`",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Package name.",
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicyResourcePackageResourceZypper": {
+      "id": "OSPolicyResourcePackageResourceZypper",
+      "description": "A package managed by Zypper. - install: `zypper -y install package` - remove: `zypper -y rm package`",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Package name.",
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicyResourcePackageResourceRPM": {
+      "id": "OSPolicyResourcePackageResourceRPM",
+      "description": "An RPM package file. RPM packages only support INSTALLED state.",
+      "type": "object",
+      "properties": {
+        "source": {
+          "description": "Required. An rpm package.",
+          "$ref": "OSPolicyResourceFile"
+        },
+        "pullDeps": {
+          "description": "Whether dependencies should also be installed. - install when false: `rpm --upgrade --replacepkgs package.rpm` - install when true: `yum -y install package.rpm` or `zypper -y install package.rpm`",
+          "type": "boolean"
+        }
+      }
+    },
+    "OSPolicyResourcePackageResourceGooGet": {
+      "id": "OSPolicyResourcePackageResourceGooGet",
+      "description": "A package managed by GooGet. - install: `googet -noconfirm install package` - remove: `googet -noconfirm remove package`",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Package name.",
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicyResourcePackageResourceMSI": {
+      "id": "OSPolicyResourcePackageResourceMSI",
+      "description": "An MSI package. MSI packages only support INSTALLED state.",
+      "type": "object",
+      "properties": {
+        "source": {
+          "description": "Required. The MSI package.",
+          "$ref": "OSPolicyResourceFile"
+        },
+        "properties": {
+          "description": "Additional properties to use during installation. This should be in the format of Property=Setting. Appended to the defaults of `ACTION=INSTALL REBOOT=ReallySuppress`.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "OSPolicyResourceRepositoryResource": {
+      "id": "OSPolicyResourceRepositoryResource",
+      "description": "A resource that manages a package repository.",
+      "type": "object",
+      "properties": {
+        "apt": {
+          "description": "An Apt Repository.",
+          "$ref": "OSPolicyResourceRepositoryResourceAptRepository"
+        },
+        "yum": {
+          "description": "A Yum Repository.",
+          "$ref": "OSPolicyResourceRepositoryResourceYumRepository"
+        },
+        "zypper": {
+          "description": "A Zypper Repository.",
+          "$ref": "OSPolicyResourceRepositoryResourceZypperRepository"
+        },
+        "goo": {
+          "description": "A Goo Repository.",
+          "$ref": "OSPolicyResourceRepositoryResourceGooRepository"
+        }
+      }
+    },
+    "OSPolicyResourceRepositoryResourceAptRepository": {
+      "id": "OSPolicyResourceRepositoryResourceAptRepository",
+      "description": "Represents a single apt package repository. These will be added to a repo file that will be managed at `\/etc\/apt\/sources.list.d\/google_osconfig.list`.",
+      "type": "object",
+      "properties": {
+        "archiveType": {
+          "description": "Required. Type of archive files in this repository.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified is invalid.",
+            "Deb indicates that the archive contains binary files.",
+            "Deb-src indicates that the archive contains source files."
+          ],
+          "enum": [
+            "ARCHIVE_TYPE_UNSPECIFIED",
+            "DEB",
+            "DEB_SRC"
+          ]
+        },
+        "uri": {
+          "description": "Required. URI for this repository.",
+          "type": "string"
+        },
+        "distribution": {
+          "description": "Required. Distribution of this repository.",
+          "type": "string"
+        },
+        "components": {
+          "description": "Required. List of components for this repository. Must contain at least one item.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "gpgKey": {
+          "description": "URI of the key file for this repository. The agent maintains a keyring at `\/etc\/apt\/trusted.gpg.d\/osconfig_agent_managed.gpg`.",
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicyResourceRepositoryResourceYumRepository": {
+      "id": "OSPolicyResourceRepositoryResourceYumRepository",
+      "description": "Represents a single yum package repository. These are added to a repo file that is managed at `\/etc\/yum.repos.d\/google_osconfig.repo`.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Required. A one word, unique name for this repository. This is the `repo id` in the yum config file and also the `display_name` if `display_name` is omitted. This id is also used as the unique identifier when checking for resource conflicts.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the repository.",
+          "type": "string"
+        },
+        "baseUrl": {
+          "description": "Required. The location of the repository directory.",
+          "type": "string"
+        },
+        "gpgKeys": {
+          "description": "URIs of GPG keys.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "OSPolicyResourceRepositoryResourceZypperRepository": {
+      "id": "OSPolicyResourceRepositoryResourceZypperRepository",
+      "description": "Represents a single zypper package repository. These are added to a repo file that is managed at `\/etc\/zypp\/repos.d\/google_osconfig.repo`.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Required. A one word, unique name for this repository. This is the `repo id` in the zypper config file and also the `display_name` if `display_name` is omitted. This id is also used as the unique identifier when checking for GuestPolicy conflicts.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the repository.",
+          "type": "string"
+        },
+        "baseUrl": {
+          "description": "Required. The location of the repository directory.",
+          "type": "string"
+        },
+        "gpgKeys": {
+          "description": "URIs of GPG keys.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "OSPolicyResourceRepositoryResourceGooRepository": {
+      "id": "OSPolicyResourceRepositoryResourceGooRepository",
+      "description": "Represents a Goo package repository. These are added to a repo file that is managed at `C:\/ProgramData\/GooGet\/repos\/google_osconfig.repo`.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The name of the repository.",
+          "type": "string"
+        },
+        "url": {
+          "description": "Required. The url of the repository.",
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicyResourceExecResource": {
+      "id": "OSPolicyResourceExecResource",
+      "description": "A resource that allows executing scripts on the VM. The `ExecResource` has 2 stages: `validate` and `enforce` and both stages accept a script as an argument to execute. When the `ExecResource` is applied by the agent, it first executes the script in the `validate` stage. The `validate` stage can signal that the `ExecResource` is already in the desired state by returning an exit code of `100`. If the `ExecResource` is not in the desired state, it should return an exit code of `101`. Any other exit code returned by this stage is considered an error. If the `ExecResource` is not in the desired state based on the exit code from the `validate` stage, the agent proceeds to execute the script from the `enforce` stage. If the `ExecResource` is already in the desired state, the `enforce` stage will not be run. Similar to `validate` stage, the `enforce` stage should return an exit code of `100` to indicate that the resource in now in its desired state. Any other exit code is considered an error. NOTE: An exit code of `100` was chosen over `0` (and `101` vs `1`) to have an explicit indicator of `in desired state`, `not in desired state` and errors. Because, for example, Powershell will always return an exit code of `0` unless an `exit` statement is provided in the script. So, for reasons of consistency and being explicit, exit codes `100` and `101` were chosen.",
+      "type": "object",
+      "properties": {
+        "validate": {
+          "description": "Required. What to run to validate this resource is in the desired state. An exit code of 100 indicates \"in desired state\", and exit code of 101 indicates \"not in desired state\". Any other exit code indicates a failure running validate.",
+          "$ref": "OSPolicyResourceExecResourceExec"
+        },
+        "enforce": {
+          "description": "What to run to bring this resource into the desired state. An exit code of 100 indicates \"success\", any other exit code indicates a failure running enforce.",
+          "$ref": "OSPolicyResourceExecResourceExec"
+        }
+      }
+    },
+    "OSPolicyResourceExecResourceExec": {
+      "id": "OSPolicyResourceExecResourceExec",
+      "description": "A file or script to execute.",
+      "type": "object",
+      "properties": {
+        "file": {
+          "description": "A remote or local file.",
+          "$ref": "OSPolicyResourceFile"
+        },
+        "script": {
+          "description": "An inline script. The size of the script is limited to 1024 characters.",
+          "type": "string"
+        },
+        "args": {
+          "description": "Optional arguments to pass to the source during execution.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "interpreter": {
+          "description": "Required. The script interpreter to use.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value, the request will return validation error.",
+            "If an interpreter is not specified, the source is executed directly. This execution, without an interpreter, only succeeds for executables and scripts that have shebang lines.",
+            "Indicates that the script runs with `\/bin\/sh` on Linux and `cmd.exe` on Windows.",
+            "Indicates that the script runs with PowerShell."
+          ],
+          "enum": [
+            "INTERPRETER_UNSPECIFIED",
+            "NONE",
+            "SHELL",
+            "POWERSHELL"
+          ]
+        },
+        "outputFilePath": {
+          "description": "Only recorded for enforce Exec. Path to an output file (that is created by this Exec) whose content will be recorded in OSPolicyResourceCompliance after a successful run. Absence or failure to read this file will result in this ExecResource being non-compliant. Output file size is limited to 100K bytes.",
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicyResourceFileResource": {
+      "id": "OSPolicyResourceFileResource",
+      "description": "A resource that manages the state of a file.",
+      "type": "object",
+      "properties": {
+        "file": {
+          "description": "A remote or local source.",
+          "$ref": "OSPolicyResourceFile"
+        },
+        "content": {
+          "description": "A a file with this content. The size of the content is limited to 1024 characters.",
+          "type": "string"
+        },
+        "path": {
+          "description": "Required. The absolute path of the file within the VM.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Required. Desired state of the file.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified is invalid.",
+            "Ensure file at path is present.",
+            "Ensure file at path is absent.",
+            "Ensure the contents of the file at path matches. If the file does not exist it will be created."
+          ],
+          "enum": [
+            "DESIRED_STATE_UNSPECIFIED",
+            "PRESENT",
+            "ABSENT",
+            "CONTENTS_MATCH"
+          ]
+        },
+        "permissions": {
+          "description": "Consists of three octal digits which represent, in order, the permissions of the owner, group, and other users for the file (similarly to the numeric mode used in the linux chmod utility). Each digit represents a three bit number with the 4 bit corresponding to the read permissions, the 2 bit corresponds to the write bit, and the one bit corresponds to the execute permission. Default behavior is 755. Below are some examples of permissions and their associated values: read, write, and execute: 7 read and execute: 5 read and write: 6 read only: 4",
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicyAssignmentInstanceFilter": {
+      "id": "OSPolicyAssignmentInstanceFilter",
+      "description": "Filters to select target VMs for an assignment. If more than one filter criteria is specified below, a VM will be selected if and only if it satisfies all of them.",
+      "type": "object",
+      "properties": {
+        "all": {
+          "description": "Target all VMs in the project. If true, no other criteria is permitted.",
+          "type": "boolean"
+        },
+        "inclusionLabels": {
+          "description": "List of label sets used for VM inclusion. If the list has more than one `LabelSet`, the VM is included if any of the label sets are applicable for the VM.",
+          "type": "array",
+          "items": {
+            "$ref": "OSPolicyAssignmentLabelSet"
+          }
+        },
+        "exclusionLabels": {
+          "description": "List of label sets used for VM exclusion. If the list has more than one label set, the VM is excluded if any of the label sets are applicable for the VM.",
+          "type": "array",
+          "items": {
+            "$ref": "OSPolicyAssignmentLabelSet"
+          }
+        },
+        "inventories": {
+          "description": "List of inventories to select VMs. A VM is selected if its inventory data matches at least one of the following inventories.",
+          "type": "array",
+          "items": {
+            "$ref": "OSPolicyAssignmentInstanceFilterInventory"
+          }
+        }
+      }
+    },
+    "OSPolicyAssignmentLabelSet": {
+      "id": "OSPolicyAssignmentLabelSet",
+      "description": "Message representing label set. * A label is a key value pair set for a VM. * A LabelSet is a set of labels. * Labels within a LabelSet are ANDed. In other words, a LabelSet is applicable for a VM only if it matches all the labels in the LabelSet. * Example: A LabelSet with 2 labels: `env=prod` and `type=webserver` will only be applicable for those VMs with both labels present.",
+      "type": "object",
+      "properties": {
+        "labels": {
+          "description": "Labels are identified by key\/value pairs in this map. A VM should contain all the key\/value pairs specified in this map to be selected.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "OSPolicyAssignmentInstanceFilterInventory": {
+      "id": "OSPolicyAssignmentInstanceFilterInventory",
+      "description": "VM inventory details.",
+      "type": "object",
+      "properties": {
+        "osShortName": {
+          "description": "Required. The OS short name",
+          "type": "string"
+        },
+        "osVersion": {
+          "description": "The OS version Prefix matches are supported if asterisk(*) is provided as the last character. For example, to match all versions with a major version of `7`, specify the following value for this field `7.*` An empty string matches all OS versions.",
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicyAssignmentRollout": {
+      "id": "OSPolicyAssignmentRollout",
+      "description": "Message to configure the rollout at the zonal level for the OS policy assignment.",
+      "type": "object",
+      "properties": {
+        "disruptionBudget": {
+          "description": "Required. The maximum number (or percentage) of VMs per zone to disrupt at any given moment.",
+          "$ref": "FixedOrPercent"
+        },
+        "minWaitDuration": {
+          "description": "Required. This determines the minimum duration of time to wait after the configuration changes are applied through the current rollout. A VM continues to count towards the `disruption_budget` at least until this duration of time has passed after configuration changes are applied.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "ListOSPolicyAssignmentsResponse": {
+      "id": "ListOSPolicyAssignmentsResponse",
+      "description": "A response message for listing all assignments under given parent.",
+      "type": "object",
+      "properties": {
+        "osPolicyAssignments": {
+          "description": "The list of assignments",
+          "type": "array",
+          "items": {
+            "$ref": "OSPolicyAssignment"
+          }
+        },
+        "nextPageToken": {
+          "description": "The pagination token to retrieve the next page of OS policy assignments.",
+          "type": "string"
+        }
+      }
+    },
+    "ListOSPolicyAssignmentRevisionsResponse": {
+      "id": "ListOSPolicyAssignmentRevisionsResponse",
+      "description": "A response message for listing all revisions for a OS policy assignment.",
+      "type": "object",
+      "properties": {
+        "osPolicyAssignments": {
+          "description": "The OS policy assignment revisions",
+          "type": "array",
+          "items": {
+            "$ref": "OSPolicyAssignment"
+          }
+        },
+        "nextPageToken": {
+          "description": "The pagination token to retrieve the next page of OS policy assignment revisions.",
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicyAssignmentReport": {
+      "id": "OSPolicyAssignmentReport",
+      "description": "A report of the OS policy assignment status for a given instance.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The `OSPolicyAssignmentReport` API resource name. Format: `projects\/{project_number}\/locations\/{location}\/instances\/{instance_id}\/osPolicyAssignments\/{os_policy_assignment_id}\/report`",
+          "type": "string"
+        },
+        "instance": {
+          "description": "The Compute Engine VM instance name.",
+          "type": "string"
+        },
+        "osPolicyAssignment": {
+          "description": "Reference to the `OSPolicyAssignment` API resource that the `OSPolicy` belongs to. Format: `projects\/{project_number}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment_id@revision_id}`",
+          "type": "string"
+        },
+        "osPolicyCompliances": {
+          "description": "Compliance data for each `OSPolicy` that is applied to the VM.",
+          "type": "array",
+          "items": {
+            "$ref": "OSPolicyAssignmentReportOSPolicyCompliance"
+          }
+        },
+        "updateTime": {
+          "description": "Timestamp for when the report was last generated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastRunId": {
+          "description": "Unique identifier of the last attempted run to apply the OS policies associated with this assignment on the VM. This ID is logged by the OS Config agent while applying the OS policies associated with this assignment on the VM. NOTE: If the service is unable to successfully connect to the agent for this run, then this id will not be available in the agent logs.",
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicyAssignmentReportOSPolicyCompliance": {
+      "id": "OSPolicyAssignmentReportOSPolicyCompliance",
+      "description": "Compliance data for an OS policy",
+      "type": "object",
+      "properties": {
+        "osPolicyId": {
+          "description": "The OS policy id",
+          "type": "string"
+        },
+        "complianceState": {
+          "description": "The compliance state of the OS policy.",
+          "type": "string",
+          "enumDescriptions": [
+            "The policy is in an unknown compliance state. Refer to the field `compliance_state_reason` to learn the exact reason for the policy to be in this compliance state.",
+            "Policy is compliant. The policy is compliant if all the underlying resources are also compliant.",
+            "Policy is non-compliant. The policy is non-compliant if one or more underlying resources are non-compliant."
+          ],
+          "enum": [
+            "UNKNOWN",
+            "COMPLIANT",
+            "NON_COMPLIANT"
+          ]
+        },
+        "complianceStateReason": {
+          "description": "The reason for the OS policy to be in an unknown compliance state. This field is always populated when `compliance_state` is `UNKNOWN`. If populated, the field can contain one of the following values: * `vm-not-running`: The VM was not running. * `os-policies-not-supported-by-agent`: The version of the OS Config agent running on the VM does not support running OS policies. * `no-agent-detected`: The OS Config agent is not detected for the VM. * `resource-execution-errors`: The OS Config agent encountered errors while executing one or more resources in the policy. See `os_policy_resource_compliances` for details. * `task-timeout`: The task sent to the agent to apply the policy timed out. * `unexpected-agent-state`: The OS Config agent did not report the final status of the task that attempted to apply the policy. Instead, the agent unexpectedly started working on a different task. This mostly happens when the agent or VM unexpectedly restarts while applying OS policies. * `internal-service-errors`: Internal service errors were encountered while attempting to apply the policy.",
+          "type": "string"
+        },
+        "osPolicyResourceCompliances": {
+          "description": "Compliance data for each resource within the policy that is applied to the VM.",
+          "type": "array",
+          "items": {
+            "$ref": "OSPolicyAssignmentReportOSPolicyComplianceOSPolicyResourceCompliance"
+          }
+        }
+      }
+    },
+    "OSPolicyAssignmentReportOSPolicyComplianceOSPolicyResourceCompliance": {
+      "id": "OSPolicyAssignmentReportOSPolicyComplianceOSPolicyResourceCompliance",
+      "description": "Compliance data for an OS policy resource.",
+      "type": "object",
+      "properties": {
+        "osPolicyResourceId": {
+          "description": "The ID of the OS policy resource.",
+          "type": "string"
+        },
+        "configSteps": {
+          "description": "Ordered list of configuration completed by the agent for the OS policy resource.",
+          "type": "array",
+          "items": {
+            "$ref": "OSPolicyAssignmentReportOSPolicyComplianceOSPolicyResourceComplianceOSPolicyResourceConfigStep"
+          }
+        },
+        "complianceState": {
+          "description": "The compliance state of the resource.",
+          "type": "string",
+          "enumDescriptions": [
+            "The resource is in an unknown compliance state. To get more details about why the policy is in this state, review the output of the `compliance_state_reason` field.",
+            "Resource is compliant.",
+            "Resource is non-compliant."
+          ],
+          "enum": [
+            "UNKNOWN",
+            "COMPLIANT",
+            "NON_COMPLIANT"
+          ]
+        },
+        "complianceStateReason": {
+          "description": "A reason for the resource to be in the given compliance state. This field is always populated when `compliance_state` is `UNKNOWN`. The following values are supported when `compliance_state == UNKNOWN` * `execution-errors`: Errors were encountered by the agent while executing the resource and the compliance state couldn't be determined. * `execution-skipped-by-agent`: Resource execution was skipped by the agent because errors were encountered while executing prior resources in the OS policy. * `os-policy-execution-attempt-failed`: The execution of the OS policy containing this resource failed and the compliance state couldn't be determined.",
+          "type": "string"
+        },
+        "execResourceOutput": {
+          "description": "ExecResource specific output.",
+          "$ref": "OSPolicyAssignmentReportOSPolicyComplianceOSPolicyResourceComplianceExecResourceOutput"
+        }
+      }
+    },
+    "OSPolicyAssignmentReportOSPolicyComplianceOSPolicyResourceComplianceOSPolicyResourceConfigStep": {
+      "id": "OSPolicyAssignmentReportOSPolicyComplianceOSPolicyResourceComplianceOSPolicyResourceConfigStep",
+      "description": "Step performed by the OS Config agent for configuring an `OSPolicy` resource to its desired state.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Configuration step type.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "Checks for resource conflicts such as schema errors.",
+            "Checks the current status of the desired state for a resource.",
+            "Enforces the desired state for a resource that is not in desired state.",
+            "Re-checks the status of the desired state. This check is done for a resource after the enforcement of all OS policies. This step is used to determine the final desired state status for the resource. It accounts for any resources that might have drifted from their desired state due to side effects from executing other resources."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "VALIDATION",
+            "DESIRED_STATE_CHECK",
+            "DESIRED_STATE_ENFORCEMENT",
+            "DESIRED_STATE_CHECK_POST_ENFORCEMENT"
+          ]
+        },
+        "errorMessage": {
+          "description": "An error message recorded during the execution of this step. Only populated if errors were encountered during this step execution.",
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicyAssignmentReportOSPolicyComplianceOSPolicyResourceComplianceExecResourceOutput": {
+      "id": "OSPolicyAssignmentReportOSPolicyComplianceOSPolicyResourceComplianceExecResourceOutput",
+      "description": "ExecResource specific output.",
+      "type": "object",
+      "properties": {
+        "enforcementOutput": {
+          "description": "Output from enforcement phase output file (if run). Output size is limited to 100K bytes.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "ListOSPolicyAssignmentReportsResponse": {
+      "id": "ListOSPolicyAssignmentReportsResponse",
+      "description": "A response message for listing OS Policy assignment reports including the page of results and page token.",
+      "type": "object",
+      "properties": {
+        "osPolicyAssignmentReports": {
+          "description": "List of OS policy assignment reports.",
+          "type": "array",
+          "items": {
+            "$ref": "OSPolicyAssignmentReport"
+          }
+        },
+        "nextPageToken": {
+          "description": "The pagination token to retrieve the next page of OS policy assignment report objects.",
+          "type": "string"
+        }
+      }
+    },
+    "Inventory": {
+      "id": "Inventory",
+      "description": "This API resource represents the available inventory data for a Compute Engine virtual machine (VM) instance at a given point in time. You can use this API resource to determine the inventory data of your VM. For more information, see [Information provided by OS inventory management](https:\/\/cloud.google.com\/compute\/docs\/instances\/os-inventory-management#data-collected).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The `Inventory` API resource name. Format: `projects\/{project_number}\/locations\/{location}\/instances\/{instance_id}\/inventory`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "osInfo": {
+          "description": "Base level operating system information for the VM.",
+          "$ref": "InventoryOsInfo"
+        },
+        "items": {
+          "description": "Inventory items related to the VM keyed by an opaque unique identifier for each inventory item. The identifier is unique to each distinct and addressable inventory item and will change, when there is a new package version.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "InventoryItem"
+          }
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp of the last reported inventory for the VM.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "InventoryOsInfo": {
+      "id": "InventoryOsInfo",
+      "description": "Operating system information for the VM.",
+      "type": "object",
+      "properties": {
+        "hostname": {
+          "description": "The VM hostname.",
+          "type": "string"
+        },
+        "longName": {
+          "description": "The operating system long name. For example 'Debian GNU\/Linux 9' or 'Microsoft Window Server 2019 Datacenter'.",
+          "type": "string"
+        },
+        "shortName": {
+          "description": "The operating system short name. For example, 'windows' or 'debian'.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The version of the operating system.",
+          "type": "string"
+        },
+        "architecture": {
+          "description": "The system architecture of the operating system.",
+          "type": "string"
+        },
+        "kernelVersion": {
+          "description": "The kernel version of the operating system.",
+          "type": "string"
+        },
+        "kernelRelease": {
+          "description": "The kernel release of the operating system.",
+          "type": "string"
+        },
+        "osconfigAgentVersion": {
+          "description": "The current version of the OS Config agent running on the VM.",
+          "type": "string"
+        }
+      }
+    },
+    "InventoryItem": {
+      "id": "InventoryItem",
+      "description": "A single piece of inventory on a VM.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Identifier for this item, unique across items for this VM.",
+          "type": "string"
+        },
+        "originType": {
+          "description": "The origin of this inventory item.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid. An origin type must be specified.",
+            "This inventory item was discovered as the result of the agent reporting inventory via the reporting API."
+          ],
+          "enum": [
+            "ORIGIN_TYPE_UNSPECIFIED",
+            "INVENTORY_REPORT"
+          ]
+        },
+        "createTime": {
+          "description": "When this inventory item was first detected.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "When this inventory item was last modified.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "type": {
+          "description": "The specific type of inventory, correlating to its specific details.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid. An type must be specified.",
+            "This represents a package that is installed on the VM.",
+            "This represents an update that is available for a package."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "INSTALLED_PACKAGE",
+            "AVAILABLE_PACKAGE"
+          ]
+        },
+        "installedPackage": {
+          "description": "Software package present on the VM instance.",
+          "$ref": "InventorySoftwarePackage"
+        },
+        "availablePackage": {
+          "description": "Software package available to be installed on the VM instance.",
+          "$ref": "InventorySoftwarePackage"
+        }
+      }
+    },
+    "InventorySoftwarePackage": {
+      "id": "InventorySoftwarePackage",
+      "description": "Software package information of the operating system.",
+      "type": "object",
+      "properties": {
+        "yumPackage": {
+          "description": "Yum package info. For details about the yum package manager, see https:\/\/access.redhat.com\/documentation\/en-us\/red_hat_enterprise_linux\/6\/html\/deployment_guide\/ch-yum.",
+          "$ref": "InventoryVersionedPackage"
+        },
+        "aptPackage": {
+          "description": "Details of an APT package. For details about the apt package manager, see https:\/\/wiki.debian.org\/Apt.",
+          "$ref": "InventoryVersionedPackage"
+        },
+        "zypperPackage": {
+          "description": "Details of a Zypper package. For details about the Zypper package manager, see https:\/\/en.opensuse.org\/SDB:Zypper_manual.",
+          "$ref": "InventoryVersionedPackage"
+        },
+        "googetPackage": {
+          "description": "Details of a Googet package. For details about the googet package manager, see https:\/\/github.com\/google\/googet.",
+          "$ref": "InventoryVersionedPackage"
+        },
+        "zypperPatch": {
+          "description": "Details of a Zypper patch. For details about the Zypper package manager, see https:\/\/en.opensuse.org\/SDB:Zypper_manual.",
+          "$ref": "InventoryZypperPatch"
+        },
+        "wuaPackage": {
+          "description": "Details of a Windows Update package. See https:\/\/docs.microsoft.com\/en-us\/windows\/win32\/api\/_wua\/ for information about Windows Update.",
+          "$ref": "InventoryWindowsUpdatePackage"
+        },
+        "qfePackage": {
+          "description": "Details of a Windows Quick Fix engineering package. See https:\/\/docs.microsoft.com\/en-us\/windows\/win32\/cimwin32prov\/win32-quickfixengineering for info in Windows Quick Fix Engineering.",
+          "$ref": "InventoryWindowsQuickFixEngineeringPackage"
+        },
+        "cosPackage": {
+          "description": "Details of a COS package.",
+          "$ref": "InventoryVersionedPackage"
+        },
+        "windowsApplication": {
+          "description": "Details of Windows Application.",
+          "$ref": "InventoryWindowsApplication"
+        }
+      }
+    },
+    "InventoryVersionedPackage": {
+      "id": "InventoryVersionedPackage",
+      "description": "Information related to the a standard versioned package. This includes package info for APT, Yum, Zypper, and Googet package managers.",
+      "type": "object",
+      "properties": {
+        "packageName": {
+          "description": "The name of the package.",
+          "type": "string"
+        },
+        "architecture": {
+          "description": "The system architecture this package is intended for.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The version of the package.",
+          "type": "string"
+        }
+      }
+    },
+    "InventoryZypperPatch": {
+      "id": "InventoryZypperPatch",
+      "description": "Details related to a Zypper Patch.",
+      "type": "object",
+      "properties": {
+        "patchName": {
+          "description": "The name of the patch.",
+          "type": "string"
+        },
+        "category": {
+          "description": "The category of the patch.",
+          "type": "string"
+        },
+        "severity": {
+          "description": "The severity specified for this patch",
+          "type": "string"
+        },
+        "summary": {
+          "description": "Any summary information provided about this patch.",
+          "type": "string"
+        }
+      }
+    },
+    "InventoryWindowsUpdatePackage": {
+      "id": "InventoryWindowsUpdatePackage",
+      "description": "Details related to a Windows Update package. Field data and names are taken from Windows Update API IUpdate Interface: https:\/\/docs.microsoft.com\/en-us\/windows\/win32\/api\/_wua\/ Descriptive fields like title, and description are localized based on the locale of the VM being updated.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "description": "The localized title of the update package.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The localized description of the update package.",
+          "type": "string"
+        },
+        "categories": {
+          "description": "The categories that are associated with this update package.",
+          "type": "array",
+          "items": {
+            "$ref": "InventoryWindowsUpdatePackageWindowsUpdateCategory"
+          }
+        },
+        "kbArticleIds": {
+          "description": "A collection of Microsoft Knowledge Base article IDs that are associated with the update package.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "supportUrl": {
+          "description": "A hyperlink to the language-specific support information for the update.",
+          "type": "string"
+        },
+        "moreInfoUrls": {
+          "description": "A collection of URLs that provide more information about the update package.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "updateId": {
+          "description": "Gets the identifier of an update package. Stays the same across revisions.",
+          "type": "string"
+        },
+        "revisionNumber": {
+          "description": "The revision number of this update package.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "lastDeploymentChangeTime": {
+          "description": "The last published date of the update, in (UTC) date and time.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "InventoryWindowsUpdatePackageWindowsUpdateCategory": {
+      "id": "InventoryWindowsUpdatePackageWindowsUpdateCategory",
+      "description": "Categories specified by the Windows Update.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The identifier of the windows update category.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of the windows update category.",
+          "type": "string"
+        }
+      }
+    },
+    "InventoryWindowsQuickFixEngineeringPackage": {
+      "id": "InventoryWindowsQuickFixEngineeringPackage",
+      "description": "Information related to a Quick Fix Engineering package. Fields are taken from Windows QuickFixEngineering Interface and match the source names: https:\/\/docs.microsoft.com\/en-us\/windows\/win32\/cimwin32prov\/win32-quickfixengineering",
+      "type": "object",
+      "properties": {
+        "caption": {
+          "description": "A short textual description of the QFE update.",
+          "type": "string"
+        },
+        "description": {
+          "description": "A textual description of the QFE update.",
+          "type": "string"
+        },
+        "hotFixId": {
+          "description": "Unique identifier associated with a particular QFE update.",
+          "type": "string"
+        },
+        "installTime": {
+          "description": "Date that the QFE update was installed. Mapped from installed_on field.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "InventoryWindowsApplication": {
+      "id": "InventoryWindowsApplication",
+      "description": "Contains information about a Windows application that is retrieved from the Windows Registry. For more information about these fields, see: https:\/\/docs.microsoft.com\/en-us\/windows\/win32\/msi\/uninstall-registry-key",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "The name of the application or product.",
+          "type": "string"
+        },
+        "displayVersion": {
+          "description": "The version of the product or application in string format.",
+          "type": "string"
+        },
+        "publisher": {
+          "description": "The name of the manufacturer for the product or application.",
+          "type": "string"
+        },
+        "installDate": {
+          "description": "The last time this product received service. The value of this property is replaced each time a patch is applied or removed from the product or the command-line option is used to repair the product.",
+          "$ref": "Date"
+        },
+        "helpLink": {
+          "description": "The internet address for technical support.",
+          "type": "string"
+        }
+      }
+    },
+    "Date": {
+      "id": "Date",
+      "description": "Represents a whole or partial calendar date, such as a birthday. The time of day and time zone are either specified elsewhere or are insignificant. The date is relative to the Gregorian Calendar. This can represent one of the following: * A full date, with non-zero year, month, and day values. * A month and day, with a zero year (for example, an anniversary). * A year on its own, with a zero month and a zero day. * A year and month, with a zero day (for example, a credit card expiration date). Related types: * google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp",
+      "type": "object",
+      "properties": {
+        "year": {
+          "description": "Year of the date. Must be from 1 to 9999, or 0 to specify a date without a year.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "month": {
+          "description": "Month of a year. Must be from 1 to 12, or 0 to specify a year without a month and day.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "day": {
+          "description": "Day of a month. Must be from 1 to 31 and valid for the year and month, or 0 to specify a year by itself or a year and month where the day isn't significant.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListInventoriesResponse": {
+      "id": "ListInventoriesResponse",
+      "description": "A response message for listing inventory data for all VMs in a specified location.",
+      "type": "object",
+      "properties": {
+        "inventories": {
+          "description": "List of inventory objects.",
+          "type": "array",
+          "items": {
+            "$ref": "Inventory"
+          }
+        },
+        "nextPageToken": {
+          "description": "The pagination token to retrieve the next page of inventory objects.",
+          "type": "string"
+        }
+      }
+    },
+    "VulnerabilityReport": {
+      "id": "VulnerabilityReport",
+      "description": "This API resource represents the vulnerability report for a specified Compute Engine virtual machine (VM) instance at a given point in time. For more information, see [Vulnerability reports](https:\/\/cloud.google.com\/compute\/docs\/instances\/os-inventory-management#vulnerability-reports).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The `vulnerabilityReport` API resource name. Format: `projects\/{project_number}\/locations\/{location}\/instances\/{instance_id}\/vulnerabilityReport`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "vulnerabilities": {
+          "description": "Output only. List of vulnerabilities affecting the VM.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "VulnerabilityReportVulnerability"
+          }
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp for when the last vulnerability report was generated for the VM.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "VulnerabilityReportVulnerability": {
+      "id": "VulnerabilityReportVulnerability",
+      "description": "A vulnerability affecting the VM instance.",
+      "type": "object",
+      "properties": {
+        "details": {
+          "description": "Contains metadata as per the upstream feed of the operating system and NVD.",
+          "$ref": "VulnerabilityReportVulnerabilityDetails"
+        },
+        "installedInventoryItemIds": {
+          "description": "Corresponds to the `INSTALLED_PACKAGE` inventory item on the VM. This field displays the inventory items affected by this vulnerability. If the vulnerability report was not updated after the VM inventory update, these values might not display in VM inventory. For some distros, this field may be empty.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "availableInventoryItemIds": {
+          "description": "Corresponds to the `AVAILABLE_PACKAGE` inventory item on the VM. If the vulnerability report was not updated after the VM inventory update, these values might not display in VM inventory. If there is no available fix, the field is empty. The `inventory_item` value specifies the latest `SoftwarePackage` available to the VM that fixes the vulnerability.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "The timestamp for when the vulnerability was first detected.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "The timestamp for when the vulnerability was last modified.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "items": {
+          "description": "List of items affected by the vulnerability.",
+          "type": "array",
+          "items": {
+            "$ref": "VulnerabilityReportVulnerabilityItem"
+          }
+        }
+      }
+    },
+    "VulnerabilityReportVulnerabilityDetails": {
+      "id": "VulnerabilityReportVulnerabilityDetails",
+      "description": "Contains metadata information for the vulnerability. This information is collected from the upstream feed of the operating system.",
+      "type": "object",
+      "properties": {
+        "cve": {
+          "description": "The CVE of the vulnerability. CVE cannot be empty and the combination of should be unique across vulnerabilities for a VM.",
+          "type": "string"
+        },
+        "cvssV2Score": {
+          "description": "The CVSS V2 score of this vulnerability. CVSS V2 score is on a scale of 0 - 10 where 0 indicates low severity and 10 indicates high severity.",
+          "type": "number",
+          "format": "float"
+        },
+        "cvssV3": {
+          "description": "The full description of the CVSSv3 for this vulnerability from NVD.",
+          "$ref": "CVSSv3"
+        },
+        "severity": {
+          "description": "Assigned severity\/impact ranking from the distro.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The note or description describing the vulnerability from the distro.",
+          "type": "string"
+        },
+        "references": {
+          "description": "Corresponds to the references attached to the `VulnerabilityDetails`.",
+          "type": "array",
+          "items": {
+            "$ref": "VulnerabilityReportVulnerabilityDetailsReference"
+          }
+        }
+      }
+    },
+    "CVSSv3": {
+      "id": "CVSSv3",
+      "description": "Common Vulnerability Scoring System version 3. For details, see https:\/\/www.first.org\/cvss\/specification-document",
+      "type": "object",
+      "properties": {
+        "baseScore": {
+          "description": "The base score is a function of the base metric scores. https:\/\/www.first.org\/cvss\/specification-document#Base-Metrics",
+          "type": "number",
+          "format": "float"
+        },
+        "exploitabilityScore": {
+          "description": "The Exploitability sub-score equation is derived from the Base Exploitability metrics. https:\/\/www.first.org\/cvss\/specification-document#2-1-Exploitability-Metrics",
+          "type": "number",
+          "format": "float"
+        },
+        "impactScore": {
+          "description": "The Impact sub-score equation is derived from the Base Impact metrics.",
+          "type": "number",
+          "format": "float"
+        },
+        "attackVector": {
+          "description": "This metric reflects the context by which vulnerability exploitation is possible.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "The vulnerable component is bound to the network stack and the set of possible attackers extends beyond the other options listed below, up to and including the entire Internet.",
+            "The vulnerable component is bound to the network stack, but the attack is limited at the protocol level to a logically adjacent topology.",
+            "The vulnerable component is not bound to the network stack and the attacker's path is via read\/write\/execute capabilities.",
+            "The attack requires the attacker to physically touch or manipulate the vulnerable component."
+          ],
+          "enum": [
+            "ATTACK_VECTOR_UNSPECIFIED",
+            "ATTACK_VECTOR_NETWORK",
+            "ATTACK_VECTOR_ADJACENT",
+            "ATTACK_VECTOR_LOCAL",
+            "ATTACK_VECTOR_PHYSICAL"
+          ]
+        },
+        "attackComplexity": {
+          "description": "This metric describes the conditions beyond the attacker's control that must exist in order to exploit the vulnerability.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "Specialized access conditions or extenuating circumstances do not exist. An attacker can expect repeatable success when attacking the vulnerable component.",
+            "A successful attack depends on conditions beyond the attacker's control. That is, a successful attack cannot be accomplished at will, but requires the attacker to invest in some measurable amount of effort in preparation or execution against the vulnerable component before a successful attack can be expected."
+          ],
+          "enum": [
+            "ATTACK_COMPLEXITY_UNSPECIFIED",
+            "ATTACK_COMPLEXITY_LOW",
+            "ATTACK_COMPLEXITY_HIGH"
+          ]
+        },
+        "privilegesRequired": {
+          "description": "This metric describes the level of privileges an attacker must possess before successfully exploiting the vulnerability.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "The attacker is unauthorized prior to attack, and therefore does not require any access to settings or files of the vulnerable system to carry out an attack.",
+            "The attacker requires privileges that provide basic user capabilities that could normally affect only settings and files owned by a user. Alternatively, an attacker with Low privileges has the ability to access only non-sensitive resources.",
+            "The attacker requires privileges that provide significant (e.g., administrative) control over the vulnerable component allowing access to component-wide settings and files."
+          ],
+          "enum": [
+            "PRIVILEGES_REQUIRED_UNSPECIFIED",
+            "PRIVILEGES_REQUIRED_NONE",
+            "PRIVILEGES_REQUIRED_LOW",
+            "PRIVILEGES_REQUIRED_HIGH"
+          ]
+        },
+        "userInteraction": {
+          "description": "This metric captures the requirement for a human user, other than the attacker, to participate in the successful compromise of the vulnerable component.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "The vulnerable system can be exploited without interaction from any user.",
+            "Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited."
+          ],
+          "enum": [
+            "USER_INTERACTION_UNSPECIFIED",
+            "USER_INTERACTION_NONE",
+            "USER_INTERACTION_REQUIRED"
+          ]
+        },
+        "scope": {
+          "description": "The Scope metric captures whether a vulnerability in one vulnerable component impacts resources in components beyond its security scope.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "An exploited vulnerability can only affect resources managed by the same security authority.",
+            "An exploited vulnerability can affect resources beyond the security scope managed by the security authority of the vulnerable component."
+          ],
+          "enum": [
+            "SCOPE_UNSPECIFIED",
+            "SCOPE_UNCHANGED",
+            "SCOPE_CHANGED"
+          ]
+        },
+        "confidentialityImpact": {
+          "description": "This metric measures the impact to the confidentiality of the information resources managed by a software component due to a successfully exploited vulnerability.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "High impact.",
+            "Low impact.",
+            "No impact."
+          ],
+          "enum": [
+            "IMPACT_UNSPECIFIED",
+            "IMPACT_HIGH",
+            "IMPACT_LOW",
+            "IMPACT_NONE"
+          ]
+        },
+        "integrityImpact": {
+          "description": "This metric measures the impact to integrity of a successfully exploited vulnerability.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "High impact.",
+            "Low impact.",
+            "No impact."
+          ],
+          "enum": [
+            "IMPACT_UNSPECIFIED",
+            "IMPACT_HIGH",
+            "IMPACT_LOW",
+            "IMPACT_NONE"
+          ]
+        },
+        "availabilityImpact": {
+          "description": "This metric measures the impact to the availability of the impacted component resulting from a successfully exploited vulnerability.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "High impact.",
+            "Low impact.",
+            "No impact."
+          ],
+          "enum": [
+            "IMPACT_UNSPECIFIED",
+            "IMPACT_HIGH",
+            "IMPACT_LOW",
+            "IMPACT_NONE"
+          ]
+        }
+      }
+    },
+    "VulnerabilityReportVulnerabilityDetailsReference": {
+      "id": "VulnerabilityReportVulnerabilityDetailsReference",
+      "description": "A reference for this vulnerability.",
+      "type": "object",
+      "properties": {
+        "url": {
+          "description": "The url of the reference.",
+          "type": "string"
+        },
+        "source": {
+          "description": "The source of the reference e.g. NVD.",
+          "type": "string"
+        }
+      }
+    },
+    "VulnerabilityReportVulnerabilityItem": {
+      "id": "VulnerabilityReportVulnerabilityItem",
+      "description": "OS inventory item that is affected by a vulnerability or fixed as a result of a vulnerability.",
+      "type": "object",
+      "properties": {
+        "installedInventoryItemId": {
+          "description": "Corresponds to the `INSTALLED_PACKAGE` inventory item on the VM. This field displays the inventory items affected by this vulnerability. If the vulnerability report was not updated after the VM inventory update, these values might not display in VM inventory. For some operating systems, this field might be empty.",
+          "type": "string"
+        },
+        "availableInventoryItemId": {
+          "description": "Corresponds to the `AVAILABLE_PACKAGE` inventory item on the VM. If the vulnerability report was not updated after the VM inventory update, these values might not display in VM inventory. If there is no available fix, the field is empty. The `inventory_item` value specifies the latest `SoftwarePackage` available to the VM that fixes the vulnerability.",
+          "type": "string"
+        },
+        "fixedCpeUri": {
+          "description": "The recommended [CPE URI](https:\/\/cpe.mitre.org\/specification\/) update that contains a fix for this vulnerability.",
+          "type": "string"
+        },
+        "upstreamFix": {
+          "description": "The upstream OS patch, packages or KB that fixes the vulnerability.",
+          "type": "string"
+        }
+      }
+    },
+    "ListVulnerabilityReportsResponse": {
+      "id": "ListVulnerabilityReportsResponse",
+      "description": "A response message for listing vulnerability reports for all VM instances in the specified location.",
+      "type": "object",
+      "properties": {
+        "vulnerabilityReports": {
+          "description": "List of vulnerabilityReport objects.",
+          "type": "array",
+          "items": {
+            "$ref": "VulnerabilityReport"
+          }
+        },
+        "nextPageToken": {
+          "description": "The pagination token to retrieve the next page of vulnerabilityReports object.",
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicyAssignmentOperationMetadata": {
+      "id": "OSPolicyAssignmentOperationMetadata",
+      "description": "OS policy assignment operation metadata provided by OS policy assignment API methods that return long running operations.",
+      "type": "object",
+      "properties": {
+        "osPolicyAssignment": {
+          "description": "Reference to the `OSPolicyAssignment` API resource. Format: `projects\/{project_number}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment_id@revision_id}`",
+          "type": "string"
+        },
+        "apiMethod": {
+          "description": "The OS policy assignment API method.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value",
+            "Create OS policy assignment API method",
+            "Update OS policy assignment API method",
+            "Delete OS policy assignment API method"
+          ],
+          "enum": [
+            "API_METHOD_UNSPECIFIED",
+            "CREATE",
+            "UPDATE",
+            "DELETE"
+          ]
+        },
+        "rolloutState": {
+          "description": "State of the rollout",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value",
+            "The rollout is in progress.",
+            "The rollout is being cancelled.",
+            "The rollout is cancelled.",
+            "The rollout has completed successfully."
+          ],
+          "enum": [
+            "ROLLOUT_STATE_UNSPECIFIED",
+            "IN_PROGRESS",
+            "CANCELLING",
+            "CANCELLED",
+            "SUCCEEDED"
+          ]
+        },
+        "rolloutStartTime": {
+          "description": "Rollout start time",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "rolloutUpdateTime": {
+          "description": "Rollout update time",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudOsconfigV1__OSPolicyAssignmentOperationMetadata": {
+      "id": "GoogleCloudOsconfigV1__OSPolicyAssignmentOperationMetadata",
+      "description": "OS policy assignment operation metadata provided by OS policy assignment API methods that return long running operations.",
+      "type": "object",
+      "properties": {
+        "osPolicyAssignment": {
+          "description": "Reference to the `OSPolicyAssignment` API resource. Format: `projects\/{project_number}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment_id@revision_id}`",
+          "type": "string"
+        },
+        "apiMethod": {
+          "description": "The OS policy assignment API method.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value",
+            "Create OS policy assignment API method",
+            "Update OS policy assignment API method",
+            "Delete OS policy assignment API method"
+          ],
+          "enum": [
+            "API_METHOD_UNSPECIFIED",
+            "CREATE",
+            "UPDATE",
+            "DELETE"
+          ]
+        },
+        "rolloutState": {
+          "description": "State of the rollout",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value",
+            "The rollout is in progress.",
+            "The rollout is being cancelled.",
+            "The rollout is cancelled.",
+            "The rollout has completed successfully."
+          ],
+          "enum": [
+            "ROLLOUT_STATE_UNSPECIFIED",
+            "IN_PROGRESS",
+            "CANCELLING",
+            "CANCELLED",
+            "SUCCEEDED"
+          ]
+        },
+        "rolloutStartTime": {
+          "description": "Rollout start time",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "rolloutUpdateTime": {
+          "description": "Rollout update time",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "resources": {
+        "locations": {
+          "resources": {
+            "osPolicyAssignments": {
+              "methods": {
+                "create": {
+                  "id": "osconfig.projects.locations.osPolicyAssignments.create",
+                  "path": "v1/{+parent}/osPolicyAssignments",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/osPolicyAssignments",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource name in the form: projects\/{project}\/locations\/{location}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "osPolicyAssignmentId": {
+                      "description": "Required. The logical name of the OS policy assignment in the project with the following restrictions: * Must contain only lowercase letters, numbers, and hyphens. * Must start with a letter. * Must be between 1-63 characters. * Must end with a number or a letter. * Must be unique within the project.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "OSPolicyAssignment"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Create an OS policy assignment. This method also creates the first revision of the OS policy assignment. This method returns a long running operation (LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. For more information, see [Method: projects.locations.osPolicyAssignments.operations.cancel](https:\/\/cloud.google.com\/compute\/docs\/osconfig\/rest\/v1\/projects.locations.osPolicyAssignments.operations\/cancel)."
+                },
+                "patch": {
+                  "id": "osconfig.projects.locations.osPolicyAssignments.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/osPolicyAssignments/{osPolicyAssignmentsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Resource name. Format: `projects\/{project_number}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment_id}` This field is ignored when you create an OS policy assignment.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/osPolicyAssignments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask that controls which fields of the assignment should be updated.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "OSPolicyAssignment"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update an existing OS policy assignment. This method creates a new revision of the OS policy assignment. This method returns a long running operation (LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. For more information, see [Method: projects.locations.osPolicyAssignments.operations.cancel](https:\/\/cloud.google.com\/compute\/docs\/osconfig\/rest\/v1\/projects.locations.osPolicyAssignments.operations\/cancel)."
+                },
+                "get": {
+                  "id": "osconfig.projects.locations.osPolicyAssignments.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/osPolicyAssignments/{osPolicyAssignmentsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of OS policy assignment. Format: `projects\/{project}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment}@{revisionId}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/osPolicyAssignments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "OSPolicyAssignment"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Retrieve an existing OS policy assignment. This method always returns the latest revision. In order to retrieve a previous revision of the assignment, also provide the revision ID in the `name` parameter."
+                },
+                "list": {
+                  "id": "osconfig.projects.locations.osPolicyAssignments.list",
+                  "path": "v1/{+parent}/osPolicyAssignments",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/osPolicyAssignments",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of assignments to return.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A pagination token returned from a previous call to `ListOSPolicyAssignments` that indicates where this listing should continue from.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListOSPolicyAssignmentsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List the OS policy assignments under the parent resource. For each OS policy assignment, the latest revision is returned."
+                },
+                "listRevisions": {
+                  "id": "osconfig.projects.locations.osPolicyAssignments.listRevisions",
+                  "path": "v1/{+name}:listRevisions",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/osPolicyAssignments/{osPolicyAssignmentsId}:listRevisions",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the OS policy assignment to list revisions for.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/osPolicyAssignments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of revisions to return.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A pagination token returned from a previous call to `ListOSPolicyAssignmentRevisions` that indicates where this listing should continue from.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOSPolicyAssignmentRevisionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List the OS policy assignment revisions for a given OS policy assignment."
+                },
+                "delete": {
+                  "id": "osconfig.projects.locations.osPolicyAssignments.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/osPolicyAssignments/{osPolicyAssignmentsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the OS policy assignment to be deleted",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/osPolicyAssignments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Delete the OS policy assignment. This method creates a new revision of the OS policy assignment. This method returns a long running operation (LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. If the LRO completes and is not cancelled, all revisions associated with the OS policy assignment are deleted. For more information, see [Method: projects.locations.osPolicyAssignments.operations.cancel](https:\/\/cloud.google.com\/compute\/docs\/osconfig\/rest\/v1\/projects.locations.osPolicyAssignments.operations\/cancel)."
+                }
+              }
+              ,
+              "resources": {
+                "operations": {
+                  "methods": {
+                    "get": {
+                      "id": "osconfig.projects.locations.osPolicyAssignments.operations.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/osPolicyAssignments/{osPolicyAssignmentsId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/osPolicyAssignments\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    },
+                    "cancel": {
+                      "id": "osconfig.projects.locations.osPolicyAssignments.operations.cancel",
+                      "path": "v1/{+name}:cancel",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/osPolicyAssignments/{osPolicyAssignmentsId}/operations/{operationsId}:cancel",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be cancelled.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/osPolicyAssignments\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "CancelOperationRequest"
+                      },
+                      "response": {
+                        "$ref": "Empty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                    }
+                  }
+                }
+              }
+            },
+            "instances": {
+              "resources": {
+                "osPolicyAssignments": {
+                  "resources": {
+                    "reports": {
+                      "methods": {
+                        "get": {
+                          "id": "osconfig.projects.locations.instances.osPolicyAssignments.reports.get",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/osPolicyAssignments/{osPolicyAssignmentsId}/report",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. API resource name for OS policy assignment report. Format: `\/projects\/{project}\/locations\/{location}\/instances\/{instance}\/osPolicyAssignments\/{assignment}\/report` For `{project}`, either `project-number` or `project-id` can be provided. For `{instance_id}`, either Compute Engine `instance-id` or `instance-name` can be provided. For `{assignment_id}`, the OSPolicyAssignment id must be provided.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/osPolicyAssignments\/[^\/]+\/report$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "OSPolicyAssignmentReport"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Get the OS policy asssignment report for the specified Compute Engine VM instance."
+                        },
+                        "list": {
+                          "id": "osconfig.projects.locations.instances.osPolicyAssignments.reports.list",
+                          "path": "v1/{+parent}/reports",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/osPolicyAssignments/{osPolicyAssignmentsId}/reports",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The parent resource name. Format: `projects\/{project}\/locations\/{location}\/instances\/{instance}\/osPolicyAssignments\/{assignment}\/reports` For `{project}`, either `project-number` or `project-id` can be provided. For `{instance}`, either `instance-name`, `instance-id`, or `-` can be provided. If '-' is provided, the response will include OSPolicyAssignmentReports for all instances in the project\/location. For `{assignment}`, either `assignment-id` or `-` can be provided. If '-' is provided, the response will include OSPolicyAssignmentReports for all OSPolicyAssignments in the project\/location. Either {instance} or {assignment} must be `-`. For example: `projects\/{project}\/locations\/{location}\/instances\/{instance}\/osPolicyAssignments\/-\/reports` returns all reports for the instance `projects\/{project}\/locations\/{location}\/instances\/-\/osPolicyAssignments\/{assignment-id}\/reports` returns all the reports for the given assignment across all instances. `projects\/{project}\/locations\/{location}\/instances\/-\/osPolicyAssignments\/-\/reports` returns all the reports for all assignments across all instances.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/osPolicyAssignments\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "The maximum number of results to return.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "filter": {
+                              "description": "If provided, this field specifies the criteria that must be met by the `OSPolicyAssignmentReport` API resource that is included in the response.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "pageToken": {
+                              "description": "A pagination token returned from a previous call to the `ListOSPolicyAssignmentReports` method that indicates where this listing should continue from.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListOSPolicyAssignmentReportsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "List OS policy asssignment reports for all Compute Engine VM instances in the specified zone."
+                        }
+                      }
+                    }
+                  }
+                },
+                "inventories": {
+                  "methods": {
+                    "get": {
+                      "id": "osconfig.projects.locations.instances.inventories.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/inventory",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. API resource name for inventory resource. Format: `projects\/{project}\/locations\/{location}\/instances\/{instance}\/inventory` For `{project}`, either `project-number` or `project-id` can be provided. For `{instance}`, either Compute Engine `instance-id` or `instance-name` can be provided.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/inventory$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "view": {
+                          "description": "Inventory view indicating what information should be included in the inventory resource. If unspecified, the default view is BASIC.",
+                          "location": "query",
+                          "type": "string",
+                          "enumDescriptions": [
+                            "The default value. The API defaults to the BASIC view.",
+                            "Returns the basic inventory information that includes `os_info`.",
+                            "Returns all fields."
+                          ],
+                          "enum": [
+                            "INVENTORY_VIEW_UNSPECIFIED",
+                            "BASIC",
+                            "FULL"
+                          ]
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Inventory"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Get inventory data for the specified VM instance. If the VM has no associated inventory, the message `NOT_FOUND` is returned."
+                    },
+                    "list": {
+                      "id": "osconfig.projects.locations.instances.inventories.list",
+                      "path": "v1/{+parent}/inventories",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/inventories",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource name. Format: `projects\/{project}\/locations\/{location}\/instances\/-` For `{project}`, either `project-number` or `project-id` can be provided.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "view": {
+                          "description": "Inventory view indicating what information should be included in the inventory resource. If unspecified, the default view is BASIC.",
+                          "location": "query",
+                          "type": "string",
+                          "enumDescriptions": [
+                            "The default value. The API defaults to the BASIC view.",
+                            "Returns the basic inventory information that includes `os_info`.",
+                            "Returns all fields."
+                          ],
+                          "enum": [
+                            "INVENTORY_VIEW_UNSPECIFIED",
+                            "BASIC",
+                            "FULL"
+                          ]
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of results to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A pagination token returned from a previous call to `ListInventories` that indicates where this listing should continue from.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "If provided, this field specifies the criteria that must be met by a `Inventory` API resource to be included in the response.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListInventoriesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "List inventory data for all VM instances in the specified zone."
+                    }
+                  }
+                },
+                "vulnerabilityReports": {
+                  "methods": {
+                    "get": {
+                      "id": "osconfig.projects.locations.instances.vulnerabilityReports.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/vulnerabilityReport",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. API resource name for vulnerability resource. Format: `projects\/{project}\/locations\/{location}\/instances\/{instance}\/vulnerabilityReport` For `{project}`, either `project-number` or `project-id` can be provided. For `{instance}`, either Compute Engine `instance-id` or `instance-name` can be provided.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/vulnerabilityReport$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "VulnerabilityReport"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the vulnerability report for the specified VM instance. Only VMs with inventory data have vulnerability reports associated with them."
+                    },
+                    "list": {
+                      "id": "osconfig.projects.locations.instances.vulnerabilityReports.list",
+                      "path": "v1/{+parent}/vulnerabilityReports",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/vulnerabilityReports",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource name. Format: `projects\/{project}\/locations\/{location}\/instances\/-` For `{project}`, either `project-number` or `project-id` can be provided.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of results to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A pagination token returned from a previous call to `ListVulnerabilityReports` that indicates where this listing should continue from.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "This field supports filtering by the severity level for the vulnerability. For a list of severity levels, see [Severity levels for vulnerabilities](https:\/\/cloud.google.com\/container-analysis\/docs\/container-scanning-overview#severity_levels_for_vulnerabilities). The filter field follows the rules described in the [AIP-160](https:\/\/google.aip.dev\/160) guidelines as follows: + **Filter for a specific severity type**: you can list reports that contain vulnerabilities that are classified as medium by specifying `vulnerabilities.details.severity:MEDIUM`. + **Filter for a range of severities** : you can list reports that have vulnerabilities that are classified as critical or high by specifying `vulnerabilities.details.severity:HIGH OR vulnerabilities.details.severity:CRITICAL`",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListVulnerabilityReportsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "List vulnerability reports for all VM instances in the specified zone."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "patchJobs": {
+          "methods": {
+            "execute": {
+              "id": "osconfig.projects.patchJobs.execute",
+              "path": "v1/{+parent}/patchJobs:execute",
+              "flatPath": "v1/projects/{projectsId}/patchJobs:execute",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The project in which to run this patch in the form `projects\/*`",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "ExecutePatchJobRequest"
+              },
+              "response": {
+                "$ref": "PatchJob"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Patch VM instances by creating and running a patch job."
+            },
+            "get": {
+              "id": "osconfig.projects.patchJobs.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/patchJobs/{patchJobsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. Name of the patch in the form `projects\/*\/patchJobs\/*`",
+                  "pattern": "^projects\/[^\/]+\/patchJobs\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "PatchJob"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Get the patch job. This can be used to track the progress of an ongoing patch job or review the details of completed jobs."
+            },
+            "cancel": {
+              "id": "osconfig.projects.patchJobs.cancel",
+              "path": "v1/{+name}:cancel",
+              "flatPath": "v1/projects/{projectsId}/patchJobs/{patchJobsId}:cancel",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. Name of the patch in the form `projects\/*\/patchJobs\/*`",
+                  "pattern": "^projects\/[^\/]+\/patchJobs\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "CancelPatchJobRequest"
+              },
+              "response": {
+                "$ref": "PatchJob"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Cancel a patch job. The patch job must be active. Canceled patch jobs cannot be restarted."
+            },
+            "list": {
+              "id": "osconfig.projects.patchJobs.list",
+              "path": "v1/{+parent}/patchJobs",
+              "flatPath": "v1/projects/{projectsId}/patchJobs",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. In the form of `projects\/*`",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of instance status to return.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A pagination token returned from a previous call that indicates where this listing should continue from.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "If provided, this field specifies the criteria that must be met by patch jobs to be included in the response. Currently, filtering is only available on the patch_deployment field.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListPatchJobsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Get a list of patch jobs."
+            }
+          }
+          ,
+          "resources": {
+            "instanceDetails": {
+              "methods": {
+                "list": {
+                  "id": "osconfig.projects.patchJobs.instanceDetails.list",
+                  "path": "v1/{+parent}/instanceDetails",
+                  "flatPath": "v1/projects/{projectsId}/patchJobs/{patchJobsId}/instanceDetails",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent for the instances are in the form of `projects\/*\/patchJobs\/*`.",
+                      "pattern": "^projects\/[^\/]+\/patchJobs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of instance details records to return. Default is 100.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A pagination token returned from a previous call that indicates where this listing should continue from.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "A filter expression that filters results listed in the response. This field supports filtering results by instance zone, name, state, or `failure_reason`.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListPatchJobInstanceDetailsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get a list of instance details for a given patch job."
+                }
+              }
+            }
+          }
+        },
+        "patchDeployments": {
+          "methods": {
+            "create": {
+              "id": "osconfig.projects.patchDeployments.create",
+              "path": "v1/{+parent}/patchDeployments",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The project to apply this patch deployment to in the form `projects\/*`.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "patchDeploymentId": {
+                  "description": "Required. A name for the patch deployment in the project. When creating a name the following rules apply: * Must contain only lowercase letters, numbers, and hyphens. * Must start with a letter. * Must be between 1-63 characters. * Must end with a number or a letter. * Must be unique within the project.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "PatchDeployment"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Create an OS Config patch deployment."
+            },
+            "get": {
+              "id": "osconfig.projects.patchDeployments.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Get an OS Config patch deployment."
+            },
+            "list": {
+              "id": "osconfig.projects.patchDeployments.list",
+              "path": "v1/{+parent}/patchDeployments",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The resource name of the parent in the form `projects\/*`.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional. The maximum number of patch deployments to return. Default is 100.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Optional. A pagination token returned from a previous call to ListPatchDeployments that indicates where this listing should continue from.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListPatchDeploymentsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Get a page of OS Config patch deployments."
+            },
+            "delete": {
+              "id": "osconfig.projects.patchDeployments.delete",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Delete an OS Config patch deployment."
+            },
+            "patch": {
+              "id": "osconfig.projects.patchDeployments.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Unique name for the patch deployment resource in a project. The patch deployment name is in the form: `projects\/{project_id}\/patchDeployments\/{patch_deployment_id}`. This field is ignored when you create a new patch deployment.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Optional. Field mask that controls which fields of the patch deployment should be updated.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "PatchDeployment"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Update an OS Config patch deployment."
+            },
+            "pause": {
+              "id": "osconfig.projects.patchDeployments.pause",
+              "path": "v1/{+name}:pause",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:pause",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "PausePatchDeploymentRequest"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Change state of patch deployment to \"PAUSED\". Patch deployment in paused state doesn't generate patch jobs."
+            },
+            "resume": {
+              "id": "osconfig.projects.patchDeployments.resume",
+              "path": "v1/{+name}:resume",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:resume",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "ResumePatchDeploymentRequest"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Change state of patch deployment back to \"ACTIVE\". Patch deployment in active state continues to generate patch jobs."
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

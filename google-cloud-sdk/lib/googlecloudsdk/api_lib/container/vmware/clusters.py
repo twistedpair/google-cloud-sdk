@@ -19,20 +19,19 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.container.vmware import client
 
 
-class ClustersClient(object):
+class ClustersClient(client.ClientBase):
   """Client for clusters in gkeonprem vmware API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or apis.GetClientInstance('gkeonprem', 'v1')
-    self.messages = messages or self.client.MESSAGES_MODULE
-    self._service = self.client.projects_locations_vmwareClusters
+  def __init__(self, **kwargs):
+    super(ClustersClient, self).__init__(**kwargs)
+    self._service = self._client.projects_locations_vmwareClusters
 
   def List(self, location_ref, limit=None, page_size=100):
     """Lists Clusters in the GKE On-Prem VMware API."""
-    list_req = self.messages.GkeonpremProjectsLocationsVmwareClustersListRequest(
+    list_req = self._messages.GkeonpremProjectsLocationsVmwareClustersListRequest(
         parent=location_ref.RelativeName())
     return list_pager.YieldFromList(
         self._service,
@@ -42,20 +41,14 @@ class ClustersClient(object):
         limit=limit,
         batch_size_attribute='pageSize')
 
-  def Describe(self, resource_ref):
-    """Gets a gkeonprem API cluster resource."""
-    req = self.messages.GkeonpremProjectsLocationsVmwareClustersGetRequest(
-        name=resource_ref.RelativeName())
-    return self._service.Get(req)
-
   def Enroll(self, admin_cluster_membership_ref, resource_ref, local_name=None):
     """Enrolls a VMware cluster to Anthos."""
-    enroll_vmware_cluster_request = self.messages.EnrollVmwareClusterRequest(
+    enroll_vmware_cluster_request = self._messages.EnrollVmwareClusterRequest(
         adminClusterMembership=admin_cluster_membership_ref.RelativeName(),
         vmwareClusterId=resource_ref.Name(),
         localName=local_name,
     )
-    req = self.messages.GkeonpremProjectsLocationsVmwareClustersEnrollRequest(
+    req = self._messages.GkeonpremProjectsLocationsVmwareClustersEnrollRequest(
         parent=resource_ref.Parent().RelativeName(),
         enrollVmwareClusterRequest=enroll_vmware_cluster_request,
     )
@@ -63,10 +56,11 @@ class ClustersClient(object):
 
   def Unenroll(self, resource_ref, force=False):
     """Unenrolls an Anthos cluster on VMware."""
-    req = self.messages.GkeonpremProjectsLocationsVmwareClustersUnenrollRequest(
-        name=resource_ref.RelativeName(),
-        force=force,
-    )
+    req = (
+        self._messages.GkeonpremProjectsLocationsVmwareClustersUnenrollRequest(
+            name=resource_ref.RelativeName(),
+            force=force,
+        ))
     return self._service.Unenroll(req)
 
   def Delete(self,
@@ -75,7 +69,7 @@ class ClustersClient(object):
              validate_only=False,
              force=False):
     """Deletes an Anthos cluster on VMware."""
-    req = self.messages.GkeonpremProjectsLocationsVmwareClustersDeleteRequest(
+    req = self._messages.GkeonpremProjectsLocationsVmwareClustersDeleteRequest(
         name=resource_ref.RelativeName(),
         allowMissing=allow_missing,
         validateOnly=validate_only,
@@ -83,50 +77,87 @@ class ClustersClient(object):
     )
     return self._service.Delete(req)
 
-  def Create(self, resource_ref, admin_cluster_membership_ref, args):
+  def Create(self, args, user_cluster_ref, admin_cluster_ref):
     """Creates an Anthos cluster on VMware."""
-    load_balancer = self.messages.VmwareLoadBalancerConfig(
-        vipConfig=self.messages.VmwareVipConfig(
-            controlPlaneVip=args.control_plane_vip,
-            ingressVip=args.ingress_vip,
-        ),)
+    req = self._messages.GkeonpremProjectsLocationsVmwareClustersCreateRequest(
+        parent=user_cluster_ref.Parent().RelativeName(),
+        validateOnly=args.validate_only,
+        vmwareCluster=self._vmware_cluster(args, user_cluster_ref,
+                                           admin_cluster_ref),
+        vmwareClusterId=user_cluster_ref.Name(),
+    )
+    return self._service.Create(req)
 
-    if args.metal_lb_config_address_pools:
-      address_pools = []
-      for address_pool in args.metal_lb_config_address_pools:
-        address_pools.append(
-            self.messages.VmwareAddressPool(
-                pool=address_pool['pool'],
-                addresses=address_pool['addresses'],
-                avoidBuggyIps=address_pool.get('avoid_buggy_ips', False),
-                manualAssign=address_pool.get('manual_assign', False),
-            ),
-        )
-      load_balancer.metalLbConfig = self.messages.VmwareMetalLbConfig(
-          addressPools=address_pools)
-
-    if args.f5_config_address:
-      load_balancer.f5Config = self.messages.VmwareF5BigIpConfig(
-          address=args.f5_config_address,
-          partition=args.f5_config_partition,
-          snatPool=args.f5_config_snat_pool,
-      )
-
-    vmware_cluster = self.messages.VmwareCluster(
-        name=resource_ref.RelativeName(),
-        adminClusterMembership=admin_cluster_membership_ref.RelativeName(),
+  def _vmware_cluster(self, args, user_cluster_ref, admin_cluster_ref):
+    """Constructs proto message field vmware_cluster."""
+    return self._messages.VmwareCluster(
+        name=user_cluster_ref.RelativeName(),
+        adminClusterMembership=admin_cluster_ref.RelativeName(),
         onPremVersion=args.version,
-        networkConfig=self.messages.VmwareNetworkConfig(
+        networkConfig=self._messages.VmwareNetworkConfig(
             serviceAddressCidrBlocks=args.service_address_cidr_blocks,
             podAddressCidrBlocks=args.pod_address_cidr_blocks,
         ),
-        loadBalancer=load_balancer,
+        loadBalancer=self._load_balancer(args),
     )
 
-    req = self.messages.GkeonpremProjectsLocationsVmwareClustersCreateRequest(
-        parent=resource_ref.Parent().RelativeName(),
-        validateOnly=args.validate_only,
-        vmwareCluster=vmware_cluster,
-        vmwareClusterId=resource_ref.Name(),
-    )
-    return self._service.Create(req)
+  def _load_balancer(self, args):
+    """Constructs proto message field load_balancer."""
+    kwargs = {
+        'f5Config': self._f5_config(args),
+        'metalLbConfig': self._metal_lb_config(args),
+        'vipConfig': self._vip_config(args),
+    }
+    if any(kwargs.values()):
+      return self._messages.VmwareLoadBalancerConfig(**kwargs)
+    return None
+
+  def _vip_config(self, args):
+    """Constructs proto message field vip_config."""
+    kwargs = {
+        'controlPlaneVip': args.control_plane_vip,
+        'ingressVip': args.ingress_vip,
+    }
+    if any(kwargs.values()):
+      return self._messages.VmwareVipConfig(**kwargs)
+    return None
+
+  def _f5_config(self, args):
+    """Constructs proto message field f5_config."""
+    kwargs = {
+        'address': args.f5_config_address,
+        'partition': args.f5_config_partition,
+        'snatPool': args.f5_config_snat_pool,
+    }
+    if any(kwargs.values()):
+      return self._messages.VmwareF5BigIpConfig(**kwargs)
+    return None
+
+  def _metal_lb_config(self, args):
+    """Constructs proto message field metal_lb_config."""
+    kwargs = {
+        'addressPools': self._address_pools(args),
+    }
+    if any(kwargs.values()):
+      return self._messages.VmwareMetalLbConfig(**kwargs)
+    return None
+
+  def _address_pools(self, args):
+    """Constructs proto message field address_pools."""
+    address_pools = []
+    if args.metal_lb_config_address_pools:
+      for address_pool in args.metal_lb_config_address_pools:
+        address_pools.append(self._address_pool(address_pool))
+    return address_pools
+
+  def _address_pool(self, address_pool_args):
+    """Constructs proto message field address_pool."""
+    kwargs = {
+        'addresses': address_pool_args.get('addresses', []),
+        'avoidBuggyIps': address_pool_args.get('avoid_buggy_ips', False),
+        'manualAssign': address_pool_args.get('manual_assign', False),
+        'pool': address_pool_args.get('pool', ''),
+    }
+    if any(kwargs.values()):
+      return self._messages.VmwareAddressPool(**kwargs)
+    return None

@@ -1,0 +1,1231 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "artifactregistry:v1alpha1",
+  "name": "artifactregistry",
+  "canonicalName": "Artifact Registry",
+  "version": "v1alpha1",
+  "revision": "0",
+  "title": "Artifact Registry API",
+  "description": "Store and manage build artifacts in a scalable and integrated service built on Google infrastructure.",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/artifacts/docs/",
+  "protocol": "rest",
+  "rootUrl": "https://artifactregistry.googleapis.com/",
+  "mtlsRootUrl": "https://artifactregistry.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://artifactregistry.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        },
+        "https://www.googleapis.com/auth/cloud-platform.read-only": {
+          "description": "View your data across Google Cloud services and see the email address of your Google Account"
+        }
+      }
+    }
+  },
+  "schemas": {
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsRequest": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsRequest",
+      "description": "The request to import new apt artifacts.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location where input content is located.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsGcsSource"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsGcsSource": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsGcsSource",
+      "description": "Google Cloud Storage location where the artifacts currently reside.",
+      "type": "object",
+      "properties": {
+        "uris": {
+          "description": "Cloud Storage paths URI (e.g., gs:\/\/my_bucket\/\/my_object).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "useWildcards": {
+          "description": "Supports URI wildcards for matching multiple objects from a single URI.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsRequest": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsRequest",
+      "description": "The request to import new yum artifacts.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location where input content is located.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsGcsSource"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsGcsSource": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsGcsSource",
+      "description": "Google Cloud Storage location where the artifacts currently reside.",
+      "type": "object",
+      "properties": {
+        "uris": {
+          "description": "Cloud Storage paths URI (e.g., gs:\/\/my_bucket\/\/my_object).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "useWildcards": {
+          "description": "Supports URI wildcards for matching multiple objects from a single URI.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest",
+      "description": "The request to import new googet artifacts.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location where input content is located.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsGcsSource"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsGcsSource": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsGcsSource",
+      "description": "Google Cloud Storage location where the artifacts currently reside.",
+      "type": "object",
+      "properties": {
+        "uris": {
+          "description": "Cloud Storage paths URI (e.g., gs:\/\/my_bucket\/my_object).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "useWildcards": {
+          "description": "Supports URI wildcards for matching multiple objects from a single URI.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactRequest": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactRequest",
+      "description": "The request to upload an artifact.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactMediaResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactMediaResponse",
+      "description": "The response to upload an artifact.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "description": "Operation to be returned to the user.",
+          "$ref": "Operation"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactRequest": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactRequest",
+      "description": "The request to upload an artifact.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMediaResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMediaResponse",
+      "description": "The response to upload an artifact.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "description": "Operation to be returned to the user.",
+          "$ref": "Operation"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactRequest": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactRequest",
+      "description": "The request to upload an artifact.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactMediaResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactMediaResponse",
+      "description": "The response to upload an artifact.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "description": "Operation to be returned to the user.",
+          "$ref": "Operation"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ListRepositoriesResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ListRepositoriesResponse",
+      "description": "The response from listing repositories.",
+      "type": "object",
+      "properties": {
+        "repositories": {
+          "description": "The repositories returned.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1Repository"
+          }
+        },
+        "nextPageToken": {
+          "description": "The token to retrieve the next page of repositories, or empty if there are no more repositories to return.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1Repository": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1Repository",
+      "description": "A Repository for storing artifacts with a specific format.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the repository, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\".",
+          "type": "string"
+        },
+        "format": {
+          "description": "The format of packages that are stored in the repository.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified package format.",
+            "Docker package format.",
+            "Maven package format.",
+            "NPM package format.",
+            "APT package format.",
+            "YUM package format.",
+            "GooGet package format.",
+            "Python package format."
+          ],
+          "enum": [
+            "FORMAT_UNSPECIFIED",
+            "DOCKER",
+            "MAVEN",
+            "NPM",
+            "APT",
+            "YUM",
+            "GOOGET",
+            "PYTHON"
+          ]
+        },
+        "description": {
+          "description": "The user-provided description of the repository.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Labels with user-defined metadata. This field may contain up to 64 entries. Label keys and values may be no longer than 63 characters. Label keys must begin with a lowercase letter and may only contain lowercase letters, numeric characters, underscores, and dashes.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "The time when the repository was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "The time when the repository was last updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "kmsKeyName": {
+          "description": "The Cloud KMS resource name of the customer managed encryption key that's used to encrypt the contents of the Repository. Has the form: `projects\/my-project\/locations\/my-region\/keyRings\/my-kr\/cryptoKeys\/my-key`. This value may not be changed after the Repository has been created.",
+          "type": "string"
+        },
+        "mode": {
+          "description": "The mode of the repository.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified mode.",
+            "A standard repository storing artifacts.",
+            "A virtual repository to serve artifacts from one or more sources."
+          ],
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "STANDARD_REPOSITORY",
+            "VIRTUAL_REPOSITORY"
+          ]
+        },
+        "sizeBytes": {
+          "description": "Output only. The size, in bytes, of all artifact storage in this repository. Repositories that are generally available or in public preview use this to calculate storage costs.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsResponse",
+      "description": "The response message from importing APT artifacts.",
+      "type": "object",
+      "properties": {
+        "aptArtifacts": {
+          "description": "The Apt artifacts imported.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1AptArtifact"
+          }
+        },
+        "errors": {
+          "description": "Detailed error info for packages that were not imported.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsErrorInfo"
+          }
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1AptArtifact": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1AptArtifact",
+      "description": "A detailed representation of an Apt artifact. Information in the record is derived from the archive's control file. See https:\/\/www.debian.org\/doc\/debian-policy\/ch-controlfields.html",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The Artifact Registry resource name of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "packageName": {
+          "description": "Output only. The Apt package name of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "packageType": {
+          "description": "Output only. An artifact is a binary or source package.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Package type is not specified.",
+            "Binary package.",
+            "Source package."
+          ],
+          "enum": [
+            "PACKAGE_TYPE_UNSPECIFIED",
+            "BINARY",
+            "SOURCE"
+          ]
+        },
+        "architecture": {
+          "description": "Output only. Operating system architecture of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "component": {
+          "description": "Output only. Repository component of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "controlFile": {
+          "description": "Output only. Contents of the artifact's control metadata file.",
+          "readOnly": true,
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsErrorInfo": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsErrorInfo",
+      "description": "Error information explaining why a package was not imported.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location requested.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsGcsSource"
+        },
+        "error": {
+          "description": "The detailed error status.",
+          "$ref": "Status"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsResponse",
+      "description": "The response message from importing artifacts.",
+      "type": "object",
+      "properties": {
+        "googetArtifacts": {
+          "description": "The GooGet artifacts updated.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1GoogetArtifact"
+          }
+        },
+        "errors": {
+          "description": "Detailed error info for packages that were not imported.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsErrorInfo"
+          }
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1GoogetArtifact": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1GoogetArtifact",
+      "description": "A detailed representation of a GooGet artifact.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The Artifact Registry resource name of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "packageName": {
+          "description": "Output only. The GooGet package name of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "architecture": {
+          "description": "Output only. Operating system architecture of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsErrorInfo": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsErrorInfo",
+      "description": "Error information explaining why a package was not imported.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location requested.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsGcsSource"
+        },
+        "error": {
+          "description": "The detailed error status.",
+          "$ref": "Status"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsResponse",
+      "description": "The response message from importing YUM artifacts.",
+      "type": "object",
+      "properties": {
+        "yumArtifacts": {
+          "description": "The yum artifacts imported.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1YumArtifact"
+          }
+        },
+        "errors": {
+          "description": "Detailed error info for packages that were not imported.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsErrorInfo"
+          }
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1YumArtifact": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1YumArtifact",
+      "description": "A detailed representation of a Yum artifact.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The Artifact Registry resource name of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "packageName": {
+          "description": "Output only. The yum package name of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "packageType": {
+          "description": "Output only. An artifact is a binary or source package.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Package type is not specified.",
+            "Binary package (.rpm).",
+            "Source package (.srpm)."
+          ],
+          "enum": [
+            "PACKAGE_TYPE_UNSPECIFIED",
+            "BINARY",
+            "SOURCE"
+          ]
+        },
+        "architecture": {
+          "description": "Output only. Operating system architecture of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsErrorInfo": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsErrorInfo",
+      "description": "Error information explaining why a package was not imported.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location requested.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsGcsSource"
+        },
+        "error": {
+          "description": "The detailed error status.",
+          "$ref": "Status"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactResponse",
+      "description": "The response of the completed artifact upload operation. This response is contained in the Operation and available to users.",
+      "type": "object",
+      "properties": {
+        "aptArtifacts": {
+          "description": "The Apt artifacts updated.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1AptArtifact"
+          }
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactResponse",
+      "description": "The response of the completed artifact upload operation. This response is contained in the Operation and available to users.",
+      "type": "object",
+      "properties": {
+        "googetArtifacts": {
+          "description": "The Apt artifacts updated.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1GoogetArtifact"
+          }
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactResponse",
+      "description": "The response of the completed artifact upload operation. This response is contained in the Operation and available to users.",
+      "type": "object",
+      "properties": {
+        "yumArtifacts": {
+          "description": "The Apt artifacts updated.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1YumArtifact"
+          }
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactMetadata": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactMetadata",
+      "description": "The operation metadata for uploading artifacts.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMetadata": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMetadata",
+      "description": "The operation metadata for uploading artifacts.",
+      "type": "object",
+      "properties": {
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "resources": {
+        "locations": {
+          "methods": {
+            "list": {
+              "id": "artifactregistry.projects.locations.list",
+              "path": "v1alpha1/{+name}/locations",
+              "flatPath": "v1alpha1/projects/{projectsId}/locations",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ListLocationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ],
+              "description": "Lists information about the supported locations for this service."
+            },
+            "get": {
+              "id": "artifactregistry.projects.locations.get",
+              "path": "v1alpha1/{+name}",
+              "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Location"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ],
+              "description": "Gets information about a location."
+            }
+          }
+          ,
+          "resources": {
+            "operations": {
+              "methods": {
+                "get": {
+                  "id": "artifactregistry.projects.locations.operations.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                }
+              }
+            },
+            "repositories": {
+              "methods": {
+                "list": {
+                  "id": "artifactregistry.projects.locations.repositories.list",
+                  "path": "v1alpha1/{+parent}/repositories",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The name of the parent resource whose repositories will be listed.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of repositories to return. Maximum page size is 1,000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value returned from a previous list request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ListRepositoriesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only"
+                  ],
+                  "description": "Lists repositories."
+                },
+                "get": {
+                  "id": "artifactregistry.projects.locations.repositories.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the repository to retrieve.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleDevtoolsArtifactregistryV1alpha1Repository"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only"
+                  ],
+                  "description": "Gets a repository."
+                },
+                "create": {
+                  "id": "artifactregistry.projects.locations.repositories.create",
+                  "path": "v1alpha1/{+parent}/repositories",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The name of the parent resource where the repository will be created.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "repositoryId": {
+                      "description": "The repository id to use for this repository.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleDevtoolsArtifactregistryV1alpha1Repository"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a repository. The returned Operation will finish once the repository has been created. Its response will be the created Repository."
+                },
+                "patch": {
+                  "id": "artifactregistry.projects.locations.repositories.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the repository, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The update mask applies to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleDevtoolsArtifactregistryV1alpha1Repository"
+                  },
+                  "response": {
+                    "$ref": "GoogleDevtoolsArtifactregistryV1alpha1Repository"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates a repository."
+                },
+                "delete": {
+                  "id": "artifactregistry.projects.locations.repositories.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the repository to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a repository and all of its contents. The returned Operation will finish once the repository has been deleted. It will not have any Operation metadata and will return a google.protobuf.Empty response."
+                }
+              }
+              ,
+              "resources": {
+                "aptArtifacts": {
+                  "methods": {
+                    "import": {
+                      "id": "artifactregistry.projects.locations.repositories.aptArtifacts.import",
+                      "path": "v1alpha1/{+parent}/aptArtifacts:import",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/aptArtifacts:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be imported.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Imports Apt artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
+                    },
+                    "upload": {
+                      "id": "artifactregistry.projects.locations.repositories.aptArtifacts.upload",
+                      "path": "v1alpha1/{+parent}/aptArtifacts:create",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/aptArtifacts:create",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be uploaded.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "supportsMediaUpload": true,
+                      "mediaUpload": {
+                        "accept": [
+                          "*/*"
+                        ],
+                        "protocols": {
+                          "simple": {
+                            "multipart": true,
+                            "path": "/upload/v1alpha1/{+parent}/aptArtifacts:create"
+                          }
+                        }
+                      },
+                      "request": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactMediaResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Directly uploads an Apt artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                },
+                "yumArtifacts": {
+                  "methods": {
+                    "import": {
+                      "id": "artifactregistry.projects.locations.repositories.yumArtifacts.import",
+                      "path": "v1alpha1/{+parent}/yumArtifacts:import",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/yumArtifacts:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be imported.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Imports Yum (RPM) artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
+                    },
+                    "upload": {
+                      "id": "artifactregistry.projects.locations.repositories.yumArtifacts.upload",
+                      "path": "v1alpha1/{+parent}/yumArtifacts:create",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/yumArtifacts:create",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be uploaded.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "supportsMediaUpload": true,
+                      "mediaUpload": {
+                        "accept": [
+                          "*/*"
+                        ],
+                        "protocols": {
+                          "simple": {
+                            "multipart": true,
+                            "path": "/upload/v1alpha1/{+parent}/yumArtifacts:create"
+                          }
+                        }
+                      },
+                      "request": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMediaResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Directly uploads a Yum artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                },
+                "googetArtifacts": {
+                  "methods": {
+                    "import": {
+                      "id": "artifactregistry.projects.locations.repositories.googetArtifacts.import",
+                      "path": "v1alpha1/{+parent}/googetArtifacts:import",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/googetArtifacts:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be imported.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Imports GooGet artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
+                    },
+                    "upload": {
+                      "id": "artifactregistry.projects.locations.repositories.googetArtifacts.upload",
+                      "path": "v1alpha1/{+parent}/googetArtifacts:create",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/googetArtifacts:create",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be uploaded.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "supportsMediaUpload": true,
+                      "mediaUpload": {
+                        "accept": [
+                          "*/*"
+                        ],
+                        "protocols": {
+                          "simple": {
+                            "multipart": true,
+                            "path": "/upload/v1alpha1/{+parent}/googetArtifacts:create"
+                          }
+                        }
+                      },
+                      "request": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactMediaResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Directly uploads a GooGet artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

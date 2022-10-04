@@ -130,3 +130,10 @@ display_name_v1:
   required: false
   help_text: |-
     An arbitrary user-provided name for the connection. Cannot exceed 64 characters.
+
+app_gateway_v1:
+  api_field: googleCloudBeyondcorpAppconnectionsV1AppConnection.gateway.appGateway
+  arg_name: app-gateway
+  hidden: true
+  help_text: |-
+    The gateway used by the AppConnection.

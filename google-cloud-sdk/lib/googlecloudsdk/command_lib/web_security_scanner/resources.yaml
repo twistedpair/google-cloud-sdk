@@ -8,9 +8,8 @@ project:
     help: The Google Cloud Platform project ID.
     property: core/project
 
-# TODO(b/124305522)
 scan_config:
-  name: scan_config
+  name: scan config
   collection: websecurityscanner.projects.scanConfigs
   attributes:
   - *project
@@ -19,35 +18,14 @@ scan_config:
     attribute_name: scan_config
     help: The ID of a Scan Config.
 
-scan-config:
-  name: scan-config
-  collection: websecurityscanner.projects.scanConfigs
-  attributes:
-  - *project
-  - &scan-config
-    parameter_name: scanConfigsId
-    attribute_name: scan-config
-    help: The ID of a Scan Config.
 
-# TODO(b/124305522)
 scan_run:
-  name: scan_run
+  name: scan run
   collection: websecurityscanner.projects.scanConfigs.scanRuns
   attributes:
   - *project
-  - *scan-config
+  - *scan_config
   - &scan_run
     parameter_name: scanRunsId
     attribute_name: scan_run
-    help: The ID of a Scan Run.
-
-scan-run:
-  name: scan-run
-  collection: websecurityscanner.projects.scanConfigs.scanRuns
-  attributes:
-  - *project
-  - *scan-config
-  - &scan-run
-    parameter_name: scanRunsId
-    attribute_name: scan-run
     help: The ID of a Scan Run.

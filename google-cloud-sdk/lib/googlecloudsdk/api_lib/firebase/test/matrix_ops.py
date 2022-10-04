@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Common test matrix operations used by Firebase Test Lab commands."""
 
 from __future__ import absolute_import
@@ -33,7 +32,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 import six
 
-
 _DEFAULT_STATUS_INTERVAL_SECS = 6.0
 _TIMESTAMP_FORMAT = '%H:%M:%S'
 
@@ -44,10 +42,13 @@ class MatrixMonitor(object):
   Attributes:
     matrix_id: {str} the unique ID of the matrix being monitored.
     completed_matrix_states: the set of TestMatrix.State enums representing all
-        final matrix states.
+      final matrix states.
   """
 
-  def __init__(self, matrix_id, test_type, context,
+  def __init__(self,
+               matrix_id,
+               test_type,
+               context,
                clock=datetime.datetime.now,
                status_interval_secs=None):
     """Construct a MatrixMonitor to monitor a single test matrix instance.
@@ -137,7 +138,8 @@ class MatrixMonitor(object):
           'Some device dimensions are not compatible and will be skipped:'
           '\n  {d}'.format(d='\n  '.join(unsupported_dimensions)))
     log.status.Print(
-        'Firebase Test Lab will execute your {t} test on {n} device(s).'
+        'Firebase Test Lab will execute your {t} test on {n} device(s). More '
+        'devices may be added later if flaky test attempts are specified.'
         .format(t=self._test_type, n=len(supported_tests)))
     return supported_tests
 
@@ -201,14 +203,14 @@ class MatrixMonitor(object):
         raise exceptions.AllDimensionsIncompatibleError(
             'Device dimensions are not compatible: {d}. '
             'Please use "gcloud firebase test android models list" to '
-            'determine which device dimensions are compatible.'
-            .format(d=_FormatInvalidDimension(status.environment)))
+            'determine which device dimensions are compatible.'.format(
+                d=_FormatInvalidDimension(status.environment)))
 
       # Inform user of test progress, typically PENDING -> RUNNING -> FINISHED
       if status.state != last_state:
         last_state = status.state
-        log.status.Print(
-            '{0} Test is {1}'.format(timestamp, self._state_names[last_state]))
+        log.status.Print('{0} Test is {1}'.format(
+            timestamp, self._state_names[last_state]))
 
       if status.state in self._completed_execution_states:
         break
@@ -235,8 +237,7 @@ class MatrixMonitor(object):
       HttpException if the Test service reports a backend error.
     """
     request = self._messages.TestingProjectsTestMatricesGetRequest(
-        projectId=self._project,
-        testMatrixId=self.matrix_id)
+        projectId=self._project, testMatrixId=self.matrix_id)
     try:
       return self._client.projects_testMatrices.Get(request)
     except apitools_exceptions.HttpError as e:
@@ -285,8 +286,8 @@ class MatrixMonitor(object):
   def _LogTestComplete(self, matrix_state):
     """Let the user know that their test matrix has completed running."""
     log.info('Test matrix completed in state: {0}'.format(matrix_state))
-    log.status.Print(
-        '\n{0} testing complete.'.format(self._test_type.capitalize()))
+    log.status.Print('\n{0} testing complete.'.format(
+        self._test_type.capitalize()))
 
   def _SleepForStatusInterval(self):
     time.sleep(self._status_interval_secs)
@@ -298,8 +299,7 @@ class MatrixMonitor(object):
       HttpException if the Test service reports a back-end error.
     """
     request = self._messages.TestingProjectsTestMatricesCancelRequest(
-        projectId=self._project,
-        testMatrixId=self.matrix_id)
+        projectId=self._project, testMatrixId=self.matrix_id)
     try:
       self._client.projects_testMatrices.Cancel(request)
     except apitools_exceptions.HttpError as e:
@@ -312,8 +312,8 @@ def _FormatInvalidDimension(environment):
   """Return a human-readable string representing an invalid matrix dimension."""
   if getattr(environment, 'androidDevice', None) is not None:
     device = environment.androidDevice
-    return ('[OS-version {vers} on {model}]'
-            .format(model=device.androidModelId, vers=device.androidVersionId))
+    return ('[OS-version {vers} on {model}]'.format(
+        model=device.androidModelId, vers=device.androidVersionId))
   if getattr(environment, 'iosDevice', None) is not None:
     device = environment.iosDevice
     return ('[OS-version {vers} on {model}]'.format(

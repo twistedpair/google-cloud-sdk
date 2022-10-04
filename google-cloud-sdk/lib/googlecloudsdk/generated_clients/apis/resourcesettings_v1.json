@@ -1,0 +1,673 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "resourcesettings:v1",
+  "name": "resourcesettings",
+  "canonicalName": "Resource Settings",
+  "version": "v1",
+  "revision": "0",
+  "title": "Resource Settings API",
+  "description": "The Resource Settings API allows users to control and modify the behavior of their GCP resources (e.g., VM, firewall, Project, etc.) across the Cloud Resource Hierarchy.",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/resource-manager/docs/resource-settings/overview",
+  "protocol": "rest",
+  "rootUrl": "https://resourcesettings.googleapis.com/",
+  "mtlsRootUrl": "https://resourcesettings.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://resourcesettings.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
+  "schemas": {
+    "GoogleCloudResourcesettingsV1ListSettingsResponse": {
+      "id": "GoogleCloudResourcesettingsV1ListSettingsResponse",
+      "description": "The response from ListSettings.",
+      "type": "object",
+      "properties": {
+        "settings": {
+          "description": "A list of settings that are available at the specified Cloud resource.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudResourcesettingsV1Setting"
+          }
+        },
+        "nextPageToken": {
+          "description": "Unused. A page token used to retrieve the next page.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudResourcesettingsV1Setting": {
+      "id": "GoogleCloudResourcesettingsV1Setting",
+      "description": "The schema for settings.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the setting. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}` * `folders\/{folder_id}\/settings\/{setting_name}` * `organizations\/{organization_id}\/settings\/{setting_name}` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\"",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Output only. Metadata about a setting which is not editable by the end user.",
+          "readOnly": true,
+          "$ref": "GoogleCloudResourcesettingsV1SettingMetadata"
+        },
+        "localValue": {
+          "description": "The configured value of the setting at the given parent resource, ignoring the resource hierarchy. The data type of Value must always be consistent with the data type defined in Setting.metadata.",
+          "$ref": "GoogleCloudResourcesettingsV1Value"
+        },
+        "effectiveValue": {
+          "description": "Output only. The effective value of the setting at the given parent resource, evaluated based on the resource hierarchy The effective value evaluates to one of the following options, in this order. If an option is not valid or doesn't exist, then the next option is used: 1. The local setting value on the given resource: Setting.local_value 2. If one of the given resource's ancestors in the resource hierarchy have a local setting value, the local value at the nearest such ancestor. 3. The setting's default value: SettingMetadata.default_value 4. An empty value, defined as a `Value` with all fields unset. The data type of Value must always be consistent with the data type defined in Setting.metadata.",
+          "readOnly": true,
+          "$ref": "GoogleCloudResourcesettingsV1Value"
+        },
+        "etag": {
+          "description": "A fingerprint used for optimistic concurrency. See UpdateSetting for more details.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudResourcesettingsV1SettingMetadata": {
+      "id": "GoogleCloudResourcesettingsV1SettingMetadata",
+      "description": "Metadata about a setting which is not editable by the end user.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "The human readable name for this setting.",
+          "type": "string"
+        },
+        "description": {
+          "description": "A detailed description of what this setting does.",
+          "type": "string"
+        },
+        "readOnly": {
+          "description": "A flag indicating that values of this setting cannot be modified. See documentation for the specific setting for updates and reasons.",
+          "type": "boolean"
+        },
+        "dataType": {
+          "description": "The data type for this setting.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified data type.",
+            "A boolean setting.",
+            "A string setting.",
+            "A string set setting.",
+            "A Enum setting",
+            "A Duration setting",
+            "A string->string map setting"
+          ],
+          "enum": [
+            "DATA_TYPE_UNSPECIFIED",
+            "BOOLEAN",
+            "STRING",
+            "STRING_SET",
+            "ENUM_VALUE",
+            "DURATION_VALUE",
+            "STRING_MAP"
+          ]
+        },
+        "defaultValue": {
+          "description": "The value provided by Setting.effective_value if no setting value is explicitly set. Note: not all settings have a default value.",
+          "$ref": "GoogleCloudResourcesettingsV1Value"
+        }
+      }
+    },
+    "GoogleCloudResourcesettingsV1Value": {
+      "id": "GoogleCloudResourcesettingsV1Value",
+      "description": "The data in a setting value.",
+      "type": "object",
+      "properties": {
+        "booleanValue": {
+          "description": "Defines this value as being a boolean value.",
+          "type": "boolean"
+        },
+        "stringValue": {
+          "description": "Defines this value as being a string value.",
+          "type": "string"
+        },
+        "stringSetValue": {
+          "description": "Defines this value as being a StringSet.",
+          "$ref": "GoogleCloudResourcesettingsV1ValueStringSet"
+        },
+        "enumValue": {
+          "description": "Defines this value as being a Enum.",
+          "$ref": "GoogleCloudResourcesettingsV1ValueEnumValue"
+        },
+        "durationValue": {
+          "description": "Defines this value as being a Duration.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "stringMapValue": {
+          "description": "Defines this value as being a StringMap.",
+          "$ref": "GoogleCloudResourcesettingsV1ValueStringMap"
+        }
+      }
+    },
+    "GoogleCloudResourcesettingsV1ValueStringSet": {
+      "id": "GoogleCloudResourcesettingsV1ValueStringSet",
+      "description": "A string set value that can hold a set of strings. The maximum length of each string is 200 characters and there can be a maximum of 50 strings in the string set.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "The strings in the set",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudResourcesettingsV1ValueEnumValue": {
+      "id": "GoogleCloudResourcesettingsV1ValueEnumValue",
+      "description": "A enum value that can hold any enum type setting values. Each enum type is represented by a number, this representation is stored in the definitions.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "The value of this enum",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudResourcesettingsV1ValueStringMap": {
+      "id": "GoogleCloudResourcesettingsV1ValueStringMap",
+      "description": "A string->string map value that can hold a map of string keys to string values. The maximum length of each string is 200 characters and there can be a maximum of 50 key-value pairs in the map.",
+      "type": "object",
+      "properties": {
+        "mappings": {
+          "description": "The key-value pairs in the map",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "resources": {
+    "organizations": {
+      "resources": {
+        "settings": {
+          "methods": {
+            "list": {
+              "id": "resourcesettings.organizations.settings.list",
+              "path": "v1/{+parent}/settings",
+              "flatPath": "v1/organizations/{organizationsId}/settings",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The project, folder, or organization that is the parent resource for this setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "pattern": "^organizations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Unused. The size of the page to be returned.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Unused. A page token used to retrieve the next page.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "view": {
+                  "description": "The SettingView for this request.",
+                  "location": "query",
+                  "type": "string",
+                  "enumDescriptions": [
+                    "The default \/ unset value. The API will default to the SETTING_VIEW_BASIC view.",
+                    "Include Setting.metadata, but nothing else. This is the default value (for both ListSettings and GetSetting).",
+                    "Include Setting.effective_value, but nothing else.",
+                    "Include Setting.local_value, but nothing else."
+                  ],
+                  "enum": [
+                    "SETTING_VIEW_UNSPECIFIED",
+                    "SETTING_VIEW_BASIC",
+                    "SETTING_VIEW_EFFECTIVE_VALUE",
+                    "SETTING_VIEW_LOCAL_VALUE"
+                  ]
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "GoogleCloudResourcesettingsV1ListSettingsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists all the settings that are available on the Cloud resource `parent`."
+            },
+            "get": {
+              "id": "resourcesettings.organizations.settings.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/organizations/{organizationsId}/settings/{settingsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the setting to get. See Setting for naming requirements.",
+                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "view": {
+                  "description": "The SettingView for this request.",
+                  "location": "query",
+                  "type": "string",
+                  "enumDescriptions": [
+                    "The default \/ unset value. The API will default to the SETTING_VIEW_BASIC view.",
+                    "Include Setting.metadata, but nothing else. This is the default value (for both ListSettings and GetSetting).",
+                    "Include Setting.effective_value, but nothing else.",
+                    "Include Setting.local_value, but nothing else."
+                  ],
+                  "enum": [
+                    "SETTING_VIEW_UNSPECIFIED",
+                    "SETTING_VIEW_BASIC",
+                    "SETTING_VIEW_EFFECTIVE_VALUE",
+                    "SETTING_VIEW_LOCAL_VALUE"
+                  ]
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudResourcesettingsV1Setting"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Returns a specified setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
+            },
+            "patch": {
+              "id": "resourcesettings.organizations.settings.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/organizations/{organizationsId}/settings/{settingsId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the setting. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}` * `folders\/{folder_id}\/settings\/{setting_name}` * `organizations\/{organization_id}\/settings\/{setting_name}` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\"",
+                  "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleCloudResourcesettingsV1Setting"
+              },
+              "response": {
+                "$ref": "GoogleCloudResourcesettingsV1Setting"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Updates a specified setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. On success, the response will contain only `name`, `local_value` and `etag`. The `metadata` and `effective_value` cannot be updated through this API. Note: the supplied setting will perform a full overwrite of the `local_value` field."
+            }
+          }
+        }
+      }
+    },
+    "folders": {
+      "resources": {
+        "settings": {
+          "methods": {
+            "list": {
+              "id": "resourcesettings.folders.settings.list",
+              "path": "v1/{+parent}/settings",
+              "flatPath": "v1/folders/{foldersId}/settings",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The project, folder, or organization that is the parent resource for this setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "pattern": "^folders\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Unused. The size of the page to be returned.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Unused. A page token used to retrieve the next page.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "view": {
+                  "description": "The SettingView for this request.",
+                  "location": "query",
+                  "type": "string",
+                  "enumDescriptions": [
+                    "The default \/ unset value. The API will default to the SETTING_VIEW_BASIC view.",
+                    "Include Setting.metadata, but nothing else. This is the default value (for both ListSettings and GetSetting).",
+                    "Include Setting.effective_value, but nothing else.",
+                    "Include Setting.local_value, but nothing else."
+                  ],
+                  "enum": [
+                    "SETTING_VIEW_UNSPECIFIED",
+                    "SETTING_VIEW_BASIC",
+                    "SETTING_VIEW_EFFECTIVE_VALUE",
+                    "SETTING_VIEW_LOCAL_VALUE"
+                  ]
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "GoogleCloudResourcesettingsV1ListSettingsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists all the settings that are available on the Cloud resource `parent`."
+            },
+            "get": {
+              "id": "resourcesettings.folders.settings.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/folders/{foldersId}/settings/{settingsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the setting to get. See Setting for naming requirements.",
+                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "view": {
+                  "description": "The SettingView for this request.",
+                  "location": "query",
+                  "type": "string",
+                  "enumDescriptions": [
+                    "The default \/ unset value. The API will default to the SETTING_VIEW_BASIC view.",
+                    "Include Setting.metadata, but nothing else. This is the default value (for both ListSettings and GetSetting).",
+                    "Include Setting.effective_value, but nothing else.",
+                    "Include Setting.local_value, but nothing else."
+                  ],
+                  "enum": [
+                    "SETTING_VIEW_UNSPECIFIED",
+                    "SETTING_VIEW_BASIC",
+                    "SETTING_VIEW_EFFECTIVE_VALUE",
+                    "SETTING_VIEW_LOCAL_VALUE"
+                  ]
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudResourcesettingsV1Setting"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Returns a specified setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
+            },
+            "patch": {
+              "id": "resourcesettings.folders.settings.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/folders/{foldersId}/settings/{settingsId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the setting. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}` * `folders\/{folder_id}\/settings\/{setting_name}` * `organizations\/{organization_id}\/settings\/{setting_name}` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\"",
+                  "pattern": "^folders\/[^\/]+\/settings\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleCloudResourcesettingsV1Setting"
+              },
+              "response": {
+                "$ref": "GoogleCloudResourcesettingsV1Setting"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Updates a specified setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. On success, the response will contain only `name`, `local_value` and `etag`. The `metadata` and `effective_value` cannot be updated through this API. Note: the supplied setting will perform a full overwrite of the `local_value` field."
+            }
+          }
+        }
+      }
+    },
+    "projects": {
+      "resources": {
+        "settings": {
+          "methods": {
+            "list": {
+              "id": "resourcesettings.projects.settings.list",
+              "path": "v1/{+parent}/settings",
+              "flatPath": "v1/projects/{projectsId}/settings",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The project, folder, or organization that is the parent resource for this setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Unused. The size of the page to be returned.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Unused. A page token used to retrieve the next page.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "view": {
+                  "description": "The SettingView for this request.",
+                  "location": "query",
+                  "type": "string",
+                  "enumDescriptions": [
+                    "The default \/ unset value. The API will default to the SETTING_VIEW_BASIC view.",
+                    "Include Setting.metadata, but nothing else. This is the default value (for both ListSettings and GetSetting).",
+                    "Include Setting.effective_value, but nothing else.",
+                    "Include Setting.local_value, but nothing else."
+                  ],
+                  "enum": [
+                    "SETTING_VIEW_UNSPECIFIED",
+                    "SETTING_VIEW_BASIC",
+                    "SETTING_VIEW_EFFECTIVE_VALUE",
+                    "SETTING_VIEW_LOCAL_VALUE"
+                  ]
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "GoogleCloudResourcesettingsV1ListSettingsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists all the settings that are available on the Cloud resource `parent`."
+            },
+            "get": {
+              "id": "resourcesettings.projects.settings.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/settings/{settingsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the setting to get. See Setting for naming requirements.",
+                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "view": {
+                  "description": "The SettingView for this request.",
+                  "location": "query",
+                  "type": "string",
+                  "enumDescriptions": [
+                    "The default \/ unset value. The API will default to the SETTING_VIEW_BASIC view.",
+                    "Include Setting.metadata, but nothing else. This is the default value (for both ListSettings and GetSetting).",
+                    "Include Setting.effective_value, but nothing else.",
+                    "Include Setting.local_value, but nothing else."
+                  ],
+                  "enum": [
+                    "SETTING_VIEW_UNSPECIFIED",
+                    "SETTING_VIEW_BASIC",
+                    "SETTING_VIEW_EFFECTIVE_VALUE",
+                    "SETTING_VIEW_LOCAL_VALUE"
+                  ]
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudResourcesettingsV1Setting"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Returns a specified setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
+            },
+            "patch": {
+              "id": "resourcesettings.projects.settings.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/settings/{settingsId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the setting. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}` * `folders\/{folder_id}\/settings\/{setting_name}` * `organizations\/{organization_id}\/settings\/{setting_name}` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\"",
+                  "pattern": "^projects\/[^\/]+\/settings\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleCloudResourcesettingsV1Setting"
+              },
+              "response": {
+                "$ref": "GoogleCloudResourcesettingsV1Setting"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Updates a specified setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. On success, the response will contain only `name`, `local_value` and `etag`. The `metadata` and `effective_value` cannot be updated through this API. Note: the supplied setting will perform a full overwrite of the `local_value` field."
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

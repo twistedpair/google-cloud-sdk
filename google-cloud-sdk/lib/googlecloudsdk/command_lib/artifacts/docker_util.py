@@ -218,7 +218,7 @@ def _GetDockerPackagesAndVersions(docker_repo,
                                   page_size,
                                   order_by,
                                   limit,
-                                  is_nested=False):
+                                  package_prefix=""):
   """Gets a list of packages with versions for a Docker repository."""
   client = ar_requests.GetClient()
   messages = ar_requests.GetMessages()
@@ -230,26 +230,13 @@ def _GetDockerPackagesAndVersions(docker_repo,
       raise ar_exceptions.ArtifactRegistryError(
           "Internal error. Corrupted package name: {}".format(pkg.name))
     img = DockerImage(DockerRepo(parts[1], parts[3], parts[5]), parts[7])
-    img_list.extend(_GetDockerVersions(img, include_tags,
-                                       page_size, order_by, limit, is_nested))
+    if package_prefix and not img.GetDockerString().startswith(package_prefix):
+      continue
+    img_list.extend(
+        _GetDockerVersions(
+            img, include_tags, page_size, order_by, limit,
+            search_subdirs=False))
   return img_list
-
-
-def _GetDockerNestedVersions(docker_img,
-                             include_tags,
-                             page_size,
-                             order_by,
-                             limit,
-                             is_nested=False):
-  """Gets a list of versions for a Docker nested image."""
-  prefix = docker_img.GetDockerString() + "/"
-  all_versions = _GetDockerPackagesAndVersions(
-      docker_img.docker_repo, include_tags,
-      page_size, order_by, limit, is_nested)
-  return [
-      ver for ver in all_versions
-      if ver["package"].startswith(prefix)
-  ]
 
 
 def _GetDockerVersions(docker_img,
@@ -257,7 +244,7 @@ def _GetDockerVersions(docker_img,
                        page_size=None,
                        order_by=None,
                        limit=None,
-                       is_nested=False):
+                       search_subdirs=False):
   """Gets a list of versions for a Docker image."""
   client = ar_requests.GetClient()
   messages = ar_requests.GetMessages()
@@ -278,9 +265,14 @@ def _GetDockerVersions(docker_img,
   # E.g. us-west1-docker.pkg.dev/fake-project/docker-repo/nested1 in
   # us-west1-docker.pkg.dev/fake-project/docker-repo/nested1/nested2/test-image
   # Try to get the list of versions through the list of all packages.
-  if not ver_list and not is_nested:
-    return _GetDockerNestedVersions(
-        docker_img, include_tags, page_size, order_by, limit, is_nested=True)
+  if not ver_list and search_subdirs:
+    return _GetDockerPackagesAndVersions(
+        docker_img.docker_repo,
+        include_tags,
+        page_size,
+        order_by,
+        limit,
+        package_prefix=docker_img.GetDockerString() + "/")
 
   img_list = []
   for ver in ver_list:
@@ -556,8 +548,13 @@ def GetDockerImages(resource, args):
         "Listing items under project {}, location {}, repository {}.\n".format(
             resource.docker_repo.project, resource.docker_repo.location,
             resource.docker_repo.repo))
-    return _GetDockerVersions(resource, args.include_tags,
-                              args.page_size, order_by, limit)
+    return _GetDockerVersions(
+        resource,
+        args.include_tags,
+        args.page_size,
+        order_by,
+        limit,
+        search_subdirs=True)
   return []
 
 
