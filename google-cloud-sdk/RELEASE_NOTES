@@ -4,6 +4,18 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
+## 405.0.1 (2022-10-14)
+
+### GKE Hub
+
+* Updated `gke-gcloud-auth-plugin` to 0.4.0.
+
+### Cloud Bigtable
+
+* Updated the version of `cbt` to v1.12.1.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 ## 405.0.0 (2022-10-04)
 
