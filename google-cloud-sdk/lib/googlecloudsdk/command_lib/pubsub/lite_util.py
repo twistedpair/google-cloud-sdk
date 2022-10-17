@@ -62,6 +62,15 @@ class InvalidSeekTarget(exceptions.Error):
   """Error for specifying an invalid seek target."""
 
 
+class InvalidResourcePath(exceptions.Error):
+  """Error for specifying an invalid fully qualified resource path."""
+
+
+def PubsubLiteClient():
+  """Returns the Pub/Sub Lite v1 client module."""
+  return apis.GetClientInstance(PUBSUBLITE_API_NAME, PUBSUBLITE_API_VERSION)
+
+
 def PubsubLiteMessages():
   """Returns the Pub/Sub Lite v1 messages module."""
   return apis.GetMessagesModule(PUBSUBLITE_API_NAME, PUBSUBLITE_API_VERSION)
@@ -340,43 +349,226 @@ def UpdateSkipBacklogField(resource_ref, args, request):
   return request
 
 
+def GetLocationValue(args):
+  """Returns the raw location argument."""
+  return args.location or args.zone
+
+
+def GetLocation(args):
+  """Returns the resource location (zone or region) extracted from arguments.
+
+  Args:
+    args: argparse.Namespace, the parsed commandline arguments.
+
+  Raises:
+    InvalidResourcePath: if the location component in a fully qualified path is
+    invalid.
+  """
+  location = GetLocationValue(args)
+  if LOCATIONS_RESOURCE_PATH not in location:
+    return location
+
+  parsed_location = DeriveLocationFromResource(location)
+  if not parsed_location:
+    raise InvalidResourcePath(
+        'The location component in the specified location path is invalid: `{}`.'
+        .format(location))
+  return parsed_location
+
+
+def GetProject(args):
+  """Returns the project from either arguments or attributes.
+
+  Args:
+    args: argparse.Namespace, the parsed commandline arguments.
+
+  Raises:
+    InvalidResourcePath: if the project component in a fully qualified path is
+    invalid.
+  """
+  location = GetLocationValue(args)
+  if not location.startswith(PROJECTS_RESOURCE_PATH):
+    return args.project or properties.VALUES.core.project.GetOrFail()
+
+  parsed_project = DeriveProjectFromResource(location)
+  if not parsed_project:
+    raise InvalidResourcePath(
+        'The project component in the specified location path is invalid: `{}`.'
+        .format(location))
+  return parsed_project
+
+
+def GetDeliveryRequirement(args, psl):
+  """Returns the DeliveryRequirement enum from arguments."""
+  if args.delivery_requirement == 'deliver-after-stored':
+    return psl.DeliveryConfig.DeliveryRequirementValueValuesEnum.DELIVER_AFTER_STORED
+  return psl.DeliveryConfig.DeliveryRequirementValueValuesEnum.DELIVER_IMMEDIATELY
+
+
+def GetDesiredExportState(args, psl):
+  """Returns the export DesiredState enum from arguments."""
+  if args.export_desired_state == 'paused':
+    return psl.ExportConfig.DesiredStateValueValuesEnum.PAUSED
+  return psl.ExportConfig.DesiredStateValueValuesEnum.ACTIVE
+
+
+def GetSeekRequest(args, psl):
+  """Returns a SeekSubscriptionRequest from arguments."""
+  if args.publish_time:
+    return psl.SeekSubscriptionRequest(
+        timeTarget=psl.TimeTarget(
+            publishTime=util.FormatSeekTime(args.publish_time)))
+  elif args.event_time:
+    return psl.SeekSubscriptionRequest(
+        timeTarget=psl.TimeTarget(
+            eventTime=util.FormatSeekTime(args.event_time)))
+  elif args.starting_offset:
+    if args.starting_offset == 'beginning':
+      return psl.SeekSubscriptionRequest(namedTarget=psl.SeekSubscriptionRequest
+                                         .NamedTargetValueValuesEnum.TAIL)
+    elif args.starting_offset == 'end':
+      return psl.SeekSubscriptionRequest(namedTarget=psl.SeekSubscriptionRequest
+                                         .NamedTargetValueValuesEnum.HEAD)
+    else:
+      # Should already be validated.
+      raise InvalidSeekTarget(
+          'Invalid starting offset value! Must be one of: [beginning, end].')
+  else:
+    # Should already be validated.
+    raise InvalidSeekTarget('Seek target must be specified!')
+
+
+def SetExportConfigResources(args, psl, project, location, export_config):
+  """Sets fully qualified resource paths for an ExportConfig."""
+  if args.export_pubsub_topic:
+    topic = args.export_pubsub_topic
+    if not topic.startswith(PROJECTS_RESOURCE_PATH):
+      topic = ('{}{}/{}{}'.format(PROJECTS_RESOURCE_PATH, project,
+                                  TOPICS_RESOURCE_PATH, topic))
+    export_config.pubsubConfig = psl.PubSubConfig(topic=topic)
+
+  if args.export_dead_letter_topic:
+    topic = args.export_dead_letter_topic
+    if not topic.startswith(PROJECTS_RESOURCE_PATH):
+      topic = ('{}{}/{}{}/{}{}'.format(PROJECTS_RESOURCE_PATH, project,
+                                       LOCATIONS_RESOURCE_PATH, location,
+                                       TOPICS_RESOURCE_PATH, topic))
+    export_config.deadLetterTopic = topic
+
+
+def GetExportConfig(args, psl, project, location, requires_seek):
+  """Returns an ExportConfig from arguments."""
+  if not hasattr(args,
+                 'export_pubsub_topic') or args.export_pubsub_topic is None:
+    return None
+
+  desired_state = GetDesiredExportState(args, psl)
+  if requires_seek:
+    # Will be updated to Active after seek.
+    desired_state = psl.ExportConfig.DesiredStateValueValuesEnum.PAUSED
+
+  export_config = psl.ExportConfig(desiredState=desired_state)
+  SetExportConfigResources(args, psl, project, location, export_config)
+  return export_config
+
+
+def ExecuteCreateSubscriptionRequest(resource_ref, args):
+  """Issues a CreateSubscriptionRequest and potentially other requests.
+
+  Args:
+    resource_ref: resources.Resource, the resource reference for the resource
+      being operated on.
+    args: argparse.Namespace, the parsed commandline arguments.
+
+  Returns:
+    The created Pub/Sub Lite Subscription.
+  """
+  psl = PubsubLiteMessages()
+  location = GetLocation(args)
+  project_id = GetProject(args)
+  project_number = six.text_type(ProjectIdToProjectNumber(project_id))
+  requires_seek = False
+  if hasattr(args, 'publish_time') and hasattr(args, 'event_time'):
+    requires_seek = args.publish_time or args.event_time
+
+  # Request 1 - Create the subscription.
+  create_request = psl.PubsubliteAdminProjectsLocationsSubscriptionsCreateRequest(
+      parent=('{}{}/{}{}'.format(PROJECTS_RESOURCE_PATH, project_number,
+                                 LOCATIONS_RESOURCE_PATH, location)),
+      subscription=psl.Subscription(
+          topic=args.topic,
+          deliveryConfig=psl.DeliveryConfig(
+              deliveryRequirement=GetDeliveryRequirement(args, psl)),
+          exportConfig=GetExportConfig(args, psl, project_number, location,
+                                       requires_seek)),
+      subscriptionId=args.subscription)
+  OverrideEndpointWithRegion(create_request)
+  AddSubscriptionTopicResource(resource_ref, args, create_request)
+  if not requires_seek:
+    UpdateSkipBacklogField(resource_ref, args, create_request)
+
+  client = PubsubLiteClient()
+  response = client.admin_projects_locations_subscriptions.Create(
+      create_request)
+
+  # Request 2 (optional) - seek the subscription.
+  if requires_seek:
+    seek_request = psl.PubsubliteAdminProjectsLocationsSubscriptionsSeekRequest(
+        name=response.name, seekSubscriptionRequest=GetSeekRequest(args, psl))
+    client.admin_projects_locations_subscriptions.Seek(seek_request)
+
+  # Request 3 (optional) - make the export subscription active.
+  if requires_seek and create_request.subscription.exportConfig and args.export_desired_state == 'active':
+    update_request = psl.PubsubliteAdminProjectsLocationsSubscriptionsPatchRequest(
+        name=response.name,
+        updateMask='export_config.desired_state',
+        subscription=psl.Subscription(
+            exportConfig=psl.ExportConfig(desiredState=psl.ExportConfig
+                                          .DesiredStateValueValuesEnum.ACTIVE)))
+    response = client.admin_projects_locations_subscriptions.Patch(
+        update_request)
+
+  return response
+
+
+def AddExportResources(resource_ref, args, request):
+  """Sets export resource paths for an UpdateSubscriptionRequest.
+
+  Args:
+    resource_ref: resources.Resource, the resource reference for the resource
+      being operated on.
+    args: argparse.Namespace, the parsed commandline arguments.
+    request: An UpdateSubscriptionRequest.
+
+  Returns:
+    The UpdateSubscriptionRequest.
+  """
+  # Unused resource reference
+  del resource_ref
+
+  if request.subscription.exportConfig is None:
+    return request
+
+  resource, _ = GetResourceInfo(request)
+  project = DeriveProjectFromResource(resource)
+  location = DeriveLocationFromResource(resource)
+  psl = PubsubLiteMessages()
+  SetExportConfigResources(args, psl, project, location,
+                           request.subscription.exportConfig)
+  return request
+
+
 def SetSeekTarget(resource_ref, args, request):
   """Sets the target for a SeekSubscriptionRequest."""
   # Unused resource reference
   del resource_ref
 
   psl = PubsubLiteMessages()
-
-  if args.starting_offset:
-    if args.starting_offset == 'beginning':
-      request.seekSubscriptionRequest = psl.SeekSubscriptionRequest(
-          namedTarget=psl.SeekSubscriptionRequest.NamedTargetValueValuesEnum
-          .TAIL)
-    elif args.starting_offset == 'end':
-      request.seekSubscriptionRequest = psl.SeekSubscriptionRequest(
-          namedTarget=psl.SeekSubscriptionRequest.NamedTargetValueValuesEnum
-          .HEAD)
-    else:
-      # Should already be validated.
-      raise InvalidSeekTarget(
-          'Invalid starting offset value! Must be one of: [beginning, end].')
-  elif args.publish_time:
-    request.seekSubscriptionRequest = psl.SeekSubscriptionRequest(
-        timeTarget=psl.TimeTarget(
-            publishTime=util.FormatSeekTime(args.publish_time)))
-  elif args.event_time:
-    request.seekSubscriptionRequest = psl.SeekSubscriptionRequest(
-        timeTarget=psl.TimeTarget(
-            eventTime=util.FormatSeekTime(args.event_time)))
-  else:
-    # Should already be validated.
-    raise InvalidSeekTarget('Seek target must be specified!')
-
+  request.seekSubscriptionRequest = GetSeekRequest(args, psl)
   log.warning(
       'The seek operation will complete once subscribers react to the seek. ' +
       'If subscribers are offline, `pubsub lite-operations describe` can be ' +
-      'used to check the operation status later.'
-  )
+      'used to check the operation status later.')
   return request
 
 

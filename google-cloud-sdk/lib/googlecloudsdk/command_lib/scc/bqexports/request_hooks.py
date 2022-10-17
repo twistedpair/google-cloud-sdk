@@ -20,14 +20,15 @@ from __future__ import unicode_literals
 
 import re
 
+from googlecloudsdk.command_lib.scc.errors import InvalidSCCInputError
 from googlecloudsdk.command_lib.scc.hooks import CleanUpUserInput
-from googlecloudsdk.command_lib.scc.hooks import InvalidSCCInputError
+from googlecloudsdk.command_lib.scc.util import GetParentFromNamedArguments
 
 
 def CreateBigQueryExportReqHook(ref, args, req):
   """Creates a BigQuery export."""
   del ref
-  req.parent = _ValidateAndGetParent(args)
+  req.parent = GetParentFromNamedArguments(args)
   if req.parent is not None:
     req.bigQueryExportId = _ValidateAndGetBigQueryExportId(args)
   else:
@@ -42,7 +43,7 @@ def CreateBigQueryExportReqHook(ref, args, req):
 def DeleteBigQueryExportReqHook(ref, args, req):
   """Deletes a BigQuery export."""
   del ref
-  parent = _ValidateAndGetParent(args)
+  parent = GetParentFromNamedArguments(args)
   if parent is not None:
     bq_export_id = _ValidateAndGetBigQueryExportId(args)
     req.name = parent + "/bigQueryExports/" + bq_export_id
@@ -55,7 +56,7 @@ def DeleteBigQueryExportReqHook(ref, args, req):
 def GetBigQueryExportReqHook(ref, args, req):
   """Gets a BigQuery export."""
   del ref
-  parent = _ValidateAndGetParent(args)
+  parent = GetParentFromNamedArguments(args)
   if parent is not None:
     bq_export_id = _ValidateAndGetBigQueryExportId(args)
     req.name = parent + "/bigQueryExports/" + bq_export_id
@@ -68,14 +69,14 @@ def GetBigQueryExportReqHook(ref, args, req):
 def ListBigQueryExportsReqHook(ref, args, req):
   """Lists BigQuery exports."""
   del ref
-  req.parent = _ValidateAndGetParent(args)
+  req.parent = GetParentFromNamedArguments(args)
   return req
 
 
 def UpdateBigQueryExportReqHook(ref, args, req):
   """Updates a BigQuery export."""
   del ref
-  parent = _ValidateAndGetParent(args)
+  parent = GetParentFromNamedArguments(args)
   if parent is not None:
     bq_export_id = _ValidateAndGetBigQueryExportId(args)
     req.name = parent + "/bigQueryExports/" + bq_export_id
@@ -85,50 +86,6 @@ def UpdateBigQueryExportReqHook(ref, args, req):
   req.updateMask = CleanUpUserInput(req.updateMask)
   args.filter = ""
   return req
-
-
-def _ValidateAndGetParent(args):
-  """Validates parent."""
-  if args.organization is not None:
-    if "/" in args.organization:
-      pattern = re.compile("^organizations/[0-9]{1,19}$")
-      if not pattern.match(args.organization):
-        raise InvalidSCCInputError(
-            "When providing a full resource path, it must include the pattern "
-            "'^organizations/[0-9]{1,19}$'.")
-      else:
-        return args.organization
-    else:
-      pattern = re.compile("^[0-9]{1,19}$")
-      if not pattern.match(args.organization):
-        raise InvalidSCCInputError(
-            "Organization does not match the pattern '^[0-9]{1,19}$'.")
-      else:
-        return "organizations/" + args.organization
-
-  if args.folder is not None:
-    if "/" in args.folder:
-      pattern = re.compile("^folders/.*$")
-      if not pattern.match(args.folder):
-        raise InvalidSCCInputError(
-            "When providing a full resource path, it must include the pattern "
-            "'^folders/.*$'.")
-      else:
-        return args.folder
-    else:
-      return "folders/" + args.folder
-
-  if args.project is not None:
-    if "/" in args.project:
-      pattern = re.compile("^projects/.*$")
-      if not pattern.match(args.project):
-        raise InvalidSCCInputError(
-            "When providing a full resource path, it must include the pattern "
-            "'^projects/.*$'.")
-      else:
-        return args.project
-    else:
-      return "projects/" + args.project
 
 
 def _ValidateAndGetBigQueryExportId(args):

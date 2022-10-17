@@ -32,10 +32,9 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 
 _STANDARD_APP_YAML_URL = (
-    'https://cloud.google.com/appengine/docs/standard/python/config/appref')
+    'https://cloud.google.com/appengine/docs/standard/reference/app-yaml')
 _FLEXIBLE_APP_YAML_URL = (
-    'https://cloud.google.com/'
-    'appengine/docs/flexible/python/configuring-your-app-with-app-yaml')
+    'https://cloud.google.com/appengine/docs/flexible/reference/app-yaml')
 
 APP_YAML_INSTRUCTIONS = (
     'using the directions at {flex} (App Engine flexible environment) or {std} '

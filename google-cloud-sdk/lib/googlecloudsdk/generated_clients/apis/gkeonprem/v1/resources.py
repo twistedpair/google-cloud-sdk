@@ -121,10 +121,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_VMWAREADMINCLUSTERS = (
       'projects.locations.vmwareAdminClusters',
-      'projects/{projectsId}/locations/{locationsId}/vmwareAdminClusters/'
-      '{vmwareAdminClustersId}',
-      {},
-      ['projectsId', 'locationsId', 'vmwareAdminClustersId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'vmwareAdminClusters/{vmwareAdminClustersId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_VMWAREADMINCLUSTERS_OPERATIONS = (

@@ -213,11 +213,7 @@ def YieldWithHttpExceptions(generator):
     raise api_exceptions.HttpException(error, HTTP_ERROR_FORMAT)
 
 
-def FetchResourcesAndOutputs(client,
-                             messages,
-                             project,
-                             deployment_name,
-                             update_action_intent=False):
+def FetchResourcesAndOutputs(client, messages, project, deployment_name):
   """Returns a ResourcesAndOutputs object for a deployment."""
   try:
     # Fetch a list of the previewed or updated resources.
@@ -231,9 +227,6 @@ def FetchResourcesAndOutputs(client,
       resources = LimitResourcesToDisplay(response.resources)
     else:
       resources = []
-
-    if update_action_intent:
-      UpdateActionResourceIntent(resources)
 
     deployment_response = client.deployments.Get(
         messages.DeploymentmanagerDeploymentsGetRequest(
@@ -279,33 +272,6 @@ def FetchDeployment(client, messages, project, deployment_name):
     return deployment_response
   except apitools_exceptions.HttpError as error:
     raise api_exceptions.HttpException(error, HTTP_ERROR_FORMAT)
-
-
-def UpdateActionResourceIntent(resources):
-  """Update the intent of the resource that is in preview."""
-  for resource in resources:
-    if resource.update:
-      resource.update.intent = GetActionResourceIntent(
-          resource.update.intent, resource.update.runtimePolicies)
-
-
-def GetActionResourceIntent(update_intent, runtime_policies):
-  """Returns action intent indicating TO_RUN or NOT_RUN."""
-  # The runtime_policies will never by an empty list
-  if runtime_policies:
-    if update_intent in ['PATCH', 'UPDATE'
-                        ] and ('UPDATE_ALWAYS' in runtime_policies or
-                               'UPDATE_ON_CHANGE' in runtime_policies):
-      return update_intent + '/TO_RUN'
-    elif update_intent == 'DELETE' and 'DELETE' in runtime_policies:
-      return update_intent + '/TO_RUN'
-    elif update_intent == 'CREATE_OR_ACQUIRE' and (
-        'CREATE' in runtime_policies or 'UPDATE_ON_CHANGE' in runtime_policies
-        or 'UPDATE_ALWAYS' in runtime_policies):
-      return update_intent + '/TO_RUN'
-    else:
-      return update_intent + '/NOT_RUN'
-  return update_intent
 
 
 class StringPropertyParser(object):

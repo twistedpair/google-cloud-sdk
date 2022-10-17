@@ -1165,6 +1165,7 @@ apis:
   spanner:
     v1:
       discovery_doc: spanner_v1.json
+      gcloud_gapic_library: google/spanner/v1:spanner_v1_py
       resources:
         projects.instances.databases.roles:
           path: projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/databaseRoles/{rolesName}
@@ -1199,11 +1200,8 @@ apis:
         projects:
           path: projects/{project}
   storageinsights:
-    v1alpha1:
-      discovery_doc: storageinsights_v1alpha1.json
     v1:
       discovery_doc: storageinsights_v1.json
-      default: true
   storagetransfer:
     v1:
       discovery_doc: storagetransfer_v1.json

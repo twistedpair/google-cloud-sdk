@@ -994,6 +994,33 @@ class EdgenetworkV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Initialize(self, request, global_params=None):
+      r"""InitializeZone will initialize resources for a zone in a project.
+
+      Args:
+        request: (EdgenetworkProjectsLocationsZonesInitializeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InitializeZoneResponse) The response message.
+      """
+      config = self.GetMethodConfig('Initialize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Initialize.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}:initialize',
+        http_method='POST',
+        method_id='edgenetwork.projects.locations.zones.initialize',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:initialize',
+        request_field='initializeZoneRequest',
+        request_type_name='EdgenetworkProjectsLocationsZonesInitializeRequest',
+        response_type_name='InitializeZoneResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists Zones in a given project and location.
 

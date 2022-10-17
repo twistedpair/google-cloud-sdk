@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.vmware import client
+from googlecloudsdk.api_lib.container.vmware import update_mask
+from googlecloudsdk.command_lib.container.vmware import flags
 
 
 class NodePoolsClient(client.ClientBase):
@@ -29,58 +31,90 @@ class NodePoolsClient(client.ClientBase):
     super(NodePoolsClient, self).__init__(**kwargs)
     self._service = self._client.projects_locations_vmwareClusters_vmwareNodePools
 
-  def List(self, location_ref, limit=None, page_size=100):
+  def List(self, args):
     """Lists Node Pools in the Anthos clusters on VMware API."""
     list_req = self._messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsListRequest(
-        parent=location_ref.RelativeName())
+        parent=self._user_cluster_name(args))
     return list_pager.YieldFromList(
         self._service,
         list_req,
         field='vmwareNodePools',
-        batch_size=page_size,
-        limit=limit,
+        batch_size=flags.Get(args, 'page_size'),
+        limit=flags.Get(args, 'limit'),
         batch_size_attribute='pageSize',
     )
 
-  def Delete(self,
-             resource_ref,
-             allow_missing=False,
-             etag=None,
-             validate_only=False):
+  def Delete(self, args):
     """Deletes a gkeonprem node pool API resource."""
+    kwargs = {
+        'allowMissing': flags.Get(args, 'allow_missing'),
+        'etag': flags.Get(args, 'etag'),
+        'name': self._node_pool_name(args),
+        'validateOnly': flags.Get(args, 'validate_only'),
+    }
     req = self._messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsDeleteRequest(
-        allowMissing=allow_missing,
-        etag=etag,
-        name=resource_ref.RelativeName(),
-        validateOnly=validate_only)
+        **kwargs)
     return self._service.Delete(req)
 
-  def Create(
-      self,
-      resource_ref,
-      image_type,
-      replicas,
-      enable_load_balancer,
-      min_replicas=0,
-      max_replicas=0,
-      validate_only=False,
-  ):
+  def Create(self, args):
     """Creates a gkeonprem node pool API resource."""
-    vmware_node_pool = self._messages.VmwareNodePool(
-        name=resource_ref.RelativeName(),
-        config=self._messages.VmwareNodeConfig(
-            imageType=image_type,
-            replicas=replicas,
-            enableLoadBalancer=enable_load_balancer,
-        ),
-        nodePoolAutoscaling=self._messages.VmwareNodePoolAutoscalingConfig(
-            minReplicas=min_replicas,
-            maxReplicas=max_replicas,
-        ))
+    node_pool_ref = self._node_pool_ref(args)
+    kwargs = {
+        'parent': node_pool_ref.Parent().RelativeName(),
+        'validateOnly': flags.Get(args, 'validate_only'),
+        'vmwareNodePool': self._vmware_node_pool(args),
+        'vmwareNodePoolId': self._node_pool_id(args),
+    }
     req = self._messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsCreateRequest(
-        parent=resource_ref.Parent().RelativeName(),
-        validateOnly=validate_only,
-        vmwareNodePool=vmware_node_pool,
-        vmwareNodePoolId=resource_ref.Name(),
-    )
+        **kwargs)
     return self._service.Create(req)
+
+  def Update(self, args):
+    """Updates a gkeonprem node pool API resource."""
+    kwargs = {
+        'allowMissing':
+            flags.Get(args, 'allow_missing'),
+        'name':
+            self._node_pool_name(args),
+        'updateMask':
+            update_mask.get_update_mask(
+                args, update_mask.VMWARE_NODE_POOL_ARGS_TO_UPDATE_MASKS),
+        'validateOnly':
+            flags.Get(args, 'validate_only'),
+        'vmwareNodePool':
+            self._vmware_node_pool(args),
+    }
+    req = self._messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsPatchRequest(
+        **kwargs)
+    return self._service.Patch(req)
+
+  def _vmware_node_pool(self, args):
+    """Constructs proto message VmwareNodePool."""
+    kwargs = {
+        'name': self._node_pool_name(args),
+        'displayName': flags.Get(args, 'display_name'),
+        'config': self._vmware_node_config(args),
+        'nodePoolAutoscaling': self._vmware_node_pool_autoscaling_config(args),
+    }
+    return self._messages.VmwareNodePool(**kwargs)
+
+  def _vmware_node_config(self, args):
+    """Constructs proto message VmwareNodeConfig."""
+    kwargs = {
+        'enableLoadBalancer': flags.Get(args, 'enable_load_balancer'),
+        'imageType': flags.Get(args, 'image_type'),
+        'replicas': flags.Get(args, 'replicas'),
+    }
+    if any(kwargs.values()):
+      return self._messages.VmwareNodeConfig(**kwargs)
+    return None
+
+  def _vmware_node_pool_autoscaling_config(self, args):
+    """Constructs proto message VmwareNodePoolAutoscalingConfig."""
+    kwargs = {
+        'minReplicas': flags.Get(args, 'min_replicas'),
+        'maxReplicas': flags.Get(args, 'max_replicas'),
+    }
+    if any(kwargs.values()):
+      return self._messages.VmwareNodePoolAutoscalingConfig(**kwargs)
+    return None

@@ -244,7 +244,7 @@
     },
     "Empty": {
       "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
       "type": "object",
       "properties": {
       }
@@ -448,6 +448,14 @@
           "items": {
             "$ref": "Symptom"
           }
+        },
+        "shieldedInstanceConfig": {
+          "description": "Shielded Instance options.",
+          "$ref": "ShieldedInstanceConfig"
+        },
+        "acceleratorConfig": {
+          "description": "The AccleratorConfig for the TPU Node.",
+          "$ref": "AcceleratorConfig"
         }
       }
     },
@@ -602,6 +610,44 @@
         },
         "workerId": {
           "description": "A string used to uniquely distinguish a worker within a TPU node.",
+          "type": "string"
+        }
+      }
+    },
+    "ShieldedInstanceConfig": {
+      "id": "ShieldedInstanceConfig",
+      "description": "A set of Shielded Instance options.",
+      "type": "object",
+      "properties": {
+        "enableSecureBoot": {
+          "description": "Defines whether the instance has Secure Boot enabled.",
+          "type": "boolean"
+        }
+      }
+    },
+    "AcceleratorConfig": {
+      "id": "AcceleratorConfig",
+      "description": "A TPU accelerator configuration.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Required. Type of TPU.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified version.",
+            "TPU v2.",
+            "TPU v3.",
+            "TPU v4."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "V2",
+            "V3",
+            "V4"
+          ]
+        },
+        "topology": {
+          "description": "Required. Topology of TPU in chips.",
           "type": "string"
         }
       }
@@ -811,44 +857,37 @@
     },
     "OperationMetadata": {
       "id": "OperationMetadata",
-      "description": "Represents the metadata of the long-running operation.",
+      "description": "Metadata describing an Operation",
       "type": "object",
       "properties": {
         "createTime": {
-          "description": "Output only. The time the operation was created.",
-          "readOnly": true,
+          "description": "The time the operation was created.",
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "Output only. The time the operation finished running.",
-          "readOnly": true,
+          "description": "The time the operation finished running.",
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
-          "description": "Output only. Server-defined resource path for the target of the operation.",
-          "readOnly": true,
+          "description": "Target of the operation - for example projects\/project-1\/connectivityTests\/test-1",
           "type": "string"
         },
         "verb": {
-          "description": "Output only. Name of the verb executed by the operation.",
-          "readOnly": true,
+          "description": "Name of the verb executed by the operation.",
           "type": "string"
         },
         "statusDetail": {
-          "description": "Output only. Human-readable status of the operation, if any.",
-          "readOnly": true,
+          "description": "Human-readable status of the operation, if any.",
           "type": "string"
         },
         "cancelRequested": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have been cancelled successfully have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
-          "readOnly": true,
+          "description": "Specifies if cancellation was requested for the operation.",
           "type": "boolean"
         },
         "apiVersion": {
-          "description": "Output only. API version used to start the operation.",
-          "readOnly": true,
+          "description": "API version.",
           "type": "string"
         }
       }
@@ -873,7 +912,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },

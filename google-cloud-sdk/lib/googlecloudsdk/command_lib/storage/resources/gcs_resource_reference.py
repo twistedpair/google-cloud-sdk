@@ -201,7 +201,70 @@ class GcsBucketResource(resource_reference.BucketResource):
 
 
 class GcsObjectResource(resource_reference.ObjectResource):
-  """API-specific subclass for handling metadata."""
+  """API-specific subclass for handling metadata.
+
+  Additional GCS Attributes:
+    storage_class_update_time (datetime|None): Storage class update time.
+  """
+
+  def __init__(self,
+               storage_url_object,
+               acl=None,
+               cache_control=None,
+               component_count=None,
+               content_disposition=None,
+               content_encoding=None,
+               content_language=None,
+               content_type=None,
+               crc32c_hash=None,
+               creation_time=None,
+               custom_metadata=None,
+               custom_time=None,
+               decryption_key_hash=None,
+               encryption_algorithm=None,
+               etag=None,
+               event_based_hold=None,
+               kms_key=None,
+               md5_hash=None,
+               metadata=None,
+               metageneration=None,
+               noncurrent_time=None,
+               retention_expiration=None,
+               size=None,
+               storage_class=None,
+               storage_class_update_time=None,
+               temporary_hold=None,
+               update_time=None):
+    """Initializes GcsObjectResource."""
+    super(GcsObjectResource, self).__init__(
+        storage_url_object,
+        acl,
+        cache_control,
+        component_count,
+        content_disposition,
+        content_encoding,
+        content_language,
+        content_type,
+        crc32c_hash,
+        creation_time,
+        custom_metadata,
+        custom_time,
+        decryption_key_hash,
+        encryption_algorithm,
+        etag,
+        event_based_hold,
+        kms_key,
+        md5_hash,
+        metadata,
+        metageneration,
+        noncurrent_time,
+        retention_expiration,
+        size,
+        storage_class,
+        temporary_hold,
+        update_time,
+    )
+    self.storage_class_update_time = storage_class_update_time
 
   def get_displayable_object_data(self):
     """Returns the DisplaybleObjectData instance."""
@@ -243,6 +306,10 @@ class GcsObjectResource(resource_reference.ObjectResource):
         storage_class_update_time=self.metadata.timeStorageClassUpdated,
         temporary_hold=True if self.metadata.temporaryHold else None,
         update_time=self.metadata.updated)
+
+  def __eq__(self, other):
+    return (super(GcsObjectResource, self).__eq__(other) and
+            self.storage_class_update_time == other.storage_class_update_time)
 
   def get_json_dump(self):
     return _get_json_dump(self)

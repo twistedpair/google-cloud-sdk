@@ -204,6 +204,20 @@
       "properties": {
       }
     },
+    "InitializeZoneRequest": {
+      "id": "InitializeZoneRequest",
+      "description": "Message for initializing a specified zone",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "InitializeZoneResponse": {
+      "id": "InitializeZoneResponse",
+      "description": "The response of initializing a zone",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ListZonesResponse": {
       "id": "ListZonesResponse",
       "description": "Message for response to listing Zones",
@@ -824,7 +838,11 @@
           "type": "string"
         },
         "router": {
-          "description": "Required. The canonical Router name in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/routers\/{router}.",
+          "description": "Optional. The canonical Router name in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/routers\/{router}.",
+          "type": "string"
+        },
+        "network": {
+          "description": "Optional. The canonical Network name in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/networks\/{network}.",
           "type": "string"
         },
         "vlanId": {
@@ -1611,6 +1629,34 @@
             },
             "zones": {
               "methods": {
+                "initialize": {
+                  "id": "edgenetwork.projects.locations.zones.initialize",
+                  "path": "v1alpha1/{+name}:initialize",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}:initialize",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the zone resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "InitializeZoneRequest"
+                  },
+                  "response": {
+                    "$ref": "InitializeZoneResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "InitializeZone will initialize resources for a zone in a project."
+                },
                 "list": {
                   "id": "edgenetwork.projects.locations.zones.list",
                   "path": "v1alpha1/{+parent}/zones",

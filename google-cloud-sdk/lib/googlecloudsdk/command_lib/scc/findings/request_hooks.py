@@ -23,11 +23,11 @@ import datetime
 import re
 
 from googlecloudsdk.api_lib.scc import securitycenter_client as sc_client
+from googlecloudsdk.command_lib.scc.errors import InvalidSCCInputError
 from googlecloudsdk.command_lib.scc.hooks import CleanUpUserInput
 from googlecloudsdk.command_lib.scc.hooks import GetOrganization
-from googlecloudsdk.command_lib.scc.hooks import GetParent
 from googlecloudsdk.command_lib.scc.hooks import GetSourceParentFromResourceName
-from googlecloudsdk.command_lib.scc.hooks import InvalidSCCInputError
+from googlecloudsdk.command_lib.scc.util import GetParentFromPositionalArguments
 
 
 def BulkMuteFindingsReqHook(ref, args, req):
@@ -63,7 +63,7 @@ def ListFindingsReqHook(ref, args, req):
   args.filter = ""
   resource_pattern = re.compile(
       "(organizations|projects|folders)/.*/sources/[0-9-]+$")
-  parent = GetParent(args)
+  parent = GetParentFromPositionalArguments(args)
   if resource_pattern.match(parent):
     args.source = parent
   return req
@@ -90,7 +90,7 @@ def GroupFindingsReqHook(ref, args, req):
   args.filter = ""
   resource_pattern = re.compile(
       "(organizations|projects|folders)/[a-z0-9]+/sources/[0-9]+")
-  parent = GetParent(args)
+  parent = GetParentFromPositionalArguments(args)
   if resource_pattern.match(parent):
     args.source = parent
   req.parent = _GetSourceNameForParent(args)
@@ -180,7 +180,7 @@ def _GetSourceNameForParent(args):
   if resource_pattern.match(args.source):
     # Handle full resource name
     return args.source
-  return GetParent(args) + "/sources/" + args.source
+  return GetParentFromPositionalArguments(args) + "/sources/" + args.source
 
 
 def _GetSourceName(args):

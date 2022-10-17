@@ -34,27 +34,33 @@ def AddQueueResourceArg(parser, verb):
 
 
 def AddQueueResourceFlag(parser, required=True, plural_tasks=False):
-  description = ('The queue the tasks belong to.' if plural_tasks else
-                 'The queue the task belongs to.')
+  description = ('The queue the tasks belong to.'
+                 if plural_tasks else 'The queue the task belongs to.')
   argument = base.Argument('--queue', help=description, required=required)
   argument.AddToParser(parser)
 
 
+def AddTaskIdFlag(parser):
+  description = ('The task ID for the task being created.')
+  argument = base.Argument('--task-id', help=description, required=False)
+  argument.AddToParser(parser)
+
+
 def AddTaskResourceArgs(parser, verb):
-  base.Argument('task', help='The task {}.\n\n'.format(verb)).AddToParser(
-      parser)
+  base.Argument(
+      'task', help='The task {}.\n\n'.format(verb)).AddToParser(parser)
   AddQueueResourceFlag(parser, required=False)
 
 
-def AddLocationFlag(parser):
+def AddLocationFlag(parser, required=False, helptext=None):
+  if helptext is None:
+    helptext = (
+        'The location where we want to manage the queue or task. If not '
+        "specified, uses the location of the current project's App Engine "
+        'app if there is an associated app.')
+
   argument = base.Argument(
-      '--location',
-      hidden=False,
-      help=(
-          "The location where we want to manage the queue or task. If not "
-          "specified, uses the location of the current project's App Engine "
-          "app if there is an associated app."
-      ))
+      '--location', hidden=False, help=helptext, required=required)
   argument.AddToParser(parser)
 
 
@@ -63,10 +69,18 @@ def AddCreatePullQueueFlags(parser):
     flag.AddToParser(parser)
 
 
-def AddCreatePushQueueFlags(
-    parser, release_track=base.ReleaseTrack.GA, app_engine_queue=False):
+def AddCreatePushQueueFlags(parser,
+                            release_track=base.ReleaseTrack.GA,
+                            app_engine_queue=False, http_queue=True):
+  """Creates flags related to Push queues."""
+
   if release_track == base.ReleaseTrack.ALPHA:
-    flags = _AlphaPushQueueFlags()
+    if http_queue and not app_engine_queue:
+      flags = _AlphaHttpPushQueueFlags()
+      _AddHttpTargetAuthFlags(parser)
+    else:
+      flags = _AlphaPushQueueFlags()
+
   else:
     flags = _PushQueueFlags(release_track)
     if release_track == base.ReleaseTrack.BETA and not app_engine_queue:
@@ -247,13 +261,15 @@ def _BasePushQueueFlags():
           """),
       base.Argument(
           '--routing-override',
-          type=arg_parsers.ArgDict(key_type=_GetAppEngineRoutingKeysValidator(),
-                                   min_length=1, max_length=3,
-                                   operators={':': None}),
+          type=arg_parsers.ArgDict(
+              key_type=_GetAppEngineRoutingKeysValidator(),
+              min_length=1,
+              max_length=3,
+              operators={':': None}),
           metavar='KEY:VALUE',
           help="""\
-          If provided, the specified route is used for all tasks in the queue,
-          no matter what is set is at the task-level.
+          If provided, the specified App Engine route is used for all tasks
+          in the queue, no matter what is set is at the task-level.
 
           KEY must be at least one of: [{}]. Any missing keys will use the
           default.
@@ -277,6 +293,47 @@ def _AlphaPushQueueFlags():
           be dispatched for this queue. After this threshold has been reached,
           Cloud Tasks stops dispatching tasks until the number of outstanding
           requests decreases.
+          """),
+  ]
+
+
+def _AlphaHttpPushQueueFlags():
+  return _AlphaPushQueueFlags() + [
+      base.Argument(
+          '--http-uri-override',
+          type=arg_parsers.ArgDict(
+              key_type=_GetHttpUriOverrideKeysValidator(),
+              min_length=1,
+              max_length=5,
+              operators={':': None}),
+          metavar='KEY:VALUE',
+          help="""\
+          If provided, the specified HTTP target URI override is used for
+          all tasks in the queue, no matter what is set at the task-level.
+
+          KEY must be at least one of: [{}]. Any missing keys will use the
+          default.
+          """.format(', '.join(constants.HTTP_URI_OVERIDE_KEYS))),
+      base.Argument(
+          '--http-method-override',
+          help="""\
+          If provided, the specified HTTP method type override is used for
+          all tasks in the queue, no matter what is set at the task-level.
+          """),
+      base.Argument(
+          '--http-header-override',
+          metavar='HEADER_FIELD: HEADER_VALUE',
+          action='append',
+          type=_GetHeaderArgValidator(),
+          help="""\
+          If provided, the specified HTTP headers overrides the existing
+          headers for all tasks in the queue.
+          If a task has a header with the same Key as a queue-level header
+          override, then the value of the task header will be overriden with
+          the value of the queue-level header. Otherwise, the queue-level
+          header will be added to the task headers.
+          Header values can contain commas. This flag can be repeated.
+          Repeated header fields will have their values overridden.
           """),
   ]
 
@@ -471,11 +528,64 @@ def _AddAuthFlags(parser):
             """)
 
 
+def _AddHttpTargetAuthFlags(parser):
+  """Add flags for http auth."""
+  auth_group = parser.add_mutually_exclusive_group(help="""\
+            If specified, all `Authorization` headers in the HttpRequest.headers
+            field will be overridden for any tasks executed on this queue.
+            """)
+  oidc_group = auth_group.add_argument_group(help='OpenId Connect')
+  oidc_group.add_argument(
+      '--http-oidc-service-account-email-override',
+      required=True,
+      help="""\
+            The service account email to be used for generating an OpenID
+            Connect token to be included in the request sent to the target when
+            executing the task. The service account must be within the same
+            project as the queue. The caller must have
+            'iam.serviceAccounts.actAs' permission for the service account.
+            """)
+  oidc_group.add_argument(
+      '--http-oidc-token-audience-override',
+      help="""\
+            The audience to be used when generating an OpenID Connect token to
+            be included in the request sent to the target when executing the
+            task. If not specified, the URI specified in the target will be
+            used.
+            """)
+  oauth_group = auth_group.add_argument_group(help='OAuth2')
+  oauth_group.add_argument(
+      '--http-oauth-service-account-email-override',
+      required=True,
+      help="""\
+            The service account email to be used for generating an OAuth2 access
+            token to be included in the request sent to the target when
+            executing the task. The service account must be within the same
+            project as the queue. The caller must have
+            'iam.serviceAccounts.actAs' permission for the service account.
+            """)
+  oauth_group.add_argument(
+      '--http-oauth-token-scope-override',
+      help="""\
+            The scope to be used when generating an OAuth2 access token to be
+            included in the request sent to the target when executing the task.
+            If not specified, 'https://www.googleapis.com/auth/cloud-platform'
+            will be used.
+            """)
+
+
 def _GetAppEngineRoutingKeysValidator():
   return arg_parsers.CustomFunctionValidator(
       lambda k: k in constants.APP_ENGINE_ROUTING_KEYS,
       'Only the following keys are valid for routing: [{}].'.format(
           ', '.join(constants.APP_ENGINE_ROUTING_KEYS)))
+
+
+def _GetHttpUriOverrideKeysValidator():
+  return arg_parsers.CustomFunctionValidator(
+      lambda k: k in constants.HTTP_URI_OVERIDE_KEYS,
+      'Only the following keys are valid for routing: [{}].'.format(
+          ', '.join(constants.HTTP_URI_OVERIDE_KEYS)))
 
 
 def _GetQueueTypeArgValidator():

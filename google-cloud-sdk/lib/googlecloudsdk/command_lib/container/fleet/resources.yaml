@@ -79,3 +79,27 @@ namespace:
     parameter_name: namespacesId
     attribute_name: namespace
     help: The namespace name.
+
+rbacrolebinding:
+  name: rbacrolebinding
+  collection: gkehub.projects.locations.namespaces.rbacrolebindings
+  attributes:
+  - *project
+  - *location
+  - *namespace
+  - &rbacrolebinding
+    parameter_name: rbacrolebindingsId
+    attribute_name: rbacrolebinding
+    help: The rbacrolebinding name.
+
+workspace:
+  name: scope
+  collection: gkehub.projects.locations.workspaces
+  attributes:
+  - *project
+  - *location
+  - &workspace
+    parameter_name: workspacesId
+    attribute_name: scope
+    help: The workspace name.
+  request_id_field: workspaceId

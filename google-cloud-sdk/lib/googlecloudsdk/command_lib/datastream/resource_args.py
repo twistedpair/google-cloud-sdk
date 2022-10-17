@@ -437,10 +437,8 @@ def AddStreamResourceArg(parser, verb, release_track, required=True):
        }
       ```
         """)
-  # TODO(b/231025836): Unhide method when BigQuery is public.
   destination_config_parser_group.add_argument(
       '--bigquery-destination-config',
-      hidden=True,
       help="""\
       Path to a YAML (or JSON) file containing the configuration for Google BigQuery Destination Config.
 

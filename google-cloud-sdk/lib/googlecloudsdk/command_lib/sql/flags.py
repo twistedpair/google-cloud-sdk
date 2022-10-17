@@ -1018,6 +1018,24 @@ def AddEncryptedBakFlags(parser):
           'up to but not including the RETURN or ENTER key.'))
 
 
+def AddBakExportStripeCountArgument(parser):
+  """Add the 'stripe_count' argument to the parser for striped export."""
+  parser.add_argument('--stripe_count', type=int, hidden=True, help=(
+      'Specifies the number of stripes to use for SQL Server exports.'))
+
+
+def AddBakExportStripedArgument(parser):
+  """Add the 'striped' argument to the parser for striped export."""
+  parser.add_argument('--striped', type=bool, hidden=True, help=(
+      'Whether or not the SQL Server export should be striped.'))
+
+
+def AddBakImportStripedArgument(parser):
+  """Add the 'striped' argument to the parser for striped import."""
+  parser.add_argument('--striped', type=bool, hidden=True, help=(
+      'Whether or not the SQL Server import is striped.'))
+
+
 def AddRescheduleType(parser):
   """Add the flag to specify reschedule type.
 
@@ -1374,4 +1392,33 @@ def AddDeletionProtection(parser):
   parser.add_argument(
       '--deletion-protection',
       action=arg_parsers.StoreTrueFalseAction,
+      help=help_text)
+
+
+def AddConnectorEnforcement(parser):
+  """Adds the '--connector-enforcement' flag to the parser.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  help_text = (
+      'Cloud SQL Connector enforcement mode. It determines how Cloud SQL '
+      'Connectors are used in the connection. See the list of modes '
+      '[here](https://cloud.google.com/sql/docs/mysql/admin-api/rest/v1beta4/instances#connectorenforcement).'
+  )
+  parser.add_argument(
+      '--connector-enforcement',
+      choices={
+          'CONNECTOR_ENFORCEMENT_UNSPECIFIED':
+              'The requirement for Cloud SQL connectors is unknown.',
+          'NOT_REQUIRED':
+              'Does not require Cloud SQL connectors.',
+          'REQUIRED':
+              ('Requires all connections to use Cloud SQL connectors, '
+               'including the Cloud SQL Auth Proxy and Cloud SQL Java, Python, '
+               'and Go connectors. Note: This disables all existing authorized '
+               'networks.')
+      },
+      required=False,
+      default=None,
       help=help_text)

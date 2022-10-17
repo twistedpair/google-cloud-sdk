@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import json
 import textwrap
 
 from googlecloudsdk.api_lib.run import container_resource
@@ -108,6 +109,26 @@ def GetVpcConnector(record):
       ('Name', record.get(container_resource.VPC_ACCESS_ANNOTATION, '')),
       ('Egress', record.get(container_resource.EGRESS_SETTINGS_ANNOTATION, ''))
   ])
+
+
+def GetVpcNetwork(record):
+  """Returns the values of the network and subnetwork in network-interfaces annotation.
+
+  Args:
+    record: A dictionary-like object containing the VPC_ACCESS_ANNOTATION and
+    EGRESS_SETTINGS_ANNOTATION keys.
+  """
+  original_value = record.get(k8s_object.NETWORK_INTERFACES_ANNOTATION, '')
+  if not original_value:
+    return ''
+  try:
+    network_interface = json.loads(original_value)[0]
+    return cp.Labeled([
+        ('Network', network_interface.get('network', '')),
+        ('Subnet', network_interface.get('subnetwork', ''))
+    ])
+  except Exception:  # pylint: disable=broad-except
+    return ''
 
 
 def GetBinAuthzPolicy(record):

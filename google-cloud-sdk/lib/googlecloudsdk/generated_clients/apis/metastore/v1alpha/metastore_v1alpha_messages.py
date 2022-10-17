@@ -278,8 +278,8 @@ class Consumer(_messages.Message):
   Fields:
     endpointUri: Output only. The URI of the endpoint used to access the
       metastore service.
-    subnetwork: The subnetwork of the customer project from which an IP
-      address is reserved and used as the Dataproc Metastore service's
+    subnetwork: Immutable. The subnetwork of the customer project from which
+      an IP address is reserved and used as the Dataproc Metastore service's
       endpoint. It is accessible to hosts in the subnet and to all hosts in a
       subnet in the same region and same network. There must be at least one
       IP address available in the subnet's primary range. The subnet is
@@ -1917,6 +1917,21 @@ class MetastoreProjectsLocationsServicesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class MetastoreProjectsLocationsServicesQueryMetadataRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesQueryMetadataRequest object.
+
+  Fields:
+    queryMetadataRequest: A QueryMetadataRequest resource to be passed as the
+      request body.
+    service: Required. The relative resource name of the metastore service to
+      query metadata, in the following format:projects/{project_id}/locations/
+      {location_id}/services/{service_id}.
+  """
+
+  queryMetadataRequest = _messages.MessageField('QueryMetadataRequest', 1)
+  service = _messages.StringField(2, required=True)
+
+
 class MetastoreProjectsLocationsServicesRemoveIamPolicyRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsServicesRemoveIamPolicyRequest object.
 
@@ -2201,6 +2216,17 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class QueryMetadataRequest(_messages.Message):
+  r"""Request message for DataprocMetastore.QueryMetadata.
+
+  Fields:
+    query: Required. A read-only SQL query to execute against the metadata
+      database. The query cannot change or mutate the data.
+  """
+
+  query = _messages.StringField(1)
+
+
 class RemoveIamPolicyRequest(_messages.Message):
   r"""Request message for DataprocMetastore.RemoveIamPolicy."""
 
@@ -2367,8 +2393,8 @@ class Service(_messages.Message):
     network: Immutable. The relative resource name of the VPC network on which
       the instance can be accessed. It is specified in the following
       form:projects/{project_number}/global/networks/{network_id}.
-    networkConfig: Immutable. The configuration specifying the network
-      settings for the Dataproc Metastore service.
+    networkConfig: The configuration specifying the network settings for the
+      Dataproc Metastore service.
     port: The TCP port at which the metastore service is reached. Default:
       9083.
     releaseChannel: Immutable. The release channel of the service. If

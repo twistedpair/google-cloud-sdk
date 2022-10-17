@@ -22,6 +22,7 @@ import base64
 import binascii
 import re
 
+from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.api_lib.storage import metadata_util
 from googlecloudsdk.api_lib.storage import s3_metadata_field_converters
 from googlecloudsdk.command_lib.storage import storage_url
@@ -32,6 +33,7 @@ from googlecloudsdk.core import log
 
 _COMMON_S3_METADATA_FIELDS = frozenset([
     'ACL',
+    'AccessControlPolicy',
     'CacheControl',
     'ContentDisposition',
     'ContentEncoding',
@@ -54,6 +56,10 @@ MD5_REGEX = re.compile(r'^[a-fA-F0-9]{32}$')
 
 def copy_object_metadata(source_metadata_dict, destination_metadata_dict):
   """Copies common S3 fields from one metadata dict to another."""
+  if not destination_metadata_dict:
+    destination_metadata_dict = {}
+  if not source_metadata_dict:
+    return destination_metadata_dict
   for field in _COMMON_S3_METADATA_FIELDS:
     if field in source_metadata_dict:
       destination_metadata_dict[field] = source_metadata_dict[field]
@@ -126,15 +132,67 @@ def _get_md5_hash_from_etag(etag, object_url):
   return None
 
 
+def _get_error_string_or_value(value):
+  """Returns the error string if value is error or the value itself."""
+  if isinstance(value, errors.S3ApiError):
+    return str(value)
+  if isinstance(value, dict) and 'ResponseMetadata' in value:
+    value_copy = value.copy()
+    value_copy.pop('ResponseMetadata')
+    return value_copy
+  return value
+
+
+def get_bucket_resource_from_s3_response(bucket_dict, bucket_name):
+  """Creates resource_reference.S3BucketResource from S3 API response.
+
+  Args:
+    bucket_dict (dict): Dictionary representing S3 API response.
+    bucket_name (str): Bucket response is relevant to.
+
+  Returns:
+    resource_reference.S3BucketResource populated with data.
+  """
+  requester_pays = _get_error_string_or_value(bucket_dict.get('Payer'))
+  if requester_pays == 'Requester':
+    requester_pays = True
+  elif requester_pays == 'BucketOwner':
+    requester_pays = False
+
+  versioning_enabled = _get_error_string_or_value(bucket_dict.get('Versioning'))
+  if isinstance(versioning_enabled, dict):
+    if versioning_enabled.get('Status') == 'Enabled':
+      versioning_enabled = True
+    else:
+      versioning_enabled = None
+
+  return s3_resource_reference.S3BucketResource(
+      storage_url.CloudUrl(storage_url.ProviderPrefix.S3, bucket_name),
+      acl=_get_error_string_or_value(bucket_dict.get('ACL')),
+      cors_config=_get_error_string_or_value(bucket_dict.get('CORSRules')),
+      lifecycle_config=_get_error_string_or_value(
+          bucket_dict.get('LifecycleConfiguration')),
+      logging_config=_get_error_string_or_value(
+          bucket_dict.get('LoggingEnabled')),
+      requester_pays=requester_pays,
+      location=_get_error_string_or_value(
+          bucket_dict.get('LocationConstraint')),
+      metadata=bucket_dict,
+      versioning_enabled=versioning_enabled,
+      website_config=_get_error_string_or_value(bucket_dict.get('Website')))
+
+
 def get_object_resource_from_s3_response(object_dict,
                                          bucket_name,
-                                         object_name=None):
+                                         object_name=None,
+                                         acl_dict=None):
   """Creates resource_reference.S3ObjectResource from S3 API response.
 
   Args:
     object_dict (dict): Dictionary representing S3 API response.
     bucket_name (str): Bucket response is relevant to.
     object_name (str|None): Object if relevant to query.
+    acl_dict (dict|None): Response from S3 get_object_acl API call.
 
   Returns:
     resource_reference.S3ObjectResource populated with data.
@@ -147,21 +205,38 @@ def get_object_resource_from_s3_response(object_dict,
   else:
     size = object_dict.get('ContentLength')
 
+  encryption_algorithm = object_dict.get(
+      'ServerSideEncryption', object_dict.get('SSECustomerAlgorithm'))
   etag = _get_etag(object_dict)
+
+  if acl_dict:
+    # Full ACL policy more detailed than predefined ACL string.
+    raw_acl_data = acl_dict
+  else:
+    # Predefined ACL string or None.
+    raw_acl_data = object_dict.get('ACL')
+  if raw_acl_data:
+    object_dict['ACL'] = raw_acl_data
+  acl = _get_error_string_or_value(raw_acl_data)
 
   return s3_resource_reference.S3ObjectResource(
       object_url,
+      acl=acl,
       cache_control=object_dict.get('CacheControl'),
+      component_count=object_dict.get('PartsCount'),
       content_disposition=object_dict.get('ContentDisposition'),
       content_encoding=object_dict.get('ContentEncoding'),
       content_language=object_dict.get('ContentLanguage'),
       content_type=object_dict.get('ContentType'),
       custom_metadata=object_dict.get('Metadata'),
+      encryption_algorithm=encryption_algorithm,
       etag=etag,
+      kms_key=object_dict.get('SSEKMSKeyId'),
       md5_hash=_get_md5_hash_from_etag(etag, object_url),
       metadata=object_dict,
       size=size,
-      storage_class=object_dict.get('StorageClass'))
+      storage_class=object_dict.get('StorageClass'),
+      update_time=object_dict.get('LastModified'))
 
 
 def get_prefix_resource_from_s3_response(prefix_dict, bucket_name):
@@ -271,4 +346,3 @@ def update_object_metadata_dict_from_request_config(object_metadata,
                                  resource_args.md5_hash)
     _process_value_or_clear_flag(object_metadata, 'StorageClass',
                                  resource_args.storage_class)
-

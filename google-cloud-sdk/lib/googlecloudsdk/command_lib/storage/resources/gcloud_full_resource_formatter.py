@@ -25,7 +25,7 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = (
     base.BucketDisplayTitlesAndDefaults(
         # Using literal string 'None' as default so that it gets displayed
         # if the value is missing.
-        storage_class=base.FieldDisplayTitleAndDefault(
+        default_storage_class=base.FieldDisplayTitleAndDefault(
             title='Storage Class', default=shim_format_util.NONE_STRING),
         location_type=base.FieldDisplayTitleAndDefault(
             title='Location Type', default=None),
@@ -61,10 +61,8 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = (
             title='Time Updated', default=None),
         metageneration=base.FieldDisplayTitleAndDefault(
             title='Metageneration', default=None),
-        bucket_policy_only_enabled=base.FieldDisplayTitleAndDefault(
-            title='Bucket Policy Only Enabled',
-            default=None,
-            field_name='_bucket_policy_only_enabled'),
+        uniform_bucket_level_access=base.FieldDisplayTitleAndDefault(
+            title='Bucket Policy Only Enabled', default=None),
         satisfies_pzs=base.FieldDisplayTitleAndDefault(
             title='Satisfies PZS', default=None),
         acl=base.FieldDisplayTitleAndDefault(
@@ -98,7 +96,7 @@ _OBJECT_DISPLAY_TITLES_AND_DEFAULTS = (
             title='Content-Encoding', default=None),
         content_language=base.FieldDisplayTitleAndDefault(
             title='Content-Language', default=None),
-        content_length=base.FieldDisplayTitleAndDefault(
+        size=base.FieldDisplayTitleAndDefault(
             title='Content-Length', default=shim_format_util.NONE_STRING),
         content_type=base.FieldDisplayTitleAndDefault(
             title='Content-Type', default=shim_format_util.NONE_STRING),
@@ -108,7 +106,7 @@ _OBJECT_DISPLAY_TITLES_AND_DEFAULTS = (
             title='Custom-Time', default=None),
         noncurrent_time=base.FieldDisplayTitleAndDefault(
             title='Noncurrent Time', default=None),
-        additional_properties=base.FieldDisplayTitleAndDefault(
+        custom_metadata=base.FieldDisplayTitleAndDefault(
             title='Additional Properties', default=None),
         crc32c_hash=base.FieldDisplayTitleAndDefault(
             title='Hash (CRC32C)', default=None),
@@ -116,7 +114,7 @@ _OBJECT_DISPLAY_TITLES_AND_DEFAULTS = (
             title='Hash (MD5)', default=None),
         encryption_algorithm=base.FieldDisplayTitleAndDefault(
             title='Encryption Algorithm', default=None),
-        encryption_key_sha256=base.FieldDisplayTitleAndDefault(
+        decryption_key_hash=base.FieldDisplayTitleAndDefault(
             title='Encryption Key SHA256', default=None),
         etag=base.FieldDisplayTitleAndDefault(title='ETag', default='None'),
         generation=base.FieldDisplayTitleAndDefault(
@@ -131,24 +129,23 @@ _OBJECT_DISPLAY_TITLES_AND_DEFAULTS = (
 class GcloudFullResourceFormatter(base.FullResourceFormatter):
   """Format a resource as per Gcloud Storage style for ls -L output."""
 
-  def format_bucket(self, url, displayable_bucket_data):
+  def format_bucket(self, url, bucket_resource):
     """See super class."""
-    shim_format_util.replace_bucket_values_with_present_string(
-        displayable_bucket_data)
-    return base.get_formatted_string(url, displayable_bucket_data,
+    shim_format_util.replace_bucket_values_with_present_string(bucket_resource)
+    return base.get_formatted_string(url, bucket_resource,
                                      _BUCKET_DISPLAY_TITLES_AND_DEFAULTS)
 
   def format_object(self,
                     url,
-                    displayable_object_data,
+                    object_resource,
                     show_acl=True,
                     show_version_in_url=False):
     """See super class."""
     shim_format_util.replace_object_values_with_encryption_string(
-        displayable_object_data, 'Underlying data encrypted')
+        object_resource, 'Underlying data encrypted')
     return base.get_formatted_string(
         url,
-        displayable_object_data,
+        object_resource,
         _OBJECT_DISPLAY_TITLES_AND_DEFAULTS,
         show_acl=show_acl,
         show_version_in_url=show_version_in_url)

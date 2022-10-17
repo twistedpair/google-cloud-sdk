@@ -47,12 +47,14 @@ _INSTANTIATE_FROM_VALUES = [
 ]
 
 
-def MakeInstanceTemplateArg(plural=False):
+def MakeInstanceTemplateArg(plural=False, include_regional=False):
   return flags.ResourceArgument(
       resource_name='instance template',
       completer=completers.InstanceTemplatesCompleter,
       plural=plural,
-      global_collection='compute.instanceTemplates')
+      global_collection='compute.instanceTemplates',
+      regional_collection=('compute.regionInstanceTemplates'
+                           if include_regional else None))
 
 
 def MakeSourceInstanceArg():
@@ -63,8 +65,7 @@ def MakeSourceInstanceArg():
       required=False,
       zonal_collection='compute.instances',
       short_help=('The name of the source instance that the instance template '
-                  'will be created from.')
-  )
+                  'will be created from.'))
 
 
 def AddConfigureDiskArgs(parser):
@@ -102,7 +103,8 @@ def AddConfigureDiskArgs(parser):
   )
 
 
-def AddServiceProxyConfigArgs(parser, hide_arguments=False,
+def AddServiceProxyConfigArgs(parser,
+                              hide_arguments=False,
                               release_track=base.ReleaseTrack.GA):
   """Adds service proxy configuration arguments for instance templates."""
   service_proxy_group = parser.add_group(hidden=hide_arguments)
@@ -289,8 +291,7 @@ def ValidateServiceProxyFlags(args):
           raise ValueError
       except ValueError:
         raise exceptions.InvalidArgumentException(
-            'proxy-port',
-            'Port value can only be between 1025 and 65535.')
+            'proxy-port', 'Port value can only be between 1025 and 65535.')
 
     if 'exclude-outbound-ip-ranges' in args.service_proxy:
       if 'intercept-all-outbound-traffic' not in args.service_proxy:
@@ -316,8 +317,8 @@ def ValidateServiceProxyFlags(args):
             'exclude-outbound-port-ranges parameters requires '
             'intercept-all-outbound-traffic to be set')
 
-      port_ranges = (args.service_proxy['exclude-outbound-port-ranges']
-                     .split(';'))
+      port_ranges = (
+          args.service_proxy['exclude-outbound-port-ranges'].split(';'))
       for port_range in port_ranges:
         ports = port_range.split('-')
         try:
@@ -382,8 +383,7 @@ def ValidateMeshFlag(args):
     if args.no_scopes:
       # --no-scopes flag needs to be removed for adding cloud-platform scope.
       # This is required for ASM's service proxy to work properly.
-      raise exceptions.ConflictingArgumentsException('--mesh',
-                                                     '--no-scopes')
+      raise exceptions.ConflictingArgumentsException('--mesh', '--no-scopes')
 
     rgx = r'(.*)\/(.*)'
     try:

@@ -1198,7 +1198,7 @@ CREATE_ENV_VARS_FLAG = base.Argument(
     'pairs to provide to the Airflow scheduler, worker, and webserver '
     'processes. NAME may contain upper and lowercase letters, digits, '
     'and underscores, but they may not begin with a digit. '
-    'To include commas as part of a `VALUE`, see `{top_command} topics'
+    'To include commas as part of a `VALUE`, see `{top_command} topic'
     ' escaping` for information about overriding the delimiter.')
 
 

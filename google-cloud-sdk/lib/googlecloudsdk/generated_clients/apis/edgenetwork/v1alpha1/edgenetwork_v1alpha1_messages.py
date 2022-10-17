@@ -219,6 +219,19 @@ class EdgenetworkProjectsLocationsZonesGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class EdgenetworkProjectsLocationsZonesInitializeRequest(_messages.Message):
+  r"""A EdgenetworkProjectsLocationsZonesInitializeRequest object.
+
+  Fields:
+    initializeZoneRequest: A InitializeZoneRequest resource to be passed as
+      the request body.
+    name: Required. The name of the zone resource.
+  """
+
+  initializeZoneRequest = _messages.MessageField('InitializeZoneRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class EdgenetworkProjectsLocationsZonesInterconnectAttachmentsCreateRequest(_messages.Message):
   r"""A EdgenetworkProjectsLocationsZonesInterconnectAttachmentsCreateRequest
   object.
@@ -766,6 +779,14 @@ class Empty(_messages.Message):
 
 
 
+class InitializeZoneRequest(_messages.Message):
+  r"""Message for initializing a specified zone"""
+
+
+class InitializeZoneResponse(_messages.Message):
+  r"""The response of initializing a zone"""
+
+
 class Interconnect(_messages.Message):
   r"""Message describing Interconnect object
 
@@ -862,7 +883,9 @@ class InterconnectAttachment(_messages.Message):
       and 9000. Default to 1500 if not set.
     name: Required. The canonical resource name of the interconnect
       attachment.
-    router: Required. The canonical Router name in the form of
+    network: Optional. The canonical Network name in the form of
+      projects/{project}/locations/{location}/zones/{zone}/networks/{network}.
+    router: Optional. The canonical Router name in the form of
       projects/{project}/locations/{location}/zones/{zone}/routers/{router}.
     state: Output only. Current stage of the resource to the device by config
       push.
@@ -920,10 +943,11 @@ class InterconnectAttachment(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   mtu = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   name = _messages.StringField(6)
-  router = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
-  vlanId = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  network = _messages.StringField(7)
+  router = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
+  vlanId = _messages.IntegerField(11, variant=_messages.Variant.INT32)
 
 
 class InterconnectDiagnostics(_messages.Message):

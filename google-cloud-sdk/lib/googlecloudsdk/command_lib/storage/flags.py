@@ -21,11 +21,39 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 
 
-INVENTORY_REPORTS_METADATA_FIELDS = [
-    'project', 'bucket', 'name', 'location', 'size', 'timeCreated', 'type',
+REQUIRED_INVENTORY_REPORTS_METADATA_FIELDS = ('project', 'bucket', 'name')
+OPTIONAL_INVENTORY_REPORTS_METADATA_FIELDS = (
+    'location', 'size', 'timeCreated', 'type',
     'updated', 'storageClass', 'etag', 'retentionExpirationTime', 'crc32c',
     'md5Hash', 'generation', 'metageneration', 'contentType',
-    'contentEncoding', 'timeStorageClassUpdated']
+    'contentEncoding', 'timeStorageClassUpdated')
+
+
+def add_predefined_acl_flag(parser):
+  """Adds predefined ACL flag shared for both buckets and objects."""
+  parser.add_argument(
+      '-a',
+      '--predefined-acl',
+      '--canned-acl',
+      help='Applies predefined, or "canned," ACLs to a resource. See'
+      ' docs for a list of predefined ACL constants: https://cloud.google.com'
+      '/storage/docs/access-control/lists#predefined-acl')
+
+
+def add_object_acl_setter_flags(parser):
+  """Adds flags common among commands that modify object ACLs."""
+  acl_flags_group = parser.add_group(mutex=True)
+  acl_flags_group.add_argument(
+      '--preserve-acl',
+      '-p',
+      action=arg_parsers.StoreTrueFalseAction,
+      help='Preserves ACLs when copying in the cloud. This option is Google'
+      ' Cloud Storage-only, and you need OWNER access to all copied objects.'
+      ' If all objects in the destination bucket should have the same ACL,'
+      ' you can also set a default object ACL on that bucket instead of using'
+      ' this flag.\nPreserving ACLs is the default behavior for updating'
+      ' existing objects.')
+  add_predefined_acl_flag(acl_flags_group)
 
 
 def add_precondition_flags(parser):
@@ -227,15 +255,19 @@ def _get_optional_help_text(require_create_flags, flag_name):
 
 def add_inventory_reports_metadata_fields_flag(parser,
                                                require_create_flags=False):
+  """Adds the metadata-fields flag."""
   parser.add_argument(
       '--metadata-fields',
       metavar='METADATA_FIELDS',
-      default=(
-          INVENTORY_REPORTS_METADATA_FIELDS if require_create_flags else None),
-      type=arg_parsers.ArgList(choices=INVENTORY_REPORTS_METADATA_FIELDS),
-      help=('Lists the metadata fields you want included in the inventory '
-            'report.' +
-            _get_optional_help_text(require_create_flags, 'metadata_fields')))
+      default=(list(OPTIONAL_INVENTORY_REPORTS_METADATA_FIELDS)
+               if require_create_flags else None),
+      type=arg_parsers.ArgList(
+          choices=OPTIONAL_INVENTORY_REPORTS_METADATA_FIELDS),
+      help=(
+          'The metadata fields to be included in the inventory '
+          'report. The required fields: "{}" get added automatically. '.format(
+              ', '.join(REQUIRED_INVENTORY_REPORTS_METADATA_FIELDS)) +
+          _get_optional_help_text(require_create_flags, 'metadata_fields')))
 
 
 def add_inventory_reports_flags(parser, require_create_flags=False):
@@ -247,6 +279,7 @@ def add_inventory_reports_flags(parser, require_create_flags=False):
   """
   parser.add_argument(
       '--csv-separator',
+      choices=[r'\n', r'\r\n'],
       type=str,
       metavar='SEPARATOR',
       help='Sets the character used to separate the records in the inventory '

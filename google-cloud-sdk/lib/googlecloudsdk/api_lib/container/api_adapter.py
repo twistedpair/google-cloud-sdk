@@ -294,11 +294,11 @@ ADDONS_OPTIONS = DEFAULT_ADDONS + [
     CONFIGCONNECTOR,
     GCEPDCSIDRIVER,
     GCPFILESTORECSIDRIVER,
+    BACKUPRESTORE,
 ]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [
     ISTIO,
     APPLICATIONMANAGER,
-    BACKUPRESTORE,
 ]
 ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [CLOUDBUILD]
 
@@ -925,7 +925,9 @@ class UpdateClusterOptions(object):
       gateway_api=None,
       logging_variant=None,
       additional_pod_ipv4_ranges=None,
-      removed_additional_pod_ipv4_ranges=None
+      removed_additional_pod_ipv4_ranges=None,
+      fleet_project=None,
+      clear_fleet_project=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1038,6 +1040,8 @@ class UpdateClusterOptions(object):
     self.logging_variant = logging_variant
     self.additional_pod_ipv4_ranges = additional_pod_ipv4_ranges
     self.removed_additional_pod_ipv4_ranges = removed_additional_pod_ipv4_ranges
+    self.fleet_project = fleet_project
+    self.clear_fleet_project = clear_fleet_project
 
 
 class SetMasterAuthOptions(object):
@@ -1126,7 +1130,8 @@ class CreateNodePoolOptions(object):
                enable_confidential_nodes=None,
                disable_pod_cidr_overprovision=None,
                enable_fast_socket=None,
-               logging_variant=None):
+               logging_variant=None,
+               windows_os_version=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -1191,6 +1196,7 @@ class CreateNodePoolOptions(object):
     self.disable_pod_cidr_overprovision = disable_pod_cidr_overprovision
     self.enable_fast_socket = enable_fast_socket
     self.logging_variant = logging_variant
+    self.windows_os_version = windows_os_version
 
 
 class UpdateNodePoolOptions(object):
@@ -1226,7 +1232,8 @@ class UpdateNodePoolOptions(object):
                network_performance_config=None,
                enable_confidential_nodes=None,
                enable_fast_socket=None,
-               logging_variant=None):
+               logging_variant=None,
+               windows_os_version=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -1257,6 +1264,7 @@ class UpdateNodePoolOptions(object):
     self.enable_confidential_nodes = enable_confidential_nodes
     self.enable_fast_socket = enable_fast_socket
     self.logging_variant = logging_variant
+    self.windows_os_version = windows_os_version
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -1287,7 +1295,8 @@ class UpdateNodePoolOptions(object):
             self.network_performance_config is not None or
             self.enable_confidential_nodes is not None or
             self.enable_fast_socket is not None or
-            self.logging_variant is not None)
+            self.logging_variant is not None or
+            self.windows_os_version is not None)
 
 
 class APIAdapter(object):
@@ -2144,8 +2153,8 @@ class APIAdapter(object):
             self.messages, hidden=True).GetEnumForChoice(options.stack_type)
       if options.ipv6_access_type is not None:
         policy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
-            self.messages, hidden=True).GetEnumForChoice(
-                options.ipv6_access_type)
+            self.messages,
+            hidden=True).GetEnumForChoice(options.ipv6_access_type)
 
       cluster.clusterIpv4Cidr = None
       cluster.ipAllocationPolicy = policy
@@ -2507,7 +2516,8 @@ class APIAdapter(object):
     return upgrade_settings
 
   def UpdateBlueGreenSettingsForNAP(self, upgrade_settings, options):
-    """Update blue green settings field in upgrade_settings for autoprovisioned node pool."""
+    """Update blue green settings field in upgrade_settings for autoprovisioned node pool.
+    """
     blue_green_settings = upgrade_settings.blueGreenSettings or self.messages.BlueGreenSettings(
     )
     if options.autoprovisioning_node_pool_soak_duration is not None:
@@ -2732,6 +2742,10 @@ class APIAdapter(object):
       if options.disable_addons.get(GCPFILESTORECSIDRIVER) is not None:
         addons.gcpFilestoreCsiDriverConfig = self.messages.GcpFilestoreCsiDriverConfig(
             enabled=not options.disable_addons.get(GCPFILESTORECSIDRIVER))
+      if options.disable_addons.get(BACKUPRESTORE) is not None:
+        addons.gkeBackupAgentConfig = (
+            self.messages.GkeBackupAgentConfig(
+                enabled=not options.disable_addons.get(BACKUPRESTORE)))
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
     elif options.enable_autoscaling is not None:
       # For update, we can either enable or disable.
@@ -2987,6 +3001,14 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredCostManagementConfig=self.messages.CostManagementConfig(
               enabled=options.enable_cost_allocation))
+
+    if options.fleet_project:
+      update = self.messages.ClusterUpdate(
+          desiredFleet=self.messages.Fleet(project=options.fleet_project))
+
+    if options.clear_fleet_project:
+      update = self.messages.ClusterUpdate(
+          desiredFleet=self.messages.Fleet(project=''))
 
     return update
 
@@ -3278,7 +3300,8 @@ class APIAdapter(object):
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
   def _SendMaintenancePolicyRequest(self, cluster_ref, policy):
-    """Given a policy, sends a SetMaintenancePolicy request and returns the operation."""
+    """Given a policy, sends a SetMaintenancePolicy request and returns the operation.
+    """
     req = self.messages.SetMaintenancePolicyRequest(
         name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref.zone,
                                     cluster_ref.clusterId),
@@ -3436,6 +3459,7 @@ class APIAdapter(object):
     _AddShieldedInstanceConfigToNodeConfig(node_config, options, self.messages)
     _AddReservationAffinityToNodeConfig(node_config, options, self.messages)
     _AddSandboxConfigToNodeConfig(node_config, options, self.messages)
+    _AddWindowsNodeConfigToNodeConfig(node_config, options, self.messages)
 
     pool = self.messages.NodePool(
         name=node_pool_ref.nodePoolId,
@@ -3746,6 +3770,13 @@ class APIAdapter(object):
           variant=VariantConfigEnumFromString(self.messages,
                                               options.logging_variant))
       update_request.loggingConfig = logging_config
+    elif options.windows_os_version is not None:
+      windows_node_config = self.messages.WindowsNodeConfig()
+      if options.windows_os_version == 'ltsc2022':
+        windows_node_config.osVersion = self.messages.WindowsNodeConfig.OsVersionValueValuesEnum.OS_VERSION_LTSC2022
+      else:
+        windows_node_config.osVersion = self.messages.WindowsNodeConfig.OsVersionValueValuesEnum.OS_VERSION_LTSC2019
+      update_request.windowsNodeConfig = windows_node_config
     return update_request
 
   def UpdateNodePool(self, node_pool_ref, options):
@@ -4204,7 +4235,8 @@ class APIAdapter(object):
                                     add_subnetworks=None,
                                     remove_subnetworks=None,
                                     clear_all_subnetworks=None):
-    """Add/Remove/Clear cross connect subnetworks and schedule cluster update request."""
+    """Add/Remove/Clear cross connect subnetworks and schedule cluster update request.
+    """
     items = existing_cross_connect_config.items
     if clear_all_subnetworks:
       items = []
@@ -4267,15 +4299,14 @@ class APIAdapter(object):
       binary_authorization = self.messages.BinaryAuthorization()
 
     if enable_binauthz is not None:
-      if enable_binauthz and binary_authorization.evaluationMode not in set(
-          [
-              self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
-                  'EVALUATION_MODE_UNSPECIFIED'),
-              self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
-                  'DISABLED'),
-              self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
-                  'PROJECT_SINGLETON_POLICY_ENFORCE'),
-          ]):
+      if enable_binauthz and binary_authorization.evaluationMode not in set([
+          self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
+              'EVALUATION_MODE_UNSPECIFIED'),
+          self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
+              'DISABLED'),
+          self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
+              'PROJECT_SINGLETON_POLICY_ENFORCE'),
+      ]):
         console_io.PromptContinue(
             message='This will cause the current version of Binary Authorization to be downgraded (not recommended).',
             cancel_on_no=True)
@@ -4603,10 +4634,6 @@ class V1Beta1Adapter(V1Adapter):
         update.desiredAddonsConfig.cloudBuildConfig = (
             self.messages.CloudBuildConfig(
                 enabled=(not options.disable_addons.get(CLOUDBUILD))))
-      if options.disable_addons.get(BACKUPRESTORE) is not None:
-        update.desiredAddonsConfig.gkeBackupAgentConfig = (
-            self.messages.GkeBackupAgentConfig(
-                enabled=(not options.disable_addons.get(BACKUPRESTORE))))
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
@@ -5128,10 +5155,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         update.desiredAddonsConfig.cloudBuildConfig = (
             self.messages.CloudBuildConfig(
                 enabled=(not options.disable_addons.get(CLOUDBUILD))))
-      if options.disable_addons.get(BACKUPRESTORE) is not None:
-        update.desiredAddonsConfig.gkeBackupAgentConfig = (
-            self.messages.GkeBackupAgentConfig(
-                enabled=(not options.disable_addons.get(BACKUPRESTORE))))
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
@@ -5398,6 +5421,18 @@ def _AddLinuxNodeConfigToNodeConfig(node_config, options, messages):
     linux_sysctls.additionalProperties = props
 
     node_config.linuxNodeConfig.sysctls = linux_sysctls
+
+
+def _AddWindowsNodeConfigToNodeConfig(node_config, options, messages):
+  """"Adds WindowsNodeConfig to NodeConfig."""
+
+  if options.windows_os_version is not None:
+    if node_config.windowsNodeConfig is None:
+      node_config.windowsNodeConfig = messages.WindowsNodeConfig()
+    if options.windows_os_version == 'ltsc2022':
+      node_config.windowsNodeConfig.osVersion = messages.WindowsNodeConfig.OsVersionValueValuesEnum.OS_VERSION_LTSC2022
+    else:
+      node_config.windowsNodeConfig.osVersion = messages.WindowsNodeConfig.OsVersionValueValuesEnum.OS_VERSION_LTSC2019
 
 
 def _AddShieldedInstanceConfigToNodeConfig(node_config, options, messages):

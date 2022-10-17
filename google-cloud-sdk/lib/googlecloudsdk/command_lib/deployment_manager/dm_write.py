@@ -124,7 +124,7 @@ def WaitForOperation(client, messages, operation_name,
     while ticks < timeout:
       operation = client.operations.Get(request)
       # Operation status is one of PENDING, RUNNING, DONE
-      if operation.status == 'DONE':
+      if operation.status == messages.Operation.StatusValueValuesEnum.DONE:
         if operation.error:
           raise exceptions.OperationError(
               'Error in Operation [{0}]: {1}'.format(

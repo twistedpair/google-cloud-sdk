@@ -363,6 +363,36 @@ class Binding(_messages.Message):
   role = _messages.StringField(4)
 
 
+class BindingLifecycleState(_messages.Message):
+  r"""BindingLifecycleState describes the state of a Binding resource.
+
+  Enums:
+    CodeValueValuesEnum: Output only. The current state of the Binding
+      resource.
+
+  Fields:
+    code: Output only. The current state of the Binding resource.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the Binding resource.
+
+    Values:
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The binding is being created.
+      READY: The binding active.
+      DELETING: The binding is being deleted.
+      UPDATING: The binding is being updated.
+    """
+    CODE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    UPDATING = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -444,288 +474,26 @@ class CloudBuildMembershipSpec(_messages.Message):
 class ClusterUpgradeFeatureSpec(_messages.Message):
   r"""**ClusterUpgrade**: The configuration for the ClusterUpgrade feature.
 
-  Messages:
-    WorkspacesValue: Map of workspace name to its corresponding spec. The
-      workspace name should be in the format of
-      `projects/[project_id]/locations/global/workspaces/[ws_id]`.
-
   Fields:
-    workspaces: Map of workspace name to its corresponding spec. The workspace
-      name should be in the format of
-      `projects/[project_id]/locations/global/workspaces/[ws_id]`.
+    gkeUpgradeOverrides: Allow users to override some properties of each GKE
+      upgrade.
+    postConditions: Post conditions to evaluate to mark an upgrade COMPLETE.
+    upstreamScopes: This scope consumes upgrades that have COMPLETE status
+      code in the upstream scopes. See ScopeGKEUpgradeState.Code for code
+      definitions. The scope name should be in the form:
+      `projects/{p}/locations/gloobal/scopes/{s}` Where {p} is the project,
+      {s} is a valid Scope in this project. {p} WILL match the Feature's
+      project. This is defined as repeated for future proof reasons. Initial
+      implementation will enforce at most one upstream scope.
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class WorkspacesValue(_messages.Message):
-    r"""Map of workspace name to its corresponding spec. The workspace name
-    should be in the format of
-    `projects/[project_id]/locations/global/workspaces/[ws_id]`.
-
-    Messages:
-      AdditionalProperty: An additional property for a WorkspacesValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type WorkspacesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a WorkspacesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A ClusterUpgradeWorkspaceFeatureSpec attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('ClusterUpgradeWorkspaceFeatureSpec', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  workspaces = _messages.MessageField('WorkspacesValue', 1)
+  gkeUpgradeOverrides = _messages.MessageField('ClusterUpgradeGKEUpgradeOverride', 1, repeated=True)
+  postConditions = _messages.MessageField('ClusterUpgradePostConditions', 2)
+  upstreamScopes = _messages.StringField(3, repeated=True)
 
 
 class ClusterUpgradeFeatureState(_messages.Message):
   r"""**ClusterUpgrade**: The state for the ClusterUpgrade feature.
-
-  Messages:
-    WorkspacesValue: Map of workspace name to its corresponding state. The
-      workspace name should be in the format of
-      `projects/[project_id]/locations/global/workspaces/[ws_id]`.
-
-  Fields:
-    workspaces: Map of workspace name to its corresponding state. The
-      workspace name should be in the format of
-      `projects/[project_id]/locations/global/workspaces/[ws_id]`.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class WorkspacesValue(_messages.Message):
-    r"""Map of workspace name to its corresponding state. The workspace name
-    should be in the format of
-    `projects/[project_id]/locations/global/workspaces/[ws_id]`.
-
-    Messages:
-      AdditionalProperty: An additional property for a WorkspacesValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type WorkspacesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a WorkspacesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A ClusterUpgradeWorkspaceFeatureState attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('ClusterUpgradeWorkspaceFeatureState', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  workspaces = _messages.MessageField('WorkspacesValue', 1)
-
-
-class ClusterUpgradeGKEUpgrade(_messages.Message):
-  r"""GKEUpgrade represents a GKE provided upgrade, e.g., control plane
-  upgrade.
-
-  Fields:
-    name: Name of the upgrade, e.g., "k8s_control_plane".
-    policy: Policy associated with the upgrade.
-    version: Version of the upgrade, e.g., "1.22.1-gke.100".
-  """
-
-  name = _messages.StringField(1)
-  policy = _messages.MessageField('ClusterUpgradeGKEUpgradePolicy', 2)
-  version = _messages.StringField(3)
-
-
-class ClusterUpgradeGKEUpgradeFeatureSpec(_messages.Message):
-  r"""GKEUpgradeFeatureSpec is the feature spec for GKE clusters.
-
-  Fields:
-    upgrades: A list of upgrades to be applied.
-  """
-
-  upgrades = _messages.MessageField('ClusterUpgradeWorkspaceGKEUpgrade', 1, repeated=True)
-
-
-class ClusterUpgradeGKEUpgradeFeatureState(_messages.Message):
-  r"""GKEUpgradeFeatureState contains feature states for GKE clusters in the
-  workspace.
-
-  Fields:
-    history: Store the last N (N=100) upgrades for debugging purpose.
-    state: Upgrade state.
-  """
-
-  history = _messages.MessageField('ClusterUpgradeWorkspaceGKEUpgradeState', 1, repeated=True)
-  state = _messages.MessageField('ClusterUpgradeWorkspaceGKEUpgradeState', 2, repeated=True)
-
-
-class ClusterUpgradeGKEUpgradeOverride(_messages.Message):
-  r"""Properties of an GKE upgrade that can be overridden by the user. For
-  example, a user can skip soaking by overriding the soaking to 0.
-
-  Fields:
-    postConditions: Post conditions to override for the specified upgrade
-      (name + version).
-    upgrade: Which upgrade to override.
-  """
-
-  postConditions = _messages.MessageField('ClusterUpgradePostConditions', 1)
-  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 2)
-
-
-class ClusterUpgradeGKEUpgradePolicy(_messages.Message):
-  r"""GKEUpgradePolicy is a serialized rollout policy string that rollout
-  server can actuate on.
-
-  Fields:
-    componentPolicy: Policy for (mitosis) component upgrade.
-    masterUpgradePolicy: Policy for master (control plane) upgrade.
-    monolithComponentPolicy: Policy for monolith component upgrade.
-    nodeUpgradePolicy: Policy for nodepool upgrade.
-  """
-
-  componentPolicy = _messages.StringField(1)
-  masterUpgradePolicy = _messages.StringField(2)
-  monolithComponentPolicy = _messages.StringField(3)
-  nodeUpgradePolicy = _messages.StringField(4)
-
-
-class ClusterUpgradeIgnoredMembership(_messages.Message):
-  r"""IgnoredMembership represents a membership ignored by the feature. A
-  membership can be ignored because it was manually upgraded to a newer
-  version than RC default.
-
-  Fields:
-    ignoredTime: Time when the membership was first set to ignored.
-    reason: Reason why the membership is ignored.
-  """
-
-  ignoredTime = _messages.StringField(1)
-  reason = _messages.StringField(2)
-
-
-class ClusterUpgradeMembershipGKEUpgradeState(_messages.Message):
-  r"""WorkspaceGKEUpgradeState is a GKEUpgrade and its state per-membership.
-
-  Fields:
-    lastUpdateTime: Last update timestamp of the last status change.
-    status: Status of the upgrade.
-    upgrade: Which upgrade to track the state.
-  """
-
-  lastUpdateTime = _messages.StringField(1)
-  status = _messages.MessageField('ClusterUpgradeUpgradeStatus', 2)
-  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 3)
-
-
-class ClusterUpgradeMembershipState(_messages.Message):
-  r"""Per-membership state for this feature.
-
-  Fields:
-    ignored: Whether this membership is ignored by the feature. For example,
-      manually upgraded clusters can be ignored if they are newer than the
-      default versions of its release channel.
-    upgradeHistory: Store the last N (N=100) upgrades for debugging purpose.
-    upgrades: Actual upgrade state against desired.
-    workspaces: Fully qualified workspace names that this clusters is bound to
-      which also have rollout sequencing enabled.
-  """
-
-  ignored = _messages.MessageField('ClusterUpgradeIgnoredMembership', 1)
-  upgradeHistory = _messages.MessageField('ClusterUpgradeMembershipGKEUpgradeState', 2, repeated=True)
-  upgrades = _messages.MessageField('ClusterUpgradeMembershipGKEUpgradeState', 3, repeated=True)
-  workspaces = _messages.StringField(4, repeated=True)
-
-
-class ClusterUpgradePostConditions(_messages.Message):
-  r"""Post conditional checks after an upgrade has been applied on all
-  eligible clusters.
-
-  Fields:
-    soaking: Amount of time to "soak" after a rollout has been finished before
-      marking it COMPLETE
-  """
-
-  soaking = _messages.StringField(1)
-
-
-class ClusterUpgradeUpgradeStatus(_messages.Message):
-  r"""UpgradeStatus provides status information for each upgrade.
-
-  Enums:
-    CodeValueValuesEnum: Status code of the upgrade.
-
-  Fields:
-    code: Status code of the upgrade.
-    reason: Reason for this status.
-  """
-
-  class CodeValueValuesEnum(_messages.Enum):
-    r"""Status code of the upgrade.
-
-    Values:
-      CODE_UNSPECIFIED: Required by https://linter.aip.dev/126/unspecified.
-      INELIGIBLE: The upgrade is ineligible. At the workspace scope, this
-        means the upgrade is ineligible for all the clusters in the workspace.
-      PENDING: The upgrade is pending. At the workspace scope, this means the
-        upgrade is pending for all the clusters in the workspace.
-      IN_PROGRESS: The upgrade is in progress. At the workspace scope, this
-        means the upgrade is in progress for at least one cluster in the
-        workspace.
-      SOAKING: The upgrade has finished and is soaking until the soaking time
-        is up. At the workspace scope, this means at least one cluster is in
-        soaking while the rest are either soaking or complete.
-      FORCED_SOAKING: A cluster will be forced to enter soaking if an upgrade
-        doesn't finish within a certain limit, despite it's actual status.
-      COMPLETE: The upgrade has passed all post conditions (soaking). At the
-        workspace scope, this means all eligible clusters are in COMPLETE
-        status.
-    """
-    CODE_UNSPECIFIED = 0
-    INELIGIBLE = 1
-    PENDING = 2
-    IN_PROGRESS = 3
-    SOAKING = 4
-    FORCED_SOAKING = 5
-    COMPLETE = 6
-
-  code = _messages.EnumField('CodeValueValuesEnum', 1)
-  reason = _messages.StringField(2)
-
-
-class ClusterUpgradeWorkspaceFeatureSpec(_messages.Message):
-  r"""WorkspaceFeatureSpec is per workspace spec.
-
-  Fields:
-    gkeUpgradeOverrides: Allow users to override some properties of each GKE
-      upgrade.
-    internalGkeUpgradeFeatureSpec: internal_gke_upgrade_feature_spec contains
-      the desired GKE upgrades. It will only be updated by the controller. We
-      will hide initially and decide whether we really need to expose it
-      later.
-    postConditions: Post conditions to evaluate to mark an upgrade COMPLETE.
-    upstreamWorkspaces: This workspace consumes upgrades that have COMPLETE
-      status code in the upstream workspaces. See
-      WorkspaceGKEUpgradeState.Code for code definitions. This field can be
-      either project id or number of the workspace host project per
-      go/aip/2510. This is defined as repeated for future proof reasons.
-      Initial implementation will enforce at most one upstream workspace.
-  """
-
-  gkeUpgradeOverrides = _messages.MessageField('ClusterUpgradeGKEUpgradeOverride', 1, repeated=True)
-  internalGkeUpgradeFeatureSpec = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureSpec', 2)
-  postConditions = _messages.MessageField('ClusterUpgradePostConditions', 3)
-  upstreamWorkspaces = _messages.StringField(4, repeated=True)
-
-
-class ClusterUpgradeWorkspaceFeatureState(_messages.Message):
-  r"""WorkspaceFeatureState is per workspace state.
 
   Messages:
     IgnoredValue: A list of memberships ignored by the feature. For example,
@@ -735,9 +503,11 @@ class ClusterUpgradeWorkspaceFeatureState(_messages.Message):
       `projects/[project_id]/locations/[location]/membership/[membership_id]`.
 
   Fields:
-    downstreamWorkspaces: This workspaces whose upstream_workspaces contain
-      the current workspace. This field can be either project id or number of
-      the workspace host project per go/aip/2510.
+    downstreamScopes: This scopes whose upstream_scopes contain the current
+      scope. The scope name should be in the form:
+      `projects/{p}/locations/gloobal/scopes/{s}` Where {p} is the project,
+      {s} is a valid Scope in this project. {p} WILL match the Feature's
+      project.
     gkeState: Feature state for GKE clusters.
     ignored: A list of memberships ignored by the feature. For example,
       manually upgraded clusters can be ignored if they are newer than the
@@ -773,38 +543,130 @@ class ClusterUpgradeWorkspaceFeatureState(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  downstreamWorkspaces = _messages.StringField(1, repeated=True)
+  downstreamScopes = _messages.StringField(1, repeated=True)
   gkeState = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureState', 2)
   ignored = _messages.MessageField('IgnoredValue', 3)
 
 
-class ClusterUpgradeWorkspaceGKEUpgrade(_messages.Message):
-  r"""WorkspaceGKEUpgrade is a GKEUpgrade and its eligibility at the workspace
-  scope. This includes upgrades that are eligible for a subset of clusters
-  (partially eligible upgrades). Partially eligible upgrades will be applied
-  on the current workspace, but won't be propagated to the downstream
-  workspace.
+class ClusterUpgradeGKEUpgrade(_messages.Message):
+  r"""GKEUpgrade represents a GKE provided upgrade, e.g., control plane
+  upgrade.
 
   Fields:
-    memberships: A list of eligible clusters to be upgraded to the given
-      GKEUpgrade. Each membership resource is in the following format:
-      `projects/[project_id]/locations/[location]/membership/[membership_id]`.
-    upgrade: Which upgrade to perform on the workspace.
+    name: Name of the upgrade, e.g., "k8s_control_plane".
+    version: Version of the upgrade, e.g., "1.22.1-gke.100".
   """
 
-  memberships = _messages.StringField(1, repeated=True)
+  name = _messages.StringField(1)
+  version = _messages.StringField(2)
+
+
+class ClusterUpgradeGKEUpgradeFeatureCondition(_messages.Message):
+  r"""GKEUpgradeFeatureCondition describes the condition of the feature for
+  GKE clusters at a certain point of time.
+
+  Fields:
+    reason: Reason why the feature is in this status.
+    status: Status of the condition, one of True, False, Unknown.
+    type: Type of the condition, for example, "ready".
+    updateTime: Last timestamp the condition was updated.
+  """
+
+  reason = _messages.StringField(1)
+  status = _messages.StringField(2)
+  type = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
+class ClusterUpgradeGKEUpgradeFeatureState(_messages.Message):
+  r"""GKEUpgradeFeatureState contains feature states for GKE clusters in the
+  scope.
+
+  Fields:
+    conditions: Current conditions of the feature.
+    state: Upgrade state.
+  """
+
+  conditions = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureCondition', 1, repeated=True)
+  state = _messages.MessageField('ClusterUpgradeScopeGKEUpgradeState', 2, repeated=True)
+
+
+class ClusterUpgradeGKEUpgradeOverride(_messages.Message):
+  r"""Properties of an GKE upgrade that can be overridden by the user. For
+  example, a user can skip soaking by overriding the soaking to 0.
+
+  Fields:
+    postConditions: Post conditions to override for the specified upgrade
+      (name + version).
+    upgrade: Which upgrade to override.
+  """
+
+  postConditions = _messages.MessageField('ClusterUpgradePostConditions', 1)
   upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 2)
 
 
-class ClusterUpgradeWorkspaceGKEUpgradeState(_messages.Message):
-  r"""WorkspaceGKEUpgradeState is a GKEUpgrade and its state at the workspace
-  scope.
+class ClusterUpgradeIgnoredMembership(_messages.Message):
+  r"""IgnoredMembership represents a membership ignored by the feature. A
+  membership can be ignored because it was manually upgraded to a newer
+  version than RC default.
+
+  Fields:
+    ignoredTime: Time when the membership was first set to ignored.
+    reason: Reason why the membership is ignored.
+  """
+
+  ignoredTime = _messages.StringField(1)
+  reason = _messages.StringField(2)
+
+
+class ClusterUpgradeMembershipGKEUpgradeState(_messages.Message):
+  r"""ScopeGKEUpgradeState is a GKEUpgrade and its state per-membership.
+
+  Fields:
+    status: Status of the upgrade.
+    upgrade: Which upgrade to track the state.
+  """
+
+  status = _messages.MessageField('ClusterUpgradeUpgradeStatus', 1)
+  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 2)
+
+
+class ClusterUpgradeMembershipState(_messages.Message):
+  r"""Per-membership state for this feature.
+
+  Fields:
+    ignored: Whether this membership is ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel.
+    scopes: Fully qualified scope names that this clusters is bound to which
+      also have rollout sequencing enabled.
+    upgrades: Actual upgrade state against desired.
+  """
+
+  ignored = _messages.MessageField('ClusterUpgradeIgnoredMembership', 1)
+  scopes = _messages.StringField(2, repeated=True)
+  upgrades = _messages.MessageField('ClusterUpgradeMembershipGKEUpgradeState', 3, repeated=True)
+
+
+class ClusterUpgradePostConditions(_messages.Message):
+  r"""Post conditional checks after an upgrade has been applied on all
+  eligible clusters.
+
+  Fields:
+    soaking: Amount of time to "soak" after a rollout has been finished before
+      marking it COMPLETE
+  """
+
+  soaking = _messages.StringField(1)
+
+
+class ClusterUpgradeScopeGKEUpgradeState(_messages.Message):
+  r"""ScopeGKEUpgradeState is a GKEUpgrade and its state at the scope level.
 
   Messages:
     StatsValue: Number of GKE clusters in each status code.
 
   Fields:
-    lastUpdateTime: Last update timestamp of the state change.
     stats: Number of GKE clusters in each status code.
     status: Status of the upgrade.
     upgrade: Which upgrade to track the state.
@@ -834,10 +696,53 @@ class ClusterUpgradeWorkspaceGKEUpgradeState(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  lastUpdateTime = _messages.StringField(1)
-  stats = _messages.MessageField('StatsValue', 2)
-  status = _messages.MessageField('ClusterUpgradeUpgradeStatus', 3)
-  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 4)
+  stats = _messages.MessageField('StatsValue', 1)
+  status = _messages.MessageField('ClusterUpgradeUpgradeStatus', 2)
+  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 3)
+
+
+class ClusterUpgradeUpgradeStatus(_messages.Message):
+  r"""UpgradeStatus provides status information for each upgrade.
+
+  Enums:
+    CodeValueValuesEnum: Status code of the upgrade.
+
+  Fields:
+    code: Status code of the upgrade.
+    reason: Reason for this status.
+    updateTime: Last timestamp the status was updated.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Status code of the upgrade.
+
+    Values:
+      CODE_UNSPECIFIED: Required by https://linter.aip.dev/126/unspecified.
+      INELIGIBLE: The upgrade is ineligible. At the scope level, this means
+        the upgrade is ineligible for all the clusters in the scope.
+      PENDING: The upgrade is pending. At the scope level, this means the
+        upgrade is pending for all the clusters in the scope.
+      IN_PROGRESS: The upgrade is in progress. At the scope level, this means
+        the upgrade is in progress for at least one cluster in the scope.
+      SOAKING: The upgrade has finished and is soaking until the soaking time
+        is up. At the scope level, this means at least one cluster is in
+        soaking while the rest are either soaking or complete.
+      FORCED_SOAKING: A cluster will be forced to enter soaking if an upgrade
+        doesn't finish within a certain limit, despite it's actual status.
+      COMPLETE: The upgrade has passed all post conditions (soaking). At the
+        scope level, this means all eligible clusters are in COMPLETE status.
+    """
+    CODE_UNSPECIFIED = 0
+    INELIGIBLE = 1
+    PENDING = 2
+    IN_PROGRESS = 3
+    SOAKING = 4
+    FORCED_SOAKING = 5
+    COMPLETE = 6
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  reason = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
 
 
 class CommonFeatureSpec(_messages.Message):
@@ -847,7 +752,8 @@ class CommonFeatureSpec(_messages.Message):
     anthosobservability: Anthos Observability spec
     appdevexperience: Appdevexperience specific spec.
     cloudauditlogging: Cloud Audit Logging-specific spec.
-    clusterupgrade: Upgrade feature spec.
+    clusterupgrade: TODO(user) Remove clusterupgrade (it's moved to
+      CommongScopeSpec). Upgrade feature spec.
     fleetobservability: FleetObservability feature spec.
     helloworld: Hello World-specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
@@ -871,7 +777,8 @@ class CommonFeatureState(_messages.Message):
 
   Fields:
     appdevexperience: Appdevexperience specific state.
-    clusterupgrade: Upgrade specific state.
+    clusterupgrade: TODO(user) Remove clusterupgrade (it's moved to
+      CommongScopeState) Upgrade specific state.
     fleetobservability: FleetObservability feature state.
     helloworld: Hello World-specific state.
     rbacrolebindingactuation: RBAC Role Binding Actuation feature state
@@ -1909,6 +1816,22 @@ class Feature(_messages.Message):
       project number, {l} is a valid location and {m} is a valid Membership in
       this project at that location. {p} MUST match the Feature's project
       number.
+    ScopeSpecsValue: Optional. Scope-specific configuration for this Feature.
+      If this Feature does not support any per-Scope configuration, this field
+      may be unused. The keys indicate which Scope the configuration is for,
+      in the form: `projects/{p}/locations/global/scopes/{s}` Where {p} is the
+      project, {s} is a valid Scope in this project. {p} WILL match the
+      Feature's project. {p} will always be returned as the project number,
+      but the project ID is also accepted during input. If the same Scope is
+      specified in the map twice (using the project ID form, and the project
+      number form), exactly ONE of the entries will be saved, with no
+      guarantees as to which. For this reason, it is recommended the same
+      format be used for all entries when mutating a Feature.
+    ScopeStatesValue: Output only. Scope-specific Feature status. If this
+      Feature does report any per-Scope status, this field may be unused. The
+      keys indicate which Scope the state is for, in the form:
+      `projects/{p}/locations/global/scopes/{s}` Where {p} is the project, {s}
+      is a valid Scope in this project. {p} WILL match the Feature's project.
 
   Fields:
     createTime: Output only. When the Feature resource was created.
@@ -1938,6 +1861,22 @@ class Feature(_messages.Message):
     name: Output only. The full, unique name of this Feature resource in the
       format `projects/*/locations/*/features/*`.
     resourceState: Output only. State of the Feature resource itself.
+    scopeSpecs: Optional. Scope-specific configuration for this Feature. If
+      this Feature does not support any per-Scope configuration, this field
+      may be unused. The keys indicate which Scope the configuration is for,
+      in the form: `projects/{p}/locations/global/scopes/{s}` Where {p} is the
+      project, {s} is a valid Scope in this project. {p} WILL match the
+      Feature's project. {p} will always be returned as the project number,
+      but the project ID is also accepted during input. If the same Scope is
+      specified in the map twice (using the project ID form, and the project
+      number form), exactly ONE of the entries will be saved, with no
+      guarantees as to which. For this reason, it is recommended the same
+      format be used for all entries when mutating a Feature.
+    scopeStates: Output only. Scope-specific Feature status. If this Feature
+      does report any per-Scope status, this field may be unused. The keys
+      indicate which Scope the state is for, in the form:
+      `projects/{p}/locations/global/scopes/{s}` Where {p} is the project, {s}
+      is a valid Scope in this project. {p} WILL match the Feature's project.
     spec: Optional. Hub-wide Feature configuration. If this Feature does not
       support any Hub-wide configuration, this field may be unused.
     state: Output only. The Hub-wide Feature state.
@@ -2035,6 +1974,69 @@ class Feature(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ScopeSpecsValue(_messages.Message):
+    r"""Optional. Scope-specific configuration for this Feature. If this
+    Feature does not support any per-Scope configuration, this field may be
+    unused. The keys indicate which Scope the configuration is for, in the
+    form: `projects/{p}/locations/global/scopes/{s}` Where {p} is the project,
+    {s} is a valid Scope in this project. {p} WILL match the Feature's
+    project. {p} will always be returned as the project number, but the
+    project ID is also accepted during input. If the same Scope is specified
+    in the map twice (using the project ID form, and the project number form),
+    exactly ONE of the entries will be saved, with no guarantees as to which.
+    For this reason, it is recommended the same format be used for all entries
+    when mutating a Feature.
+
+    Messages:
+      AdditionalProperty: An additional property for a ScopeSpecsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ScopeSpecsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ScopeSpecsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ScopeFeatureSpec attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ScopeFeatureSpec', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ScopeStatesValue(_messages.Message):
+    r"""Output only. Scope-specific Feature status. If this Feature does
+    report any per-Scope status, this field may be unused. The keys indicate
+    which Scope the state is for, in the form:
+    `projects/{p}/locations/global/scopes/{s}` Where {p} is the project, {s}
+    is a valid Scope in this project. {p} WILL match the Feature's project.
+
+    Messages:
+      AdditionalProperty: An additional property for a ScopeStatesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ScopeStatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ScopeStatesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ScopeFeatureState attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ScopeFeatureState', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
   fleetDefaultMemberConfig = _messages.MessageField('CommonFleetDefaultMemberConfigSpec', 3)
@@ -2043,9 +2045,11 @@ class Feature(_messages.Message):
   membershipStates = _messages.MessageField('MembershipStatesValue', 6)
   name = _messages.StringField(7)
   resourceState = _messages.MessageField('FeatureResourceState', 8)
-  spec = _messages.MessageField('CommonFeatureSpec', 9)
-  state = _messages.MessageField('CommonFeatureState', 10)
-  updateTime = _messages.StringField(11)
+  scopeSpecs = _messages.MessageField('ScopeSpecsValue', 9)
+  scopeStates = _messages.MessageField('ScopeStatesValue', 10)
+  spec = _messages.MessageField('CommonFeatureSpec', 11)
+  state = _messages.MessageField('CommonFeatureState', 12)
+  updateTime = _messages.StringField(13)
 
 
 class FeatureResourceState(_messages.Message):
@@ -2594,6 +2598,80 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(3, required=True)
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
+
+
+class GkehubProjectsLocationsMembershipsBindingsCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsBindingsCreateRequest object.
+
+  Fields:
+    bindingId: Required. The ID to use for the Binding.
+    gkehubUNDEFINEDOuterMessageBinding: A GkehubUNDEFINEDOuterMessageBinding
+      resource to be passed as the request body.
+    parent: Required. The parent (project and location) where the Binding will
+      be created. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+  """
+
+  bindingId = _messages.StringField(1)
+  gkehubUNDEFINEDOuterMessageBinding = _messages.MessageField('GkehubUNDEFINEDOuterMessageBinding', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsMembershipsBindingsDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsBindingsDeleteRequest object.
+
+  Fields:
+    name: Required. The Binding resource name in the format
+      `projects/*/locations/*/memberships/*/bindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsMembershipsBindingsGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsBindingsGetRequest object.
+
+  Fields:
+    name: Required. The eBinding resource name in the format
+      `projects/*/locations/*/memberships/*/bindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsMembershipsBindingsListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsBindingsListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListBindings`
+      which specifies the position in the list from where to continue listing
+      the resources.
+    parent: Required. The parent Membership for which the Bindings will be
+      listed. Specified in the format `projects/*/locations/*/memberships/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsMembershipsBindingsPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsBindingsPatchRequest object.
+
+  Fields:
+    gkehubUNDEFINEDOuterMessageBinding: A GkehubUNDEFINEDOuterMessageBinding
+      resource to be passed as the request body.
+    name: The resource name for the binding itself `projects/{project}/locatio
+      ns/{location}/memberships/{membership}/bindings/{bindings}`
+    updateMask: Required. The fields to be updated.
+  """
+
+  gkehubUNDEFINEDOuterMessageBinding = _messages.MessageField('GkehubUNDEFINEDOuterMessageBinding', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class GkehubProjectsLocationsMembershipsCreateRequest(_messages.Message):
@@ -3343,6 +3421,36 @@ class GkehubProjectsLocationsWorkspacesPatchRequest(_messages.Message):
   workspace = _messages.MessageField('Workspace', 3)
 
 
+class GkehubUNDEFINEDOuterMessageBinding(_messages.Message):
+  r"""Binding is a subresource of a Membership, representing what Fleet Scopes
+  (or other, future Fleet resources) a Membership is bound to.
+
+  Fields:
+    createTime: Output only. When the binding was created.
+    deleteTime: Output only. When the binding was deleted.
+    fleet: Whether the binding is Fleet-wide; true means that this Membership
+      should be bound to all Namespaces in this entire Fleet.
+    name: The resource name for the binding itself `projects/{project}/locatio
+      ns/{location}/memberships/{membership}/bindings/{bindings}`
+    scope: A Workspace resource name in the format
+      `projects/*/locations/*/workspaces/*`.
+    state: Output only. State of the binding resource.
+    uid: Output only. Google-generated UUID for this resource. This is unique
+      across all binding resources. If a binding resource is deleted and
+      another resource with the same name is created, it gets a different uid.
+    updateTime: Output only. When the binding was last updated.
+  """
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  fleet = _messages.BooleanField(3)
+  name = _messages.StringField(4)
+  scope = _messages.StringField(5)
+  state = _messages.MessageField('BindingLifecycleState', 6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
 class GoogleRpcStatus(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -3762,6 +3870,20 @@ class ListAdminClusterMembershipsResponse(_messages.Message):
   adminClusterMemberships = _messages.MessageField('Membership', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListBindingsResponse(_messages.Message):
+  r"""List of Bindings.
+
+  Fields:
+    bindings: The list of bindings
+    nextPageToken: A token to request the next page of resources from the
+      `ListBindings` method. The value of an empty string means that there are
+      no more resources to return.
+  """
+
+  bindings = _messages.MessageField('GkehubUNDEFINEDOuterMessageBinding', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListFeaturesResponse(_messages.Message):
@@ -4842,11 +4964,6 @@ class PolicyControllerMembershipState(_messages.Message):
       1. "admission" 2. "audit" 3. "mutation" 4. "constraint template library"
 
   Fields:
-    clusterName: The user-defined name for the cluster used by
-      ClusterSelectors to group clusters together. This should match
-      Membership's membership_name, unless the user installed PC on the
-      cluster manually prior to enabling the PC hub feature. Unique within a
-      Policy Controller installation.
     componentStates: Currently these include (also serving as map keys): 1.
       "admission" 2. "audit" 3. "mutation" 4. "constraint template library"
     state: The overall Policy Controller lifecycle state observed by the Hub
@@ -4931,9 +5048,8 @@ class PolicyControllerMembershipState(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  clusterName = _messages.StringField(1)
-  componentStates = _messages.MessageField('ComponentStatesValue', 2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  componentStates = _messages.MessageField('ComponentStatesValue', 1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class PolicyControllerMonitoringConfig(_messages.Message):
@@ -5280,6 +5396,28 @@ class Rule(_messages.Message):
   logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
   notIn = _messages.StringField(6, repeated=True)
   permissions = _messages.StringField(7, repeated=True)
+
+
+class ScopeFeatureSpec(_messages.Message):
+  r"""ScopeFeatureSpec contains feature specs for a fleet scope.
+
+  Fields:
+    clusterupgrade: Upgrade feature spec.
+  """
+
+  clusterupgrade = _messages.MessageField('ClusterUpgradeFeatureSpec', 1)
+
+
+class ScopeFeatureState(_messages.Message):
+  r"""ScopeFeatureState contains Scope-wide Feature status information.
+
+  Fields:
+    clusterupgrade: Upgrade specific state.
+    state: Output only. The "running state" of the Feature in this Scope.
+  """
+
+  clusterupgrade = _messages.MessageField('ClusterUpgradeFeatureState', 1)
+  state = _messages.MessageField('FeatureState', 2)
 
 
 class ServiceMeshAnalysisMessage(_messages.Message):

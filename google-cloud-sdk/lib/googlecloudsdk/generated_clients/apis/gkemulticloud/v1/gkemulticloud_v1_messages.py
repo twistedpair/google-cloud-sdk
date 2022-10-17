@@ -147,7 +147,7 @@ class GkemulticloudProjectsLocationsAttachedClustersPatchRequest(_messages.Messa
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AttachedCluster: * `description`. *
-      `annotations`.
+      `annotations`. * `platform_version`. * `authorization.admin_users`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -421,13 +421,15 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       `control_plane.instance_type`. * `control_plane.security_group_ids`. *
       `control_plane.proxy_config`. * `control_plane.proxy_config.secret_arn`.
       * `control_plane.proxy_config.secret_version`. *
-      `control_plane.root_volume.iops`. *
-      `control_plane.root_volume.kms_key_arn`. *
+      `control_plane.root_volume.size_gib`. *
       `control_plane.root_volume.volume_type`. *
-      `control_plane.root_volume.size_gib`. * `control_plane.ssh_config`. *
+      `control_plane.root_volume.iops`. *
+      `control_plane.root_volume.kms_key_arn`. * `control_plane.ssh_config`. *
       `control_plane.ssh_config.ec2_key_pair`. *
-      `control_plane.instance_placement.tenancy`. * `logging_config`. *
-      `control_plane.iam_instance_profile`. * `control_plane.tags`.
+      `control_plane.instance_placement.tenancy`. *
+      `control_plane.iam_instance_profile`. *
+      `logging_config.component_config.enable_components`. *
+      `control_plane.tags`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -785,10 +787,13 @@ class GkemulticloudProjectsLocationsAzureClustersPatchRequest(_messages.Message)
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AzureCluster: * `description`. *
-      `annotations`. * `azureClient`. * `authorization.admin_users`. *
-      `control_plane.version`. * `control_plane.vm_size`. *
-      `control_plane.root_volume.size_gib`. *
-      `control_plane.ssh_config.authorized_key`. * `logging_config`
+      `azureClient`. * `control_plane.version`. * `control_plane.vm_size`. *
+      `annotations`. * `authorization.admin_users`. *
+      `control_plane.root_volume.size_gib`. * `control_plane.proxy_config`. *
+      `control_plane.proxy_config.resource_group_id`. *
+      `control_plane.proxy_config.secret_id`. *
+      `control_plane.ssh_config.authorized_key`. *
+      `logging_config.component_config.enable_components`
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -1202,6 +1207,7 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
       requests to ensure the client has an up-to-date value before proceeding.
     fleet: Required. Fleet configuration.
     loggingConfig: Optional. Logging configuration for this cluster.
+    monitoringConfig: Optional. Monitoring configuration for this cluster.
     name: The name of this resource. Cluster names are formatted as
       `projects//locations//awsClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
@@ -1284,13 +1290,14 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
   etag = _messages.StringField(10)
   fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 11)
   loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 12)
-  name = _messages.StringField(13)
-  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterNetworking', 14)
-  reconciling = _messages.BooleanField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 19)
+  monitoringConfig = _messages.MessageField('GoogleCloudGkemulticloudV1MonitoringConfig', 13)
+  name = _messages.StringField(14)
+  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterNetworking', 15)
+  reconciling = _messages.BooleanField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 20)
 
 
 class GoogleCloudGkemulticloudV1AwsClusterError(_messages.Message):
@@ -2019,6 +2026,7 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
     fleet: Required. Fleet configuration.
     loggingConfig: Optional. Logging configuration for this cluster.
     managedResources: Output only. Managed Azure resources for this cluster.
+    monitoringConfig: Optional. Monitoring configuration for this cluster.
     name: The name of this resource. Cluster names are formatted as
       `projects//locations//azureClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
@@ -2106,14 +2114,15 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
   fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 12)
   loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 13)
   managedResources = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterResources', 14)
-  name = _messages.StringField(15)
-  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterNetworking', 16)
-  reconciling = _messages.BooleanField(17)
-  resourceGroupId = _messages.StringField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  uid = _messages.StringField(20)
-  updateTime = _messages.StringField(21)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 22)
+  monitoringConfig = _messages.MessageField('GoogleCloudGkemulticloudV1MonitoringConfig', 15)
+  name = _messages.StringField(16)
+  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterNetworking', 17)
+  reconciling = _messages.BooleanField(18)
+  resourceGroupId = _messages.StringField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  uid = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 23)
 
 
 class GoogleCloudGkemulticloudV1AzureClusterError(_messages.Message):
@@ -2890,6 +2899,17 @@ class GoogleCloudGkemulticloudV1LoggingConfig(_messages.Message):
   componentConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingComponentConfig', 1)
 
 
+class GoogleCloudGkemulticloudV1ManagedPrometheusConfig(_messages.Message):
+  r"""ManagedPrometheusConfig defines the configuration for Google Cloud
+  Managed Service for Prometheus.
+
+  Fields:
+    enabled: Enable Managed Collection.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class GoogleCloudGkemulticloudV1MaxPodsConstraint(_messages.Message):
   r"""Constraints applied to pods.
 
@@ -2899,6 +2919,17 @@ class GoogleCloudGkemulticloudV1MaxPodsConstraint(_messages.Message):
   """
 
   maxPodsPerNode = _messages.IntegerField(1)
+
+
+class GoogleCloudGkemulticloudV1MonitoringConfig(_messages.Message):
+  r"""Parameters that describe the Monitoring configuration in a cluster.
+
+  Fields:
+    managedPrometheusConfig: Enable Google Cloud Managed Service for
+      Prometheus in the cluster.
+  """
+
+  managedPrometheusConfig = _messages.MessageField('GoogleCloudGkemulticloudV1ManagedPrometheusConfig', 1)
 
 
 class GoogleCloudGkemulticloudV1NodeTaint(_messages.Message):

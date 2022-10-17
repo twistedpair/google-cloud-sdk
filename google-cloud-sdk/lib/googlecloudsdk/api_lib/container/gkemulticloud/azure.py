@@ -40,6 +40,7 @@ class _AzureClientBase(client.ClientBase):
         'description': flags.GetDescription(args),
         'fleet': self._Fleet(args),
         'loggingConfig': flags.GetLogging(args),
+        'monitoringConfig': flags.GetMonitoringConfig(args),
         'name': cluster_ref.azureClustersId,
         'networking': self._ClusterNetworking(args),
         'resourceGroupId': flags.GetResourceGroupId(args),
@@ -57,7 +58,9 @@ class _AzureClientBase(client.ClientBase):
         **kwargs) if any(kwargs.values()) else None
 
   def _NodePool(self, node_pool_ref, args):
+    nodepool_type = self._messages.GoogleCloudGkemulticloudV1AzureNodePool
     kwargs = {
+        'annotations': self._Annotations(args, nodepool_type),
         'autoscaling': self._Autoscaling(args),
         'azureAvailabilityZone': flags.GetAzureAvailabilityZone(args),
         'config': self._NodeConfig(args),

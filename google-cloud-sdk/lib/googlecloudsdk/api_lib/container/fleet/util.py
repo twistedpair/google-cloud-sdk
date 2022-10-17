@@ -53,6 +53,14 @@ def LocationResourceName(project, location='global'):
   ).RelativeName()
 
 
+def MembershipLocation(full_name):
+  matches = re.search('projects/.*/locations/(.*)/memberships/(.*)', full_name)
+  if matches:
+    return matches.group(1)
+  raise exceptions.Error(
+      'Invalid membership resource name: {}'.format(full_name))
+
+
 def MembershipResourceName(project, membership, location='global'):
   # See command_lib/container/fleet/resources.yaml
   return resources.REGISTRY.Create(
@@ -131,14 +139,13 @@ def FleetOrgParentName(organization, location='global'):
 
 
 def NamespaceParentName(project,
-                        location='global',
                         release_track=base.ReleaseTrack.ALPHA):
   # See command_lib/container/fleet/resources.yaml
   return resources.REGISTRY.Parse(
       line=None,
       params={
           'projectsId': project,
-          'locationsId': location,
+          'locationsId': 'global',
       },
       collection='gkehub.projects.locations',
       api_version=VERSION_MAP[release_track]).RelativeName()
@@ -146,15 +153,58 @@ def NamespaceParentName(project,
 
 def NamespaceResourceName(project,
                           name,
-                          location='global',
                           release_track=base.ReleaseTrack.ALPHA):
   # See command_lib/container/fleet/resources.yaml
   return resources.REGISTRY.Parse(
       line=None,
       params={
           'projectsId': project,
-          'locationsId': location,
+          'locationsId': 'global',
           'namespacesId': name,
       },
       collection='gkehub.projects.locations.namespaces',
       api_version=VERSION_MAP[release_track]).RelativeName()
+
+
+def RBACRoleBindingParentName(project,
+                              namespace,
+                              release_track=base.ReleaseTrack.ALPHA):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Parse(
+      line=None,
+      params={
+          'projectsId': project,
+          'locationsId': 'global',
+          'namespacesId': namespace,
+      },
+      collection='gkehub.projects.locations.namespaces',
+      api_version=VERSION_MAP[release_track]).RelativeName()
+
+
+def RBACRoleBindingResourceName(project,
+                                namespace,
+                                name,
+                                release_track=base.ReleaseTrack.ALPHA):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Parse(
+      line=None,
+      params={
+          'projectsId': project,
+          'locationsId': 'global',
+          'namespacesId': namespace,
+          'rbacrolebindingsId': name,
+      },
+      collection='gkehub.projects.locations.namespaces.rbacrolebindings',
+      api_version=VERSION_MAP[release_track]).RelativeName()
+
+
+def WorkspaceResourceName(project,
+                          workspace,
+                          location='global'):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Create(
+      'gkehub.projects.locations.workspaces',
+      projectsId=project,
+      locationsId=location,
+      workspacesId=workspace,
+  ).RelativeName()

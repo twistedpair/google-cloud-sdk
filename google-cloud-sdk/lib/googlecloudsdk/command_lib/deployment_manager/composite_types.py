@@ -110,7 +110,8 @@ def TemplateContentsFor(messages, template_path):
 
   template_name = config_obj.GetBaseName()
   schema_name = template_name + '.schema'
-  file_type = 'JINJA' if template_name.endswith('.jinja') else 'PYTHON'
+  file_type = messages.TemplateContents.InterpreterValueValuesEnum.JINJA if template_name.endswith(
+      '.jinja') else messages.TemplateContents.InterpreterValueValuesEnum.PYTHON
 
   imports = importer.CreateImports(messages, config_obj)
 
@@ -139,4 +140,3 @@ def GetReference(resources, name):
       name,
       params={'project': properties.VALUES.core.project.GetOrFail},
       collection='deploymentmanager.compositeTypes')
-

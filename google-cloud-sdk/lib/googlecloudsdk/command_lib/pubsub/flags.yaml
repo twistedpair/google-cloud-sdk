@@ -158,6 +158,33 @@ offset:
   help_text: |
     The offset of a message within a topic partition. Must be greater than or equal to 0.
 
+export-pubsub-topic:
+  api_field: subscription.exportConfig.pubsubConfig.topic
+  arg_name: export-pubsub-topic
+  help_text: |
+    The name of the destination Pub/Sub topic to export messages to. Must be the topic's fully
+    specified path if it is not in the same project as the subscription to be created.
+
+export-desired-state:
+  api_field: subscription.exportConfig.desiredState
+  arg_name: export-desired-state
+  choices:
+  - arg_value: active
+    enum_value: ACTIVE
+  - arg_value: paused
+    enum_value: PAUSED
+  type: googlecloudsdk.command_lib.util.hooks.types:LowerCaseType
+  help_text: |
+    The desired state of the export. Messages are processed for ACTIVE exports. Message processing
+    is suspended for PAUSED exports.
+
+export-dead-letter-topic:
+  api_field: subscription.exportConfig.deadLetterTopic
+  arg_name: export-dead-letter-topic
+  help_text: |
+    The name of the Pub/Sub Lite topic to write messages that cannot be exported. Must be in the
+    same project and location as the subscription to be created. Note that this is a Lite topic.
+
 
 # Deprecated flag, do not use
 zone:

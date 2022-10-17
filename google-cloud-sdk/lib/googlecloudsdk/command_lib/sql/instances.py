@@ -156,6 +156,12 @@ def _ParseWorkloadTier(sql_messages, workload_tier):
   return None
 
 
+# The caller must make sure that the connector_enforcement is specified.
+def _ParseConnectorEnforcement(sql_messages, connector_enforcement):
+  return (sql_messages.Settings.ConnectorEnforcementValueValuesEnum
+          .lookup_by_name(connector_enforcement.upper()))
+
+
 # TODO(b/122660263): Remove when V1 instances are no longer supported.
 def ShowV1DeprecationWarning(plural=False):
   message = (
@@ -321,6 +327,10 @@ class _BaseInstances(object):
       if args.IsSpecified('workload_tier'):
         settings.workloadTier = _ParseWorkloadTier(sql_messages,
                                                    args.workload_tier)
+      if args.IsSpecified('connector_enforcement'):
+        settings.connectorEnforcement = _ParseConnectorEnforcement(
+            sql_messages, args.connector_enforcement)
+
     return settings
 
   @classmethod

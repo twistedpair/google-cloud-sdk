@@ -126,11 +126,13 @@ def AddPrefixLength(parser):
       '--prefix-length',
       type=arg_parsers.BoundedInt(lower_bound=8, upper_bound=96),
       help="""\
-      The prefix length of the IP range. It must be a value between 8 and 30
-      inclusive. If not present, it means the address field is a single IP
-      address.
+      The prefix length of the IP range. If the address is an IPv4 address, it
+      must be a value between 8 and 30 inclusive. If the address is an IPv6
+      address, the only allowed value is 96. If not present, it means the
+      address field is a single IP address.
 
-      This field is not applicable to external addresses.
+      This field is not applicable to external IPv4 addresses or global IPv6
+      addresses.
       """)
 
 

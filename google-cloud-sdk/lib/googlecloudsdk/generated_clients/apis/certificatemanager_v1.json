@@ -282,11 +282,6 @@
           "readOnly": true,
           "type": "string"
         },
-        "fingerprint": {
-          "description": "Output only. The hash of the x.509 certificate.",
-          "readOnly": true,
-          "$ref": "Fingerprint"
-        },
         "expireTime": {
           "description": "Output only. The expiry timestamp of a Certificate.",
           "readOnly": true,
@@ -450,17 +445,6 @@
         "details": {
           "description": "Output only. Human readable explanation for reaching the state. Provided to help address the configuration issues. Not guaranteed to be stable. For programmatic access use FailureReason enum.",
           "readOnly": true,
-          "type": "string"
-        }
-      }
-    },
-    "Fingerprint": {
-      "id": "Fingerprint",
-      "description": "A group of fingerprints for the x509 certificate. These values can be used, where supported to search for certificate across Google Cloud APIs. For example, see the Fingerprint field.",
-      "type": "object",
-      "properties": {
-        "sha256Hash": {
-          "description": "The SHA 256 hash, encoded as a hexadecimal string, with no separators, of the DER x509 certificate. For example, `f6c245267d2302a426156a5c692d23a854327c758d867ad6e5f62d7f2017b6a8`.",
           "type": "string"
         }
       }

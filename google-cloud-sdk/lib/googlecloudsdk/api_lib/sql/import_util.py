@@ -85,7 +85,7 @@ def CsvImportContext(sql_messages,
 
 
 def BakImportContext(sql_messages, uri, database, cert_path, pvk_path,
-                     pvk_password):
+                     pvk_password, striped):
   """Generates the ImportContext for the given args, for importing from BAK.
 
   Args:
@@ -98,6 +98,7 @@ def BakImportContext(sql_messages, uri, database, cert_path, pvk_path,
       `--pvk-path` flag.
     pvk_password: The private key password used for encrypted .bak; the output
       of the `--pvk-password` or `--prompt-for-pvk-password` flag.
+    striped: Whether or not the import is striped.
 
   Returns:
     ImportContext, for use in InstancesImportRequest.importContext.
@@ -108,6 +109,9 @@ def BakImportContext(sql_messages, uri, database, cert_path, pvk_path,
         encryptionOptions=sql_messages.ImportContext.BakImportOptionsValue
         .EncryptionOptionsValue(
             certPath=cert_path, pvkPath=pvk_path, pvkPassword=pvk_password))
+  elif striped:
+    bak_import_options = sql_messages.ImportContext.BakImportOptionsValue(
+        striped=striped)
 
   return sql_messages.ImportContext(
       kind='sql#importContext',

@@ -22,6 +22,7 @@ import abc
 import collections
 import datetime
 
+from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_util
 
 import six
@@ -40,7 +41,7 @@ class FieldDisplayTitleAndDefault(object):
       title (str): The title for the field.
       default (str): The default value to be used if value is missing.
       field_name (str|None): The field name to be used to extract
-        the data from DisplayableResourceData object.
+        the data from Resource object.
         If None, the field name from BucketDisplayTitlesAndDefaults or
         ObjectDisplayTitlesAndDefaults is used.
     """
@@ -53,7 +54,7 @@ class FieldDisplayTitleAndDefault(object):
 # a BucketResource.
 BucketDisplayTitlesAndDefaults = collections.namedtuple(
     'BucketDisplayTitlesAndDefaults', (
-        'storage_class',
+        'default_storage_class',
         'location_type',
         'location',
         'versioning_enabled',
@@ -69,7 +70,7 @@ BucketDisplayTitlesAndDefaults = collections.namedtuple(
         'creation_time',
         'update_time',
         'metageneration',
-        'bucket_policy_only_enabled',
+        'uniform_bucket_level_access',
         'satisfies_pzs',
         ACL_KEY,
         'default_acl',
@@ -92,16 +93,16 @@ ObjectDisplayTitlesAndDefaults = collections.namedtuple(
         'content_disposition',
         'content_encoding',
         'content_language',
-        'content_length',
+        'size',
         'content_type',
         'component_count',
         'custom_time',
         'noncurrent_time',
-        'additional_properties',
+        'custom_metadata',
         'crc32c_hash',
         'md5_hash',
         'encryption_algorithm',
-        'encryption_key_sha256',
+        'decryption_key_hash',
         'etag',
         'generation',
         'metageneration',
@@ -126,7 +127,7 @@ def _get_formatted_line(display_name, value, default_value=None):
 
 
 def get_formatted_string(url,
-                         displayable_resource_data,
+                         resource,
                          display_titles_and_defaults,
                          show_acl=True,
                          show_version_in_url=False):
@@ -134,11 +135,10 @@ def get_formatted_string(url,
 
   Args:
     url (StorageUrl): URL representing the resource.
-    displayable_resource_data (resource_reference.DisplayableResourceData):
+    resource (resource_reference.ObjectResource):
       Object holding resource metadata that needs to be displayed.
     display_titles_and_defaults (ObjectDisplayTitlesAndDefaults): Holds the
-      display titles and default values for each field present in
-      DisplayableResourceData.
+      display titles and default values for each field present in the Resource.
     show_acl (bool): Include ACLs list in resource display.
     show_version_in_url (bool): Display extended URL with versioning info.
 
@@ -159,7 +159,9 @@ def get_formatted_string(url,
     else:
       field_name = key
 
-    value = getattr(displayable_resource_data, field_name, None)
+    value = getattr(resource, field_name, None)
+    if value == resource_reference.NOT_SUPPORTED_DO_NOT_DISPLAY:
+      continue
     line = _get_formatted_line(
         field_display_title_and_default.title,
         value,
@@ -183,13 +185,13 @@ class FullResourceFormatter(six.with_metaclass(abc.ABCMeta, object)):
   This FullResourceFormatter is specifically used for ls -L output formatting.
   """
 
-  def format_bucket(self, url, displayable_bucket_data):
+  def format_bucket(self, url, bucket_resource):
     """Returns a formatted string representing the BucketResource.
 
     Args:
       url (StorageUrl): URL representing the object.
-      displayable_bucket_data (resource_reference.DisplayableBucketData): A
-        DisplayableBucketData instance.
+      bucket_resource (resource_reference.BucketResource): A
+        BucketResource instance.
 
     Returns:
       Formatted multi-line string representing the BucketResource.
@@ -198,15 +200,14 @@ class FullResourceFormatter(six.with_metaclass(abc.ABCMeta, object)):
 
   def format_object(self,
                     url,
-                    displayable_object_data,
+                    object_resource,
                     show_acl=True,
                     show_version_in_url=False):
     """Returns a formatted string representing the ObjectResource.
 
     Args:
       url (StorageUrl): URL representing the object.
-      displayable_object_data (resource_reference.DisplayableResourceData): A
-        DisplayableObjectData instance.
+      object_resource (resource_reference.Resource): A Resource instance.
       show_acl (bool): Include ACLs list in resource display.
       show_version_in_url (bool): Display extended URL with versioning info.
 

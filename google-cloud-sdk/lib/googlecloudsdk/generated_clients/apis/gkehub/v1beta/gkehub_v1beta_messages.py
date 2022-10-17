@@ -1159,6 +1159,22 @@ class Feature(_messages.Message):
       project number, {l} is a valid location and {m} is a valid Membership in
       this project at that location. {p} MUST match the Feature's project
       number.
+    ScopeSpecsValue: Optional. Scope-specific configuration for this Feature.
+      If this Feature does not support any per-Scope configuration, this field
+      may be unused. The keys indicate which Scope the configuration is for,
+      in the form: `projects/{p}/locations/global/scopes/{s}` Where {p} is the
+      project, {s} is a valid Scope in this project. {p} WILL match the
+      Feature's project. {p} will always be returned as the project number,
+      but the project ID is also accepted during input. If the same Scope is
+      specified in the map twice (using the project ID form, and the project
+      number form), exactly ONE of the entries will be saved, with no
+      guarantees as to which. For this reason, it is recommended the same
+      format be used for all entries when mutating a Feature.
+    ScopeStatesValue: Output only. Scope-specific Feature status. If this
+      Feature does report any per-Scope status, this field may be unused. The
+      keys indicate which Scope the state is for, in the form:
+      `projects/{p}/locations/global/scopes/{s}` Where {p} is the project, {s}
+      is a valid Scope in this project. {p} WILL match the Feature's project.
 
   Fields:
     createTime: Output only. When the Feature resource was created.
@@ -1186,6 +1202,22 @@ class Feature(_messages.Message):
     name: Output only. The full, unique name of this Feature resource in the
       format `projects/*/locations/*/features/*`.
     resourceState: Output only. State of the Feature resource itself.
+    scopeSpecs: Optional. Scope-specific configuration for this Feature. If
+      this Feature does not support any per-Scope configuration, this field
+      may be unused. The keys indicate which Scope the configuration is for,
+      in the form: `projects/{p}/locations/global/scopes/{s}` Where {p} is the
+      project, {s} is a valid Scope in this project. {p} WILL match the
+      Feature's project. {p} will always be returned as the project number,
+      but the project ID is also accepted during input. If the same Scope is
+      specified in the map twice (using the project ID form, and the project
+      number form), exactly ONE of the entries will be saved, with no
+      guarantees as to which. For this reason, it is recommended the same
+      format be used for all entries when mutating a Feature.
+    scopeStates: Output only. Scope-specific Feature status. If this Feature
+      does report any per-Scope status, this field may be unused. The keys
+      indicate which Scope the state is for, in the form:
+      `projects/{p}/locations/global/scopes/{s}` Where {p} is the project, {s}
+      is a valid Scope in this project. {p} WILL match the Feature's project.
     spec: Optional. Hub-wide Feature configuration. If this Feature does not
       support any Hub-wide configuration, this field may be unused.
     state: Output only. The Hub-wide Feature state.
@@ -1283,6 +1315,69 @@ class Feature(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ScopeSpecsValue(_messages.Message):
+    r"""Optional. Scope-specific configuration for this Feature. If this
+    Feature does not support any per-Scope configuration, this field may be
+    unused. The keys indicate which Scope the configuration is for, in the
+    form: `projects/{p}/locations/global/scopes/{s}` Where {p} is the project,
+    {s} is a valid Scope in this project. {p} WILL match the Feature's
+    project. {p} will always be returned as the project number, but the
+    project ID is also accepted during input. If the same Scope is specified
+    in the map twice (using the project ID form, and the project number form),
+    exactly ONE of the entries will be saved, with no guarantees as to which.
+    For this reason, it is recommended the same format be used for all entries
+    when mutating a Feature.
+
+    Messages:
+      AdditionalProperty: An additional property for a ScopeSpecsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ScopeSpecsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ScopeSpecsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ScopeFeatureSpec attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ScopeFeatureSpec', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ScopeStatesValue(_messages.Message):
+    r"""Output only. Scope-specific Feature status. If this Feature does
+    report any per-Scope status, this field may be unused. The keys indicate
+    which Scope the state is for, in the form:
+    `projects/{p}/locations/global/scopes/{s}` Where {p} is the project, {s}
+    is a valid Scope in this project. {p} WILL match the Feature's project.
+
+    Messages:
+      AdditionalProperty: An additional property for a ScopeStatesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ScopeStatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ScopeStatesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ScopeFeatureState attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ScopeFeatureState', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
@@ -1290,9 +1385,11 @@ class Feature(_messages.Message):
   membershipStates = _messages.MessageField('MembershipStatesValue', 5)
   name = _messages.StringField(6)
   resourceState = _messages.MessageField('FeatureResourceState', 7)
-  spec = _messages.MessageField('CommonFeatureSpec', 8)
-  state = _messages.MessageField('CommonFeatureState', 9)
-  updateTime = _messages.StringField(10)
+  scopeSpecs = _messages.MessageField('ScopeSpecsValue', 8)
+  scopeStates = _messages.MessageField('ScopeStatesValue', 9)
+  spec = _messages.MessageField('CommonFeatureSpec', 10)
+  state = _messages.MessageField('CommonFeatureState', 11)
+  updateTime = _messages.StringField(12)
 
 
 class FeatureResourceState(_messages.Message):
@@ -3131,11 +3228,6 @@ class PolicyControllerMembershipState(_messages.Message):
       1. "admission" 2. "audit" 3. "mutation" 4. "constraint template library"
 
   Fields:
-    clusterName: The user-defined name for the cluster used by
-      ClusterSelectors to group clusters together. This should match
-      Membership's membership_name, unless the user installed PC on the
-      cluster manually prior to enabling the PC hub feature. Unique within a
-      Policy Controller installation.
     componentStates: Currently these include (also serving as map keys): 1.
       "admission" 2. "audit" 3. "mutation" 4. "constraint template library"
     state: The overall Policy Controller lifecycle state observed by the Hub
@@ -3220,9 +3312,8 @@ class PolicyControllerMembershipState(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  clusterName = _messages.StringField(1)
-  componentStates = _messages.MessageField('ComponentStatesValue', 2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  componentStates = _messages.MessageField('ComponentStatesValue', 1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class PolicyControllerMonitoringConfig(_messages.Message):
@@ -3368,6 +3459,20 @@ class ResourceOptions(_messages.Message):
   connectVersion = _messages.StringField(1)
   k8sVersion = _messages.StringField(2)
   v1beta1Crd = _messages.BooleanField(3)
+
+
+class ScopeFeatureSpec(_messages.Message):
+  r"""ScopeFeatureSpec contains feature specs for a fleet scope."""
+
+
+class ScopeFeatureState(_messages.Message):
+  r"""ScopeFeatureState contains Scope-wide Feature status information.
+
+  Fields:
+    state: Output only. The "running state" of the Feature in this Scope.
+  """
+
+  state = _messages.MessageField('FeatureState', 1)
 
 
 class ServiceMeshControlPlaneManagement(_messages.Message):

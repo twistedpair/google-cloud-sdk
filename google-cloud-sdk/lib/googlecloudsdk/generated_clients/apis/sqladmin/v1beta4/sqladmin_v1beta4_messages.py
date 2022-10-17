@@ -1020,11 +1020,13 @@ class ExportContext(_messages.Message):
     FileTypeValueValuesEnum: The file type for the specified uri.
 
   Messages:
+    BakExportOptionsValue: A BakExportOptionsValue object.
     CsvExportOptionsValue: Options for exporting data as CSV. `MySQL` and
       `PostgreSQL` instances only.
     SqlExportOptionsValue: Options for exporting data as SQL statements.
 
   Fields:
+    bakExportOptions: A BakExportOptionsValue attribute.
     csvExportOptions: Options for exporting data as CSV. `MySQL` and
       `PostgreSQL` instances only.
     databases: Databases to be exported. `MySQL instances:` If `fileType` is
@@ -1061,6 +1063,17 @@ class ExportContext(_messages.Message):
     SQL = 1
     CSV = 2
     BAK = 3
+
+  class BakExportOptionsValue(_messages.Message):
+    r"""A BakExportOptionsValue object.
+
+    Fields:
+      stripeCount: A integer attribute.
+      striped: A boolean attribute.
+    """
+
+    stripeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+    striped = _messages.BooleanField(2)
 
   class CsvExportOptionsValue(_messages.Message):
     r"""Options for exporting data as CSV. `MySQL` and `PostgreSQL` instances
@@ -1117,13 +1130,14 @@ class ExportContext(_messages.Message):
     schemaOnly = _messages.BooleanField(2)
     tables = _messages.StringField(3, repeated=True)
 
-  csvExportOptions = _messages.MessageField('CsvExportOptionsValue', 1)
-  databases = _messages.StringField(2, repeated=True)
-  fileType = _messages.EnumField('FileTypeValueValuesEnum', 3)
-  kind = _messages.StringField(4)
-  offload = _messages.BooleanField(5)
-  sqlExportOptions = _messages.MessageField('SqlExportOptionsValue', 6)
-  uri = _messages.StringField(7)
+  bakExportOptions = _messages.MessageField('BakExportOptionsValue', 1)
+  csvExportOptions = _messages.MessageField('CsvExportOptionsValue', 2)
+  databases = _messages.StringField(3, repeated=True)
+  fileType = _messages.EnumField('FileTypeValueValuesEnum', 4)
+  kind = _messages.StringField(5)
+  offload = _messages.BooleanField(6)
+  sqlExportOptions = _messages.MessageField('SqlExportOptionsValue', 7)
+  uri = _messages.StringField(8)
 
 
 class FailoverContext(_messages.Message):
@@ -1376,6 +1390,7 @@ class ImportContext(_messages.Message):
 
     Fields:
       encryptionOptions: A EncryptionOptionsValue attribute.
+      striped: A boolean attribute.
     """
 
     class EncryptionOptionsValue(_messages.Message):
@@ -1396,6 +1411,7 @@ class ImportContext(_messages.Message):
       pvkPath = _messages.StringField(3)
 
     encryptionOptions = _messages.MessageField('EncryptionOptionsValue', 1)
+    striped = _messages.BooleanField(2)
 
   class CsvImportOptionsValue(_messages.Message):
     r"""Options for importing data as CSV.

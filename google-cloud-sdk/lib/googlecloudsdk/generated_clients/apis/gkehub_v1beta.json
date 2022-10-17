@@ -699,6 +699,21 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "scopeSpecs": {
+          "description": "Optional. Scope-specific configuration for this Feature. If this Feature does not support any per-Scope configuration, this field may be unused. The keys indicate which Scope the configuration is for, in the form: `projects\/{p}\/locations\/global\/scopes\/{s}` Where {p} is the project, {s} is a valid Scope in this project. {p} WILL match the Feature's project. {p} will always be returned as the project number, but the project ID is also accepted during input. If the same Scope is specified in the map twice (using the project ID form, and the project number form), exactly ONE of the entries will be saved, with no guarantees as to which. For this reason, it is recommended the same format be used for all entries when mutating a Feature.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ScopeFeatureSpec"
+          }
+        },
+        "scopeStates": {
+          "description": "Output only. Scope-specific Feature status. If this Feature does report any per-Scope status, this field may be unused. The keys indicate which Scope the state is for, in the form: `projects\/{p}\/locations\/global\/scopes\/{s}` Where {p} is the project, {s} is a valid Scope in this project. {p} WILL match the Feature's project.",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ScopeFeatureState"
+          }
         }
       }
     },
@@ -2414,10 +2429,6 @@
       "description": "**Policy Controller**: State for a single cluster.",
       "type": "object",
       "properties": {
-        "clusterName": {
-          "description": "The user-defined name for the cluster used by ClusterSelectors to group clusters together. This should match Membership's membership_name, unless the user installed PC on the cluster manually prior to enabling the PC hub feature. Unique within a Policy Controller installation.",
-          "type": "string"
-        },
         "componentStates": {
           "description": "Currently these include (also serving as map keys): 1. \"admission\" 2. \"audit\" 3. \"mutation\" 4. \"constraint template library\"",
           "type": "object",
@@ -2582,6 +2593,25 @@
       "description": "MigrateState contains the state of Migrate subfeature",
       "type": "object",
       "properties": {
+      }
+    },
+    "ScopeFeatureSpec": {
+      "id": "ScopeFeatureSpec",
+      "description": "ScopeFeatureSpec contains feature specs for a fleet scope.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ScopeFeatureState": {
+      "id": "ScopeFeatureState",
+      "description": "ScopeFeatureState contains Scope-wide Feature status information.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Output only. The \"running state\" of the Feature in this Scope.",
+          "readOnly": true,
+          "$ref": "FeatureState"
+        }
       }
     },
     "GenerateConnectManifestResponse": {

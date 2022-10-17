@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py.extra_types import _JsonValueToPythonValue
 from googlecloudsdk.api_lib.scc import securitycenter_client as sc_client
-from googlecloudsdk.command_lib.scc.hooks import InvalidSCCInputError
+from googlecloudsdk.command_lib.scc.errors import InvalidSCCInputError
 
 
 def ExtractSecurityMarksFromResponse(response, args):

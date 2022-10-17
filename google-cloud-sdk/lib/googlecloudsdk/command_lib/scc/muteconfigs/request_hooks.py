@@ -20,8 +20,8 @@ from __future__ import unicode_literals
 
 import re
 
+from googlecloudsdk.command_lib.scc.errors import InvalidSCCInputError
 from googlecloudsdk.command_lib.scc.hooks import CleanUpUserInput
-from googlecloudsdk.command_lib.scc.hooks import InvalidSCCInputError
 
 
 def CreateMuteConfigReqHook(ref, args, req):

@@ -1829,10 +1829,10 @@ class _SectionContextAware(_Section):
         validator=ExistingAbsoluteFilepathValidator,
         help_text='File path for auto discovery configuration file.',
         hidden=True)
-    self.enterprise_certificate_config_file_path = self._Add(
-        'enterprise_certificate_config_file_path',
+    self.certificate_config_file_path = self._Add(
+        'certificate_config_file_path',
         validator=ExistingAbsoluteFilepathValidator,
-        help_text='File path for enterprise certificate configuration file.',
+        help_text='File path for certificate configuration file.',
         hidden=True)
 
 

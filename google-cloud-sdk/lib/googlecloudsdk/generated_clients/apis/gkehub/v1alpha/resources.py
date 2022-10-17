@@ -74,6 +74,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_MEMBERSHIPS_BINDINGS = (
+      'projects.locations.memberships.bindings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/memberships/'
+              '{membershipsId}/bindings/{bindingsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MEMBERSHIPS_NAMESPACEBINDINGS = (
       'projects.locations.memberships.namespacebindings',
       '{+name}',

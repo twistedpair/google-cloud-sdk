@@ -29,6 +29,11 @@ def GetClientAndMessages():
   return client, client.MESSAGES_MODULE
 
 
+def GetIamCredentialsClientAndMessages():
+  client = apis.GetClientInstance('iamcredentials', 'v1')
+  return client, client.MESSAGES_MODULE
+
+
 def GetTestablePermissions(iam_client, messages, resource):
   """Returns the testable permissions for a resource.
 

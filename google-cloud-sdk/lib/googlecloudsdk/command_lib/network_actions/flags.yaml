@@ -6,13 +6,17 @@ wasmPluginVersion:
     help_text: |
       URI of the container image containing the WasmPlugin, stored in the
       Artifact Registry.
-
-  config:
-    arg_name: config
-    api_field: wasmPluginVersion.proxyWasmPluginConfig
+  description:
+    arg_name: description
+    api_field: wasmPluginVersion.description
+    help_text: |-
+      A human-readable description of the resource.
+  labels:
+    arg_name: labels
+    api_field: wasmPluginVersion.labels
+    type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
     help_text: |
-      Configuration for the WasmPlugin, provided to the Proxy-Wasm
-      plugin at runtime via the proxy_on_configure Proxy-Wasm ABI.
+      List of KEY=VALUE labels to attach to this resource.
 
 wasmPlugin:
   mainVersion:
@@ -21,3 +25,14 @@ wasmPlugin:
     help_text: |
       The ID of the WasmPluginVersion that should be the currently serving
       one. The version referred to must be a child of this WasmPlugin.
+  description:
+    arg_name: description
+    api_field: wasmPlugin.description
+    help_text: |-
+      A human-readable description of the resource.
+  labels:
+    arg_name: labels
+    api_field: wasmPlugin.labels
+    type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
+    help_text: |
+      List of KEY=VALUE labels to attach to this resource.

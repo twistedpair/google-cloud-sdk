@@ -149,10 +149,8 @@ class S3Api(cloud_api.CloudApi):
       metadata['LocationConstraint'] = errors.S3ApiError(error)
 
     if fields_scope is cloud_api.FieldsScope.SHORT:
-      return s3_resource_reference.S3BucketResource(
-          storage_url.CloudUrl(storage_url.ProviderPrefix.S3, bucket_name),
-          location=metadata.get('LocationConstraint'),
-          metadata=metadata)
+      return s3_metadata_util.get_bucket_resource_from_s3_response(
+          metadata, bucket_name)
 
     # Data for FieldsScope.NO_ACL.
     for key, api_call, result_has_key in [
@@ -162,6 +160,8 @@ class S3Api(cloud_api.CloudApi):
         ('LifecycleConfiguration',
          self.client.get_bucket_lifecycle_configuration, False),
         ('LoggingEnabled', self.client.get_bucket_logging, True),
+        ('Payer', self.client.get_bucket_request_payment, True),
+        ('Versioning', self.client.get_bucket_versioning, False),
         ('Website', self.client.get_bucket_website, False),
     ]:
       try:
@@ -171,20 +171,6 @@ class S3Api(cloud_api.CloudApi):
       except botocore.exceptions.ClientError as error:
         metadata[key] = errors.S3ApiError(error)
 
-    # Responses to parse into booleans.
-    try:
-      api_result = self.client.get_bucket_request_payment(Bucket=bucket_name)
-      requester_pays = api_result.get('Payer') == 'Requester'
-      metadata['Payer'] = api_result.get('Payer')
-    except botocore.exceptions.ClientError as error:
-      requester_pays = metadata['Payer'] = errors.S3ApiError(error)
-    try:
-      api_result = self.client.get_bucket_versioning(Bucket=bucket_name)
-      versioning_enabled = api_result.get('Status') == 'Enabled'
-      metadata['Versioning'] = api_result
-    except botocore.exceptions.ClientError as error:
-      versioning_enabled = metadata['Versioning'] = errors.S3ApiError(error)
-
     # User requested ACL's with FieldsScope.FULL.
     if fields_scope is cloud_api.FieldsScope.FULL:
       try:
@@ -192,17 +178,8 @@ class S3Api(cloud_api.CloudApi):
       except botocore.exceptions.ClientError as error:
         metadata['ACL'] = errors.S3ApiError(error)
 
-    return s3_resource_reference.S3BucketResource(
-        storage_url.CloudUrl(storage_url.ProviderPrefix.S3, bucket_name),
-        acl=metadata.get('ACL'),
-        cors_config=metadata.get('CORSRules'),
-        lifecycle_config=metadata.get('LifecycleConfiguration'),
-        logging_config=metadata.get('LoggingEnabled'),
-        requester_pays=requester_pays,
-        location=metadata.get('LocationConstraint'),
-        metadata=metadata,
-        versioning_enabled=versioning_enabled,
-        website_config=metadata.get('Website'))
+    return s3_metadata_util.get_bucket_resource_from_s3_response(
+        metadata, bucket_name)
 
   def _make_patch_request(self, bucket_resource, patch_function, patch_kwargs):
     patch_kwargs['Bucket'] = bucket_resource.storage_url.bucket_name
@@ -217,12 +194,18 @@ class S3Api(cloud_api.CloudApi):
                    request_config,
                    fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
-    if request_config.predefined_acl_string:
-      self._make_patch_request(bucket_resource, self.client.put_bucket_acl, {
-          'ACL': request_config.predefined_acl_string,
-      })
-
     resource_args = request_config.resource_args
+    if request_config_factory.has_acl_request(request_config):
+      acl_dict = {}
+      if getattr(resource_args, 'acl_file_path', None):
+        acl_dict['AccessControlPolicy'] = (
+            s3_metadata_field_converters.process_acl_file(
+                resource_args.acl_file_path))
+      if request_config.predefined_acl_string:
+        acl_dict['ACL'] = request_config.predefined_acl_string
+      self._make_patch_request(bucket_resource, self.client.put_bucket_acl,
+                               acl_dict)
+
     if resource_args.cors_file_path:
       self._make_patch_request(
           bucket_resource, self.client.put_bucket_cors, {
@@ -354,33 +337,51 @@ class S3Api(cloud_api.CloudApi):
                   should_deep_copy_metadata=False,
                   progress_callback=None):
     """See super class."""
-    del progress_callback  # TODO(b/161900052): Waiting for resumable copies.
+    del progress_callback  # TODO(b/161900052): Implement resumable copies.
 
     source_kwargs = {'Bucket': source_resource.storage_url.bucket_name,
                      'Key': source_resource.storage_url.object_name}
     if source_resource.storage_url.generation:
       source_kwargs['VersionId'] = source_resource.storage_url.generation
 
-    kwargs = {'Bucket': destination_resource.storage_url.bucket_name,
-              'Key': destination_resource.storage_url.object_name,
-              'CopySource': source_kwargs}
+    copy_kwargs = {
+        'Bucket': destination_resource.storage_url.bucket_name,
+        'Key': destination_resource.storage_url.object_name,
+        'CopySource': source_kwargs
+    }
 
     if should_deep_copy_metadata:
-      kwargs['MetadataDirective'] = 'REPLACE'
+      copy_kwargs['MetadataDirective'] = 'REPLACE'
       s3_metadata_util.copy_object_metadata(
           s3_metadata_util.copy_object_metadata(
               destination_resource.metadata,
               source_resource.metadata,
-          ), kwargs)
+          ), copy_kwargs)
+
+    acl_file_path = getattr(request_config.resource_args, 'acl_file_path', None)
+    if acl_file_path:
+      put_acl_kwargs = {
+          'Bucket':
+              destination_resource.storage_url.bucket_name,
+          'Key':
+              destination_resource.storage_url.object_name,
+          'AccessControlPolicy':
+              s3_metadata_field_converters.process_acl_file(acl_file_path),
+      }
+      self.client.put_object_acl(**put_acl_kwargs)
+      full_acl_policy = self.client.get_object_acl(
+          Bucket=put_acl_kwargs['Bucket'], Key=put_acl_kwargs['Key'])
+    else:
+      full_acl_policy = None
 
     s3_metadata_util.update_object_metadata_dict_from_request_config(
-        kwargs, request_config)
-
-    response = self.client.copy_object(**kwargs)
+        copy_kwargs, request_config)
+    copy_response = self.client.copy_object(**copy_kwargs)
     return s3_metadata_util.get_object_resource_from_s3_response(
-        response, kwargs['Bucket'], kwargs['Key'])
-
-    # TODO(b/161900052): Implement resumable copies.
+        copy_response,
+        copy_kwargs['Bucket'],
+        copy_kwargs['Key'],
+        acl_dict=full_acl_policy)
 
   def _download_object(self, cloud_resource, download_stream, digesters,
                        progress_callback, start_byte):

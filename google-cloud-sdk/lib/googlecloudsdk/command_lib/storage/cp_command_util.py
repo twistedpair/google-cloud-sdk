@@ -196,24 +196,6 @@ def add_cp_flags(parser):
       ' specified, the default storage class of the destination bucket is'
       ' used. This option is not valid for copying to non-cloud destinations.')
 
-  acl_flags_group = parser.add_group(mutex=True)
-  acl_flags_group.add_argument(
-      '-a',
-      '--predefined-acl',
-      '--canned-acl',
-      help='Applies predefined, or "canned," ACLs to a copied object. See'
-      ' docs for a list of predefined ACL constants: https://cloud.google.com'
-      '/storage/docs/access-control/lists#predefined-acl')
-  acl_flags_group.add_argument(
-      '-p',
-      '--preserve-acl',
-      action='store_true',
-      help='Preserves ACLs when copying in the cloud. This option is Google'
-      ' Cloud Storage-only, and you need OWNER access to all copied objects.'
-      ' If all objects in the destination bucket should have the same ACL,'
-      ' you can also set a default object ACL on that bucket instead of using'
-      ' this flag.')
-
   gzip_flags_group = parser.add_group(mutex=True)
   gzip_flags_group.add_argument(
       '-J',
@@ -240,6 +222,7 @@ def add_cp_flags(parser):
 
   flags.add_continue_on_error_flag(parser)
   flags.add_precondition_flags(parser)
+  flags.add_object_acl_setter_flags(parser)
   flags.add_object_metadata_flags(parser)
   flags.add_encryption_flags(parser)
 

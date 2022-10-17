@@ -22,17 +22,17 @@ from __future__ import unicode_literals
 import re
 
 from googlecloudsdk.api_lib.scc import securitycenter_client as sc_client
+from googlecloudsdk.command_lib.scc.errors import InvalidSCCInputError
 from googlecloudsdk.command_lib.scc.hooks import CleanUpUserInput
 from googlecloudsdk.command_lib.scc.hooks import GetOrganization
-from googlecloudsdk.command_lib.scc.hooks import GetParent
 from googlecloudsdk.command_lib.scc.hooks import GetParentFromResourceName
-from googlecloudsdk.command_lib.scc.hooks import InvalidSCCInputError
+from googlecloudsdk.command_lib.scc.util import GetParentFromPositionalArguments
 
 
 def ListAssetsReqHook(ref, args, req):
   """Hook up filter such that the CSCC filter is used rather than gcloud."""
   del ref
-  req.parent = GetParent(args)
+  req.parent = GetParentFromPositionalArguments(args)
   if req.fieldMask is not None:
     req.fieldMask = CleanUpUserInput(req.fieldMask)
   req.filter = args.filter
@@ -43,7 +43,7 @@ def ListAssetsReqHook(ref, args, req):
 def DescribeAssetReqHook(ref, args, req):
   """Generate organization name from organization id."""
   del ref
-  req.parent = GetParent(args)
+  req.parent = GetParentFromPositionalArguments(args)
   req.filter = _GetNameOrResourceFilterForParent(args)
   return req
 
@@ -67,7 +67,7 @@ def GetProjectAssetReqHook(ref, args, req):
 def GroupAssetsReqHook(ref, args, req):
   """Hook up filter such that the CSCC filter is used rather than gcloud."""
   del ref
-  req.parent = GetParent(args)
+  req.parent = GetParentFromPositionalArguments(args)
   if not req.groupAssetsRequest:
     messages = sc_client.GetMessages()
     req.groupAssetsRequest = messages.GroupAssetsRequest()
@@ -121,7 +121,7 @@ def _GetAssetNameForParent(args):
   if resource_pattern.match(args.asset):
     # Handle asset id as full resource name
     return args.asset
-  return GetParent(args) + "/assets/" + args.asset
+  return GetParentFromPositionalArguments(args) + "/assets/" + args.asset
 
 
 def _GetNameOrResourceFilter(args):

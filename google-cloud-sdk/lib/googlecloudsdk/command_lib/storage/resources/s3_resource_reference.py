@@ -76,6 +76,7 @@ def _get_error_or_exists_string(value):
     return resource_util.get_exists_string(value)
 
 
+# TODO(b/246556206): Delete.
 def _get_error_string_or_value(value):
   """Returns the error string if value is error or the value itself."""
   if isinstance(value, errors.S3ApiError):
@@ -135,39 +136,69 @@ class S3BucketResource(resource_reference.BucketResource):
 class S3ObjectResource(resource_reference.ObjectResource):
   """API-specific subclass for handling metadata."""
 
-  def __init__(self,
-               storage_url_object,
-               cache_control=None,
-               content_disposition=None,
-               content_encoding=None,
-               content_language=None,
-               content_type=None,
-               creation_time=None,
-               custom_metadata=None,
-               etag=None,
-               crc32c_hash=None,
-               md5_hash=None,
-               metadata=None,
-               metageneration=None,
-               size=None,
-               storage_class=None):
-    """Initializes resource. Args are a subset of attributes."""
+  # pylint:disable=useless-super-delegation
+  def __init__(
+      self,
+      storage_url_object,
+      acl=None,
+      cache_control=None,
+      component_count=None,
+      content_disposition=None,
+      content_encoding=None,
+      content_language=None,
+      content_type=None,
+      # If this field is None, an encryption output formatter assumes
+      # it is because it is encrpted. In this case, we want to
+      # indicate we just don't support the field for S3.
+      crc32c_hash=resource_reference.NOT_SUPPORTED_DO_NOT_DISPLAY,
+      creation_time=None,
+      custom_metadata=None,
+      custom_time=None,
+      decryption_key_hash=None,
+      encryption_algorithm=None,
+      etag=None,
+      event_based_hold=None,
+      kms_key=None,
+      md5_hash=None,
+      metadata=None,
+      metageneration=None,
+      noncurrent_time=None,
+      retention_expiration=None,
+      size=None,
+      storage_class=None,
+      temporary_hold=None,
+      update_time=None):
+    """Initializes S3ObjectResource."""
     super(S3ObjectResource, self).__init__(
         storage_url_object,
-        cache_control=cache_control,
-        content_disposition=content_disposition,
-        content_encoding=content_encoding,
-        content_language=content_language,
-        content_type=content_type,
-        creation_time=creation_time,
-        custom_metadata=custom_metadata,
-        etag=etag,
-        crc32c_hash=None,
-        md5_hash=md5_hash,
-        metadata=metadata,
-        metageneration=metageneration,
-        size=size,
-        storage_class=storage_class)
+        acl,
+        cache_control,
+        component_count,
+        content_disposition,
+        content_encoding,
+        content_language,
+        content_type,
+        crc32c_hash,
+        creation_time,
+        custom_metadata,
+        custom_time,
+        decryption_key_hash,
+        encryption_algorithm,
+        etag,
+        event_based_hold,
+        kms_key,
+        md5_hash,
+        metadata,
+        metageneration,
+        noncurrent_time,
+        retention_expiration,
+        size,
+        storage_class,
+        temporary_hold,
+        update_time,
+    )
+
+  # pylint:enable=useless-super-delegation
 
   def get_displayable_object_data(self):
     # TODO(b/240444753): Make better use of ObjectResource attributes.
@@ -183,11 +214,11 @@ class S3ObjectResource(resource_reference.ObjectResource):
         content_language=self.metadata.get('ContentLanguage'),
         content_length=self.size,
         content_type=self.metadata.get('ContentType'),
-        # Setting crc32c_hash as DO_NOT_DISPLAY so that it can
+        # Setting crc32c_hash as NOT_SUPPORTED_DO_NOT_DISPLAY so that it can
         # be ignored as expected by ls -L formatters. Setting it None will
         # make the list/describe commands to ignore it, but ls -L might still
         # display it if encryption_algorithm is present.
-        crc32c_hash=resource_reference.DO_NOT_DISPLAY,
+        crc32c_hash=resource_reference.NOT_SUPPORTED_DO_NOT_DISPLAY,
         encryption_algorithm=self.metadata.get('SSECustomerAlgorithm'),
         etag=self.etag,
         generation=self.generation,

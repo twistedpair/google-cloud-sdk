@@ -29,7 +29,7 @@ from googlecloudsdk.core.util import debug_output
 import six
 
 
-DO_NOT_DISPLAY = 'DO_NOT_DISPLAY'
+NOT_SUPPORTED_DO_NOT_DISPLAY = '_NOT_SUPPORTED_DO_NOT_DISPLAY'
 
 
 class Resource(object):
@@ -122,8 +122,8 @@ class CloudResource(Resource):
 class BucketResource(CloudResource):
   """Class representing a bucket.
 
-  Only add attributes to this class if they're useful for business logic
-  elsewhere in gcloud. Display-only fields are handled elsewhere.
+  Warning: After being run through through output formatter utils (e.g. in
+  `shim_format_util.py`), these fields may all be strings.
 
   Attributes:
     TYPE_STRING (str): String representing the resource's content type.
@@ -131,8 +131,10 @@ class BucketResource(CloudResource):
     name (str): Name of bucket.
     scheme (storage_url.ProviderPrefix): Prefix indicating what cloud provider
       hosts the bucket.
-    acl (dict|CloudApiError|None): ACLs for the bucket.
-    cors_config (dict|CloudApiError|None): CORS configuration for the bucket.
+    acl (dict|str|None): ACLs dict or predefined-ACL string for the bucket.
+      If the API call to fetch the data failed, this can be an error string.
+    cors_config (dict|str|None): CORS configuration for the bucket.
+      If the API call to fetch the data failed, this can be an error string.
     creation_time (datetime|None): Bucket's creation time in UTC.
     default_event_based_hold (bool|None): Prevents objects in bucket from being
       deleted. Currently GCS-only but needed for generic copy logic.
@@ -140,22 +142,26 @@ class BucketResource(CloudResource):
       bucket.
     etag (str|None): HTTP version identifier.
     labels (dict|None): Labels for the bucket.
-    lifecycle_config (dict|CloudApiError|None): The lifecycle configuration for
-      the bucket.
-    location (str|CloudApiError|None): Represents region bucket was created in.
-    logging_config (dict|CloudApiError|None): Logging configuration for bucket.
+    lifecycle_config (dict|str|None): Lifecycle configuration for bucket.
+      If the API call to fetch the data failed, this can be an error string.
+    location (str|None): Represents region bucket was created in.
+      If the API call to fetch the data failed, this can be an error string.
+    logging_config (dict|str|None): Logging configuration for bucket.
+      If the API call to fetch the data failed, this can be an error string.
     metadata (object|dict|None): Cloud-provider specific data type for holding
       bucket metadata.
     metageneration (int|None): The generation of the bucket's metadata.
-    requester_pays (bool|CloudApiError|None): "Requester pays" status of bucket.
+    requester_pays (bool|str|None): "Requester pays" status of bucket.
+      If the API call to fetch the data failed, this can be an error string.
     retention_period (int|None): Default time to hold items in bucket before
       before deleting in seconds. Generated from retention_policy.
     retention_policy (dict|None): Info about object retention within bucket.
       Currently GCS-only but needed for generic copy logic.
     update_time (str|None): Bucket's update time.
-    versioning_enabled (bool|CloudApiError|None): Whether past object versions
-      are saved.
-    website_config (dict|CloudApiError|None): Website configuration for bucket.
+    versioning_enabled (bool|str|None): Whether past object versions are saved.
+      If the API call to fetch the data failed, this can be an error string.
+    website_config (dict|str|None): Website configuration for bucket.
+      If the API call to fetch the data failed, this can be an error string.
   """
   TYPE_STRING = 'cloud_bucket'
 
@@ -234,82 +240,113 @@ class BucketResource(CloudResource):
                                show_acl=True,
                                show_version_in_url=False):
     """See parent class."""
+    # TODO(b/249280177): Move this logic to caller.
     del show_acl, show_version_in_url  # Unused.
-    return formatter.format_bucket(self.storage_url,
-                                   self.get_displayable_bucket_data())
+    return formatter.format_bucket(self.storage_url, self)
 
 
 class ObjectResource(CloudResource):
   """Class representing a cloud object confirmed to exist.
 
+  Warning: After being run through through output formatter utils (e.g. in
+  `shim_format_util.py`), these fields may all be strings.
+
   Attributes:
     TYPE_STRING (str): String representing the resource's type.
     storage_url (StorageUrl): A StorageUrl object representing the object.
-    cache_control (str|None): Describes the object's cache settings.
-    content_disposition (str|None): Whether the object should be displayed or
-        downloaded.
-    content_encoding (str|None): Encodings that have been applied to the object.
-    content_language (str|None): Language used in the object's content.
-    content_type (str|None): A MIME type describing the object's content.
-    creation_time (datetime|None): Time the object was created.
-    custom_metadata (dict|None): Custom key-value pairs set by users.
-    custom_time (datetime): A timestamp in RFC 3339 format specified by the user
-        for an object.
-    decryption_key_hash (str|Nne): Digest of a customer-supplied encryption key.
-    kms_key (str|None): Resource identifier of a Google-managed encryption key.
-    etag (str|None): HTTP version identifier.
-    crc32c_hash (str|None): Base64-encoded digest of crc32c hash.
-    md5_hash (str|None): Base64-encoded digest of md5 hash.
-    metageneration (int|None): Generation object's metadata.
-    metadata (object|dict|None): Cloud-specific metadata type.
-    size (int|None): Size of object in bytes.
     scheme (storage_url.ProviderPrefix): Prefix indicating what cloud provider
-        hosts the object.
-    storage_class (str|None): Storage class of the bucket.
+      hosts the object.
     bucket (str): Bucket that contains the object.
     name (str): Name of object.
     generation (str|None): Generation (or "version") of the underlying object.
+    acl (dict|str|None): ACLs dict or predefined-ACL string for the objects.
+      If the API call to fetch the data failed, this can be an error string.
+    cache_control (str|None): Describes the object's cache settings.
+    component_count (int|None): Number of components, if any.
+    content_disposition (str|None): Whether the object should be displayed or
+      downloaded.
+    content_encoding (str|None): Encodings that have been applied to the object.
+    content_language (str|None): Language used in the object's content.
+    content_type (str|None): A MIME type describing the object's content.
+    custom_time (str|None): A timestamp in RFC 3339 format specified by the
+      user for an object. Currently, GCS-only, but not in provider-specific
+      class because generic daisy chain logic uses the field.
+    crc32c_hash (str|None): Base64-encoded digest of crc32c hash.
+    creation_time (datetime|None): Time the object was created.
+    custom_metadata (dict|None): Custom key-value pairs set by users.
+    decryption_key_hash (str|None): Digest of a customer-supplied encryption key
+    encryption_algorithm (str|None): Encryption algorithm used for encrypting
+      the object if CSEK is used.
+    etag (str|None): HTTP version identifier.
+    event_based_hold (bool|None): Event based hold information for the object.
+      Currently, GCS-only, but left generic because can affect copy logic.
+    kms_key (str|None): Resource identifier of a Google-managed encryption key.
+    md5_hash (str|None): Base64-encoded digest of md5 hash.
+    metadata (object|dict|None): Cloud-specific metadata type.
+    metageneration (int|None): Generation object's metadata.
+    noncurrent_time (datetime|None): Noncurrent time value for the object.
+    retention_expiration (datetime|None): Retention expiration information.
+    size (int|None): Size of object in bytes (equivalent to content_length).
+    storage_class (str|None): Storage class of the bucket.
+    temporary_hold (bool|None): Temporary hold information for the object.
+    update_time (datetime|None): Time the object was updated.
   """
   TYPE_STRING = 'cloud_object'
 
   def __init__(self,
                storage_url_object,
+               acl=None,
                cache_control=None,
+               component_count=None,
                content_disposition=None,
                content_encoding=None,
                content_language=None,
                content_type=None,
+               crc32c_hash=None,
                creation_time=None,
                custom_metadata=None,
                custom_time=None,
                decryption_key_hash=None,
-               kms_key=None,
+               encryption_algorithm=None,
                etag=None,
-               crc32c_hash=None,
+               event_based_hold=None,
+               kms_key=None,
                md5_hash=None,
                metadata=None,
                metageneration=None,
+               noncurrent_time=None,
+               retention_expiration=None,
                size=None,
-               storage_class=None):
+               storage_class=None,
+               temporary_hold=None,
+               update_time=None):
     """Initializes resource. Args are a subset of attributes."""
     super(ObjectResource, self).__init__(storage_url_object)
+    self.acl = acl
     self.cache_control = cache_control
+    self.component_count = component_count
     self.content_disposition = content_disposition
     self.content_encoding = content_encoding
     self.content_language = content_language
     self.content_type = content_type
+    self.crc32c_hash = crc32c_hash
     self.creation_time = creation_time
     self.custom_metadata = custom_metadata
     self.custom_time = custom_time
     self.decryption_key_hash = decryption_key_hash
-    self.kms_key = kms_key
+    self.encryption_algorithm = encryption_algorithm
     self.etag = etag
-    self.crc32c_hash = crc32c_hash
+    self.event_based_hold = event_based_hold
+    self.kms_key = kms_key
     self.md5_hash = md5_hash
     self.metageneration = metageneration
     self.metadata = metadata
+    self.noncurrent_time = noncurrent_time
+    self.retention_expiration = retention_expiration
     self.size = size
     self.storage_class = storage_class
+    self.temporary_hold = temporary_hold
+    self.update_time = update_time
 
   @property
   def bucket(self):
@@ -325,21 +362,31 @@ class ObjectResource(CloudResource):
 
   def __eq__(self, other):
     return (super(ObjectResource, self).__eq__(other) and
+            self.acl == other.acl and
             self.cache_control == other.cache_control and
+            self.component_count == other.component_count and
             self.content_disposition == other.content_disposition and
             self.content_encoding == other.content_encoding and
             self.content_language == other.content_language and
             self.content_type == other.content_type and
+            self.crc32c_hash == other.crc32c_hash and
             self.creation_time == other.creation_time and
             self.custom_metadata == other.custom_metadata and
             self.custom_time == other.custom_time and
             self.decryption_key_hash == other.decryption_key_hash and
-            self.kms_key == other.kms_key and self.etag == other.etag and
-            self.generation == other.generation and
-            self.crc32c_hash == other.crc32c_hash and
+            self.encryption_algorithm == other.encryption_algorithm and
+            self.etag == other.etag and
+            self.event_based_hold == other.event_based_hold and
+            self.kms_key == other.kms_key and
             self.md5_hash == other.md5_hash and
             self.metadata == other.metadata and
-            self.storage_class == other.storage_class)
+            self.metageneration == other.metageneration and
+            self.noncurrent_time == other.noncurrent_time and
+            self.retention_expiration == other.retention_expiration and
+            self.size == other.size and
+            self.storage_class == other.storage_class and
+            self.temporary_hold == other.temporary_hold and
+            self.update_time == other.update_time)
 
   def is_container(self):
     return False
@@ -356,9 +403,10 @@ class ObjectResource(CloudResource):
                                show_acl=True,
                                show_version_in_url=False):
     """See parent class."""
+    # TODO(b/249280177): Move this logic to caller.
     return formatter.format_object(
         self.storage_url,
-        self.get_displayable_object_data(),
+        self,
         show_acl=show_acl,
         show_version_in_url=show_version_in_url)
 
@@ -680,10 +728,10 @@ class DisplayableObjectData(DisplayableResourceData):
   def crc32c_hash(self):
     """Returns the crc3c_hash value.
 
-    If the value is DO_NOT_DISPLAY, we return None so that it gets ignored
-    by commands like list/describe.
+    If the value is NOT_SUPPORTED_DO_NOT_DISPLAY, we return None so that it gets
+    ignored by commands like list/describe.
     """
-    if self._crc32c_hash == DO_NOT_DISPLAY:
+    if self._crc32c_hash == NOT_SUPPORTED_DO_NOT_DISPLAY:
       return None
     return self._crc32c_hash
 

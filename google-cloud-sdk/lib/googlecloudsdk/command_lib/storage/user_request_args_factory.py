@@ -66,10 +66,27 @@ def _get_gzip_settings_from_command_args(args):
   return None
 
 
-class _UserBucketArgs:
+class _UserResourceArgs(object):
+  """Contains user flag values affecting cloud settings."""
+
+  def __init__(self, acl_file_path=None):
+    """Initializes class, binding flag values to it."""
+    self.acl_file_path = acl_file_path
+
+  def __eq__(self, other):
+    if not isinstance(other, type(self)):
+      return NotImplemented
+    return self.acl_file_path == other.acl_file_path
+
+  def __repr__(self):
+    return debug_output.generic_repr(self)
+
+
+class _UserBucketArgs(_UserResourceArgs):
   """Contains user flag values affecting cloud bucket settings."""
 
   def __init__(self,
+               acl_file_path=None,
                cors_file_path=None,
                default_encryption_key=None,
                default_event_based_hold=None,
@@ -89,6 +106,7 @@ class _UserBucketArgs:
                web_error_page=None,
                web_main_page_suffix=None):
     """Initializes class, binding flag values to it."""
+    super(_UserBucketArgs, self).__init__(acl_file_path)
     self.cors_file_path = cors_file_path
     self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
@@ -111,7 +129,8 @@ class _UserBucketArgs:
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (self.cors_file_path == other.cors_file_path and
+    return (super(_UserBucketArgs, self).__eq__(other) and
+            self.cors_file_path == other.cors_file_path and
             self.default_encryption_key == other.default_encryption_key and
             self.default_event_based_hold == other.default_event_based_hold and
             self.default_storage_class == other.default_storage_class and
@@ -131,15 +150,13 @@ class _UserBucketArgs:
             self.web_error_page == other.web_error_page and
             self.web_main_page_suffix == other.web_main_page_suffix)
 
-  def __repr__(self):
-    return debug_output.generic_repr(self)
 
-
-class _UserObjectArgs:
+class _UserObjectArgs(_UserResourceArgs):
   """Contains user flag values affecting cloud object settings."""
 
   def __init__(
       self,
+      acl_file_path=None,
       cache_control=None,
       content_disposition=None,
       content_encoding=None,
@@ -156,6 +173,7 @@ class _UserObjectArgs:
       temporary_hold=None,
   ):
     """Initializes class, binding flag values to it."""
+    super(_UserObjectArgs, self).__init__(acl_file_path)
     self.cache_control = cache_control
     self.content_disposition = content_disposition
     self.content_encoding = content_encoding
@@ -175,6 +193,7 @@ class _UserObjectArgs:
     if not isinstance(other, type(self)):
       return NotImplemented
     return (
+        super(_UserObjectArgs, self).__eq__(other) and
         self.cache_control == other.cache_control and
         self.content_disposition == other.content_disposition and
         self.content_encoding == other.content_encoding and
@@ -189,9 +208,6 @@ class _UserObjectArgs:
         self.preserve_acl == other.preserve_acl and
         self.storage_class == other.storage_class and
         self.temporary_hold == other.temporary_hold)
-
-  def __repr__(self):
-    return debug_output.generic_repr(self)
 
 
 class _UserRequestArgs:
@@ -281,6 +297,7 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           args, 'clear_web_main_page_suffix', 'web_main_page_suffix')
 
       resource_args = _UserBucketArgs(
+          acl_file_path=getattr(args, 'acl_file', None),
           cors_file_path=cors_file_path,
           default_encryption_key=default_encryption_key,
           default_event_based_hold=getattr(args, 'default_event_based_hold',
@@ -329,16 +346,17 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
       temporary_hold = getattr(args, 'temporary_hold', None)
 
       resource_args = _UserObjectArgs(
+          acl_file_path=getattr(args, 'acl_file', None),
           cache_control=cache_control,
           content_disposition=content_disposition,
           content_encoding=content_encoding,
           content_language=content_language,
           content_type=content_type,
           custom_metadata_to_set=custom_metadata_to_set,
-          custom_metadata_to_remove=getattr(
-              args, 'remove_custom_metadata', None),
-          custom_metadata_to_update=getattr(
-              args, 'update_custom_metadata', None),
+          custom_metadata_to_remove=getattr(args, 'remove_custom_metadata',
+                                            None),
+          custom_metadata_to_update=getattr(args, 'update_custom_metadata',
+                                            None),
           custom_time=custom_time,
           event_based_hold=event_based_hold,
           md5_hash=md5_hash,

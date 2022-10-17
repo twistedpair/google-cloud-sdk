@@ -1904,7 +1904,11 @@
           }
         },
         "securityPolicy": {
-          "description": "Optional. A fully-qualified SecurityPolicy URL reference. Defines how a server should apply security policy to inbound (VM to Proxy) initiated connections. This policy is specific to gateways of type 'SECURE_WEB_GATEWAY'.",
+          "description": "Optional. A fully-qualified GatewaySecurityPolicy URL reference. Defines how a server should apply security policy to inbound (VM to Proxy) initiated connections. This policy is specific to gateways of type 'SECURE_WEB_GATEWAY'. DEPRECATED!!!! Use the gateway_security_policy field instead.",
+          "type": "string"
+        },
+        "gatewaySecurityPolicy": {
+          "description": "Optional. A fully-qualified GatewaySecurityPolicy URL reference. Defines how a server should apply security policy to inbound (VM to Proxy) initiated connections. For example: `projects\/*\/locations\/*\/gatewaySecurityPolicies\/swg-policy`. This policy is specific to gateways of type 'SECURE_WEB_GATEWAY'.",
           "type": "string"
         },
         "network": {

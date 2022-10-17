@@ -39,6 +39,37 @@ class AcceleratorConfig(_messages.Message):
   maxTimeSharedClientsPerGpu = _messages.IntegerField(5)
 
 
+class AdditionalNodeNetworkConfig(_messages.Message):
+  r"""AdditionalNodeNetworkConfig is the configuration for additional node
+  networks within the NodeNetworkConfig message
+
+  Fields:
+    network: Name of the VPC where the additional interface belongs
+    subnetwork: Name of the subnetwork where the additional interface belongs
+  """
+
+  network = _messages.StringField(1)
+  subnetwork = _messages.StringField(2)
+
+
+class AdditionalPodNetworkConfig(_messages.Message):
+  r"""AdditionalPodNetworkConfig is the configuration for additional pod
+  networks within the NodeNetworkConfig message
+
+  Fields:
+    maxPodsPerNode: The maximum number of pods per node which use this pod
+      network
+    secondaryPodRange: The name of the secondary range on the subnet which
+      provides IP address for this pod range
+    subnetwork: Name of the subnetwork where the additional pod network
+      belongs
+  """
+
+  maxPodsPerNode = _messages.MessageField('MaxPodsConstraint', 1)
+  secondaryPodRange = _messages.StringField(2)
+  subnetwork = _messages.StringField(3)
+
+
 class AdditionalPodRangesConfig(_messages.Message):
   r"""AdditionalPodRangesConfig is the configuration for additional pod
   secondary ranges supporting the ClusterUpdate message.
@@ -3340,6 +3371,8 @@ class NetworkConfig(_messages.Message):
       this cluster. This enables flow logs for same node pod to pod traffic.
     enableL4ilbSubsetting: Whether L4ILB Subsetting is enabled for this
       cluster.
+    enableMultiNetworking: Whether multi-networking is enabled for this
+      cluster.
     enablePrivateIpv6Access: Whether or not Private IPv6 access is enabled.
       This enables direct connectivity from GKE pods to Google Cloud services
       over gRPC. Deprecated: use private_ipv6_google_access instead
@@ -3410,14 +3443,15 @@ class NetworkConfig(_messages.Message):
   enableCloudNat = _messages.BooleanField(5)
   enableIntraNodeVisibility = _messages.BooleanField(6)
   enableL4ilbSubsetting = _messages.BooleanField(7)
-  enablePrivateIpv6Access = _messages.BooleanField(8)
-  enableSharedNetwork = _messages.BooleanField(9)
-  gatewayApiConfig = _messages.MessageField('GatewayAPIConfig', 10)
-  network = _messages.StringField(11)
-  nodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 12)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 13)
-  serviceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 14)
-  subnetwork = _messages.StringField(15)
+  enableMultiNetworking = _messages.BooleanField(8)
+  enablePrivateIpv6Access = _messages.BooleanField(9)
+  enableSharedNetwork = _messages.BooleanField(10)
+  gatewayApiConfig = _messages.MessageField('GatewayAPIConfig', 11)
+  network = _messages.StringField(12)
+  nodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 13)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 14)
+  serviceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 15)
+  subnetwork = _messages.StringField(16)
 
 
 class NetworkPerformanceConfig(_messages.Message):
@@ -3899,6 +3933,12 @@ class NodeNetworkConfig(_messages.Message):
   `ip_allocation_policy.use_ip_aliases` is true.
 
   Fields:
+    additionalNodeNetworkConfigs: We specify the additional node networks for
+      this node pool using this list. Each node network corresponds to an
+      additional interface
+    additionalPodNetworkConfigs: We specify the additional pod networks for
+      this node pool using this list. Each pod network corresponds to an
+      additional alias IP range for the node
     createPodRange: Input only. Whether to create a new range for pod IPs in
       this node pool. Defaults are provided for `pod_range` and
       `pod_ipv4_cidr_block` if they are not specified. If neither
@@ -3942,14 +3982,16 @@ class NodeNetworkConfig(_messages.Message):
       notation (e.g. `240.0.0.0/8`) to pick a specific range to use.
   """
 
-  createPodRange = _messages.BooleanField(1)
-  enableEndpointsliceProxying = _messages.BooleanField(2)
-  enablePrivateNodes = _messages.BooleanField(3)
-  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 4)
-  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 5)
-  podIpv4CidrBlock = _messages.StringField(6)
-  podRange = _messages.StringField(7)
-  targetPodIpv4Range = _messages.StringField(8)
+  additionalNodeNetworkConfigs = _messages.MessageField('AdditionalNodeNetworkConfig', 1, repeated=True)
+  additionalPodNetworkConfigs = _messages.MessageField('AdditionalPodNetworkConfig', 2, repeated=True)
+  createPodRange = _messages.BooleanField(3)
+  enableEndpointsliceProxying = _messages.BooleanField(4)
+  enablePrivateNodes = _messages.BooleanField(5)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 6)
+  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 7)
+  podIpv4CidrBlock = _messages.StringField(8)
+  podRange = _messages.StringField(9)
+  targetPodIpv4Range = _messages.StringField(10)
 
 
 class NodeNetworkPolicy(_messages.Message):

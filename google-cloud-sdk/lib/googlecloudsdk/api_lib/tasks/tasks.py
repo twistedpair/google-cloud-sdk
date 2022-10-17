@@ -83,6 +83,13 @@ class Tasks(BaseTasks):
 class AlphaTasks(BaseTasks):
   """API client for Cloud Tasks tasks."""
 
+  def Buffer(self, parent_ref, task_id=None):
+    """Prepares and sends a Create request for buffering a task."""
+    request = self.messages.CloudtasksProjectsLocationsQueuesTasksBufferRequest(
+        queue=parent_ref.RelativeName(), taskId=task_id)
+
+    return self.tasks_service.Buffer(request)
+
   def Create(self, parent_ref, task_ref=None, schedule_time=None,
              pull_message=None, app_engine_http_request=None):
     """Prepares and sends a Create request for creating a task."""

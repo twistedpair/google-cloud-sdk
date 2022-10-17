@@ -2795,6 +2795,8 @@ MAP = {
                     class_path='googlecloudsdk.generated_clients.apis.spanner.v1',
                     client_classpath='spanner_v1_client.SpannerV1',
                     messages_modulepath='spanner_v1_messages'),
+                GapicClientDef(
+                    class_path='googlecloudsdk.generated_clients.gapic_wrappers.spanner.v1'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -2858,15 +2860,6 @@ MAP = {
                     client_classpath='storageinsights_v1_client.StorageinsightsV1',
                     messages_modulepath='storageinsights_v1_messages'),
                 default_version=True,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-        'v1alpha1':
-            APIDef(
-                ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.storageinsights.v1alpha1',
-                    client_classpath='storageinsights_v1alpha1_client.StorageinsightsV1alpha1',
-                    messages_modulepath='storageinsights_v1alpha1_messages'),
-                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

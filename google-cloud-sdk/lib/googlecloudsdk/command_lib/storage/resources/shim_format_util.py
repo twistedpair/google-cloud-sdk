@@ -18,8 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import datetime
-
 from googlecloudsdk.command_lib.storage.resources import resource_util
 from googlecloudsdk.core.util import scaled_integer
 
@@ -71,30 +69,27 @@ def get_human_readable_byte_value(byte_count, use_gsutil_style=False):
   return scaled_integer.FormatBinaryNumber(byte_count, decimal_places=2)
 
 
-def replace_bucket_values_with_present_string(displayable_bucket_data):
+def replace_bucket_values_with_present_string(bucket_resource):
   """Updates fields with complex data to a simple 'Present' string."""
   for field in _BUCKET_FIELDS_WITH_PRESENT_VALUE:
-    value = getattr(displayable_bucket_data, field)
+    value = getattr(bucket_resource, field)
     # Checking for string because these fields might have error strings.
     if value and not isinstance(value, str):
-      setattr(displayable_bucket_data, field, PRESENT_STRING)
+      setattr(bucket_resource, field, PRESENT_STRING)
 
 
-def replace_object_values_with_encryption_string(displayable_object_data,
+def replace_object_values_with_encryption_string(object_resource,
                                                  encrypted_marker_string):
   """Updates fields to reflect that they are encrypted."""
-  if displayable_object_data.encryption_algorithm is None:
+  if object_resource.encryption_algorithm is None:
     return
-  # Handle special case of missing hash for encrypted objects.
-  # We check for _crc32c_hash value instead of crc32c_hash because we
-  # want to be able to avoid displaying the field if it is explicitly set
-  # to DO_NOT_DISPLAY.
-  for key in ('md5_hash', '_crc32c_hash'):
-    if getattr(displayable_object_data, key) is None:
-      setattr(displayable_object_data, key, encrypted_marker_string)
+  # crc32c_hash may be set to DO_NOT_DISPLAY.
+  for key in ('md5_hash', 'crc32c_hash'):
+    if getattr(object_resource, key) is None:
+      setattr(object_resource, key, encrypted_marker_string)
 
 
-def replace_time_values_with_gsutil_style_strings(displayable_resource_data):
+def replace_time_values_with_gsutil_style_strings(resource):
   """Updates fields in gcloud time format to gsutil time format."""
   # Convert "2022-06-30T16:02:49Z" to "Thu, 30 Jun 2022 16:02:49 GMT".
   for key in (
@@ -105,17 +100,15 @@ def replace_time_values_with_gsutil_style_strings(displayable_resource_data):
       'storage_class_update_time',
       'update_time',
   ):
-    gcloud_datetime_string = getattr(displayable_resource_data, key, None)
-    if gcloud_datetime_string is not None:
-      datetime_object = datetime.datetime.strptime(gcloud_datetime_string,
-                                                   '%Y-%m-%dT%H:%M:%SZ')
-      setattr(displayable_resource_data, key,
-              datetime_object.strftime('%a, %d %b %Y %H:%M:%S GMT'))
+    gcloud_datetime = getattr(resource, key, None)
+    if gcloud_datetime is not None:
+      setattr(resource, key,
+              gcloud_datetime.strftime('%a, %d %b %Y %H:%M:%S GMT'))
 
 
-def reformat_custom_metadata_for_gsutil(displayable_object_data):
+def reformat_custom_metadata_for_gsutil(object_resource):
   """Reformats custom metadata full format string in gsutil style."""
-  metadata = displayable_object_data.additional_properties
+  metadata = object_resource.custom_metadata
   if not metadata:
     return
 
@@ -129,5 +122,4 @@ def reformat_custom_metadata_for_gsutil(displayable_object_data):
   for k, v in iterable_metadata:
     metadata_lines.append(
         resource_util.get_padded_metadata_key_value_line(k, v, extra_indent=2))
-  displayable_object_data.additional_properties = '\n' + '\n'.join(
-      metadata_lines)
+  object_resource.custom_metadata = '\n' + '\n'.join(metadata_lines)

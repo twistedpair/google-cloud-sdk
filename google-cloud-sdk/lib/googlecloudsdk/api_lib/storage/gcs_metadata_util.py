@@ -142,6 +142,7 @@ def get_bucket_resource_from_metadata(metadata):
       default_kms_key=getattr(metadata.encryption, 'defaultKmsKeyName', None),
       default_storage_class=metadata.storageClass,
       etag=metadata.etag,
+      labels=_message_to_dict(metadata.labels),
       lifecycle_config=_message_to_dict(metadata.lifecycle),
       location=metadata.location,
       location_type=metadata.locationType,
@@ -211,33 +212,39 @@ def get_object_resource_from_metadata(metadata):
 
   if metadata.customerEncryption:
     decryption_key_hash = metadata.customerEncryption.keySha256
+    encryption_algorithm = metadata.customerEncryption.encryptionAlgorithm
   else:
-    decryption_key_hash = None
-
-  if metadata.metadata:
-    custom_metadata = encoding_helper.MessageToDict(metadata.metadata)
-  else:
-    custom_metadata = None
+    decryption_key_hash = encryption_algorithm = None
 
   return gcs_resource_reference.GcsObjectResource(
       url,
+      acl=_message_to_dict(metadata.acl),
       cache_control=metadata.cacheControl,
+      component_count=metadata.componentCount,
       content_disposition=metadata.contentDisposition,
       content_encoding=metadata.contentEncoding,
       content_language=metadata.contentLanguage,
       content_type=metadata.contentType,
+      crc32c_hash=metadata.crc32c,
       creation_time=metadata.timeCreated,
-      custom_metadata=custom_metadata,
+      custom_metadata=_message_to_dict(metadata.metadata),
       custom_time=metadata.customTime,
       decryption_key_hash=decryption_key_hash,
-      kms_key=metadata.kmsKeyName,
+      encryption_algorithm=encryption_algorithm,
       etag=metadata.etag,
-      crc32c_hash=metadata.crc32c,
+      event_based_hold=(metadata.eventBasedHold
+                        if metadata.eventBasedHold else None),
+      kms_key=metadata.kmsKeyName,
       md5_hash=metadata.md5Hash,
       metadata=metadata,
       metageneration=metadata.metageneration,
+      noncurrent_time=metadata.timeDeleted,
+      retention_expiration=metadata.retentionExpirationTime,
       size=metadata.size,
-      storage_class=metadata.storageClass)
+      storage_class=metadata.storageClass,
+      storage_class_update_time=metadata.timeStorageClassUpdated,
+      temporary_hold=metadata.temporaryHold if metadata.temporaryHold else None,
+      update_time=metadata.updated)
 
 
 def update_bucket_metadata_from_request_config(bucket_metadata, request_config):

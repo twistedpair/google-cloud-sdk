@@ -27,7 +27,9 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.command_lib.container.fleet import base as hub_base
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+import six
 
 
 def _ComputeClient():
@@ -75,9 +77,14 @@ def UpdateMembership(name,
                      update_mask,
                      release_track,
                      external_id=None,
+                     infra_type=None,
+                     clear_labels=False,
+                     update_labels=None,
+                     remove_labels=None,
                      issuer_url=None,
                      oidc_jwks=None,
-                     api_server_version=None):
+                     api_server_version=None,
+                     async_flag=False):
   """UpdateMembership updates membership resource in the GKE Hub API.
 
   Args:
@@ -88,15 +95,20 @@ def UpdateMembership(name,
     release_track: The release_track used in the gcloud command.
     external_id: the unique id associated with the cluster, or None if it is not
       available.
+    infra_type: The infrastructure type that the cluster is running on
+    clear_labels: Whether labels should be cleared
+    update_labels: Labels to be updated,
+    remove_labels: Labels to be removed,
     issuer_url: The discovery URL for the cluster's service account token
       issuer.
     oidc_jwks: The JSON Web Key Set string containing public keys for validating
       service account tokens. Set to None if the issuer_url is
       publicly-reachable. Still requires issuer_url to be set.
     api_server_version: api_server_version of the cluster
+    async_flag: Whether to return the update operation instead of polling
 
   Returns:
-    The updated Membership resource.
+    The updated Membership resource or the update operation if async.
 
   Raises:
     - apitools.base.py.HttpError: if the request returns an HTTP error
@@ -140,13 +152,40 @@ def UpdateMembership(name,
 
   if external_id:
     request.membership.externalId = external_id
+  if infra_type == 'on-prem':
+    request.membership.infrastructureType = messages.Membership.InfrastructureTypeValueValuesEnum.ON_PREM
+  elif infra_type == 'multi-cloud':
+    request.membership.infrastructureType = messages.Membership.InfrastructureTypeValueValuesEnum.MULTI_CLOUD
+
+  if clear_labels or update_labels or remove_labels:
+    mem_labels = {}
+    if not clear_labels:
+      for item in membership.labels.additionalProperties:
+        mem_labels[item.key] = six.text_type(item.value)
+    if update_labels:
+      for k, v in sorted(six.iteritems(update_labels)):
+        mem_labels[k] = v
+    if remove_labels:
+      for k in remove_labels:
+        if k in mem_labels:
+          mem_labels.pop(k)
+    labels = messages.Membership.LabelsValue()
+    for k, v in sorted(six.iteritems(mem_labels)):
+      labels.additionalProperties.append(
+          labels.AdditionalProperty(key=k, value=v))
+    request.membership.labels = labels
+
   op = client.projects_locations_memberships.Patch(request)
+  log.status.Print('request issued for: [{}]'.format(name))
+  if async_flag:
+    log.status.Print('Check operation [{}] for status.'.format(op.name))
+    return op
   op_resource = resources.REGISTRY.ParseRelativeName(
       op.name, collection='gkehub.projects.locations.operations')
   return waiter.WaitFor(
       waiter.CloudOperationPoller(client.projects_locations_memberships,
                                   client.projects_locations_operations),
-      op_resource, 'Waiting for membership to be updated')
+      op_resource, 'Waiting for operation [{}] to complete'.format(op.name))
 
 
 def CreateMembership(project,

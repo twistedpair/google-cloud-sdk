@@ -21,8 +21,9 @@ from __future__ import unicode_literals
 import re
 
 from googlecloudsdk.api_lib.scc import securitycenter_client as sc_client
-from googlecloudsdk.command_lib.scc.hooks import GetOrganization
-from googlecloudsdk.command_lib.scc.hooks import GetOrganizationFromResourceName
+from googlecloudsdk.command_lib.scc.hooks import GetParentFromResourceName
+from googlecloudsdk.command_lib.scc.util import GetParentFromNamedArguments
+from googlecloudsdk.command_lib.scc.util import GetParentFromPositionalArguments
 from googlecloudsdk.core import exceptions as core_exceptions
 
 
@@ -33,75 +34,113 @@ class InvalidNotificationConfigError(core_exceptions.Error):
 def ListNotificationReqHook(ref, args, req):
   """Generate an organization id if only given numbers."""
   del ref
-  req.parent = GetOrganization(args)
+  req.parent = GetParentFromPositionalArguments(args)
+
   return req
+
 
 def DescribeNotificationReqHook(ref, args, req):
   """Generate a notification config using organization and config id."""
   del ref
   _ValidateMutexOnConfigIdAndOrganization(args)
   req.name = _GetNotificationConfigName(args)
+
   return req
+
 
 def CreateNotificationReqHook(ref, args, req):
   """Generate a notification config using organization and config id."""
   del ref
-  _ValidateMutexOnConfigIdAndOrganization(args)
+
+  parent = GetParentFromNamedArguments(args)
+  _ValidateMutexOnConfigIdAndParent(args, parent)
   config = _GetNotificationConfigName(args)
-  req.parent = GetOrganizationFromResourceName(config)
+  req.parent = GetParentFromResourceName(config)
   req.configId = _GetNotificationConfigId(config)
   messages = sc_client.GetMessages("v1")
+
   if (args.filter is None):
     streamingConfig = messages.StreamingConfig()
     streamingConfig.filter = "";
     req.notificationConfig.streamingConfig = streamingConfig;
+
   return req
+
 
 def DeleteNotificationReqHook(ref, args, req):
   """Generate a notification config using organization and config id."""
   del ref
-  _ValidateMutexOnConfigIdAndOrganization(args)
+
+  parent = GetParentFromNamedArguments(args)
+  _ValidateMutexOnConfigIdAndParent(args, parent)
   req.name = _GetNotificationConfigName(args)
+
   return req
+
 
 def UpdateNotificationReqHook(ref, args, req):
   """Generate a notification config using organization and config id."""
   del ref
-  _ValidateMutexOnConfigIdAndOrganization(args)
+
+  parent = GetParentFromNamedArguments(args)
+  _ValidateMutexOnConfigIdAndParent(args, parent)
   req.name = _GetNotificationConfigName(args)
+
   return req
+
 
 def _GetNotificationConfigName(args):
   """Returns relative resource name for a notification config."""
   resource_pattern = re.compile(
-      "organizations/[0-9]+/notificationConfigs/[a-zA-Z0-9-_]{1,128}$")
+      "(organizations|projects|folders)/.+/notificationConfigs/[a-zA-Z0-9-_]{1,128}$"
+  )
   id_pattern = re.compile("[a-zA-Z0-9-_]{1,128}$")
+
   if not resource_pattern.match(
       args.notificationConfigId) and not id_pattern.match(
           args.notificationConfigId):
     raise InvalidNotificationConfigError(
-        "NotificationConfig must match either organizations/"
-        "[0-9]+/notificationConfigs/[a-zA-Z0-9-_]{1,128})$ or "
+        "NotificationConfig must match either (organizations|projects|folders)/"
+        ".+/notificationConfigs/[a-zA-Z0-9-_]{1,128})$ or "
         "[a-zA-Z0-9-_]{1,128}$.")
+
   if resource_pattern.match(args.notificationConfigId):
     # Handle config id as full resource name
     return args.notificationConfigId
-  return GetOrganization(args) + "/notificationConfigs/" + args.notificationConfigId
+
+  return GetParentFromNamedArguments(
+      args) + "/notificationConfigs/" + args.notificationConfigId
+
 
 def _GetNotificationConfigId(resource_name):
   params_as_list = resource_name.split("/")
   return params_as_list[3]
+
 
 def _ValidateMutexOnConfigIdAndOrganization(args):
   """Validates that only a full resource name or split arguments are provided."""
   if "/" in args.notificationConfigId:
     if args.organization is not None:
       raise InvalidNotificationConfigError(
-          "Only provide a full resouce name "
+          "Only provide a full resource name "
           "(organizations/123/notificationConfigs/test-config) or an --organization "
           "flag, not both.")
-  else:
-    if args.organization is None:
+  elif args.organization is None:
+    raise InvalidNotificationConfigError(
+        "Organization must be provided if it is not included in notification id."
+    )
+
+
+def _ValidateMutexOnConfigIdAndParent(args, parent):
+  """Validates that only a full resource name or split arguments are provided.
+  """
+  if "/" in args.notificationConfigId:
+    if parent is not None:
       raise InvalidNotificationConfigError(
-          "Organization must be provided if it is not included in notification id."
-      )
+          "Only provide a full resource name "
+          "(organizations/123/notificationConfigs/test-config) "
+          "or an --(organization|folder|project) flag, not both.")
+  elif parent is None:
+    raise InvalidNotificationConfigError(
+        "A corresponding parent by a --(organization|folder|project) flag must "
+        "be provided if it is not included in notification ID.")

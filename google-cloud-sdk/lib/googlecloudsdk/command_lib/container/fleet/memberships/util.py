@@ -17,7 +17,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import base as calliope_base
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.container.fleet import api_util
+from googlecloudsdk.command_lib.container.fleet import resources
+from googlecloudsdk.command_lib.container.fleet import util as cmd_util
 from googlecloudsdk.command_lib.container.fleet.memberships import errors
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
 def SetInitProjectPath(ref, args, request):
@@ -50,6 +56,82 @@ def SetParentCollection(ref, args, request):
   del ref, args  # Unused.
   request.parent = request.parent + '/locations/-'
   return request
+
+
+def SetMembershipLocation(ref, args, request):
+  """Set membership location for requested resource.
+
+  Args:
+    ref: reference to the membership object.
+    args: command line arguments.
+    request: API request to be issued
+
+  Returns:
+    modified request
+  """
+  del ref  # Unused
+  if cmd_util.APIEndpoint() == cmd_util.AUTOPUSH_API:
+    # If a membership is provided
+    if args.IsKnownAndSpecified('membership'):
+      if resources.MembershipLocationSpecified(args):
+        request.name = resources.MembershipResourceName(args)
+      else:
+        request.name = resources.SearchMembershipResource(args)
+    else:
+      raise calliope_exceptions.RequiredArgumentException(
+          'MEMBERSHIP', 'membership is required for this command.')
+
+  return request
+
+
+def ExecuteUpdateMembershipRequest(ref, args):
+  """Set membership location for requested resource.
+
+  Args:
+    ref: API response from update membership call
+    args: command line arguments.
+
+  Returns:
+    response
+  """
+  del ref
+  if cmd_util.APIEndpoint() == cmd_util.AUTOPUSH_API:
+    if resources.MembershipLocationSpecified(args):
+      name = resources.MembershipResourceName(args)
+    else:
+      name = resources.SearchMembershipResource(args)
+  else:
+    project = arg_utils.GetFromNamespace(args, '--project', use_defaults=True)
+    membership_id = args.membership
+    location = 'global'
+    name = 'projects/{}/locations/{}/memberships/{}'.format(
+        project, location, membership_id)
+  # Update membership from Fleet API.
+  obj = api_util.GetMembership(name, calliope_base.ReleaseTrack.ALPHA)
+  update_fields = []
+  if args.external_id:
+    update_fields.append('externalId')
+  if args.infra_type:
+    update_fields.append('infrastructureType')
+  if args.clear_labels or args.update_labels or args.remove_labels:
+    update_fields.append('labels')
+  update_mask = ','.join(update_fields)
+  response = api_util.UpdateMembership(
+      name,
+      obj,
+      update_mask,
+      calliope_base.ReleaseTrack.ALPHA,
+      external_id=args.external_id,
+      infra_type=args.infra_type,
+      clear_labels=args.clear_labels,
+      update_labels=args.update_labels,
+      remove_labels=args.remove_labels,
+      issuer_url=None,
+      oidc_jwks=None,
+      api_server_version=None,
+      async_flag=args.GetValue('async'))
+
+  return response
 
 
 def GetConnectGatewayServiceName(endpoint_override, location):

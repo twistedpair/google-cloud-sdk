@@ -32,8 +32,11 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
+_LOCATION_RE = re.compile('/locations/([a-z0-9-]+)/')
 
-def PromptForMembership(flag='--membership',
+
+def PromptForMembership(memberships=None,
+                        flag='--membership',
                         message='Please specify a membership:\n',
                         cancel=True):
   """Prompt the user for a membership from a list of memberships in the fleet.
@@ -42,6 +45,7 @@ def PromptForMembership(flag='--membership',
   for getting the memberships when required.
 
   Args:
+    memberships: List of memberships to prompt from
     flag: The name of the membership flag, used in the error message
     message: The message given to the user describing the prompt.
     cancel: Whether to include a "cancel" option.
@@ -53,25 +57,25 @@ def PromptForMembership(flag='--membership',
     OperationCancelledError if the prompt is cancelled by user
     RequiredArgumentException if the console is unable to prompt
   """
-  if console_io.CanPrompt():
-    all_memberships, unreachable = api_util.ListMembershipsFull()
+  if not console_io.CanPrompt():
+    raise calliope_exceptions.RequiredArgumentException(
+        flag, ('Cannot prompt a console for membership. Membership is '
+               'required. Please specify `{}` to select at '
+               'least one membership.'.format(flag)))
+  if memberships is None:
+    memberships, unreachable = api_util.ListMembershipsFull()
     if unreachable:
       raise exceptions.Error(
           ('Locations {} are currently unreachable. Please specify '
            'memberships using `--location` or the full resource name '
            '(projects/*/locations/*/memberships/*)').format(unreachable))
-    if not all_memberships:
-      raise exceptions.Error('No Memberships available in the fleet.')
-    idx = console_io.PromptChoice(
-        MembershipPartialNames(all_memberships),
-        message=message,
-        cancel_option=cancel)
-    return all_memberships[idx] if idx is not None else None
-  else:
-    raise calliope_exceptions.RequiredArgumentException(
-        flag, ('Cannot prompt a console for membership. Membership is '
-               'required. Please specify `{}` to select at '
-               'least one membership.'.format(flag)))
+  if not memberships:
+    raise exceptions.Error('No Memberships available in the fleet.')
+  idx = console_io.PromptChoice(
+      MembershipPartialNames(memberships),
+      message=message,
+      cancel_option=cancel)
+  return memberships[idx] if idx is not None else None
 
 
 # For CLI output (e.g. prompts), the LOCATION/ID format
@@ -101,15 +105,15 @@ def _LocationAttributeConfig(help_text=''):
       fallthroughs=fallthroughs)
 
 
-def _MembershipAttributeConfig(attr_name, help_text=''):
-  """Create membership attributes in resource argument.
+def _BasicAttributeConfig(attr_name, help_text=''):
+  """Create basic attributes in resource argument.
 
   Args:
     attr_name: Name of the resource
-    help_text: If set, overrides default help text for `--membership`
+    help_text: If set, overrides default help text
 
   Returns:
-    Membership resource argument parameter config
+    Resource argument parameter config
   """
   return concepts.ResourceParameterAttributeConfig(
       name=attr_name,
@@ -121,13 +125,13 @@ def AddMembershipResourceArg(parser,
                              positional=False,
                              plural=False,
                              membership_required=False,
-                             membership_arg='',
+                             flag_override='',
                              membership_help='',
                              location_help=''):
   """Add resource arg for projects/{}/locations/{}/memberships/{}."""
   flag_name = '--membership'
-  if membership_arg:
-    flag_name = membership_arg
+  if flag_override:
+    flag_name = flag_override
   elif positional:
     # Flags without '--' prefix are automatically positional
     flag_name = 'MEMBERSHIP_NAME'
@@ -141,7 +145,7 @@ def AddMembershipResourceArg(parser,
       disable_auto_completers=True,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=_LocationAttributeConfig(location_help),
-      membershipsId=_MembershipAttributeConfig(
+      membershipsId=_BasicAttributeConfig(
           'memberships' if plural else 'membership', membership_help))
   concept_parsers.ConceptParser.ForResource(
       flag_name,
@@ -152,34 +156,37 @@ def AddMembershipResourceArg(parser,
       required=membership_required).AddToParser(parser)
 
 
-def MembershipLocationSpecified(args):
+def MembershipLocationSpecified(args, flag_override=''):
   """Returns whether a membership location is specified in args."""
-  location_re = re.compile(r'\/locations\/([a-z0-9\-]+)\/')
   if args.IsSpecified('location'):
     return True
-  if args.IsKnownAndSpecified('membership') and location_re.search(
+  if args.IsKnownAndSpecified('membership') and _LOCATION_RE.search(
       args.membership) is not None:
     return True
-  if args.IsKnownAndSpecified('MEMBERSHIP_NAME') and location_re.search(
+  if args.IsKnownAndSpecified('MEMBERSHIP_NAME') and _LOCATION_RE.search(
       args.MEMBERSHIP_NAME) is not None:
     return True
   if args.IsKnownAndSpecified('memberships') and all(
-      [location_re.search(m) is not None for m in args.memberships]):
+      [_LOCATION_RE.search(m) is not None for m in args.memberships]):
+    return True
+  if args.IsKnownAndSpecified(flag_override) and _LOCATION_RE.search(
+      args.GetValue(flag_override)) is not None:
     return True
   return False
 
 
-def SearchMembershipResource(args):
+def SearchMembershipResource(args, flag_override=''):
   """Searches the fleet for an ambiguous membership provided in args.
 
   Only necessary if location is ambiguous, i.e.
-  MembershipLocationSpecified(args) is
-  False. Assumes the argument is called `--membership`, or `MEMBERSHIP_NAME` if
-  positional. Runs ListMemberships API call to
-  verify the membership exists.
+  MembershipLocationSpecified(args) is False, or this behavior is necessary for
+  backwards compatibility. If flag_override is unset, the argument must be
+  called `MEMBERSHIP_NAME` if positional and  `--membership` otherwise. Runs a
+  ListMemberships API call to verify the membership exists.
 
   Args:
     args: arguments provided to a command, including a membership resource arg
+    flag_override: a custom membership flag
 
   Returns:
     A membership resource name string
@@ -189,7 +196,12 @@ def SearchMembershipResource(args):
     googlecloudsdk.core.exceptions.Error: unable to find the membership
       in the fleet
   """
-  if args.IsKnownAndSpecified('MEMBERSHIP_NAME'):
+  if MembershipLocationSpecified(args) and api_util.GetMembership(
+      MembershipResourceName(args)):
+    return MembershipResourceName(args)
+  if args.IsKnownAndSpecified(flag_override):
+    arg_membership = getattr(args, flag_override)
+  elif args.IsKnownAndSpecified('MEMBERSHIP_NAME'):
     arg_membership = args.MEMBERSHIP_NAME
   elif args.IsKnownAndSpecified('membership'):
     arg_membership = args.membership
@@ -257,8 +269,7 @@ def SearchMembershipResourcesPlural(args):
     # Search all memberships for specified membership
     found = []
     for existing_membership in all_memberships:
-      if arg_membership == util.MembershipShortname(
-          existing_membership) or arg_membership == existing_membership:
+      if arg_membership == util.MembershipShortname(existing_membership):
         found.append(existing_membership)
     if not found:
       raise exceptions.Error(
@@ -276,20 +287,22 @@ def AmbiguousMembershipError(membership):
        '(projects/*/locations/*/memberships/*) to specify.').format(membership))
 
 
-def MembershipResourceName(args, positional=False):
+def MembershipResourceName(args, flag_override=''):
   """Gets a membership resource name from a membership resource argument.
 
-  Assumes the argument is called `--membership`, or `MEMBERSHIP_NAME` if
-  positional.
+  If flag_override is unset, the argument must be `MEMBERSHIP_NAME` if
+  positional and `--membership` otherwise.
 
   Args:
     args: arguments provided to a command, including a membership resource arg
-    positional: whether the argument is positional
+    flag_override: a custom membership flag name
 
   Returns:
     The membership resource name (e.g. projects/x/locations/y/memberships/z)
   """
-  if positional:
+  if args.IsKnownAndSpecified(flag_override):
+    return args.CONCEPTS.GetValue(flag_override).Parse().RelativeName()
+  if args.IsKnownAndSpecified('MEMBERSHIP_NAME'):
     return args.CONCEPTS.membership_name.Parse().RelativeName()
   return args.CONCEPTS.membership.Parse().RelativeName()
 
@@ -380,3 +393,70 @@ def GetMembershipProjects(memberships):
                              'projects/*/locations/*/memberships/*)'.format(m))
     projects.add(match.group(1))
   return list(projects)
+
+
+def ParseMembershipArg(args, membership_flag='MEMBERSHIP_NAME'):
+  """Returns a membership on which to run the command, given the arguments.
+
+  This function is currently only used by the unregister command. This logic
+  should be combined with the feature ParseMembership function in a later CL.
+  Allows for `MEMBERSHIP_NAME` positional flag.
+
+  Args:
+    args: object containing arguments passed as flags with the command
+    membership_flag: the membership flag used to pass in the memberhip resource
+
+  Returns:
+    membership: A membership resource name string
+
+  Raises:
+    exceptions.Error: no memberships were found or memberships are invalid
+    calliope_exceptions.RequiredArgumentException: membership was not provided
+  """
+
+  # If a membership is provided (positional arg)
+  if args.IsKnownAndSpecified(membership_flag):
+    if MembershipLocationSpecified(args):
+      return MembershipResourceName(args)
+    else:
+      return SearchMembershipResource(args)
+
+  raise calliope_exceptions.RequiredArgumentException(
+      membership_flag, 'membership is required for this command.')
+
+
+def AddRBACResourceArg(parser, api_version='v1', rbacrb_help=''):
+  """Add resource arg for projects/{}/locations/{}/memberships/{}."""
+  # Flags without '--' prefix are automatically positional
+  flag_name = 'NAME'
+  spec = concepts.ResourceSpec(
+      'gkehub.projects.locations.namespaces.rbacrolebindings',
+      api_version=api_version,
+      resource_name='rbacrolebinding',
+      plural_name='rbacrolebindings',
+      disable_auto_completers=True,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=_LocationAttributeConfig(),
+      namespacesId=_BasicAttributeConfig('namespace', ''),
+      rbacrolebindingsId=_BasicAttributeConfig('rbacrolebinding', rbacrb_help))
+  concept_parsers.ConceptParser.ForResource(
+      flag_name,
+      spec,
+      'The group of arguments defining an RBACRoleBinding.',
+      plural=False,
+      required=True).AddToParser(parser)
+
+
+def RBACResourceName(args):
+  """Gets an RBACRoleBinding resource name from a resource argument.
+
+  Assumes the argument is called NAME.
+
+  Args:
+    args: arguments provided to a command, including an rbacRB resource arg
+
+  Returns:
+    The rbacRB resource name (e.g.
+    projects/x/locations/global/namespaces/y/rbacrolebindings/z)
+  """
+  return args.CONCEPTS.name.Parse().RelativeName()

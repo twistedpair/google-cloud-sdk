@@ -46,6 +46,11 @@ class FullTaskUnspecifiedError(exceptions.Error):
   """Error parsing task without specifing the queue or full path."""
 
 
+class NoFieldsSpecifiedForHttpQueueError(exceptions.Error):
+  """Error for calling a create-http-queue method with no override field specified.
+  """
+
+
 class QueueUpdatableConfiguration(object):
   """Data Class for queue configuration updates."""
 
@@ -249,6 +254,11 @@ def ParseTask(task, queue_ref=None):
         'Must specify either the fully qualified task path or the queue flag.')
 
 
+def ParseTaskId(args):
+  """Parses an id for a task."""
+  return args.task_id if args.task_id else None
+
+
 def ExtractLocationRefFromQueueRef(queue_ref):
   params = queue_ref.AsDict()
   del params['queuesId']
@@ -264,14 +274,20 @@ def ParseCreateOrUpdateQueueArgs(args,
                                  release_track=base.ReleaseTrack.GA):
   """Parses queue level args."""
   if release_track == base.ReleaseTrack.ALPHA:
+
+    app_engine_http_target = _ParseAppEngineHttpTargetArgs(
+        args, queue_type, messages)
+    http_target = _ParseHttpTargetArgs(args, queue_type, messages)
+
     return messages.Queue(
         retryConfig=_ParseRetryConfigArgs(
             args, queue_type, messages, is_update, is_alpha=True),
         rateLimits=_ParseAlphaRateLimitsArgs(args, queue_type, messages,
                                              is_update),
         pullTarget=_ParsePullTargetArgs(args, queue_type, messages, is_update),
-        appEngineHttpTarget=_ParseAppEngineHttpTargetArgs(
-            args, queue_type, messages))
+        appEngineHttpTarget=app_engine_http_target,
+        httpTarget=http_target,
+    )
   elif release_track == base.ReleaseTrack.BETA:
     return messages.Queue(
         retryConfig=_ParseRetryConfigArgs(
@@ -299,6 +315,7 @@ def ExtractTargetFromAppEngineHostUrl(job, project):
   Args:
     job: An instance of job fetched from the backend.
     project: The base name of the project.
+
   Returns:
     The target if it exists in the URL, or if it is present in the service
     attribute of the appEngineRouting field, returns None otherwise.
@@ -504,8 +521,34 @@ def _ParseAppEngineHttpTargetArgs(args, queue_type, messages):
   if queue_type == constants.PUSH_QUEUE:
     routing_override = _ParseAppEngineRoutingOverrideArgs(
         args, queue_type, messages)
+    if routing_override is None:
+      return None
     return messages.AppEngineHttpTarget(
         appEngineRoutingOverride=routing_override)
+
+
+def _ParseHttpTargetArgs(args, queue_type, messages):
+  """Parses the attributes of 'args' for Queue.HttpTarget."""
+  if queue_type == constants.PUSH_QUEUE:
+    uri_override = _ParseHttpRoutingOverrideArgs(args, messages)
+
+    http_method = (
+        messages.HttpTarget.HttpMethodValueValuesEnum(
+            args.http_method_override.upper())
+        if args.IsSpecified('http_method_override') else None)
+
+    oauth_token = _ParseHttpTargetOAuthArgs(args, messages)
+    oidc_token = _ParseHttpTargetOidcArgs(args, messages)
+
+    if uri_override is None and http_method is None and oauth_token is None and oidc_token is None:
+      return None
+
+    return messages.HttpTarget(
+        uriOverride=uri_override,
+        headerOverrides=_ParseHttpTargetHeaderArg(args, messages),
+        httpMethod=http_method,
+        oauthToken=oauth_token,
+        oidcToken=oidc_token)
 
 
 def _ParseAppEngineHttpQueueArgs(args, queue_type, messages):
@@ -523,6 +566,26 @@ def _ParseAppEngineRoutingOverrideArgs(args, queue_type, messages):
     if args.IsSpecified('routing_override'):
       return messages.AppEngineRouting(**args.routing_override)
     return None
+
+
+def _ParseHttpRoutingOverrideArgs(args, messages):
+  """Parses the attributes of 'args' for HTTP Routing."""
+  if args.IsSpecified('http_uri_override'):
+    return _ParseUriOverride(messages=messages, **args.http_uri_override)
+  return None
+
+
+def _ParseUriOverride(messages,
+                      scheme=None,
+                      host=None,
+                      port=None,
+                      path=None,
+                      query=None):
+  scheme = (
+      messages.HttpRequest.SchemeValueValuesEnum(scheme.upper())
+      if scheme else None)
+  return messages.UriOverride(
+      scheme=scheme, host=host, port=int(port), path=path, query=query)
 
 
 def _ParsePullMessageArgs(args, task_type, messages):
@@ -608,6 +671,24 @@ def _ParseOidcArgs(args, messages):
     return None
 
 
+def _ParseHttpTargetOAuthArgs(args, messages):
+  if args.IsSpecified('http_oauth_service_account_email_override'):
+    return messages.OAuthToken(
+        serviceAccountEmail=args.http_oauth_service_account_email_override,
+        scope=args.http_oauth_token_scope_override)
+  else:
+    return None
+
+
+def _ParseHttpTargetOidcArgs(args, messages):
+  if args.IsSpecified('http_oidc_service_account_email_override'):
+    return messages.OidcToken(
+        serviceAccountEmail=args.http_oidc_service_account_email_override,
+        audience=args.http_oidc_token_audience_override)
+  else:
+    return None
+
+
 def _ParseHeaderArg(args, headers_value):
   if args.header:
     headers_dict = {k: v for k, v in map(_SplitHeaderArgValue, args.header)}
@@ -617,6 +698,23 @@ def _ParseHeaderArg(args, headers_value):
 def _SplitHeaderArgValue(header_arg_value):
   key, value = header_arg_value.split(':', 1)
   return key, value.lstrip()
+
+
+def _ParseHttpTargetHeaderArg(args, messages):
+  """Converts header values into a list of headers and returns the list."""
+  map_ = []
+  if args.IsSpecified('http_header_override'):
+    headers_dict = {
+        k: v for k, v in map(_SplitHeaderArgValue, args.http_header_override)
+    }
+
+    items = sorted(headers_dict.items())
+    for key, value in items:
+      header_override = messages.HeaderOverride(
+          header=messages.Header(key=key.encode(), value=value.encode()))
+      map_.append(header_override)
+
+  return map_
 
 
 def FormatLeaseDuration(lease_duration):

@@ -92,7 +92,8 @@ class EnableCommand(FeatureCommand, calliope_base.CreateCommand):
 
   def Enable(self, feature):
     project = properties.VALUES.core.project.GetOrFail()
-    enable_api.EnableServiceIfDisabled(project, self.feature.api)
+    if self.feature.api:
+      enable_api.EnableServiceIfDisabled(project, self.feature.api)
     parent = util.LocationResourceName(project)
     try:
       # Retry if we still get "API not activated"; it can take a few minutes
@@ -107,7 +108,7 @@ class EnableCommand(FeatureCommand, calliope_base.CreateCommand):
     except retry.MaxRetrialsException:
       raise exceptions.Error(
           'Retry limit exceeded waiting for {} to enable'.format(
-              self.feature.api))
+              self.feature.display_name))
     except apitools_exceptions.HttpConflictError as e:
       # If the error is not due to the object already existing, re-raise.
       error = core_api_exceptions.HttpErrorPayload(e)
@@ -124,6 +125,8 @@ class EnableCommand(FeatureCommand, calliope_base.CreateCommand):
 
   def _FeatureAPINotEnabled(self, exc_type, exc_value, traceback, state):
     del traceback, state  # Unused
+    if not self.feature.api:
+      return False
     if exc_type != apitools_exceptions.HttpBadRequestError:
       return False
     error = core_api_exceptions.HttpErrorPayload(exc_value)
@@ -206,7 +209,11 @@ class UpdateCommand(FeatureCommand, calliope_base.UpdateCommand):
     return self.v1alpha1_client.projects_locations_global_features.Patch(req)
 
 
-def ParseMembership(args, prompt=False):
+def ParseMembership(args,
+                    prompt=False,
+                    autoselect=False,
+                    search=False,
+                    flag_override=''):
   """Returns a membership on which to run the command, given the arguments.
 
   Allows for a `--membership` flag or a `MEMBERSHIP_NAME` positional flag.
@@ -215,6 +222,11 @@ def ParseMembership(args, prompt=False):
     args: object containing arguments passed as flags with the command
     prompt: whether to prompt in console for a membership when none are provided
       in args
+    autoselect: if no membership is provided and only one exists,
+      automatically use that one
+    search: whether to search for the membership and error if it does not exist
+      (not recommended)
+    flag_override: to use a custom membership flag name
 
   Returns:
     membership: A membership resource name string
@@ -225,37 +237,38 @@ def ParseMembership(args, prompt=False):
   """
 
   # If a membership is provided
-  if args.IsKnownAndSpecified('membership'):
-    if resources.MembershipLocationSpecified(args):
-      return resources.MembershipResourceName(args)
+  if args.IsKnownAndSpecified('membership') or args.IsKnownAndSpecified(
+      'MEMBERSHIP_NAME') or args.IsKnownAndSpecified(flag_override):
+    if resources.MembershipLocationSpecified(args,
+                                             flag_override) and not search:
+      return resources.MembershipResourceName(args, flag_override)
     else:
-      return resources.SearchMembershipResource(args)
+      return resources.SearchMembershipResource(args, flag_override)
 
-  # If a membership is provided (positional arg)
-  if args.IsKnownAndSpecified('MEMBERSHIP_NAME'):
-    if resources.MembershipLocationSpecified(args):
-      return resources.MembershipResourceName(args, positional=True)
-    else:
-      return resources.SearchMembershipResource(args)
+  # If nothing is provided
+  if not prompt and not autoselect:
+    raise MembershipRequiredError(args, flag_override)
 
-  # If nothing is provided, prompt
-  flag = ('MEMBERSHIP_NAME'
-          if hasattr(args, 'MEMBERSHIP_NAME') else '--membership')
-  if not prompt:
-    raise calliope_exceptions.RequiredArgumentException(
-        flag, 'At least one membership is required for this command.')
-
-  membership = resources.PromptForMembership()
-  if membership is not None:
-    return membership
-  else:
-    raise calliope_exceptions.RequiredArgumentException(
-        flag, 'At least one membership is required for this command.')
+  all_memberships, unreachable = api_util.ListMembershipsFull()
+  if unreachable:
+    raise exceptions.Error(
+        ('Locations {} are currently unreachable. Please specify '
+         'memberships using `--location` or the full resource name '
+         '(projects/*/locations/*/memberships/*)').format(unreachable))
+  if autoselect and len(all_memberships) == 1:
+    log.status.Print('Selecting membership [{}].'.format(all_memberships[0]))
+    return all_memberships[0]
+  if prompt:
+    membership = resources.PromptForMembership(all_memberships)
+    if membership is not None:
+      return membership
+  raise MembershipRequiredError(args, flag_override)
 
 
 def ParseMembershipsPlural(args,
                            prompt=False,
                            prompt_cancel=True,
+                           autoselect=False,
                            allow_cross_project=False,
                            search=False):
   """Parses a list of membership resources from args.
@@ -267,6 +280,8 @@ def ParseMembershipsPlural(args,
     prompt: whether to prompt in console for a membership when none are provided
       in args
     prompt_cancel: whether to include a 'cancel' option in the prompt
+    autoselect: if no memberships are provided and only one exists,
+      automatically use that one
     allow_cross_project: whether to allow memberships from different projects
     search: whether to check that the membership exists in the fleet
 
@@ -310,20 +325,24 @@ def ParseMembershipsPlural(args,
     return memberships
 
   # If nothing is provided
-  flag = ('MEMBERSHIP_NAME'
-          if hasattr(args, 'MEMBERSHIP_NAME') else '--memberships')
-  if not prompt:
-    raise calliope_exceptions.RequiredArgumentException(
-        flag, 'At least one membership is required for this command.')
+  if not prompt and not autoselect:
+    raise MembershipRequiredError(args)
 
-  membership = resources.PromptForMembership(cancel=prompt_cancel)
-  if membership:
-    memberships.append(membership)
-  else:
-    raise calliope_exceptions.RequiredArgumentException(
-        flag, 'At least one membership is required for this command.')
-
-  return memberships
+  all_memberships, unreachable = api_util.ListMembershipsFull()
+  if unreachable:
+    raise exceptions.Error(
+        ('Locations {} are currently unreachable. Please specify '
+         'memberships using `--location` or the full resource name '
+         '(projects/*/locations/*/memberships/*)').format(unreachable))
+  if autoselect and len(all_memberships) == 1:
+    log.status.Print('Selecting membership [{}].'.format(all_memberships[0]))
+    return [all_memberships[0]]
+  if prompt:
+    membership = resources.PromptForMembership(cancel=prompt_cancel)
+    if membership:
+      memberships.append(membership)
+    return memberships
+  raise MembershipRequiredError(args)
 
 
 # This should not be used in the future and will be deleted
@@ -350,6 +369,33 @@ def CrossProjectError(projects):
   return exceptions.Error('Memberships for this command must belong to the '
                           'same project and cannot mix project number and '
                           'project ID ({}).'.format(projects))
+
+
+def MembershipRequiredError(args, flag_override=''):
+  """Parses a list of membership resources from args.
+
+  Assumes a `--memberships` flag or a `MEMBERSHIP_NAME` flag unless overridden.
+
+  Args:
+    args: argparse.Namespace arguments provided for the command
+    flag_override: set to override the name of the membership flag
+
+  Returns:
+    memberships: A list of membership resource name strings
+
+  Raises:
+    exceptions.Error: if no memberships were found or memberships are invalid
+    calliope_exceptions.RequiredArgumentException: if membership was not
+      provided
+  """
+  if flag_override:
+    flag = flag_override
+  elif args.IsKnownAndSpecified('MEMBERSHIP_NAME'):
+    flag = 'MEMBERSHIP_NAME'
+  else:
+    flag = 'memberships'
+  return calliope_exceptions.RequiredArgumentException(
+      flag, 'At least one membership is required for this command.')
 
 
 def _ClusterMissing(m):

@@ -204,8 +204,8 @@ def GetProxyInfo():
                                proxy_port)
 
 
-def CreateMutualTlsOffloadAdapter(enterprise_certificate_config_file_path):
-  return _MutualTlsOffloadAdapter(enterprise_certificate_config_file_path)
+def CreateMutualTlsOffloadAdapter(certificate_config_file_path):
+  return _MutualTlsOffloadAdapter(certificate_config_file_path)
 
 
 def Session(
@@ -278,7 +278,7 @@ def Session(
     if ca_config:
       if ca_config.config_type == context_aware.ConfigType.ENTERPRISE_CERTIFICATE:
         adapter = CreateMutualTlsOffloadAdapter(
-            ca_config.enterprise_certificate_config_file_path)
+            ca_config.certificate_config_file_path)
       elif ca_config.config_type == context_aware.ConfigType.ON_DISK_CERTIFICATE:
         log.debug('Using client certificate %s',
                   ca_config.encrypted_client_cert_path)

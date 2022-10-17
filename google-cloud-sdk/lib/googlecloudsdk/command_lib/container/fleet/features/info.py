@@ -30,7 +30,7 @@ class Info(object):
     cmd_group: The subgroup for this Feature, e.g. `container fleet <cmd_group`.
   """
 
-  def __init__(self, display_name, api, cmd_group=''):
+  def __init__(self, display_name, api='', cmd_group=''):
     self.display_name = display_name
     self.api = api
     self.cmd_group = cmd_group
@@ -118,6 +118,11 @@ _INFO = {
             display_name='Workload Certificate',
             api='workloadcertificate.googleapis.com',
             cmd_group='workload-certificate',
+        ),
+    'workloadmigration':
+        Info(
+            display_name='Workload Migration',
+            cmd_group='workload-migration',
         ),
 }
 

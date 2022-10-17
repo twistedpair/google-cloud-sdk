@@ -54,8 +54,30 @@ S3_RESOURCE_WARNING_FIELDS = {
 }
 
 
-class _BucketConfig(object):
+class _ResourceConfig(object):
+  """Holder for generic resource fields.
+
+  Attributes:
+    acl_file_path (None|str): Path to file with ACL settings.
+  """
+
+  def __init__(self, acl_file_path=None):
+    """Initializes class, binding flag values to it."""
+    self.acl_file_path = acl_file_path
+
+  def __eq__(self, other):
+    if not isinstance(other, type(self)):
+      return NotImplemented
+    return self.acl_file_path == other.acl_file_path
+
+  def __repr__(self):
+    return debug_output.generic_repr(self)
+
+
+class _BucketConfig(_ResourceConfig):
   """Holder for generic bucket fields.
+
+  More attributes may exist on parent class.
 
   Attributes:
     cors_file_path (None|str): Path to file with CORS settings.
@@ -76,6 +98,7 @@ class _BucketConfig(object):
   """
 
   def __init__(self,
+               acl_file_path=None,
                cors_file_path=None,
                labels_file_path=None,
                labels_to_append=None,
@@ -88,6 +111,7 @@ class _BucketConfig(object):
                versioning=None,
                web_error_page=None,
                web_main_page_suffix=None):
+    super(_BucketConfig, self).__init__(acl_file_path)
     self.location = location
     self.cors_file_path = cors_file_path
     self.labels_file_path = labels_file_path
@@ -118,9 +142,6 @@ class _BucketConfig(object):
             self.web_error_page == other.web_error_page and
             self.web_main_page_suffix == other.web_main_page_suffix)
 
-  def __repr__(self):
-    return debug_output.generic_repr(self)
-
 
 class _GcsBucketConfig(_BucketConfig):
   """Holder for GCS-specific bucket fields.
@@ -144,6 +165,7 @@ class _GcsBucketConfig(_BucketConfig):
   """
 
   def __init__(self,
+               acl_file_path=None,
                cors_file_path=None,
                default_encryption_key=None,
                default_event_based_hold=None,
@@ -163,10 +185,11 @@ class _GcsBucketConfig(_BucketConfig):
                web_error_page=None,
                web_main_page_suffix=None):
     super(_GcsBucketConfig,
-          self).__init__(cors_file_path, labels_file_path, labels_to_append,
-                         labels_to_remove, lifecycle_file_path, location,
-                         log_bucket, log_object_prefix, requester_pays,
-                         versioning, web_error_page, web_main_page_suffix)
+          self).__init__(acl_file_path, cors_file_path, labels_file_path,
+                         labels_to_append, labels_to_remove,
+                         lifecycle_file_path, location, log_bucket,
+                         log_object_prefix, requester_pays, versioning,
+                         web_error_page, web_main_page_suffix)
     self.public_access_prevention = public_access_prevention
     self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
@@ -176,6 +199,8 @@ class _GcsBucketConfig(_BucketConfig):
     self.uniform_bucket_level_access = uniform_bucket_level_access
 
   def __eq__(self, other):
+    if not isinstance(other, type(self)):
+      return NotImplemented
     return (super(_GcsBucketConfig, self).__eq__(other) and
             self.public_access_prevention == other.public_access_prevention and
             self.default_encryption_key == other.default_encryption_key and
@@ -196,10 +221,10 @@ class _S3BucketConfig(_BucketConfig):
   """
 
 
-class _ObjectConfig(object):
+class _ObjectConfig(_ResourceConfig):
   """Holder for storage object settings shared between cloud providers.
 
-  Provider-specific subclasses may add more attributes.
+  Superclass and provider-specific subclasses may add more attributes.
 
   Attributes:
     cache_control (str|None): Influences how backend caches requests and
@@ -228,6 +253,7 @@ class _ObjectConfig(object):
   """
 
   def __init__(self,
+               acl_file_path=None,
                cache_control=None,
                content_disposition=None,
                content_encoding=None,
@@ -242,6 +268,7 @@ class _ObjectConfig(object):
                preserve_acl=None,
                size=None,
                storage_class=None):
+    super(_ObjectConfig, self).__init__(acl_file_path)
     self.cache_control = cache_control
     self.content_disposition = content_disposition
     self.content_encoding = content_encoding
@@ -261,6 +288,7 @@ class _ObjectConfig(object):
     if not isinstance(other, type(self)):
       return NotImplemented
     return (
+        super(_ObjectConfig, self).__eq__(other) and
         self.cache_control == other.cache_control and
         self.content_disposition == other.content_disposition and
         self.content_encoding == other.content_encoding and
@@ -275,14 +303,11 @@ class _ObjectConfig(object):
         self.preserve_acl == other.preserve_acl and
         self.storage_class == other.storage_class)
 
-  def __repr__(self):
-    return debug_output.generic_repr(self)
-
 
 class _GcsObjectConfig(_ObjectConfig):
   """Arguments object for requests with custom GCS parameters.
 
-  See super class for additional attributes.
+  See superclass for additional attributes.
 
   Attributes:
     event_based_hold (bool|None): An event-based hold should be placed on an
@@ -293,6 +318,7 @@ class _GcsObjectConfig(_ObjectConfig):
   # pylint:enable=g-missing-from-attributes
 
   def __init__(self,
+               acl_file_path=None,
                cache_control=None,
                content_disposition=None,
                content_encoding=None,
@@ -309,6 +335,7 @@ class _GcsObjectConfig(_ObjectConfig):
                size=None,
                temporary_hold=None):
     super(_GcsObjectConfig, self).__init__(
+        acl_file_path=acl_file_path,
         cache_control=cache_control,
         content_disposition=content_disposition,
         content_encoding=content_encoding,
@@ -378,7 +405,7 @@ class _RequestConfig(object):
 class _GcsRequestConfig(_RequestConfig):
   """Holder for GCS-specific API request parameters.
 
-  See super class for additional attributes.
+  See superclass for additional attributes.
 
   Attributes:
     gzip_settings (user_request_args_factory.GzipSettings): Contains settings
@@ -572,6 +599,10 @@ def _get_request_config_resource_args(url,
         new_resource_args.storage_class = (
             user_resource_args.storage_class.upper())
 
+  if new_resource_args and user_resource_args:
+    # Fields that apply to all resource types.
+    new_resource_args.acl_file_path = user_resource_args.acl_file_path
+
   return new_resource_args
 
 
@@ -613,3 +644,10 @@ def get_request_config(url,
                                              'system_posix_data', None)
 
   return request_config
+
+
+def has_acl_request(request_config):
+  """Checks if RequestConfig has a field attempting to modify ACLs."""
+  return bool(
+      request_config.predefined_acl_string or
+      getattr(request_config.resource_args, 'acl_file_path', False))

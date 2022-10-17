@@ -4,6 +4,150 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
+## 406.0.0 (2022-10-17)
+
+### Breaking Changes
+
+*   **(Cloud Storage)** Changed "Additional Properties" formatting for `ls -L` to print condensed JSON object instead of JSON list with `key` and `value` keys before every key and value.
+*   **(Kubernetes Engine)** Remove deprecated `--istio-config` flag of
+    `gcloud beta container clusters create` and
+    `gcloud beta container clusters update`.
+
+### Anthos Multi-Cloud
+
+*  Promoted `--logging` flag to `gcloud container aws clusters create` and
+   `gcloud container azure clusters create` to update the logging config.
+*  Promoted `--logging` flag to `gcloud container aws clusters update` and
+   `gcloud container azure clusters update` to update the logging config.
+*  Added `--annotations` flag to `gcloud container azure node-pools create` to
+   set the annotations field when creating Azure node pools.
+*  Added `--annotations` flag to `gcloud container azure node-pools update` to
+   update the annotations of Azure node pools.
+*  Added `--clear-annotations` flag to `gcloud container azure node-pools
+   update` to clear the annotations of Azure node pools.
+
+### Bare Metal Solution
+
+* Promoted `gcloud bms nfs-shares create` to GA.
+* Promoted `gcloud bms nfs-shares delete` to GA.
+* Promoted `gcloud bms volumes restore` to GA.
+* Promoted `gcloud bms volumes snapshot` to GA.
+* Promoted `gcloud bms volumes snapshots describe` to GA.
+* Promoted `gcloud bms volumes snapshots list` to GA.
+* Promoted `gcloud bms volumes snapshots delete` to GA.
+* Promoted `--add-allowed-client` flag of `gcloud bms nfs-shares update` to GA.
+* Promoted `--remove-allowed-client` flag of `gcloud bms nfs-shares update` to GA.
+* Promoted `--clear-allowed-clients` flag of `gcloud bms nfs-shares update` to GA.
+* Promoted `gcloud bms instances stop` to GA.
+
+### BigQuery
+
+* Fixed issue with `--api` flag in external clients.
+* Added support for the target_job_concurrency flag and begins deprecating the
+  concurrency flag.
+* Added the max_staleness flag for external tables.
+* Added support for SIMPLE with the object_metadata flag.
+* Added ZSTD as an extract option.
+
+### Certificate Manager
+
+*  Added `gcloud certificate-manager issuance-configs` command group to beta. Commands
+  in this group allow for configuring Private Trust certificate issuance.
+*  Added `--issuance-config` flag for `gcloud certificate-manager certificates create`
+  command to beta. The flag allows configuring managed certificates issuance
+  with Private Trust.
+
+### Cloud Access Context Manager
+
+* Changed `--level` flag of `gcloud access-context-manager cloud-bindings create`
+  and `gcloud access-context-manager cloud-bindings update` to
+  take a string input instead of a resource:
+    * No change is required on any previous configurations as a result of this
+      change.
+
+### Cloud Datastream
+
+* Added BigQuery destination type support.
+
+### Cloud Firestore Emulator
+
+* Promoted `gcloud emulators firestore` to GA.
+
+### Cloud SQL
+
+* Added the following flags to `gcloud sql instances create` and
+  `gcloud sql instances patch` for ALPHA:
+   * `--connector_enforcement`
+
+### Cloud TPU
+
+*   Promoted `--shielded-secure-boot` flag of `gcloud compute tpus tpu-vm` to GA.
+
+### Compute Firewall Policies
+
+* Updated `gcloud compute firewall-policies rules create` to include help text
+  for `src-threat-intelligence`, `src-fqdns`, `src-region-codes`
+  , `src-address-groups`, `dest-threat-intelligence`, `dest-fqdns`
+  , `dest-region-codes` and `dest-address-groups`.
+* Updated `gcloud compute firewall-policies rules update` to include help text
+  for `src-threat-intelligence`, `src-fqdns`, `src-region-codes`
+  , `src-address-groups`, `dest-threat-intelligence`, `dest-fqdns`
+  , `dest-region-codes` and `dest-address-groups`.
+* Updated `gcloud compute network-firewall-policies rules create` to include
+  help text for `src-threat-intelligence`, `src-fqdns`, `src-region-codes`
+  , `src-address-groups`, `dest-threat-intelligence`, `dest-fqdns`
+  , `dest-region-codes` and `dest-address-groups`.
+* Updated `gcloud compute network-firewall-policies rules update` to include
+  help text for `src-threat-intelligence`, `src-fqdns`, `src-region-codes`
+  , `src-address-groups`, `dest-threat-intelligence`, `dest-fqdns`
+  , `dest-region-codes` and `dest-address-groups`.
+* Promoted `--src-address-groups` and `--dest-address-groups` flags to
+  beta in `gcloud compute firewall-policies rules create`
+  , `gcloud compute firewall-policies rules update`
+  , `gcloud compute network-firewall-policies rules create`
+  and `gcloud compute network-firewall-policies rules update` commands.
+* Promoted `--src-fqdns` and `--dest-fqdns` flags to beta
+  in `gcloud compute firewall-policies rules create`
+  , `gcloud compute firewall-policies rules update`
+  , `gcloud compute network-firewall-policies rules create`
+  and `gcloud compute network-firewall-policies rules update` commands.
+
+### Kpt
+
+* Updated kpt from v1.0.0-beta.15 to v1.0.0-beta.19.
+  <https://github.com/GoogleContainerTools/kpt/releases>.
+
+
+### Kubernetes Engine
+
+*   Promoted the GKE add-on `BackupRestore` of `gcloud container clusters
+    <create|update>` to GA. This add-on is disabled by default.
+    * Use `--addons=BackupRestore` to enable the add-on during cluster creation.
+    * Use `--update-addons=BackupRestore=ENABLED|DISABLED` to enable/disable the
+      add-on for existing GKE clusters.
+
+### Managed Active Directory
+
+* Promoted `gcloud active-directory domains extend-schema` to GA.
+
+### Network Security
+
+* Updated `gcloud network-security address-groups list` to include the `TYPE`,
+  `CAPACITY` and `USAGE` columns in the output.
+* Updated `gcloud network-security org-address-groups list` to include
+  the `TYPE`, `CAPACITY` and `USAGE` columns in the output.
+
+### Security Command Center
+
+* Updated `gcloud scc notifications update` to allow for project and folder
+  parents.
+* Updated `gcloud scc notifications create` to allow for project and folder
+  parents.
+* Updated `gcloud scc notifications delete` to allow for project and folder
+  parents.
+* Updated `gcloud scc notifications list` to allow for project and folder
+  parents.
+
 ## 405.0.1 (2022-10-14)
 
 ### GKE Hub

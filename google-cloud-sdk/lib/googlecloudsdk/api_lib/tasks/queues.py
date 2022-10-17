@@ -210,16 +210,17 @@ class AlphaQueues(BaseQueues):
   """Client for queues service in the Cloud Tasks API."""
 
   def Create(self, parent_ref, queue_ref, retry_config=None, rate_limits=None,
-             pull_target=None, app_engine_http_target=None):
+             pull_target=None, app_engine_http_target=None, http_target=None):
     """Prepares and sends a Create request for creating a queue."""
-    if pull_target and app_engine_http_target:
+
+    targets = (pull_target, app_engine_http_target, http_target)
+    if sum([1 if x is not None else 0 for x in targets]) > 1:
       raise CreatingPullAndAppEngineQueueError(
-          'Attempting to send PullTarget and AppEngineHttpTarget '
-          'simultaneously')
+          'Attempting to send multiple queue target types simultaneously')
     queue = self.messages.Queue(
         name=queue_ref.RelativeName(), retryConfig=retry_config,
         rateLimits=rate_limits, pullTarget=pull_target,
-        appEngineHttpTarget=app_engine_http_target)
+        appEngineHttpTarget=app_engine_http_target, httpTarget=http_target)
     request = self.messages.CloudtasksProjectsLocationsQueuesCreateRequest(
         parent=parent_ref.RelativeName(), queue=queue)
     return self.queues_service.Create(request)

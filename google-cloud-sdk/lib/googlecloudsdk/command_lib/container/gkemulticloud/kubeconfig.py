@@ -33,10 +33,10 @@ from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import semver
 
 COMMAND_DESCRIPTION = """
-Fetch credentials for a running Anthos cluster on {kind}.
+Fetch credentials for a running {cluster_type}.
 
 This command updates a kubeconfig file with appropriate credentials and
-endpoint information to point kubectl at a specific cluster on {kind}.
+endpoint information to point kubectl at a specific {cluster_type}.
 
 By default, credentials are written to ``HOME/.kube/config''.
 You can provide an alternate path by setting the ``KUBECONFIG'' environment
@@ -110,6 +110,34 @@ def GenerateAuthProviderCmdArgs(kind, cluster_id, location, project):
               '--format=json --exec-credential')
   return template.format(
       kind=kind, cluster_id=cluster_id, location=location, project=project)
+
+
+def GenerateAttachedKubeConfig(cluster,
+                               cluster_id,
+                               context,
+                               cmd_path):
+  """Generates a kubeconfig entry for an Anthos Multi-cloud attached cluster.
+
+  Args:
+    cluster: object, Anthos Multi-cloud cluster.
+    cluster_id: str, the cluster ID.
+    context: str, context for the kubeconfig entry.
+    cmd_path: str, authentication provider command path.
+  """
+  kubeconfig = kubeconfig_util.Kubeconfig.Default()
+  # Use the same key for context, cluster, and user.
+  kubeconfig.contexts[context] = kubeconfig_util.Context(
+      context, context, context)
+
+  _CheckPreqs()
+  _ConnectGatewayKubeconfig(kubeconfig, cluster, cluster_id, context,
+                            cmd_path)
+
+  kubeconfig.SetCurrentContext(context)
+  kubeconfig.SaveToFile()
+  log.status.Print(
+      'A new kubeconfig entry "{}" has been generated and set as the '
+      'current context.'.format(context))
 
 
 def GenerateKubeconfig(cluster,

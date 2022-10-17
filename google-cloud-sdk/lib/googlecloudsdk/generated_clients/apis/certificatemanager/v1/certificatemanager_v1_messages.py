@@ -92,7 +92,6 @@ class Certificate(_messages.Message):
     createTime: Output only. The creation timestamp of a Certificate.
     description: One or more paragraphs of text description of a certificate.
     expireTime: Output only. The expiry timestamp of a Certificate.
-    fingerprint: Output only. The hash of the x.509 certificate.
     labels: Set of labels associated with a Certificate.
     managed: If set, contains configuration and state of a managed
       certificate.
@@ -148,15 +147,14 @@ class Certificate(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   expireTime = _messages.StringField(3)
-  fingerprint = _messages.MessageField('Fingerprint', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  managed = _messages.MessageField('ManagedCertificate', 6)
-  name = _messages.StringField(7)
-  pemCertificate = _messages.StringField(8)
-  sanDnsnames = _messages.StringField(9, repeated=True)
-  scope = _messages.EnumField('ScopeValueValuesEnum', 10)
-  selfManaged = _messages.MessageField('SelfManagedCertificate', 11)
-  updateTime = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 4)
+  managed = _messages.MessageField('ManagedCertificate', 5)
+  name = _messages.StringField(6)
+  pemCertificate = _messages.StringField(7)
+  sanDnsnames = _messages.StringField(8, repeated=True)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 9)
+  selfManaged = _messages.MessageField('SelfManagedCertificate', 10)
+  updateTime = _messages.StringField(11)
 
 
 class CertificateAuthorityConfig(_messages.Message):
@@ -1062,20 +1060,6 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
-
-
-class Fingerprint(_messages.Message):
-  r"""A group of fingerprints for the x509 certificate. These values can be
-  used, where supported to search for certificate across Google Cloud APIs.
-  For example, see the Fingerprint field.
-
-  Fields:
-    sha256Hash: The SHA 256 hash, encoded as a hexadecimal string, with no
-      separators, of the DER x509 certificate. For example,
-      `f6c245267d2302a426156a5c692d23a854327c758d867ad6e5f62d7f2017b6a8`.
-  """
-
-  sha256Hash = _messages.StringField(1)
 
 
 class GclbTarget(_messages.Message):

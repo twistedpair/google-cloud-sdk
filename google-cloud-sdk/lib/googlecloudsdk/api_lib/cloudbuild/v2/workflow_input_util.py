@@ -45,6 +45,12 @@ def _WorkflowTransform(workflow):
 
   _ResourcesTransform(workflow)
 
+  if "triggers" in workflow:
+    workflow["workflowTriggers"] = workflow.pop("triggers")
+
+  for workflow_trigger in workflow.get("workflowTriggers", []):
+    input_util.WorkflowTriggerTransform(workflow_trigger)
+
   for param_spec in workflow.get("params", []):
     input_util.ParamSpecTransform(param_spec)
 
@@ -80,6 +86,22 @@ def _ResourcesTransform(workflow):
       resource.pop("kind")
       resource["secret"] = {}
       resource["secret"]["secretVersion"] = resource.pop("ref")
+      resources_map[resource.pop("name")] = resource
+
+    if "ref" in resource and "kind" in resource and resource[
+        "kind"] == "cloudbuild.googleapis.com/Repository":
+      resource.pop("kind")
+      url_or_repo = resource.pop("ref")
+      if url_or_repo.startswith("projects/"):
+        resource["repo"] = url_or_repo
+      else:
+        resource["url"] = url_or_repo
+      resources_map[resource.pop("name")] = resource
+
+    if "ref" in resource  and "kind" in resource and resource[
+        "kind"] == "pubsub.googleapis.com/Topic":
+      resource.pop("kind")
+      resource["topic"] = resource.pop("ref")
       resources_map[resource.pop("name")] = resource
 
   if has_resources:
@@ -143,8 +165,7 @@ def _WorkspaceBindingTransform(workspace_binding):
 
     if "accessMode" in popped_volume:
       access_modes = []
-      for access_mode in popped_volume.pop("accessMode").split(
-          " | "):
+      for access_mode in popped_volume.pop("accessMode").split(" | "):
         if access_mode == "read":
           access_modes.append("READ_ONLY_MANY")
         if access_mode == "read-write":

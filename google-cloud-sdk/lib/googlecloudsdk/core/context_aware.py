@@ -164,14 +164,14 @@ class _ConfigImpl(object):
     if not properties.VALUES.context_aware.use_client_certificate.GetBool():
       return None
 
-    enterprise_certificate_config_file_path = properties.VALUES.context_aware.enterprise_certificate_config_file_path.Get(
+    certificate_config_file_path = properties.VALUES.context_aware.certificate_config_file_path.Get(
     )
-    if enterprise_certificate_config_file_path is None:
-      enterprise_certificate_config_file_path = config.EnterpriseCertConfigDefaultFilePath(
+    if certificate_config_file_path is None:
+      certificate_config_file_path = config.CertConfigDefaultFilePath(
       )
-    if enterprise_certificate_config_file_path is not None:
+    if certificate_config_file_path is not None:
       # The enterprise cert config file path will be used.
-      return _EnterpriseCertConfigImpl(enterprise_certificate_config_file_path)
+      return _EnterpriseCertConfigImpl(certificate_config_file_path)
 
     config_path = _AutoDiscoveryFilePath()
     # Raw cert and key
@@ -189,10 +189,10 @@ class _ConfigImpl(object):
 class _EnterpriseCertConfigImpl(_ConfigImpl):
   """Represents the configurations associated with context aware access through a enterprise certificate on TPM or OS key store."""
 
-  def __init__(self, enterprise_certificate_config_file_path):
+  def __init__(self, certificate_config_file_path):
     super(_EnterpriseCertConfigImpl,
           self).__init__(ConfigType.ENTERPRISE_CERTIFICATE)
-    self.enterprise_certificate_config_file_path = enterprise_certificate_config_file_path
+    self.certificate_config_file_path = certificate_config_file_path
 
 
 class _OnDiskCertConfigImpl(_ConfigImpl):

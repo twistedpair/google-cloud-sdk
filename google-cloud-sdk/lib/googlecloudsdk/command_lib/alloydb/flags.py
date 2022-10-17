@@ -438,14 +438,20 @@ def AddRestoreClusterSourceFlags(parser):
   backup_source_group.add_argument(
       '--backup', required=True, type=str, help='AlloyDB backup ID')
 
+  # PITR RestoreCluster not available to external customers yet
   pitr_source_group = group.add_group(
+      hidden=True,
       help='Restore a cluster from a source cluster at a given point in time.')
   pitr_source_group.add_argument(
-      '--source-cluster', required=True, help=('Source cluster name.'))
+      '--source-cluster',
+      required=True,
+      hidden=True,
+      help=('Source cluster name.'))
   pitr_source_group.add_argument(
       '--point-in-time',
       type=arg_parsers.Datetime.Parse,
       required=True,
+      hidden=True,
       help=('Point in time to restore to, in RFC 3339 format. For example, '
             '2012-11-15T16:19:00.094Z.'))
 

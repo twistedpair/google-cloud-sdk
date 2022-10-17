@@ -324,7 +324,6 @@ def AddSrcAddressGroups(parser):
       type=arg_parsers.ArgList(),
       metavar='SOURCE_ADDRESS_GROUPS',
       required=False,
-      hidden=True,
       help=(
           'Source address groups to match for this rule. '
           'Can only be specified if DIRECTION is ingress.'
@@ -338,7 +337,6 @@ def AddDestAddressGroups(parser):
       type=arg_parsers.ArgList(),
       metavar='DEST_ADDRESS_GROUPS',
       required=False,
-      hidden=True,
       help=(
           'Dest address groups to match for this rule. '
           'Can only be specified if DIRECTION is engress.'
@@ -352,7 +350,6 @@ def AddSrcFqdns(parser):
       type=arg_parsers.ArgList(),
       metavar='SOURCE_FQDNS',
       required=False,
-      hidden=True,
       help=(
           'Source FQDNs to match for this rule. '
           'Can only be specified if DIRECTION is `ingress`.'
@@ -366,7 +363,6 @@ def AddDestFqdns(parser):
       type=arg_parsers.ArgList(),
       metavar='DEST_FQDNS',
       required=False,
-      hidden=True,
       help=(
           'Dest FQDNs to match for this rule. '
           'Can only be specified if DIRECTION is `egress`.'
@@ -380,7 +376,6 @@ def AddSrcRegionCodes(parser):
       type=arg_parsers.ArgList(),
       metavar='SOURCE_REGION_CODES',
       required=False,
-      hidden=True,
       help=(
           'Source Region Code to match for this rule. '
           'Can only be specified if DIRECTION is `ingress`.'
@@ -394,7 +389,6 @@ def AddDestRegionCodes(parser):
       type=arg_parsers.ArgList(),
       metavar='DEST_REGION_CODES',
       required=False,
-      hidden=True,
       help=(
           'Dest Region Code to match for this rule. '
           'Can only be specified if DIRECTION is `egress`.'
@@ -408,7 +402,6 @@ def AddSrcThreatIntelligence(parser):
       type=arg_parsers.ArgList(),
       metavar='SOURCE_THREAT_INTELLIGENCE_LISTS',
       required=False,
-      hidden=True,
       help=(
           'Source Threat Intelligence lists to match for this rule. '
           'Can only be specified if DIRECTION is `ingress`.'
@@ -422,7 +415,6 @@ def AddDestThreatIntelligence(parser):
       type=arg_parsers.ArgList(),
       metavar='DEST_THREAT_INTELLIGENCE_LISTS',
       required=False,
-      hidden=True,
       help=(
           'Destination Threat Intelligence lists to match for this rule. '
           'Can only be specified if DIRECTION is `egress`.'

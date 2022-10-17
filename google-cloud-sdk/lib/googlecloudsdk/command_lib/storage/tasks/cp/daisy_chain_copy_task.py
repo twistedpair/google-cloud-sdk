@@ -492,6 +492,7 @@ class DaisyChainCopyTask(copy_util.CopyTaskWithExitHandler):
 
   def _populate_request_config_with_resource_values(self, request_config):
     resource_args = request_config.resource_args
+    # Does not cover all fields. Just the ones gsutil does.
     self._gapfill_request_config_field(resource_args, 'cache_control',
                                        'cache_control')
     self._gapfill_request_config_field(resource_args, 'content_disposition',
@@ -560,6 +561,7 @@ class DaisyChainCopyTask(copy_util.CopyTaskWithExitHandler):
         md5_hash=self._get_md5_hash(),
         size=self._source_resource.size,
         user_request_args=self._user_request_args)
+    # Request configs are designed to translate between providers.
     self._populate_request_config_with_resource_values(request_config)
 
     result_resource = None

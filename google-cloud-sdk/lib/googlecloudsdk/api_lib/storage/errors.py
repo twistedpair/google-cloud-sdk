@@ -124,7 +124,7 @@ class S3ErrorPayload(api_exceptions.FormattableErrorPayload):
     # TODO(b/170215786): Remove botocore_error_string attribute when S3 api
     # tests no longer expect the botocore error format.
     self.botocore_error_string = str(client_error)
-    if not isinstance(client_error, str):
+    if hasattr(client_error, 'response'):
       self.content = client_error.response
       if 'ResponseMetadata' in client_error.response:
         self.status_code = client_error.response['ResponseMetadata'].get(

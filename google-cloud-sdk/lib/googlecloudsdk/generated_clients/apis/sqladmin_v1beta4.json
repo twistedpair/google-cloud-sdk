@@ -402,6 +402,9 @@
                   "type": "string"
                 }
               }
+            },
+            "striped": {
+              "type": "boolean"
             }
           }
         }
@@ -500,6 +503,18 @@
         "offload": {
           "description": "Option for export offload.",
           "type": "boolean"
+        },
+        "bakExportOptions": {
+          "type": "object",
+          "properties": {
+            "striped": {
+              "type": "boolean"
+            },
+            "stripeCount": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
         }
       }
     },

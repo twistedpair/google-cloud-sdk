@@ -169,5 +169,6 @@ def RunBakImportCommand(args, client):
                                                     args.uri, args.database,
                                                     args.cert_path,
                                                     args.pvk_path,
-                                                    args.pvk_password)
+                                                    args.pvk_password,
+                                                    args.striped)
   return RunImportCommand(args, client, sql_import_context)

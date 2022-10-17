@@ -840,7 +840,8 @@ specified CPU architecture or a newer one.
 
 
 def AddBinauthzFlags(parser, api_version='v1', hidden=False, autopilot=False):
-  """Adds the --enable-binauthz  and --binauthz-evaluation-mode flags to parser."""
+  """Adds the --enable-binauthz  and --binauthz-evaluation-mode flags to parser.
+  """
   messages = apis.GetMessagesModule('container', api_version)
   options = api_adapter.GetBinauthzEvaluationModeOptions(messages)
 
@@ -1080,7 +1081,8 @@ def AddEnableWorkloadMonitoringEapFlag(parser):
 
 
 def AddManagedPrometheusFlags(parser, for_create=False):
-  """Adds --enable-managed-prometheus and --disable-managed-prometheus flags to parser."""
+  """Adds --enable-managed-prometheus and --disable-managed-prometheus flags to parser.
+  """
   enable_help_text = """Enable managed collection for Managed Service for
   Prometheus."""
   disable_help_text = """Disable managed collection for Managed Service for
@@ -2804,7 +2806,7 @@ Addons
 (https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters#Cluster.AddonsConfig)
 are additional Kubernetes cluster components. Addons specified by this flag will
 be enabled. The others will be disabled. Default addons: {0}.
-The Istio addon is deprecated and will be removed in an upcoming release.
+The Istio addon is deprecated and removed.
 For more information and migration, see https://cloud.google.com/istio/docs/istio-on-gke/migrate-to-anthos-service-mesh.
 """.format(', '.join(api_adapter.DEFAULT_ADDONS)))
 
@@ -2961,36 +2963,11 @@ Examples:
       }),
       action=actions.DeprecationAction(
           '--istio-config',
-          warn="""\
-The `--istio-config` flag is deprecated and will be removed in an upcoming
-release. For more information and migration, see
-https://cloud.google.com/istio/docs/istio-on-gke/migrate-to-anthos-service-mesh.
-"""),
+          error='The `--istio-config` flag is no longer supported. '
+          'For more information and migration, see https://cloud.google.com/istio/docs/istio-on-gke/migrate-to-anthos-service-mesh.',
+          removed=True),
       help=help_text,
       hidden=suppressed)
-
-
-def ValidateIstioConfigCreateArgs(istio_config_args, addons_args):
-  """Validates flags specifying Istio config for create.
-
-  Args:
-    istio_config_args: parsed comandline arguments for --istio_config.
-    addons_args: parsed comandline arguments for --addons.
-
-  Raises:
-    InvalidArgumentException: when auth is not MTLS_PERMISSIVE nor MTLS_STRICT,
-    or --addon=Istio is not specified
-  """
-  if istio_config_args:
-    auth = istio_config_args.get('auth', '')
-    if auth not in ['MTLS_PERMISSIVE', 'MTLS_STRICT']:
-      raise exceptions.InvalidArgumentException(
-          '--istio-config', 'auth is either MTLS_PERMISSIVE or MTLS_STRICT'
-          'e.g. --istio-config auth=MTLS_PERMISSIVE')
-    if 'Istio' not in addons_args:
-      raise exceptions.InvalidArgumentException(
-          '--istio-config', '--addon=Istio must be specified when '
-          '--istio-config is given')
 
 
 def ValidateIstioConfigUpdateArgs(istio_config_args, disable_addons_args):
@@ -3001,20 +2978,15 @@ def ValidateIstioConfigUpdateArgs(istio_config_args, disable_addons_args):
     disable_addons_args: parsed comandline arguments for --update-addons.
 
   Raises:
-    InvalidArgumentException: when auth is not MTLS_PERMISSIVE nor MTLS_STRICT,
-    or --update-addons=Istio=ENABLED is not specified
+    InvalidArgumentException: --update-addons=Istio=ENABLED
+    or --istio_config is specified
   """
-  if istio_config_args:
-    auth = istio_config_args.get('auth', '')
-    if auth not in ['MTLS_PERMISSIVE', 'MTLS_STRICT']:
-      raise exceptions.InvalidArgumentException(
-          '--istio-config', 'auth must be one of MTLS_PERMISSIVE or '
-          'MTLS_STRICT e.g. --istio-config auth=MTLS_PERMISSIVE')
-    disable_istio = disable_addons_args.get('Istio')
-    if disable_istio is None or disable_istio:
-      raise exceptions.InvalidArgumentException(
-          '--istio-config', '--update-addons=Istio=ENABLED must be specified '
-          'when --istio-config is given')
+  if disable_addons_args and disable_addons_args.get('Istio'):
+    return
+  if istio_config_args or (disable_addons_args and
+                           disable_addons_args.get('Istio') is False):  # pylint: disable=g-bool-id-comparison
+    raise exceptions.InvalidArgumentException(
+        '--istio-config', 'The Istio addon is no longer supported.')
 
 
 # TODO(b/110368338): Drop this warning when changing the default value of the
@@ -3186,7 +3158,8 @@ def AddWorkloadConfigAuditFlag(parser):
 
 
 def AddWorkloadVulnScanningFlag(parser):
-  """Adds Protect Config's Enable Workload Vulnerability Scanning flag to the parser."""
+  """Adds Protect Config's Enable Workload Vulnerability Scanning flag to the parser.
+  """
   parser.add_argument(
       '--enable-workload-vulnerability-scanning',
       default=None,
@@ -3351,7 +3324,8 @@ This is currently only available on Alpha clusters, specified by using
 
 
 def AddPrivateIpv6GoogleAccessTypeFlag(api_version, parser, hidden=False):
-  """Adds --private-ipv6-google-access-type={disabled|outbound-only|bidirectional} flag."""
+  """Adds --private-ipv6-google-access-type={disabled|outbound-only|bidirectional} flag.
+  """
   messages = apis.GetMessagesModule('container', api_version)
   util.GetPrivateIpv6GoogleAccessTypeMapper(
       messages, hidden).choice_arg.AddToParser(parser)
@@ -4279,7 +4253,8 @@ https://cloud.google.com/compute/confidential-vm/docs/about-cvm.""".format(
 
 
 def AddKubernetesObjectsExportConfig(parser, for_create=False):
-  """Adds kubernetes-objects-changes-target and kubernetes-objects-snapshots-target flags to parser."""
+  """Adds kubernetes-objects-changes-target and kubernetes-objects-snapshots-target flags to parser.
+  """
   help_text = """\
 Set kubernetes objects changes target [Currently only CLOUD_LOGGING value is supported].
   """
@@ -4409,7 +4384,8 @@ Specifies whether to enable image streaming on {}.""".format(target)
 
 
 def AddDisableAutopilotFlag(parser):
-  """Adds the argument to convert cluster from Autopilot mode to Standard mode."""
+  """Adds the argument to convert cluster from Autopilot mode to Standard mode.
+  """
   help_text = """\
 Converts a cluster from Autopilot mode to Standard mode."""
   parser.add_argument(
@@ -4706,7 +4682,7 @@ def AddManagedConfigFlag(parser, hidden=True):
       hidden=hidden)
 
 
-def AddFleetProjectFlag(parser, hidden=True):
+def AddFleetProjectFlag(parser, is_update=False, hidden=True):
   """Adds --fleet-project flag to the parser."""
   help_text = """
 Sets fleet host project for the cluster. If specified, the current cluster will be registered as a fleet membership under the fleet host project.
@@ -4714,12 +4690,27 @@ Sets fleet host project for the cluster. If specified, the current cluster will 
 Example:
 $ {command} --fleet-project=my-project
 """
+
+  unset_text = """
+Remove the cluster from current fleet host project.
+Example:
+$ {command} --clear-fleet-project
+"""
+
   parser.add_argument(
       '--fleet-project',
       help=help_text,
       metavar='PROJECT_ID_OR_NUMBER',
       type=str,
       hidden=hidden)
+
+  if is_update:
+    parser.add_argument(
+        '--clear-fleet-project',
+        help=unset_text,
+        default=None,
+        hidden=hidden,
+        action='store_true')
 
 
 def AddGatewayFlags(parser, hidden=True):
@@ -4771,4 +4762,28 @@ def AddLoggingVariantFlag(parser, for_node_pool=False, hidden=False):
                 'MAX_THROUGHPUT' variant requests more node resources and is
                 able to achieve logging throughput up to 10MB per sec. """
       },
+      default=None)
+
+
+def AddWindowsOsVersionFlag(parser, hidden=True):
+  """Adds --windows-os-version flag to the given parser.
+
+  Flag:
+  --windows-os-version={ltsc2019|ltsc2022}
+
+  Args:
+    parser: A give parser.
+    hidden: Indicates that the flags are hidden.
+  """
+  help_text = """
+    Specifies the Windows Server Image to use when creating a Windows node pool.
+    Valid variants can be "ltsc2019", "ltsc2022". It means using LTSC2019 server
+    image or LTSC2022 server image. If the node pool doesn't specify a Windows
+    Server Image Os version, then Ltsc2019 will be the default one to use.
+  """
+  parser.add_argument(
+      '--windows-os-version',
+      help=help_text,
+      hidden=hidden,
+      choices=['ltsc2019', 'ltsc2022'],
       default=None)

@@ -47,6 +47,17 @@ def UnrecognizedFields(message):
             f=", ".join(unrecognized_fields)))
 
 
+def WorkflowTriggerTransform(trigger):
+  trigger["id"] = trigger.pop("name")
+  event_source = trigger.pop("eventSource")
+  trigger["eventSource"] = {
+      "id": event_source,
+  }
+  for key, value in trigger.pop("filters").items():
+    trigger[key] = value
+  ParamDictTransform(trigger.get("params", []))
+
+
 def ParamSpecTransform(param_spec):
   if "default" in param_spec:
     param_spec["default"] = ParamValueTransform(param_spec["default"])

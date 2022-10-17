@@ -311,10 +311,6 @@
           "description": "The specification for the Anthos For VM Feature.",
           "$ref": "AnthosVMFeatureSpec"
         },
-        "clusterupgradeFeatureSpec": {
-          "description": "The specification for ClusterUpgrade feature.",
-          "$ref": "ClusterUpgradeFeatureSpec"
-        },
         "rbacrolebindingactuationFeatureSpec": {
           "description": "The specification for RBAC Role Binding Actuation.",
           "$ref": "RBACRoleBindingActuationFeatureSpec"
@@ -1334,150 +1330,6 @@
       "properties": {
       }
     },
-    "ClusterUpgradeFeatureSpec": {
-      "id": "ClusterUpgradeFeatureSpec",
-      "description": "ClusterUpgradeFeatureSpec contains the input for the ClusterUpgrade feature.",
-      "type": "object",
-      "properties": {
-        "workspaces": {
-          "description": "Map of workspace name to its corresponding spec. The workspace name should be in the format of `projects\/[project_id]\/locations\/global\/workspaces\/[ws_id]`.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "WorkspaceClusterUpgradeFeatureSpec"
-          }
-        }
-      }
-    },
-    "WorkspaceClusterUpgradeFeatureSpec": {
-      "id": "WorkspaceClusterUpgradeFeatureSpec",
-      "description": "WorkspaceClusterUpgradeFeatureSpec is per workspace spec.",
-      "type": "object",
-      "properties": {
-        "upstreamWorkspaces": {
-          "description": "This workspace consumes upgrades that have COMPLETE status code in the upstream workspaces. See WorkspaceGKEUpgradeState.Code for code definitions. This field is the fully qualified resource name of the workspace, in the format of `projects\/[project_id]\/locations\/global\/workspaces\/[ws_id]`.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "postConditions": {
-          "description": "Post conditions to evaluate to mark an upgrade COMPLETE.",
-          "$ref": "PostConditions"
-        },
-        "gkeUpgradeOverrides": {
-          "description": "Allow users to override some properties of each GKE upgrade.",
-          "type": "array",
-          "items": {
-            "$ref": "GKEUpgradeOverride"
-          }
-        },
-        "internalGkeUpgradeFeatureSpec": {
-          "description": "internal_gke_upgrade_feature_spec contains the desired GKE upgrades. It will only be updated by the controller. We will hide initially and decide whether we really need to expose it later.",
-          "$ref": "GKEUpgradeFeatureSpec"
-        }
-      }
-    },
-    "PostConditions": {
-      "id": "PostConditions",
-      "description": "Post conditional checks after an upgrade has been applied on all eligible clusters.",
-      "type": "object",
-      "properties": {
-        "soaking": {
-          "description": "Amount of time to \"soak\" after a rollout has been finished before marking it COMPLETE",
-          "type": "string",
-          "format": "google-duration"
-        }
-      }
-    },
-    "GKEUpgradeOverride": {
-      "id": "GKEUpgradeOverride",
-      "description": "Properties of an GKE upgrade that can be overridden by the user. For example, a user can skip soaking by overriding the soaking to 0.",
-      "type": "object",
-      "properties": {
-        "upgrade": {
-          "description": "Which upgrade to override.",
-          "$ref": "GKEUpgrade"
-        },
-        "postConditions": {
-          "description": "Post conditions to override for the specified upgrade (name + version).",
-          "$ref": "PostConditions"
-        }
-      }
-    },
-    "GKEUpgrade": {
-      "id": "GKEUpgrade",
-      "description": "GKEUpgrade represents a GKE provided upgrade, e.g., control plane upgrade.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Name of the upgrade, e.g., \"k8s_control_plane\".",
-          "type": "string"
-        },
-        "version": {
-          "description": "Version of the upgrade, e.g., \"1.22.1-gke.100\".",
-          "type": "string"
-        },
-        "policy": {
-          "description": "Policy associated with the upgrade.",
-          "$ref": "GKEUpgradePolicy"
-        }
-      }
-    },
-    "GKEUpgradePolicy": {
-      "id": "GKEUpgradePolicy",
-      "description": "GKEUpgradePolicy is a serialized rollout policy string that rollout server can actuate on.",
-      "type": "object",
-      "properties": {
-        "masterUpgradePolicy": {
-          "description": "Policy for master (control plane) upgrade.",
-          "type": "string"
-        },
-        "nodeUpgradePolicy": {
-          "description": "Policy for nodepool upgrade.",
-          "type": "string"
-        },
-        "componentPolicy": {
-          "description": "Policy for (mitosis) component upgrade.",
-          "type": "string"
-        },
-        "monolithComponentPolicy": {
-          "description": "Policy for monolith component upgrade.",
-          "type": "string"
-        }
-      }
-    },
-    "GKEUpgradeFeatureSpec": {
-      "id": "GKEUpgradeFeatureSpec",
-      "description": "GKEUpgradeFeatureSpec is the feature spec for GKE clusters.",
-      "type": "object",
-      "properties": {
-        "upgrades": {
-          "description": "A list of upgrades to be applied.",
-          "type": "array",
-          "items": {
-            "$ref": "WorkspaceGKEUpgrade"
-          }
-        }
-      }
-    },
-    "WorkspaceGKEUpgrade": {
-      "id": "WorkspaceGKEUpgrade",
-      "description": "WorkspaceGKEUpgrade is a GKEUpgrade and its eligibility at the workspace scope. This includes upgrades that are eligible for a subset of clusters (partially eligible upgrades). Partially eligible upgrades will be applied on the current workspace, but won't be propagated to the downstream workspace.",
-      "type": "object",
-      "properties": {
-        "upgrade": {
-          "description": "Which upgrade to perform on the workspace.",
-          "$ref": "GKEUpgrade"
-        },
-        "memberships": {
-          "description": "A list of eligible clusters to be upgraded to the given GKEUpgrade. Each membership resource is in the following format: `projects\/[project_id]\/locations\/[location]\/membership\/[membership_id]`.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "RBACRoleBindingActuationFeatureSpec": {
       "id": "RBACRoleBindingActuationFeatureSpec",
       "description": "**RBAC RoleBinding Actuation**: The Hub-wide input for the RBACRoleBindingActuation feature.",
@@ -1625,10 +1477,6 @@
         "anthosvmFeatureState": {
           "description": "State for the Anthos For VM Feature.",
           "$ref": "AnthosVMFeatureState"
-        },
-        "clusterupgradeFeatureState": {
-          "description": "State for the ClusterUpgrade Feature.",
-          "$ref": "ClusterUpgradeFeatureState"
         },
         "rbacrolebindingactuationFeatureState": {
           "description": "State for RBAC Role Binding Actuation.",
@@ -2710,10 +2558,6 @@
       "description": "State for PolicyController",
       "type": "object",
       "properties": {
-        "clusterName": {
-          "description": "The user-defined name for the cluster used by ClusterSelectors to group clusters together. This should match Membership's membership_name, unless the user installed Policy Controller on the cluster manually prior to enabling the Policy Controller Hub Feature. Unique within a Policy Controller installation.",
-          "type": "string"
-        },
         "state": {
           "description": "The overall Policy Controller lifecycle state observed by the Hub Feature controller.",
           "type": "string",
@@ -2878,143 +2722,6 @@
       "description": "MigrateState contains the state of Migrate subfeature",
       "type": "object",
       "properties": {
-      }
-    },
-    "ClusterUpgradeFeatureState": {
-      "id": "ClusterUpgradeFeatureState",
-      "description": "ClusterUpgradeFeatureState contains the status fields specific to the ClusterUpgrade feature.",
-      "type": "object",
-      "properties": {
-        "workspaces": {
-          "description": "Map of workspace name to its corresponding state. The workspace name should be in the format of `projects\/[project_id]\/locations\/global\/workspaces\/[ws_id]`.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "WorkspaceClusterUpgradeFeatureState"
-          }
-        }
-      }
-    },
-    "WorkspaceClusterUpgradeFeatureState": {
-      "id": "WorkspaceClusterUpgradeFeatureState",
-      "description": "WorkspaceClusterUpgradeFeatureState is per workspace state.",
-      "type": "object",
-      "properties": {
-        "downstreamWorkspaces": {
-          "description": "Tge workspaces whose upstream_workspaces contain the current workspace. This field is the fully qualified resource name of the workspace, in the format of `projects\/[project_id]\/locations\/global\/workspaces\/[ws_id]`.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "ignored": {
-          "description": "A list of memberships ignored by the feature. For example, manually upgraded clusters can be ignored if they are newer than the default versions of its release channel. The membership resource is in the format: `projects\/[project_id]\/locations\/[location]\/membership\/[membership_id]`.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "IgnoredMembership"
-          }
-        },
-        "gkeState": {
-          "description": "Feature state for GKE clusters.",
-          "$ref": "GKEUpgradeFeatureState"
-        }
-      }
-    },
-    "IgnoredMembership": {
-      "id": "IgnoredMembership",
-      "description": "IgnoredMembership represents a membership ignored by the feature. A membership can be ignored because it was manually upgraded to a newer version than RC default.",
-      "type": "object",
-      "properties": {
-        "reason": {
-          "description": "Reason why the membership is ignored.",
-          "type": "string"
-        },
-        "ignoredTime": {
-          "description": "Time when the membership was first set to ignored.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "GKEUpgradeFeatureState": {
-      "id": "GKEUpgradeFeatureState",
-      "description": "GKEUpgradeFeatureState contains feature states for GKE clusters in the workspace.",
-      "type": "object",
-      "properties": {
-        "state": {
-          "description": "Upgrade state.",
-          "type": "array",
-          "items": {
-            "$ref": "WorkspaceGKEUpgradeState"
-          }
-        },
-        "history": {
-          "description": "Store the last N (N=100) upgrades for debugging purpose.",
-          "type": "array",
-          "items": {
-            "$ref": "WorkspaceGKEUpgradeState"
-          }
-        }
-      }
-    },
-    "WorkspaceGKEUpgradeState": {
-      "id": "WorkspaceGKEUpgradeState",
-      "description": "WorkspaceGKEUpgradeState is a GKEUpgrade and its state at the workspace scope.",
-      "type": "object",
-      "properties": {
-        "upgrade": {
-          "description": "Which upgrade to track the state.",
-          "$ref": "GKEUpgrade"
-        },
-        "status": {
-          "description": "Status of the upgrade.",
-          "$ref": "UpgradeStatus"
-        },
-        "stats": {
-          "description": "Number of GKE clusters in each status code.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "lastUpdateTime": {
-          "description": "Last update timestamp of the state change.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "UpgradeStatus": {
-      "id": "UpgradeStatus",
-      "description": "UpgradeStatus provides status information for each upgrade.",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "Status code of the upgrade.",
-          "type": "string",
-          "enumDescriptions": [
-            "Required by https:\/\/linter.aip.dev\/126\/unspecified.",
-            "The upgrade is ineligible. At the workspace scope, this means the upgrade is ineligible for all the clusters in the workspace.",
-            "The upgrade is pending. At the workspace scope, this means the upgrade is pending for all the clusters in the workspace.",
-            "The upgrade is in progress. At the workspace scope, this means the upgrade is in progress for at least one cluster in the workspace.",
-            "The upgrade has finished and is soaking until the soaking time is up. At the workspace scope, this means at least one cluster is in soaking while the rest are either soaking or complete.",
-            "A cluster will be forced to enter soaking if an upgrade doesn't finish within a certain limit, despite it's actual status.",
-            "The upgrade has passed all post conditions (soaking). At the workspace scope, this means all eligible clusters are in COMPLETE status."
-          ],
-          "enum": [
-            "CODE_UNSPECIFIED",
-            "INELIGIBLE",
-            "PENDING",
-            "IN_PROGRESS",
-            "SOAKING",
-            "FORCED_SOAKING",
-            "COMPLETE"
-          ]
-        },
-        "reason": {
-          "description": "Reason for this status.",
-          "type": "string"
-        }
       }
     },
     "RBACRoleBindingActuationFeatureState": {

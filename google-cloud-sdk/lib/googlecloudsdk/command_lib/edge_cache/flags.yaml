@@ -16,7 +16,7 @@ origin:
         - api_field: key
         - api_field: value
     help_text: |
-      List of KEY=VALUE labels to attach this resource.
+      List of KEY=VALUE labels to attach to this resource.
 
   failover_origin:
     arg_name: failover-origin
@@ -201,7 +201,7 @@ keyset:
         - api_field: key
         - api_field: value
     help_text: |
-      List of KEY=VALUE labels to attach this resource.
+      List of KEY=VALUE labels to attach to this resource.
 
   public_keys:
     arg_name: public-key
@@ -284,7 +284,7 @@ service:
         - api_field: key
         - api_field: value
     help_text: |
-      List of KEY=VALUE labels to attach this resource.
+      List of KEY=VALUE labels to attach to this resource.
 
   disable_quic:
     arg_name: disable-quic

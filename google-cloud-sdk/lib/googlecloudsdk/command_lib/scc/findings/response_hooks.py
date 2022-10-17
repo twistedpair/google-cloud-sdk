@@ -19,7 +19,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.command_lib.scc.hooks import InvalidSCCInputError
+from googlecloudsdk.command_lib.scc.errors import InvalidSCCInputError
 
 
 def ExtractSecurityMarksFromResponse(response, args):

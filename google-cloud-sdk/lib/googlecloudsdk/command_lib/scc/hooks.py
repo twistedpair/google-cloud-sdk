@@ -23,6 +23,7 @@ import re
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.scc import securitycenter_client as sc_client
+from googlecloudsdk.command_lib.scc.errors import InvalidSCCInputError
 from googlecloudsdk.command_lib.util.apis import yaml_data
 from googlecloudsdk.command_lib.util.args import resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -37,10 +38,6 @@ class InvalidCustomConfigFileError(core_exceptions.Error):
 
 class InvalidTestDataFileError(core_exceptions.Error):
   """Error if a test data file is improperly formatted."""
-
-
-class InvalidSCCInputError(core_exceptions.Error):
-  """Exception raised for errors in the input."""
 
 
 def AppendOrgArg():
@@ -87,36 +84,6 @@ def SecurityMarksHook(parsed_dict):
   security_marks.marks = encoding.DictToMessage(
       parsed_dict, messages.SecurityMarks.MarksValue)
   return security_marks
-
-
-def GetParent(args):
-  """Converts user input to one of: organization, project, or folder."""
-  id_pattern = re.compile("[0-9]+")
-  parent = None
-  if hasattr(args, "parent"):
-    if not args.parent:
-      parent = properties.VALUES.scc.parent.Get()
-    else:
-      parent = args.parent
-  if parent is None:
-    # Use organization property as backup for legacy behavior.
-    parent = properties.VALUES.scc.organization.Get()
-    if parent is None:
-      parent = args.organization
-  if parent is None:
-    raise InvalidSCCInputError("Could not find Parent argument. Please "
-                               "provide the parent argument.")
-  if id_pattern.match(parent):
-    # Prepend organizations/ if only number value is provided.
-    parent = "organizations/" + parent
-  if not (parent.startswith("organizations/") or
-          parent.startswith("projects/") or parent.startswith("folders/")):
-    error_message = ("Parent must match either [0-9]+, organizations/[0-9]+, "
-                     "projects/.* "
-                     "or folders/.*."
-                     "")
-    raise InvalidSCCInputError(error_message)
-  return parent
 
 
 def GetOrganization(args):

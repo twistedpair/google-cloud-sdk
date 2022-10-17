@@ -1063,6 +1063,60 @@ class GkeonpremV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Enroll(self, request, global_params=None):
+      r"""Enrolls an existing VMware Admin Cluster to the GKE on-prem API within a given project and location. Through enrollment, an existing admin cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API.
+
+      Args:
+        request: (GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Enroll')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Enroll.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareAdminClusters:enroll',
+        http_method='POST',
+        method_id='gkeonprem.projects.locations.vmwareAdminClusters.enroll',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/vmwareAdminClusters:enroll',
+        request_field='enrollVmwareAdminClusterRequest',
+        request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single VMware Admin Cluster.
+
+      Args:
+        request: (GkeonpremProjectsLocationsVmwareAdminClustersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VmwareAdminCluster) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareAdminClusters/{vmwareAdminClustersId}',
+        http_method='GET',
+        method_id='gkeonprem.projects.locations.vmwareAdminClusters.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersGetRequest',
+        response_type_name='VmwareAdminCluster',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -1087,6 +1141,60 @@ class GkeonpremV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists VMware Admin Clusters in a given project and location.
+
+      Args:
+        request: (GkeonpremProjectsLocationsVmwareAdminClustersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListVmwareAdminClustersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareAdminClusters',
+        http_method='GET',
+        method_id='gkeonprem.projects.locations.vmwareAdminClusters.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        relative_path='v1/{+parent}/vmwareAdminClusters',
+        request_field='',
+        request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersListRequest',
+        response_type_name='ListVmwareAdminClustersResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single VMware Admin Cluster.
+
+      Args:
+        request: (GkeonpremProjectsLocationsVmwareAdminClustersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareAdminClusters/{vmwareAdminClustersId}',
+        http_method='PATCH',
+        method_id='gkeonprem.projects.locations.vmwareAdminClusters.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='vmwareAdminCluster',
+        request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1141,6 +1249,33 @@ class GkeonpremV1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+    def Unenroll(self, request, global_params=None):
+      r"""Unenrolls an existing Vmware Admin Cluster from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients.
+
+      Args:
+        request: (GkeonpremProjectsLocationsVmwareAdminClustersUnenrollRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Unenroll')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Unenroll.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareAdminClusters/{vmwareAdminClustersId}:unenroll',
+        http_method='DELETE',
+        method_id='gkeonprem.projects.locations.vmwareAdminClusters.unenroll',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'etag', 'validateOnly'],
+        relative_path='v1/{+name}:unenroll',
+        request_field='',
+        request_type_name='GkeonpremProjectsLocationsVmwareAdminClustersUnenrollRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1694,6 +1829,33 @@ class GkeonpremV1(base_api.BaseApiClient):
         request_field='vmwareCluster',
         request_type_name='GkeonpremProjectsLocationsVmwareClustersPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def QueryVersionConfig(self, request, global_params=None):
+      r"""Queries the VMware user cluster version config.
+
+      Args:
+        request: (GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryVmwareVersionConfigResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryVersionConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryVersionConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters:queryVersionConfig',
+        http_method='POST',
+        method_id='gkeonprem.projects.locations.vmwareClusters.queryVersionConfig',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['createConfig_adminClusterMembership', 'createConfig_adminClusterName', 'upgradeConfig_clusterName'],
+        relative_path='v1/{+parent}/vmwareClusters:queryVersionConfig',
+        request_field='',
+        request_type_name='GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest',
+        response_type_name='QueryVmwareVersionConfigResponse',
         supports_download=False,
     )
 

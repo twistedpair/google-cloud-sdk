@@ -795,3 +795,33 @@ def AddEndpointSubnetId(parser):
 
 def GetEndpointSubnetId(args):
   return getattr(args, 'endpoint_subnet_id', None)
+
+
+def AddMonitoringConfig(parser):
+  parser.add_argument(
+      '--enable-managed-prometheus',
+      action='store_true',
+      help=('Enable managed collection for Managed Service for Prometheus.'))
+
+
+def GetMonitoringConfig(args):
+  """Parses and validates the value of the --enable-managed-prometheus flag.
+
+  Args:
+    args: Arguments parsed from the command.
+
+  Returns:
+    The monitoring config object as GoogleCloudGkemulticloudV1MonitoringConfig.
+    None if enable_managed_prometheus is None.
+
+  """
+  prometheus = getattr(args, 'enable_managed_prometheus', None)
+  if not prometheus:
+    return None
+
+  messages = api_util.GetMessagesModule()
+  config = messages.GoogleCloudGkemulticloudV1ManagedPrometheusConfig()
+  config.enabled = True
+  return messages.GoogleCloudGkemulticloudV1MonitoringConfig(
+      managedPrometheusConfig=config)
+

@@ -553,10 +553,6 @@ def GetScheduling(args,
   location_hint = None
   if hasattr(args, 'location_hint'):
     location_hint = args.location_hint
-  if (skip_defaults and not IsAnySpecified(
-      args, 'maintenance_policy', 'preemptible', 'restart_on_failure') and
-      not node_affinities):
-    return None
   freeze_duration = None
   if hasattr(args, 'maintenance_freeze_duration') and args.IsSpecified(
       'maintenance_freeze_duration'):
@@ -590,11 +586,25 @@ def GetScheduling(args,
       args, 'termination_time'):
     termination_time = args.termination_time
 
+  # Make sure restart_on_failure always retain user-provided value,
+  # but also ignore its default value when asked to skip defaults.
+  restart_on_failure = None
+  if not skip_defaults or args.IsKnownAndSpecified('restart_on_failure'):
+    restart_on_failure = args.restart_on_failure
+
+  if (skip_defaults and not IsAnySpecified(
+      args, 'instance_termination_action', 'maintenance_policy', 'preemptible',
+      'provisioning_model') and not restart_on_failure and
+      not node_affinities and not max_run_duration and not termination_time and
+      not freeze_duration and not host_error_timeout_seconds and
+      not maintenance_interval):
+    return None
+
   return CreateSchedulingMessage(
       messages=client.messages,
       maintenance_policy=args.maintenance_policy,
       preemptible=args.preemptible,
-      restart_on_failure=args.restart_on_failure,
+      restart_on_failure=restart_on_failure,
       node_affinities=node_affinities,
       min_node_cpu=min_node_cpu,
       location_hint=location_hint,

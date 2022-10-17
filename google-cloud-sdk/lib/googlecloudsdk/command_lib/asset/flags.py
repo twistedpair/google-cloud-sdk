@@ -291,15 +291,6 @@ def AddSavedQueriesQueryFilePath(parser, is_required):
       '--query-file-path', required=is_required, help=query_file_path_help_text)
 
 
-def AddSavedQueriesQueryLabels(parser):
-  labels_help_text = (
-      'A key/value pair to attach to the query,'
-      ' which can be used in search and list operations.'
-      ' You can include up to 10 labels for each saved query.'
-  )
-  parser.add_argument('--labels', help=labels_help_text)
-
-
 def AddSavedQueriesQueryDescription(parser):
   description_help_text = (
       'A string describing the query.'

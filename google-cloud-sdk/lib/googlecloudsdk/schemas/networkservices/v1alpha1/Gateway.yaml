@@ -57,6 +57,14 @@ properties:
       A free-text description of the resource. Max length 1024
       characters.
     type: string
+  gatewaySecurityPolicy:
+    description: |-
+      A fully-qualified GatewaySecurityPolicy URL reference. Defines how
+      a server should apply security policy to inbound (VM to Proxy)
+      initiated connections. For example:
+      `projects/*/locations/*/gatewaySecurityPolicies/swg-policy`. This
+      policy is specific to gateways of type 'SECURE_WEB_GATEWAY'.
+    type: string
   labels:
     description: Set of label tags associated with the Gateway resource.
     $ref: LabelsValue.yaml
@@ -92,10 +100,11 @@ properties:
     type: string
   securityPolicy:
     description: |-
-      A fully-qualified SecurityPolicy URL reference. Defines how a
-      server should apply security policy to inbound (VM to Proxy)
-      initiated connections. This policy is specific to gateways of
-      type 'SECURE_WEB_GATEWAY'.
+      A fully-qualified GatewaySecurityPolicy URL reference. Defines
+      how a server should apply security policy to inbound (VM to
+      Proxy) initiated connections. This policy is specific to
+      gateways of type 'SECURE_WEB_GATEWAY'. DEPRECATED!!!! Use the
+      gateway_security_policy field instead.
     type: string
   serverTlsPolicy:
     description: |-

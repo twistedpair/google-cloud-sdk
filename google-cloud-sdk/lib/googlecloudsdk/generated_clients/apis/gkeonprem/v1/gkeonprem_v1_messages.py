@@ -856,6 +856,32 @@ class EnrollBareMetalClusterRequest(_messages.Message):
   localName = _messages.StringField(3)
 
 
+class EnrollVmwareAdminClusterRequest(_messages.Message):
+  r"""Message for enrolling an existing VMware Admin Cluster to the GKE on-
+  prem API.
+
+  Fields:
+    localName: The object name of the VMware OnPremAdminCluster custom
+      resource on the associated admin cluster. This field is used to support
+      conflicting resource names when enrolling existing clusters to the API.
+      When not provided, this field will resolve to the
+      vmware_admin_cluster_id. Otherwise, it must match the object name of the
+      VMware OnPremAdminCluster custom resource. It is not modifiable outside
+      / beyond the enrollment operation.
+    membership: Required. This is the full resource name of this admin
+      cluster's hub membership.
+    vmwareAdminClusterId: User provided OnePlatform identifier that is used as
+      part of the resource name. This must be unique among all GKE on-prem
+      clusters within a project and location and will return a 409 if the
+      cluster already exists. This value must be up to 40 characters and
+      follow RFC-1123 (https://tools.ietf.org/html/rfc1123) format.
+  """
+
+  localName = _messages.StringField(1)
+  membership = _messages.StringField(2)
+  vmwareAdminClusterId = _messages.StringField(3)
+
+
 class EnrollVmwareClusterRequest(_messages.Message):
   r"""Message for enrolling an existing VMware Cluster to the GKE on-prem API.
 
@@ -1579,6 +1605,21 @@ class GkeonpremProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest object.
+
+  Fields:
+    enrollVmwareAdminClusterRequest: A EnrollVmwareAdminClusterRequest
+      resource to be passed as the request body.
+    parent: Required. The parent of the project and location that we are
+      Enrolling this cluster in. Format:
+      "projects/{project}/locations/{location}"
+  """
+
+  enrollVmwareAdminClusterRequest = _messages.MessageField('EnrollVmwareAdminClusterRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class GkeonpremProjectsLocationsVmwareAdminClustersGetIamPolicyRequest(_messages.Message):
   r"""A GkeonpremProjectsLocationsVmwareAdminClustersGetIamPolicyRequest
   object.
@@ -1604,6 +1645,38 @@ class GkeonpremProjectsLocationsVmwareAdminClustersGetIamPolicyRequest(_messages
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class GkeonpremProjectsLocationsVmwareAdminClustersGetRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsVmwareAdminClustersGetRequest object.
+
+  Fields:
+    name: Required. Name of the VMware Admin Cluster to be returned. Format: "
+      projects/{project}/locations/{location}/vmwareAdminClusters/{vmware_admi
+      n_cluster}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkeonpremProjectsLocationsVmwareAdminClustersListRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsVmwareAdminClustersListRequest object.
+
+  Fields:
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, at most 50 clusters will be returned. The
+      maximum value is 1000; values above 1000 will be coerced to 1000.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. The parent of the project and location that we are
+      listing existing VMware Admin clusters in. Format:
+      "projects/{project}/locations/{location}"
+    showDeleted: If true, shows deleted VMware Admin Clusters.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
 
 
 class GkeonpremProjectsLocationsVmwareAdminClustersOperationsGetRequest(_messages.Message):
@@ -1632,6 +1705,34 @@ class GkeonpremProjectsLocationsVmwareAdminClustersOperationsListRequest(_messag
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class GkeonpremProjectsLocationsVmwareAdminClustersPatchRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsVmwareAdminClustersPatchRequest object.
+
+  Fields:
+    allowMissing: If set to true, and the VMware Admin Cluster is not found,
+      the request will create a new VMware Admin Cluster with the provided
+      configuration. The user must have both create and update permission to
+      call Update with allow_missing set to true.
+    name: Required. The VMware Admin Cluster resource name.
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the VMwareAdminCluster resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all populated fields in the
+      VmwareAdminCluster message will be updated. Empty fields will be ignored
+      unless a field mask is used.
+    validateOnly: Validate the request without actually doing any updates.
+    vmwareAdminCluster: A VmwareAdminCluster resource to be passed as the
+      request body.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+  vmwareAdminCluster = _messages.MessageField('VmwareAdminCluster', 5)
 
 
 class GkeonpremProjectsLocationsVmwareAdminClustersSetIamPolicyRequest(_messages.Message):
@@ -1666,6 +1767,27 @@ class GkeonpremProjectsLocationsVmwareAdminClustersTestIamPermissionsRequest(_me
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class GkeonpremProjectsLocationsVmwareAdminClustersUnenrollRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsVmwareAdminClustersUnenrollRequest object.
+
+  Fields:
+    allowMissing: If set to true, and the Vmware Admin Cluster is not found,
+      the request will succeed but no action will be taken on the server and
+      return a completed LRO.
+    etag: The current etag of the Vmware Admin Cluster. If an etag is provided
+      and does not match the current etag of the cluster, deletion will be
+      blocked and an ABORTED error will be returned.
+    name: Required. Name of the Vmware Admin Cluster to be unenrolled. Format:
+      "projects/{project}/locations/{location}/vmwareAdminClusters/{cluster}"
+    validateOnly: Validate the request without actually doing any updates.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
 
 
 class GkeonpremProjectsLocationsVmwareClustersCreateRequest(_messages.Message):
@@ -1841,6 +1963,32 @@ class GkeonpremProjectsLocationsVmwareClustersPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
   validateOnly = _messages.BooleanField(4)
   vmwareCluster = _messages.MessageField('VmwareCluster', 5)
+
+
+class GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest
+  object.
+
+  Fields:
+    createConfig_adminClusterMembership: The admin cluster membership. This is
+      the full resource name of the admin cluster's hub membership. Format:
+      "projects/{project}/locations/{location}/memberships/{membership}"
+    createConfig_adminClusterName: The admin cluster resource name. This is
+      the full resource name of the admin cluster resource. Format: "projects/
+      {project}/locations/{location}/vmwareAdminClusters/{vmware_admin_cluster
+      }"
+    parent: Required. The parent of the project and location that we are
+      getting version config. Format:
+      "projects/{project}/locations/{location}"
+    upgradeConfig_clusterName: The user cluster resource name. This is the
+      full resource name of the user cluster resource. Format: "projects/{proj
+      ect}/locations/{location}/vmwareClusters/{vmware_cluster}"
+  """
+
+  createConfig_adminClusterMembership = _messages.StringField(1)
+  createConfig_adminClusterName = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  upgradeConfig_clusterName = _messages.StringField(4)
 
 
 class GkeonpremProjectsLocationsVmwareClustersSetIamPolicyRequest(_messages.Message):
@@ -2166,6 +2314,23 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListVmwareAdminClustersResponse(_messages.Message):
+  r"""Response message for listing VMware Admin Clusters.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return. If the token is not empty this means that more results are
+      available and should be retrieved by repeating the request with the
+      provided page token.
+    unreachable: Locations that could not be reached.
+    vmwareAdminClusters: The list of VMware Admin Cluster.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  vmwareAdminClusters = _messages.MessageField('VmwareAdminCluster', 3, repeated=True)
 
 
 class ListVmwareClustersResponse(_messages.Message):
@@ -2541,6 +2706,16 @@ class QueryBareMetalVersionConfigResponse(_messages.Message):
   versions = _messages.MessageField('BareMetalVersionInfo', 1, repeated=True)
 
 
+class QueryVmwareVersionConfigResponse(_messages.Message):
+  r"""Response message for querying VMware user cluster version config.
+
+  Fields:
+    versions: List of available versions to install or to upgrade to.
+  """
+
+  versions = _messages.MessageField('VmwareVersionInfo', 1, repeated=True)
+
+
 class ResourceCondition(_messages.Message):
   r"""ResourceCondition provides a standard mechanism for higher-level status
   reporting from user cluster controller.
@@ -2875,6 +3050,316 @@ class VmwareAddressPool(_messages.Message):
   pool = _messages.StringField(4)
 
 
+class VmwareAdminAddonNodeConfig(_messages.Message):
+  r"""VmwareAdminAddonNodeConfig contains add-on node configurations for
+  VMware Admin Cluster.
+
+  Fields:
+    autoResizeConfig: VmwareAutoResizeConfig config specifies auto resize
+      config.
+  """
+
+  autoResizeConfig = _messages.MessageField('VmwareAutoResizeConfig', 1)
+
+
+class VmwareAdminCluster(_messages.Message):
+  r"""Resource that represents a VMware Admin Cluster.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of VMware Admin
+      Cluster.
+
+  Messages:
+    AnnotationsValue: Annotations on the VMware Admin Cluster. This field has
+      the same restrictions as Kubernetes annotations. The total size of all
+      keys and values combined is limited to 256k. Key can have 2 segments:
+      prefix (optional) and name (required), separated by a slash (/). Prefix
+      must be a DNS subdomain. Name must be 63 characters or less, begin and
+      end with alphanumerics, with dashes (-), underscores (_), dots (.), and
+      alphanumerics between.
+
+  Fields:
+    addonNode: The VMware Admin Cluster addon node configuration.
+    annotations: Annotations on the VMware Admin Cluster. This field has the
+      same restrictions as Kubernetes annotations. The total size of all keys
+      and values combined is limited to 256k. Key can have 2 segments: prefix
+      (optional) and name (required), separated by a slash (/). Prefix must be
+      a DNS subdomain. Name must be 63 characters or less, begin and end with
+      alphanumerics, with dashes (-), underscores (_), dots (.), and
+      alphanumerics between.
+    antiAffinityGroups: The VMware Admin Cluster anti affinity group
+      configuration.
+    autoRepairConfig: The VMware Admin Cluster auto repair configuration.
+    bootstrapClusterMembership: The bootstrap cluster this VMware Admin
+      Cluster belongs to.
+    controlPlaneNode: The VMware Admin Cluster control plane node
+      configuration.
+    createTime: Output only. The time at which VMware Admin Cluster was
+      created.
+    description: A human readable description of this VMware Admin Cluster.
+    endpoint: Output only. The DNS name of VMware Admin Cluster's API server.
+    etag: This checksum is computed by the server based on the value of other
+      fields, and may be sent on update and delete requests to ensure the
+      client has an up-to-date value before proceeding. Allows clients to
+      perform consistent read-modify-writes through optimistic concurrency
+      control.
+    fleet: Output only. Fleet configuration for the cluster.
+    imageType: The OS image type for the VMware Admin Cluster.
+    loadBalancer: The VMware Admin Cluster load balancer configuration.
+    localName: Output only. The object name of the VMware OnPremAdminCluster
+      custom resource. This field is used to support conflicting names when
+      enrolling existing clusters to the API. When used as a part of cluster
+      enrollment, this field will differ from the ID in the resource name. For
+      new clusters, this field will match the user provided cluster ID and be
+      visible in the last component of the resource name. It is not
+      modifiable. All users should use this name to access their cluster using
+      gkectl or kubectl and should expect to see the local name when viewing
+      admin cluster controller logs.
+    name: Required. The VMware Admin Cluster resource name.
+    networkConfig: The VMware Admin Cluster network configuration.
+    onPremVersion: The Anthos clusters on the VMware version for the admin
+      cluster.
+    platformConfig: The VMware platform configuration.
+    reconciling: Output only. If set, there are currently changes in flight to
+      the VMware Admin Cluster.
+    state: Output only. The current state of VMware Admin Cluster.
+    status: Output only. ResourceStatus representing detailed cluster state.
+    uid: Output only. The unique identifier of the VMware Admin Cluster.
+    updateTime: Output only. The time at which VMware Admin Cluster was last
+      updated.
+    vcenter: The VMware Admin Cluster VCenter configuration.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of VMware Admin Cluster.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      PROVISIONING: The PROVISIONING state indicates the cluster is being
+        created.
+      RUNNING: The RUNNING state indicates the cluster has been created and is
+        fully usable.
+      RECONCILING: The RECONCILING state indicates that the cluster is being
+        updated. It remains available, but potentially with degraded
+        performance.
+      STOPPING: The STOPPING state indicates the cluster is being deleted.
+      ERROR: The ERROR state indicates the cluster is in a broken
+        unrecoverable state.
+      DEGRADED: The DEGRADED state indicates the cluster requires user action
+        to restore full functionality.
+    """
+    STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    RUNNING = 2
+    RECONCILING = 3
+    STOPPING = 4
+    ERROR = 5
+    DEGRADED = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Annotations on the VMware Admin Cluster. This field has the same
+    restrictions as Kubernetes annotations. The total size of all keys and
+    values combined is limited to 256k. Key can have 2 segments: prefix
+    (optional) and name (required), separated by a slash (/). Prefix must be a
+    DNS subdomain. Name must be 63 characters or less, begin and end with
+    alphanumerics, with dashes (-), underscores (_), dots (.), and
+    alphanumerics between.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  addonNode = _messages.MessageField('VmwareAdminAddonNodeConfig', 1)
+  annotations = _messages.MessageField('AnnotationsValue', 2)
+  antiAffinityGroups = _messages.MessageField('VmwareAAGConfig', 3)
+  autoRepairConfig = _messages.MessageField('VmwareAutoRepairConfig', 4)
+  bootstrapClusterMembership = _messages.StringField(5)
+  controlPlaneNode = _messages.MessageField('VmwareAdminControlPlaneNodeConfig', 6)
+  createTime = _messages.StringField(7)
+  description = _messages.StringField(8)
+  endpoint = _messages.StringField(9)
+  etag = _messages.StringField(10)
+  fleet = _messages.MessageField('Fleet', 11)
+  imageType = _messages.StringField(12)
+  loadBalancer = _messages.MessageField('VmwareAdminLoadBalancerConfig', 13)
+  localName = _messages.StringField(14)
+  name = _messages.StringField(15)
+  networkConfig = _messages.MessageField('VmwareAdminNetworkConfig', 16)
+  onPremVersion = _messages.StringField(17)
+  platformConfig = _messages.MessageField('VmwarePlatformConfig', 18)
+  reconciling = _messages.BooleanField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  status = _messages.MessageField('ResourceStatus', 21)
+  uid = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
+  vcenter = _messages.MessageField('VmwareAdminVCenterConfig', 24)
+
+
+class VmwareAdminControlPlaneNodeConfig(_messages.Message):
+  r"""VmwareAdminControlPlaneNodeConfig contains control plane node
+  configuration for VMware Admin Cluster.
+
+  Fields:
+    cpus: The number of vCPUs for the control-plane node of the admin cluster.
+    memory: The number of mebibytes of memory for the control-plane node of
+      the admin cluster.
+  """
+
+  cpus = _messages.IntegerField(1)
+  memory = _messages.IntegerField(2)
+
+
+class VmwareAdminF5BigIpConfig(_messages.Message):
+  r"""VmwareAdminF5BigIpConfig represents configuration parameters for an F5
+  BIG-IP load balancer.
+
+  Fields:
+    address: The load balancer's IP address.
+    partition: The preexisting partition to be used by the load balancer. This
+      partition is usually created for the admin cluster for example:
+      'my-f5-admin-partition'.
+    snatPool: The pool name. Only necessary, if using SNAT.
+  """
+
+  address = _messages.StringField(1)
+  partition = _messages.StringField(2)
+  snatPool = _messages.StringField(3)
+
+
+class VmwareAdminLoadBalancerConfig(_messages.Message):
+  r"""VmwareAdminLoadBalancerConfig contains load balancer configuration for
+  VMware Admin Cluster.
+
+  Fields:
+    f5Config: Configuration for F5 Big IP typed load balancers.
+    manualLbConfig: Manually configured load balancers.
+    metalLbConfig: MetalLB load balancers.
+    vipConfig: The VIPs used by the load balancer.
+  """
+
+  f5Config = _messages.MessageField('VmwareAdminF5BigIpConfig', 1)
+  manualLbConfig = _messages.MessageField('VmwareAdminManualLbConfig', 2)
+  metalLbConfig = _messages.MessageField('VmwareAdminMetalLbConfig', 3)
+  vipConfig = _messages.MessageField('VmwareAdminVipConfig', 4)
+
+
+class VmwareAdminManualLbConfig(_messages.Message):
+  r"""A VmwareAdminManualLbConfig object.
+
+  Fields:
+    addonsNodePort: NodePort for add-ons server in the admin cluster.
+    controlPlaneNodePort: NodePort for control plane service. The Kubernetes
+      API server in the admin cluster is implemented as a Service of type
+      NodePort (ex. 30968).
+    ingressHttpNodePort: NodePort for ingress service's http. The ingress
+      service in the admin cluster is implemented as a Service of type
+      NodePort (ex. 32527).
+    ingressHttpsNodePort: NodePort for ingress service's https. The ingress
+      service in the admin cluster is implemented as a Service of type
+      NodePort (ex. 30139).
+    konnectivityServerNodePort: NodePort for konnectivity server service
+      running as a sidecar in each kube-apiserver pod (ex. 30564).
+  """
+
+  addonsNodePort = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  controlPlaneNodePort = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  ingressHttpNodePort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  ingressHttpsNodePort = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  konnectivityServerNodePort = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class VmwareAdminMetalLbConfig(_messages.Message):
+  r"""VmwareAdminMetalLbConfig represents configuration parameters for a
+  MetalLB load balancer. For admin clusters, currently no configurations is
+  needed.
+  """
+
+
+
+class VmwareAdminNetworkConfig(_messages.Message):
+  r"""VmwareAdminNetworkConfig contains network configuration for VMware Admin
+  Cluster.
+
+  Fields:
+    dhcpIpConfig: Configuration settings for a DHCP IP configuration.
+    hostConfig: Represents common network settings irrespective of the host's
+      IP address.
+    podAddressCidrBlocks: Required. All pods in the cluster are assigned an
+      RFC1918 IPv4 address from these ranges. Only a single range is
+      supported. This field cannot be changed after creation.
+    serviceAddressCidrBlocks: Required. All services in the cluster are
+      assigned an RFC1918 IPv4 address from these ranges. Only a single range
+      is supported. This field cannot be changed after creation.
+    staticIpConfig: Configuration settings for a static IP configuration.
+    vcenterNetwork: vcenter_network specifies vCenter network name.
+  """
+
+  dhcpIpConfig = _messages.MessageField('VmwareDhcpIpConfig', 1)
+  hostConfig = _messages.MessageField('VmwareHostConfig', 2)
+  podAddressCidrBlocks = _messages.StringField(3, repeated=True)
+  serviceAddressCidrBlocks = _messages.StringField(4, repeated=True)
+  staticIpConfig = _messages.MessageField('VmwareStaticIpConfig', 5)
+  vcenterNetwork = _messages.StringField(6)
+
+
+class VmwareAdminVCenterConfig(_messages.Message):
+  r"""VmwareAdminVCenterConfig contains VCenter configuration for VMware Admin
+  Cluster.
+
+  Fields:
+    address: The vCenter IP address.
+    caCertData: Contains the vCenter CA certificate public key for SSL
+      verification.
+    cluster: The name of the vCenter cluster for the admin cluster.
+    dataDisk: The name of the virtual machine disk (VMDK) for the admin
+      cluster.
+    datacenter: The name of the vCenter datacenter for the admin cluster.
+    datastore: The name of the vCenter datastore for the admin cluster.
+    folder: The name of the vCenter folder for the admin cluster.
+    resourcePool: The name of the vCenter resource pool for the admin cluster.
+  """
+
+  address = _messages.StringField(1)
+  caCertData = _messages.StringField(2)
+  cluster = _messages.StringField(3)
+  dataDisk = _messages.StringField(4)
+  datacenter = _messages.StringField(5)
+  datastore = _messages.StringField(6)
+  folder = _messages.StringField(7)
+  resourcePool = _messages.StringField(8)
+
+
+class VmwareAdminVipConfig(_messages.Message):
+  r"""VmwareAdminVipConfig for Vmware Load Balancer Config.
+
+  Fields:
+    addonsVip: The VIP to configure the load balancer for add-ons.
+    controlPlaneVip: The VIP which you previously set aside for the Kubernetes
+      API of the admin cluster.
+  """
+
+  addonsVip = _messages.StringField(1)
+  controlPlaneVip = _messages.StringField(2)
+
+
 class VmwareAutoRepairConfig(_messages.Message):
   r"""VmwareAutoRepairConfig is used to enable/disable auto repair. The
   cluster-health-controller is deployed only if Enabled is true.
@@ -2894,6 +3379,18 @@ class VmwareAutoResizeConfig(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
+
+
+class VmwareBundleConfig(_messages.Message):
+  r"""VmwareBundleConfig represents configuration for the bundle.
+
+  Fields:
+    status: Output only. Resource status for the bundle.
+    version: The version of the bundle.
+  """
+
+  status = _messages.MessageField('ResourceStatus', 1)
+  version = _messages.StringField(2)
 
 
 class VmwareCluster(_messages.Message):
@@ -3477,6 +3974,26 @@ class VmwareNodePoolAutoscalingConfig(_messages.Message):
   minReplicas = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class VmwarePlatformConfig(_messages.Message):
+  r"""VmwarePlatformConfig represents configuration for the VMware platform.
+
+  Fields:
+    bundles: Output only. The list of bundles installed in the admin cluster.
+    platformVersion: Output only. The platform version e.g. 1.13.2.
+    requiredPlatformVersion: Input only. The required platform version e.g.
+      1.13.1. If the current platform version is lower than the target
+      version, the platform version will be updated to the target version. If
+      the target version is not installed in the platform (bundle versions),
+      download the target version bundle.
+    status: Output only. Resource status for the platform.
+  """
+
+  bundles = _messages.MessageField('VmwareBundleConfig', 1, repeated=True)
+  platformVersion = _messages.StringField(2)
+  requiredPlatformVersion = _messages.StringField(3)
+  status = _messages.MessageField('ResourceStatus', 4)
+
+
 class VmwareSeesawConfig(_messages.Message):
   r"""A VmwareSeesawConfig object.
 
@@ -3544,6 +4061,21 @@ class VmwareVCenterConfig(_messages.Message):
   datastore = _messages.StringField(5)
   folder = _messages.StringField(6)
   resourcePool = _messages.StringField(7)
+
+
+class VmwareVersionInfo(_messages.Message):
+  r"""VmwareVersionInfo contains information about a specific Anthos on VMware
+  version.
+
+  Fields:
+    hasDependencies: If set, the cluster dependencies (e.g. the admin cluster,
+      other user clusters managed by the same admin cluster) must be upgraded
+      before this version can be installed or upgraded to.
+    version: Version number e.g. 1.13.1-gke.1000.
+  """
+
+  hasDependencies = _messages.BooleanField(1)
+  version = _messages.StringField(2)
 
 
 class VmwareVipConfig(_messages.Message):

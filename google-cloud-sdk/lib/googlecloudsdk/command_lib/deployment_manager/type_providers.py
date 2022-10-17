@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """type-provider command basics."""
 
 from __future__ import absolute_import
@@ -28,68 +27,64 @@ def AddTypeProviderNameFlag(parser):
   """Add the type provider name argument.
 
   Args:
-    parser: An argparse parser that you can use to add arguments that go
-        on the command line after this command. Positional arguments are
-        allowed.
+    parser: An argparse parser that you can use to add arguments that go on the
+      command line after this command. Positional arguments are allowed.
   """
-  parser.add_argument('provider_name',
-                      help='Type provider name or URI.')
+  parser.add_argument('provider_name', help='Type provider name or URI.')
 
 
 def AddDescriptionFlag(parser):
   """Add the description argument.
 
   Args:
-    parser: An argparse parser that you can use to add arguments that go
-        on the command line after this command. Positional arguments are
-        allowed.
+    parser: An argparse parser that you can use to add arguments that go on the
+      command line after this command. Positional arguments are allowed.
   """
-  parser.add_argument('--description',
-                      help='Optional description of the type provider.',
-                      default='')
+  parser.add_argument(
+      '--description',
+      help='Optional description of the type provider.',
+      default='')
 
 
 def AddDescriptorUrlFlag(parser):
   """Add the descriptor URL argument.
 
   Args:
-    parser: An argparse parser that you can use to add arguments that go
-        on the command line after this command. Positional arguments are
-        allowed.
+    parser: An argparse parser that you can use to add arguments that go on the
+      command line after this command. Positional arguments are allowed.
   """
-  parser.add_argument('--descriptor-url',
-                      help='URL of API of your type.',
-                      required=True)
+  parser.add_argument(
+      '--descriptor-url', help='URL of API of your type.', required=True)
 
 
 def AddApiOptionsFileFlag(parser):
   """Add the api options file argument.
 
   Args:
-    parser: An argparse parser that you can use to add arguments that go
-        on the command line after this command. Positional arguments are
-        allowed.
+    parser: An argparse parser that you can use to add arguments that go on the
+      command line after this command. Positional arguments are allowed.
   """
-  parser.add_argument('--api-options-file',
-                      help=('YAML file with options for the API: e.g. '
-                            'options and collection overrides.'))
+  parser.add_argument(
+      '--api-options-file',
+      help=('YAML file with options for the API: e.g. '
+            'options and collection overrides.'))
 
 
 def AddCustomCaCertificateFlag(parser):
   """Add the Custom CA Certificates flag.
 
   Args:
-    parser: An argparse parser that you can use to add arguments that go
-        on the command line after this command. Positional arguments are
-        allowed.
+    parser: An argparse parser that you can use to add arguments that go on the
+      command line after this command. Positional arguments are allowed.
   """
-  parser.add_argument('--custom-certificate-authority-roots',
-                      help="""\
+  parser.add_argument(
+      '--custom-certificate-authority-roots',
+      help="""\
                       Comma-separated list of CA root certificates to use when
                       connecting to the type's API by HTTPS.""",
-                      type=arg_parsers.ArgList(min_length=1),
-                      default=[],
-                      metavar='CA_ROOT')
+      type=arg_parsers.ArgList(min_length=1),
+      default=[],
+      metavar='CA_ROOT')
 
 
 def _OptionsFrom(messages, options_data):
@@ -98,6 +93,7 @@ def _OptionsFrom(messages, options_data):
   Args:
     messages: The API message to use.
     options_data: A dict containing options data.
+
   Returns:
     An Options message object derived from options_data.
   """
@@ -106,17 +102,19 @@ def _OptionsFrom(messages, options_data):
     options.virtualProperties = options_data['virtualProperties']
 
   if 'inputMappings' in options_data:
-    options.inputMappings = [_InputMappingFrom(messages, im_data)
-                             for im_data in options_data['inputMappings']]
+    options.inputMappings = [
+        _InputMappingFrom(messages, im_data)
+        for im_data in options_data['inputMappings']
+    ]
 
   if 'validationOptions' in options_data:
     validation_options_data = options_data['validationOptions']
     validation_options = messages.ValidationOptions()
     if 'schemaValidation' in validation_options_data:
-      validation_options.schemaValidation = (
+      validation_options.schemaValidation = messages.ValidationOptions.SchemaValidationValueValuesEnum(
           validation_options_data['schemaValidation'])
     if 'undeclaredProperties' in validation_options_data:
-      validation_options.undeclaredProperties = (
+      validation_options.undeclaredProperties = messages.ValidationOptions.UndeclaredPropertiesValueValuesEnum(
           validation_options_data['undeclaredProperties'])
     options.validationOptions = validation_options
 
@@ -129,12 +127,19 @@ def _InputMappingFrom(messages, input_mapping_data):
   Args:
     messages: The API message to use.
     input_mapping_data: A dict containing input mapping data.
+
   Returns:
     An InputMapping message object derived from options_data.
   """
+
+  # Retrieve the location, and if it's not None convert to the enum value
+  location = input_mapping_data.get('location', None)
+  if location is not None:
+    location = messages.InputMapping.LocationValueValuesEnum(location)
+
   return messages.InputMapping(
       fieldName=input_mapping_data.get('fieldName', None),
-      location=input_mapping_data.get('location', None),
+      location=location,
       methodMatch=input_mapping_data.get('methodMatch', None),
       value=input_mapping_data.get('value', None))
 
@@ -145,6 +150,7 @@ def _CredentialFrom(messages, credential_data):
   Args:
     messages: The API message to use.
     credential_data: A dict containing credential data.
+
   Returns:
     An Credential message object derived from credential_data.
   """
@@ -160,8 +166,9 @@ def AddOptions(messages, options_file, type_provider):
   Args:
     messages: The API message to use.
     options_file: String path expression pointing to a type-provider options
-        file.
+      file.
     type_provider: A TypeProvider message on which the options will be set.
+
   Returns:
     The type_provider after applying changes.
   Raises:
@@ -189,8 +196,8 @@ def AddOptions(messages, options_file, type_provider):
       type_provider.options = _OptionsFrom(messages, yaml_content['options'])
 
     if 'credential' in yaml_content:
-      type_provider.credential = _CredentialFrom(
-          messages, yaml_content['credential'])
+      type_provider.credential = _CredentialFrom(messages,
+                                                 yaml_content['credential'])
 
   return type_provider
 

@@ -444,34 +444,14 @@ class AssetSavedQueriesClient(object):
         'IamPolicyAnalysisQuery': self.message_module.IamPolicyAnalysisQuery
     }
 
-  def GetLabelsObject(self, labels_str):
-    """Convert string to LabelsValue."""
-    if labels_str:
-      # labels string should have meaningful values for it to be processed
-      try:
-        label_dic = {}
-        for pair in labels_str.split(','):
-          k, v = pair.split('=')
-          label_dic[k] = v
-        labels = self.message_module.SavedQuery.LabelsValue()
-        props = []
-        for k, v in label_dic.items():
-          props.append(labels.AdditionalProperty(key=k, value=v))
-        labels.additionalProperties = props
-        return labels
-      except:
-        raise gcloud_exceptions.InvalidArgumentException(
-            '--labels',
-            'Labels should be the following format: \"key1=val1,key2val2\".')
-    return None
-
   def Create(self, args):
     """Create a SavedQuery."""
     query_obj = self.GetQueryContentFromFile(
         args.query_file_path)
     saved_query_content = self.message_module.QueryContent(
         iamPolicyAnalysisQuery=query_obj)
-    arg_labels = self.GetLabelsObject(args.labels)
+    arg_labels = labels_util.ParseCreateArgs(
+        args, self.message_module.SavedQuery.LabelsValue)
     saved_query = self.message_module.SavedQuery(
         content=saved_query_content,
         description=args.description,

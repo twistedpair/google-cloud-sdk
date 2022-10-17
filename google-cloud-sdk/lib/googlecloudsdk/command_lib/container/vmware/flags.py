@@ -25,6 +25,27 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
 
+def Get(args, flag_name, default=None):
+  """Returns the value if it's set, otherwise returns None.
+
+  Args:
+    args: An argparser Namespace class instance.
+    flag_name: A string type flag name.
+    default: The default value to return if not found in the argparser
+      namespace.
+
+  Returns:
+    The flag value if it is set by the user. If the flag is not added to the
+    interface, or it is added by not specified by the user, returns the
+    default value.
+  """
+  default_values = {
+      'page_size': 100,
+  }
+  default_value = default_values.get(flag_name, default)
+  return getattr(args, flag_name, default_value)
+
+
 def LocationAttributeConfig():
   """Gets Google Cloud location resource attribute."""
   return concepts.ResourceParameterAttributeConfig(
@@ -46,16 +67,17 @@ def GetLocationResourceSpec():
   )
 
 
-def AddLocationResourceArg(parser):
+def AddLocationResourceArg(parser, verb):
   """Adds a resource argument for Google Cloud location.
 
   Args:
     parser: The argparse.parser to add the resource arg to.
+    verb: str, the verb to describe the resource, such as 'to update'.
   """
   concept_parsers.ConceptParser.ForResource(
       '--location',
       GetLocationResourceSpec(),
-      'Google Cloud location for the {resource}.',
+      'Google Cloud location {}.'.format(verb),
       required=True).AddToParser(parser)
 
 
@@ -161,7 +183,7 @@ def AddAdminClusterMembershipResourceArg(parser, positional=True):
   parser.set_defaults(admin_cluster_membership_location='global')
 
 
-def AddForceUnenrollFlag(parser):
+def AddForceUnenroll(parser):
   """Adds a flag for force unenroll operation when there are existing node pools.
 
   Args:
@@ -174,7 +196,7 @@ def AddForceUnenrollFlag(parser):
   )
 
 
-def AddForceDeleteClusterFlag(parser):
+def AddForceDeleteCluster(parser):
   """Adds a flag for force delete cluster operation when there are existing node pools.
 
   Args:
@@ -187,7 +209,7 @@ def AddForceDeleteClusterFlag(parser):
   )
 
 
-def AddAllowMissingFlag(parser):
+def AddAllowMissingDeleteNodePool(parser):
   """Adds a flag for delete node pool operation to return success and perform no action when there is no matching node pool.
 
   Args:
@@ -200,7 +222,7 @@ def AddAllowMissingFlag(parser):
   )
 
 
-def AddAllowMissingDeleteClusterFlag(parser):
+def AddAllowMissingDeleteCluster(parser):
   """Adds a flag for delete cluster operation to return success and perform no action when there is no matching cluster.
 
   Args:
@@ -210,6 +232,25 @@ def AddAllowMissingDeleteClusterFlag(parser):
       '--allow-missing',
       action='store_true',
       help='If set, and the Anthos cluster on VMware is not found, the request will succeed but no action will be taken.',
+  )
+
+
+def AddAllowMissingUpdateCluster(parser):
+  """Adds a flag to enable allow missing in an update cluster request.
+
+  If set to true, and the cluster is not found, the request will
+  create a new cluster with the provided configuration. The user
+  must have both create and update permission to call Update with
+  allow_missing set to true.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--allow-missing',
+      action='store_true',
+      hidden=True,
+      help='If set, and the Anthos cluster on VMware is not found, the update request will try to create a new cluster with the provided configuration.',
   )
 
 
@@ -228,16 +269,17 @@ def AddValidationOnly(parser, hidden=False):
   )
 
 
-def AddImageType(parser):
+def AddImageType(parser, required=False):
   """Adds a flag to specify the node pool image type.
 
   Args:
     parser: The argparse parser to add the flag to.
+    required: bool, True to raise an exception if the property is not set.
   """
   parser.add_argument(
       '--image-type',
-      required=True,
-      help='Set the OS image type to use on node pool instances.',
+      required=required,
+      help='OS image type to use on node pool instances.',
   )
 
 
@@ -250,7 +292,7 @@ def AddReplicas(parser):
   parser.add_argument(
       '--replicas',
       type=int,
-      help='Set the number of replicas to use on node pool instances.',
+      help='Number of replicas to use on node pool instances.',
   )
 
 
@@ -267,24 +309,25 @@ def AddEnableLoadBalancer(parser):
   )
 
 
-def AddAutoscaling(parser):
+def AddAutoscaling(parser, required=False):
   """Adds a flag to specify the node pool autoscaling config.
 
   Args:
     parser: The argparse parser to add the flag to.
+    required: bool, True to raise an exception if the property is not set.
   """
   group = parser.add_argument_group('Node pool autoscaling')
   group.add_argument(
       '--min-replicas',
-      required=True,
+      required=required,
       type=int,
-      help='Minimum number of replicas in the node pool',
+      help='Minimum number of replicas in the node pool.',
   )
   group.add_argument(
       '--max-replicas',
-      required=True,
+      required=required,
       type=int,
-      help='Maximum number of replicas in the node pool',
+      help='Maximum number of replicas in the node pool.',
   )
 
 
@@ -296,7 +339,7 @@ def AddVersion(parser):
   """
   parser.add_argument(
       '--version',
-      help='Set the Anthos Cluster on VMware version for the user cluster resource',
+      help='Anthos Cluster on VMware version for the user cluster resource',
   )
 
 
@@ -314,7 +357,7 @@ def AddServiceAddressCidrBlocks(parser):
           max_length=1,
       ),
       required=True,
-      help='Set the IPv4 address range for all services in the cluster.',
+      help='IPv4 address range for all services in the cluster.',
   )
 
 
@@ -332,7 +375,7 @@ def AddPodAddressCidrBlocks(parser):
           max_length=1,
       ),
       required=True,
-      help='Set IPv4 address range for all pods in the cluster.',
+      help='IPv4 address range for all pods in the cluster.',
   )
 
 
@@ -347,18 +390,18 @@ def _AddF5Config(lb_mutex_group):
       '--f5-config-address',
       type=str,
       required=True,
-      help='Set the F5 Big IP load balancer address.',
+      help='F5 Big IP load balancer address.',
   )
   f5_config_group.add_argument(
       '--f5-config-partition',
       type=str,
       required=True,
-      help='Set the F5 Big IP load balancer partition.',
+      help='F5 Big IP load balancer partition.',
   )
   f5_config_group.add_argument(
       '--f5-config-snat-pool',
       type=str,
-      help='Set the F5 Big IP load balancer pool name if using SNAT.',
+      help='F5 Big IP load balancer pool name if using SNAT.',
   )
 
 
@@ -386,7 +429,7 @@ def _AddMetalLbConfig(lb_mutex_group):
               'addresses',
           ],
       ),
-      help='Set the MetalLB typed load balancers configuration.',
+      help='MetalLB typed load balancers configuration.',
   )
 
 
@@ -398,17 +441,17 @@ def AddLoadBalancerConfig(parser):
   """
 
   lb_config_group = parser.add_argument_group(
-      help='Populate the Anthos on Vmware cluster load balancer configuration.',
+      help='Anthos on Vmware cluster load balancer configuration.',
   )
   lb_config_group.add_argument(
       '--control-plane-vip',
       required=True,
-      help='Set the VIP for the Kubernetes API of this cluster.',
+      help='VIP for the Kubernetes API of this cluster.',
   )
   lb_config_group.add_argument(
       '--ingress-vip',
       required=True,
-      help='Set the VIP for ingress traffic into this cluster.',
+      help='VIP for ingress traffic into this cluster.',
   )
 
   lb_mutex_group = lb_config_group.add_mutually_exclusive_group(
@@ -418,3 +461,23 @@ def AddLoadBalancerConfig(parser):
 
   _AddMetalLbConfig(lb_mutex_group)
   _AddF5Config(lb_mutex_group)
+
+
+def AddDescription(parser):
+  """Adds a flag to specify the description of the resource.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--description', type=str, help='Description for the resource.')
+
+
+def AddNodePoolDisplayName(parser):
+  """Adds a flag to specify the display name of the node pool.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--display-name', type=str, help='Display name for the resource.')

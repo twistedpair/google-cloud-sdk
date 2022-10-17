@@ -396,3 +396,124 @@ class FleetClient(object):
         req,
         field='namespaces',
         batch_size_attribute=None)
+
+  def GetRBACRoleBinding(self, name):
+    """Gets an RBACRoleBinding resource from the GKEHub API.
+
+    Args:
+      name: the full rolebinding resource name.
+
+    Returns:
+      An RBACRoleBinding resource
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    req = self.messages.GkehubProjectsLocationsNamespacesRbacrolebindingsGetRequest(
+        name=name)
+    return self.client.projects_locations_namespaces_rbacrolebindings.Get(req)
+
+  def CreateRBACRoleBinding(self, name, role, user, group):
+    """Creates an RBACRoleBinding resource from the GKEHub API.
+
+    Args:
+      name: the full rbacrolebinding resource name.
+      role: the role.
+      user: the user.
+      group: the group.
+
+    Returns:
+      An RBACRoleBinding resource
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+      calliope_exceptions.RequiredArgumentException: if a required field is
+        missing
+    """
+    rolebinding = self.messages.RBACRoleBinding(
+        name=name,
+        role=self.messages.Role(
+            predefinedRole=self.messages.Role.PredefinedRoleValueValuesEnum(
+                role.upper())),
+        user=user,
+        group=group)
+    resource = resources.REGISTRY.ParseRelativeName(
+        name,
+        'gkehub.projects.locations.namespaces.rbacrolebindings',
+        api_version='v1alpha')
+    req = self.messages.GkehubProjectsLocationsNamespacesRbacrolebindingsCreateRequest(
+        rBACRoleBinding=rolebinding,
+        rbacrolebindingId=resource.Name(),
+        parent=resource.Parent().RelativeName(),
+    )
+    return self.client.projects_locations_namespaces_rbacrolebindings.Create(
+        req)
+
+  def DeleteRBACRoleBinding(self, name):
+    """Deletes an RBACRoleBinding resource from the fleet.
+
+    Args:
+      name: the resource name of the rolebinding.
+
+    Returns:
+      An operation
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    req = self.messages.GkehubProjectsLocationsNamespacesRbacrolebindingsDeleteRequest(
+        name=name)
+    return self.client.projects_locations_namespaces_rbacrolebindings.Delete(
+        req)
+
+  def UpdateRBACRoleBinding(self, name, user, group, role, mask):
+    """Updates an RBACRoleBinding resource in the fleet.
+
+    Args:
+      name: the rolebinding name.
+      user: the user.
+      group: the group.
+      role: the role.
+      mask: a mask of the fields to update.
+
+    Returns:
+      An operation
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    # RoleBinding containing fields with updated value(s)
+    rolebinding = self.messages.RBACRoleBinding(
+        name=name,
+        user=user,
+        group=group,
+        role=self.messages.Role(
+            predefinedRole=self.messages.Role.PredefinedRoleValueValuesEnum(
+                role.upper())),
+    )
+    req = self.messages.GkehubProjectsLocationsNamespacesRbacrolebindingsPatchRequest(
+        rBACRoleBinding=rolebinding,
+        name=rolebinding.name,
+        updateMask=mask)
+    return self.client.projects_locations_namespaces_rbacrolebindings.Patch(req)
+
+  def ListRBACRoleBindings(self, project, namespace):
+    """Lists rolebindings in a namespace.
+
+    Args:
+      project: the project containing the namespace to list rolebindings from.
+      namespace: the namespace to list rolebindings from.
+
+    Returns:
+      A ListNamespaceResponse (list of rolebindings and next page token)
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    req = self.messages.GkehubProjectsLocationsNamespacesRbacrolebindingsListRequest(
+        pageToken='', parent=util.RBACRoleBindingParentName(project, namespace))
+    return list_pager.YieldFromList(
+        self.client.projects_locations_namespaces_rbacrolebindings,
+        req,
+        field='rbacrolebindings',
+        batch_size_attribute=None)

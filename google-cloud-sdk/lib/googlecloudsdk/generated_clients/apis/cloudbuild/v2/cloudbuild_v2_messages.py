@@ -142,6 +142,12 @@ class Artifacts(_messages.Message):
       account's credentials. The digests of the pushed images will be stored
       in the Build resource's results field. If any of the images fail to be
       pushed, the build is marked FAILURE.
+    mavenArtifacts: A list of Maven artifacts to be uploaded to Artifact
+      Registry upon successful completion of all build steps. Artifacts in the
+      workspace matching specified paths globs will be uploaded to the
+      specified Artifact Registry repository using the builder service
+      account's credentials. If any artifacts fail to be pushed, the build is
+      marked FAILURE.
     objects: A list of objects to be uploaded to Cloud Storage upon successful
       completion of all build steps. Files in the workspace matching specified
       paths globs will be uploaded to the specified Cloud Storage location
@@ -149,10 +155,16 @@ class Artifacts(_messages.Message):
       generation of the uploaded objects will be stored in the Build
       resource's results field. If any objects fail to be pushed, the build is
       marked FAILURE.
+    pythonPackages: A list of Python packages to be uploaded to Artifact
+      Registry upon successful completion of all build steps. The build
+      service account credentials will be used to perform the upload. If any
+      objects fail to be pushed, the build is marked FAILURE.
   """
 
   images = _messages.StringField(1, repeated=True)
-  objects = _messages.MessageField('ArtifactObjects', 2)
+  mavenArtifacts = _messages.MessageField('MavenArtifact', 2, repeated=True)
+  objects = _messages.MessageField('ArtifactObjects', 3)
+  pythonPackages = _messages.MessageField('PythonPackage', 4, repeated=True)
 
 
 class AuditConfig(_messages.Message):
@@ -388,9 +400,10 @@ class Build(_messages.Message):
     SubstitutionsValue: Substitutions data for `Build` resource.
     TimingValue: Output only. Stores timing information for phases of the
       build. Valid keys are: * BUILD: time to execute all build steps. * PUSH:
-      time to push all specified images. * FETCHSOURCE: time to fetch source.
-      * SETUPBUILD: time to set up build. If the build does not specify source
-      or images, these keys will not be included.
+      time to push all artifacts including docker images and non docker
+      artifacts. * FETCHSOURCE: time to fetch source. * SETUPBUILD: time to
+      set up build. If the build does not specify source or images, these keys
+      will not be included.
 
   Fields:
     approval: Output only. Describes this build's approval configuration,
@@ -451,9 +464,10 @@ class Build(_messages.Message):
       ticking from `startTime`. Default time is ten minutes.
     timing: Output only. Stores timing information for phases of the build.
       Valid keys are: * BUILD: time to execute all build steps. * PUSH: time
-      to push all specified images. * FETCHSOURCE: time to fetch source. *
-      SETUPBUILD: time to set up build. If the build does not specify source
-      or images, these keys will not be included.
+      to push all artifacts including docker images and non docker artifacts.
+      * FETCHSOURCE: time to fetch source. * SETUPBUILD: time to set up build.
+      If the build does not specify source or images, these keys will not be
+      included.
     warnings: Output only. Non-fatal problems encountered during the execution
       of the build.
   """
@@ -514,9 +528,10 @@ class Build(_messages.Message):
   class TimingValue(_messages.Message):
     r"""Output only. Stores timing information for phases of the build. Valid
     keys are: * BUILD: time to execute all build steps. * PUSH: time to push
-    all specified images. * FETCHSOURCE: time to fetch source. * SETUPBUILD:
-    time to set up build. If the build does not specify source or images,
-    these keys will not be included.
+    all artifacts including docker images and non docker artifacts. *
+    FETCHSOURCE: time to fetch source. * SETUPBUILD: time to set up build. If
+    the build does not specify source or images, these keys will not be
+    included.
 
     Messages:
       AdditionalProperty: An additional property for a TimingValue object.
@@ -2560,6 +2575,34 @@ class ListWorkflowsResponse(_messages.Message):
   workflows = _messages.MessageField('Workflow', 2, repeated=True)
 
 
+class MavenArtifact(_messages.Message):
+  r"""A Maven artifact to upload to Artifact Registry upon successful
+  completion of all build steps.
+
+  Fields:
+    artifactId: Maven `artifactId` value used when uploading the artifact to
+      Artifact Registry.
+    groupId: Maven `groupId` value used when uploading the artifact to
+      Artifact Registry.
+    path: Path to an artifact in the build's workspace to be uploaded to
+      Artifact Registry. This can be either an absolute path, e.g.
+      /workspace/my-app/target/my-app-1.0.SNAPSHOT.jar or a relative path from
+      /workspace, e.g. my-app/target/my-app-1.0.SNAPSHOT.jar.
+    repository: Artifact Registry repository, in the form "https://$REGION-
+      maven.pkg.dev/$PROJECT/$REPOSITORY" Artifact in the workspace specified
+      by path will be uploaded to Artifact Registry with this location as a
+      prefix.
+    version: Maven `version` value used when uploading the artifact to
+      Artifact Registry.
+  """
+
+  artifactId = _messages.StringField(1)
+  groupId = _messages.StringField(2)
+  path = _messages.StringField(3)
+  repository = _messages.StringField(4)
+  version = _messages.StringField(5)
+
+
 class Notification(_messages.Message):
   r"""Notification is the container which holds the data that is relevant to
   this particular notification.
@@ -3308,6 +3351,25 @@ class PullRequest(_messages.Message):
   pusher = _messages.EnumField('PusherValueValuesEnum', 2)
 
 
+class PythonPackage(_messages.Message):
+  r"""Python package to upload to Artifact Registry upon successful completion
+  of all build steps. A package can encapsulate multiple objects to be
+  uploaded to a single repository.
+
+  Fields:
+    paths: Path globs used to match files in the build's workspace. For
+      Python/ Twine, this is usually `dist/*`, and sometimes additionally an
+      `.asc` file.
+    repository: Artifact Registry repository, in the form "https://$REGION-
+      python.pkg.dev/$PROJECT/$REPOSITORY" Files in the workspace matching any
+      path pattern will be uploaded to Artifact Registry with this location as
+      a prefix.
+  """
+
+  paths = _messages.StringField(1, repeated=True)
+  repository = _messages.StringField(2)
+
+
 class Record(_messages.Message):
   r"""Record belonging to a Result.
 
@@ -3599,9 +3661,10 @@ class Results(_messages.Message):
   r"""Artifacts created by the build pipeline.
 
   Fields:
-    artifactManifest: Path to the artifact manifest. Only populated when
-      artifacts are uploaded.
-    artifactTiming: Time to push all non-container artifacts.
+    artifactManifest: Path to the artifact manifest for non-container
+      artifacts uploaded to Cloud Storage. Only populated when artifacts are
+      uploaded to Cloud Storage.
+    artifactTiming: Time to push all non-container artifacts to Cloud Storage.
     buildStepImages: List of build step digests, in the order corresponding to
       build step indices.
     buildStepOutputs: List of build step outputs, produced by builder images,
@@ -3610,8 +3673,12 @@ class Results(_messages.Message):
       produce this output by writing to `$BUILDER_OUTPUT/output`. Only the
       first 4KB of data is stored.
     images: Container images that were built as a part of the build.
-    numArtifacts: Number of artifacts uploaded. Only populated when artifacts
-      are uploaded.
+    mavenArtifacts: Maven artifacts uploaded to Artifact Registry at the end
+      of the build.
+    numArtifacts: Number of non-container artifacts uploaded to Cloud Storage.
+      Only populated when artifacts are uploaded to Cloud Storage.
+    pythonPackages: Python artifacts uploaded to Artifact Registry at the end
+      of the build.
   """
 
   artifactManifest = _messages.StringField(1)
@@ -3619,7 +3686,9 @@ class Results(_messages.Message):
   buildStepImages = _messages.StringField(3, repeated=True)
   buildStepOutputs = _messages.BytesField(4, repeated=True)
   images = _messages.MessageField('BuiltImage', 5, repeated=True)
-  numArtifacts = _messages.IntegerField(6)
+  mavenArtifacts = _messages.MessageField('UploadedMavenArtifact', 6, repeated=True)
+  numArtifacts = _messages.IntegerField(7)
+  pythonPackages = _messages.MessageField('UploadedPythonPackage', 8, repeated=True)
 
 
 class RunWorkflowCustomOperationMetadata(_messages.Message):
@@ -4524,6 +4593,36 @@ class UpdateWorkerPoolOperationMetadata(_messages.Message):
   completeTime = _messages.StringField(1)
   createTime = _messages.StringField(2)
   workerPool = _messages.StringField(3)
+
+
+class UploadedMavenArtifact(_messages.Message):
+  r"""A Maven artifact uploaded using the MavenArtifact directive.
+
+  Fields:
+    fileHashes: Hash types and values of the Maven Artifact.
+    pushTiming: Output only. Stores timing information for pushing the
+      specified artifact.
+    uri: URI of the uploaded artifact.
+  """
+
+  fileHashes = _messages.MessageField('FileHashes', 1)
+  pushTiming = _messages.MessageField('TimeSpan', 2)
+  uri = _messages.StringField(3)
+
+
+class UploadedPythonPackage(_messages.Message):
+  r"""Artifact uploaded using the PythonPackage directive.
+
+  Fields:
+    fileHashes: Hash types and values of the Python Artifact.
+    pushTiming: Output only. Stores timing information for pushing the
+      specified artifact.
+    uri: URI of the uploaded artifact.
+  """
+
+  fileHashes = _messages.MessageField('FileHashes', 1)
+  pushTiming = _messages.MessageField('TimeSpan', 2)
+  uri = _messages.StringField(3)
 
 
 class Volume(_messages.Message):

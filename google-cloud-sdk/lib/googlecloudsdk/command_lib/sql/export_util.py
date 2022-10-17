@@ -176,5 +176,7 @@ def RunBakExportCommand(args, client):
     operation if the export was successful.
   """
   sql_export_context = export_util.BakExportContext(client.sql_messages,
-                                                    args.uri, args.database)
+                                                    args.uri, args.database,
+                                                    args.stripe_count,
+                                                    args.striped)
   return RunExportCommand(args, client, sql_export_context)

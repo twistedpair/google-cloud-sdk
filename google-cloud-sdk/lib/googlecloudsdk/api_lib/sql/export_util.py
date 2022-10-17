@@ -92,7 +92,7 @@ def CsvExportContext(sql_messages,
           linesTerminatedBy=lines_terminated_by))
 
 
-def BakExportContext(sql_messages, uri, database):
+def BakExportContext(sql_messages, uri, database, stripe_count, striped):
   """Generates the ExportContext for the given args, for exporting to BAK.
 
   Args:
@@ -100,12 +100,20 @@ def BakExportContext(sql_messages, uri, database):
     uri: The URI of the bucket to export to; the output of the 'uri' arg.
     database: The list of databases to export from; the output of the
       '--database' flag.
+    stripe_count: How many stripes to perform the export with.
+    striped: Whether the export should be striped.
 
   Returns:
     ExportContext, for use in InstancesExportRequest.exportContext.
   """
+  bak_export_options = None
+  if striped or stripe_count:
+    bak_export_options = sql_messages.ExportContext.BakExportOptionsValue(
+        stripeCount=stripe_count, striped=striped)
+
   return sql_messages.ExportContext(
       kind='sql#exportContext',
       uri=uri,
       databases=database,
-      fileType=sql_messages.ExportContext.FileTypeValueValuesEnum.BAK)
+      fileType=sql_messages.ExportContext.FileTypeValueValuesEnum.BAK,
+      bakExportOptions=bak_export_options)

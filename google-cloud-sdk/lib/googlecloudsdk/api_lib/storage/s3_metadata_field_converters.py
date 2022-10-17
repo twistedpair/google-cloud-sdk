@@ -22,6 +22,15 @@ from googlecloudsdk.api_lib.storage import metadata_util
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 
 
+def process_acl_file(file_path):
+  """Converts ACLs file to S3 metadata dict."""
+  # Expect ACLs file to already be in correct format for S3.
+  # { "Owner": {...}, "Grants": [...] }
+  # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services
+  # /s3.html#S3.Client.get_bucket_acl
+  return metadata_util.cached_read_json_file(file_path)
+
+
 def process_cors(file_path):
   """Converts CORS file to S3 metadata dict."""
   if file_path == user_request_args_factory.CLEAR:

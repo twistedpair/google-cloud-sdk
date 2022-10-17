@@ -1064,6 +1064,33 @@ class MetastoreV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def QueryMetadata(self, request, global_params=None):
+      r"""Query DPMS metadata.
+
+      Args:
+        request: (MetastoreProjectsLocationsServicesQueryMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('QueryMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:queryMetadata',
+        http_method='POST',
+        method_id='metastore.projects.locations.services.queryMetadata',
+        ordered_params=['service'],
+        path_params=['service'],
+        query_params=[],
+        relative_path='v1alpha/{+service}:queryMetadata',
+        request_field='queryMetadataRequest',
+        request_type_name='MetastoreProjectsLocationsServicesQueryMetadataRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def RemoveIamPolicy(self, request, global_params=None):
       r"""Removes the attached IAM policies for a resource.
 

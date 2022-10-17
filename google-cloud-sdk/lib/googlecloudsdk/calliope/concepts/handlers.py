@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import util
 from googlecloudsdk.core import exceptions
@@ -107,3 +108,23 @@ class RuntimeHandler(object):
   def Reset(self):
     for concept_details in self._all_concepts:
       concept_details['concept_info'].ClearCache()
+
+  def GetValue(self, dest):
+    """Returns the value of the argument registered for dest.
+
+    Based on argparse.Namespace.GetValue().
+
+    Args:
+      dest: The dest of a registered argument.
+
+    Raises:
+      UnknownDestinationException: If no arg is registered for dest.
+
+    Returns:
+      The value of the argument registered for dest.
+    """
+    try:
+      return getattr(self, dest)
+    except AttributeError:
+      raise parser_errors.UnknownDestinationException(
+          'No registered concept arg for destination [{}].'.format(dest))

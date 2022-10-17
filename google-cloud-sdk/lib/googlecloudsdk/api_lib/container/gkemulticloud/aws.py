@@ -37,6 +37,7 @@ class _AwsClientBase(client.ClientBase):
         'description': flags.GetDescription(args),
         'fleet': self._Fleet(args),
         'loggingConfig': flags.GetLogging(args),
+        'monitoringConfig': flags.GetMonitoringConfig(args),
         'name': cluster_ref.awsClustersId,
         'networking': self._ClusterNetworking(args),
     }

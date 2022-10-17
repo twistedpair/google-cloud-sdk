@@ -49,6 +49,15 @@ NS_LIST_FORMAT = """
     )
 """
 
+RB_LIST_FORMAT = """
+    table(
+      name.segment(7):sort=1:label=NAME,
+      user:sort=1:label=USER,
+      group:sort=1:label=GROUP,
+      role.predefinedRole:label=ROLE
+    )
+"""
+
 
 def DefaultFleetID():
   """Returns 'default' to be used as a fallthrough hook in resources.yaml."""
