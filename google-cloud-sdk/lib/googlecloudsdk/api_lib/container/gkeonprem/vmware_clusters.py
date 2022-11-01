@@ -156,7 +156,10 @@ class ClustersClient(client.ClientBase):
 
   def _vmware_host_ip(self, args):
     """Constructs proto message VmwareHostIp."""
-    host_ips = flags.Get(args, 'host_ips', [])
+    host_ips = flags.Get(args, 'host_ips')
+    if not host_ips:
+      return None
+
     ret = []
     for host_ip_group in host_ips:
       ret.append(
@@ -174,13 +177,13 @@ class ClustersClient(client.ClientBase):
         'ips': self._vmware_host_ip(args),
     }
     if flags.IsSet(kwargs):
-      return self._messages.VmwareIpBlock(**kwargs)
+      return [self._messages.VmwareIpBlock(**kwargs)]
     return None
 
   def _vmware_static_ip_config(self, args):
     """Constructs proto message VmwareStaticIpConfig."""
     kwargs = {
-        'ipBlocks': [self._vmware_ip_block(args)],
+        'ipBlocks': self._vmware_ip_block(args),
     }
     if flags.IsSet(kwargs):
       return self._messages.VmwareStaticIpConfig(**kwargs)
@@ -198,8 +201,8 @@ class ClustersClient(client.ClientBase):
   def _vmware_host_config(self, args):
     """Constructs proto message VmwareHostConfig."""
     kwargs = {
-        'dnsServers': flags.Get(args, 'dns_servers', []),
-        'ntpServers': flags.Get(args, 'ntp_servers', []),
+        'dnsServers': flags.Get(args, 'dns_servers'),
+        'ntpServers': flags.Get(args, 'ntp_servers'),
     }
     if flags.IsSet(kwargs):
       return self._messages.VmwareHostConfig(**kwargs)
@@ -209,9 +212,9 @@ class ClustersClient(client.ClientBase):
     """Constructs proto message VmwareNetworkConfig."""
     kwargs = {
         'serviceAddressCidrBlocks':
-            flags.Get(args, 'service_address_cidr_blocks', []),
+            flags.Get(args, 'service_address_cidr_blocks'),
         'podAddressCidrBlocks':
-            flags.Get(args, 'pod_address_cidr_blocks', []),
+            flags.Get(args, 'pod_address_cidr_blocks'),
         'staticIpConfig':
             self._vmware_static_ip_config(args),
         'dhcpIpConfig':

@@ -294,7 +294,7 @@
       "type": "object",
       "properties": {
         "uriOverride": {
-          "description": "Uri override. When specified modifies the execution Uri for all the tasks in the queue.",
+          "description": "Uri override. When specified, modifies the execution Uri for all the tasks in the queue.",
           "$ref": "UriOverride"
         },
         "httpMethod": {
@@ -373,6 +373,20 @@
         "query": {
           "description": "Uri Query. Will replace the query part of the task uri.",
           "type": "string"
+        },
+        "uriOverrideEnforceMode": {
+          "description": "Uri Override Enforce Mode Determines the Target UriOverride mode.",
+          "type": "string",
+          "enumDescriptions": [
+            "OverrideMode Unspecified. Defaults to ALWAYS.",
+            "In the IF_NOT_EXISTS mode, queue-level configuration is only applied where task-level configuration does not exist.",
+            "In the ALWAYS mode, queue-level configuration overrides all task-level configuration"
+          ],
+          "enum": [
+            "URI_OVERRIDE_ENFORCE_MODE_UNSPECIFIED",
+            "IF_NOT_EXISTS",
+            "ALWAYS"
+          ]
         }
       }
     },
@@ -1148,7 +1162,7 @@
     },
     "BufferTaskRequest": {
       "id": "BufferTaskRequest",
-      "description": "LINT.IfChange Request message for BufferTask.",
+      "description": "Request message for BufferTask.",
       "type": "object",
       "properties": {
         "body": {

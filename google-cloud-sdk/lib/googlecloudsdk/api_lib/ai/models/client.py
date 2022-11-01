@@ -44,6 +44,7 @@ class ModelsClient(object):
                     region_ref=None,
                     display_name=None,
                     description=None,
+                    version_description=None,
                     artifact_uri=None,
                     container_image_uri=None,
                     container_command=None,
@@ -65,6 +66,7 @@ class ModelsClient(object):
       display_name: The display name of the Model. The name can be up
         to 128 characters long and can be consist of any UTF-8 characters.
       description: The description of the Model.
+      version_description: The description of the Model version.
       artifact_uri: The path to the directory containing the Model
         artifact and any of its supporting files. Not present for AutoML Models.
       container_image_uri: Immutable. URI of the Docker image to be used as the
@@ -264,6 +266,7 @@ class ModelsClient(object):
         artifactUri=artifact_uri,
         containerSpec=container_spec,
         description=description,
+        versionDescription=version_description,
         displayName=display_name,
         explanationSpec=explanation_spec)
     if version_aliases:
@@ -289,6 +292,7 @@ class ModelsClient(object):
                region_ref=None,
                display_name=None,
                description=None,
+               version_description=None,
                artifact_uri=None,
                container_image_uri=None,
                container_command=None,
@@ -310,6 +314,7 @@ class ModelsClient(object):
       display_name: The display name of the Model. The name can be up
         to 128 characters long and can be consist of any UTF-8 characters.
       description: The description of the Model.
+      version_description: The description of the Model version.
       artifact_uri: The path to the directory containing the Model
         artifact and any of its supporting files. Not present for AutoML Models.
       container_image_uri: Immutable. URI of the Docker image to be used as the
@@ -509,6 +514,7 @@ class ModelsClient(object):
         artifactUri=artifact_uri,
         containerSpec=container_spec,
         description=description,
+        versionDescription=version_description,
         displayName=display_name,
         explanationSpec=explanation_spec)
     if version_aliases:

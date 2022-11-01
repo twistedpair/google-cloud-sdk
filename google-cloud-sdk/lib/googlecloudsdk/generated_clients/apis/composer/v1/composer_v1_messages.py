@@ -724,6 +724,42 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
   enabled = _messages.BooleanField(2)
 
 
+class NetworkingConfig(_messages.Message):
+  r"""Configuration options for networking connections in the Composer 2
+  environment.
+
+  Enums:
+    ConnectionTypeValueValuesEnum: Optional. Indicates the user requested
+      specifc connection type between Tenant and Customer projects. You cannot
+      set networking connection type in public IP environment.
+
+  Fields:
+    connectionType: Optional. Indicates the user requested specifc connection
+      type between Tenant and Customer projects. You cannot set networking
+      connection type in public IP environment.
+  """
+
+  class ConnectionTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Indicates the user requested specifc connection type between
+    Tenant and Customer projects. You cannot set networking connection type in
+    public IP environment.
+
+    Values:
+      CONNECTION_TYPE_UNSPECIFIED: No specific connection type was requested,
+        so the environment uses the default value corresponding to the rest of
+        its configuration.
+      VPC_PEERING: Requests the use of VPC peerings for connecting the
+        Customer and Tenant projects.
+      PRIVATE_SERVICE_CONNECT: Requests the use of Private Service Connect for
+        connecting the Customer and Tenant projects.
+    """
+    CONNECTION_TYPE_UNSPECIFIED = 0
+    VPC_PEERING = 1
+    PRIVATE_SERVICE_CONNECT = 2
+
+  connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 1)
+
+
 class NodeConfig(_messages.Message):
   r"""The configuration information for the Kubernetes Engine nodes running
   the Apache Airflow software.
@@ -1041,6 +1077,8 @@ class PrivateEnvironmentConfig(_messages.Message):
       (non-RFC1918) ranges can be used for
       `IPAllocationPolicy.cluster_ipv4_cidr_block` and
       `IPAllocationPolicy.service_ipv4_cidr_block`.
+    networkingConfig: Optional. Configuration for the network connections
+      configuration in the environment.
     privateClusterConfig: Optional. Configuration for the private GKE cluster
       for a Private IP Cloud Composer environment.
     webServerIpv4CidrBlock: Optional. The CIDR block from which IP range for
@@ -1059,9 +1097,10 @@ class PrivateEnvironmentConfig(_messages.Message):
   cloudSqlIpv4CidrBlock = _messages.StringField(4)
   enablePrivateEnvironment = _messages.BooleanField(5)
   enablePrivatelyUsedPublicIps = _messages.BooleanField(6)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 7)
-  webServerIpv4CidrBlock = _messages.StringField(8)
-  webServerIpv4ReservedRange = _messages.StringField(9)
+  networkingConfig = _messages.MessageField('NetworkingConfig', 7)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 8)
+  webServerIpv4CidrBlock = _messages.StringField(9)
+  webServerIpv4ReservedRange = _messages.StringField(10)
 
 
 class SaveSnapshotResponse(_messages.Message):

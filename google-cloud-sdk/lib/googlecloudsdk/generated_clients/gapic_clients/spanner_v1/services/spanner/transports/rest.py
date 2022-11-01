@@ -26,7 +26,7 @@ from google.api_core import rest_streaming
 from google.api_core import path_template
 from google.api_core import gapic_v1
 
-from google.protobuf import json_format
+from cloudsdk.google.protobuf import json_format
 from requests import __version__ as requests_version
 import dataclasses
 import re
@@ -39,7 +39,7 @@ except AttributeError:  # pragma: NO COVER
     OptionalRetry = Union[retries.Retry, object]  # type: ignore
 
 
-from google.protobuf import empty_pb2  # type: ignore
+from cloudsdk.google.protobuf import empty_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types import commit_response
 from googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types import result_set
 from googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types import spanner

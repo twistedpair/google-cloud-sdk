@@ -44,8 +44,7 @@ def List(instance_ref):
   """List app profiles.
 
   Args:
-    instance_ref: A resource reference of the instance to list
-                  app profiles for.
+    instance_ref: A resource reference of the instance to list app profiles for.
 
   Returns:
     Generator of app profile resource objects.
@@ -67,8 +66,7 @@ def Delete(app_profile_ref, force=False):
 
   Args:
     app_profile_ref: A resource reference to the app profile to delete.
-    force: bool, Whether to ignore API warnings and delete
-        forcibly.
+    force: bool, Whether to ignore API warnings and delete forcibly.
 
   Returns:
     Empty response.
@@ -88,23 +86,25 @@ def Create(app_profile_ref,
            restrict_to=None,
            failover_radius=None,
            transactional_writes=False,
-           force=False):
+           force=False,
+           priority=None):
   """Create an app profile.
 
   Args:
     app_profile_ref: A resource reference of the new app profile.
     cluster: string, The cluster id for the new app profile to route to using
-        single cluster routing.
+      single cluster routing.
     description: string, A description of the app profile.
     multi_cluster: bool, Whether this app profile should route to multiple
-        clusters, instead of single cluster.
+      clusters, instead of single cluster.
     restrict_to: list[string] The list of cluster ids for the new app profile to
       route to using multi cluster routing.
     failover_radius: string, Restricts clusters that requests can fail over to
       by proximity with multi cluster routing.
     transactional_writes: bool, Whether this app profile has transactional
-        writes enabled. This is only possible when using single cluster routing.
+      writes enabled. This is only possible when using single cluster routing.
     force: bool, Whether to ignore API warnings and create forcibly.
+    priority: string, The request priority of the new app profile.
 
   Raises:
     ConflictingArgumentsException:
@@ -152,11 +152,16 @@ def Create(app_profile_ref,
     single_cluster_routing = msgs.SingleClusterRouting(
         clusterId=cluster, allowTransactionalWrites=transactional_writes)
 
+  # Default priority to PRIORITY_UNSPECIFIED.
+  priority_enum = msgs.AppProfile.PriorityValueValuesEnum(
+      priority or 'PRIORITY_UNSPECIFIED')
+
   msg = msgs.BigtableadminProjectsInstancesAppProfilesCreateRequest(
       appProfile=msgs.AppProfile(
           description=description,
           multiClusterRoutingUseAny=multi_cluster_routing,
-          singleClusterRouting=single_cluster_routing),
+          singleClusterRouting=single_cluster_routing,
+          priority=priority_enum),
       appProfileId=app_profile_ref.Name(),
       parent=instance_ref.RelativeName(),
       ignoreWarnings=force)
@@ -170,23 +175,25 @@ def Update(app_profile_ref,
            restrict_to=None,
            failover_radius=None,
            transactional_writes=False,
-           force=False):
+           force=False,
+           priority=None):
   """Update an app profile.
 
   Args:
     app_profile_ref: A resource reference of the app profile to update.
-    cluster: string, The cluster id for the app profile to route to using
-        single cluster routing.
+    cluster: string, The cluster id for the app profile to route to using single
+      cluster routing.
     description: string, A description of the app profile.
     multi_cluster: bool, Whether this app profile should route to multiple
-        clusters, instead of single cluster.
+      clusters, instead of single cluster.
     restrict_to: list[string] The list of cluster IDs for the new app profile to
-        route to using multi cluster routing.
+      route to using multi cluster routing.
     failover_radius: string, Restricts clusters that requests can fail over to
       by proximity with multi cluster routing.
     transactional_writes: bool, Whether this app profile has transactional
-        writes enabled. This is only possible when using single cluster routing.
+      writes enabled. This is only possible when using single cluster routing.
     force: bool, Whether to ignore API warnings and create forcibly.
+    priority: string, The request priority of the new app profile.
 
   Raises:
     ConflictingArgumentsException:
@@ -237,6 +244,11 @@ def Update(app_profile_ref,
   if description:
     changed_fields.append('description')
     app_profile.description = description
+
+  if priority:
+    priority_enum = msgs.AppProfile.PriorityValueValuesEnum(priority)
+    changed_fields.append('priority')
+    app_profile.priority = priority_enum
 
   msg = msgs.BigtableadminProjectsInstancesAppProfilesPatchRequest(
       appProfile=app_profile,

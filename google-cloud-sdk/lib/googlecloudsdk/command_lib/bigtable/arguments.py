@@ -280,6 +280,26 @@ class ArgAdder(object):
         help='Ignore warnings and force {}.'.format(verb))
     return self
 
+  def AddRequestPriority(self):
+    """Add argument for request priority to parser."""
+    choices = {
+        'PRIORITY_LOW':
+            'Requests will be treated with low priority.',
+        'PRIORITY_MEDIUM':
+            'Requests will be treated with medium priority.',
+        'PRIORITY_HIGH':
+            'Requests will be treated with high priority.'
+    }
+    self.parser.add_argument(
+        '--priority',
+        type=lambda x: x.replace('-', '_').upper(),
+        choices=choices,
+        default=None,
+        help='Specify the request priority. '
+        'If omitted, PRIORITY_HIGH will be used by default.',
+        hidden=True)  # TODO(b/249618888): Remove hidden=True for GA
+    return self
+
   def AddInstanceDisplayName(self, required=False):
     """Add argument group for display-name to parser."""
     self.parser.add_argument(

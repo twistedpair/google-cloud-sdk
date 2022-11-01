@@ -1485,6 +1485,13 @@ class _SectionAuth(_Section):
         help_text='A switch to disable google-auth for a surface or a command '
         'group, in case there are some edge cases or google-auth '
         'does not work for some surface.')
+    self.token_introspection_endpoint = self._Add(
+        'token_introspection_endpoint',
+        hidden=True,
+        help_text='Overrides the endpoint used for token introspection with '
+        'Workload and Workforce Identity Federation. It can be used with '
+        'Private Service Connect.'
+    )
 
 
 class _SectionBatch(_Section):

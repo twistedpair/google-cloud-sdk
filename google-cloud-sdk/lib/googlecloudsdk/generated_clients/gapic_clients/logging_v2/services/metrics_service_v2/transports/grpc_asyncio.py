@@ -24,7 +24,7 @@ from google.auth.transport.grpc import SslCredentials  # type: ignore
 import grpc                        # type: ignore
 from grpc.experimental import aio  # type: ignore
 
-from google.protobuf import empty_pb2  # type: ignore
+from cloudsdk.google.protobuf import empty_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.logging_v2.types import logging_metrics
 from .base import MetricsServiceV2Transport, DEFAULT_CLIENT_INFO
 from .grpc import MetricsServiceV2GrpcTransport

@@ -36,7 +36,7 @@ except AttributeError:  # pragma: NO COVER
 
 from google.api import distribution_pb2  # type: ignore
 from google.api import metric_pb2  # type: ignore
-from google.protobuf import timestamp_pb2  # type: ignore
+from cloudsdk.google.protobuf import timestamp_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.logging_v2.services.metrics_service_v2 import pagers
 from googlecloudsdk.generated_clients.gapic_clients.logging_v2.types import logging_metrics
 from .transports.base import MetricsServiceV2Transport, DEFAULT_CLIENT_INFO

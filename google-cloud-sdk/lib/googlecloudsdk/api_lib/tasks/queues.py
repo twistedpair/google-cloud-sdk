@@ -22,6 +22,13 @@ from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.core import exceptions
 
+http_target_update_masks_list = [
+    'httpTarget.headerOverrides', 'httpTarget.httpMethod',
+    'httpTarget.oauthToken.serviceAccountEmail', 'httpTarget.oauthToken.scope',
+    'httpTarget.oidcToken.serviceAccountEmail', 'httpTarget.oidcToken.audience',
+    'httpTarget.uriOverride'
+]
+
 
 class CreatingPullAndAppEngineQueueError(exceptions.InternalError):
   """Error for when attempt to create a queue as both pull and App Engine."""
@@ -29,6 +36,11 @@ class CreatingPullAndAppEngineQueueError(exceptions.InternalError):
 
 class NoFieldsSpecifiedError(exceptions.Error):
   """Error for when calling a patch method with no fields specified."""
+
+
+class RequiredFieldsMissingError(exceptions.Error):
+  """Error for when calling a patch method when a required field is unspecified.
+  """
 
 
 class BaseQueues(object):
@@ -177,9 +189,12 @@ class BetaQueues(BaseQueues):
     if queue_type and queue_type != queue_type.PULL:
       queue_type = None
 
-    if not any([retry_config, rate_limits, app_engine_routing_override,
-                stackdriver_logging_config]):
-      raise NoFieldsSpecifiedError('Must specify at least one field to update.')
+    if not any([retry_config, rate_limits, stackdriver_logging_config]):
+      # If appEngineRoutingOverride is in updated_fields then an empty
+      # app_engine_routing_override will remove the routing override field.
+      if not app_engine_routing_override and 'appEngineRoutingOverride' not in updated_fields:
+        raise NoFieldsSpecifiedError(
+            'Must specify at least one field to update.')
 
     queue = self.messages.Queue(name=queue_ref.RelativeName(), type=queue_type)
 
@@ -230,11 +245,31 @@ class AlphaQueues(BaseQueues):
             updated_fields,
             retry_config=None,
             rate_limits=None,
-            app_engine_routing_override=None):
+            app_engine_routing_override=None,
+            http_uri_override=None,
+            http_method_override=None,
+            http_header_override=None,
+            http_oauth_email_override=None,
+            http_oauth_scope_override=None,
+            http_oidc_email_override=None,
+            http_oidc_audience_override=None):
     """Prepares and sends a Patch request for modifying a queue."""
 
-    if not any([retry_config, rate_limits, app_engine_routing_override]):
-      raise NoFieldsSpecifiedError('Must specify at least one field to update.')
+    if not any([retry_config, rate_limits]):
+      # IF no app_engine_routing_override (for updating the value) AND
+      # IF no appEngineRoutingOverride in the update fields (to clear the value)
+      # AND IF none of the http target override parts are given (to update their
+      # values) AND IF none of the http target override update masks are in the
+      # update fields (to clear their values) THEN throw error.
+      if (_NeitherUpdateNorClear([app_engine_routing_override],
+                                 ['appEngineRoutingOverride'], updated_fields)
+          and _NeitherUpdateNorClear([
+              http_uri_override, http_method_override, http_header_override,
+              http_oauth_email_override, http_oauth_scope_override,
+              http_oidc_email_override, http_oidc_audience_override
+          ], http_target_update_masks_list, updated_fields)):
+        raise NoFieldsSpecifiedError(
+            'Must specify at least one field to update.')
 
     queue = self.messages.Queue(name=queue_ref.RelativeName())
 
@@ -248,11 +283,89 @@ class AlphaQueues(BaseQueues):
       else:
         queue.appEngineHttpTarget = self.messages.AppEngineHttpTarget(
             appEngineRoutingOverride=app_engine_routing_override)
+
+    if _HttpTargetNeedsUpdate(updated_fields):
+      http_target = self.messages.HttpTarget()
+      if queue.httpTarget is not None:
+        http_target = self.messages.HttpTarget(
+            uriOverride=queue.httpTarget.uriOverride,
+            httpMethod=queue.httpTarget.httpMethod,
+            headerOverrides=queue.httpTarget.headerOverrides,
+            oauthToken=queue.httpTarget.oauthToken,
+            oidcToken=queue.httpTarget.oidcToken)
+
+      if 'httpTarget.uriOverride' in updated_fields:
+        http_target.uriOverride = http_uri_override
+
+      if 'httpTarget.httpMethod' in updated_fields:
+        http_target.httpMethod = http_method_override
+
+      if 'httpTarget.headerOverrides' in updated_fields:
+        if http_header_override is None:
+          http_target.headerOverrides = []
+        else:
+          map_ = []
+          for ho in http_header_override:
+            header_override = self.messages.HeaderOverride(
+                header=self.messages.Header(
+                    key=ho.header.key, value=ho.header.value))
+            map_.append(header_override)
+          http_target.headerOverrides = map_
+
+      if ('httpTarget.oauthToken.serviceAccountEmail' in updated_fields or
+          'httpTarget.oauthToken.scope' in updated_fields):
+        # service account email is required
+        if ('httpTarget.oauthToken.serviceAccountEmail' not in updated_fields or
+            (http_oauth_email_override is None and
+             http_oauth_scope_override is not None)):
+          raise RequiredFieldsMissingError(
+              'Oauth service account email (http-oauth-service-account-email-override) is required.'
+          )
+        elif (http_oauth_email_override is None and
+              http_oauth_scope_override is None):
+          http_target.oauthToken = None
+        else:
+          http_target.oauthToken = self.messages.OAuthToken(
+              serviceAccountEmail=http_oauth_email_override,
+              scope=http_oauth_scope_override)
+
+      if ('httpTarget.oidcToken.serviceAccountEmail' in updated_fields or
+          'httpTarget.oidcToken.audience' in updated_fields):
+        # service account email is required
+        if ('httpTarget.oidcToken.serviceAccountEmail' not in updated_fields or
+            (http_oidc_email_override is None and
+             http_oidc_audience_override is not None)):
+          raise RequiredFieldsMissingError(
+              'Oidc service account email (http-oidc-service-account-email-override) is required.'
+          )
+        if (http_oidc_email_override is None and
+            http_oidc_audience_override is None):
+          http_target.oidcToken = None
+        else:
+          http_target.oidcToken = self.messages.OidcToken(
+              serviceAccountEmail=http_oidc_email_override,
+              audience=http_oidc_audience_override)
+
+      queue.httpTarget = None if _IsEmptyConfig(http_target) else http_target
+
     update_mask = ','.join(updated_fields)
 
     request = self.messages.CloudtasksProjectsLocationsQueuesPatchRequest(
         name=queue_ref.RelativeName(), queue=queue, updateMask=update_mask)
     return self.queues_service.Patch(request)
+
+
+def _HttpTargetNeedsUpdate(updated_fields):
+  for mask in http_target_update_masks_list:
+    if mask in updated_fields:
+      return True
+
+  return False
+
+
+def _NeitherUpdateNorClear(update_values, available_masks, update_fields):
+  return (all(item is None for item in update_values) and
+          not any(item in available_masks for item in update_fields))
 
 
 def _IsEmptyConfig(config):

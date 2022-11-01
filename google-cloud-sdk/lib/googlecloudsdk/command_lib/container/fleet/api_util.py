@@ -76,6 +76,7 @@ def UpdateMembership(name,
                      membership,
                      update_mask,
                      release_track,
+                     description=None,
                      external_id=None,
                      infra_type=None,
                      clear_labels=False,
@@ -93,6 +94,7 @@ def UpdateMembership(name,
     membership: Membership resource that needs to be updated.
     update_mask: Field names of membership resource to be updated.
     release_track: The release_track used in the gcloud command.
+    description: the value to put in the description field
     external_id: the unique id associated with the cluster, or None if it is not
       available.
     infra_type: The infrastructure type that the cluster is running on
@@ -150,6 +152,8 @@ def UpdateMembership(name,
     else:
       request.membership.endpoint = endpoint
 
+  if description:
+    request.membership.description = description
   if external_id:
     request.membership.externalId = external_id
   if infra_type == 'on-prem':
@@ -159,7 +163,7 @@ def UpdateMembership(name,
 
   if clear_labels or update_labels or remove_labels:
     mem_labels = {}
-    if not clear_labels:
+    if not clear_labels and membership.labels:
       for item in membership.labels.additionalProperties:
         mem_labels[item.key] = six.text_type(item.value)
     if update_labels:

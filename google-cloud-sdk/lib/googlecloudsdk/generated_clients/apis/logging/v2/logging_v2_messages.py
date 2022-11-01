@@ -536,6 +536,8 @@ class Link(_messages.Message):
       CREATING: The resource has been marked for creation by the user. It will
         remain in this state until the creation is complete.
       FAILED: The resource is in an INTERNAL error state.
+      MOVED: The resource has been moved to a different location and this is
+        the before-move record and should no longer be used.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -543,6 +545,7 @@ class Link(_messages.Message):
     UPDATING = 3
     CREATING = 4
     FAILED = 5
+    MOVED = 6
 
   bigqueryDataset = _messages.MessageField('BigQueryDataset', 1)
   createTime = _messages.StringField(2)
@@ -966,6 +969,8 @@ class LogBucket(_messages.Message):
       CREATING: The resource has been marked for creation by the user. It will
         remain in this state until the creation is complete.
       FAILED: The resource is in an INTERNAL error state.
+      MOVED: The resource has been moved to a different location and this is
+        the before-move record and should no longer be used.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -973,6 +978,7 @@ class LogBucket(_messages.Message):
     UPDATING = 3
     CREATING = 4
     FAILED = 5
+    MOVED = 6
 
   class UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum(_messages.Enum):
     r"""UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum enum type.
@@ -2032,6 +2038,25 @@ class LoggingBillingAccountsLocationsBucketsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class LoggingBillingAccountsLocationsBucketsMoveRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsMoveRequest object.
+
+  Fields:
+    moveBucketRequest: A MoveBucketRequest resource to be passed as the
+      request body.
+    name: Required. The full resource name of the source bucket to move.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
+  """
+
+  moveBucketRequest = _messages.MessageField('MoveBucketRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class LoggingBillingAccountsLocationsBucketsPatchRequest(_messages.Message):
   r"""A LoggingBillingAccountsLocationsBucketsPatchRequest object.
 
@@ -2850,6 +2875,25 @@ class LoggingFoldersLocationsBucketsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class LoggingFoldersLocationsBucketsMoveRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsMoveRequest object.
+
+  Fields:
+    moveBucketRequest: A MoveBucketRequest resource to be passed as the
+      request body.
+    name: Required. The full resource name of the source bucket to move.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
+  """
+
+  moveBucketRequest = _messages.MessageField('MoveBucketRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class LoggingFoldersLocationsBucketsPatchRequest(_messages.Message):
   r"""A LoggingFoldersLocationsBucketsPatchRequest object.
 
@@ -3510,6 +3554,25 @@ class LoggingLocationsBucketsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class LoggingLocationsBucketsMoveRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsMoveRequest object.
+
+  Fields:
+    moveBucketRequest: A MoveBucketRequest resource to be passed as the
+      request body.
+    name: Required. The full resource name of the source bucket to move.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
+  """
+
+  moveBucketRequest = _messages.MessageField('MoveBucketRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class LoggingLocationsBucketsPatchRequest(_messages.Message):
   r"""A LoggingLocationsBucketsPatchRequest object.
 
@@ -4048,6 +4111,25 @@ class LoggingOrganizationsLocationsBucketsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class LoggingOrganizationsLocationsBucketsMoveRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsMoveRequest object.
+
+  Fields:
+    moveBucketRequest: A MoveBucketRequest resource to be passed as the
+      request body.
+    name: Required. The full resource name of the source bucket to move.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
+  """
+
+  moveBucketRequest = _messages.MessageField('MoveBucketRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class LoggingOrganizationsLocationsBucketsPatchRequest(_messages.Message):
@@ -4823,6 +4905,25 @@ class LoggingProjectsLocationsBucketsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class LoggingProjectsLocationsBucketsMoveRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsMoveRequest object.
+
+  Fields:
+    moveBucketRequest: A MoveBucketRequest resource to be passed as the
+      request body.
+    name: Required. The full resource name of the source bucket to move.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
+  """
+
+  moveBucketRequest = _messages.MessageField('MoveBucketRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class LoggingProjectsLocationsBucketsPatchRequest(_messages.Message):
@@ -6024,6 +6125,16 @@ class MonitoredResourceMetadata(_messages.Message):
 
   systemLabels = _messages.MessageField('SystemLabelsValue', 1)
   userLabels = _messages.MessageField('UserLabelsValue', 2)
+
+
+class MoveBucketRequest(_messages.Message):
+  r"""The parameters to MoveBucket.
+
+  Fields:
+    newName: Required. The full resource name of the relocated bucket.
+  """
+
+  newName = _messages.StringField(1)
 
 
 class Operation(_messages.Message):

@@ -316,7 +316,10 @@ def get_cleared_bucket_fields(request_config):
   if not resource_args:
     return cleared_fields
 
-  if resource_args.cors_file_path == user_request_args_factory.CLEAR:
+  if (resource_args.cors_file_path == user_request_args_factory.CLEAR or
+      resource_args.cors_file_path and
+      not metadata_util.cached_read_json_file(resource_args.cors_file_path)):
+    # Empty JSON object similar to CLEAR flag.
     cleared_fields.append('cors')
 
   if resource_args.default_encryption_key == user_request_args_factory.CLEAR:
@@ -328,7 +331,11 @@ def get_cleared_bucket_fields(request_config):
   if resource_args.labels_file_path == user_request_args_factory.CLEAR:
     cleared_fields.append('labels')
 
-  if resource_args.lifecycle_file_path == user_request_args_factory.CLEAR:
+  if (resource_args.lifecycle_file_path == user_request_args_factory.CLEAR or
+      resource_args.lifecycle_file_path and
+      not metadata_util.cached_read_json_file(resource_args.lifecycle_file_path)
+     ):
+    # Empty JSON object similar to CLEAR flag.
     cleared_fields.append('lifecycle')
 
   if (resource_args.log_bucket == resource_args.log_object_prefix ==

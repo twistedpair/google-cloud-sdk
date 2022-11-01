@@ -364,6 +364,9 @@ def InProdRegionalAllowlist(project, track=None):
       'a4vm-ui-tests-3',  # For Cloud Console UI testing.
       'm4a-ui-playground-1',  # For Cloud Console UI testing.
       'pikalov-tb',
+      'anthos-cl-e2e-tests',
+      'a4vm-ui-playground',
+      'm4a-ui-playground-1',
   ]
   return track is calliope_base.ReleaseTrack.ALPHA and (
       project in prod_regional_allowlist)

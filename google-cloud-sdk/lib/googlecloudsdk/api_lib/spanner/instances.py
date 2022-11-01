@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 import datetime
 
 from apitools.base.py import list_pager
-from google.protobuf import timestamp_pb2
+from cloudsdk.google.protobuf import timestamp_pb2
 from googlecloudsdk.api_lib.spanner import response_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iam import iam_util
@@ -46,7 +46,8 @@ def Create(instance,
            nodes,
            processing_units=None,
            instance_type=None,
-           expire_behavior=None):
+           expire_behavior=None,
+           default_storage_type=None):
   """Create a new instance."""
   client = apis.GetClientInstance('spanner', 'v1')
   # Module containing the definitions of messages for the specified API.
@@ -68,6 +69,8 @@ def Create(instance,
   if expire_behavior is not None:
     instance_obj.freeInstanceMetadata = msgs.FreeInstanceMetadata(
         expireBehavior=expire_behavior)
+  if default_storage_type is not None:
+    instance_obj.defaultStorageType = default_storage_type
   req = msgs.SpannerProjectsInstancesCreateRequest(
       parent=project_ref.RelativeName(),
       createInstanceRequest=msgs.CreateInstanceRequest(

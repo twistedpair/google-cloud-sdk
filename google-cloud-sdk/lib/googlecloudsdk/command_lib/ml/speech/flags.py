@@ -46,14 +46,14 @@ class RecognizeArgsToRequestMapper:
     self._microphone_distance_type_mapper = None
     self._device_type_mapper = None
 
-  def AddRecognizeArgsToParser(self, parser, api_version):
+  def AddRecognizeArgsToParser(self, parser, api_version, require_flags=True):
     """Add common, GA level flags for recognize commands."""
     parser.add_argument(
         'audio',
         help='The location of the audio file to transcribe. '
         'Must be a local path or a Google Cloud Storage URL '
         '(in the format gs://bucket/object).')
-    language_args = parser.add_group(mutex=True, required=True)
+    language_args = parser.add_group(mutex=True, required=require_flags)
     language_args.add_argument(
         '--language-code',
         help='The language of the supplied audio as a BCP-47 '
@@ -87,7 +87,7 @@ class RecognizeArgsToRequestMapper:
     audio_channel_args.add_argument(
         '--audio-channel-count',
         type=int,
-        required=True,
+        required=require_flags,
         help='The number of channels in the input audio data.  Set this for '
         'separate-channel-recognition. Valid values are: '
         '1)LINEAR16 and FLAC are 1-8 '
@@ -96,7 +96,7 @@ class RecognizeArgsToRequestMapper:
     audio_channel_args.add_argument(
         '--separate-channel-recognition',
         action='store_true',
-        required=True,
+        required=require_flags,
         help='Recognition result will contain a `channel_tag` field to state '
         'which channel that result belongs to. If this is not true, only '
         'the first channel will be recognized.')
@@ -213,7 +213,7 @@ class RecognizeArgsToRequestMapper:
         config.useEnhanced = True
     return config
 
-  def AddBetaRecognizeArgsToParser(self, parser):
+  def AddBetaRecognizeArgsToParser(self, parser, require_flags=True):
     """Add beta arguments."""
     parser.add_argument(
         '--additional-language-codes',
@@ -252,7 +252,7 @@ in the most likely language detected including the main language-code.""")
     speaker_args.add_argument(
         '--enable-speaker-diarization',
         action='store_true',
-        required=True,
+        required=require_flags,
         help='Enable speaker detection for each recognized word in the top '
         'alternative of the recognition result using an integer '
         'speaker_tag provided in the WordInfo.')

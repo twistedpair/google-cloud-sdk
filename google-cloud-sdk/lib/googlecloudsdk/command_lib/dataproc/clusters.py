@@ -1092,7 +1092,7 @@ def GetClusterConfig(args,
                     dataproc.messages.NodeGroup.RolesValueListEntryValuesEnum
                     .DRIVER
                 ],
-                nodePoolConfig=dataproc.messages.InstanceGroupConfig(
+                nodeGroupConfig=dataproc.messages.InstanceGroupConfig(
                     numInstances=args.driver_pool_size,
                     imageUri=image_ref and image_ref.SelfLink(),
                     machineTypeUri=args.driver_pool_machine_type,

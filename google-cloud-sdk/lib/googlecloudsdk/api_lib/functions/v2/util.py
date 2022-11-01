@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import enum
 import re
 
 from apitools.base.py import encoding
@@ -34,6 +35,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
+
 from googlecloudsdk.core.util import encoding as encoder
 from googlecloudsdk.core.util import retry
 import six
@@ -92,6 +94,13 @@ PUBSUB_MESSAGE_PUBLISH_TYPES = (
 )
 
 
+class ApiEnv(enum.Enum):
+  TEST = 1
+  AUTOPUSH = 2
+  STAGING = 3
+  PROD = 4
+
+
 def GetProject():
   """Returns the value of the core/project config prooerty.
 
@@ -145,7 +154,8 @@ def _GetStageName(name_enum):
 
 
 def _BuildOperationMetadata(messages):
-  """Returns corresponding GoogleCloudFunctionsV2(alpha|beta|ga)OperationMetadata."""
+  """Returns corresponding GoogleCloudFunctionsV2(alpha|beta|ga)OperationMetadata.
+  """
   if messages is apis.GetMessagesModule(_API_NAME, _V2_ALPHA):
     return messages.GoogleCloudFunctionsV2alphaOperationMetadata
   elif messages is apis.GetMessagesModule(_API_NAME, _V2_BETA):
@@ -470,3 +480,20 @@ def PromptToEnableDataAccessAuditLogs(service):
         'Your account does not have permission to enable Data Access audit '
         'logs for the service [%s]. If the deployment fails, ensure audit '
         'logs are enabled for service [%s] before retrying', service, service)
+
+
+def GetCloudFunctionsApiEnv():
+  """Determine the cloudfunctions API env the gcloud cmd is using."""
+  endpoint_property = getattr(properties.VALUES.api_endpoint_overrides,
+                              'cloudfunctions')
+  api_string = endpoint_property.Get()
+  if api_string is None:
+    return ApiEnv.PROD
+  if 'test-cloudfunctions' in api_string:
+    return ApiEnv.TEST
+  if 'autopush-cloudfunctions' in api_string:
+    return ApiEnv.AUTOPUSH
+  if 'staging-cloudfunctions' in api_string:
+    return ApiEnv.STAGING
+
+  return ApiEnv.PROD

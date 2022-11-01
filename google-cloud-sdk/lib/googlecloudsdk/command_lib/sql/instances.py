@@ -300,6 +300,10 @@ class _BaseInstances(object):
     if args.deletion_protection is not None:
       settings.deletionProtectionEnabled = args.deletion_protection
 
+    if args.IsSpecified('connector_enforcement'):
+      settings.connectorEnforcement = _ParseConnectorEnforcement(
+          sql_messages, args.connector_enforcement)
+
     # BETA args.
     if _IsBetaOrNewer(release_track):
       if args.IsSpecified('storage_auto_increase_limit'):
@@ -322,10 +326,6 @@ class _BaseInstances(object):
         if not settings.ipConfiguration:
           settings.ipConfiguration = sql_messages.IpConfiguration()
         settings.ipConfiguration.enablePrivatePathForGoogleCloudServices = args.enable_google_private_path
-
-      if args.IsSpecified('connector_enforcement'):
-        settings.connectorEnforcement = _ParseConnectorEnforcement(
-            sql_messages, args.connector_enforcement)
 
     if _IsAlpha(release_track):
       if args.IsSpecified('workload_tier'):

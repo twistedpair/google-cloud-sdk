@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 
 DEFAULT_DATABASE = '(default)'
@@ -38,6 +39,12 @@ def GetClient():
 def GetService():
   """Returns the service for interacting with the Datastore Admin service."""
   return GetClient().projects_databases
+
+
+def GetLocationService():
+  """Returns the Firestore Location service for interacting with the Firestore Admin service.
+  """
+  return GetClient().projects_locations
 
 
 def CreateDatabase(project, location, database, database_type):
@@ -142,3 +149,20 @@ def Import(project, input_uri_prefix, collection_ids=None):
   dbname = 'projects/{}/databases/{}'.format(project, DEFAULT_DATABASE)
   return GetService().ImportDocuments(
       GetImportDocumentsRequest(dbname, input_uri_prefix, collection_ids))
+
+
+def ListLocations(project):
+  """Lists locations available to Google Cloud Firestore.
+
+  Args:
+    project: the project id to list locations, a string.
+
+  Returns:
+    a List of Locations.
+  """
+  return list_pager.YieldFromList(
+      GetLocationService(),
+      GetMessages().FirestoreProjectsLocationsListRequest(
+          name='projects/{}'.format(project)),
+      field='locations',
+      batch_size_attribute='pageSize')

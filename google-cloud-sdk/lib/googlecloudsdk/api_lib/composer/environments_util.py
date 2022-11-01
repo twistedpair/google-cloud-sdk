@@ -22,6 +22,9 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.composer import util as api_util
 from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.composer.flags import CONNECTION_TYPE_FLAG_ALPHA
+from googlecloudsdk.command_lib.composer.flags import CONNECTION_TYPE_FLAG_BETA
+from googlecloudsdk.command_lib.composer.flags import CONNECTION_TYPE_FLAG_GA
 from googlecloudsdk.command_lib.composer.flags import ENVIRONMENT_SIZE_ALPHA
 from googlecloudsdk.command_lib.composer.flags import ENVIRONMENT_SIZE_BETA
 from googlecloudsdk.command_lib.composer.flags import ENVIRONMENT_SIZE_GA
@@ -88,6 +91,8 @@ class CreateEnvironmentFlags:
     connection_subnetwork: str or None, the Compute Engine subnetwork from which
       to reserve the IP address for internal connections, specified as relative
       resource name.
+    connection_type: str or None, mode of internal connectivity within the
+      Cloud Composer environment. Can be VPC_PEERING or PRIVATE_SERVICE_CONNECT.
     web_server_access_control: [{string: string}], List of IP ranges with
       descriptions to allow access to the web server.
     cloud_sql_machine_type: str or None, Cloud SQL machine type used by the
@@ -146,7 +151,9 @@ class CreateEnvironmentFlags:
     snapshot_location: str or None, a Cloud Storage location used to store
       automatically created snapshots
     snapshot_schedule_timezone: str or None, time zone that sets the context to
-      interpret snapshot_creation_schedule.
+      interpret snapshot_creation_schedule
+    enable_cloud_data_lineage_integration: bool or None, whether Cloud Data
+      Lineage integration should be enabled
   """
 
   # TODO(b/154131605): This a type that is an immutable data object. Can't use
@@ -186,6 +193,7 @@ class CreateEnvironmentFlags:
                cloud_sql_ipv4_cidr=None,
                composer_network_ipv4_cidr=None,
                connection_subnetwork=None,
+               connection_type=None,
                web_server_access_control=None,
                cloud_sql_machine_type=None,
                web_server_machine_type=None,
@@ -215,7 +223,8 @@ class CreateEnvironmentFlags:
                enable_scheduled_snapshot_creation=None,
                snapshot_creation_schedule=None,
                snapshot_location=None,
-               snapshot_schedule_timezone=None):
+               snapshot_schedule_timezone=None,
+               enable_cloud_data_lineage_integration=None):
     self.node_count = node_count
     self.environment_size = environment_size
     self.labels = labels
@@ -247,6 +256,7 @@ class CreateEnvironmentFlags:
     self.cloud_sql_ipv4_cidr = cloud_sql_ipv4_cidr
     self.composer_network_ipv4_cidr = composer_network_ipv4_cidr
     self.connection_subnetwork = connection_subnetwork
+    self.connection_type = connection_type
     self.web_server_access_control = web_server_access_control
     self.cloud_sql_machine_type = cloud_sql_machine_type
     self.web_server_machine_type = web_server_machine_type
@@ -277,6 +287,7 @@ class CreateEnvironmentFlags:
     self.snapshot_creation_schedule = snapshot_creation_schedule
     self.snapshot_location = snapshot_location
     self.snapshot_schedule_timezone = snapshot_schedule_timezone
+    self.enable_cloud_data_lineage_integration = enable_cloud_data_lineage_integration
 
 
 def _CreateNodeConfig(messages, flags):
@@ -361,7 +372,8 @@ def _CreateConfig(messages, flags, is_composer_v1):
           flags.environment_size)
   if (flags.image_version or flags.env_variables or
       flags.airflow_config_overrides or flags.python_version or
-      flags.airflow_executor_type or flags.scheduler_count and is_composer_v1):
+      flags.airflow_executor_type or flags.scheduler_count and is_composer_v1 or
+      flags.enable_cloud_data_lineage_integration):
     config.softwareConfig = messages.SoftwareConfig()
     if flags.image_version:
       config.softwareConfig.imageVersion = flags.image_version
@@ -380,6 +392,9 @@ def _CreateConfig(messages, flags, is_composer_v1):
           flags.airflow_executor_type)
     if flags.scheduler_count and is_composer_v1:
       config.softwareConfig.schedulerCount = flags.scheduler_count
+    if flags.enable_cloud_data_lineage_integration:
+      config.softwareConfig.cloudDataLineageIntegration = messages.CloudDataLineageIntegration(
+          enabled=True)
 
   if flags.maintenance_window_start:
     assert flags.maintenance_window_end, 'maintenance_window_end is missing'
@@ -404,14 +419,28 @@ def _CreateConfig(messages, flags, is_composer_v1):
   if flags.private_environment:
     # Adds a PrivateClusterConfig, if necessary.
     private_cluster_config = None
+    networking_config = None
     if flags.private_endpoint or flags.master_ipv4_cidr:
       private_cluster_config = messages.PrivateClusterConfig(
           enablePrivateEndpoint=flags.private_endpoint,
           masterIpv4CidrBlock=flags.master_ipv4_cidr)
+    if flags.connection_type:
+      if flags.release_track == base.ReleaseTrack.GA:
+        connection_type = CONNECTION_TYPE_FLAG_GA.GetEnumForChoice(
+            flags.connection_type)
+      elif flags.release_track == base.ReleaseTrack.BETA:
+        connection_type = CONNECTION_TYPE_FLAG_BETA.GetEnumForChoice(
+            flags.connection_type)
+      elif flags.release_track == base.ReleaseTrack.ALPHA:
+        connection_type = CONNECTION_TYPE_FLAG_ALPHA.GetEnumForChoice(
+            flags.connection_type)
+      networking_config = messages.NetworkingConfig(
+          connectionType=connection_type)
 
     private_env_config_args = {
         'enablePrivateEnvironment': flags.private_environment,
         'privateClusterConfig': private_cluster_config,
+        'networkingConfig': networking_config,
     }
 
     if flags.web_server_ipv4_cidr is not None:

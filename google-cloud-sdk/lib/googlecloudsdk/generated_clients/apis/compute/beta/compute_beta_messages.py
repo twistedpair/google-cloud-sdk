@@ -1536,8 +1536,8 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
   r"""Properties of the SKU instances being reserved. Next ID: 9
 
   Enums:
-    MaintenanceIntervalValueValuesEnum: For more information about maintenance
-      intervals, see Setting maintenance intervals.
+    MaintenanceIntervalValueValuesEnum: Specifies the frequency of planned
+      maintenance events. The accepted values are: `PERIODIC`.
 
   Fields:
     guestAccelerators: Specifies accelerator type and count.
@@ -1553,14 +1553,14 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
     maintenanceFreezeDurationHours: Specifies the number of hours after
       reservation creation where instances using the reservation won't be
       scheduled for maintenance.
-    maintenanceInterval: For more information about maintenance intervals, see
-      Setting maintenance intervals.
+    maintenanceInterval: Specifies the frequency of planned maintenance
+      events. The accepted values are: `PERIODIC`.
     minCpuPlatform: Minimum cpu platform the reservation.
   """
 
   class MaintenanceIntervalValueValuesEnum(_messages.Enum):
-    r"""For more information about maintenance intervals, see Setting
-    maintenance intervals.
+    r"""Specifies the frequency of planned maintenance events. The accepted
+    values are: `PERIODIC`.
 
     Values:
       PERIODIC: VMs receive infrastructure and hypervisor updates on a
@@ -1812,12 +1812,14 @@ class AttachedDiskInitializeParams(_messages.Message):
       example:
       https://www.googleapis.com/compute/v1/projects/project/zones/zone
       /diskTypes/pd-standard For a full list of acceptable values, see
-      Persistent disk types. If you define this field, you can provide either
-      the full or partial URL. For example, the following are valid values: -
+      Persistent disk types. If you specify this field when creating a VM, you
+      can provide either the full or partial URL. For example, the following
+      values are valid: -
       https://www.googleapis.com/compute/v1/projects/project/zones/zone
       /diskTypes/diskType - projects/project/zones/zone/diskTypes/diskType -
-      zones/zone/diskTypes/diskType Note that for InstanceTemplate, this is
-      the name of the disk type, not URL.
+      zones/zone/diskTypes/diskType If you specify this field when creating or
+      updating an instance template or all-instances configuration, specify
+      the type of the disk, not the URL. For example: pd-standard.
     guestOsFeatures: A list of features to enable on the guest operating
       system. Applicable only for bootable images. Read Enabling guest
       operating system features to see a list of available options. Guest OS
@@ -1860,10 +1862,10 @@ class AttachedDiskInitializeParams(_messages.Message):
       later, this field will not be set.
     sourceImageEncryptionKey: The customer-supplied encryption key of the
       source image. Required if the source image is protected by a customer-
-      supplied encryption key. Instance templates do not store customer-
-      supplied encryption keys, so you cannot create disks for instances in a
-      managed instance group if the source images are encrypted with your own
-      keys.
+      supplied encryption key. InstanceTemplate and InstancePropertiesPatch do
+      not store customer-supplied encryption keys, so you cannot create disks
+      for instances in a managed instance group if the source images are
+      encrypted with your own keys.
     sourceSnapshot: The source snapshot to create this disk. When creating a
       new instance, one of initializeParams.sourceSnapshot or
       initializeParams.sourceImage or disks.source is required except for
@@ -3951,11 +3953,9 @@ class BackendService(_messages.Message):
       from the load balancing pool for the backend service. If not set, this
       feature is considered disabled. This field is applicable to either: - A
       regional backend service with the service_protocol set to HTTP, HTTPS,
-      or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. - A global
-      backend service with the load_balancing_scheme set to
-      INTERNAL_SELF_MANAGED. Not supported when the backend service is
-      referenced by a URL map that is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
+      HTTP2, or GRPC, and load_balancing_scheme set to INTERNAL_MANAGED. - A
+      global backend service with the load_balancing_scheme set to
+      INTERNAL_SELF_MANAGED.
     port: Deprecated in favor of portName. The TCP port to connect on the
       backend. The default value is 80. For Internal TCP/UDP Load Balancing
       and Network Load Balancing, omit port.
@@ -14011,6 +14011,8 @@ class ComputeInstancesStopRequest(_messages.Message):
   r"""A ComputeInstancesStopRequest object.
 
   Fields:
+    discardLocalSsd: If true, discard the contents of any attached localSSD
+      partitions. Default value is false (== preserve localSSD data).
     instance: Name of the instance resource to stop.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -14026,10 +14028,11 @@ class ComputeInstancesStopRequest(_messages.Message):
     zone: The name of the zone for this request.
   """
 
-  instance = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  zone = _messages.StringField(4, required=True)
+  discardLocalSsd = _messages.BooleanField(1)
+  instance = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesSuspendRequest(_messages.Message):
@@ -30007,7 +30010,9 @@ class CorsPolicy(_messages.Message):
     allowOriginRegexes: Specifies a regular expression that matches allowed
       origins. For more information about the regular expression syntax, see
       Syntax. An origin is allowed if it matches either an item in
-      allowOrigins or an item in allowOriginRegexes.
+      allowOrigins or an item in allowOriginRegexes. Regular expressions can
+      only be used when the loadBalancingScheme is set to
+      INTERNAL_SELF_MANAGED.
     allowOrigins: Specifies the list of origins that is allowed to do CORS
       requests. An origin is allowed if it matches either an item in
       allowOrigins or an item in allowOriginRegexes.
@@ -31758,6 +31763,10 @@ class DistributionPolicy(_messages.Message):
         requested number of VMs within present resource constraints and to
         maximize utilization of unused zonal reservations. Recommended for
         batch workloads that do not require high availability.
+      ANY_SINGLE_ZONE: The group creates all VM instances within a single
+        zone. The zone is selected based on the present resource constraints
+        and to maximize utilization of unused zonal reservations. Recommended
+        for batch workloads with heavy interprocess communication.
       BALANCED: The group prioritizes acquisition of resources, scheduling VMs
         in zones where resources are available while distributing VMs as
         evenly as possible across selected zones to minimize the impact of
@@ -31769,8 +31778,9 @@ class DistributionPolicy(_messages.Message):
         highly available serving workloads.
     """
     ANY = 0
-    BALANCED = 1
-    EVEN = 2
+    ANY_SINGLE_ZONE = 1
+    BALANCED = 2
+    EVEN = 3
 
   targetShape = _messages.EnumField('TargetShapeValueValuesEnum', 1)
   zones = _messages.MessageField('DistributionPolicyZoneConfiguration', 2, repeated=True)
@@ -33339,14 +33349,14 @@ class ForwardingRule(_messages.Message):
       address resource. When omitted, Google Cloud assigns an ephemeral IP
       address. Use one of the following formats to specify an IP address while
       creating a forwarding rule: * IP address number, as in `100.1.2.3` *
-      Full resource URL, as in
-      https://www.googleapis.com/compute/v1/projects/project_id/regions/region
-      /addresses/address-name * Partial URL or by name, as in: -
-      projects/project_id/regions/region/addresses/address-name -
-      regions/region/addresses/address-name - global/addresses/address-name -
-      address-name The forwarding rule's target or backendService, and in most
-      cases, also the loadBalancingScheme, determine the type of IP address
-      that you can use. For detailed information, see [IP address
+      IPv6 address range, as in `2600:1234::/96` * Full resource URL, as in
+      https://www.googleapis.com/compute/v1/projects/
+      project_id/regions/region/addresses/address-name * Partial URL or by
+      name, as in: - projects/project_id/regions/region/addresses/address-name
+      - regions/region/addresses/address-name - global/addresses/address-name
+      - address-name The forwarding rule's target or backendService, and in
+      most cases, also the loadBalancingScheme, determine the type of IP
+      address that you can use. For detailed information, see [IP address
       specifications](https://cloud.google.com/load-balancing/docs/forwarding-
       rule-concepts#ip_address_specifications). When reading an IPAddress, the
       API always returns the IP address number.
@@ -36138,8 +36148,8 @@ class HttpHeaderMatch(_messages.Message):
       request, use a headerMatch with headerName set to PORT and a regular
       expression that satisfies the RFC2616 Host header's port specifier. Only
       one of exactMatch, prefixMatch, suffixMatch, regexMatch, presentMatch or
-      rangeMatch must be set. regexMatch only applies to load balancers that
-      have loadBalancingScheme set to INTERNAL_SELF_MANAGED.
+      rangeMatch must be set. Regular expressions can only be used when the
+      loadBalancingScheme is set to INTERNAL_SELF_MANAGED.
     suffixMatch: The value of the header must end with the contents of
       suffixMatch. Only one of exactMatch, prefixMatch, suffixMatch,
       regexMatch, presentMatch or rangeMatch must be set.
@@ -36405,8 +36415,9 @@ class HttpQueryParameterMatch(_messages.Message):
     regexMatch: The queryParameterMatch matches if the value of the parameter
       matches the regular expression specified by regexMatch. For more
       information about regular expression syntax, see Syntax. Only one of
-      presentMatch, exactMatch, or regexMatch must be set. regexMatch only
-      applies when the loadBalancingScheme is set to INTERNAL_SELF_MANAGED.
+      presentMatch, exactMatch, or regexMatch must be set. Regular expressions
+      can only be used when the loadBalancingScheme is set to
+      INTERNAL_SELF_MANAGED.
   """
 
   exactMatch = _messages.StringField(1)
@@ -36732,8 +36743,8 @@ class HttpRouteRuleMatch(_messages.Message):
       after removing any query parameters and anchor supplied with the
       original URL. For more information about regular expression syntax, see
       Syntax. Only one of prefixMatch, fullPathMatch or regexMatch must be
-      specified. regexMatch only applies to load balancers that have
-      loadBalancingScheme set to INTERNAL_SELF_MANAGED.
+      specified. Regular expressions can only be used when the
+      loadBalancingScheme is set to INTERNAL_SELF_MANAGED.
   """
 
   fullPathMatch = _messages.StringField(1)
@@ -50837,19 +50848,27 @@ class OutlierDetection(_messages.Message):
       number of times the host has been ejected. Defaults to 30000ms or 30s.
     consecutiveErrors: Number of errors before a host is ejected from the
       connection pool. When the backend host is accessed over HTTP, a 5xx
-      return code qualifies as an error. Defaults to 5.
+      return code qualifies as an error. Defaults to 5. Not supported when the
+      backend service is referenced by a URL map that is bound to target gRPC
+      proxy that has validateForProxyless field set to true.
     consecutiveGatewayFailure: The number of consecutive gateway failures
       (502, 503, 504 status or connection errors that are mapped to one of
       those status codes) before a consecutive gateway failure ejection
-      occurs. Defaults to 3.
+      occurs. Defaults to 3. Not supported when the backend service is
+      referenced by a URL map that is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     enforcingConsecutiveErrors: The percentage chance that a host will be
       actually ejected when an outlier status is detected through consecutive
       5xx. This setting can be used to disable ejection or to ramp it up
-      slowly. Defaults to 0.
+      slowly. Defaults to 0. Not supported when the backend service is
+      referenced by a URL map that is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     enforcingConsecutiveGatewayFailure: The percentage chance that a host will
       be actually ejected when an outlier status is detected through
       consecutive gateway failures. This setting can be used to disable
-      ejection or to ramp it up slowly. Defaults to 100.
+      ejection or to ramp it up slowly. Defaults to 100. Not supported when
+      the backend service is referenced by a URL map that is bound to target
+      gRPC proxy that has validateForProxyless field set to true.
     enforcingSuccessRate: The percentage chance that a host will be actually
       ejected when an outlier status is detected through success rate
       statistics. This setting can be used to disable ejection or to ramp it
@@ -53347,6 +53366,7 @@ class Quota(_messages.Message):
       SSL_CERTIFICATES: <no description>
       STATIC_ADDRESSES: <no description>
       STATIC_BYOIP_ADDRESSES: <no description>
+      STATIC_EXTERNAL_IPV6_ADDRESS_RANGES: <no description>
       SUBNETWORKS: <no description>
       T2A_CPUS: <no description>
       T2D_CPUS: <no description>
@@ -53481,20 +53501,21 @@ class Quota(_messages.Message):
     SSL_CERTIFICATES = 116
     STATIC_ADDRESSES = 117
     STATIC_BYOIP_ADDRESSES = 118
-    SUBNETWORKS = 119
-    T2A_CPUS = 120
-    T2D_CPUS = 121
-    TARGET_HTTPS_PROXIES = 122
-    TARGET_HTTP_PROXIES = 123
-    TARGET_INSTANCES = 124
-    TARGET_POOLS = 125
-    TARGET_SSL_PROXIES = 126
-    TARGET_TCP_PROXIES = 127
-    TARGET_VPN_GATEWAYS = 128
-    URL_MAPS = 129
-    VPN_GATEWAYS = 130
-    VPN_TUNNELS = 131
-    XPN_SERVICE_PROJECTS = 132
+    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 119
+    SUBNETWORKS = 120
+    T2A_CPUS = 121
+    T2D_CPUS = 122
+    TARGET_HTTPS_PROXIES = 123
+    TARGET_HTTP_PROXIES = 124
+    TARGET_INSTANCES = 125
+    TARGET_POOLS = 126
+    TARGET_SSL_PROXIES = 127
+    TARGET_TCP_PROXIES = 128
+    TARGET_VPN_GATEWAYS = 129
+    URL_MAPS = 130
+    VPN_GATEWAYS = 131
+    VPN_TUNNELS = 132
+    XPN_SERVICE_PROJECTS = 133
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -55269,7 +55290,10 @@ class Reservation(_messages.Message):
     satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
-    shareSettings: Share-settings for shared-reservation
+    shareSettings: Specify share-settings to create a shared reservation. This
+      property is optional. For more information about the syntax and options
+      for this field and its subfields, see the guide for creating a shared
+      reservation.
     specificReservation: Reservation for instances with specific machine
       shapes.
     specificReservationRequired: Indicates whether the reservation can be
@@ -59140,8 +59164,8 @@ class Scheduling(_messages.Message):
   Enums:
     InstanceTerminationActionValueValuesEnum: Specifies the termination action
       for the instance.
-    MaintenanceIntervalValueValuesEnum: For more information about maintenance
-      intervals, see Setting maintenance intervals.
+    MaintenanceIntervalValueValuesEnum: Specifies the frequency of planned
+      maintenance events. The accepted values are: `PERIODIC`.
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
       this instance. For standard instances, the default behavior is MIGRATE.
       For preemptible instances, the default and only possible behavior is
@@ -59167,8 +59191,11 @@ class Scheduling(_messages.Message):
       public API.
     maintenanceFreezeDurationHours: Specifies the number of hours after VM
       instance creation where the VM won't be scheduled for maintenance.
-    maintenanceInterval: For more information about maintenance intervals, see
-      Setting maintenance intervals.
+    maintenanceInterval: Specifies the frequency of planned maintenance
+      events. The accepted values are: `PERIODIC`.
+    maxRunDuration: Specifies the max run duration for the given instance. If
+      specified, the instance termination action will be performed at the end
+      of the run duration.
     minNodeCpus: The minimum number of virtual CPUs this instance will consume
       when running on a sole-tenant node.
     nodeAffinities: A set of node affinity and anti-affinity configurations.
@@ -59183,6 +59210,9 @@ class Scheduling(_messages.Message):
       therefore, in a `TERMINATED` state. See Instance Life Cycle for more
       information on the possible instance states.
     provisioningModel: Specifies the provisioning model of the instance.
+    terminationTime: Specifies the timestamp, when the instance will be
+      terminated, in RFC3339 text format. If specified, the instance
+      termination action will be performed at the termination time.
   """
 
   class InstanceTerminationActionValueValuesEnum(_messages.Enum):
@@ -59199,8 +59229,8 @@ class Scheduling(_messages.Message):
     STOP = 2
 
   class MaintenanceIntervalValueValuesEnum(_messages.Enum):
-    r"""For more information about maintenance intervals, see Setting
-    maintenance intervals.
+    r"""Specifies the frequency of planned maintenance events. The accepted
+    values are: `PERIODIC`.
 
     Values:
       PERIODIC: VMs receive infrastructure and hypervisor updates on a
@@ -59247,11 +59277,13 @@ class Scheduling(_messages.Message):
   locationHint = _messages.StringField(4)
   maintenanceFreezeDurationHours = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 6)
-  minNodeCpus = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 8, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 9)
-  preemptible = _messages.BooleanField(10)
-  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 11)
+  maxRunDuration = _messages.MessageField('Duration', 7)
+  minNodeCpus = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 9, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 10)
+  preemptible = _messages.BooleanField(11)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 12)
+  terminationTime = _messages.StringField(13)
 
 
 class SchedulingNodeAffinity(_messages.Message):
@@ -59737,9 +59769,11 @@ class SecurityPolicy(_messages.Message):
     ruleTupleCount: [Output Only] Total count of all security policy rule
       tuples. A security policy can not exceed a set number of tuples.
     rules: A list of rules that belong to this policy. There must always be a
-      default rule (rule with priority 2147483647 and match "*"). If no rules
-      are provided when creating a security policy, a default rule with action
-      "allow" will be added.
+      default rule which is a rule with priority 2147483647 and match all
+      condition (for the match condition this means match "*" for srcIpRanges
+      and for the networkMatch condition every field must be either match "*"
+      or not set). If no rules are provided when creating a security policy, a
+      default rule with action "allow" will be added.
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
@@ -60442,20 +60476,24 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     EnforceOnKeyValueValuesEnum: Determines the key to enforce the
       rate_limit_threshold on. Possible values are: - ALL: A single rate limit
       threshold is applied to all the requests matching this rule. This is the
-      default value if this field 'enforce_on_key' is not configured. - IP:
-      The source IP address of the request is the key. Each IP has this limit
-      enforced separately. - HTTP_HEADER: The value of the HTTP header whose
-      name is configured under "enforce_on_key_name". The key value is
-      truncated to the first 128 bytes of the header value. If no such header
-      is present in the request, the key type defaults to ALL. - XFF_IP: The
-      first IP address (i.e. the originating client IP address) specified in
-      the list of IPs under X-Forwarded-For HTTP header. If no such header is
-      present or the value is not a valid IP, the key defaults to the source
-      IP address of the request i.e. key type IP. - HTTP_COOKIE: The value of
-      the HTTP cookie whose name is configured under "enforce_on_key_name".
-      The key value is truncated to the first 128 bytes of the cookie value.
-      If no such cookie is present in the request, the key type defaults to
-      ALL.
+      default value if "enforceOnKey" is not configured. - IP: The source IP
+      address of the request is the key. Each IP has this limit enforced
+      separately. - HTTP_HEADER: The value of the HTTP header whose name is
+      configured under "enforceOnKeyName". The key value is truncated to the
+      first 128 bytes of the header value. If no such header is present in the
+      request, the key type defaults to ALL. - XFF_IP: The first IP address
+      (i.e. the originating client IP address) specified in the list of IPs
+      under X-Forwarded-For HTTP header. If no such header is present or the
+      value is not a valid IP, the key defaults to the source IP address of
+      the request i.e. key type IP. - HTTP_COOKIE: The value of the HTTP
+      cookie whose name is configured under "enforceOnKeyName". The key value
+      is truncated to the first 128 bytes of the cookie value. If no such
+      cookie is present in the request, the key type defaults to ALL. -
+      HTTP_PATH: The URL path of the HTTP request. The key value is truncated
+      to the first 128 bytes. - SNI: Server name indication in the TLS session
+      of the HTTPS request. The key value is truncated to the first 128 bytes.
+      The key type defaults to ALL on a HTTP session. - REGION_CODE: The
+      country/region from which the request originates.
 
   Fields:
     banDurationSec: Can only be specified if the action for the rule is
@@ -60470,20 +60508,25 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       rate limit threshold. Valid option is "allow" only.
     enforceOnKey: Determines the key to enforce the rate_limit_threshold on.
       Possible values are: - ALL: A single rate limit threshold is applied to
-      all the requests matching this rule. This is the default value if this
-      field 'enforce_on_key' is not configured. - IP: The source IP address of
-      the request is the key. Each IP has this limit enforced separately. -
+      all the requests matching this rule. This is the default value if
+      "enforceOnKey" is not configured. - IP: The source IP address of the
+      request is the key. Each IP has this limit enforced separately. -
       HTTP_HEADER: The value of the HTTP header whose name is configured under
-      "enforce_on_key_name". The key value is truncated to the first 128 bytes
-      of the header value. If no such header is present in the request, the
-      key type defaults to ALL. - XFF_IP: The first IP address (i.e. the
+      "enforceOnKeyName". The key value is truncated to the first 128 bytes of
+      the header value. If no such header is present in the request, the key
+      type defaults to ALL. - XFF_IP: The first IP address (i.e. the
       originating client IP address) specified in the list of IPs under
       X-Forwarded-For HTTP header. If no such header is present or the value
       is not a valid IP, the key defaults to the source IP address of the
       request i.e. key type IP. - HTTP_COOKIE: The value of the HTTP cookie
-      whose name is configured under "enforce_on_key_name". The key value is
+      whose name is configured under "enforceOnKeyName". The key value is
       truncated to the first 128 bytes of the cookie value. If no such cookie
-      is present in the request, the key type defaults to ALL.
+      is present in the request, the key type defaults to ALL. - HTTP_PATH:
+      The URL path of the HTTP request. The key value is truncated to the
+      first 128 bytes. - SNI: Server name indication in the TLS session of the
+      HTTPS request. The key value is truncated to the first 128 bytes. The
+      key type defaults to ALL on a HTTP session. - REGION_CODE: The
+      country/region from which the request originates.
     enforceOnKeyName: Rate limit key name applicable only for the following
       key types: HTTP_HEADER -- Name of the HTTP header whose value is taken
       as the key value. HTTP_COOKIE -- Name of the HTTP cookie whose value is
@@ -60503,35 +60546,45 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
   class EnforceOnKeyValueValuesEnum(_messages.Enum):
     r"""Determines the key to enforce the rate_limit_threshold on. Possible
     values are: - ALL: A single rate limit threshold is applied to all the
-    requests matching this rule. This is the default value if this field
-    'enforce_on_key' is not configured. - IP: The source IP address of the
-    request is the key. Each IP has this limit enforced separately. -
-    HTTP_HEADER: The value of the HTTP header whose name is configured under
-    "enforce_on_key_name". The key value is truncated to the first 128 bytes
-    of the header value. If no such header is present in the request, the key
-    type defaults to ALL. - XFF_IP: The first IP address (i.e. the originating
-    client IP address) specified in the list of IPs under X-Forwarded-For HTTP
-    header. If no such header is present or the value is not a valid IP, the
-    key defaults to the source IP address of the request i.e. key type IP. -
-    HTTP_COOKIE: The value of the HTTP cookie whose name is configured under
-    "enforce_on_key_name". The key value is truncated to the first 128 bytes
-    of the cookie value. If no such cookie is present in the request, the key
-    type defaults to ALL.
+    requests matching this rule. This is the default value if "enforceOnKey"
+    is not configured. - IP: The source IP address of the request is the key.
+    Each IP has this limit enforced separately. - HTTP_HEADER: The value of
+    the HTTP header whose name is configured under "enforceOnKeyName". The key
+    value is truncated to the first 128 bytes of the header value. If no such
+    header is present in the request, the key type defaults to ALL. - XFF_IP:
+    The first IP address (i.e. the originating client IP address) specified in
+    the list of IPs under X-Forwarded-For HTTP header. If no such header is
+    present or the value is not a valid IP, the key defaults to the source IP
+    address of the request i.e. key type IP. - HTTP_COOKIE: The value of the
+    HTTP cookie whose name is configured under "enforceOnKeyName". The key
+    value is truncated to the first 128 bytes of the cookie value. If no such
+    cookie is present in the request, the key type defaults to ALL. -
+    HTTP_PATH: The URL path of the HTTP request. The key value is truncated to
+    the first 128 bytes. - SNI: Server name indication in the TLS session of
+    the HTTPS request. The key value is truncated to the first 128 bytes. The
+    key type defaults to ALL on a HTTP session. - REGION_CODE: The
+    country/region from which the request originates.
 
     Values:
       ALL: <no description>
       ALL_IPS: <no description>
       HTTP_COOKIE: <no description>
       HTTP_HEADER: <no description>
+      HTTP_PATH: <no description>
       IP: <no description>
+      REGION_CODE: <no description>
+      SNI: <no description>
       XFF_IP: <no description>
     """
     ALL = 0
     ALL_IPS = 1
     HTTP_COOKIE = 2
     HTTP_HEADER = 3
-    IP = 4
-    XFF_IP = 5
+    HTTP_PATH = 4
+    IP = 5
+    REGION_CODE = 6
+    SNI = 7
+    XFF_IP = 8
 
   banDurationSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   banThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 2)
@@ -63850,8 +63903,8 @@ class Subnetwork(_messages.Message):
       is no org policy specified, then it will default to disabled. This field
       isn't supported with the purpose field set to
       INTERNAL_HTTPS_LOAD_BALANCER.
-    externalIpv6Prefix: [Output Only] The external IPv6 address range that is
-      assigned to this subnetwork.
+    externalIpv6Prefix: The external IPv6 address range that is owned by this
+      subnetwork.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a Subnetwork. An up-to-date fingerprint
@@ -63903,6 +63956,7 @@ class Subnetwork(_messages.Message):
       supported with the purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.
     region: URL of the region where the Subnetwork resides. This field can be
       set only at resource creation time.
+    reservedInternalRange: The URL of the reserved internal range.
     role: The role of subnetwork. Currently, this field is only used when
       purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE
       or BACKUP. An ACTIVE subnetwork is one that is currently being used for
@@ -64046,11 +64100,12 @@ class Subnetwork(_messages.Message):
   privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 18)
   purpose = _messages.EnumField('PurposeValueValuesEnum', 19)
   region = _messages.StringField(20)
-  role = _messages.EnumField('RoleValueValuesEnum', 21)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 22, repeated=True)
-  selfLink = _messages.StringField(23)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
+  reservedInternalRange = _messages.StringField(21)
+  role = _messages.EnumField('RoleValueValuesEnum', 22)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 23, repeated=True)
+  selfLink = _messages.StringField(24)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
 
 
 class SubnetworkAggregatedList(_messages.Message):
@@ -64497,10 +64552,12 @@ class SubnetworkSecondaryRange(_messages.Message):
       when adding an alias IP range to a VM instance. The name must be 1-63
       characters long, and comply with RFC1035. The name must be unique within
       the subnetwork.
+    reservedInternalRange: The URL of the reserved internal range.
   """
 
   ipCidrRange = _messages.StringField(1)
   rangeName = _messages.StringField(2)
+  reservedInternalRange = _messages.StringField(3)
 
 
 class SubnetworksExpandIpCidrRangeRequest(_messages.Message):
@@ -70495,8 +70552,8 @@ class VpnGateway(_messages.Message):
 
   Enums:
     StackTypeValueValuesEnum: The stack type for this VPN gateway to identify
-      the IP protocols that are enabled. If not specified, IPV4_ONLY will be
-      used.
+      the IP protocols that are enabled. Possible values are: IPV4_ONLY,
+      IPV4_IPV6. If not specified, IPV4_ONLY will be used.
 
   Messages:
     LabelsValue: Labels for this resource. These can only be added or modified
@@ -70535,14 +70592,16 @@ class VpnGateway(_messages.Message):
     region: [Output Only] URL of the region where the VPN gateway resides.
     selfLink: [Output Only] Server-defined URL for the resource.
     stackType: The stack type for this VPN gateway to identify the IP
-      protocols that are enabled. If not specified, IPV4_ONLY will be used.
+      protocols that are enabled. Possible values are: IPV4_ONLY, IPV4_IPV6.
+      If not specified, IPV4_ONLY will be used.
     vpnInterfaces: The list of VPN interfaces associated with this VPN
       gateway.
   """
 
   class StackTypeValueValuesEnum(_messages.Enum):
     r"""The stack type for this VPN gateway to identify the IP protocols that
-    are enabled. If not specified, IPV4_ONLY will be used.
+    are enabled. Possible values are: IPV4_ONLY, IPV4_IPV6. If not specified,
+    IPV4_ONLY will be used.
 
     Values:
       IPV4_IPV6: Enable VPN gateway with both IPv4 and IPv6 protocols.
@@ -71296,7 +71355,9 @@ class VpnTunnel(_messages.Message):
       is created. This field is exclusive with the field peerGcpGateway.
     peerExternalGatewayInterface: The interface ID of the external VPN gateway
       to which this VPN tunnel is connected. Provided by the client when the
-      VPN tunnel is created.
+      VPN tunnel is created. Possible values are: `0`, `1`, `2`, `3`. The
+      number of IDs in use depends on the external VPN gateway redundancy
+      type.
     peerGcpGateway: URL of the peer side HA GCP VPN gateway to which this VPN
       tunnel is connected. Provided by the client when the VPN tunnel is
       created. This field can be used when creating highly available VPN from
@@ -71343,7 +71404,7 @@ class VpnTunnel(_messages.Message):
       must be used (instead of target_vpn_gateway) if a High Availability VPN
       gateway resource is created.
     vpnGatewayInterface: The interface ID of the VPN gateway with which this
-      VPN tunnel is associated.
+      VPN tunnel is associated. Possible values are: `0`, `1`.
   """
 
   class StatusValueValuesEnum(_messages.Enum):

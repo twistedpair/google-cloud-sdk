@@ -43,6 +43,12 @@ class UpdateBucketTask(task.Task):
     self._bucket_resource = bucket_resource
     self._user_request_args = user_request_args
 
+  def __eq__(self, other):
+    if not isinstance(other, UpdateBucketTask):
+      return NotImplemented
+    return (self._bucket_resource == other._bucket_resource and
+            self._user_request_args == other._user_request_args)
+
   def execute(self, task_status_queue=None):
     log.status.Print('Updating {}...'.format(self._bucket_resource))
     provider = self._bucket_resource.storage_url.scheme

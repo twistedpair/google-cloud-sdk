@@ -77,7 +77,7 @@ def AddCreatePushQueueFlags(parser,
   if release_track == base.ReleaseTrack.ALPHA:
     if http_queue and not app_engine_queue:
       flags = _AlphaHttpPushQueueFlags()
-      _AddHttpTargetAuthFlags(parser)
+      _AddHttpTargetAuthFlags(parser, is_email_required=True)
     else:
       flags = _AlphaPushQueueFlags()
 
@@ -94,10 +94,17 @@ def AddUpdatePullQueueFlags(parser):
     _AddFlagAndItsClearEquivalent(flag, parser)
 
 
-def AddUpdatePushQueueFlags(
-    parser, release_track=base.ReleaseTrack.GA, app_engine_queue=False):
+def AddUpdatePushQueueFlags(parser,
+                            release_track=base.ReleaseTrack.GA,
+                            app_engine_queue=False,
+                            http_queue=False):
+  """Updates flags related to Push queues."""
   if release_track == base.ReleaseTrack.ALPHA:
-    flags = _AlphaPushQueueFlags()
+    if http_queue and not app_engine_queue:
+      flags = _AlphaHttpPushQueueFlags()
+      flags = flags + _AddHttpTargetAuthFlags()
+    else:
+      flags = _AlphaPushQueueFlags()
   else:
     flags = _PushQueueFlags(release_track)
     if release_track == base.ReleaseTrack.BETA and not app_engine_queue:
@@ -528,16 +535,19 @@ def _AddAuthFlags(parser):
             """)
 
 
-def _AddHttpTargetAuthFlags(parser):
+def _AddHttpTargetAuthFlags(parser=None, is_email_required=False):
   """Add flags for http auth."""
-  auth_group = parser.add_mutually_exclusive_group(help="""\
+  auth_group = base.ArgumentGroup(
+      mutex=True,
+      help="""\
             If specified, all `Authorization` headers in the HttpRequest.headers
             field will be overridden for any tasks executed on this queue.
             """)
-  oidc_group = auth_group.add_argument_group(help='OpenId Connect')
-  oidc_group.add_argument(
+
+  oidc_group = base.ArgumentGroup(help='OpenId Connect')
+  oidc_email_arg = base.Argument(
       '--http-oidc-service-account-email-override',
-      required=True,
+      required=is_email_required,
       help="""\
             The service account email to be used for generating an OpenID
             Connect token to be included in the request sent to the target when
@@ -545,7 +555,8 @@ def _AddHttpTargetAuthFlags(parser):
             project as the queue. The caller must have
             'iam.serviceAccounts.actAs' permission for the service account.
             """)
-  oidc_group.add_argument(
+  oidc_group.AddArgument(oidc_email_arg)
+  oidc_token_arg = base.Argument(
       '--http-oidc-token-audience-override',
       help="""\
             The audience to be used when generating an OpenID Connect token to
@@ -553,10 +564,12 @@ def _AddHttpTargetAuthFlags(parser):
             task. If not specified, the URI specified in the target will be
             used.
             """)
-  oauth_group = auth_group.add_argument_group(help='OAuth2')
-  oauth_group.add_argument(
+  oidc_group.AddArgument(oidc_token_arg)
+
+  oauth_group = base.ArgumentGroup(help='OAuth2')
+  oauth_email_arg = base.Argument(
       '--http-oauth-service-account-email-override',
-      required=True,
+      required=is_email_required,
       help="""\
             The service account email to be used for generating an OAuth2 access
             token to be included in the request sent to the target when
@@ -564,7 +577,8 @@ def _AddHttpTargetAuthFlags(parser):
             project as the queue. The caller must have
             'iam.serviceAccounts.actAs' permission for the service account.
             """)
-  oauth_group.add_argument(
+  oauth_group.AddArgument(oauth_email_arg)
+  oauth_scope_arg = base.Argument(
       '--http-oauth-token-scope-override',
       help="""\
             The scope to be used when generating an OAuth2 access token to be
@@ -572,6 +586,15 @@ def _AddHttpTargetAuthFlags(parser):
             If not specified, 'https://www.googleapis.com/auth/cloud-platform'
             will be used.
             """)
+  oauth_group.AddArgument(oauth_scope_arg)
+
+  auth_group.AddArgument(oidc_group)
+  auth_group.AddArgument(oauth_group)
+
+  if parser is not None:
+    auth_group.AddToParser(parser)
+
+  return [oidc_email_arg, oidc_token_arg, oauth_email_arg, oauth_scope_arg]
 
 
 def _GetAppEngineRoutingKeysValidator():

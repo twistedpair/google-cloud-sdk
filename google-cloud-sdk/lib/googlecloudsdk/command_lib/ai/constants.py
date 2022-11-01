@@ -109,6 +109,31 @@ SUPPORTED_DEPLOYMENT_RESOURCE_POOL_REGIONS = (
     'asia-southeast1',
 )
 
+# Available regions specifically for model monitoring jobs
+SUPPORTED_MODEL_MONITORING_JOBS_REGIONS = (
+    'asia-east1',
+    'asia-east2',
+    'asia-northeast1',
+    'asia-northeast3',
+    'asia-south1',
+    'asia-southeast1',
+    'australia-southeast1',
+    'europe-west1',
+    'europe-west2',
+    'europe-west3',
+    'europe-west4',
+    'europe-west6',
+    'europe-west9',
+    'northamerica-northeast1',
+    'southamerica-east1',
+    'us-central1',
+    'us-east1',
+    'us-east4',
+    'us-west1',
+    'us-west2',
+    'us-west4',
+)
+
 OPERATION_CREATION_DISPLAY_MESSAGE = """\
 The {verb} operation [{name}] was submitted successfully.
 

@@ -33,8 +33,9 @@ def AddNodeAffinityFlagToParser(parser, is_update=False):
           according to their node affinity labels. A node's affinity labels come
           from the node template of the group the node is in.
 
-          The file should contain a list of a JSON/YAML objects with the
-          following fields:
+          The file should contain a list of a JSON/YAML objects. For an example,
+          see https://cloud.google.com/compute/docs/nodes/provisioning-sole-tenant-vms#configure_node_affinity_labels.
+          The following list describes the fields:
 
           *key*::: Corresponds to the node affinity label keys of
           the Node resource.

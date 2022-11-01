@@ -389,7 +389,7 @@ def AddMigForceUpdateOnRepairFlags(parser):
       per-instance configurations after the VM was created, then these changes
       are applied when VM is repaired. If this flag is disabled with
       ``-no-force-update-on-repair'', then updates are applied in accordance
-      with the group's update policy type.
+      with the group's update policy type. By default, this flag is disabled.
     """
   parser.add_argument(
       '--force-update-on-repair',

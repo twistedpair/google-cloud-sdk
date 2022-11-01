@@ -16,7 +16,7 @@
 import proto  # type: ignore
 
 from google.api import monitored_resource_pb2  # type: ignore
-from google.protobuf import duration_pb2  # type: ignore
+from cloudsdk.google.protobuf import duration_pb2  # type: ignore
 from google.rpc import status_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.logging_v2.types import log_entry
 

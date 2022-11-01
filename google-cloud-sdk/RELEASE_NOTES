@@ -5,6 +5,61 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 408.0.0 (2022-11-01)
+
+### Breaking Changes
+
+*   **(Cloud Storage)** Lifecycle and CORS settings files now use camel case instead of snake case to match the API documentation. Example: <http://cloud/storage/docs/json_api/v1/buckets#lifecycle>.
+
+
+### AI
+
+* Added more available regions to `gcloud ai model-monitoring-jobs`.
+* Added `--version-description` flag to `gcloud ai models upload` to support setting model version description.
+
+### BigQuery
+
+* Add missing open source licenses.
+* Expose Iceberg for public preview.
+
+### Cloud Composer
+
+* Added `--connection-type` flag to `gcloud beta composer environments create` and `gcloud composer environments create` command to allow forcing the use of VPC peerings for internal communication.
+
+### Cloud Deploy
+
+* Added `initial-rollout-labels` and `initial-rollout-annotations` flags to `gcloud deploy releases create` command.
+
+### Cloud SQL
+
+* Promoted `--connector_enforcement` flag for `gcloud sql instances create` and
+  `gcloud sql instances patch` to GA.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.16.
+
+### Compute Engine
+
+* Promoted `--discard-local-ssd` flag of `gcloud compute instances stop` to beta.
+* Promoted `--force-update-on-repair` flag of `gcloud compute instance-groups managed <create | update>` to beta.
+* Fixed missing ephemeral IP when neither `--address` nor `--no-address` keys are provided with `--network-interface` flag during instance template creation.
+
+### GKE Hub
+
+* Changed membership-related flags in `gcloud container fleet` and `gcloud container hub` command groups to resource arguments, adding `--location` flag and `LOCATION` column in list commands.
+
+### Kubernetes Engine
+
+*   Promoted `--enable-managed-prometheus` flag of `gcloud container clusters
+    create/update` to GA.
+*   Promoted `--disable-managed-prometheus` flag of `gcloud container clusters
+    update` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 407.0.0 (2022-08-25)
 
 ### Breaking Changes

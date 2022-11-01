@@ -18,6 +18,10 @@ class AppProfile(_messages.Message):
   r"""A configuration object describing how Cloud Bigtable should treat
   traffic from a particular end user application.
 
+  Enums:
+    PriorityValueValuesEnum: The priority of requests sent using this app
+      profile.
+
   Fields:
     description: Long form description of the use case for this AppProfile.
     etag: Strongly validated etag for optimistic concurrency control. Preserve
@@ -30,14 +34,31 @@ class AppProfile(_messages.Message):
     multiClusterRoutingUseAny: Use a multi-cluster routing policy.
     name: The unique name of the app profile. Values are of the form
       `projects/{project}/instances/{instance}/appProfiles/_a-zA-Z0-9*`.
+    priority: The priority of requests sent using this app profile.
     singleClusterRouting: Use a single-cluster routing policy.
   """
+
+  class PriorityValueValuesEnum(_messages.Enum):
+    r"""The priority of requests sent using this app profile.
+
+    Values:
+      PRIORITY_UNSPECIFIED: Default value. Mapped to PRIORITY_HIGH (the legacy
+        behavior) on creation.
+      PRIORITY_LOW: <no description>
+      PRIORITY_MEDIUM: <no description>
+      PRIORITY_HIGH: <no description>
+    """
+    PRIORITY_UNSPECIFIED = 0
+    PRIORITY_LOW = 1
+    PRIORITY_MEDIUM = 2
+    PRIORITY_HIGH = 3
 
   description = _messages.StringField(1)
   etag = _messages.StringField(2)
   multiClusterRoutingUseAny = _messages.MessageField('MultiClusterRoutingUseAny', 3)
   name = _messages.StringField(4)
-  singleClusterRouting = _messages.MessageField('SingleClusterRouting', 5)
+  priority = _messages.EnumField('PriorityValueValuesEnum', 5)
+  singleClusterRouting = _messages.MessageField('SingleClusterRouting', 6)
 
 
 class AuditConfig(_messages.Message):

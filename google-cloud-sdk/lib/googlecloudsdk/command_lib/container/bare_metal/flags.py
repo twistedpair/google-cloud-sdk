@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.container.gkeonprem import flags
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
@@ -77,18 +78,29 @@ def GetClusterResourceSpec():
   )
 
 
-def AddClusterResourceArg(parser, verb, positional=True):
+def AddClusterResourceArg(parser,
+                          verb,
+                          positional=True,
+                          required=True,
+                          flag_name_overrides=None):
   """Adds a resource argument for an Anthos cluster on Bare Metal.
 
   Args:
     parser: The argparse parser to add the resource arg to.
     verb: str, the verb to describe the resource, such as 'to update'.
     positional: bool, whether the argument is positional or not.
+    required: bool, whether the argument is required or not.
+    flag_name_overrides: {str: str}, dict of attribute names to the desired flag
+      name.
   """
   name = 'cluster' if positional else '--cluster'
   concept_parsers.ConceptParser.ForResource(
-      name, GetClusterResourceSpec(), 'cluster {}'.format(verb),
-      required=True).AddToParser(parser)
+      name,
+      GetClusterResourceSpec(),
+      'cluster {}'.format(verb),
+      required=required,
+      flag_name_overrides=flag_name_overrides,
+  ).AddToParser(parser)
 
 
 def NodePoolAttributeConfig():
@@ -148,3 +160,49 @@ def AddAllowMissingCluster(parser):
       help='If set, and the Bare Metal cluster is not found, the request will succeed but no action will be taken.',
   )
 
+
+def AddValidationOnly(parser):
+  """Adds a flag to only validate the request without performing the operation.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--validate-only',
+      action='store_true',
+      help='If set, only validate the request, but do not actually perform the operation.',
+  )
+
+
+def AddConfigType(parser):
+  """Adds flags to specify version config type.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  config_type_group = parser.add_group('Version configuration type', mutex=True)
+
+  create_config = config_type_group.add_group('Create configuration')
+  flags.AddAdminClusterMembershipResourceArg(
+      create_config, positional=False, required=False)
+
+  upgrade_config = config_type_group.add_group('Upgrade configuration')
+  AddClusterResourceArg(
+      upgrade_config,
+      'to query version configuration',
+      positional=False,
+      required=False,
+      flag_name_overrides={'location': ''})
+
+
+def AddAllowMissingNodePool(parser):
+  """Adds a flag for the node pool operation to return success and perform no action when there is no matching node pool.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--allow-missing',
+      action='store_true',
+      help='If set, and the Bare Metal Node Pool is not found, the request will succeed but no action will be taken.',
+  )

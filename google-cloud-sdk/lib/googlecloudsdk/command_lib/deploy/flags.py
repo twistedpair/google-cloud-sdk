@@ -296,23 +296,79 @@ def AddSkipPipelineLookup(parser):
       help=help_text)
 
 
-def AddInitialRolloutGroup(parser, hidden=False):
-  """Adds initial-rollout flag group."""
-  group = parser.add_mutually_exclusive_group()
-  group.add_argument(
+def AddInitialRolloutLabelsFlag():
+  """Add --initial-rollout-labels flag."""
+  help_text = textwrap.dedent("""\
+  Labels to apply to the initial rollout when creating the release. Labels take
+  the form of key/value string pairs.
+
+  Examples:
+
+  Add labels:
+
+    $ {command} initial-rollout-labels="commit=abc123,author=foo"
+
+""")
+  return base.Argument(
+      '--initial-rollout-labels',
+      help=help_text,
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict())
+
+
+def AddInitialRolloutAnnotationsFlag():
+  """Adds --initial-rollout-annotations flag."""
+  help_text = textwrap.dedent("""\
+  Annotations to apply to the initial rollout when creating the release.
+  Annotations take the form of key/value string pairs.
+
+  Examples:
+
+  Add annotations:
+
+    $ {command} --initial-rollout-annotations="from_target=test,status=stable"
+
+  """)
+
+  return base.Argument(
+      '--initial-rollout-annotations',
+      help=help_text,
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict())
+
+
+def AddEnableInitialRolloutFlag():
+  """Adds --enable-initial-rollout flag."""
+
+  return base.Argument(
       '--enable-initial-rollout',
       action='store_const',
-      const=True,
-      hidden=hidden,
-      help='Creates a rollout in the first target defined in the delivery pipeline. This is the default behavior.'
-  )
-  group.add_argument(
+      help='Creates a rollout in the first target defined in the delivery pipeline. This is the default behavior.',
+      const=True)
+
+
+def AddDisableInitialRolloutFlag():
+  """Adds --disable-initial-rollout flag."""
+
+  return base.Argument(
       '--disable-initial-rollout',
-      hidden=hidden,
       action='store_const',
-      const=True,
-      help='Skips creating a rollout in the first target defined in the delivery pipeline.'
-  )
+      help='Skips creating a rollout in the first target defined in the delivery pipeline.',
+      const=True)
+
+
+def AddInitialRolloutGroup(parser):
+  """Adds initial-rollout flag group."""
+  group = parser.add_mutually_exclusive_group()
+  # Create a group that contains the flags to enable an initial rollout and add
+  # labels and annotations to that rollout. The group itself is mutually
+  # exclusive of the disable initial rollout group.
+  enable_initial_rollout_group = group.add_group(mutex=False)
+  AddInitialRolloutLabelsFlag().AddToParser(enable_initial_rollout_group)
+  AddInitialRolloutAnnotationsFlag().AddToParser(enable_initial_rollout_group)
+  AddEnableInitialRolloutFlag().AddToParser(enable_initial_rollout_group)
+  # Add the disable initial rollout flag to the mutex group.
+  AddDisableInitialRolloutFlag().AddToParser(group)
 
 
 def AddJobId(parser, hidden=False):

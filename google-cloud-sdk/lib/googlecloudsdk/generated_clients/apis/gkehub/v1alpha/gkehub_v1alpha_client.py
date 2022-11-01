@@ -50,6 +50,7 @@ class GkehubV1alpha(base_api.BaseApiClient):
     self.projects_locations_namespaces_rbacrolebindings = self.ProjectsLocationsNamespacesRbacrolebindingsService(self)
     self.projects_locations_namespaces = self.ProjectsLocationsNamespacesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_scopes = self.ProjectsLocationsScopesService(self)
     self.projects_locations_workspaces = self.ProjectsLocationsWorkspacesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -493,7 +494,7 @@ class GkehubV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Binding.
+      r"""Creates a MembershipBinding.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsBindingsCreateRequest) input message
@@ -511,16 +512,16 @@ class GkehubV1alpha(base_api.BaseApiClient):
         method_id='gkehub.projects.locations.memberships.bindings.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['bindingId'],
+        query_params=['membershipBindingId'],
         relative_path='v1alpha/{+parent}/bindings',
-        request_field='gkehubUNDEFINEDOuterMessageBinding',
+        request_field='membershipBinding',
         request_type_name='GkehubProjectsLocationsMembershipsBindingsCreateRequest',
         response_type_name='Operation',
         supports_download=False,
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Binding.
+      r"""Deletes a MembershipBinding.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsBindingsDeleteRequest) input message
@@ -547,13 +548,13 @@ class GkehubV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the details of a Binding.
+      r"""Returns the details of a MembershipBindin.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsBindingsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GkehubUNDEFINEDOuterMessageBinding) The response message.
+        (MembershipBinding) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -569,18 +570,18 @@ class GkehubV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+name}',
         request_field='',
         request_type_name='GkehubProjectsLocationsMembershipsBindingsGetRequest',
-        response_type_name='GkehubUNDEFINEDOuterMessageBinding',
+        response_type_name='MembershipBinding',
         supports_download=False,
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Bindings.
+      r"""Lists MembershipBindings.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsBindingsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListBindingsResponse) The response message.
+        (ListMembershipBindingsResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -596,12 +597,12 @@ class GkehubV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+parent}/bindings',
         request_field='',
         request_type_name='GkehubProjectsLocationsMembershipsBindingsListRequest',
-        response_type_name='ListBindingsResponse',
+        response_type_name='ListMembershipBindingsResponse',
         supports_download=False,
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a Binding.
+      r"""Updates a MembershipBinding.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsBindingsPatchRequest) input message
@@ -621,7 +622,7 @@ class GkehubV1alpha(base_api.BaseApiClient):
         path_params=['name'],
         query_params=['updateMask'],
         relative_path='v1alpha/{+name}',
-        request_field='gkehubUNDEFINEDOuterMessageBinding',
+        request_field='membershipBinding',
         request_type_name='GkehubProjectsLocationsMembershipsBindingsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
@@ -1022,6 +1023,33 @@ class GkehubV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkehubProjectsLocationsMembershipsListPermittedRequest',
         response_type_name='ListMembershipsResponse',
+        supports_download=False,
+    )
+
+    def ListScopes(self, request, global_params=None):
+      r"""Lists scopes of a given membership.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsListScopesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListScopesForMembershipResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListScopes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListScopes.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:listScopes',
+        http_method='GET',
+        method_id='gkehub.projects.locations.memberships.listScopes',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}:listScopes',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsMembershipsListScopesRequest',
+        response_type_name='ListScopesForMembershipResponse',
         supports_download=False,
     )
 
@@ -1619,6 +1647,178 @@ class GkehubV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkehubProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsScopesService(base_api.BaseApiService):
+    """Service class for the projects_locations_scopes resource."""
+
+    _NAME = 'projects_locations_scopes'
+
+    def __init__(self, client):
+      super(GkehubV1alpha.ProjectsLocationsScopesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Scope.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/scopes',
+        http_method='POST',
+        method_id='gkehub.projects.locations.scopes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['scopeId'],
+        relative_path='v1alpha/{+parent}/scopes',
+        request_field='scope',
+        request_type_name='GkehubProjectsLocationsScopesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a Scope.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}',
+        http_method='DELETE',
+        method_id='gkehub.projects.locations.scopes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsScopesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the details of a Scope.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Scope) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}',
+        http_method='GET',
+        method_id='gkehub.projects.locations.scopes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsScopesGetRequest',
+        response_type_name='Scope',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Scopes.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListScopesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/scopes',
+        http_method='GET',
+        method_id='gkehub.projects.locations.scopes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/scopes',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsScopesListRequest',
+        response_type_name='ListScopesResponse',
+        supports_download=False,
+    )
+
+    def ListPermitted(self, request, global_params=None):
+      r"""Lists scopes that the caller is permitted to access in IAM.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesListPermittedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListScopesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListPermitted')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListPermitted.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/scopes:listPermitted',
+        http_method='GET',
+        method_id='gkehub.projects.locations.scopes.listPermitted',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/scopes:listPermitted',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsScopesListPermittedRequest',
+        response_type_name='ListScopesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a scopes.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}',
+        http_method='PATCH',
+        method_id='gkehub.projects.locations.scopes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='scope',
+        request_type_name='GkehubProjectsLocationsScopesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

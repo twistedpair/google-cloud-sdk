@@ -135,7 +135,7 @@ class NodePoolsClient(client.ClientBase):
 
     input_node_taint = '='.join(node_taint)
     valid_node_taint_effects = ', '.join(
-        six.text_type(key) for key in taint_effect_mapping.keys())
+        six.text_type(key) for key in sorted(taint_effect_mapping.keys()))
 
     if len(node_taint) != 2:
       raise arg_parsers.ArgumentTypeError(

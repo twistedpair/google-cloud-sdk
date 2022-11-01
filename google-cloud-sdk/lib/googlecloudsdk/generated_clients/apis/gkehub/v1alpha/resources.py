@@ -129,6 +129,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SCOPES = (
+      'projects.locations.scopes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/scopes/'
+              '{scopesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_WORKSPACES = (
       'projects.locations.workspaces',
       '{+name}',

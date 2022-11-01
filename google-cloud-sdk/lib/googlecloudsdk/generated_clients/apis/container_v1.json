@@ -589,6 +589,14 @@
         "windowsNodeConfig": {
           "description": "Parameters that can be configured on Windows nodes.",
           "$ref": "WindowsNodeConfig"
+        },
+        "localNvmeSsdBlockConfig": {
+          "description": "Parameters for using raw-block Local NVMe SSDs.",
+          "$ref": "LocalNvmeSsdBlockConfig"
+        },
+        "ephemeralStorageLocalSsdConfig": {
+          "description": "Parameters for the node ephemeral storage using Local SSDs. If unspecified, ephemeral storage is backed by the boot disk.",
+          "$ref": "EphemeralStorageLocalSsdConfig"
         }
       }
     },
@@ -792,6 +800,20 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "cgroupMode": {
+          "description": "cgroup_mode specifies the cgroup mode to be used on the node.",
+          "type": "string",
+          "enumDescriptions": [
+            "CGROUP_MODE_UNSPECIFIED is when unspecified cgroup configuration is used. The default for the GKE node OS image will be used.",
+            "CGROUP_MODE_V1 specifies to use cgroupv1 for the cgroup configuration on the node image.",
+            "CGROUP_MODE_V2 specifies to use cgroupv2 for the cgroup configuration on the node image."
+          ],
+          "enum": [
+            "CGROUP_MODE_UNSPECIFIED",
+            "CGROUP_MODE_V1",
+            "CGROUP_MODE_V2"
+          ]
         }
       }
     },
@@ -925,6 +947,30 @@
             "OS_VERSION_LTSC2019",
             "OS_VERSION_LTSC2022"
           ]
+        }
+      }
+    },
+    "LocalNvmeSsdBlockConfig": {
+      "id": "LocalNvmeSsdBlockConfig",
+      "description": "LocalNvmeSsdBlockConfig contains configuration for using raw-block local NVMe SSD.",
+      "type": "object",
+      "properties": {
+        "localSsdCount": {
+          "description": "The number of raw-block local NVMe SSD disks to be attached to the node. Each local SSD is 375 GB in size. If zero, it means no raw-block local NVMe SSD disks to be attached to the node. The limit for this value is dependent upon the maximum number of disks available on a machine per zone. See: https:\/\/cloud.google.com\/compute\/docs\/disks\/local-ssd for more information.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "EphemeralStorageLocalSsdConfig": {
+      "id": "EphemeralStorageLocalSsdConfig",
+      "description": "EphemeralStorageLocalSsdConfig contains configuration for the node ephemeral storage using Local SSD.",
+      "type": "object",
+      "properties": {
+        "localSsdCount": {
+          "description": "Number of local SSDs to use to back ephemeral storage. Uses NVMe interfaces. Each local SSD is 375 GB in size. If zero, it means to disable using local SSDs as ephemeral storage. The limit for this value is dependent upon the maximum number of disks available on a machine per zone. See: https:\/\/cloud.google.com\/compute\/docs\/disks\/local-ssd for more information.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1238,6 +1284,10 @@
         "upgradeSettings": {
           "description": "Upgrade settings control disruption and speed of the upgrade.",
           "$ref": "UpgradeSettings"
+        },
+        "placementPolicy": {
+          "description": "Specifies the node placement policy.",
+          "$ref": "PlacementPolicy"
         },
         "updateInfo": {
           "description": "Output only. [Output only] Update info contains relevant information during a node pool update.",
@@ -1592,7 +1642,7 @@
       "type": "object",
       "properties": {
         "batchPercentage": {
-          "description": "Percentage of the bool pool nodes to drain in a batch. The range of this field should be (0.0, 1.0].",
+          "description": "Percentage of the blue pool nodes to drain in a batch. The range of this field should be (0.0, 1.0].",
           "type": "number",
           "format": "float"
         },
@@ -1622,6 +1672,29 @@
           "description": "Percentage of the maximum number of nodes that can be unavailable during during the upgrade process.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "PlacementPolicy": {
+      "id": "PlacementPolicy",
+      "description": "PlacementPolicy defines the placement policy used by the node pool.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of placement.",
+          "type": "string",
+          "enumDescriptions": [
+            "TYPE_UNSPECIFIED specifies no requirements on nodes placement.",
+            "COMPACT specifies node placement in the same availability domain to ensure low communication latency."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "COMPACT"
+          ]
+        },
+        "tpuTopology": {
+          "description": "TPU placement topology for pod slice node pool. https:\/\/cloud.google.com\/tpu\/docs\/types-topologies#tpu_topologies",
+          "type": "string"
         }
       }
     },
@@ -1831,7 +1904,7 @@
           }
         },
         "gcpPublicCidrsAccessEnabled": {
-          "description": "Whether master is accessbile via Google Compute Engine Public IPs.",
+          "description": "Whether master is accessbile via Google Compute Engine Public IP addresses.",
           "type": "boolean"
         }
       }
@@ -1970,17 +2043,21 @@
           "type": "boolean"
         },
         "evaluationMode": {
-          "description": "Mode of operation for binauthz policy evaluation. Currently the only options are equivalent to enable\/disable. If unspecified, defaults to DISABLED.",
+          "description": "Mode of operation for binauthz policy evaluation. If unspecified, defaults to DISABLED.",
           "type": "string",
           "enumDescriptions": [
             "Default value",
             "Disable BinaryAuthorization",
-            "Enforce Kubernetes admission requests with BinaryAuthorization using the project's singleton policy. This is equivalent to setting the enabled boolean to true."
+            "Enforce Kubernetes admission requests with BinaryAuthorization using the project's singleton policy. This is equivalent to setting the enabled boolean to true.",
+            "Use Binary Authorization in monitoring mode with the policy specified in binary_authorization.policy.",
+            "Use Binary Authorization in monitoring mode with the policy specified in binary_authorization.policy and enforce admission with the project's singleton policy."
           ],
           "enum": [
             "EVALUATION_MODE_UNSPECIFIED",
             "DISABLED",
-            "PROJECT_SINGLETON_POLICY_ENFORCE"
+            "PROJECT_SINGLETON_POLICY_ENFORCE",
+            "MONITORING",
+            "MONITORING_AND_PROJECT_SINGLETON_POLICY_ENFORCE"
           ]
         },
         "policy": {
@@ -2353,7 +2430,7 @@
           "$ref": "PrivateClusterMasterGlobalAccessConfig"
         },
         "privateEndpointSubnetwork": {
-          "description": "Subnetwork in cluster's network where master's endpoint will be provisioned. Specified in projects\/*\/regions\/*\/subnetworks\/* format.",
+          "description": "Subnet to provision the master's private endpoint during cluster creation. Specified in projects\/*\/regions\/*\/subnetworks\/* format.",
           "type": "string"
         }
       }
@@ -3193,7 +3270,7 @@
           "$ref": "ServiceExternalIPsConfig"
         },
         "desiredEnablePrivateEndpoint": {
-          "description": "Enable\/Disable private endpoint for the cluster.",
+          "description": "Enable\/Disable private endpoint for the cluster's master.",
           "type": "boolean"
         },
         "desiredMasterVersion": {

@@ -21,9 +21,7 @@ from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.container.fleet import api_util
 from googlecloudsdk.command_lib.container.fleet import resources
-from googlecloudsdk.command_lib.container.fleet import util as cmd_util
 from googlecloudsdk.command_lib.container.fleet.memberships import errors
-from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
 def SetInitProjectPath(ref, args, request):
@@ -70,16 +68,15 @@ def SetMembershipLocation(ref, args, request):
     modified request
   """
   del ref  # Unused
-  if cmd_util.APIEndpoint() == cmd_util.AUTOPUSH_API:
-    # If a membership is provided
-    if args.IsKnownAndSpecified('membership'):
-      if resources.MembershipLocationSpecified(args):
-        request.name = resources.MembershipResourceName(args)
-      else:
-        request.name = resources.SearchMembershipResource(args)
+  # If a membership is provided
+  if args.IsKnownAndSpecified('membership'):
+    if resources.MembershipLocationSpecified(args):
+      request.name = resources.MembershipResourceName(args)
     else:
-      raise calliope_exceptions.RequiredArgumentException(
-          'MEMBERSHIP', 'membership is required for this command.')
+      request.name = resources.SearchMembershipResource(args)
+  else:
+    raise calliope_exceptions.RequiredArgumentException(
+        'MEMBERSHIP', 'membership is required for this command.')
 
   return request
 
@@ -95,37 +92,43 @@ def ExecuteUpdateMembershipRequest(ref, args):
     response
   """
   del ref
-  if cmd_util.APIEndpoint() == cmd_util.AUTOPUSH_API:
-    if resources.MembershipLocationSpecified(args):
-      name = resources.MembershipResourceName(args)
-    else:
-      name = resources.SearchMembershipResource(args)
+  if resources.MembershipLocationSpecified(args):
+    name = resources.MembershipResourceName(args)
   else:
-    project = arg_utils.GetFromNamespace(args, '--project', use_defaults=True)
-    membership_id = args.membership
-    location = 'global'
-    name = 'projects/{}/locations/{}/memberships/{}'.format(
-        project, location, membership_id)
+    name = resources.SearchMembershipResource(args)
+
   # Update membership from Fleet API.
-  obj = api_util.GetMembership(name, calliope_base.ReleaseTrack.ALPHA)
+  release_track = args.calliope_command.ReleaseTrack()
+  obj = api_util.GetMembership(name, release_track)
   update_fields = []
-  if args.external_id:
+
+  description = external_id = infra_type = None
+  if release_track == calliope_base.ReleaseTrack.BETA and args.GetValue(
+      'description'):
+    update_fields.append('description')
+    description = args.GetValue('description')
+  if args.GetValue('external_id'):
     update_fields.append('externalId')
-  if args.infra_type:
+    external_id = args.GetValue('external_id')
+  if release_track != calliope_base.ReleaseTrack.GA and args.GetValue(
+      'infra_type'):
     update_fields.append('infrastructureType')
-  if args.clear_labels or args.update_labels or args.remove_labels:
+    infra_type = args.GetValue('infra_type')
+  if args.GetValue('clear_labels') or args.GetValue(
+      'update_labels') or args.GetValue('remove_labels'):
     update_fields.append('labels')
   update_mask = ','.join(update_fields)
   response = api_util.UpdateMembership(
       name,
       obj,
       update_mask,
-      calliope_base.ReleaseTrack.ALPHA,
-      external_id=args.external_id,
-      infra_type=args.infra_type,
-      clear_labels=args.clear_labels,
-      update_labels=args.update_labels,
-      remove_labels=args.remove_labels,
+      release_track,
+      description=description,
+      external_id=external_id,
+      infra_type=infra_type,
+      clear_labels=args.GetValue('clear_labels'),
+      update_labels=args.GetValue('update_labels'),
+      remove_labels=args.GetValue('remove_labels'),
       issuer_url=None,
       oidc_jwks=None,
       api_server_version=None,

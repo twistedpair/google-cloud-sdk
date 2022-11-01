@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 import datetime
 from apitools.base.py import encoding
 
-from google.protobuf import timestamp_pb2
+from cloudsdk.google.protobuf import timestamp_pb2
 
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.util import apis

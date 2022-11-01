@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 
 
 from argcomplete.completers import FilesCompleter
-from google.protobuf import descriptor_pb2
+from cloudsdk.google.protobuf import descriptor_pb2
 from googlecloudsdk.api_lib.spanner import databases
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base

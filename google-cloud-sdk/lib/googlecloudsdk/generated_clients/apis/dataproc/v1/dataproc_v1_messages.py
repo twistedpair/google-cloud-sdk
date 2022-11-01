@@ -4776,7 +4776,7 @@ class NodeGroup(_messages.Message):
       RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt). The node group must
       have no more than 32 labelsn.
     name: The Node group resource name (https://aip.dev/122).
-    nodePoolConfig: Optional. The node group instance group configuration.
+    nodeGroupConfig: Optional. The node group instance group configuration.
     roles: Required. Node group roles.
   """
 
@@ -4826,7 +4826,7 @@ class NodeGroup(_messages.Message):
 
   labels = _messages.MessageField('LabelsValue', 1)
   name = _messages.StringField(2)
-  nodePoolConfig = _messages.MessageField('InstanceGroupConfig', 3)
+  nodeGroupConfig = _messages.MessageField('InstanceGroupConfig', 3)
   roles = _messages.EnumField('RolesValueListEntryValuesEnum', 4, repeated=True)
 
 

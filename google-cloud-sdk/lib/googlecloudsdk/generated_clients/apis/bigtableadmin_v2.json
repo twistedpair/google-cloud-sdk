@@ -515,6 +515,22 @@
         "singleClusterRouting": {
           "description": "Use a single-cluster routing policy.",
           "$ref": "SingleClusterRouting"
+        },
+        "priority": {
+          "description": "The priority of requests sent using this app profile.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. Mapped to PRIORITY_HIGH (the legacy behavior) on creation.",
+            "",
+            "",
+            ""
+          ],
+          "enum": [
+            "PRIORITY_UNSPECIFIED",
+            "PRIORITY_LOW",
+            "PRIORITY_MEDIUM",
+            "PRIORITY_HIGH"
+          ]
         }
       }
     },

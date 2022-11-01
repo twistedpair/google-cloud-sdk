@@ -1378,8 +1378,6 @@ apis:
           path: projects/{projectsId}/locations/{locationsId}/sshKeys/{sshKeysId}
           enable_uri_parsing: true
   workstations:
-    v1alpha1:
-      discovery_doc: workstations_v1alpha1.json
     v1beta:
       discovery_doc: workstations_v1beta.json
       default: true

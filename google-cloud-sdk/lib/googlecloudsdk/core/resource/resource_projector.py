@@ -432,13 +432,13 @@ class Projector(object):
       obj = obj.name
     else:
       self._been_here_done_that.add(objid)
-      from google.protobuf import message as protobuf_message  # pylint: disable=g-import-not-at-top
+      from cloudsdk.google.protobuf import message as protobuf_message  # pylint: disable=g-import-not-at-top
       if isinstance(obj, protorpc_message.Message):
         # protorpc message
         obj = protorpc_encoding.MessageToDict(obj)
       elif isinstance(obj, protobuf_message.Message):
         # protobuf message
-        from google.protobuf import json_format as protobuf_encoding  # pylint: disable=g-import-not-at-top
+        from cloudsdk.google.protobuf import json_format as protobuf_encoding  # pylint: disable=g-import-not-at-top
         obj = protobuf_encoding.MessageToDict(obj)
       elif six.PY3 and isinstance(obj, proto.Message):
         # proto message

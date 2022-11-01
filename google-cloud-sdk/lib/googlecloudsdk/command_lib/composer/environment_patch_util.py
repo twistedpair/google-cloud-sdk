@@ -145,7 +145,8 @@ def ConstructPatch(is_composer_v1,
                    enable_scheduled_snapshot_creation=None,
                    snapshot_location=None,
                    snapshot_schedule_timezone=None,
-                   snapshot_creation_schedule=None):
+                   snapshot_creation_schedule=None,
+                   cloud_data_lineage_integration_enabled=None):
   """Constructs an environment patch.
 
   Args:
@@ -237,6 +238,8 @@ def ConstructPatch(is_composer_v1,
       interpret snapshot_creation_schedule.
     snapshot_creation_schedule: str, cron expression that specifies when
       snapshots will be created
+    cloud_data_lineage_integration_enabled: bool or None, whether the feature
+      should be enabled
 
   Returns:
     (str, Environment), the field mask and environment to use for update.
@@ -338,6 +341,9 @@ def ConstructPatch(is_composer_v1,
         maintenance_window_end,
         maintenance_window_recurrence,
         release_track=release_track)
+  if cloud_data_lineage_integration_enabled is not None:
+    return _ConstructSoftwareConfigurationCloudDataLineageIntegrationPatch(
+        cloud_data_lineage_integration_enabled, release_track)
   raise command_util.Error(
       'Cannot update Environment with no update type specified.')
 
@@ -830,3 +836,24 @@ def _ConstructSoftwareConfigurationSchedulerCountPatch(
       config=messages.EnvironmentConfig(
           softwareConfig=messages.SoftwareConfig(
               schedulerCount=scheduler_count)))
+
+
+def _ConstructSoftwareConfigurationCloudDataLineageIntegrationPatch(
+    enabled, release_track):
+  """Constructs a patch for updating Cloud Data Lineage integration config.
+
+  Args:
+    enabled: bool, whether Cloud Data Lineage integration should be enabled.
+    release_track: base.ReleaseTrack, the release track of command. It dictates
+      which Composer client library is used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+
+  return 'config.software_config.cloud_data_lineage_integration', messages.Environment(
+      config=messages.EnvironmentConfig(
+          softwareConfig=messages.SoftwareConfig(
+              cloudDataLineageIntegration=messages.CloudDataLineageIntegration(
+                  enabled=enabled))))

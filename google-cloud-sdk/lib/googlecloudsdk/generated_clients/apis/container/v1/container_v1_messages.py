@@ -283,15 +283,13 @@ class BinaryAuthorization(_messages.Message):
 
   Enums:
     EvaluationModeValueValuesEnum: Mode of operation for binauthz policy
-      evaluation. Currently the only options are equivalent to enable/disable.
-      If unspecified, defaults to DISABLED.
+      evaluation. If unspecified, defaults to DISABLED.
 
   Fields:
     enabled: This field is deprecated. Leave this unset and instead configure
       BinaryAuthorization using evaluation_mode. If evaluation_mode is set to
       anything other than EVALUATION_MODE_UNSPECIFIED, this field is ignored.
-    evaluationMode: Mode of operation for binauthz policy evaluation.
-      Currently the only options are equivalent to enable/disable. If
+    evaluationMode: Mode of operation for binauthz policy evaluation. If
       unspecified, defaults to DISABLED.
     policy: The relative resource name of the binauthz platform policy to
       audit and/or enforce against. GKE platform policies have the following
@@ -301,9 +299,8 @@ class BinaryAuthorization(_messages.Message):
   """
 
   class EvaluationModeValueValuesEnum(_messages.Enum):
-    r"""Mode of operation for binauthz policy evaluation. Currently the only
-    options are equivalent to enable/disable. If unspecified, defaults to
-    DISABLED.
+    r"""Mode of operation for binauthz policy evaluation. If unspecified,
+    defaults to DISABLED.
 
     Values:
       EVALUATION_MODE_UNSPECIFIED: Default value
@@ -311,10 +308,18 @@ class BinaryAuthorization(_messages.Message):
       PROJECT_SINGLETON_POLICY_ENFORCE: Enforce Kubernetes admission requests
         with BinaryAuthorization using the project's singleton policy. This is
         equivalent to setting the enabled boolean to true.
+      MONITORING: Use Binary Authorization in monitoring mode with the policy
+        specified in binary_authorization.policy.
+      MONITORING_AND_PROJECT_SINGLETON_POLICY_ENFORCE: Use Binary
+        Authorization in monitoring mode with the policy specified in
+        binary_authorization.policy and enforce admission with the project's
+        singleton policy.
     """
     EVALUATION_MODE_UNSPECIFIED = 0
     DISABLED = 1
     PROJECT_SINGLETON_POLICY_ENFORCE = 2
+    MONITORING = 3
+    MONITORING_AND_PROJECT_SINGLETON_POLICY_ENFORCE = 4
 
   enabled = _messages.BooleanField(1)
   evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 2)
@@ -862,7 +867,7 @@ class ClusterUpdate(_messages.Message):
       sNAT for this cluster.
     desiredDnsConfig: DNSConfig contains clusterDNS config for this cluster.
     desiredEnablePrivateEndpoint: Enable/Disable private endpoint for the
-      cluster.
+      cluster's master.
     desiredFleet: The desired fleet configuration for the cluster.
     desiredGatewayApiConfig: The desired config of Gateway API on this
       cluster.
@@ -1844,6 +1849,22 @@ class Empty(_messages.Message):
 
 
 
+class EphemeralStorageLocalSsdConfig(_messages.Message):
+  r"""EphemeralStorageLocalSsdConfig contains configuration for the node
+  ephemeral storage using Local SSD.
+
+  Fields:
+    localSsdCount: Number of local SSDs to use to back ephemeral storage. Uses
+      NVMe interfaces. Each local SSD is 375 GB in size. If zero, it means to
+      disable using local SSDs as ephemeral storage. The limit for this value
+      is dependent upon the maximum number of disks available on a machine per
+      zone. See: https://cloud.google.com/compute/docs/disks/local-ssd for
+      more information.
+  """
+
+  localSsdCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class FastSocket(_messages.Message):
   r"""Configuration of Fast Socket feature.
 
@@ -2308,6 +2329,10 @@ class LegacyAbac(_messages.Message):
 class LinuxNodeConfig(_messages.Message):
   r"""Parameters that can be configured on Linux nodes.
 
+  Enums:
+    CgroupModeValueValuesEnum: cgroup_mode specifies the cgroup mode to be
+      used on the node.
+
   Messages:
     SysctlsValue: The Linux kernel parameters to be applied to the nodes and
       all pods running on the nodes. The following parameters are supported.
@@ -2317,6 +2342,7 @@ class LinuxNodeConfig(_messages.Message):
       net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
 
   Fields:
+    cgroupMode: cgroup_mode specifies the cgroup mode to be used on the node.
     sysctls: The Linux kernel parameters to be applied to the nodes and all
       pods running on the nodes. The following parameters are supported.
       net.core.busy_poll net.core.busy_read net.core.netdev_max_backlog
@@ -2324,6 +2350,22 @@ class LinuxNodeConfig(_messages.Message):
       net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem
       net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
   """
+
+  class CgroupModeValueValuesEnum(_messages.Enum):
+    r"""cgroup_mode specifies the cgroup mode to be used on the node.
+
+    Values:
+      CGROUP_MODE_UNSPECIFIED: CGROUP_MODE_UNSPECIFIED is when unspecified
+        cgroup configuration is used. The default for the GKE node OS image
+        will be used.
+      CGROUP_MODE_V1: CGROUP_MODE_V1 specifies to use cgroupv1 for the cgroup
+        configuration on the node image.
+      CGROUP_MODE_V2: CGROUP_MODE_V2 specifies to use cgroupv2 for the cgroup
+        configuration on the node image.
+    """
+    CGROUP_MODE_UNSPECIFIED = 0
+    CGROUP_MODE_V1 = 1
+    CGROUP_MODE_V2 = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SysctlsValue(_messages.Message):
@@ -2354,7 +2396,8 @@ class LinuxNodeConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  sysctls = _messages.MessageField('SysctlsValue', 1)
+  cgroupMode = _messages.EnumField('CgroupModeValueValuesEnum', 1)
+  sysctls = _messages.MessageField('SysctlsValue', 2)
 
 
 class ListClustersResponse(_messages.Message):
@@ -2410,6 +2453,23 @@ class ListUsableSubnetworksResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   subnetworks = _messages.MessageField('UsableSubnetwork', 2, repeated=True)
+
+
+class LocalNvmeSsdBlockConfig(_messages.Message):
+  r"""LocalNvmeSsdBlockConfig contains configuration for using raw-block local
+  NVMe SSD.
+
+  Fields:
+    localSsdCount: The number of raw-block local NVMe SSD disks to be attached
+      to the node. Each local SSD is 375 GB in size. If zero, it means no raw-
+      block local NVMe SSD disks to be attached to the node. The limit for
+      this value is dependent upon the maximum number of disks available on a
+      machine per zone. See:
+      https://cloud.google.com/compute/docs/disks/local-ssd for more
+      information.
+  """
+
+  localSsdCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class LoggingComponentConfig(_messages.Message):
@@ -2674,7 +2734,7 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
       access Kubernetes master through HTTPS.
     enabled: Whether or not master authorized networks is enabled.
     gcpPublicCidrsAccessEnabled: Whether master is accessbile via Google
-      Compute Engine Public IPs.
+      Compute Engine Public IP addresses.
   """
 
   cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)
@@ -2991,6 +3051,9 @@ class NodeConfig(_messages.Message):
     diskType: Type of the disk attached to each node (e.g. 'pd-standard', 'pd-
       ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-
       standard'
+    ephemeralStorageLocalSsdConfig: Parameters for the node ephemeral storage
+      using Local SSDs. If unspecified, ephemeral storage is backed by the
+      boot disk.
     fastSocket: Enable or disable NCCL fast socket for the node pool.
     gcfsConfig: Google Container File System (image streaming) configs.
     gvnic: Enable or disable gvnic in the node pool.
@@ -3006,6 +3069,7 @@ class NodeConfig(_messages.Message):
       https://kubernetes.io/docs/concepts/overview/working-with-
       objects/labels/
     linuxNodeConfig: Parameters that can be configured on Linux nodes.
+    localNvmeSsdBlockConfig: Parameters for using raw-block Local NVMe SSDs.
     localSsdCount: The number of local SSD disks to be attached to the node.
       The limit for this value is dependent upon the maximum number of disks
       available on a machine per zone. See:
@@ -3183,32 +3247,34 @@ class NodeConfig(_messages.Message):
   confidentialNodes = _messages.MessageField('ConfidentialNodes', 4)
   diskSizeGb = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   diskType = _messages.StringField(6)
-  fastSocket = _messages.MessageField('FastSocket', 7)
-  gcfsConfig = _messages.MessageField('GcfsConfig', 8)
-  gvnic = _messages.MessageField('VirtualNIC', 9)
-  imageType = _messages.StringField(10)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 13)
-  localSsdCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 15)
-  machineType = _messages.StringField(16)
-  metadata = _messages.MessageField('MetadataValue', 17)
-  minCpuPlatform = _messages.StringField(18)
-  nodeGroup = _messages.StringField(19)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 20)
-  oauthScopes = _messages.StringField(21, repeated=True)
-  preemptible = _messages.BooleanField(22)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 23)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 24)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 25)
-  serviceAccount = _messages.StringField(26)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 27)
-  spot = _messages.BooleanField(28)
-  tags = _messages.StringField(29, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 30, repeated=True)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 31)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 32)
+  ephemeralStorageLocalSsdConfig = _messages.MessageField('EphemeralStorageLocalSsdConfig', 7)
+  fastSocket = _messages.MessageField('FastSocket', 8)
+  gcfsConfig = _messages.MessageField('GcfsConfig', 9)
+  gvnic = _messages.MessageField('VirtualNIC', 10)
+  imageType = _messages.StringField(11)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 14)
+  localNvmeSsdBlockConfig = _messages.MessageField('LocalNvmeSsdBlockConfig', 15)
+  localSsdCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 17)
+  machineType = _messages.StringField(18)
+  metadata = _messages.MessageField('MetadataValue', 19)
+  minCpuPlatform = _messages.StringField(20)
+  nodeGroup = _messages.StringField(21)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 22)
+  oauthScopes = _messages.StringField(23, repeated=True)
+  preemptible = _messages.BooleanField(24)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 25)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 26)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 27)
+  serviceAccount = _messages.StringField(28)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 29)
+  spot = _messages.BooleanField(30)
+  tags = _messages.StringField(31, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 32, repeated=True)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 33)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 34)
 
 
 class NodeConfigDefaults(_messages.Message):
@@ -3416,6 +3482,7 @@ class NodePool(_messages.Message):
     name: The name of the node pool.
     networkConfig: Networking configuration for this NodePool. If specified,
       it overrides the cluster-level defaults.
+    placementPolicy: Specifies the node placement policy.
     podIpv4CidrSize: [Output only] The pod CIDR block size per node in this
       node pool.
     selfLink: [Output only] Server-defined URL for the resource.
@@ -3469,13 +3536,14 @@ class NodePool(_messages.Message):
   maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 9)
   name = _messages.StringField(10)
   networkConfig = _messages.MessageField('NodeNetworkConfig', 11)
-  podIpv4CidrSize = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(13)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  statusMessage = _messages.StringField(15)
-  updateInfo = _messages.MessageField('UpdateInfo', 16)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 17)
-  version = _messages.StringField(18)
+  placementPolicy = _messages.MessageField('PlacementPolicy', 12)
+  podIpv4CidrSize = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  statusMessage = _messages.StringField(16)
+  updateInfo = _messages.MessageField('UpdateInfo', 17)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 18)
+  version = _messages.StringField(19)
 
 
 class NodePoolAutoConfig(_messages.Message):
@@ -3769,6 +3837,34 @@ class OperationProgress(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 4)
 
 
+class PlacementPolicy(_messages.Message):
+  r"""PlacementPolicy defines the placement policy used by the node pool.
+
+  Enums:
+    TypeValueValuesEnum: The type of placement.
+
+  Fields:
+    tpuTopology: TPU placement topology for pod slice node pool.
+      https://cloud.google.com/tpu/docs/types-topologies#tpu_topologies
+    type: The type of placement.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of placement.
+
+    Values:
+      TYPE_UNSPECIFIED: TYPE_UNSPECIFIED specifies no requirements on nodes
+        placement.
+      COMPACT: COMPACT specifies node placement in the same availability
+        domain to ensure low communication latency.
+    """
+    TYPE_UNSPECIFIED = 0
+    COMPACT = 1
+
+  tpuTopology = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
 class PodCIDROverprovisionConfig(_messages.Message):
   r"""Config for pod CIDR size overprovisioning.
 
@@ -3799,8 +3895,8 @@ class PrivateClusterConfig(_messages.Message):
       this cluster.
     privateEndpoint: Output only. The internal IP address of this cluster's
       master endpoint.
-    privateEndpointSubnetwork: Subnetwork in cluster's network where master's
-      endpoint will be provisioned. Specified in
+    privateEndpointSubnetwork: Subnet to provision the master's private
+      endpoint during cluster creation. Specified in
       projects/*/regions/*/subnetworks/* format.
     publicEndpoint: Output only. The external IP address of this cluster's
       master endpoint.
@@ -4710,7 +4806,7 @@ class StandardRolloutPolicy(_messages.Message):
 
   Fields:
     batchNodeCount: Number of blue nodes to drain in a batch.
-    batchPercentage: Percentage of the bool pool nodes to drain in a batch.
+    batchPercentage: Percentage of the blue pool nodes to drain in a batch.
       The range of this field should be (0.0, 1.0].
     batchSoakDuration: Soak time after each batch gets drained. Default to
       zero.

@@ -1616,17 +1616,26 @@ class VulnerabilityCheck(_messages.Message):
     allowedCves: Optional. A list of specific CVEs to ignore even if the
       vulnerability level violates maximumUnfixableSeverity or
       maximumFixableSeverity. CVEs are listed in the format of Container
-      Analysis note projects/[PROVIDER_ID]/notes/[NOTE_ID]. For example: -
-      projects/goog-vulnz/notes/CVE-2021-20305 - projects/goog-
-      vulnz/notes/CVE-2020-10543 - projects/some-vulnz-provider/notes/some-
-      vulnz-note-id
+      Analysis note id. For example: - CVE-2021-20305 - CVE-2020-10543 The
+      CVEs are applicable regardless of note provider project, e.g., an entry
+      of `CVE-2021-20305` will allow vulnerabilities with a note name of
+      either `projects/goog-vulnz/notes/CVE-2021-20305` or `projects/CUSTOM-
+      PROJECT/notes/CVE-2021-20305`.
     blockedCves: Optional. A list of specific CVEs to always raise warnings
       about even if the vulnerability level meets maximumUnfixableSeverity or
       maximumFixableSeverity. CVEs are listed in the format of Container
-      Analysis note projects/[PROVIDER_ID]/notes/[NOTE_ID]. For example: -
-      projects/goog-vulnz/notes/CVE-2021-20305 - projects/goog-
-      vulnz/notes/CVE-2020-10543 - projects/some-vulnz-provider/notes/some-
-      vulnz-note-id
+      Analysis note id. For example: - CVE-2021-20305 - CVE-2020-10543 The
+      CVEs are applicable regardless of note provider project, e.g., an entry
+      of `CVE-2021-20305` will block vulnerabilities with a note name of
+      either `projects/goog-vulnz/notes/CVE-2021-20305` or `projects/CUSTOM-
+      PROJECT/notes/CVE-2021-20305`.
+    containerAnalysisVulnerabilityProjects: Optional. The projects where
+      vulnerabilities are stored as Container Analysis Occurrences. Each
+      project is expressed in the resource format of `projects/[PROJECT_ID]`,
+      e.g., projects/my-gcp-project. An attempt will be made for each project
+      to fetch vulnerabilities, and all valid vulnerabilities will be used to
+      check against the vulnerability policy. If no valid scan is found in all
+      projects configured here, an error will be returned for the check.
     maximumFixableSeverity: Required. The threshold for severity for which a
       fix is currently available. This field is required and must be set.
     maximumUnfixableSeverity: Required. The threshold for severity for which a
@@ -1683,8 +1692,9 @@ class VulnerabilityCheck(_messages.Message):
 
   allowedCves = _messages.StringField(1, repeated=True)
   blockedCves = _messages.StringField(2, repeated=True)
-  maximumFixableSeverity = _messages.EnumField('MaximumFixableSeverityValueValuesEnum', 3)
-  maximumUnfixableSeverity = _messages.EnumField('MaximumUnfixableSeverityValueValuesEnum', 4)
+  containerAnalysisVulnerabilityProjects = _messages.StringField(3, repeated=True)
+  maximumFixableSeverity = _messages.EnumField('MaximumFixableSeverityValueValuesEnum', 4)
+  maximumUnfixableSeverity = _messages.EnumField('MaximumUnfixableSeverityValueValuesEnum', 5)
 
 
 encoding.AddCustomJsonFieldMapping(

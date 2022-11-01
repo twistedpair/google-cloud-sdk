@@ -174,7 +174,7 @@ class DomainRoutingFormatter(base_formatter.BaseFormatter):
     return found
 
   def _GuessDomainFromSSLComponentName(self, name):
-    parts = name.split('-')
+    parts = name.replace('d--', '').split('-')
     # skip prefix and suffix in the name.
     # The first two are custom-domains, the last two are <region hash>-cert.
     # if the domain is too long, the suffix will become

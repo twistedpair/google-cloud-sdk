@@ -42,7 +42,7 @@ def AddFormatFlag(parser):
       '--resource-format',
       choices=['krm', 'terraform'],
       help=('Format of the configuration to export. Available configuration '
-            'formats are Kubernetes Resource Model (krm) or Terraform '
+            'formats are Kubernetes Resource Model YAML (krm) or Terraform '
             'HCL (terraform). Command defaults to "krm".'))
 
 

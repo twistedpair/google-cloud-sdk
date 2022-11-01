@@ -42,91 +42,6 @@ class AnthosObservabilityMembershipSpec(_messages.Message):
   version = _messages.StringField(3)
 
 
-class AnthosVMMembershipSpec(_messages.Message):
-  r"""AnthosVMMembershipSpec contains the AnthosVM feature configuration for a
-  membership/cluster.
-
-  Fields:
-    subfeaturesSpec: List of configurations of the Anthos For VM subfeatures
-      that are to be enabled
-  """
-
-  subfeaturesSpec = _messages.MessageField('AnthosVMSubFeatureSpec', 1, repeated=True)
-
-
-class AnthosVMMembershipState(_messages.Message):
-  r"""AnthosVMFeatureState contains the state of the AnthosVM feature. It
-  represents the actual state in the cluster, while the AnthosVMMembershipSpec
-  represents the desired state.
-
-  Fields:
-    localControllerState: State of the local PE-controller inside the cluster
-    subfeatureState: List of AnthosVM subfeature states
-  """
-
-  localControllerState = _messages.MessageField('LocalControllerState', 1)
-  subfeatureState = _messages.MessageField('AnthosVMSubFeatureState', 2, repeated=True)
-
-
-class AnthosVMSubFeatureSpec(_messages.Message):
-  r"""AnthosVMSubFeatureSpec contains the subfeature configuration for a
-  membership/cluster.
-
-  Fields:
-    enabled: Indicates whether the subfeature should be enabled on the cluster
-      or not. If set to true, the subfeature's control plane and resources
-      will be installed in the cluster. If set to false, the oneof spec if
-      present will be ignored and nothing will be installed in the cluster.
-    migrateSpec: MigrateSpec repsents the configuration for Migrate
-      subfeature.
-    serviceMeshSpec: ServiceMeshSpec repsents the configuration for Service
-      Mesh subfeature.
-  """
-
-  enabled = _messages.BooleanField(1)
-  migrateSpec = _messages.MessageField('MigrateSpec', 2)
-  serviceMeshSpec = _messages.MessageField('ServiceMeshSpec', 3)
-
-
-class AnthosVMSubFeatureState(_messages.Message):
-  r"""AnthosVMSubFeatureState contains the state of the AnthosVM subfeatures.
-
-  Enums:
-    InstallationStateValueValuesEnum: InstallationState represents the state
-      of installation of the subfeature in the cluster.
-
-  Fields:
-    description: Description represents human readable description of the
-      subfeature state. If the deployment failed, this should also contain the
-      reason for the failure.
-    installationState: InstallationState represents the state of installation
-      of the subfeature in the cluster.
-    migrateState: MigrateState represents the state of the Migrate subfeature.
-    serviceMeshState: ServiceMeshState represents the state of the Service
-      Mesh subfeature.
-  """
-
-  class InstallationStateValueValuesEnum(_messages.Enum):
-    r"""InstallationState represents the state of installation of the
-    subfeature in the cluster.
-
-    Values:
-      INSTALLATION_STATE_UNSPECIFIED: state of installation is unknown
-      INSTALLATION_STATE_NOT_INSTALLED: component is not installed
-      INSTALLATION_STATE_INSTALLED: component is successfully installed
-      INSTALLATION_STATE_FAILED: installation failed
-    """
-    INSTALLATION_STATE_UNSPECIFIED = 0
-    INSTALLATION_STATE_NOT_INSTALLED = 1
-    INSTALLATION_STATE_INSTALLED = 2
-    INSTALLATION_STATE_FAILED = 3
-
-  description = _messages.StringField(1)
-  installationState = _messages.EnumField('InstallationStateValueValuesEnum', 2)
-  migrateState = _messages.MessageField('MigrateState', 3)
-  serviceMeshState = _messages.MessageField('ServiceMeshState', 4)
-
-
 class ApigeeMembershipSpec(_messages.Message):
   r"""**Apigee**: Per-Membership Feature spec.
 
@@ -363,36 +278,6 @@ class Binding(_messages.Message):
   role = _messages.StringField(4)
 
 
-class BindingLifecycleState(_messages.Message):
-  r"""BindingLifecycleState describes the state of a Binding resource.
-
-  Enums:
-    CodeValueValuesEnum: Output only. The current state of the Binding
-      resource.
-
-  Fields:
-    code: Output only. The current state of the Binding resource.
-  """
-
-  class CodeValueValuesEnum(_messages.Enum):
-    r"""Output only. The current state of the Binding resource.
-
-    Values:
-      CODE_UNSPECIFIED: The code is not set.
-      CREATING: The binding is being created.
-      READY: The binding active.
-      DELETING: The binding is being deleted.
-      UPDATING: The binding is being updated.
-    """
-    CODE_UNSPECIFIED = 0
-    CREATING = 1
-    READY = 2
-    DELETING = 3
-    UPDATING = 4
-
-  code = _messages.EnumField('CodeValueValuesEnum', 1)
-
-
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -481,9 +366,9 @@ class ClusterUpgradeFeatureSpec(_messages.Message):
     upstreamScopes: This scope consumes upgrades that have COMPLETE status
       code in the upstream scopes. See ScopeGKEUpgradeState.Code for code
       definitions. The scope name should be in the form:
-      `projects/{p}/locations/gloobal/scopes/{s}` Where {p} is the project,
-      {s} is a valid Scope in this project. {p} WILL match the Feature's
-      project. This is defined as repeated for future proof reasons. Initial
+      `projects/{p}/locations/global/scopes/{s}` Where {p} is the project, {s}
+      is a valid Scope in this project. {p} WILL match the Feature's project.
+      This is defined as repeated for future proof reasons. Initial
       implementation will enforce at most one upstream scope.
   """
 
@@ -499,21 +384,18 @@ class ClusterUpgradeFeatureState(_messages.Message):
     IgnoredValue: A list of memberships ignored by the feature. For example,
       manually upgraded clusters can be ignored if they are newer than the
       default versions of its release channel. The membership resource is in
-      the format:
-      `projects/[project_id]/locations/[location]/membership/[membership_id]`.
+      the format: `projects/{p}/locations/{l}/membership/{l}`.
 
   Fields:
     downstreamScopes: This scopes whose upstream_scopes contain the current
       scope. The scope name should be in the form:
-      `projects/{p}/locations/gloobal/scopes/{s}` Where {p} is the project,
-      {s} is a valid Scope in this project. {p} WILL match the Feature's
-      project.
+      `projects/{p}/locations/global/scopes/{s}` Where {p} is the project, {s}
+      is a valid Scope in this project. {p} WILL match the Feature's project.
     gkeState: Feature state for GKE clusters.
     ignored: A list of memberships ignored by the feature. For example,
       manually upgraded clusters can be ignored if they are newer than the
       default versions of its release channel. The membership resource is in
-      the format:
-      `projects/[project_id]/locations/[location]/membership/[membership_id]`.
+      the format: `projects/{p}/locations/{l}/membership/{l}`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -521,7 +403,7 @@ class ClusterUpgradeFeatureState(_messages.Message):
     r"""A list of memberships ignored by the feature. For example, manually
     upgraded clusters can be ignored if they are newer than the default
     versions of its release channel. The membership resource is in the format:
-    `projects/[project_id]/locations/[location]/membership/[membership_id]`.
+    `projects/{p}/locations/{l}/membership/{l}`.
 
     Messages:
       AdditionalProperty: An additional property for a IgnoredValue object.
@@ -553,8 +435,10 @@ class ClusterUpgradeGKEUpgrade(_messages.Message):
   upgrade.
 
   Fields:
-    name: Name of the upgrade, e.g., "k8s_control_plane".
-    version: Version of the upgrade, e.g., "1.22.1-gke.100".
+    name: Name of the upgrade, e.g., "k8s_control_plane". It should be a valid
+      upgrade name. It must not exceet 99 characters.
+    version: Version of the upgrade, e.g., "1.22.1-gke.100". It should be a
+      valid version. It must not exceet 99 characters.
   """
 
   name = _messages.StringField(1)
@@ -592,7 +476,7 @@ class ClusterUpgradeGKEUpgradeFeatureState(_messages.Message):
 
 
 class ClusterUpgradeGKEUpgradeOverride(_messages.Message):
-  r"""Properties of an GKE upgrade that can be overridden by the user. For
+  r"""Properties of a GKE upgrade that can be overridden by the user. For
   example, a user can skip soaking by overriding the soaking to 0.
 
   Fields:
@@ -654,7 +538,7 @@ class ClusterUpgradePostConditions(_messages.Message):
 
   Fields:
     soaking: Amount of time to "soak" after a rollout has been finished before
-      marking it COMPLETE
+      marking it COMPLETE. Cannot exceed 30 days.
   """
 
   soaking = _messages.StringField(1)
@@ -699,6 +583,81 @@ class ClusterUpgradeScopeGKEUpgradeState(_messages.Message):
   stats = _messages.MessageField('StatsValue', 1)
   status = _messages.MessageField('ClusterUpgradeUpgradeStatus', 2)
   upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 3)
+
+
+class ClusterUpgradeScopeSpec(_messages.Message):
+  r"""**ClusterUpgrade**: The configuration for the ClusterUpgrade feature.
+
+  Fields:
+    gkeUpgradeOverrides: Allow users to override some properties of each GKE
+      upgrade.
+    postConditions: Post conditions to evaluate to mark an upgrade COMPLETE.
+    upstreamScopes: This scope consumes upgrades that have COMPLETE status
+      code in the upstream scopes. See ScopeGKEUpgradeState.Code for code
+      definitions. The scope name should be in the form:
+      `projects/{p}/locations/global/scopes/{s}` Where {p} is the project, {s}
+      is a valid Scope in this project. {p} WILL match the Feature's project.
+      This is defined as repeated for future proof reasons. Initial
+      implementation will enforce at most one upstream scope.
+  """
+
+  gkeUpgradeOverrides = _messages.MessageField('ClusterUpgradeGKEUpgradeOverride', 1, repeated=True)
+  postConditions = _messages.MessageField('ClusterUpgradePostConditions', 2)
+  upstreamScopes = _messages.StringField(3, repeated=True)
+
+
+class ClusterUpgradeScopeState(_messages.Message):
+  r"""**ClusterUpgrade**: The state for the ClusterUpgrade feature.
+
+  Messages:
+    IgnoredValue: A list of memberships ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel. The membership resource is in
+      the format: `projects/{p}/locations/{l}/membership/{m}`.
+
+  Fields:
+    downstreamScopes: This scopes whose upstream_scopes contain the current
+      scope. The scope name should be in the form:
+      `projects/{p}/locations/gloobal/scopes/{s}` Where {p} is the project,
+      {s} is a valid Scope in this project. {p} WILL match the Feature's
+      project.
+    gkeState: Feature state for GKE clusters.
+    ignored: A list of memberships ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel. The membership resource is in
+      the format: `projects/{p}/locations/{l}/membership/{m}`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class IgnoredValue(_messages.Message):
+    r"""A list of memberships ignored by the feature. For example, manually
+    upgraded clusters can be ignored if they are newer than the default
+    versions of its release channel. The membership resource is in the format:
+    `projects/{p}/locations/{l}/membership/{m}`.
+
+    Messages:
+      AdditionalProperty: An additional property for a IgnoredValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type IgnoredValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a IgnoredValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ClusterUpgradeIgnoredMembership attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ClusterUpgradeIgnoredMembership', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  downstreamScopes = _messages.StringField(1, repeated=True)
+  gkeState = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureState', 2)
+  ignored = _messages.MessageField('IgnoredValue', 3)
 
 
 class ClusterUpgradeUpgradeStatus(_messages.Message):
@@ -752,8 +711,7 @@ class CommonFeatureSpec(_messages.Message):
     anthosobservability: Anthos Observability spec
     appdevexperience: Appdevexperience specific spec.
     cloudauditlogging: Cloud Audit Logging-specific spec.
-    clusterupgrade: TODO(user) Remove clusterupgrade (it's moved to
-      CommongScopeSpec). Upgrade feature spec.
+    clusterupgrade: A ClusterUpgradeFeatureSpec attribute.
     fleetobservability: FleetObservability feature spec.
     helloworld: Hello World-specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
@@ -777,8 +735,7 @@ class CommonFeatureState(_messages.Message):
 
   Fields:
     appdevexperience: Appdevexperience specific state.
-    clusterupgrade: TODO(user) Remove clusterupgrade (it's moved to
-      CommongScopeState) Upgrade specific state.
+    clusterupgrade: A ClusterUpgradeFeatureState attribute.
     fleetobservability: FleetObservability feature state.
     helloworld: Hello World-specific state.
     rbacrolebindingactuation: RBAC Role Binding Actuation feature state
@@ -800,10 +757,12 @@ class CommonFleetDefaultMemberConfigSpec(_messages.Message):
   information for memberships of a fleet
 
   Fields:
+    identityservice: Identity Service-specific spec.
     mesh: Anthos Service Mesh-specific spec
   """
 
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 1)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 1)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 2)
 
 
 class Condition(_messages.Message):
@@ -2604,16 +2563,16 @@ class GkehubProjectsLocationsMembershipsBindingsCreateRequest(_messages.Message)
   r"""A GkehubProjectsLocationsMembershipsBindingsCreateRequest object.
 
   Fields:
-    bindingId: Required. The ID to use for the Binding.
-    gkehubUNDEFINEDOuterMessageBinding: A GkehubUNDEFINEDOuterMessageBinding
-      resource to be passed as the request body.
-    parent: Required. The parent (project and location) where the Binding will
-      be created. Specified in the format
+    membershipBinding: A MembershipBinding resource to be passed as the
+      request body.
+    membershipBindingId: Required. The ID to use for the MembershipBinding.
+    parent: Required. The parent (project and location) where the
+      MembershipBinding will be created. Specified in the format
       `projects/*/locations/*/memberships/*`.
   """
 
-  bindingId = _messages.StringField(1)
-  gkehubUNDEFINEDOuterMessageBinding = _messages.MessageField('GkehubUNDEFINEDOuterMessageBinding', 2)
+  membershipBinding = _messages.MessageField('MembershipBinding', 1)
+  membershipBindingId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
 
 
@@ -2621,7 +2580,7 @@ class GkehubProjectsLocationsMembershipsBindingsDeleteRequest(_messages.Message)
   r"""A GkehubProjectsLocationsMembershipsBindingsDeleteRequest object.
 
   Fields:
-    name: Required. The Binding resource name in the format
+    name: Required. The MembershipBinding resource name in the format
       `projects/*/locations/*/memberships/*/bindings/*`.
   """
 
@@ -2632,7 +2591,7 @@ class GkehubProjectsLocationsMembershipsBindingsGetRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsBindingsGetRequest object.
 
   Fields:
-    name: Required. The eBinding resource name in the format
+    name: Required. The MembershipBinding resource name in the format
       `projects/*/locations/*/memberships/*/bindings/*`.
   """
 
@@ -2646,11 +2605,12 @@ class GkehubProjectsLocationsMembershipsBindingsListRequest(_messages.Message):
     pageSize: Optional. When requesting a 'page' of resources, `page_size`
       specifies number of resources to return. If unspecified or set to 0, all
       resources will be returned.
-    pageToken: Optional. Token returned by previous call to `ListBindings`
-      which specifies the position in the list from where to continue listing
-      the resources.
-    parent: Required. The parent Membership for which the Bindings will be
-      listed. Specified in the format `projects/*/locations/*/memberships/*`.
+    pageToken: Optional. Token returned by previous call to
+      `ListMembershipBindings` which specifies the position in the list from
+      where to continue listing the resources.
+    parent: Required. The parent Membership for which the MembershipBindings
+      will be listed. Specified in the format
+      `projects/*/locations/*/memberships/*`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2662,14 +2622,15 @@ class GkehubProjectsLocationsMembershipsBindingsPatchRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsBindingsPatchRequest object.
 
   Fields:
-    gkehubUNDEFINEDOuterMessageBinding: A GkehubUNDEFINEDOuterMessageBinding
-      resource to be passed as the request body.
-    name: The resource name for the binding itself `projects/{project}/locatio
-      ns/{location}/memberships/{membership}/bindings/{bindings}`
+    membershipBinding: A MembershipBinding resource to be passed as the
+      request body.
+    name: The resource name for the membershipbinding itself `projects/{projec
+      t}/locations/{location}/memberships/{membership}/bindings/{membershipbin
+      ding}`
     updateMask: Required. The fields to be updated.
   """
 
-  gkehubUNDEFINEDOuterMessageBinding = _messages.MessageField('GkehubUNDEFINEDOuterMessageBinding', 1)
+  membershipBinding = _messages.MessageField('MembershipBinding', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
 
@@ -2906,6 +2867,26 @@ class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class GkehubProjectsLocationsMembershipsListScopesRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsListScopesRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListScopes` which
+      specifies the position in the list from where to continue listing the
+      resources.
+    parent: Required. The parent (project, location, membership) where the
+      Scope will be listed. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class GkehubProjectsLocationsMembershipsListWorkspacesRequest(_messages.Message):
@@ -3330,6 +3311,97 @@ class GkehubProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class GkehubProjectsLocationsScopesCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent (project and location) where the Scope will
+      be created. Specified in the format `projects/*/locations/*`.
+    scope: A Scope resource to be passed as the request body.
+    scopeId: Required. Client chosen ID for the Scope. `scope_id` must be a
+      ????
+  """
+
+  parent = _messages.StringField(1, required=True)
+  scope = _messages.MessageField('Scope', 2)
+  scopeId = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsScopesDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesDeleteRequest object.
+
+  Fields:
+    name: Required. The Scope resource name in the format
+      `projects/*/locations/*/scopes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsScopesGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesGetRequest object.
+
+  Fields:
+    name: Required. The Scope resource name in the format
+      `projects/*/locations/*/scopes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsScopesListPermittedRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesListPermittedRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListScopes` which
+      specifies the position in the list from where to continue listing the
+      resources.
+    parent: Required. The parent (project and location) where the Scope will
+      be listed. Specified in the format `projects/*/locations/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsScopesListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListScopes` which
+      specifies the position in the list from where to continue listing the
+      resources.
+    parent: Required. The parent (project and location) where the Scope will
+      be listed. Specified in the format `projects/*/locations/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsScopesPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesPatchRequest object.
+
+  Fields:
+    name: The resource name for the scope
+      `projects/{project}/locations/{location}/scopes/{scope}`
+    scope: A Scope resource to be passed as the request body.
+    updateMask: Required. The fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  scope = _messages.MessageField('Scope', 2)
+  updateMask = _messages.StringField(3)
+
+
 class GkehubProjectsLocationsWorkspacesCreateRequest(_messages.Message):
   r"""A GkehubProjectsLocationsWorkspacesCreateRequest object.
 
@@ -3419,36 +3491,6 @@ class GkehubProjectsLocationsWorkspacesPatchRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   updateMask = _messages.StringField(2)
   workspace = _messages.MessageField('Workspace', 3)
-
-
-class GkehubUNDEFINEDOuterMessageBinding(_messages.Message):
-  r"""Binding is a subresource of a Membership, representing what Fleet Scopes
-  (or other, future Fleet resources) a Membership is bound to.
-
-  Fields:
-    createTime: Output only. When the binding was created.
-    deleteTime: Output only. When the binding was deleted.
-    fleet: Whether the binding is Fleet-wide; true means that this Membership
-      should be bound to all Namespaces in this entire Fleet.
-    name: The resource name for the binding itself `projects/{project}/locatio
-      ns/{location}/memberships/{membership}/bindings/{bindings}`
-    scope: A Workspace resource name in the format
-      `projects/*/locations/*/workspaces/*`.
-    state: Output only. State of the binding resource.
-    uid: Output only. Google-generated UUID for this resource. This is unique
-      across all binding resources. If a binding resource is deleted and
-      another resource with the same name is created, it gets a different uid.
-    updateTime: Output only. When the binding was last updated.
-  """
-
-  createTime = _messages.StringField(1)
-  deleteTime = _messages.StringField(2)
-  fleet = _messages.BooleanField(3)
-  name = _messages.StringField(4)
-  scope = _messages.StringField(5)
-  state = _messages.MessageField('BindingLifecycleState', 6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
 
 
 class GoogleRpcStatus(_messages.Message):
@@ -3872,20 +3914,6 @@ class ListAdminClusterMembershipsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
-class ListBindingsResponse(_messages.Message):
-  r"""List of Bindings.
-
-  Fields:
-    bindings: The list of bindings
-    nextPageToken: A token to request the next page of resources from the
-      `ListBindings` method. The value of an empty string means that there are
-      no more resources to return.
-  """
-
-  bindings = _messages.MessageField('GkehubUNDEFINEDOuterMessageBinding', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
 class ListFeaturesResponse(_messages.Message):
   r"""Response message for the `GkeHub.ListFeatures` method.
 
@@ -3924,6 +3952,20 @@ class ListLocationsResponse(_messages.Message):
   """
 
   locations = _messages.MessageField('Location', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListMembershipBindingsResponse(_messages.Message):
+  r"""List of MembershipBindings.
+
+  Fields:
+    membershipBindings: The list of membership_bindings
+    nextPageToken: A token to request the next page of resources from the
+      `ListMembershipBindings` method. The value of an empty string means that
+      there are no more resources to return.
+  """
+
+  membershipBindings = _messages.MessageField('MembershipBinding', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -4030,6 +4072,34 @@ class ListRBACRoleBindingsResponse(_messages.Message):
   rbacrolebindings = _messages.MessageField('RBACRoleBinding', 2, repeated=True)
 
 
+class ListScopesForMembershipResponse(_messages.Message):
+  r"""List of paginated scopes for a membership.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListScopes` method. The value of an empty string means that there are
+      no more resources to return.
+    scopes: The list of scopes
+  """
+
+  nextPageToken = _messages.StringField(1)
+  scopes = _messages.MessageField('Scope', 2, repeated=True)
+
+
+class ListScopesResponse(_messages.Message):
+  r"""List of Scopes.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListScopes` method. The value of an empty string means that there are
+      no more resources to return.
+    scopes: The list of Scopes
+  """
+
+  nextPageToken = _messages.StringField(1)
+  scopes = _messages.MessageField('Scope', 2, repeated=True)
+
+
 class ListWorkspacesForMembershipResponse(_messages.Message):
   r"""List of paginated workspaces for a membership.
 
@@ -4056,40 +4126,6 @@ class ListWorkspacesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   workspaces = _messages.MessageField('Workspace', 2, repeated=True)
-
-
-class LocalControllerState(_messages.Message):
-  r"""LocalControllerState contains the state of the local controller deployed
-  in the cluster.
-
-  Enums:
-    InstallationStateValueValuesEnum: InstallationState represents the state
-      of deployment of the local PE controller in the cluster.
-
-  Fields:
-    description: Description represents the human readable description of the
-      current state of the local PE controller
-    installationState: InstallationState represents the state of deployment of
-      the local PE controller in the cluster.
-  """
-
-  class InstallationStateValueValuesEnum(_messages.Enum):
-    r"""InstallationState represents the state of deployment of the local PE
-    controller in the cluster.
-
-    Values:
-      INSTALLATION_STATE_UNSPECIFIED: state of installation is unknown
-      INSTALLATION_STATE_NOT_INSTALLED: component is not installed
-      INSTALLATION_STATE_INSTALLED: component is successfully installed
-      INSTALLATION_STATE_FAILED: installation failed
-    """
-    INSTALLATION_STATE_UNSPECIFIED = 0
-    INSTALLATION_STATE_NOT_INSTALLED = 1
-    INSTALLATION_STATE_INSTALLED = 2
-    INSTALLATION_STATE_FAILED = 3
-
-  description = _messages.StringField(1)
-  installationState = _messages.EnumField('InstallationStateValueValuesEnum', 2)
 
 
 class Location(_messages.Message):
@@ -4289,6 +4325,69 @@ class Membership(_messages.Message):
   updateTime = _messages.StringField(13)
 
 
+class MembershipBinding(_messages.Message):
+  r"""MembershipBinding is a subresource of a Membership, representing what
+  Fleet Scopes (or other, future Fleet resources) a Membership is bound to.
+
+  Fields:
+    createTime: Output only. When the membership binding was created.
+    deleteTime: Output only. When the membership binding was deleted.
+    fleet: Whether the membershipbinding is Fleet-wide; true means that this
+      Membership should be bound to all Namespaces in this entire Fleet.
+    name: The resource name for the membershipbinding itself `projects/{projec
+      t}/locations/{location}/memberships/{membership}/bindings/{membershipbin
+      ding}`
+    scope: A Workspace resource name in the format
+      `projects/*/locations/*/scopes/*`.
+    state: Output only. State of the membership binding resource.
+    uid: Output only. Google-generated UUID for this resource. This is unique
+      across all membershipbinding resources. If a membershipbinding resource
+      is deleted and another resource with the same name is created, it gets a
+      different uid.
+    updateTime: Output only. When the membership binding was last updated.
+  """
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  fleet = _messages.BooleanField(3)
+  name = _messages.StringField(4)
+  scope = _messages.StringField(5)
+  state = _messages.MessageField('MembershipBindingLifecycleState', 6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class MembershipBindingLifecycleState(_messages.Message):
+  r"""MembershipBindingLifecycleState describes the state of a Binding
+  resource.
+
+  Enums:
+    CodeValueValuesEnum: Output only. The current state of the
+      MembershipBinding resource.
+
+  Fields:
+    code: Output only. The current state of the MembershipBinding resource.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the MembershipBinding resource.
+
+    Values:
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The membershipbinding is being created.
+      READY: The membershipbinding active.
+      DELETING: The membershipbinding is being deleted.
+      UPDATING: The membershipbinding is being updated.
+    """
+    CODE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    UPDATING = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+
+
 class MembershipEndpoint(_messages.Message):
   r"""MembershipEndpoint contains information needed to contact a Kubernetes
   API, endpoint and any additional Kubernetes metadata.
@@ -4345,11 +4444,10 @@ class MembershipFeatureSpec(_messages.Message):
 
   Fields:
     anthosobservability: Anthos Observability-specific spec
-    anthosvm: AnthosVM spec.
     apigee: Apigee-specific spec.
     cloudbuild: Cloud Build-specific spec
     configmanagement: Config Management-specific spec.
-    fleetobservability: A FleetObservabilityMembershipSpec attribute.
+    fleetobservability: Fleet observability membership spec
     helloworld: Hello World-specific spec.
     identityservice: Identity Service-specific spec.
     mesh: Anthos Service Mesh-specific spec
@@ -4359,17 +4457,16 @@ class MembershipFeatureSpec(_messages.Message):
   """
 
   anthosobservability = _messages.MessageField('AnthosObservabilityMembershipSpec', 1)
-  anthosvm = _messages.MessageField('AnthosVMMembershipSpec', 2)
-  apigee = _messages.MessageField('ApigeeMembershipSpec', 3)
-  cloudbuild = _messages.MessageField('CloudBuildMembershipSpec', 4)
-  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 5)
-  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 6)
-  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 7)
-  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 8)
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 9)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 10)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipSpec', 11)
-  workloadcertificate = _messages.MessageField('MembershipSpec', 12)
+  apigee = _messages.MessageField('ApigeeMembershipSpec', 2)
+  cloudbuild = _messages.MessageField('CloudBuildMembershipSpec', 3)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 4)
+  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 5)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 6)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 7)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 8)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 9)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipSpec', 10)
+  workloadcertificate = _messages.MessageField('MembershipSpec', 11)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -4377,11 +4474,10 @@ class MembershipFeatureState(_messages.Message):
   Membership.
 
   Fields:
-    anthosvm: AnthosVM state.
     appdevexperience: Appdevexperience specific state.
     clusterupgrade: ClusterUpgrade state.
     configmanagement: Config Management-specific state.
-    fleetobservability: A FleetObservabilityMembershipState attribute.
+    fleetobservability: Fleet observability membership state.
     helloworld: Hello World-specific state.
     identityservice: Identity Service-specific state.
     metering: Metering-specific state.
@@ -4391,18 +4487,17 @@ class MembershipFeatureState(_messages.Message):
     state: The high-level state of this Feature for a single membership.
   """
 
-  anthosvm = _messages.MessageField('AnthosVMMembershipState', 1)
-  appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 2)
-  clusterupgrade = _messages.MessageField('ClusterUpgradeMembershipState', 3)
-  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 4)
-  fleetobservability = _messages.MessageField('FleetObservabilityMembershipState', 5)
-  helloworld = _messages.MessageField('HelloWorldMembershipState', 6)
-  identityservice = _messages.MessageField('IdentityServiceMembershipState', 7)
-  metering = _messages.MessageField('MeteringMembershipState', 8)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 9)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipState', 10)
-  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 11)
-  state = _messages.MessageField('FeatureState', 12)
+  appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
+  clusterupgrade = _messages.MessageField('ClusterUpgradeMembershipState', 2)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 3)
+  fleetobservability = _messages.MessageField('FleetObservabilityMembershipState', 4)
+  helloworld = _messages.MessageField('HelloWorldMembershipState', 5)
+  identityservice = _messages.MessageField('IdentityServiceMembershipState', 6)
+  metering = _messages.MessageField('MeteringMembershipState', 7)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 8)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipState', 9)
+  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 10)
+  state = _messages.MessageField('FeatureState', 11)
 
 
 class MembershipSpec(_messages.Message):
@@ -4477,14 +4572,6 @@ class MeteringMembershipState(_messages.Message):
 
   lastMeasurementTime = _messages.StringField(1)
   preciseLastMeasuredClusterVcpuCapacity = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-
-
-class MigrateSpec(_messages.Message):
-  r"""MigrateSpec contains the migrate subfeature configuration."""
-
-
-class MigrateState(_messages.Message):
-  r"""MigrateState contains the state of Migrate subfeature"""
 
 
 class MultiCloudCluster(_messages.Message):
@@ -5398,14 +5485,39 @@ class Rule(_messages.Message):
   permissions = _messages.StringField(7, repeated=True)
 
 
+class Scope(_messages.Message):
+  r"""Scope represents a Scope in a Fleet.
+
+  Fields:
+    createTime: Output only. When the scope was created.
+    deleteTime: Output only. When the scope was deleted.
+    name: The resource name for the scope
+      `projects/{project}/locations/{location}/scopes/{scope}`
+    state: Output only. State of the scope resource.
+    uid: Output only. Google-generated UUID for this resource. This is unique
+      across all scope resources. If a scope resource is deleted and another
+      resource with the same name is created, it gets a different uid.
+    updateTime: Output only. When the scope was last updated.
+  """
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  state = _messages.MessageField('ScopeLifecycleState', 4)
+  uid = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
 class ScopeFeatureSpec(_messages.Message):
   r"""ScopeFeatureSpec contains feature specs for a fleet scope.
 
   Fields:
     clusterupgrade: Upgrade feature spec.
+    clusterupgradeNew: A ClusterUpgradeScopeSpec attribute.
   """
 
   clusterupgrade = _messages.MessageField('ClusterUpgradeFeatureSpec', 1)
+  clusterupgradeNew = _messages.MessageField('ClusterUpgradeScopeSpec', 2)
 
 
 class ScopeFeatureState(_messages.Message):
@@ -5413,11 +5525,42 @@ class ScopeFeatureState(_messages.Message):
 
   Fields:
     clusterupgrade: Upgrade specific state.
+    clusterupgradeNew: A ClusterUpgradeScopeState attribute.
     state: Output only. The "running state" of the Feature in this Scope.
   """
 
   clusterupgrade = _messages.MessageField('ClusterUpgradeFeatureState', 1)
-  state = _messages.MessageField('FeatureState', 2)
+  clusterupgradeNew = _messages.MessageField('ClusterUpgradeScopeState', 2)
+  state = _messages.MessageField('FeatureState', 3)
+
+
+class ScopeLifecycleState(_messages.Message):
+  r"""ScopeLifecycleState describes the state of a Scope resource.
+
+  Enums:
+    CodeValueValuesEnum: Output only. The current state of the scope resource.
+
+  Fields:
+    code: Output only. The current state of the scope resource.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the scope resource.
+
+    Values:
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The scope is being created.
+      READY: The scope active.
+      DELETING: The scope is being deleted.
+      UPDATING: The scope is being updated.
+    """
+    CODE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    UPDATING = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
 
 
 class ServiceMeshAnalysisMessage(_messages.Message):
@@ -5873,14 +6016,6 @@ class ServiceMeshMeshConnectivity(_messages.Message):
 
   details = _messages.MessageField('ServiceMeshStatusDetails', 1, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 2)
-
-
-class ServiceMeshSpec(_messages.Message):
-  r"""ServiceMeshSpec contains the serviceMesh subfeature configuration."""
-
-
-class ServiceMeshState(_messages.Message):
-  r"""ServiceMeshState contains the state of Service Mesh subfeature"""
 
 
 class ServiceMeshStatusDetails(_messages.Message):

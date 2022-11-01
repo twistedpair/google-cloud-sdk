@@ -402,7 +402,8 @@
             "The resource has been marked for deletion by the user. For some resources (e.g. buckets), this can be reversed by an un-delete operation.",
             "The resource has been marked for an update by the user. It will remain in this state until the update is complete.",
             "The resource has been marked for creation by the user. It will remain in this state until the creation is complete.",
-            "The resource is in an INTERNAL error state."
+            "The resource is in an INTERNAL error state.",
+            "The resource has been moved to a different location and this is the before-move record and should no longer be used."
           ],
           "enum": [
             "LIFECYCLE_STATE_UNSPECIFIED",
@@ -410,7 +411,8 @@
             "DELETE_REQUESTED",
             "UPDATING",
             "CREATING",
-            "FAILED"
+            "FAILED",
+            "MOVED"
           ]
         },
         "analyticsEnabled": {
@@ -790,7 +792,8 @@
             "The resource has been marked for deletion by the user. For some resources (e.g. buckets), this can be reversed by an un-delete operation.",
             "The resource has been marked for an update by the user. It will remain in this state until the update is complete.",
             "The resource has been marked for creation by the user. It will remain in this state until the creation is complete.",
-            "The resource is in an INTERNAL error state."
+            "The resource is in an INTERNAL error state.",
+            "The resource has been moved to a different location and this is the before-move record and should no longer be used."
           ],
           "enum": [
             "LIFECYCLE_STATE_UNSPECIFIED",
@@ -798,7 +801,8 @@
             "DELETE_REQUESTED",
             "UPDATING",
             "CREATING",
-            "FAILED"
+            "FAILED",
+            "MOVED"
           ]
         },
         "bigqueryDataset": {
@@ -899,6 +903,17 @@
         },
         "destination": {
           "description": "Required. Destination to which to copy log entries.",
+          "type": "string"
+        }
+      }
+    },
+    "MoveBucketRequest": {
+      "id": "MoveBucketRequest",
+      "description": "The parameters to MoveBucket.",
+      "type": "object",
+      "properties": {
+        "newName": {
+          "description": "Required. The full resource name of the relocated bucket.",
           "type": "string"
         }
       }
@@ -3732,6 +3747,35 @@
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
                   "description": "Undeletes a log bucket. A bucket that has been deleted can be undeleted within the grace period of 7 days."
+                },
+                "move": {
+                  "id": "logging.projects.locations.buckets.move",
+                  "path": "v2/{+name}:move",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}:move",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the source bucket to move. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "MoveBucketRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with a MOVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of \"global\" Have a non-project parent when it is a _Default bucket"
                 }
               }
               ,
@@ -5216,6 +5260,35 @@
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
                   "description": "Undeletes a log bucket. A bucket that has been deleted can be undeleted within the grace period of 7 days."
+                },
+                "move": {
+                  "id": "logging.organizations.locations.buckets.move",
+                  "path": "v2/{+name}:move",
+                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}:move",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the source bucket to move. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "MoveBucketRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with a MOVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of \"global\" Have a non-project parent when it is a _Default bucket"
                 }
               }
               ,
@@ -6507,6 +6580,35 @@
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
                   "description": "Undeletes a log bucket. A bucket that has been deleted can be undeleted within the grace period of 7 days."
+                },
+                "move": {
+                  "id": "logging.folders.locations.buckets.move",
+                  "path": "v2/{+name}:move",
+                  "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}:move",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the source bucket to move. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
+                      "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "MoveBucketRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with a MOVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of \"global\" Have a non-project parent when it is a _Default bucket"
                 }
               }
               ,
@@ -7763,6 +7865,35 @@
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
                   "description": "Undeletes a log bucket. A bucket that has been deleted can be undeleted within the grace period of 7 days."
+                },
+                "move": {
+                  "id": "logging.billingAccounts.locations.buckets.move",
+                  "path": "v2/{+name}:move",
+                  "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}:move",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the source bucket to move. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
+                      "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "MoveBucketRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with a MOVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of \"global\" Have a non-project parent when it is a _Default bucket"
                 }
               }
               ,
@@ -8571,6 +8702,35 @@
                 "https://www.googleapis.com/auth/logging.admin"
               ],
               "description": "Undeletes a log bucket. A bucket that has been deleted can be undeleted within the grace period of 7 days."
+            },
+            "move": {
+              "id": "logging.locations.buckets.move",
+              "path": "v2/{+name}:move",
+              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}:move",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The full resource name of the source bucket to move. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
+                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "MoveBucketRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/logging.admin"
+              ],
+              "description": "Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with a MOVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of \"global\" Have a non-project parent when it is a _Default bucket"
             }
           }
           ,

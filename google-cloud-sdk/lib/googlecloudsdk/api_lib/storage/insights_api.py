@@ -26,7 +26,8 @@ from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.core import properties
 
 
-PAGE_SIZE = 1000
+# Backend has a limit of 500.
+PAGE_SIZE = 500
 
 
 def _get_unescaped_ascii(string):
@@ -127,16 +128,18 @@ class InsightsApi:
     filter_list = []
     if source_bucket is not None:
       filter_list.append(
-          'objectMetadataReportOptions.storageFilters.bucket:{}'.format(
+          'objectMetadataReportOptions.storageFilters.bucket="{}"'.format(
               source_bucket.bucket_name))
+    # TODO(b/255962994): Not used currently. Will be tested when we bring
+    # back destination support.
     if destination is not None:
       filter_list.append(
           'objectMetadataReportOptions.storageDestinationOptions.'
-          'bucket:{}'.format(destination.bucket_name))
+          'bucket="{}"'.format(destination.bucket_name))
       if destination.object_name is not None:
         filter_list.append(
             'objectMetadataReportOptions.storageDestinationOptions.'
-            'destinationPath:{}'.format(destination.object_name))
+            'destinationPath="{}"'.format(destination.object_name))
     if filter_list:
       return ' AND '.join(filter_list)
     else:

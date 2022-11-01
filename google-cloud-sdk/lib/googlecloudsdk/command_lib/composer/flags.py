@@ -307,6 +307,10 @@ TRIGGERER_ENABLED_GROUP_DESCRIPTION = (
 MASTER_AUTHORIZED_NETWORKS_GROUP_DESCRIPTION = (
     'Group of arguments for setting master authorized networks configuration.')
 
+CLOUD_DATA_LINEAGE_INTEGRATION_GROUP_DESCRIPTION = (
+    'Group of arguments for setting Cloud Data Lineage integration '
+    'configuration in Composer 2')
+
 CLEAR_PYPI_PACKAGES_FLAG = base.Argument(
     '--clear-pypi-packages',
     action='store_true',
@@ -710,6 +714,22 @@ AIRFLOW_DATABASE_RETENTION_DAYS = base.Argument(
       days for airflow database retention mechanism.
     """)
 
+ENABLE_CLOUD_DATA_LINEAGE_INTEGRATION_FLAG = base.Argument(
+    '--enable-cloud-data-lineage-integration',
+    default=None,
+    action='store_true',
+    help="""\
+    Enable Cloud Data Lineage integration.
+    """)
+
+DISABLE_CLOUD_DATA_LINEAGE_INTEGRATION_FLAG = base.Argument(
+    '--disable-cloud-data-lineage-integration',
+    default=None,
+    action='store_true',
+    help="""\
+    Disable Cloud Data Lineage integration.
+    """)
+
 
 def _IsValidIpv4CidrBlock(ipv4_cidr_block):
   """Validates that IPV4 CIDR block arg has valid format.
@@ -826,6 +846,37 @@ CONNECTION_SUBNETWORK_FLAG = base.Argument(
     Can be specified for Composer 2.X or greater. Cannot be specified
     unless `--enable-private-environment` is also specified.
     """)
+CONNECTION_TYPE_FLAG_HELP = """\
+    Mode of internal communication within the Composer environment. Must be one
+    of `VPC_PEERING` or `PRIVATE_SERVICE_CONNECT`.
+
+    Can be specified for Composer 2.X or greater. Cannot be specified
+    unless `--enable-private-environment` is also specified. Cannot be set to
+    `VPC_PEERING` if `--connection-subnetwork` is also specified.
+    """
+
+CONNECTION_TYPE_FLAG_ALPHA = arg_utils.ChoiceEnumMapper(
+    '--connection-type',
+    help_str=CONNECTION_TYPE_FLAG_HELP,
+    required=False,
+    message_enum=api_util.GetMessagesModule(
+        release_track=base.ReleaseTrack.ALPHA).NetworkingConfig
+    .ConnectionTypeValueValuesEnum)
+
+CONNECTION_TYPE_FLAG_BETA = arg_utils.ChoiceEnumMapper(
+    '--connection-type',
+    help_str=CONNECTION_TYPE_FLAG_HELP,
+    required=False,
+    message_enum=api_util.GetMessagesModule(
+        release_track=base.ReleaseTrack.BETA).NetworkingConfig
+    .ConnectionTypeValueValuesEnum)
+
+CONNECTION_TYPE_FLAG_GA = arg_utils.ChoiceEnumMapper(
+    '--connection-type',
+    help_str=CONNECTION_TYPE_FLAG_HELP,
+    required=False,
+    message_enum=api_util.GetMessagesModule(release_track=base.ReleaseTrack.GA)
+    .NetworkingConfig.ConnectionTypeValueValuesEnum)
 
 
 def _GetIpv4CidrMaskSize(ipv4_cidr_block):
@@ -1300,7 +1351,7 @@ def AddIpAliasEnvironmentFlags(update_type_group, support_max_pods_per_node):
     MAX_PODS_PER_NODE.AddToParser(group)
 
 
-def AddPrivateIpEnvironmentFlags(update_type_group):
+def AddPrivateIpEnvironmentFlags(update_type_group, release_track):
   """Adds flags related to private clusters to parser.
 
   Private cluster flags are related to similar flags found within GKE SDK:
@@ -1308,6 +1359,7 @@ def AddPrivateIpEnvironmentFlags(update_type_group):
 
   Args:
     update_type_group: argument group, the group to which flag should be added.
+    release_track: which release track messages should we use.
   """
   group = update_type_group.add_group(help='Private Clusters')
   ENABLE_PRIVATE_ENVIRONMENT_FLAG.AddToParser(group)
@@ -1317,6 +1369,12 @@ def AddPrivateIpEnvironmentFlags(update_type_group):
   CLOUD_SQL_IPV4_CIDR_FLAG.AddToParser(group)
   COMPOSER_NETWORK_IPV4_CIDR_FLAG.AddToParser(group)
   CONNECTION_SUBNETWORK_FLAG.AddToParser(group)
+  if release_track == base.ReleaseTrack.GA:
+    CONNECTION_TYPE_FLAG_GA.choice_arg.AddToParser(group)
+  elif release_track == base.ReleaseTrack.BETA:
+    CONNECTION_TYPE_FLAG_BETA.choice_arg.AddToParser(group)
+  elif release_track == base.ReleaseTrack.ALPHA:
+    CONNECTION_TYPE_FLAG_ALPHA.choice_arg.AddToParser(group)
   ENABLE_PRIVATELY_USED_PUBLIC_IPS_FLAG.AddToParser(group)
 
 
@@ -1466,6 +1524,22 @@ def AddMaintenanceWindowFlagsGroup(update_type_group):
   MAINTENANCE_WINDOW_START_FLAG.AddToParser(group)
   MAINTENANCE_WINDOW_END_FLAG.AddToParser(group)
   MAINTENANCE_WINDOW_RECURRENCE_FLAG.AddToParser(group)
+
+
+def AddCloudDataLineageIntegrationUpdateFlagsToGroup(update_type_group):
+  """Adds flag group for Cloud Data Lineage integration.
+
+  Args:
+    update_type_group: argument group, the group to which flags should be added.
+  """
+  update_group = update_type_group.add_argument_group(
+      CLOUD_DATA_LINEAGE_INTEGRATION_GROUP_DESCRIPTION, hidden=True)
+
+  update_enable_disable_group = update_group.add_argument_group(mutex=True)
+  ENABLE_CLOUD_DATA_LINEAGE_INTEGRATION_FLAG.AddToParser(
+      update_enable_disable_group)
+  DISABLE_CLOUD_DATA_LINEAGE_INTEGRATION_FLAG.AddToParser(
+      update_enable_disable_group)
 
 
 def FallthroughToLocationProperty(location_refs, flag_name, failure_msg):

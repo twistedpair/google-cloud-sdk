@@ -24,7 +24,7 @@ from google.auth.transport.grpc import SslCredentials  # type: ignore
 import grpc                        # type: ignore
 from grpc.experimental import aio  # type: ignore
 
-from google.protobuf import empty_pb2  # type: ignore
+from cloudsdk.google.protobuf import empty_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types import commit_response
 from googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types import result_set
 from googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types import spanner

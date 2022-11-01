@@ -1989,7 +1989,7 @@
             ]
           }
         },
-        "nodePoolConfig": {
+        "nodeGroupConfig": {
           "description": "Optional. The node group instance group configuration.",
           "$ref": "InstanceGroupConfig"
         },

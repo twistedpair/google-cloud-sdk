@@ -63,11 +63,13 @@ class QueueUpdatableConfiguration(object):
     config.retry_config = {}
     config.rate_limits = {}
     config.app_engine_routing_override = {}
+    config.http_target = {}
     config.stackdriver_logging_config = {}
 
     config.retry_config_mask_prefix = None
     config.rate_limits_mask_prefix = None
     config.app_engine_routing_override_mask_prefix = None
+    config.http_target_mask_prefix = None
     config.stackdriver_logging_config_mask_prefix = None
 
     if queue_type == constants.PULL_QUEUE:
@@ -92,9 +94,26 @@ class QueueUpdatableConfiguration(object):
         config.app_engine_routing_override = {
             'routing_override': 'appEngineRoutingOverride',
         }
+        config.http_target = {
+            'http_uri_override':
+                'uriOverride',
+            'http_method_override':
+                'httpMethod',
+            'http_header_override':
+                'headerOverrides',
+            'http_oauth_service_account_email_override':
+                'oauthToken.serviceAccountEmail',
+            'http_oauth_token_scope_override':
+                'oauthToken.scope',
+            'http_oidc_service_account_email_override':
+                'oidcToken.serviceAccountEmail',
+            'http_oidc_token_audience_override':
+                'oidcToken.audience',
+        }
         config.retry_config_mask_prefix = 'retryConfig'
         config.rate_limits_mask_prefix = 'rateLimits'
         config.app_engine_routing_override_mask_prefix = 'appEngineHttpTarget'
+        config.http_target_mask_prefix = 'httpTarget'
       elif release_track == base.ReleaseTrack.BETA:
         config.retry_config = {
             'max_attempts': 'maxAttempts',
@@ -149,6 +168,7 @@ class QueueUpdatableConfiguration(object):
         (self.rate_limits, self.rate_limits_mask_prefix),
         (self.app_engine_routing_override,
          self.app_engine_routing_override_mask_prefix),
+        (self.http_target, self.http_target_mask_prefix),
         (self.stackdriver_logging_config,
          self.stackdriver_logging_config_mask_prefix),
     ]
@@ -178,6 +198,7 @@ class QueueUpdatableConfiguration(object):
   def AllConfigs(self):
     return (list(self.retry_config.keys()) + list(self.rate_limits.keys()) +
             list(self.app_engine_routing_override.keys()) +
+            list(self.http_target.keys()) +
             list(self.stackdriver_logging_config.keys()))
 
 

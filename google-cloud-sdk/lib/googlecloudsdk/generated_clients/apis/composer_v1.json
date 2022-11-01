@@ -497,6 +497,10 @@
         "cloudComposerConnectionSubnetwork": {
           "description": "Optional. When specified, the environment will use Private Service Connect instead of VPC peerings to connect to Cloud SQL in the Tenant Project, and the PSC endpoint in the Customer Project will use an IP address from this subnetwork.",
           "type": "string"
+        },
+        "networkingConfig": {
+          "description": "Optional. Configuration for the network connections configuration in the environment.",
+          "$ref": "NetworkingConfig"
         }
       }
     },
@@ -517,6 +521,27 @@
           "description": "Output only. The IP range in CIDR notation to use for the hosted master network. This range is used for assigning internal IP addresses to the GKE cluster master or set of masters and to the internal load balancer virtual IP. This range must not overlap with any other ranges in use within the cluster's network.",
           "readOnly": true,
           "type": "string"
+        }
+      }
+    },
+    "NetworkingConfig": {
+      "id": "NetworkingConfig",
+      "description": "Configuration options for networking connections in the Composer 2 environment.",
+      "type": "object",
+      "properties": {
+        "connectionType": {
+          "description": "Optional. Indicates the user requested specifc connection type between Tenant and Customer projects. You cannot set networking connection type in public IP environment.",
+          "type": "string",
+          "enumDescriptions": [
+            "No specific connection type was requested, so the environment uses the default value corresponding to the rest of its configuration.",
+            "Requests the use of VPC peerings for connecting the Customer and Tenant projects.",
+            "Requests the use of Private Service Connect for connecting the Customer and Tenant projects."
+          ],
+          "enum": [
+            "CONNECTION_TYPE_UNSPECIFIED",
+            "VPC_PEERING",
+            "PRIVATE_SERVICE_CONNECT"
+          ]
         }
       }
     },

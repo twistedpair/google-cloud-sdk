@@ -16669,7 +16669,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified policy with the data included in the request.
+      r"""Patches the specified policy with the data included in the request. To clear fields in the rule, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
 
       Args:
         request: (ComputeRegionSecurityPoliciesPatchRequest) input message
@@ -16695,7 +16695,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def PatchRule(self, request, global_params=None):
-      r"""Patches a rule at the specified priority.
+      r"""Patches a rule at the specified priority. To clear fields in the rule, leave the fields empty and specify them in the updateMask.
 
       Args:
         request: (ComputeRegionSecurityPoliciesPatchRuleRequest) input message
@@ -16712,7 +16712,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id='compute.regionSecurityPolicies.patchRule',
         ordered_params=['project', 'region', 'securityPolicy'],
         path_params=['project', 'region', 'securityPolicy'],
-        query_params=['priority', 'validateOnly'],
+        query_params=['priority', 'updateMask', 'validateOnly'],
         relative_path='projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/patchRule',
         request_field='securityPolicyRule',
         request_type_name='ComputeRegionSecurityPoliciesPatchRuleRequest',
@@ -19051,7 +19051,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified policy with the data included in the request. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+      r"""Patches the specified policy with the data included in the request. To clear fields in the rule, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
 
       Args:
         request: (ComputeSecurityPoliciesPatchRequest) input message

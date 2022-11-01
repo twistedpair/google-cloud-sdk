@@ -33,8 +33,8 @@ except AttributeError:  # pragma: NO COVER
 
 from google.api_core import operation  # type: ignore
 from google.api_core import operation_async  # type: ignore
-from google.protobuf import field_mask_pb2  # type: ignore
-from google.protobuf import timestamp_pb2  # type: ignore
+from cloudsdk.google.protobuf import field_mask_pb2  # type: ignore
+from cloudsdk.google.protobuf import timestamp_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.logging_v2.services.config_service_v2 import pagers
 from googlecloudsdk.generated_clients.gapic_clients.logging_v2.types import logging_config
 from .transports.base import ConfigServiceV2Transport, DEFAULT_CLIENT_INFO

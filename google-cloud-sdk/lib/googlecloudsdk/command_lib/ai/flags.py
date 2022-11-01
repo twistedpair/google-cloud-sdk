@@ -585,6 +585,9 @@ def AddUploadModelFlags(parser, prompt_func=region_util.PromptForRegion):
       '--description', required=False,
       help=('Description of the model.')).AddToParser(parser)
   base.Argument(
+      '--version-description', required=False,
+      help=('Description of the model version.')).AddToParser(parser)
+  base.Argument(
       '--container-image-uri',
       required=True,
       help=("""\
@@ -1333,7 +1336,9 @@ def GetMonitoringJobResourceSpec(resource_name='monitoring_job'):
       constants.MODEL_MONITORING_JOBS_COLLECTION,
       resource_name=resource_name,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=RegionAttributeConfig(),
+      locationsId=RegionAttributeConfig(
+          prompt_func=region_util.GetPromptForRegionFunc(
+              constants.SUPPORTED_MODEL_MONITORING_JOBS_REGIONS)),
       disable_auto_completers=False)
 
 

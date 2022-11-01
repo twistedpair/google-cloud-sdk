@@ -65,8 +65,8 @@ properties:
       specifies any weightedBackendServices, service must not be set.
       Conversely if service is set, routeAction cannot contain any
       weightedBackendServices. Only one of routeAction or urlRedirect must
-      be set. URL maps for external HTTP(S) load balancers support only the
-      urlRewrite action within a path rule's routeAction.
+      be set. URL maps for Classic external HTTP(S) load balancers only
+      support the urlRewrite action within a path rule's routeAction.
     $ref: HttpRouteAction.yaml
   service:
     description: |-

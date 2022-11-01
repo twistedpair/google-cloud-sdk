@@ -26,7 +26,7 @@ from google.api_core import rest_streaming
 from google.api_core import path_template
 from google.api_core import gapic_v1
 
-from google.protobuf import json_format
+from cloudsdk.google.protobuf import json_format
 from google.api_core import operations_v1
 from requests import __version__ as requests_version
 import dataclasses
@@ -41,7 +41,7 @@ except AttributeError:  # pragma: NO COVER
 
 
 from google.longrunning import operations_pb2  # type: ignore
-from google.protobuf import empty_pb2  # type: ignore
+from cloudsdk.google.protobuf import empty_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.logging_v2.types import logging_config
 
 from .base import ConfigServiceV2Transport, DEFAULT_CLIENT_INFO as BASE_DEFAULT_CLIENT_INFO

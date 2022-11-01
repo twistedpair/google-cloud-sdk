@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import json
+import os
 
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import user_request_args_factory
@@ -29,7 +30,8 @@ from googlecloudsdk.core.util import files
 @function_result_cache.lru(maxsize=None)
 def cached_read_json_file(file_path):
   """Convert JSON file to an in-memory dict."""
-  with files.FileReader(file_path) as file_reader:
+  expanded_file_path = os.path.realpath(os.path.expanduser(file_path))
+  with files.FileReader(expanded_file_path) as file_reader:
     return json.load(file_reader)
 
 

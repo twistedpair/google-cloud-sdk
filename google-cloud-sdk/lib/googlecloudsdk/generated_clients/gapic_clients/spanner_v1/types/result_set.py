@@ -15,7 +15,7 @@
 #
 import proto  # type: ignore
 
-from google.protobuf import struct_pb2  # type: ignore
+from cloudsdk.google.protobuf import struct_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types import query_plan as gs_query_plan
 from googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types import transaction as gs_transaction
 from googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types import type as gs_type

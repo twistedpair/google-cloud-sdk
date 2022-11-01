@@ -3128,15 +3128,6 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'workstations': {
-        'v1alpha1':
-            APIDef(
-                ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.workstations.v1alpha1',
-                    client_classpath='workstations_v1alpha1_client.WorkstationsV1alpha1',
-                    messages_modulepath='workstations_v1alpha1_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
         'v1beta':
             APIDef(
                 ApitoolsClientDef(

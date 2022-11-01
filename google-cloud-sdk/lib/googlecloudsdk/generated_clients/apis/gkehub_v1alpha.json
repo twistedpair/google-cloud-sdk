@@ -833,7 +833,6 @@
           "$ref": "AnthosObservabilityFeatureSpec"
         },
         "clusterupgrade": {
-          "description": "TODO(user) Remove clusterupgrade (it's moved to CommongScopeSpec). Upgrade feature spec.",
           "$ref": "ClusterUpgradeFeatureSpec"
         },
         "rbacrolebindingactuation": {
@@ -1065,7 +1064,7 @@
       "type": "object",
       "properties": {
         "upstreamScopes": {
-          "description": "This scope consumes upgrades that have COMPLETE status code in the upstream scopes. See ScopeGKEUpgradeState.Code for code definitions. The scope name should be in the form: `projects\/{p}\/locations\/gloobal\/scopes\/{s}` Where {p} is the project, {s} is a valid Scope in this project. {p} WILL match the Feature's project. This is defined as repeated for future proof reasons. Initial implementation will enforce at most one upstream scope.",
+          "description": "This scope consumes upgrades that have COMPLETE status code in the upstream scopes. See ScopeGKEUpgradeState.Code for code definitions. The scope name should be in the form: `projects\/{p}\/locations\/global\/scopes\/{s}` Where {p} is the project, {s} is a valid Scope in this project. {p} WILL match the Feature's project. This is defined as repeated for future proof reasons. Initial implementation will enforce at most one upstream scope.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1090,7 +1089,7 @@
       "type": "object",
       "properties": {
         "soaking": {
-          "description": "Amount of time to \"soak\" after a rollout has been finished before marking it COMPLETE",
+          "description": "Amount of time to \"soak\" after a rollout has been finished before marking it COMPLETE. Cannot exceed 30 days.",
           "type": "string",
           "format": "google-duration"
         }
@@ -1098,7 +1097,7 @@
     },
     "ClusterUpgradeGKEUpgradeOverride": {
       "id": "ClusterUpgradeGKEUpgradeOverride",
-      "description": "Properties of an GKE upgrade that can be overridden by the user. For example, a user can skip soaking by overriding the soaking to 0.",
+      "description": "Properties of a GKE upgrade that can be overridden by the user. For example, a user can skip soaking by overriding the soaking to 0.",
       "type": "object",
       "properties": {
         "upgrade": {
@@ -1117,11 +1116,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of the upgrade, e.g., \"k8s_control_plane\".",
+          "description": "Name of the upgrade, e.g., \"k8s_control_plane\". It should be a valid upgrade name. It must not exceet 99 characters.",
           "type": "string"
         },
         "version": {
-          "description": "Version of the upgrade, e.g., \"1.22.1-gke.100\".",
+          "description": "Version of the upgrade, e.g., \"1.22.1-gke.100\". It should be a valid version. It must not exceet 99 characters.",
           "type": "string"
         }
       }
@@ -1184,15 +1183,12 @@
           "description": "Policy Controller spec.",
           "$ref": "PolicyControllerMembershipSpec"
         },
-        "anthosvm": {
-          "description": "AnthosVM spec.",
-          "$ref": "AnthosVMMembershipSpec"
-        },
         "rbacrolebindingactuation": {
           "description": "RBAC Role Binding Actuation membership spec",
           "$ref": "RBACRoleBindingActuationMembershipSpec"
         },
         "fleetobservability": {
+          "description": "Fleet observability membership spec",
           "$ref": "FleetObservabilityMembershipSpec"
         }
       }
@@ -1794,53 +1790,6 @@
         }
       }
     },
-    "AnthosVMMembershipSpec": {
-      "id": "AnthosVMMembershipSpec",
-      "description": "AnthosVMMembershipSpec contains the AnthosVM feature configuration for a membership\/cluster.",
-      "type": "object",
-      "properties": {
-        "subfeaturesSpec": {
-          "description": "List of configurations of the Anthos For VM subfeatures that are to be enabled",
-          "type": "array",
-          "items": {
-            "$ref": "AnthosVMSubFeatureSpec"
-          }
-        }
-      }
-    },
-    "AnthosVMSubFeatureSpec": {
-      "id": "AnthosVMSubFeatureSpec",
-      "description": "AnthosVMSubFeatureSpec contains the subfeature configuration for a membership\/cluster.",
-      "type": "object",
-      "properties": {
-        "serviceMeshSpec": {
-          "description": "ServiceMeshSpec repsents the configuration for Service Mesh subfeature.",
-          "$ref": "ServiceMeshSpec"
-        },
-        "migrateSpec": {
-          "description": "MigrateSpec repsents the configuration for Migrate subfeature.",
-          "$ref": "MigrateSpec"
-        },
-        "enabled": {
-          "description": "Indicates whether the subfeature should be enabled on the cluster or not. If set to true, the subfeature's control plane and resources will be installed in the cluster. If set to false, the oneof spec if present will be ignored and nothing will be installed in the cluster.",
-          "type": "boolean"
-        }
-      }
-    },
-    "ServiceMeshSpec": {
-      "id": "ServiceMeshSpec",
-      "description": "ServiceMeshSpec contains the serviceMesh subfeature configuration.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "MigrateSpec": {
-      "id": "MigrateSpec",
-      "description": "MigrateSpec contains the migrate subfeature configuration.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "RBACRoleBindingActuationMembershipSpec": {
       "id": "RBACRoleBindingActuationMembershipSpec",
       "description": "**RBAC RoleBinding Actuation**: The membership-specific input for RBACRoleBindingActuation feature.",
@@ -1876,7 +1825,6 @@
           "$ref": "AppDevExperienceFeatureState"
         },
         "clusterupgrade": {
-          "description": "TODO(user) Remove clusterupgrade (it's moved to CommongScopeState) Upgrade specific state.",
           "$ref": "ClusterUpgradeFeatureState"
         },
         "rbacrolebindingactuation": {
@@ -2036,14 +1984,14 @@
       "type": "object",
       "properties": {
         "downstreamScopes": {
-          "description": "This scopes whose upstream_scopes contain the current scope. The scope name should be in the form: `projects\/{p}\/locations\/gloobal\/scopes\/{s}` Where {p} is the project, {s} is a valid Scope in this project. {p} WILL match the Feature's project.",
+          "description": "This scopes whose upstream_scopes contain the current scope. The scope name should be in the form: `projects\/{p}\/locations\/global\/scopes\/{s}` Where {p} is the project, {s} is a valid Scope in this project. {p} WILL match the Feature's project.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "ignored": {
-          "description": "A list of memberships ignored by the feature. For example, manually upgraded clusters can be ignored if they are newer than the default versions of its release channel. The membership resource is in the format: `projects\/[project_id]\/locations\/[location]\/membership\/[membership_id]`.",
+          "description": "A list of memberships ignored by the feature. For example, manually upgraded clusters can be ignored if they are newer than the default versions of its release channel. The membership resource is in the format: `projects\/{p}\/locations\/{l}\/membership\/{l}`.",
           "type": "object",
           "additionalProperties": {
             "$ref": "ClusterUpgradeIgnoredMembership"
@@ -2256,10 +2204,6 @@
           "description": "Policycontroller-specific state.",
           "$ref": "PolicyControllerMembershipState"
         },
-        "anthosvm": {
-          "description": "AnthosVM state.",
-          "$ref": "AnthosVMMembershipState"
-        },
         "clusterupgrade": {
           "description": "ClusterUpgrade state.",
           "$ref": "ClusterUpgradeMembershipState"
@@ -2269,6 +2213,7 @@
           "$ref": "RBACRoleBindingActuationMembershipState"
         },
         "fleetobservability": {
+          "description": "Fleet observability membership state.",
           "$ref": "FleetObservabilityMembershipState"
         },
         "state": {
@@ -3244,100 +3189,6 @@
         }
       }
     },
-    "AnthosVMMembershipState": {
-      "id": "AnthosVMMembershipState",
-      "description": "AnthosVMFeatureState contains the state of the AnthosVM feature. It represents the actual state in the cluster, while the AnthosVMMembershipSpec represents the desired state.",
-      "type": "object",
-      "properties": {
-        "localControllerState": {
-          "description": "State of the local PE-controller inside the cluster",
-          "$ref": "LocalControllerState"
-        },
-        "subfeatureState": {
-          "description": "List of AnthosVM subfeature states",
-          "type": "array",
-          "items": {
-            "$ref": "AnthosVMSubFeatureState"
-          }
-        }
-      }
-    },
-    "LocalControllerState": {
-      "id": "LocalControllerState",
-      "description": "LocalControllerState contains the state of the local controller deployed in the cluster.",
-      "type": "object",
-      "properties": {
-        "installationState": {
-          "description": "InstallationState represents the state of deployment of the local PE controller in the cluster.",
-          "type": "string",
-          "enumDescriptions": [
-            "state of installation is unknown",
-            "component is not installed",
-            "component is successfully installed",
-            "installation failed"
-          ],
-          "enum": [
-            "INSTALLATION_STATE_UNSPECIFIED",
-            "INSTALLATION_STATE_NOT_INSTALLED",
-            "INSTALLATION_STATE_INSTALLED",
-            "INSTALLATION_STATE_FAILED"
-          ]
-        },
-        "description": {
-          "description": "Description represents the human readable description of the current state of the local PE controller",
-          "type": "string"
-        }
-      }
-    },
-    "AnthosVMSubFeatureState": {
-      "id": "AnthosVMSubFeatureState",
-      "description": "AnthosVMSubFeatureState contains the state of the AnthosVM subfeatures.",
-      "type": "object",
-      "properties": {
-        "serviceMeshState": {
-          "description": "ServiceMeshState represents the state of the Service Mesh subfeature.",
-          "$ref": "ServiceMeshState"
-        },
-        "migrateState": {
-          "description": "MigrateState represents the state of the Migrate subfeature.",
-          "$ref": "MigrateState"
-        },
-        "installationState": {
-          "description": "InstallationState represents the state of installation of the subfeature in the cluster.",
-          "type": "string",
-          "enumDescriptions": [
-            "state of installation is unknown",
-            "component is not installed",
-            "component is successfully installed",
-            "installation failed"
-          ],
-          "enum": [
-            "INSTALLATION_STATE_UNSPECIFIED",
-            "INSTALLATION_STATE_NOT_INSTALLED",
-            "INSTALLATION_STATE_INSTALLED",
-            "INSTALLATION_STATE_FAILED"
-          ]
-        },
-        "description": {
-          "description": "Description represents human readable description of the subfeature state. If the deployment failed, this should also contain the reason for the failure.",
-          "type": "string"
-        }
-      }
-    },
-    "ServiceMeshState": {
-      "id": "ServiceMeshState",
-      "description": "ServiceMeshState contains the state of Service Mesh subfeature",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "MigrateState": {
-      "id": "MigrateState",
-      "description": "MigrateState contains the state of Migrate subfeature",
-      "type": "object",
-      "properties": {
-      }
-    },
     "ClusterUpgradeMembershipState": {
       "id": "ClusterUpgradeMembershipState",
       "description": "Per-membership state for this feature.",
@@ -3416,6 +3267,10 @@
         "mesh": {
           "description": "Anthos Service Mesh-specific spec",
           "$ref": "ServiceMeshMembershipSpec"
+        },
+        "identityservice": {
+          "description": "Identity Service-specific spec.",
+          "$ref": "IdentityServiceMembershipSpec"
         }
       }
     },
@@ -3427,6 +3282,34 @@
         "clusterupgrade": {
           "description": "Upgrade feature spec.",
           "$ref": "ClusterUpgradeFeatureSpec"
+        },
+        "clusterupgradeNew": {
+          "$ref": "ClusterUpgradeScopeSpec"
+        }
+      }
+    },
+    "ClusterUpgradeScopeSpec": {
+      "id": "ClusterUpgradeScopeSpec",
+      "description": "**ClusterUpgrade**: The configuration for the ClusterUpgrade feature.",
+      "type": "object",
+      "properties": {
+        "upstreamScopes": {
+          "description": "This scope consumes upgrades that have COMPLETE status code in the upstream scopes. See ScopeGKEUpgradeState.Code for code definitions. The scope name should be in the form: `projects\/{p}\/locations\/global\/scopes\/{s}` Where {p} is the project, {s} is a valid Scope in this project. {p} WILL match the Feature's project. This is defined as repeated for future proof reasons. Initial implementation will enforce at most one upstream scope.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "postConditions": {
+          "description": "Post conditions to evaluate to mark an upgrade COMPLETE.",
+          "$ref": "ClusterUpgradePostConditions"
+        },
+        "gkeUpgradeOverrides": {
+          "description": "Allow users to override some properties of each GKE upgrade.",
+          "type": "array",
+          "items": {
+            "$ref": "ClusterUpgradeGKEUpgradeOverride"
+          }
         }
       }
     },
@@ -3439,10 +3322,38 @@
           "description": "Upgrade specific state.",
           "$ref": "ClusterUpgradeFeatureState"
         },
+        "clusterupgradeNew": {
+          "$ref": "ClusterUpgradeScopeState"
+        },
         "state": {
           "description": "Output only. The \"running state\" of the Feature in this Scope.",
           "readOnly": true,
           "$ref": "FeatureState"
+        }
+      }
+    },
+    "ClusterUpgradeScopeState": {
+      "id": "ClusterUpgradeScopeState",
+      "description": "**ClusterUpgrade**: The state for the ClusterUpgrade feature.",
+      "type": "object",
+      "properties": {
+        "downstreamScopes": {
+          "description": "This scopes whose upstream_scopes contain the current scope. The scope name should be in the form: `projects\/{p}\/locations\/gloobal\/scopes\/{s}` Where {p} is the project, {s} is a valid Scope in this project. {p} WILL match the Feature's project.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ignored": {
+          "description": "A list of memberships ignored by the feature. For example, manually upgraded clusters can be ignored if they are newer than the default versions of its release channel. The membership resource is in the format: `projects\/{p}\/locations\/{l}\/membership\/{m}`.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ClusterUpgradeIgnoredMembership"
+          }
+        },
+        "gkeState": {
+          "description": "Feature state for GKE clusters.",
+          "$ref": "ClusterUpgradeGKEUpgradeFeatureState"
         }
       }
     },
@@ -3794,68 +3705,60 @@
         }
       }
     },
-    "GkehubUNDEFINED_outer_messageBinding": {
-      "id": "GkehubUNDEFINED_outer_messageBinding",
-      "description": "Binding is a subresource of a Membership, representing what Fleet Scopes (or other, future Fleet resources) a Membership is bound to.",
+    "Scope": {
+      "id": "Scope",
+      "description": "Scope represents a Scope in a Fleet.",
       "type": "object",
       "properties": {
-        "scope": {
-          "description": "A Workspace resource name in the format `projects\/*\/locations\/*\/workspaces\/*`.",
-          "type": "string"
-        },
-        "fleet": {
-          "description": "Whether the binding is Fleet-wide; true means that this Membership should be bound to all Namespaces in this entire Fleet.",
-          "type": "boolean"
-        },
         "name": {
-          "description": "The resource name for the binding itself `projects\/{project}\/locations\/{location}\/memberships\/{membership}\/bindings\/{bindings}`",
+          "description": "The resource name for the scope `projects\/{project}\/locations\/{location}\/scopes\/{scope}`",
           "type": "string"
         },
         "uid": {
-          "description": "Output only. Google-generated UUID for this resource. This is unique across all binding resources. If a binding resource is deleted and another resource with the same name is created, it gets a different uid.",
+          "description": "Output only. Google-generated UUID for this resource. This is unique across all scope resources. If a scope resource is deleted and another resource with the same name is created, it gets a different uid.",
           "readOnly": true,
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. When the binding was created.",
+          "description": "Output only. When the scope was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. When the binding was last updated.",
+          "description": "Output only. When the scope was last updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "deleteTime": {
-          "description": "Output only. When the binding was deleted.",
+          "description": "Output only. When the scope was deleted.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "state": {
-          "description": "Output only. State of the binding resource.",
+          "description": "Output only. State of the scope resource.",
           "readOnly": true,
-          "$ref": "BindingLifecycleState"
+          "$ref": "ScopeLifecycleState"
         }
       }
     },
-    "BindingLifecycleState": {
-      "id": "BindingLifecycleState",
-      "description": "BindingLifecycleState describes the state of a Binding resource.",
+    "ScopeLifecycleState": {
+      "id": "ScopeLifecycleState",
+      "description": "ScopeLifecycleState describes the state of a Scope resource.",
       "type": "object",
       "properties": {
         "code": {
-          "description": "Output only. The current state of the Binding resource.",
+          "description": "Output only. The current state of the scope resource.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "The code is not set.",
-            "The binding is being created.",
-            "The binding active.",
-            "The binding is being deleted.",
-            "The binding is being updated."
+            "The scope is being created.",
+            "The scope active.",
+            "The scope is being deleted.",
+            "The scope is being updated."
           ],
           "enum": [
             "CODE_UNSPECIFIED",
@@ -3867,20 +3770,129 @@
         }
       }
     },
-    "ListBindingsResponse": {
-      "id": "ListBindingsResponse",
-      "description": "List of Bindings.",
+    "ListScopesResponse": {
+      "id": "ListScopesResponse",
+      "description": "List of Scopes.",
       "type": "object",
       "properties": {
-        "bindings": {
-          "description": "The list of bindings",
+        "scopes": {
+          "description": "The list of Scopes",
           "type": "array",
           "items": {
-            "$ref": "GkehubUNDEFINED_outer_messageBinding"
+            "$ref": "Scope"
           }
         },
         "nextPageToken": {
-          "description": "A token to request the next page of resources from the `ListBindings` method. The value of an empty string means that there are no more resources to return.",
+          "description": "A token to request the next page of resources from the `ListScopes` method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        }
+      }
+    },
+    "ListScopesForMembershipResponse": {
+      "id": "ListScopesForMembershipResponse",
+      "description": "List of paginated scopes for a membership.",
+      "type": "object",
+      "properties": {
+        "scopes": {
+          "description": "The list of scopes",
+          "type": "array",
+          "items": {
+            "$ref": "Scope"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the `ListScopes` method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        }
+      }
+    },
+    "MembershipBinding": {
+      "id": "MembershipBinding",
+      "description": "MembershipBinding is a subresource of a Membership, representing what Fleet Scopes (or other, future Fleet resources) a Membership is bound to.",
+      "type": "object",
+      "properties": {
+        "scope": {
+          "description": "A Workspace resource name in the format `projects\/*\/locations\/*\/scopes\/*`.",
+          "type": "string"
+        },
+        "fleet": {
+          "description": "Whether the membershipbinding is Fleet-wide; true means that this Membership should be bound to all Namespaces in this entire Fleet.",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "The resource name for the membershipbinding itself `projects\/{project}\/locations\/{location}\/memberships\/{membership}\/bindings\/{membershipbinding}`",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. Google-generated UUID for this resource. This is unique across all membershipbinding resources. If a membershipbinding resource is deleted and another resource with the same name is created, it gets a different uid.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. When the membership binding was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. When the membership binding was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deleteTime": {
+          "description": "Output only. When the membership binding was deleted.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. State of the membership binding resource.",
+          "readOnly": true,
+          "$ref": "MembershipBindingLifecycleState"
+        }
+      }
+    },
+    "MembershipBindingLifecycleState": {
+      "id": "MembershipBindingLifecycleState",
+      "description": "MembershipBindingLifecycleState describes the state of a Binding resource.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Output only. The current state of the MembershipBinding resource.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The code is not set.",
+            "The membershipbinding is being created.",
+            "The membershipbinding active.",
+            "The membershipbinding is being deleted.",
+            "The membershipbinding is being updated."
+          ],
+          "enum": [
+            "CODE_UNSPECIFIED",
+            "CREATING",
+            "READY",
+            "DELETING",
+            "UPDATING"
+          ]
+        }
+      }
+    },
+    "ListMembershipBindingsResponse": {
+      "id": "ListMembershipBindingsResponse",
+      "description": "List of MembershipBindings.",
+      "type": "object",
+      "properties": {
+        "membershipBindings": {
+          "description": "The list of membership_bindings",
+          "type": "array",
+          "items": {
+            "$ref": "MembershipBinding"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the `ListMembershipBindings` method. The value of an empty string means that there are no more resources to return.",
           "type": "string"
         }
       }
@@ -5264,6 +5276,42 @@
                   ],
                   "description": "Lists workspaces of a given membership"
                 },
+                "listScopes": {
+                  "id": "gkehub.projects.locations.memberships.listScopes",
+                  "path": "v1alpha/{+parent}:listScopes",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:listScopes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent (project, location, membership) where the Scope will be listed. Specified in the format `projects\/*\/locations\/*\/memberships\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Token returned by previous call to `ListScopes` which specifies the position in the list from where to continue listing the resources.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListScopesForMembershipResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists scopes of a given membership"
+                },
                 "validateCreate": {
                   "id": "gkehub.projects.locations.memberships.validateCreate",
                   "path": "v1alpha/{+parent}/memberships:validateCreate",
@@ -5391,7 +5439,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The eBinding resource name in the format `projects\/*\/locations\/*\/memberships\/*\/bindings\/*`.",
+                          "description": "Required. The MembershipBinding resource name in the format `projects\/*\/locations\/*\/memberships\/*\/bindings\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+\/bindings\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -5402,12 +5450,12 @@
                         "name"
                       ],
                       "response": {
-                        "$ref": "GkehubUNDEFINED_outer_messageBinding"
+                        "$ref": "MembershipBinding"
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Returns the details of a Binding."
+                      "description": "Returns the details of a MembershipBindin."
                     },
                     "create": {
                       "id": "gkehub.projects.locations.memberships.bindings.create",
@@ -5416,14 +5464,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent (project and location) where the Binding will be created. Specified in the format `projects\/*\/locations\/*\/memberships\/*`.",
+                          "description": "Required. The parent (project and location) where the MembershipBinding will be created. Specified in the format `projects\/*\/locations\/*\/memberships\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
-                        "bindingId": {
-                          "description": "Required. The ID to use for the Binding.",
+                        "membershipBindingId": {
+                          "description": "Required. The ID to use for the MembershipBinding.",
                           "location": "query",
                           "type": "string"
                         }
@@ -5432,7 +5480,7 @@
                         "parent"
                       ],
                       "request": {
-                        "$ref": "GkehubUNDEFINED_outer_messageBinding"
+                        "$ref": "MembershipBinding"
                       },
                       "response": {
                         "$ref": "Operation"
@@ -5440,7 +5488,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a Binding."
+                      "description": "Creates a MembershipBinding."
                     },
                     "patch": {
                       "id": "gkehub.projects.locations.memberships.bindings.patch",
@@ -5449,7 +5497,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "The resource name for the binding itself `projects\/{project}\/locations\/{location}\/memberships\/{membership}\/bindings\/{bindings}`",
+                          "description": "The resource name for the membershipbinding itself `projects\/{project}\/locations\/{location}\/memberships\/{membership}\/bindings\/{membershipbinding}`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+\/bindings\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -5466,7 +5514,7 @@
                         "name"
                       ],
                       "request": {
-                        "$ref": "GkehubUNDEFINED_outer_messageBinding"
+                        "$ref": "MembershipBinding"
                       },
                       "response": {
                         "$ref": "Operation"
@@ -5474,7 +5522,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates a Binding."
+                      "description": "Updates a MembershipBinding."
                     },
                     "delete": {
                       "id": "gkehub.projects.locations.memberships.bindings.delete",
@@ -5483,7 +5531,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The Binding resource name in the format `projects\/*\/locations\/*\/memberships\/*\/bindings\/*`.",
+                          "description": "Required. The MembershipBinding resource name in the format `projects\/*\/locations\/*\/memberships\/*\/bindings\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+\/bindings\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -5499,7 +5547,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a Binding."
+                      "description": "Deletes a MembershipBinding."
                     },
                     "list": {
                       "id": "gkehub.projects.locations.memberships.bindings.list",
@@ -5508,7 +5556,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent Membership for which the Bindings will be listed. Specified in the format `projects\/*\/locations\/*\/memberships\/*`.",
+                          "description": "Required. The parent Membership for which the MembershipBindings will be listed. Specified in the format `projects\/*\/locations\/*\/memberships\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -5521,7 +5569,7 @@
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "Optional. Token returned by previous call to `ListBindings` which specifies the position in the list from where to continue listing the resources.",
+                          "description": "Optional. Token returned by previous call to `ListMembershipBindings` which specifies the position in the list from where to continue listing the resources.",
                           "location": "query",
                           "type": "string"
                         }
@@ -5530,12 +5578,12 @@
                         "parent"
                       ],
                       "response": {
-                        "$ref": "ListBindingsResponse"
+                        "$ref": "ListMembershipBindingsResponse"
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists Bindings."
+                      "description": "Lists MembershipBindings."
                     }
                   }
                 },
@@ -6703,6 +6751,199 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Lists workspaces that the caller is permitted to access in IAM"
+                }
+              }
+            },
+            "scopes": {
+              "methods": {
+                "get": {
+                  "id": "gkehub.projects.locations.scopes.get",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The Scope resource name in the format `projects\/*\/locations\/*\/scopes\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/scopes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Scope"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns the details of a Scope."
+                },
+                "create": {
+                  "id": "gkehub.projects.locations.scopes.create",
+                  "path": "v1alpha/{+parent}/scopes",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/scopes",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent (project and location) where the Scope will be created. Specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "scopeId": {
+                      "description": "Required. Client chosen ID for the Scope. `scope_id` must be a ????",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Scope"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a Scope."
+                },
+                "patch": {
+                  "id": "gkehub.projects.locations.scopes.patch",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name for the scope `projects\/{project}\/locations\/{location}\/scopes\/{scope}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/scopes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. The fields to be updated.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Scope"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates a scopes."
+                },
+                "delete": {
+                  "id": "gkehub.projects.locations.scopes.delete",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The Scope resource name in the format `projects\/*\/locations\/*\/scopes\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/scopes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a Scope."
+                },
+                "list": {
+                  "id": "gkehub.projects.locations.scopes.list",
+                  "path": "v1alpha/{+parent}/scopes",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/scopes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent (project and location) where the Scope will be listed. Specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Token returned by previous call to `ListScopes` which specifies the position in the list from where to continue listing the resources.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListScopesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Scopes."
+                },
+                "listPermitted": {
+                  "id": "gkehub.projects.locations.scopes.listPermitted",
+                  "path": "v1alpha/{+parent}/scopes:listPermitted",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/scopes:listPermitted",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent (project and location) where the Scope will be listed. Specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Token returned by previous call to `ListScopes` which specifies the position in the list from where to continue listing the resources.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListScopesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists scopes that the caller is permitted to access in IAM"
                 }
               }
             }

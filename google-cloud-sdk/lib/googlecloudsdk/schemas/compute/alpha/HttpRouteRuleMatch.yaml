@@ -69,6 +69,16 @@ properties:
     type: array
     items:
       $ref: MetadataFilter.yaml
+  pathTemplateMatch:
+    description: |-
+      If specified, the route is a pattern match expression that must
+      match the :path header once the query string is removed. A pattern
+      match allows you to match - The value must be between 1 and 1024
+      characters - The pattern must start with a leading slash ("/") -
+      There may be no more than 5 operators in pattern Precisely one of
+      prefix_match, full_path_match, regex_match or path_template_match
+      must be set.
+    type: string
   prefixMatch:
     description: |-
       For satisfying the matchRule condition, the request's path must

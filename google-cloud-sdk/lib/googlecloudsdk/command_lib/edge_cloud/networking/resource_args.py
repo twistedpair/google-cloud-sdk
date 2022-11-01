@@ -68,6 +68,16 @@ def InterconnectAttributeConfig(name='interconnect'):
       completion_id_field='id')
 
 
+def GetZoneResourceSpec(resource_name='zone'):
+  return concepts.ResourceSpec(
+      'edgenetwork.projects.locations.zones',
+      resource_name=resource_name,
+      zonesId=ZoneAttributeConfig(name=resource_name),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
+
+
 def GetRouterResourceSpec(resource_name='router'):
   return concepts.ResourceSpec(
       'edgenetwork.projects.locations.zones.routers',
@@ -99,6 +109,30 @@ def GetInterconnectResourceSpec(resource_name='interconnect'):
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
+
+
+def AddZoneResourceArg(parser, verb, positional=False):
+  """Add a resource argument for a GDCE router.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to create'.
+    positional: bool, if True, means that the resource is a positional rather
+      than a flag.
+  """
+  if positional:
+    name = 'zone'
+  else:
+    name = '--zone'
+
+  resource_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          name,
+          GetZoneResourceSpec(),
+          'The zone {}.'.format(verb),
+          required=True)
+  ]
+  concept_parsers.ConceptParser(resource_specs).AddToParser(parser)
 
 
 def AddRouterResourceArg(parser, verb, positional=False):

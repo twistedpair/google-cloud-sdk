@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import contextlib
 import itertools
 
 from apitools.base.py import list_pager
@@ -67,32 +66,6 @@ def _YieldFromLocations(locations, project, limit, messages, client):
       yield function
 
 
-@contextlib.contextmanager
-def _OverrideEndpointOverrides(api_name, override):
-  """Context manager to override an API's endpoint overrides for a while.
-
-  Usage:
-    with _OverrideEndpointOverrides(api_name, override):
-      client = apis.GetClientInstance(api_name, api_version)
-
-
-  Args:
-    api_name: str, Name of the API to modify. E.g. "cloudfunctions"
-    override: str, New value for the endpoint.
-
-  Yields:
-    None.
-  """
-  endpoint_property = getattr(properties.VALUES.api_endpoint_overrides,
-                              api_name)
-  old_endpoint = endpoint_property.Get()
-  try:
-    endpoint_property.Set(override)
-    yield
-  finally:
-    endpoint_property.Set(old_endpoint)
-
-
 def Run(args, release_track):
   """List Google Cloud Functions."""
   client = api_util.GetClientInstance(release_track=release_track)
@@ -103,16 +76,19 @@ def Run(args, release_track):
   list_v2_generator = _YieldFromLocations(args.regions, project, limit,
                                           messages, client)
 
-  # Currently GCF v2 exists in staging so users of GCF v2 have in their config
-  # the api_endpoint_overrides of cloudfunctions.
-  # To list GCF v1 resources use _OverrideEndpointOverrides to forcibly
-  # overwrites's the user config's override with the original v1 endpoint.
-  with _OverrideEndpointOverrides('cloudfunctions',
-                                  'https://cloudfunctions.googleapis.com/'):
+  # v1 autopush and staging are the same in routing perspective, they share the
+  # staging-cloudfunctions endpoint. The mixer will route the request to the
+  # corresponding manager instances in autopush and staging.
+  # autopush-cloudfunctions.sandbox.googleapi.com endpoint is not used by v1
+  # at all, the GFE will route the traffic to 2nd Gen frontend even if you
+  # specifed v1.  it's safe to assume when user specified this override,
+  # they are tending to talk to v2 only
+  if api_util.GetCloudFunctionsApiEnv() == api_util.ApiEnv.AUTOPUSH:
+    return list_v2_generator
+  # respect the user overrides for all other cases.
+  else:
     client = api_v1_util.GetApiClientInstance()
     messages = api_v1_util.GetApiMessagesModule()
     list_v1_generator = command.YieldFromLocations(args.regions, project, limit,
                                                    messages, client)
-
-  combined_generator = itertools.chain(list_v2_generator, list_v1_generator)
-  return combined_generator
+    return itertools.chain(list_v2_generator, list_v1_generator)

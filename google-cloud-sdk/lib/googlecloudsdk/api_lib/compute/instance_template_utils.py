@@ -168,8 +168,9 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
   if network_interface_arg:
     for interface in network_interface_arg:
       address = interface.get('address', None)
+      no_address = interface.get('no-address', None)
       # pylint: disable=g-explicit-bool-comparison
-      if address == '':
+      if address == '' or (address is None and no_address is None):
         address = EPHEMERAL_ADDRESS
 
       network_tier = interface.get('network-tier', None)

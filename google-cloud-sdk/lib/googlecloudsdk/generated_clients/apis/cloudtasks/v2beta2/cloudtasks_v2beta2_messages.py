@@ -410,7 +410,7 @@ class Binding(_messages.Message):
 
 
 class BufferTaskRequest(_messages.Message):
-  r"""LINT.IfChange Request message for BufferTask.
+  r"""Request message for BufferTask.
 
   Fields:
     body: Optional. Body of the HTTP request. The body can take any generic
@@ -1372,7 +1372,7 @@ class HttpTarget(_messages.Message):
       HTTP request. This type of authorization can be used for many scenarios,
       including calling Cloud Run, or endpoints where you intend to validate
       the token yourself.
-    uriOverride: Uri override. When specified modifies the execution Uri for
+    uriOverride: Uri override. When specified, modifies the execution Uri for
       all the tasks in the queue.
   """
 
@@ -2401,6 +2401,8 @@ class UriOverride(_messages.Message):
   Enums:
     SchemeValueValuesEnum: Scheme override. When specified, the Uri scheme is
       replaced by the provided value.
+    UriOverrideEnforceModeValueValuesEnum: Uri Override Enforce Mode
+      Determines the Target UriOverride mode.
 
   Fields:
     host: Host override. When specified, the host part of url will be
@@ -2415,6 +2417,8 @@ class UriOverride(_messages.Message):
     query: Uri Query. Will replace the query part of the task uri.
     scheme: Scheme override. When specified, the Uri scheme is replaced by the
       provided value.
+    uriOverrideEnforceMode: Uri Override Enforce Mode Determines the Target
+      UriOverride mode.
   """
 
   class SchemeValueValuesEnum(_messages.Enum):
@@ -2432,11 +2436,27 @@ class UriOverride(_messages.Message):
     HTTP = 1
     HTTPS = 2
 
+  class UriOverrideEnforceModeValueValuesEnum(_messages.Enum):
+    r"""Uri Override Enforce Mode Determines the Target UriOverride mode.
+
+    Values:
+      URI_OVERRIDE_ENFORCE_MODE_UNSPECIFIED: OverrideMode Unspecified.
+        Defaults to ALWAYS.
+      IF_NOT_EXISTS: In the IF_NOT_EXISTS mode, queue-level configuration is
+        only applied where task-level configuration does not exist.
+      ALWAYS: In the ALWAYS mode, queue-level configuration overrides all
+        task-level configuration
+    """
+    URI_OVERRIDE_ENFORCE_MODE_UNSPECIFIED = 0
+    IF_NOT_EXISTS = 1
+    ALWAYS = 2
+
   host = _messages.StringField(1)
   path = _messages.StringField(2)
   port = _messages.IntegerField(3)
   query = _messages.StringField(4)
   scheme = _messages.EnumField('SchemeValueValuesEnum', 5)
+  uriOverrideEnforceMode = _messages.EnumField('UriOverrideEnforceModeValueValuesEnum', 6)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -398,3 +398,12 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
       resource_args=resource_args,
       system_posix_data=system_posix_data,
   )
+
+
+def modifies_full_acl_policy(user_request_args):
+  """Checks if UserRequestArgs has ACL field aside from predefined ACL."""
+  return bool(
+      user_request_args.resource_args and
+      (user_request_args.resource_args.acl_file_path or
+       user_request_args.resource_args.acl_grants_to_add or
+       user_request_args.resource_args.acl_grants_to_remove))

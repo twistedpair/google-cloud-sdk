@@ -764,6 +764,10 @@
         "anthosobservability": {
           "description": "Anthos Observability spec",
           "$ref": "AnthosObservabilityFeatureSpec"
+        },
+        "fleetobservability": {
+          "description": "FleetObservability feature spec.",
+          "$ref": "FleetObservabilityFeatureSpec"
         }
       }
     },
@@ -920,6 +924,13 @@
         }
       }
     },
+    "FleetObservabilityFeatureSpec": {
+      "id": "FleetObservabilityFeatureSpec",
+      "description": "**Fleet Observability**: The Hub-wide input for the FleetObservability feature.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "MembershipFeatureSpec": {
       "id": "MembershipFeatureSpec",
       "description": "MembershipFeatureSpec contains configuration information for a single Membership.",
@@ -953,9 +964,9 @@
           "description": "Policy Controller spec.",
           "$ref": "PolicyControllerMembershipSpec"
         },
-        "anthosvm": {
-          "description": "AnthosVM spec.",
-          "$ref": "AnthosVMMembershipSpec"
+        "fleetobservability": {
+          "description": "Fleet observability membership spec",
+          "$ref": "FleetObservabilityMembershipSpec"
         }
       }
     },
@@ -1508,49 +1519,9 @@
         }
       }
     },
-    "AnthosVMMembershipSpec": {
-      "id": "AnthosVMMembershipSpec",
-      "description": "AnthosVMMembershipSpec contains the AnthosVM feature configuration for a membership\/cluster.",
-      "type": "object",
-      "properties": {
-        "subfeaturesSpec": {
-          "description": "List of configurations of the Anthos For VM subfeatures that are to be enabled",
-          "type": "array",
-          "items": {
-            "$ref": "AnthosVMSubFeatureSpec"
-          }
-        }
-      }
-    },
-    "AnthosVMSubFeatureSpec": {
-      "id": "AnthosVMSubFeatureSpec",
-      "description": "AnthosVMSubFeatureSpec contains the subfeature configuration for a membership\/cluster.",
-      "type": "object",
-      "properties": {
-        "serviceMeshSpec": {
-          "description": "ServiceMeshSpec repsents the configuration for Service Mesh subfeature.",
-          "$ref": "ServiceMeshSpec"
-        },
-        "migrateSpec": {
-          "description": "MigrateSpec repsents the configuration for Migrate subfeature.",
-          "$ref": "MigrateSpec"
-        },
-        "enabled": {
-          "description": "Indicates whether the subfeature should be enabled on the cluster or not. If set to true, the subfeature's control plane and resources will be installed in the cluster. If set to false, the oneof spec if present will be ignored and nothing will be installed in the cluster.",
-          "type": "boolean"
-        }
-      }
-    },
-    "ServiceMeshSpec": {
-      "id": "ServiceMeshSpec",
-      "description": "ServiceMeshSpec contains the serviceMesh subfeature configuration.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "MigrateSpec": {
-      "id": "MigrateSpec",
-      "description": "MigrateSpec contains the migrate subfeature configuration.",
+    "FleetObservabilityMembershipSpec": {
+      "id": "FleetObservabilityMembershipSpec",
+      "description": "**FleetObservability**: The membership-specific input for FleetObservability feature.",
       "type": "object",
       "properties": {
       }
@@ -1567,6 +1538,10 @@
         "appdevexperience": {
           "description": "Appdevexperience specific state.",
           "$ref": "AppDevExperienceFeatureState"
+        },
+        "fleetobservability": {
+          "description": "FleetObservability feature state.",
+          "$ref": "FleetObservabilityFeatureState"
         },
         "state": {
           "description": "Output only. The \"running state\" of the Feature in this Hub.",
@@ -1618,6 +1593,13 @@
           "description": "Description is populated if Code is Failed, explaining why it has failed.",
           "type": "string"
         }
+      }
+    },
+    "FleetObservabilityFeatureState": {
+      "id": "FleetObservabilityFeatureState",
+      "description": "**FleetObservability**: An empty state left as an example Hub-wide Feature state.",
+      "type": "object",
+      "properties": {
       }
     },
     "FeatureState": {
@@ -1685,9 +1667,9 @@
           "description": "Policycontroller-specific state.",
           "$ref": "PolicyControllerMembershipState"
         },
-        "anthosvm": {
-          "description": "AnthosVM state.",
-          "$ref": "AnthosVMMembershipState"
+        "fleetobservability": {
+          "description": "Fleet observability membership state.",
+          "$ref": "FleetObservabilityMembershipState"
         },
         "state": {
           "description": "The high-level state of this Feature for a single membership.",
@@ -2501,96 +2483,9 @@
         }
       }
     },
-    "AnthosVMMembershipState": {
-      "id": "AnthosVMMembershipState",
-      "description": "AnthosVMFeatureState contains the state of the AnthosVM feature. It represents the actual state in the cluster, while the AnthosVMMembershipSpec represents the desired state.",
-      "type": "object",
-      "properties": {
-        "localControllerState": {
-          "description": "State of the local PE-controller inside the cluster",
-          "$ref": "LocalControllerState"
-        },
-        "subfeatureState": {
-          "description": "List of AnthosVM subfeature states",
-          "type": "array",
-          "items": {
-            "$ref": "AnthosVMSubFeatureState"
-          }
-        }
-      }
-    },
-    "LocalControllerState": {
-      "id": "LocalControllerState",
-      "description": "LocalControllerState contains the state of the local controller deployed in the cluster.",
-      "type": "object",
-      "properties": {
-        "installationState": {
-          "description": "InstallationState represents the state of deployment of the local PE controller in the cluster.",
-          "type": "string",
-          "enumDescriptions": [
-            "state of installation is unknown",
-            "component is not installed",
-            "component is successfully installed",
-            "installation failed"
-          ],
-          "enum": [
-            "INSTALLATION_STATE_UNSPECIFIED",
-            "INSTALLATION_STATE_NOT_INSTALLED",
-            "INSTALLATION_STATE_INSTALLED",
-            "INSTALLATION_STATE_FAILED"
-          ]
-        },
-        "description": {
-          "description": "Description represents the human readable description of the current state of the local PE controller",
-          "type": "string"
-        }
-      }
-    },
-    "AnthosVMSubFeatureState": {
-      "id": "AnthosVMSubFeatureState",
-      "description": "AnthosVMSubFeatureState contains the state of the AnthosVM subfeatures.",
-      "type": "object",
-      "properties": {
-        "serviceMeshState": {
-          "description": "ServiceMeshState represents the state of the Service Mesh subfeature.",
-          "$ref": "ServiceMeshState"
-        },
-        "migrateState": {
-          "description": "MigrateState represents the state of the Migrate subfeature.",
-          "$ref": "MigrateState"
-        },
-        "installationState": {
-          "description": "InstallationState represents the state of installation of the subfeature in the cluster.",
-          "type": "string",
-          "enumDescriptions": [
-            "state of installation is unknown",
-            "component is not installed",
-            "component is successfully installed",
-            "installation failed"
-          ],
-          "enum": [
-            "INSTALLATION_STATE_UNSPECIFIED",
-            "INSTALLATION_STATE_NOT_INSTALLED",
-            "INSTALLATION_STATE_INSTALLED",
-            "INSTALLATION_STATE_FAILED"
-          ]
-        },
-        "description": {
-          "description": "Description represents human readable description of the subfeature state. If the deployment failed, this should also contain the reason for the failure.",
-          "type": "string"
-        }
-      }
-    },
-    "ServiceMeshState": {
-      "id": "ServiceMeshState",
-      "description": "ServiceMeshState contains the state of Service Mesh subfeature",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "MigrateState": {
-      "id": "MigrateState",
-      "description": "MigrateState contains the state of Migrate subfeature",
+    "FleetObservabilityMembershipState": {
+      "id": "FleetObservabilityMembershipState",
+      "description": "**FleetObservability**: An empty state left as an example membership-specific Feature state.",
       "type": "object",
       "properties": {
       }

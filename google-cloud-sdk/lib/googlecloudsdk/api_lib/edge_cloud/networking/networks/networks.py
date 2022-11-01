@@ -22,7 +22,7 @@ from googlecloudsdk.api_lib.edge_cloud.networking import utils
 
 
 class NetworksClient(object):
-  """Client for private connections service in the API."""
+  """Client for network resource of GDCE fabric API."""
 
   def __init__(self, client=None, messages=None):
     self._client = client or utils.GetClientInstance()
