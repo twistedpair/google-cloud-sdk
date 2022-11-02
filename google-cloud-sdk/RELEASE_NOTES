@@ -4,6 +4,15 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
+## 408.0.1 (2022-11-02)
+
+### BigQuery
+
+* Adds various fixes to PSC environments.
+* Adds support for random forest models as part of BQML.
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
 
 ## 408.0.0 (2022-11-01)
 
@@ -69,7 +78,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 *   **(Cloud Run)** In `gcloud run deploy` and `gcloud run services update`, `--set-secrets`,
     `--remove-secrets`, and `--update-secrets` flags now support mounting
     multiple versions of the same secret in the same directory.
-*   **(Cloud Run)** 
+*   **(Cloud Run)**
     *   If multiple different secrets are requested to be mounted in the same
         directory, including for secrets already set on the service in the case
         of `--update-secrets`, the operation will now fail instead of silently
