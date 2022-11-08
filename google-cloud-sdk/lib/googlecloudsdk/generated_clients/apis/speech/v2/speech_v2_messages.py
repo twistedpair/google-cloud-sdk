@@ -477,7 +477,7 @@ class ExplicitDecodingConfig(_messages.Message):
       recognition. Supported for the following encodings: * LINEAR16:
       Headerless 16-bit signed little-endian PCM samples. * MULAW: Headerless
       8-bit companded mulaw samples. * ALAW: Headerless 8-bit companded alaw
-      samples.
+      samples. The maximum allowed value is 8.
     encoding: Required. Encoding of the audio data sent for recognition.
     sampleRateHertz: Sample rate in Hertz of the audio data sent for
       recognition. Valid values are: 8000-48000. 16000 is optimal. For best
@@ -721,7 +721,6 @@ class OperationMetadata(_messages.Message):
       Operation.
     undeleteRecognizerRequest: The UndeleteRecognizerRequest that spawned the
       Operation.
-    updateConfigRequest: The UpdateConfigRequest that spawned the Operation.
     updateCustomClassRequest: The UpdateCustomClassRequest that spawned the
       Operation.
     updatePhraseSetRequest: The UpdatePhraseSetRequest that spawned the
@@ -748,11 +747,10 @@ class OperationMetadata(_messages.Message):
   undeleteCustomClassRequest = _messages.MessageField('UndeleteCustomClassRequest', 15)
   undeletePhraseSetRequest = _messages.MessageField('UndeletePhraseSetRequest', 16)
   undeleteRecognizerRequest = _messages.MessageField('UndeleteRecognizerRequest', 17)
-  updateConfigRequest = _messages.MessageField('UpdateConfigRequest', 18)
-  updateCustomClassRequest = _messages.MessageField('UpdateCustomClassRequest', 19)
-  updatePhraseSetRequest = _messages.MessageField('UpdatePhraseSetRequest', 20)
-  updateRecognizerRequest = _messages.MessageField('UpdateRecognizerRequest', 21)
-  updateTime = _messages.StringField(22)
+  updateCustomClassRequest = _messages.MessageField('UpdateCustomClassRequest', 18)
+  updatePhraseSetRequest = _messages.MessageField('UpdatePhraseSetRequest', 19)
+  updateRecognizerRequest = _messages.MessageField('UpdateRecognizerRequest', 20)
+  updateTime = _messages.StringField(21)
 
 
 class Phrase(_messages.Message):
@@ -1104,7 +1102,19 @@ class Recognizer(_messages.Message):
       transcribing audio after the first utterance is detected and completed.
       When using this model, SEPARATE_RECOGNITION_PER_CHANNEL is not
       supported; multi-channel audio is accepted, but only the first channel
-      will be processed and transcribed.
+      will be processed and transcribed. - `telephony` Best for audio that
+      originated from a phone call (typically recorded at an 8khz sampling
+      rate). - `medical_conversation` For conversations between a medical
+      provider-for example, a doctor or nurse-and a patient. Use this model
+      when both a provider and a patient are speaking. Words uttered by each
+      speaker are automatically detected and labeled in the returned
+      transcript. For supported features please see [medical models
+      documentation](https://cloud.google.com/speech-to-text/docs/medical-
+      models). - `medical_dictation` For dictated notes spoken by a single
+      medical provider-for example, a doctor dictating notes about a patient's
+      blood test results. For supported features please see [medical models
+      documentation](https://cloud.google.com/speech-to-text/docs/medical-
+      models).
     name: Output only. The resource name of the Recognizer. Format:
       `projects/{project}/locations/{location}/recognizers/{recognizer}`.
     reconciling: Output only. Whether or not this Recognizer is in the process
@@ -1182,9 +1192,9 @@ class SpeakerDiarizationConfig(_messages.Message):
       the correct number of speakers.
     minSpeakerCount: Required. Minimum number of speakers in the conversation.
       This range gives you more flexibility by allowing the system to
-      automatically determine the correct number of speakers. If not set, the
-      default value is 2. To fix the number of speakers detected in the audio,
-      set `min_speaker_count` = `max_speaker_count`.
+      automatically determine the correct number of speakers. To fix the
+      number of speakers detected in the audio, set `min_speaker_count` =
+      `max_speaker_count`.
   """
 
   maxSpeakerCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1817,20 +1827,6 @@ class UndeleteRecognizerRequest(_messages.Message):
   etag = _messages.StringField(1)
   name = _messages.StringField(2)
   validateOnly = _messages.BooleanField(3)
-
-
-class UpdateConfigRequest(_messages.Message):
-  r"""Request message for the UpdateConfig method.
-
-  Fields:
-    config: Required. The config to update. The config's `name` field is used
-      to identify the config to be updated. The expected format is
-      `projects/{project}/locations/{location}/config`.
-    updateMask: The list of fields to be updated.
-  """
-
-  config = _messages.MessageField('Config', 1)
-  updateMask = _messages.StringField(2)
 
 
 class UpdateCustomClassRequest(_messages.Message):

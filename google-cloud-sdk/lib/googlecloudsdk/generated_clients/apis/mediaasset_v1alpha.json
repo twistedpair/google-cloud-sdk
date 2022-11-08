@@ -587,11 +587,15 @@
           "$ref": "AssetTypeStats"
         },
         "facetConfigs": {
-          "description": "Mapping of facet name to its configuration.",
+          "description": "Mapping of facet name to its configuration. To update facets, use either \"*\" or \"facet_configs\" update mask.",
           "type": "object",
           "additionalProperties": {
             "$ref": "FacetConfig"
           }
+        },
+        "featureConfigs": {
+          "description": "Configuration for IMS features, including languages for speech transcription.",
+          "$ref": "FeatureConfigs"
         }
       }
     },
@@ -769,6 +773,28 @@
           "description": "Maximum number of facet values to return in a facet. Default is 10.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "FeatureConfigs": {
+      "id": "FeatureConfigs",
+      "description": "FeatureConfigs configure different IMS properties.",
+      "type": "object",
+      "properties": {
+        "speechTranscriptionConfig": {
+          "description": "Configure transcription options for speech: keyword.",
+          "$ref": "SpeechTranscriptionConfig"
+        }
+      }
+    },
+    "SpeechTranscriptionConfig": {
+      "id": "SpeechTranscriptionConfig",
+      "description": "Configure transcription options for speech: keyword.",
+      "type": "object",
+      "properties": {
+        "languageCode": {
+          "description": "Language code to use for configuring `speech:` search keyword. If unset, the default language will be English (en-US). This language code will be validated under [BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt). Example: \"en-US\". See [Language Support](https:\/\/cloud.google.com\/speech\/docs\/languages) for a list of the currently supported language codes.",
+          "type": "string"
         }
       }
     },

@@ -99,6 +99,34 @@ class AbortInfo(_messages.Message):
   resourceUri = _messages.StringField(3)
 
 
+class AppEngineVersionEndpoint(_messages.Message):
+  r"""Wrapper for app engine service version attributes.
+
+  Fields:
+    uri: An [App Engine](https://cloud.google.com/appengine) [service
+      version](https://cloud.google.com/appengine/docs/admin-
+      api/reference/rest/v1/apps.services.versions) name.
+  """
+
+  uri = _messages.StringField(1)
+
+
+class AppEngineVersionInfo(_messages.Message):
+  r"""For display only. Metadata associated with an App Engine version.
+
+  Fields:
+    displayName: Name of an App Engine version.
+    environment: App Engine execution environment for a version.
+    runtime: Runtime of the App Engine version.
+    uri: URI of an App Engine version.
+  """
+
+  displayName = _messages.StringField(1)
+  environment = _messages.StringField(2)
+  runtime = _messages.StringField(3)
+  uri = _messages.StringField(4)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -416,13 +444,13 @@ class DeliverInfo(_messages.Message):
       GOOGLE_API: Target is a Google API.
       GKE_MASTER: Target is a Google Kubernetes Engine cluster master.
       CLOUD_SQL_INSTANCE: Target is a Cloud SQL instance.
-      PSC_PUBLISHED_SERVICE: Target is a published service using [Private
+      PSC_PUBLISHED_SERVICE: Target is a published service that uses [Private
         Service Connect](https://cloud.google.com/vpc/docs/configure-private-
         service-connect-services).
-      PSC_GOOGLE_API: Target is all Google APIs using [Private Service
+      PSC_GOOGLE_API: Target is all Google APIs that use [Private Service
         Connect](https://cloud.google.com/vpc/docs/configure-private-service-
         connect-apis).
-      PSC_VPC_SC: Target is VPC-SC using [Private Service
+      PSC_VPC_SC: Target is a VPC-SC that uses [Private Service
         Connect](https://cloud.google.com/vpc/docs/configure-private-service-
         connect-apis).
     """
@@ -484,6 +512,9 @@ class DropInfo(_messages.Message):
         if the IP address is being used in the project.
       FORWARDING_RULE_MISMATCH: Forwarding rule's protocol and ports do not
         match the packet header.
+      FORWARDING_RULE_REGION_MISMATCH: Packet could be dropped because it was
+        sent from a different region to a regional forwarding without global
+        access.
       FORWARDING_RULE_NO_INSTANCES: Forwarding rule does not have backends
         configured.
       FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK: Firewalls block
@@ -517,6 +548,9 @@ class DropInfo(_messages.Message):
       GOOGLE_MANAGED_SERVICE_NO_PEERING: Packet was dropped because there is
         no peering between the originating network and the Google Managed
         Services Network.
+      GKE_PSC_ENDPOINT_MISSING: Packet was dropped because the GKE cluster
+        uses Private Service Connect (PSC), but the PSC endpoint is not found
+        in the project.
       CLOUD_SQL_INSTANCE_NO_IP_ADDRESS: Packet was dropped because the Cloud
         SQL instance has neither a private nor a public IP address.
       GKE_CONTROL_PLANE_REGION_MISMATCH: Packet was dropped because a GKE
@@ -541,11 +575,8 @@ class DropInfo(_messages.Message):
         is set.
       VPC_CONNECTOR_NOT_RUNNING: Packet could be dropped because the VPC
         connector is not in a running state.
-      FORWARDING_RULE_REGION_MISMATCH: Packet could be dropped because it was
-        sent from a different region to a regional forwarding without global
-        access.
-      PSC_CONNECTION_NOT_ACCEPTED: Privte Service Connect (PSC) connection is
-        not in accepted state.
+      PSC_CONNECTION_NOT_ACCEPTED: The Private Service Connect endpoint is in
+        a project that is not approved to connect to the service.
       CLOUD_RUN_REVISION_NOT_READY: Packet sent from a Cloud Run revision that
         is not ready.
     """
@@ -561,30 +592,31 @@ class DropInfo(_messages.Message):
     NO_EXTERNAL_ADDRESS = 9
     UNKNOWN_INTERNAL_ADDRESS = 10
     FORWARDING_RULE_MISMATCH = 11
-    FORWARDING_RULE_NO_INSTANCES = 12
-    FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK = 13
-    INSTANCE_NOT_RUNNING = 14
-    GKE_CLUSTER_NOT_RUNNING = 15
-    CLOUD_SQL_INSTANCE_NOT_RUNNING = 16
-    TRAFFIC_TYPE_BLOCKED = 17
-    GKE_MASTER_UNAUTHORIZED_ACCESS = 18
-    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 19
-    DROPPED_INSIDE_GKE_SERVICE = 20
-    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 21
-    GOOGLE_MANAGED_SERVICE_NO_PEERING = 22
-    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 23
-    GKE_CONTROL_PLANE_REGION_MISMATCH = 24
-    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 25
-    GKE_CONTROL_PLANE_NO_ROUTE = 26
-    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 27
-    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 28
-    CLOUD_SQL_INSTANCE_NO_ROUTE = 29
-    CLOUD_FUNCTION_NOT_ACTIVE = 30
-    VPC_CONNECTOR_NOT_SET = 31
-    VPC_CONNECTOR_NOT_RUNNING = 32
-    FORWARDING_RULE_REGION_MISMATCH = 33
-    PSC_CONNECTION_NOT_ACCEPTED = 34
-    CLOUD_RUN_REVISION_NOT_READY = 35
+    FORWARDING_RULE_REGION_MISMATCH = 12
+    FORWARDING_RULE_NO_INSTANCES = 13
+    FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK = 14
+    INSTANCE_NOT_RUNNING = 15
+    GKE_CLUSTER_NOT_RUNNING = 16
+    CLOUD_SQL_INSTANCE_NOT_RUNNING = 17
+    TRAFFIC_TYPE_BLOCKED = 18
+    GKE_MASTER_UNAUTHORIZED_ACCESS = 19
+    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 20
+    DROPPED_INSIDE_GKE_SERVICE = 21
+    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 22
+    GOOGLE_MANAGED_SERVICE_NO_PEERING = 23
+    GKE_PSC_ENDPOINT_MISSING = 24
+    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 25
+    GKE_CONTROL_PLANE_REGION_MISMATCH = 26
+    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 27
+    GKE_CONTROL_PLANE_NO_ROUTE = 28
+    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 29
+    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 30
+    CLOUD_SQL_INSTANCE_NO_ROUTE = 31
+    CLOUD_FUNCTION_NOT_ACTIVE = 32
+    VPC_CONNECTOR_NOT_SET = 33
+    VPC_CONNECTOR_NOT_RUNNING = 34
+    PSC_CONNECTION_NOT_ACCEPTED = 35
+    CLOUD_RUN_REVISION_NOT_READY = 36
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)
@@ -619,6 +651,9 @@ class Endpoint(_messages.Message):
       can be inferred from the source.
 
   Fields:
+    appEngineVersion: An [App Engine](https://cloud.google.com/appengine)
+      [service version](https://cloud.google.com/appengine/docs/admin-
+      api/reference/rest/v1/apps.services.versions).
     cloudFunction: A [Cloud Function](https://cloud.google.com/functions).
     cloudRunRevision: A [Cloud Run](https://cloud.google.com/run) [revision](h
       ttps://cloud.google.com/run/docs/reference/rest/v1/namespaces.revisions/
@@ -666,16 +701,17 @@ class Endpoint(_messages.Message):
     GCP_NETWORK = 1
     NON_GCP_NETWORK = 2
 
-  cloudFunction = _messages.MessageField('CloudFunctionEndpoint', 1)
-  cloudRunRevision = _messages.MessageField('CloudRunRevisionEndpoint', 2)
-  cloudSqlInstance = _messages.StringField(3)
-  gkeMasterCluster = _messages.StringField(4)
-  instance = _messages.StringField(5)
-  ipAddress = _messages.StringField(6)
-  network = _messages.StringField(7)
-  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 8)
-  port = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  projectId = _messages.StringField(10)
+  appEngineVersion = _messages.MessageField('AppEngineVersionEndpoint', 1)
+  cloudFunction = _messages.MessageField('CloudFunctionEndpoint', 2)
+  cloudRunRevision = _messages.MessageField('CloudRunRevisionEndpoint', 3)
+  cloudSqlInstance = _messages.StringField(4)
+  gkeMasterCluster = _messages.StringField(5)
+  instance = _messages.StringField(6)
+  ipAddress = _messages.StringField(7)
+  network = _messages.StringField(8)
+  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 9)
+  port = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(11)
 
 
 class EndpointInfo(_messages.Message):
@@ -2008,6 +2044,7 @@ class Step(_messages.Message):
 
   Fields:
     abort: Display information of the final state "abort" and reason.
+    appEngineVersion: Display information of an App Engine service version.
     causesDrop: This is a step that leads to the final state Drop.
     cloudFunction: Display information of a Cloud Function.
     cloudRunRevision: Display information of a Cloud Run revision.
@@ -2060,6 +2097,9 @@ class Step(_messages.Message):
       START_FROM_CLOUD_FUNCTION: Initial state: packet originating from a
         Cloud Function. A CloudFunctionInfo is populated with starting
         function information.
+      START_FROM_APP_ENGINE_VERSION: Initial state: packet originating from an
+        App Engine service version. An AppEngineVersionInfo is populated with
+        starting version information.
       START_FROM_CLOUD_RUN_REVISION: Initial state: packet originating from a
         Cloud Run revision. A CloudRunRevisionInfo is populated with starting
         revision information.
@@ -2099,48 +2139,50 @@ class Step(_messages.Message):
     START_FROM_GKE_MASTER = 4
     START_FROM_CLOUD_SQL_INSTANCE = 5
     START_FROM_CLOUD_FUNCTION = 6
-    START_FROM_CLOUD_RUN_REVISION = 7
-    APPLY_INGRESS_FIREWALL_RULE = 8
-    APPLY_EGRESS_FIREWALL_RULE = 9
-    APPLY_ROUTE = 10
-    APPLY_FORWARDING_RULE = 11
-    SPOOFING_APPROVED = 12
-    ARRIVE_AT_INSTANCE = 13
-    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 14
-    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 15
-    ARRIVE_AT_VPN_GATEWAY = 16
-    ARRIVE_AT_VPN_TUNNEL = 17
-    ARRIVE_AT_VPC_CONNECTOR = 18
-    NAT = 19
-    PROXY_CONNECTION = 20
-    DELIVER = 21
-    DROP = 22
-    FORWARD = 23
-    ABORT = 24
-    VIEWER_PERMISSION_MISSING = 25
+    START_FROM_APP_ENGINE_VERSION = 7
+    START_FROM_CLOUD_RUN_REVISION = 8
+    APPLY_INGRESS_FIREWALL_RULE = 9
+    APPLY_EGRESS_FIREWALL_RULE = 10
+    APPLY_ROUTE = 11
+    APPLY_FORWARDING_RULE = 12
+    SPOOFING_APPROVED = 13
+    ARRIVE_AT_INSTANCE = 14
+    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 15
+    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 16
+    ARRIVE_AT_VPN_GATEWAY = 17
+    ARRIVE_AT_VPN_TUNNEL = 18
+    ARRIVE_AT_VPC_CONNECTOR = 19
+    NAT = 20
+    PROXY_CONNECTION = 21
+    DELIVER = 22
+    DROP = 23
+    FORWARD = 24
+    ABORT = 25
+    VIEWER_PERMISSION_MISSING = 26
 
   abort = _messages.MessageField('AbortInfo', 1)
-  causesDrop = _messages.BooleanField(2)
-  cloudFunction = _messages.MessageField('CloudFunctionInfo', 3)
-  cloudRunRevision = _messages.MessageField('CloudRunRevisionInfo', 4)
-  cloudSqlInstance = _messages.MessageField('CloudSQLInstanceInfo', 5)
-  deliver = _messages.MessageField('DeliverInfo', 6)
-  description = _messages.StringField(7)
-  drop = _messages.MessageField('DropInfo', 8)
-  endpoint = _messages.MessageField('EndpointInfo', 9)
-  firewall = _messages.MessageField('FirewallInfo', 10)
-  forward = _messages.MessageField('ForwardInfo', 11)
-  forwardingRule = _messages.MessageField('ForwardingRuleInfo', 12)
-  gkeMaster = _messages.MessageField('GKEMasterInfo', 13)
-  instance = _messages.MessageField('InstanceInfo', 14)
-  loadBalancer = _messages.MessageField('LoadBalancerInfo', 15)
-  network = _messages.MessageField('NetworkInfo', 16)
-  projectId = _messages.StringField(17)
-  route = _messages.MessageField('RouteInfo', 18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  vpcConnector = _messages.MessageField('VpcConnectorInfo', 20)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 21)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 22)
+  appEngineVersion = _messages.MessageField('AppEngineVersionInfo', 2)
+  causesDrop = _messages.BooleanField(3)
+  cloudFunction = _messages.MessageField('CloudFunctionInfo', 4)
+  cloudRunRevision = _messages.MessageField('CloudRunRevisionInfo', 5)
+  cloudSqlInstance = _messages.MessageField('CloudSQLInstanceInfo', 6)
+  deliver = _messages.MessageField('DeliverInfo', 7)
+  description = _messages.StringField(8)
+  drop = _messages.MessageField('DropInfo', 9)
+  endpoint = _messages.MessageField('EndpointInfo', 10)
+  firewall = _messages.MessageField('FirewallInfo', 11)
+  forward = _messages.MessageField('ForwardInfo', 12)
+  forwardingRule = _messages.MessageField('ForwardingRuleInfo', 13)
+  gkeMaster = _messages.MessageField('GKEMasterInfo', 14)
+  instance = _messages.MessageField('InstanceInfo', 15)
+  loadBalancer = _messages.MessageField('LoadBalancerInfo', 16)
+  network = _messages.MessageField('NetworkInfo', 17)
+  projectId = _messages.StringField(18)
+  route = _messages.MessageField('RouteInfo', 19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 21)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 22)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 23)
 
 
 class TestIamPermissionsRequest(_messages.Message):

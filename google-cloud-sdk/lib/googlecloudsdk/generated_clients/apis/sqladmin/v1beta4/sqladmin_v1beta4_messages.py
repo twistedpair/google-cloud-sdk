@@ -1020,13 +1020,13 @@ class ExportContext(_messages.Message):
     FileTypeValueValuesEnum: The file type for the specified uri.
 
   Messages:
-    BakExportOptionsValue: A BakExportOptionsValue object.
+    BakExportOptionsValue: Options for exporting BAK files (SQL Server-only)
     CsvExportOptionsValue: Options for exporting data as CSV. `MySQL` and
       `PostgreSQL` instances only.
     SqlExportOptionsValue: Options for exporting data as SQL statements.
 
   Fields:
-    bakExportOptions: A BakExportOptionsValue attribute.
+    bakExportOptions: Options for exporting BAK files (SQL Server-only)
     csvExportOptions: Options for exporting data as CSV. `MySQL` and
       `PostgreSQL` instances only.
     databases: Databases to be exported. `MySQL instances:` If `fileType` is
@@ -1065,11 +1065,13 @@ class ExportContext(_messages.Message):
     BAK = 3
 
   class BakExportOptionsValue(_messages.Message):
-    r"""A BakExportOptionsValue object.
+    r"""Options for exporting BAK files (SQL Server-only)
 
     Fields:
-      stripeCount: A integer attribute.
-      striped: A boolean attribute.
+      stripeCount: Option for specifying how many stripes to use for the
+        export. If blank, and the value of the striped field is true, the
+        number of stripes is automatically chosen.
+      striped: Whether or not the export should be striped.
     """
 
     stripeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1390,7 +1392,8 @@ class ImportContext(_messages.Message):
 
     Fields:
       encryptionOptions: A EncryptionOptionsValue attribute.
-      striped: A boolean attribute.
+      striped: Whether or not the backup set being restored is striped.
+        Applies only to Cloud SQL for SQL Server.
     """
 
     class EncryptionOptionsValue(_messages.Message):
@@ -3437,15 +3440,16 @@ class SqlUsersGetRequest(_messages.Message):
   r"""A SqlUsersGetRequest object.
 
   Fields:
+    host: Host of a user of the instance.
     instance: Database instance ID. This does not include the project ID.
-    name: User of the instance. If the database user has a host, this is
-      specified as {username}@{host} else as {username}.
+    name: User of the instance.
     project: Project ID of the project that contains the instance.
   """
 
-  instance = _messages.StringField(1, required=True)
-  name = _messages.StringField(2, required=True)
-  project = _messages.StringField(3, required=True)
+  host = _messages.StringField(1)
+  instance = _messages.StringField(2, required=True)
+  name = _messages.StringField(3, required=True)
+  project = _messages.StringField(4, required=True)
 
 
 class SqlUsersListRequest(_messages.Message):

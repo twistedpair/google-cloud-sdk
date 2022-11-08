@@ -211,6 +211,11 @@
           "items": {
             "$ref": "Endpoint"
           }
+        },
+        "uid": {
+          "description": "Output only. The globally unique identifier of the service in the UUID4 format.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -242,6 +247,11 @@
         "network": {
           "description": "Immutable. The Google Compute Engine network (VPC) of the endpoint in the format `projects\/\/locations\/global\/networks\/*`. The project must be specified by project number (project id is rejected). Incorrectly formatted networks are rejected, we also check to make sure that you have the servicedirectory.networks.attach permission on the project specified.",
           "type": "string"
+        },
+        "uid": {
+          "description": "Output only. The globally unique identifier of the endpoint in the UUID4 format.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -260,6 +270,11 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "uid": {
+          "description": "Output only. The globally unique identifier of the namespace in the UUID4 format.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },

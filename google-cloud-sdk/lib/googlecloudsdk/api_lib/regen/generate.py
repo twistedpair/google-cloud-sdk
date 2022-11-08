@@ -53,7 +53,7 @@ class NoDefaultApiError(Exception):
   """Multiple apis versions are specified but no default is set."""
 
 
-class WrongDiscoveryDoc(Exception):
+class WrongDiscoveryDocError(Exception):
   """Unexpected discovery doc."""
 
 
@@ -111,10 +111,28 @@ def _MakeApitoolsClientDef(root_package, api_name, api_version):
         _CamelCase(api_name) + _CamelCase(api_version)])
 
   messages_modulepath = '_'.join([api_name, api_version, 'messages'])
-  return api_def.ApitoolsClientDef(
+  base_url = ''
+  client_full_classpath = class_path + '.' + client_classpath
+  try:
+    client_classpath_def = _GetClientClassFromDef(client_full_classpath)
+    base_url = client_classpath_def.BASE_URL
+  except Exception:   # pylint: disable=broad-except
+    # unreleased api or test not in "googlecloudsdk.generated_clients.apis"
+    pass
+
+  apitools_def = api_def.ApitoolsClientDef(
       class_path=class_path,
       client_classpath=client_classpath,
-      messages_modulepath=messages_modulepath)
+      messages_modulepath=messages_modulepath,
+      base_url=base_url)
+  return apitools_def
+
+
+def _GetClientClassFromDef(client_full_classpath):
+  """Returns the client class for the API definition specified in the args."""
+  module_path, client_class_name = client_full_classpath.rsplit('.', 1)
+  module_obj = __import__(module_path, fromlist=[client_class_name])
+  return getattr(module_obj, client_class_name)
 
 
 def _MakeGapicClientDef(root_package, api_name, api_version):
@@ -212,7 +230,7 @@ def GenerateResourceModule(base_dir, root_dir, api_name, api_version,
       discovery_doc_path: str, file path to discovery doc.
       custom_resources: dict, dictionary of custom resource collections.
   Raises:
-    WrongDiscoveryDoc: if discovery doc api name/version does not match.
+    WrongDiscoveryDocError: if discovery doc api name/version does not match.
   """
 
   discovery_doc = resource_generator.DiscoveryDoc.FromJson(
@@ -222,8 +240,8 @@ def GenerateResourceModule(base_dir, root_dir, api_name, api_version,
                     'this client will be accessible via new alias.',
                     discovery_doc.api_version, api_version)
   if discovery_doc.api_name != api_name:
-    raise WrongDiscoveryDoc('api name {0}, expected {1}'
-                            .format(discovery_doc.api_name, api_name))
+    raise WrongDiscoveryDocError('api name {0}, expected {1}'.format(
+        discovery_doc.api_name, api_name))
   resource_collections = discovery_doc.GetResourceCollections(
       custom_resources, api_version)
   if custom_resources:

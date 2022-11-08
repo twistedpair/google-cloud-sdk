@@ -47,12 +47,14 @@ class AcceleratorType(_messages.Message):
   r"""A accelerator type that a Node can be configured with.
 
   Fields:
+    acceleratorConfigs: The accelerator config.
     name: The resource name.
-    type: the accelerator type.
+    type: The accelerator type.
   """
 
-  name = _messages.StringField(1)
-  type = _messages.StringField(2)
+  acceleratorConfigs = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
+  name = _messages.StringField(2)
+  type = _messages.StringField(3)
 
 
 class AcceptedData(_messages.Message):
@@ -409,26 +411,6 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
-class MultiNodeParams(_messages.Message):
-  r"""Parameters to specify for multi-node QueuedResource requests. This field
-  must be populated in case of multi-node requests instead of node_id. It's an
-  error to specify both node_id and multi_node_params.
-
-  Fields:
-    nodeCount: Required. Number of nodes with this spec. The system will
-      attempt to provison "node_count" nodes as part of the request. This
-      needs to be > 1.
-    nodeIdPrefix: Prefix of node_ids in case of multi-node request Should
-      follow the ^[A-Za-z0-9_.~+%-]+$ regex format. If node_count = 3 and
-      node_id_prefix = "np", node ids of nodes created will be "np-0", "np-1",
-      "np-2". If this field is not provided we use queued_resource_id as the
-      node_id_prefix.
-  """
-
-  nodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  nodeIdPrefix = _messages.StringField(2)
-
-
 class NetworkConfig(_messages.Message):
   r"""Network related configurations.
 
@@ -675,7 +657,6 @@ class NodeSpec(_messages.Message):
   node(s) to be created.
 
   Fields:
-    multiNodeParams: Fields to specify in case of multi-node request.
     node: Required. The node.
     nodeId: The unqualified resource name. Should follow the
       ^[A-Za-z0-9_.~+%-]+$ regex format. This is only specified when
@@ -685,10 +666,9 @@ class NodeSpec(_messages.Message):
     parent: Required. The parent resource name.
   """
 
-  multiNodeParams = _messages.MessageField('MultiNodeParams', 1)
-  node = _messages.MessageField('Node', 2)
-  nodeId = _messages.StringField(3)
-  parent = _messages.StringField(4)
+  node = _messages.MessageField('Node', 1)
+  nodeId = _messages.StringField(2)
+  parent = _messages.StringField(3)
 
 
 class Operation(_messages.Message):

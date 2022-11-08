@@ -999,9 +999,9 @@ class Trigger(_messages.Message):
       the client has an up-to-date value before proceeding.
     labels: Optional. User labels attached to the triggers that can be used to
       group resources.
-    matchingCriteria: Required. null The criteria by which events are
-      filtered. Only events that match with this criteria will be sent to the
-      destination.
+    matchingCriteria: Required. Unordered list. The criteria by which events
+      are filtered. Only events that match with this criteria will be sent to
+      the destination.
     name: Required. The resource name of the trigger. Must be unique within
       the location on the project and must in
       `projects/{project}/locations/{location}/triggers/{trigger}` format.

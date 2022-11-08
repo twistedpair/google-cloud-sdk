@@ -60,18 +60,26 @@ class FeatureCommand(hub_base.HubCommand):
     """The Feature info entry for this command's Feature."""
     return info.Get(self.feature_name)
 
-  def FeatureResourceName(self):
-    """Builds the full resource name, using the core project property."""
-    return super(FeatureCommand, self).FeatureResourceName(self.feature_name)
+  def FeatureResourceName(self, project=None):
+    """Builds the full resource name, using the core project property if no project is specified."""
+    return super(FeatureCommand,
+                 self).FeatureResourceName(self.feature_name, project)
 
-  def FeatureNotEnabledError(self):
+  def FeatureNotEnabledError(self, project=None):
     """Constructs a new Error for reporting when this Feature is not enabled."""
-    project = properties.VALUES.core.project.GetOrFail()
+    project = project or properties.VALUES.core.project.GetOrFail()
     return exceptions.Error('{} Feature for project [{}] is not enabled'.format(
         self.feature.display_name, project))
 
+  def NotAuthorizedError(self, project=None):
+    """Constructs a new Error for reporting when accessing this Feature is not authorized."""
+    project = project or properties.VALUES.core.project.GetOrFail()
+    return exceptions.Error(
+        'Not authorized to access {} Feature for project [{}]'.format(
+            self.feature.display_name, project))
+
   # TODO(b/181242245): Remove v1alpha1 once all remaining features use v1alpha+.
-  def GetFeature(self, v1alpha1=False):
+  def GetFeature(self, project=None, v1alpha1=False):
     """Fetch this command's Feature from the API, handling common errors."""
     try:
       if v1alpha1:
@@ -79,9 +87,11 @@ class FeatureCommand(hub_base.HubCommand):
             self.v1alpha1_messages
             .GkehubProjectsLocationsGlobalFeaturesGetRequest(
                 name=self.FeatureResourceName()))
-      return self.hubclient.GetFeature(self.FeatureResourceName())
+      return self.hubclient.GetFeature(self.FeatureResourceName(project))
     except apitools_exceptions.HttpNotFoundError:
-      raise self.FeatureNotEnabledError()
+      raise self.FeatureNotEnabledError(project)
+    except apitools_exceptions.HttpUnauthorizedError:
+      raise self.NotAuthorizedError(project)
 
 
 class EnableCommand(FeatureCommand, calliope_base.CreateCommand):
@@ -345,8 +355,8 @@ def ParseMembershipsPlural(args,
   raise MembershipRequiredError(args)
 
 
-# This should not be used in the future and will be deleted
-# once all features support regional memberships
+# This should not be used in the future and only exists to support deprecated
+# commands until they are deleted
 def ListMemberships():
   """Lists Membership IDs in the fleet for the current project.
 

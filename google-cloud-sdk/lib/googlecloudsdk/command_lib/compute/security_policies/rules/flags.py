@@ -328,7 +328,10 @@ def AddRateLimitOptions(parser,
         action when the redirect type is ``external-302''.
         """)
 
-  enforce_on_key = ['ip', 'all', 'http-header', 'xff-ip', 'http-cookie']
+  enforce_on_key = [
+      'ip', 'all', 'http-header', 'xff-ip', 'http-cookie', 'http-path', 'sni',
+      'region-code'
+  ]
   parser.add_argument(
       '--enforce-on-key',
       choices=enforce_on_key,
@@ -343,6 +346,11 @@ def AddRateLimitOptions(parser,
                     header as the key
       - ``http-cookie'': key type takes the value of the HTTP cookie configured
                          in enforce-on-key-name as the key value
+      - ``http-path'': key type takes the value of the URL path in the request
+      - ``sni'': key type takes the value of the server name indication from the
+                  TLS session of the HTTPS request
+      - ``region-code'': key type takes the value of the region code from which
+                         the request originates
       """)
 
   parser.add_argument(

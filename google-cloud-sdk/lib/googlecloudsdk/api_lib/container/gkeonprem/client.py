@@ -53,6 +53,13 @@ class ClientBase(object):
       return args.CONCEPTS.location.Parse()
     return None
 
+  def _location_name(self, args):
+    """Parses location from args and returns its name."""
+    location_ref = self._location_ref(args)
+    if location_ref:
+      return location_ref.RelativeName()
+    return None
+
   def _user_cluster_name(self, args):
     """Parses user cluster from args and returns its name."""
     user_cluster_ref = self._user_cluster_ref(args)

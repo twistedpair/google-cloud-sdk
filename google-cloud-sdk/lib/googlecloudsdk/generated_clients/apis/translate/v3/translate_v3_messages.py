@@ -1209,6 +1209,9 @@ class TranslateDocumentRequest(_messages.Message):
     glossaryConfig: Optional. Glossary to be applied. The glossary must be
       within the same region (have the same location-id) as the model,
       otherwise an INVALID_ARGUMENT (400) error is returned.
+    isTranslateNativePdfOnly: Optional. is_translate_native_pdf_only field for
+      external customers. If true, the page limit of online native pdf
+      translation is 300 and only native pdf pages will be translated.
     labels: Optional. The labels with user-defined metadata for the request.
       Label keys and values can be no longer than 63 characters (Unicode
       codepoints), can only contain lowercase letters, numeric characters,
@@ -1268,10 +1271,11 @@ class TranslateDocumentRequest(_messages.Message):
   documentInputConfig = _messages.MessageField('DocumentInputConfig', 2)
   documentOutputConfig = _messages.MessageField('DocumentOutputConfig', 3)
   glossaryConfig = _messages.MessageField('TranslateTextGlossaryConfig', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  model = _messages.StringField(6)
-  sourceLanguageCode = _messages.StringField(7)
-  targetLanguageCode = _messages.StringField(8)
+  isTranslateNativePdfOnly = _messages.BooleanField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  model = _messages.StringField(7)
+  sourceLanguageCode = _messages.StringField(8)
+  targetLanguageCode = _messages.StringField(9)
 
 
 class TranslateDocumentResponse(_messages.Message):

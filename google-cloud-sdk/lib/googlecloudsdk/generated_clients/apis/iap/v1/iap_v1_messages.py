@@ -837,10 +837,12 @@ class ReauthSettings(_messages.Message):
       METHOD_UNSPECIFIED: Reauthentication disabled.
       LOGIN: Prompts the user to log in again.
       SECURE_KEY: User must use their secure key 2nd factor device.
+      ENROLLED_SECOND_FACTORS: User can use any enabled 2nd factor.
     """
     METHOD_UNSPECIFIED = 0
     LOGIN = 1
     SECURE_KEY = 2
+    ENROLLED_SECOND_FACTORS = 3
 
   class PolicyTypeValueValuesEnum(_messages.Enum):
     r"""How IAP determines the effective policy in cases of hierarchial
@@ -1066,8 +1068,8 @@ class TunnelDestGroup(_messages.Message):
   r"""A TunnelDestGroup.
 
   Fields:
-    cidrs: null List of CIDRs that this group applies to.
-    fqdns: null List of FQDNs that this group applies to.
+    cidrs: Unordered list. List of CIDRs that this group applies to.
+    fqdns: Unordered list. List of FQDNs that this group applies to.
     name: Required. Immutable. Identifier for the TunnelDestGroup. Must be
       unique within the project and contain only lower case letters (a-z) and
       dashes (-).

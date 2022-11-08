@@ -1280,6 +1280,8 @@ class Instance(_messages.Message):
       SUSPENDED: The instance is suspended. You can get further details from
         the `suspension_reasons` field of the `Instance` resource.
       REVERTING: The instance is reverting to a snapshot.
+      SUSPENDING: The instance is in the process of becoming suspended.
+      RESUMING: The instance is in the process of becoming active.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1290,6 +1292,8 @@ class Instance(_messages.Message):
     RESTORING = 6
     SUSPENDED = 7
     REVERTING = 8
+    SUSPENDING = 9
+    RESUMING = 10
 
   class SuspensionReasonsValueListEntryValuesEnum(_messages.Enum):
     r"""SuspensionReasonsValueListEntryValuesEnum enum type.

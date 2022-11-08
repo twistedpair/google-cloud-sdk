@@ -493,6 +493,32 @@ class DatastoreV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RunAggregationQuery(self, request, global_params=None):
+      r"""Runs an aggregation query.
+
+      Args:
+        request: (DatastoreProjectsRunAggregationQueryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RunAggregationQueryResponse) The response message.
+      """
+      config = self.GetMethodConfig('RunAggregationQuery')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RunAggregationQuery.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='datastore.projects.runAggregationQuery',
+        ordered_params=['projectId'],
+        path_params=['projectId'],
+        query_params=[],
+        relative_path='v1/projects/{projectId}:runAggregationQuery',
+        request_field='runAggregationQueryRequest',
+        request_type_name='DatastoreProjectsRunAggregationQueryRequest',
+        response_type_name='RunAggregationQueryResponse',
+        supports_download=False,
+    )
+
     def RunQuery(self, request, global_params=None):
       r"""Queries for entities.
 

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.iam import iam_util
 
 
 class BackendService(object):
@@ -168,3 +169,52 @@ class BackendService(object):
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
     return requests
+
+  def GetIamPolicy(self):
+    """Get the IAM policy for a Compute Engine backend service."""
+    if self.ref.Collection() == 'compute.backendServices':
+      service = self._compute_client.apitools_client.backendServices
+      request = self._compute_client.messages.ComputeBackendServicesGetIamPolicyRequest(
+          resource=self.ref.Name(), project=self.ref.project)
+    elif self.ref.Collection() == 'compute.regionBackendServices':
+      service = self._compute_client.apitools_client.regionBackendServices
+      request = self._compute_client.messages.ComputeRegionBackendServicesGetIamPolicyRequest(
+          resource=self.ref.Name(),
+          region=self.ref.region,
+          project=self.ref.project)
+    return self._compute_client.MakeRequests([(service, 'GetIamPolicy', request)
+                                             ])[0]
+
+  def SetIamPolicy(self, policy):
+    """Set the IAM policy binding for a Compute Engine backend service."""
+    if self.ref.Collection() == 'compute.backendServices':
+      service = self._compute_client.apitools_client.backendServices
+      request = self._compute_client.messages.ComputeBackendServicesSetIamPolicyRequest(
+          resource=self.ref.Name(),
+          project=self.ref.project,
+          globalSetPolicyRequest=self._compute_client.messages
+          .GlobalSetPolicyRequest(policy=policy))
+    elif self.ref.Collection() == 'compute.regionBackendServices':
+      service = self._compute_client.apitools_client.regionBackendServices
+      request = self._compute_client.messages.ComputeRegionBackendServicesSetIamPolicyRequest(
+          resource=self.ref.Name(),
+          region=self.ref.region,
+          project=self.ref.project,
+          regionSetPolicyRequest=self._compute_client.messages
+          .RegionSetPolicyRequest(policy=policy))
+    result = self._compute_client.MakeRequests([(service, 'SetIamPolicy',
+                                                 request)])[0]
+    iam_util.LogSetIamPolicy(self.ref.Name(), 'backend service')
+    return result
+
+  def AddIamPolicyBinding(self, member, role):
+    """Compute Engine backend service add iam policy binding request."""
+    policy = self.GetIamPolicy()
+    iam_util.AddBindingToIamPolicy(self._messages.Binding, policy, member, role)
+    return self.SetIamPolicy(policy)
+
+  def RemoveIamPolicyBinding(self, member, role):
+    """Compute Engine backend service remove iam policy binding request."""
+    policy = self.GetIamPolicy()
+    iam_util.RemoveBindingFromIamPolicy(policy, member, role)
+    return self.SetIamPolicy(policy)

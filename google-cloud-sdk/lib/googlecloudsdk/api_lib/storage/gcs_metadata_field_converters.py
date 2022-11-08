@@ -34,6 +34,28 @@ def _create_iam_metadata_if_needed(current_iam_metadata):
   return apis.GetMessagesModule('storage', 'v1').Bucket.IamConfigurationValue()
 
 
+def process_acl_file(file_path):
+  """Converts ACL file to Apitools objects."""
+  if file_path == user_request_args_factory.CLEAR:
+    return []
+  acl_dict_list = metadata_util.cached_read_json_file(file_path)
+  if not acl_dict_list:
+    return []
+
+  acl_messages = []
+  messages = apis.GetMessagesModule('storage', 'v1')
+  for acl_dict in acl_dict_list:
+    acl_messages.append(
+        encoding.DictToMessage(acl_dict, messages.BucketAccessControl))
+  return acl_messages
+
+
+def process_autoclass(enabled_boolean):
+  """Converts autoclass boolean to Apitools object."""
+  messages = apis.GetMessagesModule('storage', 'v1')
+  return messages.Bucket.AutoclassValue(enabled=enabled_boolean)
+
+
 def process_cors(file_path):
   """Converts CORS file to Apitools objects."""
   if file_path == user_request_args_factory.CLEAR:

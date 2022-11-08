@@ -26,13 +26,29 @@ VMWARE_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
     'display_name': 'display_name',
     'min_replicas': 'node_pool_autoscaling.min_replicas',
     'max_replicas': 'node_pool_autoscaling.max_replicas',
+    'cpus': 'config.cpus',
+    'memory': 'config.memory_mb',
     'replicas': 'config.replicas',
+    'image_type': 'config.image_type',
+    'image': 'config.image',
+    'boot_disk_size': 'config.boot_disk_size_gb',
+    'node_taints': 'config.taints',
+    'node_labels': 'config.labels',
     'enable_load_balancer': 'config.enable_load_balancer',
     'disable_load_balancer': 'config.enable_load_balancer',
 }
 
 VMWARE_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'required_platform_version': 'platform_config.required_platform_version',
+}
+
+BARE_METAL_CLUSTER_ARGS_TO_UPDATE_MASKS = {
+    'metal_lb_config_address_pools':
+        'load_balancer.metal_lb_config.address_pools',
+}
+
+BARE_METAL_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
+    'node_configs': 'node_pool_config.node_configs',
 }
 
 

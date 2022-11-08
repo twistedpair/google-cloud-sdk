@@ -972,6 +972,8 @@ class Repository(_messages.Message):
       lowercase letters, numeric characters, underscores, and dashes.
     name: The name of the repository, for example: "projects/p1/locations/us-
       central1/repositories/repo1".
+    satisfiesPzs: Output only. If set, the repository satisfies physical zone
+      separation.
     sizeBytes: Output only. The size, in bytes, of all artifact storage in
       this repository. Repositories that are generally available or in public
       preview use this to calculate storage costs.
@@ -1033,8 +1035,9 @@ class Repository(_messages.Message):
   kmsKeyName = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  sizeBytes = _messages.IntegerField(7)
-  updateTime = _messages.StringField(8)
+  satisfiesPzs = _messages.BooleanField(7)
+  sizeBytes = _messages.IntegerField(8)
+  updateTime = _messages.StringField(9)
 
 
 class SetIamPolicyRequest(_messages.Message):

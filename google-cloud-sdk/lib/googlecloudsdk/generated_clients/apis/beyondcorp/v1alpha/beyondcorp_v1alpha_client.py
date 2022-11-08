@@ -40,6 +40,7 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.organizations_locations_insights = self.OrganizationsLocationsInsightsService(self)
+    self.organizations_locations_subscriptions = self.OrganizationsLocationsSubscriptionsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_locations_appConnections = self.ProjectsLocationsAppConnectionsService(self)
@@ -144,6 +145,97 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='BeyondcorpOrganizationsLocationsInsightsListRequest',
         response_type_name='GoogleCloudBeyondcorpSaasplatformInsightsV1alphaListInsightsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsSubscriptionsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_subscriptions resource."""
+
+    _NAME = 'organizations_locations_subscriptions'
+
+    def __init__(self, client):
+      super(BeyondcorpV1alpha.OrganizationsLocationsSubscriptionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new BeyondCorp Enterprise Subscription in a given organization. Location will always be global as BeyondCorp subscriptions are per organization.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsSubscriptionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/subscriptions',
+        http_method='POST',
+        method_id='beyondcorp.organizations.locations.subscriptions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/subscriptions',
+        request_field='googleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription',
+        request_type_name='BeyondcorpOrganizationsLocationsSubscriptionsCreateRequest',
+        response_type_name='GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Subscription.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsSubscriptionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/subscriptions/{subscriptionsId}',
+        http_method='GET',
+        method_id='beyondcorp.organizations.locations.subscriptions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='BeyondcorpOrganizationsLocationsSubscriptionsGetRequest',
+        response_type_name='GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Subscriptions in a given organization and location.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsSubscriptionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaListSubscriptionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/subscriptions',
+        http_method='GET',
+        method_id='beyondcorp.organizations.locations.subscriptions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/subscriptions',
+        request_field='',
+        request_type_name='BeyondcorpOrganizationsLocationsSubscriptionsListRequest',
+        response_type_name='GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaListSubscriptionsResponse',
         supports_download=False,
     )
 
@@ -2049,87 +2141,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Create(self, request, global_params=None):
-      r"""Creates a new NetConnection in a given project and location.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsNetConnectionsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/netConnections',
-        http_method='POST',
-        method_id='beyondcorp.projects.locations.netConnections.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['netConnectionId', 'requestId', 'validateOnly'],
-        relative_path='v1alpha/{+parent}/netConnections',
-        request_field='googleCloudBeyondcorpNetconnectionsV1alphaNetConnection',
-        request_type_name='BeyondcorpProjectsLocationsNetConnectionsCreateRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single NetConnection.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsNetConnectionsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/netConnections/{netConnectionsId}',
-        http_method='DELETE',
-        method_id='beyondcorp.projects.locations.netConnections.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'validateOnly'],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='BeyondcorpProjectsLocationsNetConnectionsDeleteRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single NetConnection.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsNetConnectionsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudBeyondcorpNetconnectionsV1alphaNetConnection) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/netConnections/{netConnectionsId}',
-        http_method='GET',
-        method_id='beyondcorp.projects.locations.netConnections.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='BeyondcorpProjectsLocationsNetConnectionsGetRequest',
-        response_type_name='GoogleCloudBeyondcorpNetconnectionsV1alphaNetConnection',
-        supports_download=False,
-    )
-
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -2154,60 +2165,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='BeyondcorpProjectsLocationsNetConnectionsGetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists NetConnections in a given project and location.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsNetConnectionsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudBeyondcorpNetconnectionsV1alphaListNetConnectionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/netConnections',
-        http_method='GET',
-        method_id='beyondcorp.projects.locations.netConnections.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/netConnections',
-        request_field='',
-        request_type_name='BeyondcorpProjectsLocationsNetConnectionsListRequest',
-        response_type_name='GoogleCloudBeyondcorpNetconnectionsV1alphaListNetConnectionsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single NetConnection.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsNetConnectionsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/netConnections/{netConnectionsId}',
-        http_method='PATCH',
-        method_id='beyondcorp.projects.locations.netConnections.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['allowMissing', 'requestId', 'updateMask', 'validateOnly'],
-        relative_path='v1alpha/{+name}',
-        request_field='googleCloudBeyondcorpNetconnectionsV1alphaNetConnection',
-        request_type_name='BeyondcorpProjectsLocationsNetConnectionsPatchRequest',
-        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

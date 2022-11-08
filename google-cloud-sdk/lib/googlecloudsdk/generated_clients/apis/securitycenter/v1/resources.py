@@ -44,6 +44,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  FOLDERS_NOTIFICATIONCONFIGS = (
+      'folders.notificationConfigs',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/notificationConfigs/'
+              '{notificationConfigsId}',
+      },
+      ['name'],
+      True
+  )
   FOLDERS_SECURITYHEALTHANALYTICSSETTINGS = (
       'folders.securityHealthAnalyticsSettings',
       'folders/{foldersId}',
@@ -194,6 +205,17 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/muteConfigs/{muteConfigsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_NOTIFICATIONCONFIGS = (
+      'projects.notificationConfigs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/notificationConfigs/'
+              '{notificationConfigsId}',
       },
       ['name'],
       True

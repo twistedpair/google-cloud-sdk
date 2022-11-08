@@ -24,6 +24,9 @@ from googlecloudsdk.command_lib.scc.errors import InvalidSCCInputError
 from googlecloudsdk.command_lib.scc.hooks import CleanUpUserInput
 
 _PARENT_SUFFIX = "/securityHealthAnalyticsSettings"
+_SHA_CUSTOM_MODULE_ID_PATTERN = re.compile("([0-9]{1,20})$")
+_ORGANIZATION_ID_PATTERN = re.compile("^[0-9]{1,19}$")
+_ORGANIZATION_NAME_PATTERN = re.compile("^organizations/[0-9]{1,19}$")
 
 
 def CreateSecurityHealthAnalyticsCustomModuleReqHook(ref, args, req):
@@ -123,12 +126,11 @@ def UpdateSecurityHealthAnalyticsCustomModuleReqHook(ref, args, req):
 def _ValidateAndGetCustomModuleId(args):
   """Validates customModuleId."""
   custom_module_id = args.custom_module
-  pattern = re.compile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$")
-  if not pattern.match(custom_module_id):
+
+  if not _SHA_CUSTOM_MODULE_ID_PATTERN.match(custom_module_id):
     raise InvalidSCCInputError(
-        "Custom module id does not match the pattern "
-        "'^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$'."
-    )
+        "Custom module id does not match the pattern '%s'." %
+        _SHA_CUSTOM_MODULE_ID_PATTERN.pattern)
   else:
     return custom_module_id
 
@@ -138,13 +140,11 @@ def _ValidateAndGetCustomModuleFullResourceName(args):
   custom_module = args.custom_module
   resource_pattern = re.compile(
       "(organizations|projects|folders)/.*/securityHealthAnalyticsSettings/"
-      "customModules/[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"
-  )
+      "customModules/%s"%_SHA_CUSTOM_MODULE_ID_PATTERN.pattern)
   if not resource_pattern.match(custom_module):
     raise InvalidSCCInputError(
         "Custom module must match the full resource name, or `--organization=`,"
-        " `--folder=` or `--project=` must be provided."
-    )
+        " `--folder=` or `--project=` must be provided.")
   return custom_module
 
 
@@ -152,7 +152,8 @@ def _ValidateAndGetEffectiveCustomModuleFullResourceName(args):
   """Validates effective custom module full resource name."""
   custom_module = args.custom_module
   resource_pattern = re.compile(
-      "(organizations|projects|folders)/.*/securityHealthAnalyticsSettings/effectiveCustomModules/[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"
+      "(organizations|projects|folders)/.*/securityHealthAnalyticsSettings/effectiveCustomModules/%s"
+      % _SHA_CUSTOM_MODULE_ID_PATTERN.pattern
   )
   if not resource_pattern.match(custom_module):
     raise InvalidSCCInputError(
@@ -165,18 +166,17 @@ def _ValidateAndGetParent(args):
   """Validates parent."""
   if args.organization is not None:
     if "/" in args.organization:
-      pattern = re.compile("^organizations/[0-9]{1,19}$")
-      if not pattern.match(args.organization):
+      if not _ORGANIZATION_NAME_PATTERN.match(args.organization):
         raise InvalidSCCInputError(
             "When providing a full resource path, it must include the pattern "
-            "'^organizations/[0-9]{1,19}$'.")
+            "'%s'." % _ORGANIZATION_NAME_PATTERN.pattern)
       else:
         return args.organization + _PARENT_SUFFIX
     else:
-      pattern = re.compile("^[0-9]{1,19}$")
-      if not pattern.match(args.organization):
+      if not _ORGANIZATION_ID_PATTERN.match(args.organization):
         raise InvalidSCCInputError(
-            "Organization does not match the pattern '^[0-9]{1,19}$'.")
+            "Organization does not match the pattern '%s'." %
+            _ORGANIZATION_ID_PATTERN.pattern)
       else:
         return "organizations/" + args.organization + _PARENT_SUFFIX
 

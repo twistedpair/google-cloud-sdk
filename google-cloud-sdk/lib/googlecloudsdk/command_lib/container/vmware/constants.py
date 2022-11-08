@@ -47,12 +47,3 @@ table(
 )
 """
 
-VMWARE_OPERATIONS_FORMAT = """
-table(
-    metadata.target.basename():label=NAME,
-    metadata.verb:label=TYPE,
-    name.segment(3):label=LOCATION,
-    done:label=DONE,
-    metadata.createTime
-)
-"""

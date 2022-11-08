@@ -22,9 +22,9 @@ from cloudsdk.google.protobuf import timestamp_pb2  # type: ignore
 __protobuf__ = proto.module(
     package='google.logging.v2',
     manifest={
+        'OperationState',
         'LifecycleState',
         'IndexType',
-        'OperationState',
         'IndexConfig',
         'LogBucket',
         'LogView',
@@ -69,22 +69,6 @@ __protobuf__ = proto.module(
 )
 
 
-class LifecycleState(proto.Enum):
-    r"""LogBucket lifecycle states."""
-    LIFECYCLE_STATE_UNSPECIFIED = 0
-    ACTIVE = 1
-    DELETE_REQUESTED = 2
-
-
-class IndexType(proto.Enum):
-    r"""IndexType is used for custom indexing. It describes the type
-    of an indexed field.
-    """
-    INDEX_TYPE_UNSPECIFIED = 0
-    INDEX_TYPE_STRING = 1
-    INDEX_TYPE_INTEGER = 2
-
-
 class OperationState(proto.Enum):
     r"""List of different operation states.
     High level state of the operation. This is used to report the
@@ -100,6 +84,22 @@ class OperationState(proto.Enum):
     OPERATION_STATE_SUCCEEDED = 4
     OPERATION_STATE_FAILED = 5
     OPERATION_STATE_CANCELLED = 6
+
+
+class LifecycleState(proto.Enum):
+    r"""LogBucket lifecycle states."""
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETE_REQUESTED = 2
+
+
+class IndexType(proto.Enum):
+    r"""IndexType is used for custom indexing. It describes the type
+    of an indexed field.
+    """
+    INDEX_TYPE_UNSPECIFIED = 0
+    INDEX_TYPE_STRING = 1
+    INDEX_TYPE_INTEGER = 2
 
 
 class IndexConfig(proto.Message):

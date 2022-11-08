@@ -671,7 +671,7 @@
           "type": "string",
           "enumDescriptions": [
             "Accelerator type is not specified.",
-            "b\/241005111 K80 deprecation in Google Managed Notebooks Accelerator type is Nvidia Tesla K80.",
+            "Accelerator type is Nvidia Tesla K80.",
             "Accelerator type is Nvidia Tesla P100.",
             "Accelerator type is Nvidia Tesla V100.",
             "Accelerator type is Nvidia Tesla P4.",
@@ -867,6 +867,17 @@
     "ResetRuntimeRequest": {
       "id": "ResetRuntimeRequest",
       "description": "Request for resetting a Managed Notebook Runtime.",
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "description": "Idempotent request UUID.",
+          "type": "string"
+        }
+      }
+    },
+    "UpgradeRuntimeRequest": {
+      "id": "UpgradeRuntimeRequest",
+      "description": "Request for upgrading a Managed Notebook Runtime to the latest version. option (google.api.message_visibility).restriction = \"TRUSTED_TESTER,SPECIAL_TESTER\";",
       "type": "object",
       "properties": {
         "requestId": {
@@ -2916,6 +2927,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Resets a Managed Notebook Runtime."
+                },
+                "upgrade": {
+                  "id": "notebooks.projects.locations.runtimes.upgrade",
+                  "path": "v1/{+name}:upgrade",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}:upgrade",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/runtimes\/{runtime_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/runtimes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "UpgradeRuntimeRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Upgrades a Managed Notebook Runtime to the latest version."
                 },
                 "reportEvent": {
                   "id": "notebooks.projects.locations.runtimes.reportEvent",

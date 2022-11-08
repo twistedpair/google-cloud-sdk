@@ -186,6 +186,33 @@ def AddStopGroupAsyncReplicationArgs(parser):
           compute_flags.REGION_PROPERTY_EXPLANATION))
 
 
+def AddBulkCreateArgs(parser):
+  """Adds bulk create specific arguments to parser."""
+  parser.add_argument(
+      '--source-consistency-group-policy',
+      help='''
+      URL of the source consistency group resource policy. The resource policy
+      is always in the region of the source disks.
+      ''',
+      # This argument is required because consistent cloning is only supported
+      # feature under the BulkCreate now. May become optional in the future.
+      required=True)
+
+  help_text = """Target {0} of the created disks, which currently must be the same as the source {0}. {1}"""
+  scope_parser = parser.add_mutually_exclusive_group(required=True)
+  scope_parser.add_argument(
+      '--zone',
+      completer=compute_completers.ZonesCompleter,
+      action=actions.StoreProperty(properties.VALUES.compute.zone),
+      help=help_text.format('zone', compute_flags.ZONE_PROPERTY_EXPLANATION))
+  scope_parser.add_argument(
+      '--region',
+      completer=compute_completers.RegionsCompleter,
+      action=actions.StoreProperty(properties.VALUES.compute.region),
+      help=help_text.format('region',
+                            compute_flags.REGION_PROPERTY_EXPLANATION))
+
+
 def AddProvisionedIopsFlag(parser, arg_parsers, constants):
   return parser.add_argument(
       '--provisioned-iops',

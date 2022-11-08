@@ -942,6 +942,129 @@
         }
       }
     },
+    "ExecuteAirflowCommandRequest": {
+      "id": "ExecuteAirflowCommandRequest",
+      "description": "Execute Airflow Command request.",
+      "type": "object",
+      "properties": {
+        "command": {
+          "description": "Airflow command.",
+          "type": "string"
+        },
+        "subcommand": {
+          "description": "Airflow subcommand.",
+          "type": "string"
+        },
+        "parameters": {
+          "description": "Parameters for the Airflow command\/subcommand as an array of arguments. It may contain positional arguments like `[\"my-dag-id\"]`, key-value parameters like `[\"--foo=bar\"]` or `[\"--foo\",\"bar\"]`, or other flags like `[\"-f\"]`.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ExecuteAirflowCommandResponse": {
+      "id": "ExecuteAirflowCommandResponse",
+      "description": "Response to ExecuteAirflowCommandRequest.",
+      "type": "object",
+      "properties": {
+        "executionId": {
+          "description": "The unique ID of the command execution for polling.",
+          "type": "string"
+        },
+        "pod": {
+          "description": "The name of the pod where the command is executed.",
+          "type": "string"
+        },
+        "podNamespace": {
+          "description": "The namespace of the pod where the command is executed.",
+          "type": "string"
+        },
+        "error": {
+          "description": "Error message. Empty if there was no error.",
+          "type": "string"
+        }
+      }
+    },
+    "PollAirflowCommandRequest": {
+      "id": "PollAirflowCommandRequest",
+      "description": "Poll Airflow Command request.",
+      "type": "object",
+      "properties": {
+        "executionId": {
+          "description": "The unique ID of the command execution.",
+          "type": "string"
+        },
+        "pod": {
+          "description": "The name of the pod where the command is executed.",
+          "type": "string"
+        },
+        "podNamespace": {
+          "description": "The namespace of the pod where the command is executed.",
+          "type": "string"
+        },
+        "nextLineNumber": {
+          "description": "Line number from which new logs should be fetched.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "PollAirflowCommandResponse": {
+      "id": "PollAirflowCommandResponse",
+      "description": "Response to PollAirflowCommandRequest.",
+      "type": "object",
+      "properties": {
+        "output": {
+          "description": "Output from the command execution. It may not contain the full output and the caller may need to poll for more lines.",
+          "type": "array",
+          "items": {
+            "$ref": "Line"
+          }
+        },
+        "outputEnd": {
+          "description": "Whether the command execution has finished and there is no more output.",
+          "type": "boolean"
+        },
+        "exitInfo": {
+          "description": "The result exit status of the command.",
+          "$ref": "ExitInfo"
+        }
+      }
+    },
+    "Line": {
+      "id": "Line",
+      "description": "Contains information about a single line from logs.",
+      "type": "object",
+      "properties": {
+        "lineNumber": {
+          "description": "Number of the line.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "content": {
+          "description": "Text content of the log line.",
+          "type": "string"
+        }
+      }
+    },
+    "ExitInfo": {
+      "id": "ExitInfo",
+      "description": "Information about how a command ended.",
+      "type": "object",
+      "properties": {
+        "exitCode": {
+          "description": "The exit code from the command execution.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "error": {
+          "description": "Error message. Empty if there was no error.",
+          "type": "string"
+        }
+      }
+    },
     "SaveSnapshotRequest": {
       "id": "SaveSnapshotRequest",
       "description": "Request to create a snapshot of a Cloud Composer environment.",
@@ -1514,6 +1637,62 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Check if an upgrade operation on the environment will succeed. In case of problems detailed info can be found in the returned Operation."
+                },
+                "executeAirflowCommand": {
+                  "id": "composer.projects.locations.environments.executeAirflowCommand",
+                  "path": "v1beta1/{+environment}:executeAirflowCommand",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:executeAirflowCommand",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "environment": {
+                      "description": "The resource name of the environment in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "environment"
+                  ],
+                  "request": {
+                    "$ref": "ExecuteAirflowCommandRequest"
+                  },
+                  "response": {
+                    "$ref": "ExecuteAirflowCommandResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Executes Airflow CLI command."
+                },
+                "pollAirflowCommand": {
+                  "id": "composer.projects.locations.environments.pollAirflowCommand",
+                  "path": "v1beta1/{+environment}:pollAirflowCommand",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:pollAirflowCommand",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "environment": {
+                      "description": "The resource name of the environment in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "environment"
+                  ],
+                  "request": {
+                    "$ref": "PollAirflowCommandRequest"
+                  },
+                  "response": {
+                    "$ref": "PollAirflowCommandResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Polls Airflow CLI command execution and fetches logs."
                 },
                 "saveSnapshot": {
                   "id": "composer.projects.locations.environments.saveSnapshot",

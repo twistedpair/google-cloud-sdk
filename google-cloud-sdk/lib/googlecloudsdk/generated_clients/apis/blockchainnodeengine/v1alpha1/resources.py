@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://blockchainnodeengine.googleapis.com/v1alpha1/'
-DOCS_URL = 'https://cloud.google.com/blockchainnodeengine'
+DOCS_URL = 'https://cloud.google.com/web3'
 
 
 class Collections(enum.Enum):

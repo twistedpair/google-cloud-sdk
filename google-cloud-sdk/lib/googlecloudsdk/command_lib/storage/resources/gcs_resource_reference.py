@@ -66,6 +66,8 @@ class GcsBucketResource(resource_reference.BucketResource):
   """API-specific subclass for handling metadata.
 
   Additional GCS Attributes:
+    autoclass_enabled_time (datetime|None): Datetime autoclass feature was
+      enabled on bucket. None means the feature is disabled.
     default_acl (dict|None): Default object ACLs for the bucket.
     default_kms_key (str|None): Default KMS key for objects in the bucket.
     location_type (str|None): Region, dual-region, etc.
@@ -81,6 +83,7 @@ class GcsBucketResource(resource_reference.BucketResource):
   def __init__(self,
                storage_url_object,
                acl=None,
+               autoclass_enabled_time=None,
                cors_config=None,
                creation_time=None,
                default_acl=None,
@@ -126,6 +129,7 @@ class GcsBucketResource(resource_reference.BucketResource):
         versioning_enabled=versioning_enabled,
         website_config=website_config,
     )
+    self.autoclass_enabled_time = autoclass_enabled_time
     self.default_acl = default_acl
     self.default_kms_key = default_kms_key
     self.location_type = location_type
@@ -185,16 +189,16 @@ class GcsBucketResource(resource_reference.BucketResource):
         website_config=_message_to_dict(self.metadata.website))
 
   def __eq__(self, other):
-    return (super(GcsBucketResource, self).__eq__(other) and
-            self.default_acl == other.default_acl and
-            self.default_kms_key == other.default_kms_key and
-            self.location_type == other.location_type and
-            self.project_number == other.project_number and
-            self.public_access_prevention == other.public_access_prevention and
-            self.rpo == other.rpo and
-            self.satisfies_pzs == other.satisfies_pzs and
-            self.uniform_bucket_level_access
-            == other.uniform_bucket_level_access)
+    return (
+        super(GcsBucketResource, self).__eq__(other) and
+        self.autoclass_enabled_time == other.autoclass_enabled_time and
+        self.default_acl == other.default_acl and
+        self.default_kms_key == other.default_kms_key and
+        self.location_type == other.location_type and
+        self.project_number == other.project_number and
+        self.public_access_prevention == other.public_access_prevention and
+        self.rpo == other.rpo and self.satisfies_pzs == other.satisfies_pzs and
+        self.uniform_bucket_level_access == other.uniform_bucket_level_access)
 
   def get_json_dump(self):
     return _get_json_dump(self)

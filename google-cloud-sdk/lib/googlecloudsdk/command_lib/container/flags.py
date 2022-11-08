@@ -839,11 +839,16 @@ specified CPU architecture or a newer one.
 """)
 
 
-def AddBinauthzFlags(parser, api_version='v1', hidden=False, autopilot=False):
+def AddBinauthzFlags(parser,
+                     release_track=base.ReleaseTrack.GA,
+                     hidden=False,
+                     autopilot=False):
   """Adds the --enable-binauthz  and --binauthz-evaluation-mode flags to parser.
   """
-  messages = apis.GetMessagesModule('container', api_version)
-  options = api_adapter.GetBinauthzEvaluationModeOptions(messages)
+  messages = apis.GetMessagesModule(
+      'container', api_adapter.APIVersionFromReleaseTrack(release_track))
+  options = api_adapter.GetBinauthzEvaluationModeOptions(
+      messages, release_track)
 
   binauthz_group = parser.add_group(
       mutex=False, help='Flags for Binary Authorization:')
@@ -876,7 +881,7 @@ def AddBinauthzFlags(parser, api_version='v1', hidden=False, autopilot=False):
         help='Enable Binary Authorization for this cluster.',
         hidden=hidden,
     )
-  if api_version == 'v1alpha1':
+  if release_track == base.ReleaseTrack.ALPHA:
     platform_policy_type = arg_parsers.RegexpValidator(
         _BINAUTHZ_GKE_POLICY_REGEX,
         'GKE policy resource names have the following format: '
@@ -1314,6 +1319,9 @@ def AddLocalSSDsAlphaFlags(parser, for_node_pool=False, suppressed=False):
   AddEphemeralStorageFlag(group, for_node_pool=for_node_pool, hidden=suppressed)
   AddLocalSSDFlag(
       group, suppressed=suppressed, help_text=local_ssd_relationship)
+  AddEphemeralStorageLocalSSDFlag(
+      group, for_node_pool=for_node_pool, hidden=True)
+  AddLocalNvmeSSDBlockFlag(group, for_node_pool=for_node_pool, hidden=True)
 
 
 def AddLocalSSDsBetaFlags(parser, for_node_pool=False, suppressed=False):
@@ -1321,6 +1329,19 @@ def AddLocalSSDsBetaFlags(parser, for_node_pool=False, suppressed=False):
   group = parser.add_mutually_exclusive_group()
   AddLocalSSDFlag(group, suppressed=suppressed)
   AddEphemeralStorageFlag(group, for_node_pool=for_node_pool, hidden=suppressed)
+  AddEphemeralStorageLocalSSDFlag(
+      group, for_node_pool=for_node_pool, hidden=True)
+  AddLocalNvmeSSDBlockFlag(group, for_node_pool=for_node_pool, hidden=True)
+
+
+def AddLocalSSDsGAFlags(parser, for_node_pool=False, suppressed=False):
+  """Adds the --local-ssd-count, --local-nvme-ssd-block and --ephemeral-storage-local-ssd flags to the parser.
+  """
+  group = parser.add_mutually_exclusive_group()
+  AddLocalSSDFlag(group, suppressed=suppressed)
+  AddEphemeralStorageLocalSSDFlag(
+      group, for_node_pool=for_node_pool, hidden=True)
+  AddLocalNvmeSSDBlockFlag(group, for_node_pool=for_node_pool, hidden=True)
 
 
 def AddLocalSSDVolumeConfigsFlag(parser, for_node_pool=False, help_text=''):
@@ -1365,6 +1386,36 @@ https://cloud.google.com/compute/docs/disks/local-ssd for more information.
       help=help_text)
 
 
+def AddLocalNvmeSSDBlockFlag(parser,
+                             for_node_pool=False,
+                             hidden=False,
+                             help_text=''):
+  """Adds a --local-nvme-ssd-block flag to the given parser."""
+  help_text += """\
+Adds the requested local SSDs on all nodes in default node pool(s) in new cluster.
+
+Examples:
+
+  $ {{command}} {0} --local-nvme-ssd-block count=2
+
+'count' must be between 1-8\n
+
+New nodes, including ones created by resize or recreate, will have these local SSDs.
+
+Local SSDs have a fixed 375 GB capacity per device. The number of disks that
+can be attached to an instance is limited by the maximum number of disks
+available on a machine, which differs by compute zone.
+See https://cloud.google.com/compute/docs/disks/local-ssd for more information.
+""".format('node-pool-1 --cluster=example cluster'
+           if for_node_pool else 'example_cluster')
+  parser.add_argument(
+      '--local-nvme-ssd-block',
+      help=help_text,
+      hidden=hidden,
+      type=arg_parsers.ArgDict(spec={'count': int}, required_keys=['count']),
+  )
+
+
 def AddEphemeralStorageFlag(parser,
                             hidden=False,
                             for_node_pool=False,
@@ -1391,6 +1442,34 @@ See https://cloud.google.com/compute/docs/disks/local-ssd for more information.
       hidden=hidden,
       type=arg_parsers.ArgDict(
           spec={'local-ssd-count': int}, required_keys=['local-ssd-count']),
+  )
+
+
+def AddEphemeralStorageLocalSSDFlag(parser,
+                                    hidden=False,
+                                    for_node_pool=False,
+                                    help_text=''):
+  """Adds --ephemeral-storage-local-ssd flag to the parser."""
+  help_text += """\
+Parameters for the ephemeral storage filesystem.
+If unspecified, ephemeral storage is backed by the boot disk.
+
+Examples:
+
+  $ {{command}} {0} --ephemeral-storage-local-ssd count=2
+
+'count' specifies the number of local SSDs to use to back ephemeral
+storage. Local SDDs use NVMe interfaces and each is 375 GB in size.
+If 'count=0', it means to disable using local SSDs as ephemeral storage.
+
+See https://cloud.google.com/compute/docs/disks/local-ssd for more information.
+""".format('node-pool-1 --cluster=example cluster'
+           if for_node_pool else 'example_cluster')
+  parser.add_argument(
+      '--ephemeral-storage-local-ssd',
+      help=help_text,
+      hidden=hidden,
+      type=arg_parsers.ArgDict(spec={'count': int}, required_keys=['count']),
   )
 
 
@@ -4407,7 +4486,7 @@ Converts a cluster from Autopilot mode to Standard mode."""
       action='store_true')
 
 
-def AddPrivateEndpointSubnetworkFlag(parser, hidden=True):
+def AddPrivateEndpointSubnetworkFlag(parser):
   """Adds the argument to handle private endpoint subnetwork."""
   help_text = """\
   Sets the subnetwork GKE uses to provision the control plane's
@@ -4416,7 +4495,6 @@ def AddPrivateEndpointSubnetworkFlag(parser, hidden=True):
   parser.add_argument(
       '--private-endpoint-subnetwork',
       help=help_text,
-      hidden=hidden,
       metavar='NAME')
 
 
@@ -4576,7 +4654,7 @@ Pod cidr overprovisioning is enabled by default.
       hidden=hidden)
 
 
-def AddNodePoolEnablePrivateNodes(parser, hidden=True):
+def AddNodePoolEnablePrivateNodes(parser):
   """Adds a --enable-private-nodes to the given node-pool parser."""
   help_text = """\
   Enables provisioning nodes with private IP addresses only.
@@ -4587,7 +4665,6 @@ def AddNodePoolEnablePrivateNodes(parser, hidden=True):
 """
   parser.add_argument(
       '--enable-private-nodes',
-      hidden=hidden,
       default=None,
       action='store_true',
       help=help_text)
@@ -4635,7 +4712,7 @@ def VerifyGetCredentialsFlags(args):
     raise util.Error(constants.CONFLICTING_GET_CREDS_FLAGS_ERROR_MSG)
 
 
-def AddEnablePrivateEndpoint(parser, hidden=True):
+def AddEnablePrivateEndpoint(parser):
   """Adds a --enable-private-endpoint flag to the given parser."""
   help_text = """\
   Enables cluster's control plane to be accessible using private IP
@@ -4644,20 +4721,18 @@ def AddEnablePrivateEndpoint(parser, hidden=True):
   parser.add_argument(
       '--enable-private-endpoint',
       help=help_text,
-      hidden=hidden,
       default=None,
       action='store_true')
 
 
-def AddEnableGoogleCloudAccess(parser, hidden=True):
+def AddEnableGoogleCloudAccess(parser):
   """Adds a --enable-google-cloud-access to the given clusters parser."""
   help_text = """\
-  When you enable Google Cloud Access, anyone who uses Google Cloud can reach
-  the public control plane endpoint of your cluster.
+  When you enable Google Cloud Access, any public IP addresses owned by Google
+  Cloud can reach the public control plane endpoint of your cluster.
   """
   parser.add_argument(
       '--enable-google-cloud-access',
-      hidden=hidden,
       default=None,
       action='store_true',
       help=help_text)
@@ -4866,7 +4941,6 @@ def AddAdditionalPodNetworkFlag(parser, hidden=False):
   Args:
     parser: A given parser.
     hidden: Indicates that the flags are hidden.
-
   """
   spec = {
       'subnetwork': str,
@@ -4877,9 +4951,7 @@ def AddAdditionalPodNetworkFlag(parser, hidden=False):
   parser.add_argument(
       '--additional-pod-network',
       type=arg_parsers.ArgDict(
-          spec=spec,
-          required_keys=['pod-ipv4-range'],
-          max_length=len(spec)),
+          spec=spec, required_keys=['pod-ipv4-range'], max_length=len(spec)),
       metavar='subnetwork=SUBNETWORK_NAME,pod-ipv4-range=SECONDARY_RANGE_NAME,[max-pods-per-node=NUM_PODS]',
       hidden=hidden,
       action='append',

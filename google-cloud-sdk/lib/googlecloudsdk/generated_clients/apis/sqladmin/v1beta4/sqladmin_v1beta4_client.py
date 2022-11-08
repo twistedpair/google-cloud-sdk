@@ -1375,7 +1375,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
         method_id='sql.users.get',
         ordered_params=['project', 'instance', 'name'],
         path_params=['instance', 'name', 'project'],
-        query_params=[],
+        query_params=['host'],
         relative_path='sql/v1beta4/projects/{project}/instances/{instance}/users/{name}',
         request_field='',
         request_type_name='SqlUsersGetRequest',

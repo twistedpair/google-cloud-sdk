@@ -39,190 +39,11 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.organizations_locations_repositories = self.OrganizationsLocationsRepositoriesService(self)
-    self.organizations_locations = self.OrganizationsLocationsService(self)
-    self.organizations = self.OrganizationsService(self)
-    self.projects_locations_instances_sshkeys = self.ProjectsLocationsInstancesSshkeysService(self)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_repositories = self.ProjectsLocationsRepositoriesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-
-  class OrganizationsLocationsRepositoriesService(base_api.BaseApiService):
-    """Service class for the organizations_locations_repositories resource."""
-
-    _NAME = 'organizations_locations_repositories'
-
-    def __init__(self, client):
-      super(SecuresourcemanagerV1.OrganizationsLocationsRepositoriesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def CreateRepositoryInternal(self, request, global_params=None):
-      r"""Insert a repository reference to database. This method is for internal use only.
-
-      Args:
-        request: (SecuresourcemanagerOrganizationsLocationsRepositoriesCreateRepositoryInternalRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Repository) The response message.
-      """
-      config = self.GetMethodConfig('CreateRepositoryInternal')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    CreateRepositoryInternal.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/repositories:createRepositoryInternal',
-        http_method='POST',
-        method_id='securesourcemanager.organizations.locations.repositories.createRepositoryInternal',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['repositoryId'],
-        relative_path='v1/{+parent}/repositories:createRepositoryInternal',
-        request_field='repository',
-        request_type_name='SecuresourcemanagerOrganizationsLocationsRepositoriesCreateRepositoryInternalRequest',
-        response_type_name='Repository',
-        supports_download=False,
-    )
-
-  class OrganizationsLocationsService(base_api.BaseApiService):
-    """Service class for the organizations_locations resource."""
-
-    _NAME = 'organizations_locations'
-
-    def __init__(self, client):
-      super(SecuresourcemanagerV1.OrganizationsLocationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class OrganizationsService(base_api.BaseApiService):
-    """Service class for the organizations resource."""
-
-    _NAME = 'organizations'
-
-    def __init__(self, client):
-      super(SecuresourcemanagerV1.OrganizationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class ProjectsLocationsInstancesSshkeysService(base_api.BaseApiService):
-    """Service class for the projects_locations_instances_sshkeys resource."""
-
-    _NAME = 'projects_locations_instances_sshkeys'
-
-    def __init__(self, client):
-      super(SecuresourcemanagerV1.ProjectsLocationsInstancesSshkeysService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new SSH key in a given project and location.
-
-      Args:
-        request: (SecuresourcemanagerProjectsLocationsInstancesSshkeysCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/sshkeys',
-        http_method='POST',
-        method_id='securesourcemanager.projects.locations.instances.sshkeys.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['sshkeyId'],
-        relative_path='v1/{+parent}/sshkeys',
-        request_field='sshKey',
-        request_type_name='SecuresourcemanagerProjectsLocationsInstancesSshkeysCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a SSH key.
-
-      Args:
-        request: (SecuresourcemanagerProjectsLocationsInstancesSshkeysDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/sshkeys/{sshkeysId}',
-        http_method='DELETE',
-        method_id='securesourcemanager.projects.locations.instances.sshkeys.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['allowMissing'],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='SecuresourcemanagerProjectsLocationsInstancesSshkeysDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets a SSH Key.
-
-      Args:
-        request: (SecuresourcemanagerProjectsLocationsInstancesSshkeysGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (SshKey) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/sshkeys/{sshkeysId}',
-        http_method='GET',
-        method_id='securesourcemanager.projects.locations.instances.sshkeys.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='SecuresourcemanagerProjectsLocationsInstancesSshkeysGetRequest',
-        response_type_name='SshKey',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists SSH Keys in a given project and location.
-
-      Args:
-        request: (SecuresourcemanagerProjectsLocationsInstancesSshkeysListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListSshKeysResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/sshkeys',
-        http_method='GET',
-        method_id='securesourcemanager.projects.locations.instances.sshkeys.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1/{+parent}/sshkeys',
-        request_field='',
-        request_type_name='SecuresourcemanagerProjectsLocationsInstancesSshkeysListRequest',
-        response_type_name='ListSshKeysResponse',
-        supports_download=False,
-    )
 
   class ProjectsLocationsInstancesService(base_api.BaseApiService):
     """Service class for the projects_locations_instances resource."""
@@ -342,6 +163,33 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def IssueRedirectTicketInternal(self, request, global_params=None):
+      r"""THIS METHOD IS FOR INTERNAL USE ONLY.
+
+      Args:
+        request: (SecuresourcemanagerProjectsLocationsInstancesIssueRedirectTicketInternalRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IssueRedirectTicketInternalResponse) The response message.
+      """
+      config = self.GetMethodConfig('IssueRedirectTicketInternal')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    IssueRedirectTicketInternal.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:issueRedirectTicketInternal',
+        http_method='POST',
+        method_id='securesourcemanager.projects.locations.instances.issueRedirectTicketInternal',
+        ordered_params=['instance'],
+        path_params=['instance'],
+        query_params=[],
+        relative_path='v1/{+instance}:issueRedirectTicketInternal',
+        request_field='issueRedirectTicketInternalRequest',
+        request_type_name='SecuresourcemanagerProjectsLocationsInstancesIssueRedirectTicketInternalRequest',
+        response_type_name='IssueRedirectTicketInternalResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists Instances in a given project and location.
 
@@ -366,33 +214,6 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuresourcemanagerProjectsLocationsInstancesListRequest',
         response_type_name='ListInstancesResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Instance.
-
-      Args:
-        request: (SecuresourcemanagerProjectsLocationsInstancesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
-        http_method='PATCH',
-        method_id='securesourcemanager.projects.locations.instances.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1/{+name}',
-        request_field='instance',
-        request_type_name='SecuresourcemanagerProjectsLocationsInstancesPatchRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -579,7 +400,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Repository in a given project and location.
+      r"""Creates a new Repository in a given project and location. **Host: Data Plane**.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesCreateRequest) input message
@@ -606,7 +427,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def CreateRepositoryInternal(self, request, global_params=None):
-      r"""Insert a repository reference to database. This method is for internal use only.
+      r"""THIS METHOD IS FOR INTERNAL USE ONLY.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesCreateRepositoryInternalRequest) input message
@@ -633,7 +454,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Repository.
+      r"""Deletes a Repository. **Host: Data Plane**.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesDeleteRequest) input message
@@ -660,7 +481,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def DeleteRepositoryInternal(self, request, global_params=None):
-      r"""Delete a repository reference to database. This method is for internal use only.
+      r"""THIS METHOD IS FOR INTERNAL USE ONLY.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesDeleteRepositoryInternalRequest) input message
@@ -687,7 +508,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets metadata of a Repository.
+      r"""Gets metadata of a Repository. **Host: Data Plane**.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesGetRequest) input message
@@ -714,7 +535,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+      r"""Get IAM policy for a repository.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesGetIamPolicyRequest) input message
@@ -741,7 +562,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Repositories in a given project and location.
+      r"""Lists Repositories in a given project and location. **Host: Data Plane**.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesListRequest) input message
@@ -767,35 +588,8 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Patch(self, request, global_params=None):
-      r"""Updates the metadata of a Repository.
-
-      Args:
-        request: (SecuresourcemanagerProjectsLocationsRepositoriesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}',
-        http_method='PATCH',
-        method_id='securesourcemanager.projects.locations.repositories.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask', 'validateOnly'],
-        relative_path='v1/{+name}',
-        request_field='repository',
-        request_type_name='SecuresourcemanagerProjectsLocationsRepositoriesPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+      r"""Set IAM policy on a repository.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesSetIamPolicyRequest) input message
@@ -822,7 +616,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+      r"""Test IAM permissions on a repository.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesTestIamPermissionsRequest) input message

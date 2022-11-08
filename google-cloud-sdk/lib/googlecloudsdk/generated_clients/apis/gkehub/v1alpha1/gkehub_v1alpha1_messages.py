@@ -81,187 +81,6 @@ class AnthosObservabilityMembershipSpec(_messages.Message):
   version = _messages.StringField(3)
 
 
-class AnthosVMFeatureSpec(_messages.Message):
-  r"""AnthosVMFeatureSpec contains the configuration for the AnthosVM feature
-
-  Messages:
-    MembershipSpecsValue: Map of Membership IDs to their individual
-      configuration. A map entry consists of a membershipID and the desired
-      anthosvm spec for that membership/cluster. The MembershipID needs to be
-      the full path to the membership eg:
-      projects/p1/locations/l1/memberships/m1
-
-  Fields:
-    membershipSpecs: Map of Membership IDs to their individual configuration.
-      A map entry consists of a membershipID and the desired anthosvm spec for
-      that membership/cluster. The MembershipID needs to be the full path to
-      the membership eg: projects/p1/locations/l1/memberships/m1
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MembershipSpecsValue(_messages.Message):
-    r"""Map of Membership IDs to their individual configuration. A map entry
-    consists of a membershipID and the desired anthosvm spec for that
-    membership/cluster. The MembershipID needs to be the full path to the
-    membership eg: projects/p1/locations/l1/memberships/m1
-
-    Messages:
-      AdditionalProperty: An additional property for a MembershipSpecsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type MembershipSpecsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a MembershipSpecsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A AnthosVMMembershipSpec attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('AnthosVMMembershipSpec', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 1)
-
-
-class AnthosVMFeatureState(_messages.Message):
-  r"""AnthosVMFeatureState contains the state of the AnthosVM feature. It
-  represents the actual state in the cluster, while the AnthosVMMembershipSpec
-  represents the desired state.
-
-  Fields:
-    localControllerState: State of the local PE-controller in the cluster
-    subfeatureState: List of AnthosVM subfeature states
-  """
-
-  localControllerState = _messages.MessageField('LocalControllerState', 1)
-  subfeatureState = _messages.MessageField('AnthosVMSubFeatureState', 2, repeated=True)
-
-
-class AnthosVMMembershipSpec(_messages.Message):
-  r"""AnthosVMMembershipSpec contains the AnthosVM feature configuration for a
-  membership/cluster.
-
-  Fields:
-    subfeaturesSpec: List of configurations of the Anthos For VM subfeatures
-      that are to be enabled
-  """
-
-  subfeaturesSpec = _messages.MessageField('AnthosVMSubFeatureSpec', 1, repeated=True)
-
-
-class AnthosVMSubFeatureSpec(_messages.Message):
-  r"""AnthosVMSubFeatureSpec contains the subfeature configuration for a
-  membership/cluster.
-
-  Fields:
-    enabled: Indicates whether the subfeature should be enabled on the cluster
-      or not. If set to true, the subfeature's control plane and resources
-      will be installed in the cluster. If set to false, the oneof spec if
-      present will be ignored and nothing will be installed in the cluster.
-    migrateSpec: MigrateSpec repsents the configuration for Migrate
-      subfeature.
-    serviceMeshSpec: ServiceMeshSpec repsents the configuration for Service
-      Mesh subfeature.
-  """
-
-  enabled = _messages.BooleanField(1)
-  migrateSpec = _messages.MessageField('MigrateSpec', 2)
-  serviceMeshSpec = _messages.MessageField('ServiceMeshSpec', 3)
-
-
-class AnthosVMSubFeatureState(_messages.Message):
-  r"""AnthosVMSubFeatureState contains the state of the AnthosVM subfeatures.
-
-  Enums:
-    InstallationStateValueValuesEnum: InstallationState represents the state
-      of installation of the subfeature in the cluster.
-
-  Fields:
-    description: Description represents human readable description of the
-      subfeature state. If the deployment failed, this should also contain the
-      reason for the failure.
-    installationState: InstallationState represents the state of installation
-      of the subfeature in the cluster.
-    migrateState: MigrateState represents the state of the Migrate subfeature.
-    serviceMeshState: ServiceMeshState represents the state of the Service
-      Mesh subfeature.
-  """
-
-  class InstallationStateValueValuesEnum(_messages.Enum):
-    r"""InstallationState represents the state of installation of the
-    subfeature in the cluster.
-
-    Values:
-      INSTALLATION_STATE_UNSPECIFIED: state of installation is unknown
-      INSTALLATION_STATE_NOT_INSTALLED: component is not installed
-      INSTALLATION_STATE_INSTALLED: component is successfully installed
-      INSTALLATION_STATE_FAILED: installation failed
-    """
-    INSTALLATION_STATE_UNSPECIFIED = 0
-    INSTALLATION_STATE_NOT_INSTALLED = 1
-    INSTALLATION_STATE_INSTALLED = 2
-    INSTALLATION_STATE_FAILED = 3
-
-  description = _messages.StringField(1)
-  installationState = _messages.EnumField('InstallationStateValueValuesEnum', 2)
-  migrateState = _messages.MessageField('MigrateState', 3)
-  serviceMeshState = _messages.MessageField('ServiceMeshState', 4)
-
-
-class ApigeeFeatureSpec(_messages.Message):
-  r"""Feature spec for Apigee
-
-  Messages:
-    MembershipSpecsValue: Map of Hub-based Membership IDs to individual
-      membership spec. Membership IDs are in this format: `projects/[project-
-      number]/locations/global/memberships/[membership-name]`
-
-  Fields:
-    membershipSpecs: Map of Hub-based Membership IDs to individual membership
-      spec. Membership IDs are in this format: `projects/[project-
-      number]/locations/global/memberships/[membership-name]`
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MembershipSpecsValue(_messages.Message):
-    r"""Map of Hub-based Membership IDs to individual membership spec.
-    Membership IDs are in this format: `projects/[project-
-    number]/locations/global/memberships/[membership-name]`
-
-    Messages:
-      AdditionalProperty: An additional property for a MembershipSpecsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type MembershipSpecsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a MembershipSpecsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A MembershipSpec attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('MembershipSpec', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 1)
-
-
-class ApigeeFeatureState(_messages.Message):
-  r"""An empty state for Apigee feature."""
-
-
 class AppDevExperienceFeatureSpec(_messages.Message):
   r"""Spec for App Dev Experience Feature."""
 
@@ -1385,8 +1204,6 @@ class Feature(_messages.Message):
   Fields:
     anthosobservabilityFeatureSpec: The specification for Anthos
       Observability.
-    anthosvmFeatureSpec: The specification for the Anthos For VM Feature.
-    apigeeFeatureSpec: The specification for Apigee.
     appdevexperienceFeatureSpec: The specification for App Dev Experience.
     authorizerFeatureSpec: The specification for the Authorizer Feature.
     cloudauditloggingFeatureSpec: The specification for Anthos Cloud Audit
@@ -1445,31 +1262,29 @@ class Feature(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   anthosobservabilityFeatureSpec = _messages.MessageField('AnthosObservabilityFeatureSpec', 1)
-  anthosvmFeatureSpec = _messages.MessageField('AnthosVMFeatureSpec', 2)
-  apigeeFeatureSpec = _messages.MessageField('ApigeeFeatureSpec', 3)
-  appdevexperienceFeatureSpec = _messages.MessageField('AppDevExperienceFeatureSpec', 4)
-  authorizerFeatureSpec = _messages.MessageField('AuthorizerFeatureSpec', 5)
-  cloudauditloggingFeatureSpec = _messages.MessageField('CloudAuditLoggingFeatureSpec', 6)
-  cloudbuildFeatureSpec = _messages.MessageField('CloudBuildFeatureSpec', 7)
-  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 8)
-  createTime = _messages.StringField(9)
-  deleteTime = _messages.StringField(10)
-  description = _messages.StringField(11)
-  featureState = _messages.MessageField('FeatureState', 12)
-  fleetobservabilityFeatureSpec = _messages.MessageField('FleetObservabilityFeatureSpec', 13)
-  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 14)
-  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 17)
-  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 18)
-  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 19)
-  name = _messages.StringField(20)
-  policycontrollerFeatureSpec = _messages.MessageField('PolicyControllerFeatureSpec', 21)
-  rbacrolebindingactuationFeatureSpec = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 22)
-  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 23)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 24)
-  updateTime = _messages.StringField(25)
-  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 26)
+  appdevexperienceFeatureSpec = _messages.MessageField('AppDevExperienceFeatureSpec', 2)
+  authorizerFeatureSpec = _messages.MessageField('AuthorizerFeatureSpec', 3)
+  cloudauditloggingFeatureSpec = _messages.MessageField('CloudAuditLoggingFeatureSpec', 4)
+  cloudbuildFeatureSpec = _messages.MessageField('CloudBuildFeatureSpec', 5)
+  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 6)
+  createTime = _messages.StringField(7)
+  deleteTime = _messages.StringField(8)
+  description = _messages.StringField(9)
+  featureState = _messages.MessageField('FeatureState', 10)
+  fleetobservabilityFeatureSpec = _messages.MessageField('FleetObservabilityFeatureSpec', 11)
+  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 12)
+  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 15)
+  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 16)
+  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 17)
+  name = _messages.StringField(18)
+  policycontrollerFeatureSpec = _messages.MessageField('PolicyControllerFeatureSpec', 19)
+  rbacrolebindingactuationFeatureSpec = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 20)
+  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 21)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 22)
+  updateTime = _messages.StringField(23)
+  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 24)
 
 
 class FeatureState(_messages.Message):
@@ -1558,8 +1373,6 @@ class FeatureStateDetails(_messages.Message):
   Fields:
     anthosobservabilityFeatureState: State for the Anthos Observability
       Feature
-    anthosvmFeatureState: State for the Anthos For VM Feature.
-    apigeeFeatureState: State for the Apigee Feature.
     appdevexperienceFeatureState: State for the AppDevExperience Feature.
     authorizerFeatureState: State for the Authorizer Feature.
     cloudauditloggingFeatureState: The state of the Anthos Cloud Audit Logging
@@ -1609,26 +1422,24 @@ class FeatureStateDetails(_messages.Message):
     WARNING = 3
 
   anthosobservabilityFeatureState = _messages.MessageField('AnthosObservabilityFeatureState', 1)
-  anthosvmFeatureState = _messages.MessageField('AnthosVMFeatureState', 2)
-  apigeeFeatureState = _messages.MessageField('ApigeeFeatureState', 3)
-  appdevexperienceFeatureState = _messages.MessageField('AppDevExperienceFeatureState', 4)
-  authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 5)
-  cloudauditloggingFeatureState = _messages.MessageField('CloudAuditLoggingFeatureState', 6)
-  code = _messages.EnumField('CodeValueValuesEnum', 7)
-  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 8)
-  description = _messages.StringField(9)
-  fleetobservabilityFeatureState = _messages.MessageField('FleetObservabilityFeatureState', 10)
-  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 11)
-  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 12)
-  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 13)
-  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 14)
-  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 15)
-  policycontrollerFeatureState = _messages.MessageField('PolicyControllerFeatureState', 16)
-  rbacrolebindingactuationFeatureState = _messages.MessageField('RBACRoleBindingActuationFeatureState', 17)
-  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 18)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 19)
-  updateTime = _messages.StringField(20)
-  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 21)
+  appdevexperienceFeatureState = _messages.MessageField('AppDevExperienceFeatureState', 2)
+  authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 3)
+  cloudauditloggingFeatureState = _messages.MessageField('CloudAuditLoggingFeatureState', 4)
+  code = _messages.EnumField('CodeValueValuesEnum', 5)
+  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 6)
+  description = _messages.StringField(7)
+  fleetobservabilityFeatureState = _messages.MessageField('FleetObservabilityFeatureState', 8)
+  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 9)
+  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 10)
+  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 11)
+  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 12)
+  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 13)
+  policycontrollerFeatureState = _messages.MessageField('PolicyControllerFeatureState', 14)
+  rbacrolebindingactuationFeatureState = _messages.MessageField('RBACRoleBindingActuationFeatureState', 15)
+  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 16)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 17)
+  updateTime = _messages.StringField(18)
+  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 19)
 
 
 class FeatureTest(_messages.Message):
@@ -2380,40 +2191,6 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
-class LocalControllerState(_messages.Message):
-  r"""LocalControllerState contains the state of the local controller deployed
-  in the cluster.
-
-  Enums:
-    InstallationStateValueValuesEnum: InstallationState represents the state
-      of deployment of the local PE controller in the cluster.
-
-  Fields:
-    description: Description represents the human readable description of the
-      current state of the local PE controller
-    installationState: InstallationState represents the state of deployment of
-      the local PE controller in the cluster.
-  """
-
-  class InstallationStateValueValuesEnum(_messages.Enum):
-    r"""InstallationState represents the state of deployment of the local PE
-    controller in the cluster.
-
-    Values:
-      INSTALLATION_STATE_UNSPECIFIED: state of installation is unknown
-      INSTALLATION_STATE_NOT_INSTALLED: component is not installed
-      INSTALLATION_STATE_INSTALLED: component is successfully installed
-      INSTALLATION_STATE_FAILED: installation failed
-    """
-    INSTALLATION_STATE_UNSPECIFIED = 0
-    INSTALLATION_STATE_NOT_INSTALLED = 1
-    INSTALLATION_STATE_INSTALLED = 2
-    INSTALLATION_STATE_FAILED = 3
-
-  description = _messages.StringField(1)
-  installationState = _messages.EnumField('InstallationStateValueValuesEnum', 2)
-
-
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -2537,23 +2314,6 @@ class MembershipConfig(_messages.Message):
   version = _messages.StringField(5)
 
 
-class MembershipSpec(_messages.Message):
-  r"""Membership information
-
-  Fields:
-    location: Location of the cluster. This is used by Apigee management plane
-      for making location-based routing decisions.
-    organizationProjects: In Apigee hybrid install, a project can contain
-      memberships that serve multiple Apigee org projects. This is the list of
-      Apigee org projects that the membership serves. E.g., In order to get
-      the memberships that serve a specific organization project, Consumers
-      can filter based on this field.
-  """
-
-  location = _messages.StringField(1)
-  organizationProjects = _messages.StringField(2, repeated=True)
-
-
 class MeshConnectivity(_messages.Message):
   r"""Status of cross cluster load balancing between other clusters in the
   mesh.
@@ -2615,17 +2375,6 @@ class MeteringFeatureState(_messages.Message):
 
   lastMeasurementTime = _messages.StringField(1)
   preciseLastMeasuredClusterVcpuCapacity = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-
-
-class MigrateSpec(_messages.Message):
-  r"""MigrateSpec contains the migrate subfeature configuration. Other fields
-  to be added later
-  """
-
-
-
-class MigrateState(_messages.Message):
-  r"""MigrateState contains the state of Migrate subfeature"""
 
 
 class MultiClusterIngressFeatureSpec(_messages.Message):
@@ -3757,17 +3506,6 @@ class ServiceMeshMembershipSpec(_messages.Message):
   dataPlane = _messages.EnumField('DataPlaneValueValuesEnum', 2)
   defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 3)
   management = _messages.EnumField('ManagementValueValuesEnum', 4)
-
-
-class ServiceMeshSpec(_messages.Message):
-  r"""ServiceMeshSpec contains the serviceMesh subfeature configuration. Other
-  fields to be added later
-  """
-
-
-
-class ServiceMeshState(_messages.Message):
-  r"""ServiceMeshState contains the state of Service Mesh subfeature"""
 
 
 class SetIamPolicyRequest(_messages.Message):

@@ -485,6 +485,32 @@ class DomainMappingStatus(_messages.Message):
   url = _messages.StringField(5)
 
 
+class EmptyDirVolumeSource(_messages.Message):
+  r"""Ephemeral storage which can be backed by real disks (HD, SSD), network
+  storage or memory (i.e. tmpfs). For now only in memory (tmpfs) is supported.
+  It is ephemeral in the sense that when the sandbox is taken down, the data
+  is destroyed with it (it does not persist across sandbox runs).
+
+  Fields:
+    medium: The medium on which the data is stored. The default is "" which
+      means to use the node's default medium. Must be an empty string
+      (default) or Memory. More info:
+      https://kubernetes.io/docs/concepts/storage/volumes#emptydir +optional
+    sizeLimit: Limit on the storage usable by this EmptyDir volume. The size
+      limit is also applicable for memory medium. The maximum usage on memory
+      medium EmptyDir would be the minimum value between the SizeLimit
+      specified here and the sum of memory limits of all containers in a pod.
+      This field's values are of the 'Quantity' k8s type:
+      https://kubernetes.io/docs/reference/kubernetes-api/common-
+      definitions/quantity/. The default is nil which means that the limit is
+      undefined. More info: http://kubernetes.io/docs/user-
+      guide/volumes#emptydir +optional
+  """
+
+  medium = _messages.StringField(1)
+  sizeLimit = _messages.StringField(2)
+
+
 class EnvFromSource(_messages.Message):
   r"""Not supported by Cloud Run. EnvFromSource represents the source of a set
   of ConfigMaps
@@ -608,8 +634,7 @@ class ExecutionSpec(_messages.Message):
     taskCount: Optional. Specifies the desired number of tasks the execution
       should run. Setting to 1 means that parallelism is limited to 1 and the
       success of that task signals the success of the execution.
-    template: Optional. Describes the task(s) that will be created when
-      executing an execution.
+    template: Optional. The template used to create tasks for this execution.
   """
 
   parallelism = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -845,7 +870,7 @@ class HTTPHeader(_messages.Message):
   r"""HTTPHeader describes a custom header to be used in HTTP probes
 
   Fields:
-    name: The header field name
+    name: Required. The header field name
     value: The header field value
   """
 
@@ -1929,11 +1954,10 @@ class RouteStatus(_messages.Message):
       that was last processed by the controller. Clients polling for completed
       reconciliation should poll until observedGeneration =
       metadata.generation and the Ready condition's status is True or False.
-      Note that providing a trafficTarget that only has a configurationName
-      will result in a Route that does not increment either its
-      metadata.generation or its observedGeneration, as new "latest ready"
-      revisions from the Configuration are processed without an update to the
-      Route's spec.
+      Note that providing a TrafficTarget that has latest_revision=True will
+      result in a Route that does not increment either its metadata.generation
+      or its observedGeneration, as new "latest ready" revisions from the
+      Configuration are processed without an update to the Route's spec.
     traffic: Traffic holds the configured traffic distribution. These entries
       will always contain RevisionName references. When ConfigurationName
       appears in the spec, this will hold the LatestReadyRevisionName that was
@@ -3816,23 +3840,21 @@ class TrafficTarget(_messages.Message):
   r"""TrafficTarget holds a single entry of the routing table for a Route.
 
   Fields:
-    configurationName: ConfigurationName of a configuration to whose latest
-      revision which will be sent this portion of traffic. When the
-      "status.latestReadyRevisionName" of the referenced configuration
-      changes, traffic will automatically migrate from the prior "latest
-      ready" revision to the new one. This field is never set in Route's
-      status, only its spec. This is mutually exclusive with RevisionName.
-      Cloud Run currently supports a single ConfigurationName.
-    latestRevision: Optional. LatestRevision may be provided to indicate that
-      the latest ready Revision of the Configuration should be used for this
-      traffic target. When provided LatestRevision must be true if
-      RevisionName is empty; it must be false when RevisionName is non-empty.
+    configurationName: [Deprecated] Not supported in Cloud Run. It must be
+      empty.
+    latestRevision: Uses the "status.latestReadyRevisionName" of the Service
+      to determine the traffic target. When it changes, traffic will
+      automatically migrate from the prior "latest ready" revision to the new
+      one. This field must be false if RevisionName is set. This field
+      defaults to true otherwise. If the field is set to true on Status, this
+      means that the Revision was resolved from the Service's latest ready
+      revision.
     percent: Percent specifies percent of the traffic to this Revision or
       Configuration. This defaults to zero if unspecified.
-    revisionName: RevisionName of a specific revision to which to send this
-      portion of traffic. This is mutually exclusive with ConfigurationName.
-    tag: Optional. Tag is used to expose a dedicated url for referencing this
-      target exclusively.
+    revisionName: Points this traffic target to a specific Revision. This
+      field is mutually exclusive with latest_revision.
+    tag: Tag is used to expose a dedicated url for referencing this target
+      exclusively.
     url: Output only. URL displays the URL for accessing tagged traffic
       targets. URL is displayed in status, and is disallowed on spec. URL must
       contain a scheme (e.g. https://) and a hostname, but may not contain
@@ -3852,6 +3874,7 @@ class Volume(_messages.Message):
 
   Fields:
     configMap: Not supported in Cloud Run.
+    emptyDir: Ephemeral storage used as a shared volume.
     name: Volume's name. In Cloud Run Fully Managed, the name 'cloudsql' is
       reserved.
     secret: The secret's value will be presented as the content of a file
@@ -3860,8 +3883,9 @@ class Volume(_messages.Message):
   """
 
   configMap = _messages.MessageField('ConfigMapVolumeSource', 1)
-  name = _messages.StringField(2)
-  secret = _messages.MessageField('SecretVolumeSource', 3)
+  emptyDir = _messages.MessageField('EmptyDirVolumeSource', 2)
+  name = _messages.StringField(3)
+  secret = _messages.MessageField('SecretVolumeSource', 4)
 
 
 class VolumeMount(_messages.Message):

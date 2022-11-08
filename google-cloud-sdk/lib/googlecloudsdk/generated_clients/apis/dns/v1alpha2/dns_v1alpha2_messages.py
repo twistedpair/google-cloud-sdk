@@ -992,7 +992,7 @@ class DnsResponsePoliciesPatchRequest(_messages.Message):
       identifier specified by the client. Must be unique for operation
       resources in the Operations collection.
     project: Identifies the project addressed by this request.
-    responsePolicy: User assigned name of the Respones Policy addressed by
+    responsePolicy: User assigned name of the response policy addressed by
       this request.
     responsePolicyResource: A ResponsePolicy resource to be passed as the
       request body.
@@ -2093,7 +2093,7 @@ class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
       ranges; that is, RFC1918 addresses go to the VPC network, non-RFC1918
       addresses go to the internet. When set to PRIVATE, Cloud DNS always
       sends queries through the VPC network for this target.
-    ipv4Address: IPv4 address to forward to.
+    ipv4Address: IPv4 address to forward queries to.
     ipv6Address: IPv6 address to forward to. Does not accept both fields (ipv4
       & ipv6) being populated.
     kind: A string attribute.
@@ -2494,15 +2494,15 @@ class ResponsePoliciesListResponse(_messages.Message):
 
   Fields:
     header: A ResponseHeader attribute.
-    nextPageToken: The presence of this field indicates that there exist more
-      results following your last page of results in pagination order. To
-      fetch them, make another list request using this value as your page
-      token. This lets you the complete contents of even very large
-      collections one page at a time. However, if the contents of the
-      collection change between the first and last paginated list request, the
-      set of all elements returned are an inconsistent view of the collection.
-      You cannot retrieve a consistent snapshot of a collection larger than
-      the maximum page size.
+    nextPageToken: The presence of this field indicates that more results
+      exist following your last page of results in pagination order. To fetch
+      them, make another list request by using this value as your page token.
+      This lets you view the complete contents of even very large collections
+      one page at a time. However, if the contents of the collection change
+      between the first and last paginated list request, the set of all
+      elements returned are an inconsistent view of the collection. You cannot
+      retrieve a consistent snapshot of a collection larger than the maximum
+      page size.
     responsePolicies: The Response Policy resources.
   """
 

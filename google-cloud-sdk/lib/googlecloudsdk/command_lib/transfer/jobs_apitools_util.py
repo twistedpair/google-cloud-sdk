@@ -427,11 +427,23 @@ def _create_or_modify_notification_config(job, args, messages, is_update=False):
 
 def _create_or_modify_logging_config(job, args, messages):
   """Creates or modifies transfer LoggingConfig object based on args."""
+  enable_posix_transfer_logs = getattr(args, 'enable_posix_transfer_logs', None)
+  if not job.loggingConfig:
+    if enable_posix_transfer_logs is None:
+      # Default to creating new jobs with logging enabled.
+      job.loggingConfig = messages.LoggingConfig(
+          enableOnpremGcsTransferLogs=True)
+    else:
+      job.loggingConfig = messages.LoggingConfig()
+
+  if enable_posix_transfer_logs is not None:
+    # Update new and existing jobs with user setting.
+    job.loggingConfig.enableOnpremGcsTransferLogs = enable_posix_transfer_logs
+
   log_actions = getattr(args, 'log_actions', None)
   log_action_states = getattr(args, 'log_action_states', None)
-
   if not (log_actions or log_action_states):
-    # Nothing to modify with.
+    # Nothing remaining to modify with.
     return
 
   existing_log_actions = job.loggingConfig and job.loggingConfig.logActions
@@ -443,9 +455,6 @@ def _create_or_modify_logging_config(job, args, messages):
        (log_action_states and not existing_log_actions))):
     raise ValueError('Both --log-actions and --log-action-states are required'
                      ' for a complete log config.')
-
-  if not job.loggingConfig:
-    job.loggingConfig = messages.LoggingConfig()
 
   if log_actions:
     actions = []

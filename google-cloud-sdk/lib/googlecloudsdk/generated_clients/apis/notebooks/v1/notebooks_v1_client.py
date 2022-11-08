@@ -1475,6 +1475,33 @@ class NotebooksV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Upgrade(self, request, global_params=None):
+      r"""Upgrades a Managed Notebook Runtime to the latest version.
+
+      Args:
+        request: (NotebooksProjectsLocationsRuntimesUpgradeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Upgrade')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Upgrade.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}:upgrade',
+        http_method='POST',
+        method_id='notebooks.projects.locations.runtimes.upgrade',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:upgrade',
+        request_field='upgradeRuntimeRequest',
+        request_type_name='NotebooksProjectsLocationsRuntimesUpgradeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsSchedulesService(base_api.BaseApiService):
     """Service class for the projects_locations_schedules resource."""
 

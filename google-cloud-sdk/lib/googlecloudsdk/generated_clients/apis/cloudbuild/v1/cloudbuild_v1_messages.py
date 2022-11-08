@@ -3243,33 +3243,6 @@ class GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig(_messages.Mes
   vcpuCount = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
-class GoogleDevtoolsCloudbuildV2OperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-
-
 class HTTPDelivery(_messages.Message):
   r"""HTTPDelivery is the delivery configuration for an HTTP notification.
 
@@ -4254,10 +4227,12 @@ class RepositoryEventConfig(_messages.Message):
         GITHUB.
       GITHUB: The SCM repo is GITHUB.
       GITHUB_ENTERPRISE: The SCM repo is GITHUB Enterprise.
+      GITLAB_ENTERPRISE: The SCM repo is GITLAB Enterprise.
     """
     REPOSITORY_TYPE_UNSPECIFIED = 0
     GITHUB = 1
     GITHUB_ENTERPRISE = 2
+    GITLAB_ENTERPRISE = 3
 
   pullRequest = _messages.MessageField('PullRequestFilter', 1)
   push = _messages.MessageField('PushFilter', 2)
@@ -4327,33 +4302,6 @@ class RunBuildTriggerRequest(_messages.Message):
   projectId = _messages.StringField(1)
   source = _messages.MessageField('RepoSource', 2)
   triggerId = _messages.StringField(3)
-
-
-class RunWorkflowCustomOperationMetadata(_messages.Message):
-  r"""Represents the custom metadata of the RunWorkflow long-running
-  operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    pipelineRunId: Output only. ID of the pipeline run created by RunWorkflow.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  pipelineRunId = _messages.StringField(4)
-  requestedCancellation = _messages.BooleanField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
 
 
 class SMTPDelivery(_messages.Message):

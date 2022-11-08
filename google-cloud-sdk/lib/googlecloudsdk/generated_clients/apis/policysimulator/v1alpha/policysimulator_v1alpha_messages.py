@@ -78,14 +78,19 @@ class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
     actionType: Allow or deny type.
     condition: Org policy condition/expression. For example:
       `resource.instanceName.matches("[production|test]_.*_(\d)+")'` or,
-      `resource.management.auto_upgrade == true`
-    description: Detailed information about this custom policy constraint.
-    displayName: One line display name for the UI.
+      `resource.management.auto_upgrade == true` The max length of the
+      condition is 1000 characters.
+    description: Detailed information about this custom policy constraint. The
+      max length of the description is 2000 characters.
+    displayName: One line display name for the UI. The max length of the
+      display_name is 200 characters.
     methodTypes: All the operations being applied for this constraint.
     name: Immutable. Name of the constraint. This is unique within the
       organization. Format of the name should be * `organizations/{organizatio
       n_id}/customConstraints/{custom_constraint_id}` Example :
-      "organizations/123/customConstraints/custom.createOnlyE2TypeVms"
+      "organizations/123/customConstraints/custom.createOnlyE2TypeVms" The max
+      length is 70 characters and the min length is 1. Note that the prefix
+      "organizations/{organization_id}/customConstraints/" is not counted.
     resourceTypes: Immutable. The Resource Instance type on which this policy
       applies to. Format will be of the form : "/" Example: *
       `compute.googleapis.com/Instance`.
@@ -113,7 +118,8 @@ class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
       METHOD_TYPE_UNSPECIFIED: Unspecified. Will results in user error.
       CREATE: Constraint applied when creating the resource.
       UPDATE: Constraint applied when updating the resource.
-      DELETE: Constraint applied when deleting the resource.
+      DELETE: Constraint applied when deleting the resource. Not supported
+        yet.
     """
     METHOD_TYPE_UNSPECIFIED = 0
     CREATE = 1

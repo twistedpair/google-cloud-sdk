@@ -35,9 +35,9 @@ class AnthospolicycontrollerstatusPaProjectsFleetConstraintTemplatesListRequest(
 
   Fields:
     pageSize: The maximum number of fleet constraint templates to return. The
-      service may return fewer than this value. If unspecified, defaults to 0
-      and returns all results without paginating. The maximum value is 1000;
-      values above 1000 will be coerced to 1000.
+      service may return fewer than this value. If unspecified or 0, defaults
+      to 500 results. The maximum value is 2000; values above 2000 will be
+      coerced to 2000.
     pageToken: A page token, received from a previous
       ListFleetConstraintTemplates call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to
@@ -71,9 +71,9 @@ class AnthospolicycontrollerstatusPaProjectsFleetConstraintsListRequest(_message
 
   Fields:
     pageSize: The maximum number of fleet constraints to return. The service
-      may return fewer than this value. If unspecified, defaults to 0 and
-      returns all results without paginating. The maximum value is 1000;
-      values above 1000 will be coerced to 1000.
+      may return fewer than this value. If unspecified or 0, defaults to 500
+      results. The maximum value is 2000; values above 2000 will be coerced to
+      2000.
     pageToken: A page token, received from a previous ListFleetConstraints
       call. Provide this to retrieve the subsequent page. When paginating, all
       other parameters provided to ListFleetConstraints must match the call
@@ -93,9 +93,9 @@ class AnthospolicycontrollerstatusPaProjectsMembershipConstraintAuditViolationsL
 
   Fields:
     pageSize: The maximum number of membership constraint audit violations to
-      return. The service may return fewer than this value. If unspecified,
-      defaults to 0 and returns all results without paginating. The maximum
-      value is 1000; values above 1000 will be coerced to 1000.
+      return. The service may return fewer than this value. If unspecified or
+      0, defaults to 500 results. The maximum value is 2000; values above 2000
+      will be coerced to 2000.
     pageToken: A page token, received from a previous
       ListMembershipConstraintAuditViolations call. Provide this to retrieve
       the subsequent page. When paginating, all other parameters provided to
@@ -129,9 +129,9 @@ class AnthospolicycontrollerstatusPaProjectsMembershipConstraintTemplatesListReq
 
   Fields:
     pageSize: The maximum number of membership constraint templates to return.
-      The service may return fewer than this value. If unspecified, defaults
-      to 0 and returns all results without paginating. The maximum value is
-      1000; values above 1000 will be coerced to 1000.
+      The service may return fewer than this value. If unspecified or 0,
+      defaults to 500 results. The maximum value is 2000; values above 2000
+      will be coerced to 2000.
     pageToken: A page token, received from a previous
       ListMembershipConstraintTemplates call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to
@@ -165,9 +165,9 @@ class AnthospolicycontrollerstatusPaProjectsMembershipConstraintsListRequest(_me
 
   Fields:
     pageSize: The maximum number of membership constraints to return. The
-      service may return fewer than this value. If unspecified, defaults to 0
-      and returns all results without paginating. The maximum value is 1000;
-      values above 1000 will be coerced to 1000.
+      service may return fewer than this value. If unspecified or 0, defaults
+      to 500 results. The maximum value is 2000; values above 2000 will be
+      coerced to 2000.
     pageToken: A page token, received from a previous
       ListMembershipConstraints call. Provide this to retrieve the subsequent
       page. When paginating, all other parameters provided to
@@ -187,9 +187,9 @@ class AnthospolicycontrollerstatusPaProjectsMembershipsListRequest(_messages.Mes
 
   Fields:
     pageSize: The maximum number of memberships to return. The service may
-      return fewer than this value. If unspecified, defaults to 0 and returns
-      all results without paginating. The maximum value is 1000; values above
-      1000 will be coerced to 1000.
+      return fewer than this value. If unspecified or 0, defaults to 500
+      results. The maximum value is 2000; values above 2000 will be coerced to
+      2000.
     pageToken: A page token, received from a previous ListMemberships call.
       Provide this to retrieve the subsequent page. When paginating, all other
       parameters provided to ListMemberships must match the call that provided

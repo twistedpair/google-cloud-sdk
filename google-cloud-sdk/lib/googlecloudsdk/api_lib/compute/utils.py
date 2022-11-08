@@ -118,8 +118,19 @@ def CamelCaseToOutputFriendly(string):
 def ConstructList(title, items):
   """Returns a string displaying the items and a title."""
   buf = io.StringIO()
-  fmt = 'list[title="{title}",always-display-title]'.format(title=title)
-  resource_printer.Print(sorted(set(items)), fmt, out=buf)
+  use_yaml = False
+  for item in items:
+    if ShouldUseYaml(item):
+      use_yaml = True
+      break
+  if use_yaml:
+    fmt = 'yaml'
+    resource_printer.Print(items, fmt, out=buf)
+    if title:
+      return '{}\n{}'.format(title, buf.getvalue())
+  else:
+    fmt = 'list[title="{title}",always-display-title]'.format(title=title)
+    resource_printer.Print(sorted(set(items)), fmt, out=buf)
   return buf.getvalue()
 
 
@@ -131,13 +142,42 @@ def RaiseToolException(problems, error_message=None):
 def RaiseException(problems, exception, error_message=None):
   """Raises the provided exception with the given list of problems."""
   errors = []
-  for _, message in problems:
-    errors.append(message)
+  for _, error in problems:
+    errors.append(error)
 
   raise exception(
-      ConstructList(
-          error_message or 'Some requests did not succeed:',
-          errors))
+      ConstructList(error_message or 'Some requests did not succeed:',
+                    ParseErrors(errors)))
+
+
+def ParseErrors(errors):
+  """Parses errors to prepare the right error contents."""
+  filtered_errors = []
+  for error in errors:
+    if not hasattr(error, 'message'):
+      filtered_errors.append(error)
+    elif IsQuotaExceededError(error):
+      filtered_errors.append(CreateQuotaExceededMsg(error))
+    elif ShouldUseYaml(error):
+      filtered_errors.append(error)
+    else:
+      filtered_errors.append(error.message)
+  return filtered_errors
+
+
+def CreateQuotaExceededMsg(error):
+  """Constructs message to show for quota exceeded error."""
+  if not hasattr(error, 'errorDetails') or not error.errorDetails[0].quotaInfo:
+    return error.message
+  details = error.errorDetails[0].quotaInfo
+  msg = '{}\n\tmetric name = {}\n\tlimit name = {}\n'.format(
+      error.message, details.metricName, details.limitName)
+  if details.dimensions:
+    dim = io.StringIO()
+    resource_printer.Print(details.dimensions, 'yaml', out=dim)
+    msg = msg + '\tdimensions = {}'.format(dim.getvalue())
+  return msg + ('Try your request in another zone, or view documentation on how'
+                ' to increase quotas: https://cloud.google.com/compute/quotas.')
 
 
 # TODO(b/32637269) delete and clean up uses of scope_name.
@@ -298,3 +338,20 @@ def GetListPager(client, request, get_value_fn):
     page, next_page_token = _GetNextListPage()
     results += page
   return results
+
+
+def ShouldUseYaml(error):
+  if hasattr(
+      error,
+      'code') and (error.code == 'ZONE_RESOURCE_POOL_EXHAUSTED_WITH_DETAILS' or
+                   error.code == 'ZONE_RESOURCE_POOL_EXHAUSTED' or
+                   error.code == 'QUOTA_EXCEEDED'):
+    return True
+  return False
+
+
+def IsQuotaExceededError(error):
+  return hasattr(error, 'code') and error.code == 'QUOTA_EXCEEDED'
+
+
+

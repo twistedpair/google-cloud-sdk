@@ -27,6 +27,7 @@ import os
 import re
 
 from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.functions.v1 import exceptions
 from googlecloudsdk.api_lib.functions.v1 import operations
 from googlecloudsdk.api_lib.storage import storage_util
@@ -420,6 +421,19 @@ def GetFunction(function_name):
       # The function has not been found.
       return None
     raise
+
+
+@CatchHTTPErrorRaiseHTTPException
+def ListRegions():
+  """Returns the list of regions where GCF 1st Gen is supported."""
+  client = GetApiClientInstance()
+  messages = client.MESSAGES_MODULE
+  return list_pager.YieldFromList(
+      service=client.projects_locations,
+      request=messages.CloudfunctionsProjectsLocationsListRequest(
+          name='projects/' + properties.VALUES.core.project.Get(required=True)),
+      field='locations',
+      batch_size_attribute='pageSize')
 
 
 # TODO(b/130604453): Remove try_set_invoker option

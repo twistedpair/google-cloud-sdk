@@ -108,6 +108,7 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
     self._digesters = {}
     self._processed_bytes = 0,
     self._progress_callback = None
+    self._size = None
 
     self._chunk_size = scaled_integer.ParseInteger(
         properties.VALUES.storage.download_chunk_size.Get())
@@ -117,6 +118,7 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
                                             self._chunk_size)
 
   def update_destination_info(self, stream,
+                              size,
                               digesters=None,
                               processed_bytes=0,
                               progress_callback=None):
@@ -130,6 +132,7 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
 
     Args:
       stream (stream): Local stream to write downloaded data to.
+      size (int): The amount of data in bytes to be downloaded.
       digesters (dict<HashAlgorithm, hashlib object> | None): For updating hash
         digests of downloaded objects on the fly.
       processed_bytes (int): For keeping track of how much progress has been
@@ -138,9 +141,11 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
         progress info for aggregation.
     """
     self._stream = stream
+    self._size = size
     self._digesters = digesters if digesters is not None else {}
     self._processed_bytes = processed_bytes
     self._progress_callback = progress_callback
+    self._start_byte = self._processed_bytes
 
   def handle(self, source_stream):
     if self._stream is None:
@@ -169,6 +174,16 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
           # Make a last progress callback call to update the final size.
           self._progress_callback(self._processed_bytes)
         break
+
+    total_downloaded_data = self._processed_bytes - self._start_byte
+    if self._size != total_downloaded_data:
+      # The input stream terminated before the entire content was read,
+      # possibly due to a network condition.
+      message = (
+          'Download not completed. Target size={}, downloaded data={}'.format(
+              self._size, total_downloaded_data))
+      log.debug(message)
+      raise cloud_errors.RetryableApiError(message)
 
 
 def _get_encryption_headers(key):
@@ -301,47 +316,6 @@ class GcsApi(cloud_api.CloudApi):
     metadata = self.client.buckets.Get(request)
     return gcs_metadata_util.get_bucket_resource_from_metadata(metadata)
 
-  def _handle_append_and_remove_bucket_updates(
-      self, bucket_resource, request_config, update_request_metadata):
-    """Handles bucket patch requests which append/remove to/from list fields.
-
-    Requires getting bucket metadata first, so that non-removed values can stay
-    in list fields.
-
-    Args:
-      bucket_resource (UnknownResource): Names the bucket to update.
-      request_config (GcsRequestConfig): Metadata to update the bucket with.
-      update_request_metadata (Bucket): Apitools message sent in update request.
-
-    Returns:
-      None, but updates list fields in update_request_metadata.
-    """
-    if not request_config.resource_args:
-      return
-
-    labels_to_append = request_config.resource_args.labels_to_append or {}
-    labels_to_remove = request_config.resource_args.labels_to_remove or []
-    if not (labels_to_append or labels_to_remove):
-      return
-
-    existing_resource = self.get_bucket(bucket_resource.storage_url.bucket_name)
-    existing_labels = getattr(
-        existing_resource.metadata.labels, 'additionalProperties', [])
-
-    new_labels = []
-
-    for label in existing_labels:
-      if label.key not in labels_to_remove:
-        new_labels.append(label)
-
-    for key, value in labels_to_append.items():
-      new_labels.append(
-          self.messages.Bucket.LabelsValue.AdditionalProperty(
-              key=key, value=value))
-
-    update_request_metadata.labels = self.messages.Bucket.LabelsValue(
-        additionalProperties=new_labels)
-
   @gcs_error_util.catch_http_error_raise_gcs_api_error()
   def patch_bucket(self,
                    bucket_resource,
@@ -350,13 +324,11 @@ class GcsApi(cloud_api.CloudApi):
     """See super class."""
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageBucketsPatchRequest)
-    metadata = self.messages.Bucket(
-        name=bucket_resource.storage_url.bucket_name)
+    metadata = bucket_resource.metadata or (
+        gcs_metadata_util.get_apitools_metadata_from_url(
+            bucket_resource.storage_url))
     gcs_metadata_util.update_bucket_metadata_from_request_config(
         metadata, request_config)
-
-    self._handle_append_and_remove_bucket_updates(
-        bucket_resource, request_config, metadata)
 
     cleared_fields = gcs_metadata_util.get_cleared_bucket_fields(request_config)
     if (metadata.defaultObjectAcl and metadata.defaultObjectAcl[0]
@@ -540,10 +512,9 @@ class GcsApi(cloud_api.CloudApi):
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageObjectsPatchRequest)
 
-    object_metadata = object_resource.metadata
-    if not object_metadata:
-      object_metadata = gcs_metadata_util.get_apitools_metadata_from_url(
-          object_resource.storage_url)
+    object_metadata = object_resource.metadata or (
+        gcs_metadata_util.get_apitools_metadata_from_url(
+            object_resource.storage_url))
 
     gcs_metadata_util.update_object_metadata_from_request_config(
         object_metadata, request_config)
@@ -704,6 +675,8 @@ class GcsApi(cloud_api.CloudApi):
 
     self._stream_response_handler.update_destination_info(
         stream=download_stream,
+        size=(end_byte - start_byte + 1
+              if end_byte is not None else cloud_resource.size),
         digesters=digesters,
         processed_bytes=start_byte,
         progress_callback=progress_callback)

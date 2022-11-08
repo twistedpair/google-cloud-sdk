@@ -1297,6 +1297,7 @@ def AddAddressArgs(parser,
       'subnet': str,
       'private-network-ip': str,
       'aliases': str,
+      'network-attachment': str,
   }
 
   multiple_network_interface_cards_spec['network-tier'] = _ValidateNetworkTier
@@ -1627,20 +1628,22 @@ def AddMaxRunDurationVmArgs(parser):
       help="""\
       Limits how long this VM instance can run, specified as a duration
       relative to the VM instance's most-recent start time. Format the duration,
-      ``MAX_RUN_DURATION'', similar to `T1h2m3s` where you can specify
-      the number of hours, minutes, and seconds
-      using `h`, `m`, and `s` respectively.
-      Alternatively, to specify a timestamp, use `--termination-time` instead.
+      ``MAX_RUN_DURATION'', as the number of days, hours, minutes, and seconds
+      followed by d, h, m, and s respectively. For example, specify 30m for a
+      duration of 30 minutes or specify 1d2h3m4s for a duration of 1 day,
+      2 hours, 3 minutes, and 4 seconds. Alternatively, to specify a timestamp,
+      use `--termination-time` instead.
 
       If neither `--max-run-duration` nor `--termination-time` is specified
       (default), the VM instance runs until prompted by a user action
       or system event.
-      If either is specified, the VM instance will be terminated
-      using the action specified by `--instance-termination-action`.
-      For `--max-run-duration`, the VM instance is terminated
-      whenever the VM's current runtime reaches ``MAX_RUN_DURATION'';
-      the current runtime is reset to zero
-      any time the VM instance is stopped and started again.
+      If either is specified, the VM instance is scheduled to be automatically
+      terminated using the action specified by `--instance-termination-action`.
+      For `--max-run-duration`, the VM instance is automatically terminated when the VM's
+      current runtime reaches ``MAX_RUN_DURATION''. Note: Anytime the VM instance
+      is stopped or suspended,  `--max-run-duration` and (unless the VM uses
+      `--provisioning-model=SPOT`) `--instance-termination-action` are
+      automatically removed from the VM.
       """)
 
   parser.add_argument(
@@ -1648,16 +1651,19 @@ def AddMaxRunDurationVmArgs(parser):
       type=arg_parsers.Datetime.Parse,
       help="""
       Limits how long this VM instance can run, specified as a time.
-      Format the time, ``TERMINATION_TIME'', as a RFC 3339 timestamp.
+      Format the time, ``TERMINATION_TIME'', as a RFC 3339 timestamp. For more
+      information, see https://tools.ietf.org/html/rfc3339.
       Alternatively, to specify a duration, use `--max-run-duration` instead.
 
      If neither `--termination-time` nor `--max-run-duration`
      is specified (default),
      the VM instance runs until prompted by a user action or system event.
-     If either is specified, the VM instance will be terminated using the action
-     specified by `--instance-termination-action`.
-     For `--termination-time`,
-     the VM instance is terminated only during the specified time.
+     If either is specified, the VM instance is scheduled to be automatically
+     terminated using the action specified by `--instance-termination-action`.
+     For `--termination-time`, the VM instance is automatically terminated at the
+     specified timestamp. Note: Anytime the VM instance is stopped or suspended,
+     `--termination-time` and (unless the VM uses `--provisioning-model=SPOT`)
+     `--instance-termination-action` are automatically removed from the VM.
      """)
 
 
@@ -1696,7 +1702,9 @@ def AddInstanceTerminationActionVmArgs(parser, is_update=False):
         },
         type=arg_utils.ChoiceToEnumName,
         help="""\
-      Specifies the termination action that will be taken upon VM preemption.
+      Specifies the termination action that will be taken upon VM preemption
+      (`--provisioning-model=SPOT` or `--preemptible`) or automatic instance
+      termination (`--max-run-duration` or `--termination-time`).
       """)
     termination_action_group.add_argument(
         '--clear-instance-termination-action',
@@ -1721,7 +1729,9 @@ def AddInstanceTerminationActionVmArgs(parser, is_update=False):
         },
         type=arg_utils.ChoiceToEnumName,
         help="""\
-      Specifies the termination action that will be taken upon VM preemption.
+      Specifies the termination action that will be taken upon VM preemption
+      (`--provisioning-model=SPOT` or `--preemptible`) or automatic instance
+      termination (`--max-run-duration` or `--termination-time`).
       """)
 
 

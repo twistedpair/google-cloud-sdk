@@ -1094,7 +1094,6 @@ SKIP_PYPI_PACKAGES_INSTALLATION = base.Argument(
 SKIP_ENVIRONMENT_VARIABLES_SETTING = base.Argument(
     '--skip-environment-variables-setting',
     default=None,
-    hidden=True,
     action='store_true',
     help="""\
     When specified, skips setting environment variables from the snapshot.
@@ -1103,7 +1102,6 @@ SKIP_ENVIRONMENT_VARIABLES_SETTING = base.Argument(
 SKIP_AIRFLOW_OVERRIDES_SETTING = base.Argument(
     '--skip-airflow-overrides-setting',
     default=None,
-    hidden=True,
     action='store_true',
     help="""\
     When specified, skips setting Airflow overrides from the snapshot.
@@ -1112,7 +1110,6 @@ SKIP_AIRFLOW_OVERRIDES_SETTING = base.Argument(
 SKIP_COPYING_GCS_DATA = base.Argument(
     '--skip-gcs-data-copying',
     default=None,
-    hidden=True,
     action='store_true',
     help="""\
     When specified, skips copying dags, plugins and data folders from

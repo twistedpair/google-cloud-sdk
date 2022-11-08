@@ -73,15 +73,18 @@ class ApitoolsClientDef(object):
       version.
     messages_full_modulepath: str, Full path to the messages module for an API
       version.
+    base_url: str, The base_url used for the default version of the API.
   """
 
   def __init__(self,
                class_path,
                client_classpath,
-               messages_modulepath):
+               messages_modulepath,
+               base_url):
     self.class_path = class_path
     self.client_classpath = client_classpath
     self.messages_modulepath = messages_modulepath
+    self.base_url = base_url
 
   @property
   def client_full_classpath(self):
@@ -99,9 +102,9 @@ class ApitoolsClientDef(object):
     return not self.__eq__(other)
 
   def get_init_source(self):
-    src_fmt = 'ApitoolsClientDef("{0}", "{1}", "{2}")'
+    src_fmt = 'ApitoolsClientDef("{0}", "{1}", "{2}", "{3}")'
     return src_fmt.format(self.class_path, self.client_classpath,
-                          self.messages_modulepath)
+                          self.messages_modulepath, self.base_url)
 
   def __repr__(self):
     return self.get_init_source()
@@ -158,6 +161,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.accessapproval.v1',
                     client_classpath='accessapproval_v1_client.AccessapprovalV1',
+                    base_url='https://accessapproval.googleapis.com/',
                     messages_modulepath='accessapproval_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -169,6 +173,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.accesscontextmanager.v1',
                     client_classpath='accesscontextmanager_v1_client.AccesscontextmanagerV1',
+                    base_url='https://accesscontextmanager.googleapis.com/',
                     messages_modulepath='accesscontextmanager_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -178,6 +183,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.accesscontextmanager.v1alpha',
                     client_classpath='accesscontextmanager_v1alpha_client.AccesscontextmanagerV1alpha',
+                    base_url='https://accesscontextmanager.googleapis.com/',
                     messages_modulepath='accesscontextmanager_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -187,6 +193,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.accesscontextmanager.v1beta',
                     client_classpath='accesscontextmanager_v1beta_client.AccesscontextmanagerV1beta',
+                    base_url='https://accesscontextmanager.googleapis.com/',
                     messages_modulepath='accesscontextmanager_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -198,6 +205,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.admin.v1',
                     client_classpath='admin_v1_client.AdminDirectoryV1',
+                    base_url='https://www.googleapis.com/admin/directory/v1/',
                     messages_modulepath='admin_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -209,6 +217,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.aiplatform.v1',
                     client_classpath='aiplatform_v1_client.AiplatformV1',
+                    base_url='https://aiplatform.googleapis.com/',
                     messages_modulepath='aiplatform_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -218,6 +227,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.aiplatform.v1alpha1',
                     client_classpath='aiplatform_v1alpha1_client.AiplatformV1alpha1',
+                    base_url='https://aiplatform.googleapis.com/',
                     messages_modulepath='aiplatform_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -227,6 +237,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.aiplatform.v1beta1',
                     client_classpath='aiplatform_v1beta1_client.AiplatformV1beta1',
+                    base_url='https://aiplatform.googleapis.com/',
                     messages_modulepath='aiplatform_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -238,6 +249,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.alloydb.v1alpha',
                     client_classpath='alloydb_v1alpha_client.AlloydbV1alpha',
+                    base_url='https://alloydb.googleapis.com/',
                     messages_modulepath='alloydb_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -247,6 +259,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.alloydb.v1beta',
                     client_classpath='alloydb_v1beta_client.AlloydbV1beta',
+                    base_url='https://alloydb.googleapis.com/',
                     messages_modulepath='alloydb_v1beta_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -258,6 +271,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.anthosevents.v1',
                     client_classpath='anthosevents_v1_client.AnthoseventsV1',
+                    base_url='https://anthosevents.googleapis.com/',
                     messages_modulepath='anthosevents_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -267,6 +281,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.anthosevents.v1alpha1',
                     client_classpath='anthosevents_v1alpha1_client.AnthoseventsV1alpha1',
+                    base_url='https://anthosevents.googleapis.com/',
                     messages_modulepath='anthosevents_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -276,6 +291,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.anthosevents.v1beta1',
                     client_classpath='anthosevents_v1beta1_client.AnthoseventsV1beta1',
+                    base_url='https://anthosevents.googleapis.com/',
                     messages_modulepath='anthosevents_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -287,6 +303,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.anthospolicycontrollerstatus_pa.v1alpha',
                     client_classpath='anthospolicycontrollerstatus_pa_v1alpha_client.AnthospolicycontrollerstatusPaV1alpha',
+                    base_url='https://anthospolicycontrollerstatus-pa.googleapis.com/',
                     messages_modulepath='anthospolicycontrollerstatus_pa_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -298,6 +315,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.apigateway.v1',
                     client_classpath='apigateway_v1_client.ApigatewayV1',
+                    base_url='https://apigateway.googleapis.com/',
                     messages_modulepath='apigateway_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -307,6 +325,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.apigateway.v1alpha1',
                     client_classpath='apigateway_v1alpha1_client.ApigatewayV1alpha1',
+                    base_url='https://apigateway.googleapis.com/',
                     messages_modulepath='apigateway_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -316,6 +335,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.apigateway.v1beta',
                     client_classpath='apigateway_v1beta_client.ApigatewayV1beta',
+                    base_url='https://apigateway.googleapis.com/',
                     messages_modulepath='apigateway_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -327,6 +347,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.apigee.v1',
                     client_classpath='apigee_v1_client.ApigeeV1',
+                    base_url='https://apigee.googleapis.com/',
                     messages_modulepath='apigee_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -338,6 +359,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.apikeys.v2',
                     client_classpath='apikeys_v2_client.ApikeysV2',
+                    base_url='https://apikeys.googleapis.com/',
                     messages_modulepath='apikeys_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -347,6 +369,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.apikeys.v2alpha1',
                     client_classpath='apikeys_v2alpha1_client.ApikeysV2alpha1',
+                    base_url='https://apikeys.googleapis.com/',
                     messages_modulepath='apikeys_v2alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -358,6 +381,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.appengine.v1',
                     client_classpath='appengine_v1_client.AppengineV1',
+                    base_url='https://appengine.googleapis.com/',
                     messages_modulepath='appengine_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -367,6 +391,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.appengine.v1alpha',
                     client_classpath='appengine_v1alpha_client.AppengineV1alpha',
+                    base_url='https://appengine.googleapis.com/',
                     messages_modulepath='appengine_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -376,6 +401,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.appengine.v1beta',
                     client_classpath='appengine_v1beta_client.AppengineV1beta',
+                    base_url='https://appengine.googleapis.com/',
                     messages_modulepath='appengine_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -387,6 +413,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.artifactregistry.v1',
                     client_classpath='artifactregistry_v1_client.ArtifactregistryV1',
+                    base_url='https://artifactregistry.googleapis.com/',
                     messages_modulepath='artifactregistry_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -396,6 +423,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.artifactregistry.v1alpha1',
                     client_classpath='artifactregistry_v1alpha1_client.ArtifactregistryV1alpha1',
+                    base_url='https://artifactregistry.googleapis.com/',
                     messages_modulepath='artifactregistry_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -405,6 +433,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.artifactregistry.v1beta1',
                     client_classpath='artifactregistry_v1beta1_client.ArtifactregistryV1beta1',
+                    base_url='https://artifactregistry.googleapis.com/',
                     messages_modulepath='artifactregistry_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -414,6 +443,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.artifactregistry.v1beta2',
                     client_classpath='artifactregistry_v1beta2_client.ArtifactregistryV1beta2',
+                    base_url='https://artifactregistry.googleapis.com/',
                     messages_modulepath='artifactregistry_v1beta2_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -425,6 +455,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.assuredworkloads.v1',
                     client_classpath='assuredworkloads_v1_client.AssuredworkloadsV1',
+                    base_url='https://assuredworkloads.googleapis.com/',
                     messages_modulepath='assuredworkloads_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -434,6 +465,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.assuredworkloads.v1beta1',
                     client_classpath='assuredworkloads_v1beta1_client.AssuredworkloadsV1beta1',
+                    base_url='https://assuredworkloads.googleapis.com/',
                     messages_modulepath='assuredworkloads_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -445,6 +477,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.baremetalsolution.v1',
                     client_classpath='baremetalsolution_v1_client.BaremetalsolutionV1',
+                    base_url='https://baremetalsolution.googleapis.com/',
                     messages_modulepath='baremetalsolution_v1_messages'),
                 default_version=False,
                 enable_mtls=False,
@@ -454,6 +487,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.baremetalsolution.v2',
                     client_classpath='baremetalsolution_v2_client.BaremetalsolutionV2',
+                    base_url='https://baremetalsolution.googleapis.com/',
                     messages_modulepath='baremetalsolution_v2_messages'),
                 default_version=True,
                 enable_mtls=False,
@@ -465,6 +499,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.batch.v1',
                     client_classpath='batch_v1_client.BatchV1',
+                    base_url='https://batch.googleapis.com/',
                     messages_modulepath='batch_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -474,6 +509,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.batch.v1alpha1',
                     client_classpath='batch_v1alpha1_client.BatchV1alpha1',
+                    base_url='https://batch.googleapis.com/',
                     messages_modulepath='batch_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -485,6 +521,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.beyondcorp.v1',
                     client_classpath='beyondcorp_v1_client.BeyondcorpV1',
+                    base_url='https://beyondcorp.googleapis.com/',
                     messages_modulepath='beyondcorp_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -494,6 +531,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.beyondcorp.v1alpha',
                     client_classpath='beyondcorp_v1alpha_client.BeyondcorpV1alpha',
+                    base_url='https://beyondcorp.googleapis.com/',
                     messages_modulepath='beyondcorp_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -505,6 +543,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.bigquery.v2',
                     client_classpath='bigquery_v2_client.BigqueryV2',
+                    base_url='https://bigquery.googleapis.com/bigquery/v2/',
                     messages_modulepath='bigquery_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -516,6 +555,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.bigquerydatatransfer.v1',
                     client_classpath='bigquerydatatransfer_v1_client.BigquerydatatransferV1',
+                    base_url='https://bigquerydatatransfer.googleapis.com/',
                     messages_modulepath='bigquerydatatransfer_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -527,6 +567,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.bigtableadmin.v2',
                     client_classpath='bigtableadmin_v2_client.BigtableadminV2',
+                    base_url='https://bigtableadmin.googleapis.com/',
                     messages_modulepath='bigtableadmin_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -538,6 +579,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.billingbudgets.v1',
                     client_classpath='billingbudgets_v1_client.BillingbudgetsV1',
+                    base_url='https://billingbudgets.googleapis.com/',
                     messages_modulepath='billingbudgets_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -547,6 +589,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.billingbudgets.v1beta1',
                     client_classpath='billingbudgets_v1beta1_client.BillingbudgetsV1beta1',
+                    base_url='https://billingbudgets.googleapis.com/',
                     messages_modulepath='billingbudgets_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -558,6 +601,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.binaryauthorization.v1',
                     client_classpath='binaryauthorization_v1_client.BinaryauthorizationV1',
+                    base_url='https://binaryauthorization.googleapis.com/',
                     messages_modulepath='binaryauthorization_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -567,6 +611,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.binaryauthorization.v1alpha2',
                     client_classpath='binaryauthorization_v1alpha2_client.BinaryauthorizationV1alpha2',
+                    base_url='https://binaryauthorization.googleapis.com/',
                     messages_modulepath='binaryauthorization_v1alpha2_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -576,6 +621,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.binaryauthorization.v1beta1',
                     client_classpath='binaryauthorization_v1beta1_client.BinaryauthorizationV1beta1',
+                    base_url='https://binaryauthorization.googleapis.com/',
                     messages_modulepath='binaryauthorization_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -587,6 +633,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.blockchainnodeengine.v1alpha1',
                     client_classpath='blockchainnodeengine_v1alpha1_client.BlockchainnodeengineV1alpha1',
+                    base_url='https://blockchainnodeengine.googleapis.com/',
                     messages_modulepath='blockchainnodeengine_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -598,6 +645,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.certificatemanager.v1',
                     client_classpath='certificatemanager_v1_client.CertificatemanagerV1',
+                    base_url='https://certificatemanager.googleapis.com/',
                     messages_modulepath='certificatemanager_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -607,6 +655,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.certificatemanager.v1alpha1',
                     client_classpath='certificatemanager_v1alpha1_client.CertificatemanagerV1alpha1',
+                    base_url='https://certificatemanager.googleapis.com/',
                     messages_modulepath='certificatemanager_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -616,6 +665,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.certificatemanager.v1alpha2',
                     client_classpath='certificatemanager_v1alpha2_client.CertificatemanagerV1alpha2',
+                    base_url='https://certificatemanager.googleapis.com/',
                     messages_modulepath='certificatemanager_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -627,6 +677,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudasset.v1',
                     client_classpath='cloudasset_v1_client.CloudassetV1',
+                    base_url='https://cloudasset.googleapis.com/',
                     messages_modulepath='cloudasset_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -636,6 +687,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudasset.v1p1beta1',
                     client_classpath='cloudasset_v1p1beta1_client.CloudassetV1p1beta1',
+                    base_url='https://cloudasset.googleapis.com/',
                     messages_modulepath='cloudasset_v1p1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -645,6 +697,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudasset.v1p2beta1',
                     client_classpath='cloudasset_v1p2beta1_client.CloudassetV1p2beta1',
+                    base_url='https://cloudasset.googleapis.com/',
                     messages_modulepath='cloudasset_v1p2beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -654,6 +707,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudasset.v1p4alpha1',
                     client_classpath='cloudasset_v1p4alpha1_client.CloudassetV1p4alpha1',
+                    base_url='https://cloudasset.googleapis.com/',
                     messages_modulepath='cloudasset_v1p4alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -663,6 +717,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudasset.v1p5beta1',
                     client_classpath='cloudasset_v1p5beta1_client.CloudassetV1p5beta1',
+                    base_url='https://cloudasset.googleapis.com/',
                     messages_modulepath='cloudasset_v1p5beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -672,6 +727,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudasset.v1p7beta1',
                     client_classpath='cloudasset_v1p7beta1_client.CloudassetV1p7beta1',
+                    base_url='https://cloudasset.googleapis.com/',
                     messages_modulepath='cloudasset_v1p7beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -683,6 +739,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudbilling.v1',
                     client_classpath='cloudbilling_v1_client.CloudbillingV1',
+                    base_url='https://cloudbilling.googleapis.com/',
                     messages_modulepath='cloudbilling_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -694,6 +751,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudbuild.v1',
                     client_classpath='cloudbuild_v1_client.CloudbuildV1',
+                    base_url='https://cloudbuild.googleapis.com/',
                     messages_modulepath='cloudbuild_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -703,6 +761,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudbuild.v1alpha1',
                     client_classpath='cloudbuild_v1alpha1_client.CloudbuildV1alpha1',
+                    base_url='https://cloudbuild.googleapis.com/',
                     messages_modulepath='cloudbuild_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -712,6 +771,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudbuild.v1alpha2',
                     client_classpath='cloudbuild_v1alpha2_client.CloudbuildV1alpha2',
+                    base_url='https://cloudbuild.googleapis.com/',
                     messages_modulepath='cloudbuild_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -721,6 +781,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudbuild.v1beta1',
                     client_classpath='cloudbuild_v1beta1_client.CloudbuildV1beta1',
+                    base_url='https://cloudbuild.googleapis.com/',
                     messages_modulepath='cloudbuild_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -730,6 +791,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudbuild.v2',
                     client_classpath='cloudbuild_v2_client.CloudbuildV2',
+                    base_url='https://cloudbuild.googleapis.com/',
                     messages_modulepath='cloudbuild_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -741,6 +803,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudcommerceconsumerprocurement.v1alpha1',
                     client_classpath='cloudcommerceconsumerprocurement_v1alpha1_client.CloudcommerceconsumerprocurementV1alpha1',
+                    base_url='https://cloudcommerceconsumerprocurement.googleapis.com/',
                     messages_modulepath='cloudcommerceconsumerprocurement_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -752,6 +815,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.clouddebugger.v2',
                     client_classpath='clouddebugger_v2_client.ClouddebuggerV2',
+                    base_url='https://clouddebugger.googleapis.com/',
                     messages_modulepath='clouddebugger_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -763,6 +827,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.clouddeploy.v1',
                     client_classpath='clouddeploy_v1_client.ClouddeployV1',
+                    base_url='https://clouddeploy.googleapis.com/',
                     messages_modulepath='clouddeploy_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -774,6 +839,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.clouderrorreporting.v1beta1',
                     client_classpath='clouderrorreporting_v1beta1_client.ClouderrorreportingV1beta1',
+                    base_url='https://clouderrorreporting.googleapis.com/',
                     messages_modulepath='clouderrorreporting_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -785,6 +851,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudfunctions.v1',
                     client_classpath='cloudfunctions_v1_client.CloudfunctionsV1',
+                    base_url='https://cloudfunctions.googleapis.com/',
                     messages_modulepath='cloudfunctions_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -794,6 +861,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudfunctions.v2',
                     client_classpath='cloudfunctions_v2_client.CloudfunctionsV2',
+                    base_url='https://cloudfunctions.googleapis.com/',
                     messages_modulepath='cloudfunctions_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -803,6 +871,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudfunctions.v2alpha',
                     client_classpath='cloudfunctions_v2alpha_client.CloudfunctionsV2alpha',
+                    base_url='https://cloudfunctions.googleapis.com/',
                     messages_modulepath='cloudfunctions_v2alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -812,6 +881,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudfunctions.v2beta',
                     client_classpath='cloudfunctions_v2beta_client.CloudfunctionsV2beta',
+                    base_url='https://cloudfunctions.googleapis.com/',
                     messages_modulepath='cloudfunctions_v2beta_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -823,6 +893,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudidentity.v1',
                     client_classpath='cloudidentity_v1_client.CloudidentityV1',
+                    base_url='https://cloudidentity.googleapis.com/',
                     messages_modulepath='cloudidentity_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -832,6 +903,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudidentity.v1alpha1',
                     client_classpath='cloudidentity_v1alpha1_client.CloudidentityV1alpha1',
+                    base_url='https://cloudidentity.googleapis.com/',
                     messages_modulepath='cloudidentity_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -841,6 +913,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudidentity.v1beta1',
                     client_classpath='cloudidentity_v1beta1_client.CloudidentityV1beta1',
+                    base_url='https://cloudidentity.googleapis.com/',
                     messages_modulepath='cloudidentity_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -852,6 +925,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudiot.v1',
                     client_classpath='cloudiot_v1_client.CloudiotV1',
+                    base_url='https://cloudiot.googleapis.com/',
                     messages_modulepath='cloudiot_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -863,6 +937,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudkms.v1',
                     client_classpath='cloudkms_v1_client.CloudkmsV1',
+                    base_url='https://cloudkms.googleapis.com/',
                     messages_modulepath='cloudkms_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -874,6 +949,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudresourcemanager.v1',
                     client_classpath='cloudresourcemanager_v1_client.CloudresourcemanagerV1',
+                    base_url='https://cloudresourcemanager.googleapis.com/',
                     messages_modulepath='cloudresourcemanager_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -883,6 +959,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudresourcemanager.v1beta1',
                     client_classpath='cloudresourcemanager_v1beta1_client.CloudresourcemanagerV1beta1',
+                    base_url='https://cloudresourcemanager.googleapis.com/',
                     messages_modulepath='cloudresourcemanager_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -892,6 +969,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudresourcemanager.v2',
                     client_classpath='cloudresourcemanager_v2_client.CloudresourcemanagerV2',
+                    base_url='https://cloudresourcemanager.googleapis.com/',
                     messages_modulepath='cloudresourcemanager_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -901,6 +979,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudresourcemanager.v2alpha1',
                     client_classpath='cloudresourcemanager_v2alpha1_client.CloudresourcemanagerV2alpha1',
+                    base_url='https://cloudresourcemanager.googleapis.com/',
                     messages_modulepath='cloudresourcemanager_v2alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -910,6 +989,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudresourcemanager.v2beta1',
                     client_classpath='cloudresourcemanager_v2beta1_client.CloudresourcemanagerV2beta1',
+                    base_url='https://cloudresourcemanager.googleapis.com/',
                     messages_modulepath='cloudresourcemanager_v2beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -919,6 +999,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudresourcemanager.v3',
                     client_classpath='cloudresourcemanager_v3_client.CloudresourcemanagerV3',
+                    base_url='https://cloudresourcemanager.googleapis.com/',
                     messages_modulepath='cloudresourcemanager_v3_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -930,6 +1011,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudscheduler.v1',
                     client_classpath='cloudscheduler_v1_client.CloudschedulerV1',
+                    base_url='https://cloudscheduler.googleapis.com/',
                     messages_modulepath='cloudscheduler_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -939,6 +1021,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudscheduler.v1alpha1',
                     client_classpath='cloudscheduler_v1alpha1_client.CloudschedulerV1alpha1',
+                    base_url='https://cloudscheduler.googleapis.com/',
                     messages_modulepath='cloudscheduler_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -948,6 +1031,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudscheduler.v1beta1',
                     client_classpath='cloudscheduler_v1beta1_client.CloudschedulerV1beta1',
+                    base_url='https://cloudscheduler.googleapis.com/',
                     messages_modulepath='cloudscheduler_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -959,6 +1043,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudshell.v1',
                     client_classpath='cloudshell_v1_client.CloudshellV1',
+                    base_url='https://cloudshell.googleapis.com/',
                     messages_modulepath='cloudshell_v1_messages'),
                 default_version=False,
                 enable_mtls=False,
@@ -968,6 +1053,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudshell.v1alpha1',
                     client_classpath='cloudshell_v1alpha1_client.CloudshellV1alpha1',
+                    base_url='https://cloudshell.googleapis.com/',
                     messages_modulepath='cloudshell_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=False,
@@ -979,6 +1065,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudtasks.v2',
                     client_classpath='cloudtasks_v2_client.CloudtasksV2',
+                    base_url='https://cloudtasks.googleapis.com/',
                     messages_modulepath='cloudtasks_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -988,6 +1075,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudtasks.v2beta2',
                     client_classpath='cloudtasks_v2beta2_client.CloudtasksV2beta2',
+                    base_url='https://cloudtasks.googleapis.com/',
                     messages_modulepath='cloudtasks_v2beta2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -997,6 +1085,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudtasks.v2beta3',
                     client_classpath='cloudtasks_v2beta3_client.CloudtasksV2beta3',
+                    base_url='https://cloudtasks.googleapis.com/',
                     messages_modulepath='cloudtasks_v2beta3_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1008,6 +1097,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.cloudtrace.v2beta1',
                     client_classpath='cloudtrace_v2beta1_client.CloudtraceV2beta1',
+                    base_url='https://cloudtrace.googleapis.com/',
                     messages_modulepath='cloudtrace_v2beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1019,6 +1109,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.composer.v1',
                     client_classpath='composer_v1_client.ComposerV1',
+                    base_url='https://composer.googleapis.com/',
                     messages_modulepath='composer_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1028,6 +1119,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.composer.v1alpha2',
                     client_classpath='composer_v1alpha2_client.ComposerV1alpha2',
+                    base_url='https://composer.googleapis.com/',
                     messages_modulepath='composer_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1037,6 +1129,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.composer.v1beta1',
                     client_classpath='composer_v1beta1_client.ComposerV1beta1',
+                    base_url='https://composer.googleapis.com/',
                     messages_modulepath='composer_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1048,6 +1141,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.composerflex.v1alpha1',
                     client_classpath='composerflex_v1alpha1_client.ComposerflexV1alpha1',
+                    base_url='https://composerflex.googleapis.com/',
                     messages_modulepath='composerflex_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1059,6 +1153,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.compute.alpha',
                     client_classpath='compute_alpha_client.ComputeAlpha',
+                    base_url='https://compute.googleapis.com/compute/alpha/',
                     messages_modulepath='compute_alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1068,6 +1163,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.compute.beta',
                     client_classpath='compute_beta_client.ComputeBeta',
+                    base_url='https://compute.googleapis.com/compute/beta/',
                     messages_modulepath='compute_beta_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1077,6 +1173,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.compute.v1',
                     client_classpath='compute_v1_client.ComputeV1',
+                    base_url='https://compute.googleapis.com/compute/v1/',
                     messages_modulepath='compute_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1088,6 +1185,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.config.v1alpha1',
                     client_classpath='config_v1alpha1_client.ConfigV1alpha1',
+                    base_url='https://config.googleapis.com/',
                     messages_modulepath='config_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1099,6 +1197,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.container.v1',
                     client_classpath='container_v1_client.ContainerV1',
+                    base_url='https://container.googleapis.com/',
                     messages_modulepath='container_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1108,6 +1207,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.container.v1alpha1',
                     client_classpath='container_v1alpha1_client.ContainerV1alpha1',
+                    base_url='https://container.googleapis.com/',
                     messages_modulepath='container_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1117,6 +1217,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.container.v1beta1',
                     client_classpath='container_v1beta1_client.ContainerV1beta1',
+                    base_url='https://container.googleapis.com/',
                     messages_modulepath='container_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1128,6 +1229,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.containeranalysis.v1',
                     client_classpath='containeranalysis_v1_client.ContaineranalysisV1',
+                    base_url='https://containeranalysis.googleapis.com/',
                     messages_modulepath='containeranalysis_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1137,6 +1239,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.containeranalysis.v1alpha1',
                     client_classpath='containeranalysis_v1alpha1_client.ContaineranalysisV1alpha1',
+                    base_url='https://containeranalysis.googleapis.com/',
                     messages_modulepath='containeranalysis_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1146,6 +1249,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.containeranalysis.v1beta1',
                     client_classpath='containeranalysis_v1beta1_client.ContaineranalysisV1beta1',
+                    base_url='https://containeranalysis.googleapis.com/',
                     messages_modulepath='containeranalysis_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1157,6 +1261,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.datacatalog.v1',
                     client_classpath='datacatalog_v1_client.DatacatalogV1',
+                    base_url='https://datacatalog.googleapis.com/',
                     messages_modulepath='datacatalog_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1166,6 +1271,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.datacatalog.v1alpha3',
                     client_classpath='datacatalog_v1alpha3_client.DatacatalogV1alpha3',
+                    base_url='https://datacatalog.googleapis.com/',
                     messages_modulepath='datacatalog_v1alpha3_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1175,6 +1281,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.datacatalog.v1beta1',
                     client_classpath='datacatalog_v1beta1_client.DatacatalogV1beta1',
+                    base_url='https://datacatalog.googleapis.com/',
                     messages_modulepath='datacatalog_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1186,6 +1293,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.dataflow.v1b3',
                     client_classpath='dataflow_v1b3_client.DataflowV1b3',
+                    base_url='https://dataflow.googleapis.com/',
                     messages_modulepath='dataflow_v1b3_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1197,6 +1305,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.datafusion.v1beta1',
                     client_classpath='datafusion_v1beta1_client.DatafusionV1beta1',
+                    base_url='https://datafusion.googleapis.com/',
                     messages_modulepath='datafusion_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=False,
@@ -1208,6 +1317,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.datamigration.v1',
                     client_classpath='datamigration_v1_client.DatamigrationV1',
+                    base_url='https://datamigration.googleapis.com/',
                     messages_modulepath='datamigration_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1217,6 +1327,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.datamigration.v1alpha2',
                     client_classpath='datamigration_v1alpha2_client.DatamigrationV1alpha2',
+                    base_url='https://datamigration.googleapis.com/',
                     messages_modulepath='datamigration_v1alpha2_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1228,6 +1339,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.datapipelines.v1',
                     client_classpath='datapipelines_v1_client.DatapipelinesV1',
+                    base_url='https://datapipelines.googleapis.com/',
                     messages_modulepath='datapipelines_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1239,6 +1351,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.dataplex.v1',
                     client_classpath='dataplex_v1_client.DataplexV1',
+                    base_url='https://dataplex.googleapis.com/',
                     messages_modulepath='dataplex_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1250,6 +1363,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.dataproc.v1',
                     client_classpath='dataproc_v1_client.DataprocV1',
+                    base_url='https://dataproc.googleapis.com/',
                     messages_modulepath='dataproc_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1261,6 +1375,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.datastore.v1',
                     client_classpath='datastore_v1_client.DatastoreV1',
+                    base_url='https://datastore.googleapis.com/',
                     messages_modulepath='datastore_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1270,6 +1385,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.datastore.v1beta1',
                     client_classpath='datastore_v1beta1_client.DatastoreV1beta1',
+                    base_url='https://datastore.googleapis.com/',
                     messages_modulepath='datastore_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1281,6 +1397,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.datastream.v1',
                     client_classpath='datastream_v1_client.DatastreamV1',
+                    base_url='https://datastream.googleapis.com/',
                     messages_modulepath='datastream_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1290,6 +1407,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.datastream.v1alpha1',
                     client_classpath='datastream_v1alpha1_client.DatastreamV1alpha1',
+                    base_url='https://datastream.googleapis.com/',
                     messages_modulepath='datastream_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1301,6 +1419,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.deploymentmanager.alpha',
                     client_classpath='deploymentmanager_alpha_client.DeploymentmanagerAlpha',
+                    base_url='https://deploymentmanager.googleapis.com/',
                     messages_modulepath='deploymentmanager_alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1310,6 +1429,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.deploymentmanager.v2',
                     client_classpath='deploymentmanager_v2_client.DeploymentmanagerV2',
+                    base_url='https://deploymentmanager.googleapis.com/',
                     messages_modulepath='deploymentmanager_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1319,6 +1439,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.deploymentmanager.v2beta',
                     client_classpath='deploymentmanager_v2beta_client.DeploymentmanagerV2beta',
+                    base_url='https://deploymentmanager.googleapis.com/',
                     messages_modulepath='deploymentmanager_v2beta_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1330,6 +1451,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.dialogflow.v2',
                     client_classpath='dialogflow_v2_client.DialogflowV2',
+                    base_url='https://dialogflow.googleapis.com/',
                     messages_modulepath='dialogflow_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1341,6 +1463,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.discovery.v1',
                     client_classpath='discovery_v1_client.DiscoveryV1',
+                    base_url='https://www.googleapis.com/discovery/v1/',
                     messages_modulepath='discovery_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1352,6 +1475,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.dlp.v2',
                     client_classpath='dlp_v2_client.DlpV2',
+                    base_url='https://dlp.googleapis.com/',
                     messages_modulepath='dlp_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1363,6 +1487,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.dns.v1',
                     client_classpath='dns_v1_client.DnsV1',
+                    base_url='https://dns.googleapis.com/dns/v1/',
                     messages_modulepath='dns_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1372,6 +1497,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.dns.v1alpha2',
                     client_classpath='dns_v1alpha2_client.DnsV1alpha2',
+                    base_url='https://dns.googleapis.com/',
                     messages_modulepath='dns_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1381,6 +1507,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.dns.v1beta2',
                     client_classpath='dns_v1beta2_client.DnsV1beta2',
+                    base_url='https://dns.googleapis.com/dns/v1beta2/',
                     messages_modulepath='dns_v1beta2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1390,6 +1517,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.dns.v2',
                     client_classpath='dns_v2_client.DnsV2',
+                    base_url='https://dns.googleapis.com/',
                     messages_modulepath='dns_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1401,6 +1529,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.domains.v1',
                     client_classpath='domains_v1_client.DomainsV1',
+                    base_url='https://domains.googleapis.com/',
                     messages_modulepath='domains_v1_messages'),
                 default_version=True,
                 enable_mtls=False,
@@ -1410,6 +1539,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.domains.v1alpha2',
                     client_classpath='domains_v1alpha2_client.DomainsV1alpha2',
+                    base_url='https://domains.googleapis.com/',
                     messages_modulepath='domains_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=False,
@@ -1419,6 +1549,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.domains.v1beta1',
                     client_classpath='domains_v1beta1_client.DomainsV1beta1',
+                    base_url='https://domains.googleapis.com/',
                     messages_modulepath='domains_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=False,
@@ -1430,6 +1561,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.edgecontainer.v1',
                     client_classpath='edgecontainer_v1_client.EdgecontainerV1',
+                    base_url='https://edgecontainer.googleapis.com/',
                     messages_modulepath='edgecontainer_v1_messages'),
                 default_version=False,
                 enable_mtls=False,
@@ -1439,6 +1571,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.edgecontainer.v1alpha',
                     client_classpath='edgecontainer_v1alpha_client.EdgecontainerV1alpha',
+                    base_url='https://edgecontainer.googleapis.com/',
                     messages_modulepath='edgecontainer_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=False,
@@ -1448,6 +1581,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.edgecontainer.v1beta',
                     client_classpath='edgecontainer_v1beta_client.EdgecontainerV1beta',
+                    base_url='https://edgecontainer.googleapis.com/',
                     messages_modulepath='edgecontainer_v1beta_messages'),
                 default_version=False,
                 enable_mtls=False,
@@ -1459,6 +1593,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.edgenetwork.v1alpha1',
                     client_classpath='edgenetwork_v1alpha1_client.EdgenetworkV1alpha1',
+                    base_url='https://edgenetwork.googleapis.com/',
                     messages_modulepath='edgenetwork_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1470,6 +1605,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.essentialcontacts.v1',
                     client_classpath='essentialcontacts_v1_client.EssentialcontactsV1',
+                    base_url='https://essentialcontacts.googleapis.com/',
                     messages_modulepath='essentialcontacts_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1479,6 +1615,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.essentialcontacts.v1alpha1',
                     client_classpath='essentialcontacts_v1alpha1_client.EssentialcontactsV1alpha1',
+                    base_url='https://essentialcontacts.googleapis.com/',
                     messages_modulepath='essentialcontacts_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1488,6 +1625,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.essentialcontacts.v1beta1',
                     client_classpath='essentialcontacts_v1beta1_client.EssentialcontactsV1beta1',
+                    base_url='https://essentialcontacts.googleapis.com/',
                     messages_modulepath='essentialcontacts_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1499,6 +1637,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.eventarc.v1',
                     client_classpath='eventarc_v1_client.EventarcV1',
+                    base_url='https://eventarc.googleapis.com/',
                     messages_modulepath='eventarc_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1508,6 +1647,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.eventarc.v1beta1',
                     client_classpath='eventarc_v1beta1_client.EventarcV1beta1',
+                    base_url='https://eventarc.googleapis.com/',
                     messages_modulepath='eventarc_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1519,6 +1659,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.eventarcpublishing.v1',
                     client_classpath='eventarcpublishing_v1_client.EventarcpublishingV1',
+                    base_url='https://eventarcpublishing.googleapis.com/',
                     messages_modulepath='eventarcpublishing_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1530,6 +1671,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.eventflow.v1beta2',
                     client_classpath='eventflow_v1beta2_client.EventflowV1beta2',
+                    base_url='https://eventflow.googleapis.com/',
                     messages_modulepath='eventflow_v1beta2_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1541,6 +1683,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.events.v1beta1',
                     client_classpath='events_v1beta1_client.EventsV1beta1',
+                    base_url='https://events.googleapis.com/',
                     messages_modulepath='events_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1552,6 +1695,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.file.v1',
                     client_classpath='file_v1_client.FileV1',
+                    base_url='https://file.googleapis.com/',
                     messages_modulepath='file_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1561,6 +1705,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.file.v1beta1',
                     client_classpath='file_v1beta1_client.FileV1beta1',
+                    base_url='https://file.googleapis.com/',
                     messages_modulepath='file_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1570,6 +1715,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.file.v1p1alpha1',
                     client_classpath='file_v1p1alpha1_client.FileV1p1alpha1',
+                    base_url='https://file.googleapis.com/',
                     messages_modulepath='file_v1p1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1581,6 +1727,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.firestore.v1',
                     client_classpath='firestore_v1_client.FirestoreV1',
+                    base_url='https://firestore.googleapis.com/',
                     messages_modulepath='firestore_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1590,6 +1737,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.firestore.v1beta1',
                     client_classpath='firestore_v1beta1_client.FirestoreV1beta1',
+                    base_url='https://firestore.googleapis.com/',
                     messages_modulepath='firestore_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1599,6 +1747,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.firestore.v1beta2',
                     client_classpath='firestore_v1beta2_client.FirestoreV1beta2',
+                    base_url='https://firestore.googleapis.com/',
                     messages_modulepath='firestore_v1beta2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1610,6 +1759,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.gameservices.v1',
                     client_classpath='gameservices_v1_client.GameservicesV1',
+                    base_url='https://gameservices.googleapis.com/',
                     messages_modulepath='gameservices_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1619,6 +1769,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.gameservices.v1alpha',
                     client_classpath='gameservices_v1alpha_client.GameservicesV1alpha',
+                    base_url='https://gameservices.googleapis.com/',
                     messages_modulepath='gameservices_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1628,6 +1779,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.gameservices.v1beta',
                     client_classpath='gameservices_v1beta_client.GameservicesV1beta',
+                    base_url='https://gameservices.googleapis.com/',
                     messages_modulepath='gameservices_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1639,6 +1791,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.genomics.v1',
                     client_classpath='genomics_v1_client.GenomicsV1',
+                    base_url='https://genomics.googleapis.com/',
                     messages_modulepath='genomics_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1648,6 +1801,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.genomics.v1alpha2',
                     client_classpath='genomics_v1alpha2_client.GenomicsV1alpha2',
+                    base_url='https://genomics.googleapis.com/',
                     messages_modulepath='genomics_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1657,6 +1811,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.genomics.v2alpha1',
                     client_classpath='genomics_v2alpha1_client.GenomicsV2alpha1',
+                    base_url='https://genomics.googleapis.com/',
                     messages_modulepath='genomics_v2alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1668,6 +1823,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.gkebackup.v1',
                     client_classpath='gkebackup_v1_client.GkebackupV1',
+                    base_url='https://gkebackup.googleapis.com/',
                     messages_modulepath='gkebackup_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1677,6 +1833,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.gkebackup.v1alpha1',
                     client_classpath='gkebackup_v1alpha1_client.GkebackupV1alpha1',
+                    base_url='https://gkebackup.googleapis.com/',
                     messages_modulepath='gkebackup_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1688,6 +1845,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.gkehub.v1',
                     client_classpath='gkehub_v1_client.GkehubV1',
+                    base_url='https://gkehub.googleapis.com/',
                     messages_modulepath='gkehub_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1697,6 +1855,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.gkehub.v1alpha',
                     client_classpath='gkehub_v1alpha_client.GkehubV1alpha',
+                    base_url='https://gkehub.googleapis.com/',
                     messages_modulepath='gkehub_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1706,6 +1865,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.gkehub.v1alpha1',
                     client_classpath='gkehub_v1alpha1_client.GkehubV1alpha1',
+                    base_url='https://gkehub.googleapis.com/',
                     messages_modulepath='gkehub_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1715,6 +1875,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.gkehub.v1alpha2',
                     client_classpath='gkehub_v1alpha2_client.GkehubV1alpha2',
+                    base_url='https://gkehub.googleapis.com/',
                     messages_modulepath='gkehub_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1724,6 +1885,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.gkehub.v1beta',
                     client_classpath='gkehub_v1beta_client.GkehubV1beta',
+                    base_url='https://gkehub.googleapis.com/',
                     messages_modulepath='gkehub_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1733,6 +1895,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.gkehub.v1beta1',
                     client_classpath='gkehub_v1beta1_client.GkehubV1beta1',
+                    base_url='https://gkehub.googleapis.com/',
                     messages_modulepath='gkehub_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1744,6 +1907,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.gkemulticloud.v1',
                     client_classpath='gkemulticloud_v1_client.GkemulticloudV1',
+                    base_url='https://gkemulticloud.googleapis.com/',
                     messages_modulepath='gkemulticloud_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1755,6 +1919,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.gkeonprem.v1',
                     client_classpath='gkeonprem_v1_client.GkeonpremV1',
+                    base_url='https://gkeonprem.googleapis.com/',
                     messages_modulepath='gkeonprem_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1766,6 +1931,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.gsuiteaddons.v1',
                     client_classpath='gsuiteaddons_v1_client.GsuiteaddonsV1',
+                    base_url='https://gsuiteaddons.googleapis.com/',
                     messages_modulepath='gsuiteaddons_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1777,6 +1943,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.healthcare.v1',
                     client_classpath='healthcare_v1_client.HealthcareV1',
+                    base_url='https://healthcare.googleapis.com/',
                     messages_modulepath='healthcare_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1786,6 +1953,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.healthcare.v1alpha2',
                     client_classpath='healthcare_v1alpha2_client.HealthcareV1alpha2',
+                    base_url='https://healthcare.googleapis.com/',
                     messages_modulepath='healthcare_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1795,6 +1963,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.healthcare.v1beta1',
                     client_classpath='healthcare_v1beta1_client.HealthcareV1beta1',
+                    base_url='https://healthcare.googleapis.com/',
                     messages_modulepath='healthcare_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1806,6 +1975,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.iam.v1',
                     client_classpath='iam_v1_client.IamV1',
+                    base_url='https://iam.googleapis.com/',
                     messages_modulepath='iam_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1815,6 +1985,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.iam.v1beta',
                     client_classpath='iam_v1beta_client.IamV1beta',
+                    base_url='https://iam.googleapis.com/',
                     messages_modulepath='iam_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1824,6 +1995,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.iam.v2',
                     client_classpath='iam_v2_client.IamV2',
+                    base_url='https://iam.googleapis.com/',
                     messages_modulepath='iam_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1833,6 +2005,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.iam.v2alpha',
                     client_classpath='iam_v2alpha_client.IamV2alpha',
+                    base_url='https://iam.googleapis.com/',
                     messages_modulepath='iam_v2alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1842,6 +2015,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.iam.v2beta',
                     client_classpath='iam_v2beta_client.IamV2beta',
+                    base_url='https://iam.googleapis.com/',
                     messages_modulepath='iam_v2beta_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1853,6 +2027,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.iamcredentials.v1',
                     client_classpath='iamcredentials_v1_client.IamcredentialsV1',
+                    base_url='https://iamcredentials.googleapis.com/',
                     messages_modulepath='iamcredentials_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1864,6 +2039,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.iap.v1',
                     client_classpath='iap_v1_client.IapV1',
+                    base_url='https://iap.googleapis.com/',
                     messages_modulepath='iap_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1873,6 +2049,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.iap.v1beta1',
                     client_classpath='iap_v1beta1_client.IapV1beta1',
+                    base_url='https://iap.googleapis.com/',
                     messages_modulepath='iap_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1884,6 +2061,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.ids.v1',
                     client_classpath='ids_v1_client.IdsV1',
+                    base_url='https://ids.googleapis.com/',
                     messages_modulepath='ids_v1_messages'),
                 default_version=True,
                 enable_mtls=False,
@@ -1895,6 +2073,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.kmsinventory.v1',
                     client_classpath='kmsinventory_v1_client.KmsinventoryV1',
+                    base_url='https://kmsinventory.googleapis.com/',
                     messages_modulepath='kmsinventory_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1906,6 +2085,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.krmapihosting.v1',
                     client_classpath='krmapihosting_v1_client.KrmapihostingV1',
+                    base_url='https://krmapihosting.googleapis.com/',
                     messages_modulepath='krmapihosting_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1915,6 +2095,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.krmapihosting.v1alpha1',
                     client_classpath='krmapihosting_v1alpha1_client.KrmapihostingV1alpha1',
+                    base_url='https://krmapihosting.googleapis.com/',
                     messages_modulepath='krmapihosting_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1926,6 +2107,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.language.v1',
                     client_classpath='language_v1_client.LanguageV1',
+                    base_url='https://language.googleapis.com/',
                     messages_modulepath='language_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1935,6 +2117,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.language.v1beta2',
                     client_classpath='language_v1beta2_client.LanguageV1beta2',
+                    base_url='https://language.googleapis.com/',
                     messages_modulepath='language_v1beta2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1946,6 +2129,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.lifesciences.v2beta',
                     client_classpath='lifesciences_v2beta_client.LifesciencesV2beta',
+                    base_url='https://lifesciences.googleapis.com/',
                     messages_modulepath='lifesciences_v2beta_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1957,6 +2141,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.logging.v2',
                     client_classpath='logging_v2_client.LoggingV2',
+                    base_url='https://logging.googleapis.com/',
                     messages_modulepath='logging_v2_messages'),
                 GapicClientDef(
                     class_path='googlecloudsdk.generated_clients.gapic_wrappers.logging.v2'),
@@ -1970,6 +2155,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.managedidentities.v1',
                     client_classpath='managedidentities_v1_client.ManagedidentitiesV1',
+                    base_url='https://managedidentities.googleapis.com/',
                     messages_modulepath='managedidentities_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -1979,6 +2165,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.managedidentities.v1alpha1',
                     client_classpath='managedidentities_v1alpha1_client.ManagedidentitiesV1alpha1',
+                    base_url='https://managedidentities.googleapis.com/',
                     messages_modulepath='managedidentities_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1988,6 +2175,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.managedidentities.v1beta1',
                     client_classpath='managedidentities_v1beta1_client.ManagedidentitiesV1beta1',
+                    base_url='https://managedidentities.googleapis.com/',
                     messages_modulepath='managedidentities_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -1999,6 +2187,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.mediaasset.v1alpha',
                     client_classpath='mediaasset_v1alpha_client.MediaassetV1alpha',
+                    base_url='https://mediaasset.googleapis.com/',
                     messages_modulepath='mediaasset_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2010,6 +2199,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.memcache.v1',
                     client_classpath='memcache_v1_client.MemcacheV1',
+                    base_url='https://memcache.googleapis.com/',
                     messages_modulepath='memcache_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2019,6 +2209,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.memcache.v1beta2',
                     client_classpath='memcache_v1beta2_client.MemcacheV1beta2',
+                    base_url='https://memcache.googleapis.com/',
                     messages_modulepath='memcache_v1beta2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2030,6 +2221,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.metastore.v1',
                     client_classpath='metastore_v1_client.MetastoreV1',
+                    base_url='https://metastore.googleapis.com/',
                     messages_modulepath='metastore_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2039,6 +2231,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.metastore.v1alpha',
                     client_classpath='metastore_v1alpha_client.MetastoreV1alpha',
+                    base_url='https://metastore.googleapis.com/',
                     messages_modulepath='metastore_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2048,6 +2241,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.metastore.v1beta',
                     client_classpath='metastore_v1beta_client.MetastoreV1beta',
+                    base_url='https://metastore.googleapis.com/',
                     messages_modulepath='metastore_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2059,6 +2253,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.microservices.v1alpha1',
                     client_classpath='microservices_v1alpha1_client.MicroservicesV1alpha1',
+                    base_url='https://microservices.googleapis.com/',
                     messages_modulepath='microservices_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2070,6 +2265,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.ml.v1',
                     client_classpath='ml_v1_client.MlV1',
+                    base_url='https://ml.googleapis.com/',
                     messages_modulepath='ml_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2081,6 +2277,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.monitoring.v1',
                     client_classpath='monitoring_v1_client.MonitoringV1',
+                    base_url='https://monitoring.googleapis.com/',
                     messages_modulepath='monitoring_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2090,6 +2287,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.monitoring.v3',
                     client_classpath='monitoring_v3_client.MonitoringV3',
+                    base_url='https://monitoring.googleapis.com/',
                     messages_modulepath='monitoring_v3_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2101,6 +2299,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.netapp.v1alpha1',
                     client_classpath='netapp_v1alpha1_client.NetappV1alpha1',
+                    base_url='https://netapp.googleapis.com/',
                     messages_modulepath='netapp_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2112,6 +2311,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.networkconnectivity.v1',
                     client_classpath='networkconnectivity_v1_client.NetworkconnectivityV1',
+                    base_url='https://networkconnectivity.googleapis.com/',
                     messages_modulepath='networkconnectivity_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2121,6 +2321,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.networkconnectivity.v1alpha1',
                     client_classpath='networkconnectivity_v1alpha1_client.NetworkconnectivityV1alpha1',
+                    base_url='https://networkconnectivity.googleapis.com/',
                     messages_modulepath='networkconnectivity_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2132,6 +2333,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.networkmanagement.v1',
                     client_classpath='networkmanagement_v1_client.NetworkmanagementV1',
+                    base_url='https://networkmanagement.googleapis.com/',
                     messages_modulepath='networkmanagement_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2141,6 +2343,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.networkmanagement.v1beta1',
                     client_classpath='networkmanagement_v1beta1_client.NetworkmanagementV1beta1',
+                    base_url='https://networkmanagement.googleapis.com/',
                     messages_modulepath='networkmanagement_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2152,6 +2355,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.networksecurity.v1',
                     client_classpath='networksecurity_v1_client.NetworksecurityV1',
+                    base_url='https://networksecurity.googleapis.com/',
                     messages_modulepath='networksecurity_v1_messages'),
                 default_version=True,
                 enable_mtls=False,
@@ -2161,6 +2365,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.networksecurity.v1alpha1',
                     client_classpath='networksecurity_v1alpha1_client.NetworksecurityV1alpha1',
+                    base_url='https://networksecurity.googleapis.com/',
                     messages_modulepath='networksecurity_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=False,
@@ -2170,6 +2375,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.networksecurity.v1beta1',
                     client_classpath='networksecurity_v1beta1_client.NetworksecurityV1beta1',
+                    base_url='https://networksecurity.googleapis.com/',
                     messages_modulepath='networksecurity_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=False,
@@ -2181,6 +2387,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.networkservices.v1',
                     client_classpath='networkservices_v1_client.NetworkservicesV1',
+                    base_url='https://networkservices.googleapis.com/',
                     messages_modulepath='networkservices_v1_messages'),
                 default_version=True,
                 enable_mtls=False,
@@ -2190,6 +2397,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.networkservices.v1alpha1',
                     client_classpath='networkservices_v1alpha1_client.NetworkservicesV1alpha1',
+                    base_url='https://networkservices.googleapis.com/',
                     messages_modulepath='networkservices_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=False,
@@ -2199,6 +2407,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.networkservices.v1beta1',
                     client_classpath='networkservices_v1beta1_client.NetworkservicesV1beta1',
+                    base_url='https://networkservices.googleapis.com/',
                     messages_modulepath='networkservices_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=False,
@@ -2210,6 +2419,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.notebooks.v1',
                     client_classpath='notebooks_v1_client.NotebooksV1',
+                    base_url='https://notebooks.googleapis.com/',
                     messages_modulepath='notebooks_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2219,6 +2429,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.notebooks.v1beta1',
                     client_classpath='notebooks_v1beta1_client.NotebooksV1beta1',
+                    base_url='https://notebooks.googleapis.com/',
                     messages_modulepath='notebooks_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2230,6 +2441,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.ondemandscanning.v1',
                     client_classpath='ondemandscanning_v1_client.OndemandscanningV1',
+                    base_url='https://ondemandscanning.googleapis.com/',
                     messages_modulepath='ondemandscanning_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2239,6 +2451,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.ondemandscanning.v1beta1',
                     client_classpath='ondemandscanning_v1beta1_client.OndemandscanningV1beta1',
+                    base_url='https://ondemandscanning.googleapis.com/',
                     messages_modulepath='ondemandscanning_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2250,6 +2463,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.orgpolicy.v2',
                     client_classpath='orgpolicy_v2_client.OrgpolicyV2',
+                    base_url='https://orgpolicy.googleapis.com/',
                     messages_modulepath='orgpolicy_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2259,6 +2473,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.orgpolicy.v2alpha1',
                     client_classpath='orgpolicy_v2alpha1_client.OrgpolicyV2alpha1',
+                    base_url='https://orgpolicy.googleapis.com/',
                     messages_modulepath='orgpolicy_v2alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2270,6 +2485,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.osconfig.v1',
                     client_classpath='osconfig_v1_client.OsconfigV1',
+                    base_url='https://osconfig.googleapis.com/',
                     messages_modulepath='osconfig_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2279,6 +2495,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.osconfig.v1alpha',
                     client_classpath='osconfig_v1alpha_client.OsconfigV1alpha',
+                    base_url='https://osconfig.googleapis.com/',
                     messages_modulepath='osconfig_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2288,6 +2505,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.osconfig.v1alpha2',
                     client_classpath='osconfig_v1alpha2_client.OsconfigV1alpha2',
+                    base_url='https://osconfig.googleapis.com/',
                     messages_modulepath='osconfig_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2297,6 +2515,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.osconfig.v1beta',
                     client_classpath='osconfig_v1beta_client.OsconfigV1beta',
+                    base_url='https://osconfig.googleapis.com/',
                     messages_modulepath='osconfig_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2308,6 +2527,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.oslogin.v1',
                     client_classpath='oslogin_v1_client.OsloginV1',
+                    base_url='https://oslogin.googleapis.com/',
                     messages_modulepath='oslogin_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2317,6 +2537,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.oslogin.v1alpha',
                     client_classpath='oslogin_v1alpha_client.OsloginV1alpha',
+                    base_url='https://oslogin.googleapis.com/',
                     messages_modulepath='oslogin_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2326,6 +2547,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.oslogin.v1beta',
                     client_classpath='oslogin_v1beta_client.OsloginV1beta',
+                    base_url='https://oslogin.googleapis.com/',
                     messages_modulepath='oslogin_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2337,6 +2559,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.policyanalyzer.v1',
                     client_classpath='policyanalyzer_v1_client.PolicyanalyzerV1',
+                    base_url='https://policyanalyzer.googleapis.com/',
                     messages_modulepath='policyanalyzer_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2346,6 +2569,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.policyanalyzer.v1beta1',
                     client_classpath='policyanalyzer_v1beta1_client.PolicyanalyzerV1beta1',
+                    base_url='https://policyanalyzer.googleapis.com/',
                     messages_modulepath='policyanalyzer_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2357,6 +2581,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.policysimulator.v1',
                     client_classpath='policysimulator_v1_client.PolicysimulatorV1',
+                    base_url='https://policysimulator.googleapis.com/',
                     messages_modulepath='policysimulator_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2366,6 +2591,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.policysimulator.v1alpha',
                     client_classpath='policysimulator_v1alpha_client.PolicysimulatorV1alpha',
+                    base_url='https://policysimulator.googleapis.com/',
                     messages_modulepath='policysimulator_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2375,6 +2601,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.policysimulator.v1beta1',
                     client_classpath='policysimulator_v1beta1_client.PolicysimulatorV1beta1',
+                    base_url='https://policysimulator.googleapis.com/',
                     messages_modulepath='policysimulator_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2386,6 +2613,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.policytroubleshooter.v1',
                     client_classpath='policytroubleshooter_v1_client.PolicytroubleshooterV1',
+                    base_url='https://policytroubleshooter.googleapis.com/',
                     messages_modulepath='policytroubleshooter_v1_messages'),
                 default_version=True,
                 enable_mtls=False,
@@ -2395,6 +2623,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.policytroubleshooter.v1beta',
                     client_classpath='policytroubleshooter_v1beta_client.PolicytroubleshooterV1beta',
+                    base_url='https://policytroubleshooter.googleapis.com/',
                     messages_modulepath='policytroubleshooter_v1beta_messages'),
                 default_version=False,
                 enable_mtls=False,
@@ -2404,6 +2633,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.policytroubleshooter.v2alpha1',
                     client_classpath='policytroubleshooter_v2alpha1_client.PolicytroubleshooterV2alpha1',
+                    base_url='https://policytroubleshooter.googleapis.com/',
                     messages_modulepath='policytroubleshooter_v2alpha1_messages'),
                 default_version=False,
                 enable_mtls=False,
@@ -2415,6 +2645,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.privateca.v1',
                     client_classpath='privateca_v1_client.PrivatecaV1',
+                    base_url='https://privateca.googleapis.com/',
                     messages_modulepath='privateca_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2424,6 +2655,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.privateca.v1beta1',
                     client_classpath='privateca_v1beta1_client.PrivatecaV1beta1',
+                    base_url='https://privateca.googleapis.com/',
                     messages_modulepath='privateca_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2435,6 +2667,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.publicca.v1alpha1',
                     client_classpath='publicca_v1alpha1_client.PubliccaV1alpha1',
+                    base_url='https://publicca.googleapis.com/',
                     messages_modulepath='publicca_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=False,
@@ -2444,6 +2677,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.publicca.v1beta1',
                     client_classpath='publicca_v1beta1_client.PubliccaV1beta1',
+                    base_url='https://publicca.googleapis.com/',
                     messages_modulepath='publicca_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=False,
@@ -2455,6 +2689,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.pubsub.v1',
                     client_classpath='pubsub_v1_client.PubsubV1',
+                    base_url='https://pubsub.googleapis.com/',
                     messages_modulepath='pubsub_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2466,6 +2701,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.pubsublite.v1',
                     client_classpath='pubsublite_v1_client.PubsubliteV1',
+                    base_url='https://pubsublite.googleapis.com/',
                     messages_modulepath='pubsublite_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2477,6 +2713,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.recaptchaenterprise.v1',
                     client_classpath='recaptchaenterprise_v1_client.RecaptchaenterpriseV1',
+                    base_url='https://recaptchaenterprise.googleapis.com/',
                     messages_modulepath='recaptchaenterprise_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2488,6 +2725,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.recommender.v1',
                     client_classpath='recommender_v1_client.RecommenderV1',
+                    base_url='https://recommender.googleapis.com/',
                     messages_modulepath='recommender_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2497,6 +2735,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.recommender.v1alpha2',
                     client_classpath='recommender_v1alpha2_client.RecommenderV1alpha2',
+                    base_url='https://recommender.googleapis.com/',
                     messages_modulepath='recommender_v1alpha2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2506,6 +2745,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.recommender.v1beta1',
                     client_classpath='recommender_v1beta1_client.RecommenderV1beta1',
+                    base_url='https://recommender.googleapis.com/',
                     messages_modulepath='recommender_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2517,6 +2757,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.redis.v1',
                     client_classpath='redis_v1_client.RedisV1',
+                    base_url='https://redis.googleapis.com/',
                     messages_modulepath='redis_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2526,6 +2767,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.redis.v1alpha1',
                     client_classpath='redis_v1alpha1_client.RedisV1alpha1',
+                    base_url='https://redis.googleapis.com/',
                     messages_modulepath='redis_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2535,6 +2777,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.redis.v1beta1',
                     client_classpath='redis_v1beta1_client.RedisV1beta1',
+                    base_url='https://redis.googleapis.com/',
                     messages_modulepath='redis_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2546,6 +2789,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.remotebuildexecution.v1alpha',
                     client_classpath='remotebuildexecution_v1alpha_client.RemotebuildexecutionV1alpha',
+                    base_url='https://admin-remotebuildexecution.googleapis.com/',
                     messages_modulepath='remotebuildexecution_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2557,6 +2801,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.resourcesettings.v1',
                     client_classpath='resourcesettings_v1_client.ResourcesettingsV1',
+                    base_url='https://resourcesettings.googleapis.com/',
                     messages_modulepath='resourcesettings_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2566,6 +2811,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.resourcesettings.v1alpha1',
                     client_classpath='resourcesettings_v1alpha1_client.ResourcesettingsV1alpha1',
+                    base_url='https://resourcesettings.googleapis.com/',
                     messages_modulepath='resourcesettings_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2577,6 +2823,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.run.v1',
                     client_classpath='run_v1_client.RunV1',
+                    base_url='https://run.googleapis.com/',
                     messages_modulepath='run_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2586,6 +2833,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.run.v1alpha1',
                     client_classpath='run_v1alpha1_client.RunV1alpha1',
+                    base_url='https://run.googleapis.com/',
                     messages_modulepath='run_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2595,6 +2843,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.run.v1beta1',
                     client_classpath='run_v1beta1_client.RunV1beta1',
+                    base_url='https://run.googleapis.com/',
                     messages_modulepath='run_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2606,6 +2855,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.runapps.v1alpha1',
                     client_classpath='runapps_v1alpha1_client.RunappsV1alpha1',
+                    base_url='https://runapps.googleapis.com/',
                     messages_modulepath='runapps_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2617,6 +2867,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.runtimeconfig.v1beta1',
                     client_classpath='runtimeconfig_v1beta1_client.RuntimeconfigV1beta1',
+                    base_url='https://runtimeconfig.googleapis.com/',
                     messages_modulepath='runtimeconfig_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2628,6 +2879,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.sddc.v1alpha1',
                     client_classpath='sddc_v1alpha1_client.SddcV1alpha1',
+                    base_url='https://sddc.googleapis.com/',
                     messages_modulepath='sddc_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2639,6 +2891,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.secretmanager.v1',
                     client_classpath='secretmanager_v1_client.SecretmanagerV1',
+                    base_url='https://secretmanager.googleapis.com/',
                     messages_modulepath='secretmanager_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2650,6 +2903,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.securedlandingzone.v1beta',
                     client_classpath='securedlandingzone_v1beta_client.SecuredlandingzoneV1beta',
+                    base_url='https://securedlandingzone.googleapis.com/',
                     messages_modulepath='securedlandingzone_v1beta_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2661,6 +2915,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.securesourcemanager.v1',
                     client_classpath='securesourcemanager_v1_client.SecuresourcemanagerV1',
+                    base_url='https://securesourcemanager.googleapis.com/',
                     messages_modulepath='securesourcemanager_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2672,6 +2927,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.securitycenter.v1',
                     client_classpath='securitycenter_v1_client.SecuritycenterV1',
+                    base_url='https://securitycenter.googleapis.com/',
                     messages_modulepath='securitycenter_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2681,6 +2937,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.securitycenter.v1beta2',
                     client_classpath='securitycenter_v1beta2_client.SecuritycenterV1beta2',
+                    base_url='https://securitycenter.googleapis.com/',
                     messages_modulepath='securitycenter_v1beta2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2692,6 +2949,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.serviceconsumermanagement.v1beta1',
                     client_classpath='serviceconsumermanagement_v1beta1_client.ServiceconsumermanagementV1beta1',
+                    base_url='https://serviceconsumermanagement.googleapis.com/',
                     messages_modulepath='serviceconsumermanagement_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2703,6 +2961,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.servicedirectory.v1',
                     client_classpath='servicedirectory_v1_client.ServicedirectoryV1',
+                    base_url='https://servicedirectory.googleapis.com/',
                     messages_modulepath='servicedirectory_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2712,6 +2971,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.servicedirectory.v1beta1',
                     client_classpath='servicedirectory_v1beta1_client.ServicedirectoryV1beta1',
+                    base_url='https://servicedirectory.googleapis.com/',
                     messages_modulepath='servicedirectory_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2723,6 +2983,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.servicemanagement.v1',
                     client_classpath='servicemanagement_v1_client.ServicemanagementV1',
+                    base_url='https://servicemanagement.googleapis.com/',
                     messages_modulepath='servicemanagement_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2734,6 +2995,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.servicenetworking.v1',
                     client_classpath='servicenetworking_v1_client.ServicenetworkingV1',
+                    base_url='https://servicenetworking.googleapis.com/',
                     messages_modulepath='servicenetworking_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2743,6 +3005,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.servicenetworking.v1beta',
                     client_classpath='servicenetworking_v1beta_client.ServicenetworkingV1beta',
+                    base_url='https://servicenetworking.googleapis.com/',
                     messages_modulepath='servicenetworking_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2754,6 +3017,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.serviceusage.v1',
                     client_classpath='serviceusage_v1_client.ServiceusageV1',
+                    base_url='https://serviceusage.googleapis.com/',
                     messages_modulepath='serviceusage_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2763,6 +3027,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.serviceusage.v1alpha',
                     client_classpath='serviceusage_v1alpha_client.ServiceusageV1alpha',
+                    base_url='https://serviceusage.googleapis.com/',
                     messages_modulepath='serviceusage_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2772,6 +3037,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.serviceusage.v1beta1',
                     client_classpath='serviceusage_v1beta1_client.ServiceusageV1beta1',
+                    base_url='https://serviceusage.googleapis.com/',
                     messages_modulepath='serviceusage_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2783,6 +3049,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.source.v1',
                     client_classpath='source_v1_client.SourceV1',
+                    base_url='https://source.googleapis.com/',
                     messages_modulepath='source_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2794,6 +3061,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.sourcerepo.v1',
                     client_classpath='sourcerepo_v1_client.SourcerepoV1',
+                    base_url='https://sourcerepo.googleapis.com/',
                     messages_modulepath='sourcerepo_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2805,6 +3073,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.spanner.v1',
                     client_classpath='spanner_v1_client.SpannerV1',
+                    base_url='https://spanner.googleapis.com/',
                     messages_modulepath='spanner_v1_messages'),
                 GapicClientDef(
                     class_path='googlecloudsdk.generated_clients.gapic_wrappers.spanner.v1'),
@@ -2818,6 +3087,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.speech.v1',
                     client_classpath='speech_v1_client.SpeechV1',
+                    base_url='https://speech.googleapis.com/',
                     messages_modulepath='speech_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2827,6 +3097,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.speech.v1p1beta1',
                     client_classpath='speech_v1p1beta1_client.SpeechV1p1beta1',
+                    base_url='https://speech.googleapis.com/',
                     messages_modulepath='speech_v1p1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2836,6 +3107,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.speech.v2',
                     client_classpath='speech_v2_client.SpeechV2',
+                    base_url='https://speech.googleapis.com/',
                     messages_modulepath='speech_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2847,6 +3119,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.sqladmin.v1beta4',
                     client_classpath='sqladmin_v1beta4_client.SqladminV1beta4',
+                    base_url='https://sqladmin.googleapis.com/',
                     messages_modulepath='sqladmin_v1beta4_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2858,6 +3131,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.storage.v1',
                     client_classpath='storage_v1_client.StorageV1',
+                    base_url='https://storage.googleapis.com/storage/v1/',
                     messages_modulepath='storage_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2869,6 +3143,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.storageinsights.v1',
                     client_classpath='storageinsights_v1_client.StorageinsightsV1',
+                    base_url='https://storageinsights.googleapis.com/',
                     messages_modulepath='storageinsights_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2880,6 +3155,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.storagetransfer.v1',
                     client_classpath='storagetransfer_v1_client.StoragetransferV1',
+                    base_url='https://storagetransfer.googleapis.com/',
                     messages_modulepath='storagetransfer_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2891,6 +3167,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.stream.v1alpha1',
                     client_classpath='stream_v1alpha1_client.StreamV1alpha1',
+                    base_url='https://stream.googleapis.com/',
                     messages_modulepath='stream_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2902,6 +3179,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.testing.v1',
                     client_classpath='testing_v1_client.TestingV1',
+                    base_url='https://testing.googleapis.com/',
                     messages_modulepath='testing_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2913,6 +3191,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.toolresults.v1beta3',
                     client_classpath='toolresults_v1beta3_client.ToolresultsV1beta3',
+                    base_url='https://toolresults.googleapis.com/',
                     messages_modulepath='toolresults_v1beta3_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2924,6 +3203,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.tpu.v1',
                     client_classpath='tpu_v1_client.TpuV1',
+                    base_url='https://tpu.googleapis.com/',
                     messages_modulepath='tpu_v1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2933,6 +3213,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.tpu.v1alpha1',
                     client_classpath='tpu_v1alpha1_client.TpuV1alpha1',
+                    base_url='https://tpu.googleapis.com/',
                     messages_modulepath='tpu_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2942,6 +3223,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.tpu.v2',
                     client_classpath='tpu_v2_client.TpuV2',
+                    base_url='https://tpu.googleapis.com/',
                     messages_modulepath='tpu_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2951,6 +3233,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.tpu.v2alpha1',
                     client_classpath='tpu_v2alpha1_client.TpuV2alpha1',
+                    base_url='https://tpu.googleapis.com/',
                     messages_modulepath='tpu_v2alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2962,6 +3245,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.transcoder.v1',
                     client_classpath='transcoder_v1_client.TranscoderV1',
+                    base_url='https://transcoder.googleapis.com/',
                     messages_modulepath='transcoder_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2971,6 +3255,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.transcoder.v1beta1',
                     client_classpath='transcoder_v1beta1_client.TranscoderV1beta1',
+                    base_url='https://transcoder.googleapis.com/',
                     messages_modulepath='transcoder_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2982,6 +3267,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.translate.v3',
                     client_classpath='translate_v3_client.TranslateV3',
+                    base_url='https://translation.googleapis.com/',
                     messages_modulepath='translate_v3_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -2991,6 +3277,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.translate.v3beta1',
                     client_classpath='translate_v3beta1_client.TranslateV3beta1',
+                    base_url='https://translation.googleapis.com/',
                     messages_modulepath='translate_v3beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -3002,6 +3289,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.videointelligence.v1',
                     client_classpath='videointelligence_v1_client.VideointelligenceV1',
+                    base_url='https://videointelligence.googleapis.com/',
                     messages_modulepath='videointelligence_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -3013,6 +3301,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.vision.v1',
                     client_classpath='vision_v1_client.VisionV1',
+                    base_url='https://vision.googleapis.com/',
                     messages_modulepath='vision_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -3024,6 +3313,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.vmwareengine.v1',
                     client_classpath='vmwareengine_v1_client.VmwareengineV1',
+                    base_url='https://vmwareengine.googleapis.com/',
                     messages_modulepath='vmwareengine_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -3035,6 +3325,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.vpcaccess.v1',
                     client_classpath='vpcaccess_v1_client.VpcaccessV1',
+                    base_url='https://vpcaccess.googleapis.com/',
                     messages_modulepath='vpcaccess_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -3044,6 +3335,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.vpcaccess.v1alpha1',
                     client_classpath='vpcaccess_v1alpha1_client.VpcaccessV1alpha1',
+                    base_url='https://vpcaccess.googleapis.com/',
                     messages_modulepath='vpcaccess_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -3053,6 +3345,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.vpcaccess.v1beta1',
                     client_classpath='vpcaccess_v1beta1_client.VpcaccessV1beta1',
+                    base_url='https://vpcaccess.googleapis.com/',
                     messages_modulepath='vpcaccess_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -3064,6 +3357,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.websecurityscanner.v1beta',
                     client_classpath='websecurityscanner_v1beta_client.WebsecurityscannerV1beta',
+                    base_url='https://websecurityscanner.googleapis.com/',
                     messages_modulepath='websecurityscanner_v1beta_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -3075,6 +3369,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.workflowexecutions.v1',
                     client_classpath='workflowexecutions_v1_client.WorkflowexecutionsV1',
+                    base_url='https://workflowexecutions.googleapis.com/',
                     messages_modulepath='workflowexecutions_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -3084,6 +3379,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.workflowexecutions.v1alpha1',
                     client_classpath='workflowexecutions_v1alpha1_client.WorkflowexecutionsV1alpha1',
+                    base_url='https://workflowexecutions.googleapis.com/',
                     messages_modulepath='workflowexecutions_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -3093,6 +3389,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.workflowexecutions.v1beta',
                     client_classpath='workflowexecutions_v1beta_client.WorkflowexecutionsV1beta',
+                    base_url='https://workflowexecutions.googleapis.com/',
                     messages_modulepath='workflowexecutions_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -3104,6 +3401,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.workflows.v1',
                     client_classpath='workflows_v1_client.WorkflowsV1',
+                    base_url='https://workflows.googleapis.com/',
                     messages_modulepath='workflows_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -3113,6 +3411,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.workflows.v1alpha1',
                     client_classpath='workflows_v1alpha1_client.WorkflowsV1alpha1',
+                    base_url='https://workflows.googleapis.com/',
                     messages_modulepath='workflows_v1alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -3122,6 +3421,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.workflows.v1beta',
                     client_classpath='workflows_v1beta_client.WorkflowsV1beta',
+                    base_url='https://workflows.googleapis.com/',
                     messages_modulepath='workflows_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
@@ -3133,6 +3433,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.workstations.v1beta',
                     client_classpath='workstations_v1beta_client.WorkstationsV1beta',
+                    base_url='https://workstations.googleapis.com/',
                     messages_modulepath='workstations_v1beta_messages'),
                 default_version=True,
                 enable_mtls=True,

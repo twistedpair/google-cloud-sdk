@@ -524,7 +524,7 @@
           "type": "string"
         },
         "managed": {
-          "description": "Optional. Set to true to have the CDN automatically manage this public key value. Either `value` or `managed` must be specified.",
+          "description": "Optional. Set to true to have the CDN automatically manage this public key. Managed keys are used by the CDN for dual-token authentication. Media CDN internally generates, uses, and rotates the underlying public and private key pair. It is not possible to use a managed key outside of dual-token authentication. Either `value` or `managed` must be specified.",
           "type": "boolean"
         }
       }
@@ -1308,7 +1308,7 @@
           "$ref": "CDNPolicyAddSignaturesOptions"
         },
         "signedRequestMaximumExpirationTtl": {
-          "description": "Optional. Limit how far into the future the expiration time of a signed request may be. When set, a signed request is rejected if its expiration time is later than `now` + `signed_request_maximum_expiration_ttl`, where `now` is the time at which the signed request is first handled by the CDN. - The TTL must be > 0. - Fractions of a second are not allowed. By default, `signed_requess_maximum_expiration_ttl` is not set and the expiration time of a signed request may be arbitrarily far into future.",
+          "description": "Optional. Limit how far into the future the expiration time of a signed request may be. When set, a signed request is rejected if its expiration time is later than `now` + `signed_request_maximum_expiration_ttl`, where `now` is the time at which the signed request is first handled by the CDN. - The TTL must be > 0. - Fractions of a second are not allowed. By default, `signed_request_maximum_expiration_ttl` is not set and the expiration time of a signed request may be arbitrarily far into future.",
           "type": "string",
           "format": "google-duration"
         }

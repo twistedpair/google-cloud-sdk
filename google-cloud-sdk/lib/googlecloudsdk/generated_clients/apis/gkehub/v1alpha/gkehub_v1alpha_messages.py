@@ -42,23 +42,6 @@ class AnthosObservabilityMembershipSpec(_messages.Message):
   version = _messages.StringField(3)
 
 
-class ApigeeMembershipSpec(_messages.Message):
-  r"""**Apigee**: Per-Membership Feature spec.
-
-  Fields:
-    location: Location of the cluster. This is used by Apigee management plane
-      for making location-based routing decisions.
-    organizationProjects: In Apigee hybrid install, a project can contain
-      memberships that serve multiple Apigee org projects. This is the list of
-      Apigee org projects that the membership serves. E.g., In order to get
-      the memberships that serve a specific organization project, Consumers
-      can filter based on this field.
-  """
-
-  location = _messages.StringField(1)
-  organizationProjects = _messages.StringField(2, repeated=True)
-
-
 class AppDevExperienceFeatureSpec(_messages.Message):
   r"""Spec for App Dev Experience Feature."""
 
@@ -356,80 +339,6 @@ class CloudBuildMembershipSpec(_messages.Message):
   version = _messages.StringField(2)
 
 
-class ClusterUpgradeFeatureSpec(_messages.Message):
-  r"""**ClusterUpgrade**: The configuration for the ClusterUpgrade feature.
-
-  Fields:
-    gkeUpgradeOverrides: Allow users to override some properties of each GKE
-      upgrade.
-    postConditions: Post conditions to evaluate to mark an upgrade COMPLETE.
-    upstreamScopes: This scope consumes upgrades that have COMPLETE status
-      code in the upstream scopes. See ScopeGKEUpgradeState.Code for code
-      definitions. The scope name should be in the form:
-      `projects/{p}/locations/global/scopes/{s}` Where {p} is the project, {s}
-      is a valid Scope in this project. {p} WILL match the Feature's project.
-      This is defined as repeated for future proof reasons. Initial
-      implementation will enforce at most one upstream scope.
-  """
-
-  gkeUpgradeOverrides = _messages.MessageField('ClusterUpgradeGKEUpgradeOverride', 1, repeated=True)
-  postConditions = _messages.MessageField('ClusterUpgradePostConditions', 2)
-  upstreamScopes = _messages.StringField(3, repeated=True)
-
-
-class ClusterUpgradeFeatureState(_messages.Message):
-  r"""**ClusterUpgrade**: The state for the ClusterUpgrade feature.
-
-  Messages:
-    IgnoredValue: A list of memberships ignored by the feature. For example,
-      manually upgraded clusters can be ignored if they are newer than the
-      default versions of its release channel. The membership resource is in
-      the format: `projects/{p}/locations/{l}/membership/{l}`.
-
-  Fields:
-    downstreamScopes: This scopes whose upstream_scopes contain the current
-      scope. The scope name should be in the form:
-      `projects/{p}/locations/global/scopes/{s}` Where {p} is the project, {s}
-      is a valid Scope in this project. {p} WILL match the Feature's project.
-    gkeState: Feature state for GKE clusters.
-    ignored: A list of memberships ignored by the feature. For example,
-      manually upgraded clusters can be ignored if they are newer than the
-      default versions of its release channel. The membership resource is in
-      the format: `projects/{p}/locations/{l}/membership/{l}`.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class IgnoredValue(_messages.Message):
-    r"""A list of memberships ignored by the feature. For example, manually
-    upgraded clusters can be ignored if they are newer than the default
-    versions of its release channel. The membership resource is in the format:
-    `projects/{p}/locations/{l}/membership/{l}`.
-
-    Messages:
-      AdditionalProperty: An additional property for a IgnoredValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type IgnoredValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a IgnoredValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A ClusterUpgradeIgnoredMembership attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('ClusterUpgradeIgnoredMembership', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  downstreamScopes = _messages.StringField(1, repeated=True)
-  gkeState = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureState', 2)
-  ignored = _messages.MessageField('IgnoredValue', 3)
-
-
 class ClusterUpgradeGKEUpgrade(_messages.Message):
   r"""GKEUpgrade represents a GKE provided upgrade, e.g., control plane
   upgrade.
@@ -711,7 +620,6 @@ class CommonFeatureSpec(_messages.Message):
     anthosobservability: Anthos Observability spec
     appdevexperience: Appdevexperience specific spec.
     cloudauditlogging: Cloud Audit Logging-specific spec.
-    clusterupgrade: A ClusterUpgradeFeatureSpec attribute.
     fleetobservability: FleetObservability feature spec.
     helloworld: Hello World-specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
@@ -722,12 +630,11 @@ class CommonFeatureSpec(_messages.Message):
   anthosobservability = _messages.MessageField('AnthosObservabilityFeatureSpec', 1)
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureSpec', 2)
   cloudauditlogging = _messages.MessageField('CloudAuditLoggingFeatureSpec', 3)
-  clusterupgrade = _messages.MessageField('ClusterUpgradeFeatureSpec', 4)
-  fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 5)
-  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 6)
-  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 7)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 8)
-  workloadcertificate = _messages.MessageField('FeatureSpec', 9)
+  fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 4)
+  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 5)
+  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 6)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 7)
+  workloadcertificate = _messages.MessageField('FeatureSpec', 8)
 
 
 class CommonFeatureState(_messages.Message):
@@ -735,7 +642,6 @@ class CommonFeatureState(_messages.Message):
 
   Fields:
     appdevexperience: Appdevexperience specific state.
-    clusterupgrade: A ClusterUpgradeFeatureState attribute.
     fleetobservability: FleetObservability feature state.
     helloworld: Hello World-specific state.
     rbacrolebindingactuation: RBAC Role Binding Actuation feature state
@@ -744,12 +650,11 @@ class CommonFeatureState(_messages.Message):
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
-  clusterupgrade = _messages.MessageField('ClusterUpgradeFeatureState', 2)
-  fleetobservability = _messages.MessageField('FleetObservabilityFeatureState', 3)
-  helloworld = _messages.MessageField('HelloWorldFeatureState', 4)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureState', 5)
-  servicemesh = _messages.MessageField('ServiceMeshFeatureState', 6)
-  state = _messages.MessageField('FeatureState', 7)
+  fleetobservability = _messages.MessageField('FleetObservabilityFeatureState', 2)
+  helloworld = _messages.MessageField('HelloWorldFeatureState', 3)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureState', 4)
+  servicemesh = _messages.MessageField('ServiceMeshFeatureState', 5)
+  state = _messages.MessageField('FeatureState', 6)
 
 
 class CommonFleetDefaultMemberConfigSpec(_messages.Message):
@@ -4444,7 +4349,6 @@ class MembershipFeatureSpec(_messages.Message):
 
   Fields:
     anthosobservability: Anthos Observability-specific spec
-    apigee: Apigee-specific spec.
     cloudbuild: Cloud Build-specific spec
     configmanagement: Config Management-specific spec.
     fleetobservability: Fleet observability membership spec
@@ -4457,16 +4361,15 @@ class MembershipFeatureSpec(_messages.Message):
   """
 
   anthosobservability = _messages.MessageField('AnthosObservabilityMembershipSpec', 1)
-  apigee = _messages.MessageField('ApigeeMembershipSpec', 2)
-  cloudbuild = _messages.MessageField('CloudBuildMembershipSpec', 3)
-  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 4)
-  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 5)
-  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 6)
-  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 7)
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 8)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 9)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipSpec', 10)
-  workloadcertificate = _messages.MessageField('MembershipSpec', 11)
+  cloudbuild = _messages.MessageField('CloudBuildMembershipSpec', 2)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 3)
+  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 4)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 5)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 6)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 7)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 8)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipSpec', 9)
+  workloadcertificate = _messages.MessageField('MembershipSpec', 10)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -5512,26 +5415,22 @@ class ScopeFeatureSpec(_messages.Message):
   r"""ScopeFeatureSpec contains feature specs for a fleet scope.
 
   Fields:
-    clusterupgrade: Upgrade feature spec.
-    clusterupgradeNew: A ClusterUpgradeScopeSpec attribute.
+    clusterupgrade: A ClusterUpgradeScopeSpec attribute.
   """
 
-  clusterupgrade = _messages.MessageField('ClusterUpgradeFeatureSpec', 1)
-  clusterupgradeNew = _messages.MessageField('ClusterUpgradeScopeSpec', 2)
+  clusterupgrade = _messages.MessageField('ClusterUpgradeScopeSpec', 1)
 
 
 class ScopeFeatureState(_messages.Message):
   r"""ScopeFeatureState contains Scope-wide Feature status information.
 
   Fields:
-    clusterupgrade: Upgrade specific state.
-    clusterupgradeNew: A ClusterUpgradeScopeState attribute.
+    clusterupgrade: A ClusterUpgradeScopeState attribute.
     state: Output only. The "running state" of the Feature in this Scope.
   """
 
-  clusterupgrade = _messages.MessageField('ClusterUpgradeFeatureState', 1)
-  clusterupgradeNew = _messages.MessageField('ClusterUpgradeScopeState', 2)
-  state = _messages.MessageField('FeatureState', 3)
+  clusterupgrade = _messages.MessageField('ClusterUpgradeScopeState', 1)
+  state = _messages.MessageField('FeatureState', 2)
 
 
 class ScopeLifecycleState(_messages.Message):

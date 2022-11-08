@@ -198,7 +198,7 @@ class EssentialcontactsFoldersContactsPatchRequest(_messages.Message):
     googleCloudEssentialcontactsV1alpha1Contact: A
       GoogleCloudEssentialcontactsV1alpha1Contact resource to be passed as the
       request body.
-    name: The identifier for the contact. Format:
+    name: Output only. The identifier for the contact. Format:
       {resource_type}/{resource_id}/contacts/{contact_id}
     updateMask: Optional. The update mask applied to the resource. For the
       `FieldMask` definition, see https://developers.google.com/protocol-
@@ -448,7 +448,7 @@ class EssentialcontactsOrganizationsContactsPatchRequest(_messages.Message):
     googleCloudEssentialcontactsV1alpha1Contact: A
       GoogleCloudEssentialcontactsV1alpha1Contact resource to be passed as the
       request body.
-    name: The identifier for the contact. Format:
+    name: Output only. The identifier for the contact. Format:
       {resource_type}/{resource_id}/contacts/{contact_id}
     updateMask: Optional. The update mask applied to the resource. For the
       `FieldMask` definition, see https://developers.google.com/protocol-
@@ -698,7 +698,7 @@ class EssentialcontactsProjectsContactsPatchRequest(_messages.Message):
     googleCloudEssentialcontactsV1alpha1Contact: A
       GoogleCloudEssentialcontactsV1alpha1Contact resource to be passed as the
       request body.
-    name: The identifier for the contact. Format:
+    name: Output only. The identifier for the contact. Format:
       {resource_type}/{resource_id}/contacts/{contact_id}
     updateMask: Optional. The update mask applied to the resource. For the
       `FieldMask` definition, see https://developers.google.com/protocol-
@@ -792,17 +792,17 @@ class GoogleCloudEssentialcontactsV1alpha1Contact(_messages.Message):
       email address.
 
   Fields:
-    email: Required. The email address to send notifications to. This does not
-      need to be a Google account.
-    languageTag: The preferred language for notifications, as a ISO 639-1
-      language code. See [Supported
+    email: Required. The email address to send notifications to. The email
+      address does not need to be a Google Account.
+    languageTag: Required. The preferred language for notifications, as a ISO
+      639-1 language code. See [Supported
       languages](https://cloud.google.com/resource-manager/docs/managing-
       notification-contacts#supported-languages) for a list of supported
       languages.
-    name: The identifier for the contact. Format:
+    name: Output only. The identifier for the contact. Format:
       {resource_type}/{resource_id}/contacts/{contact_id}
-    notificationCategorySubscriptions: The categories of notifications that
-      the contact will receive communications for.
+    notificationCategorySubscriptions: Required. The categories of
+      notifications that the contact will receive communications for.
     validateTime: The last time the validation_state was updated, either
       manually or automatically. A contact is considered stale if its
       validation state was updated more than 1 year ago.

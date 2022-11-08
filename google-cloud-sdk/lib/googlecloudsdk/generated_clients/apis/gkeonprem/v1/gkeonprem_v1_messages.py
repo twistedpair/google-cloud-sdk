@@ -72,7 +72,8 @@ class BareMetalCluster(_messages.Message):
       must be a DNS subdomain. Name must be 63 characters or less, begin and
       end with alphanumerics, with dashes (-), underscores (_), dots (.), and
       alphanumerics between.
-    bareMetalVersion: A string attribute.
+    bareMetalVersion: Required. The Anthos clusters on Bare Metal version for
+      your Bare Metal User Cluster.
     clusterOperations: Cluster operations configuration.
     controlPlane: Required. Control plane configuration.
     createTime: Output only. The time at which this Bare Metal User Cluster
@@ -99,6 +100,7 @@ class BareMetalCluster(_messages.Message):
       their cluster using gkectl or kubectl and should expect to see the local
       name when viewing admin cluster controller logs.
     maintenanceConfig: Maintenance configuration.
+    maintenanceStatus: Output only. Status of on-going maintenance tasks.
     name: Required. The Bare Metal User Cluster resource name.
     networkConfig: Required. Network configuration.
     nodeConfig: Workload node configuration.
@@ -187,18 +189,19 @@ class BareMetalCluster(_messages.Message):
   loadBalancer = _messages.MessageField('BareMetalLoadBalancerConfig', 12)
   localName = _messages.StringField(13)
   maintenanceConfig = _messages.MessageField('BareMetalMaintenanceConfig', 14)
-  name = _messages.StringField(15)
-  networkConfig = _messages.MessageField('BareMetalNetworkConfig', 16)
-  nodeConfig = _messages.MessageField('BareMetalWorkloadNodeConfig', 17)
-  proxy = _messages.MessageField('BareMetalProxyConfig', 18)
-  reconciling = _messages.BooleanField(19)
-  securityConfig = _messages.MessageField('BareMetalSecurityConfig', 20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  status = _messages.MessageField('ResourceStatus', 22)
-  storage = _messages.MessageField('BareMetalStorageConfig', 23)
-  uid = _messages.StringField(24)
-  updateTime = _messages.StringField(25)
-  validationCheck = _messages.MessageField('ValidationCheck', 26)
+  maintenanceStatus = _messages.MessageField('BareMetalMaintenanceStatus', 15)
+  name = _messages.StringField(16)
+  networkConfig = _messages.MessageField('BareMetalNetworkConfig', 17)
+  nodeConfig = _messages.MessageField('BareMetalWorkloadNodeConfig', 18)
+  proxy = _messages.MessageField('BareMetalProxyConfig', 19)
+  reconciling = _messages.BooleanField(20)
+  securityConfig = _messages.MessageField('BareMetalSecurityConfig', 21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  status = _messages.MessageField('ResourceStatus', 23)
+  storage = _messages.MessageField('BareMetalStorageConfig', 24)
+  uid = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
+  validationCheck = _messages.MessageField('ValidationCheck', 27)
 
 
 class BareMetalClusterOperationsConfig(_messages.Message):
@@ -244,6 +247,29 @@ class BareMetalControlPlaneNodePoolConfig(_messages.Message):
   """
 
   nodePoolConfig = _messages.MessageField('BareMetalNodePoolConfig', 1)
+
+
+class BareMetalDrainedMachine(_messages.Message):
+  r"""BareMetalDrainedMachine represents a machine that is currently drained.
+
+  Fields:
+    nodeIp: Drained machine IP address.
+  """
+
+  nodeIp = _messages.StringField(1)
+
+
+class BareMetalDrainingMachine(_messages.Message):
+  r"""BareMetalDrainingMachine represents a machine that is currently
+  draining.
+
+  Fields:
+    nodeIp: Draining machine IP address.
+    podCount: The count of pods yet to drain.
+  """
+
+  nodeIp = _messages.StringField(1)
+  podCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class BareMetalIslandModeCidrConfig(_messages.Message):
@@ -342,6 +368,19 @@ class BareMetalLvpShareConfig(_messages.Message):
   sharedPathPvCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class BareMetalMachineDrainStatus(_messages.Message):
+  r"""BareMetalAdminMachineDrainStatus represents the status of Bare Metal
+  node machines that are undergoing drain operations.
+
+  Fields:
+    drainedMachines: The list of drained machines.
+    drainingMachines: The list of draning machines.
+  """
+
+  drainedMachines = _messages.MessageField('BareMetalDrainedMachine', 1, repeated=True)
+  drainingMachines = _messages.MessageField('BareMetalDrainingMachine', 2, repeated=True)
+
+
 class BareMetalMaintenanceConfig(_messages.Message):
   r"""BareMetalMaintenanceConfig specifies configurations to put Bare Metal
   CRs in and out of maintenance.
@@ -355,6 +394,17 @@ class BareMetalMaintenanceConfig(_messages.Message):
   """
 
   maintenanceAddressCidrBlocks = _messages.StringField(1, repeated=True)
+
+
+class BareMetalMaintenanceStatus(_messages.Message):
+  r"""BareMetalMaintenanceStatus represents the maintenance status for Bare
+  Metal user clusters.
+
+  Fields:
+    machineDrainStatus: The maintenance status of node machines.
+  """
+
+  machineDrainStatus = _messages.MessageField('BareMetalMachineDrainStatus', 1)
 
 
 class BareMetalManualLbConfig(_messages.Message):
@@ -3415,6 +3465,8 @@ class VmwareCluster(_messages.Message):
       cluster's hub membership. In the future, references to other resource
       types might be allowed if admin clusters are modeled as their own
       resources.
+    adminClusterName: Output only. The resource name of the Vmware Admin
+      Cluster hosting this User Cluster.
     annotations: Annotations on the VMware User Cluster. This field has the
       same restrictions as Kubernetes annotations. The total size of all keys
       and values combined is limited to 256k. Key can have 2 segments: prefix
@@ -3535,33 +3587,34 @@ class VmwareCluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   adminClusterMembership = _messages.StringField(1)
-  annotations = _messages.MessageField('AnnotationsValue', 2)
-  antiAffinityGroups = _messages.MessageField('VmwareAAGConfig', 3)
-  authorization = _messages.MessageField('Authorization', 4)
-  autoRepairConfig = _messages.MessageField('VmwareAutoRepairConfig', 5)
-  controlPlaneNode = _messages.MessageField('VmwareControlPlaneNodeConfig', 6)
-  createTime = _messages.StringField(7)
-  dataplaneV2 = _messages.MessageField('VmwareDataplaneV2Config', 8)
-  deleteTime = _messages.StringField(9)
-  description = _messages.StringField(10)
-  endpoint = _messages.StringField(11)
-  etag = _messages.StringField(12)
-  fleet = _messages.MessageField('Fleet', 13)
-  loadBalancer = _messages.MessageField('VmwareLoadBalancerConfig', 14)
-  localName = _messages.StringField(15)
-  name = _messages.StringField(16)
-  networkConfig = _messages.MessageField('VmwareNetworkConfig', 17)
-  onPremVersion = _messages.StringField(18)
-  reconciling = _messages.BooleanField(19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  status = _messages.MessageField('ResourceStatus', 21)
-  storage = _messages.MessageField('VmwareStorageConfig', 22)
-  uid = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
-  validationCheck = _messages.MessageField('ValidationCheck', 25)
-  vcenter = _messages.MessageField('VmwareVCenterConfig', 26)
-  vmTrackingEnabled = _messages.BooleanField(27)
-  workloadIdentity = _messages.MessageField('VmwareWorkloadIdentityConfig', 28)
+  adminClusterName = _messages.StringField(2)
+  annotations = _messages.MessageField('AnnotationsValue', 3)
+  antiAffinityGroups = _messages.MessageField('VmwareAAGConfig', 4)
+  authorization = _messages.MessageField('Authorization', 5)
+  autoRepairConfig = _messages.MessageField('VmwareAutoRepairConfig', 6)
+  controlPlaneNode = _messages.MessageField('VmwareControlPlaneNodeConfig', 7)
+  createTime = _messages.StringField(8)
+  dataplaneV2 = _messages.MessageField('VmwareDataplaneV2Config', 9)
+  deleteTime = _messages.StringField(10)
+  description = _messages.StringField(11)
+  endpoint = _messages.StringField(12)
+  etag = _messages.StringField(13)
+  fleet = _messages.MessageField('Fleet', 14)
+  loadBalancer = _messages.MessageField('VmwareLoadBalancerConfig', 15)
+  localName = _messages.StringField(16)
+  name = _messages.StringField(17)
+  networkConfig = _messages.MessageField('VmwareNetworkConfig', 18)
+  onPremVersion = _messages.StringField(19)
+  reconciling = _messages.BooleanField(20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  status = _messages.MessageField('ResourceStatus', 22)
+  storage = _messages.MessageField('VmwareStorageConfig', 23)
+  uid = _messages.StringField(24)
+  updateTime = _messages.StringField(25)
+  validationCheck = _messages.MessageField('ValidationCheck', 26)
+  vcenter = _messages.MessageField('VmwareVCenterConfig', 27)
+  vmTrackingEnabled = _messages.BooleanField(28)
+  workloadIdentity = _messages.MessageField('VmwareWorkloadIdentityConfig', 29)
 
 
 class VmwareControlPlaneNodeConfig(_messages.Message):

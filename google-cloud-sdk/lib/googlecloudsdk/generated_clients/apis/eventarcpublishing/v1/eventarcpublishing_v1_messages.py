@@ -56,6 +56,10 @@ class GoogleCloudEventarcPublishingV1PublishChannelConnectionEventsRequest(_mess
   Fields:
     events: The CloudEvents v1.0 events to publish. No other types are
       allowed.
+    textEvents: The text representation of events to publish. CloudEvent v1.0
+      in JSON format is the only allowed type. Refer to https://github.com/clo
+      udevents/spec/blob/v1.0.2/cloudevents/formats/json-format.md for
+      specification.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -85,6 +89,7 @@ class GoogleCloudEventarcPublishingV1PublishChannelConnectionEventsRequest(_mess
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   events = _messages.MessageField('EventsValueListEntry', 1, repeated=True)
+  textEvents = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudEventarcPublishingV1PublishChannelConnectionEventsResponse(_messages.Message):

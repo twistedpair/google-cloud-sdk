@@ -108,6 +108,13 @@ def ArgsForClusterRef(parser,
       help='The number of worker nodes in the cluster. Defaults to '
       'server-specified.')
   worker_group.add_argument(
+      '--min-num-workers',
+      type=int,
+      hidden=True,
+      help='The minimum number of worker nodes required to create the cluster. '
+      'if it is not met, cluster creation will be failed.'
+  )
+  worker_group.add_argument(
       '--secondary-worker-type',
       metavar='TYPE',
       choices=['preemptible', 'non-preemptible', 'spot'],
@@ -939,6 +946,7 @@ def GetClusterConfig(args,
           minCpuPlatform=args.master_min_cpu_platform),
       workerConfig=dataproc.messages.InstanceGroupConfig(
           numInstances=args.num_workers,
+          minNumInstances=args.min_num_workers,
           imageUri=image_ref and image_ref.SelfLink(),
           machineTypeUri=args.worker_machine_type,
           accelerators=worker_accelerators,
@@ -1132,7 +1140,7 @@ def GetClusterConfig(args,
 
 
 def _GetMetricOverrides(args):
-  """Method to get metric overrides from either metric_overrides list or the file passed."""
+  """Gets metric overrides from from input file or metric_overrides list."""
   if args.metric_overrides:
     return args.metric_overrides
   if args.metric_overrides_file:

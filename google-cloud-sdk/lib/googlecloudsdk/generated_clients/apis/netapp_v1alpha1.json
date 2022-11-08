@@ -3,7 +3,7 @@
   "discoveryVersion": "v1",
   "id": "netapp:v1alpha1",
   "name": "netapp",
-  "canonicalName": "Google Cloud NetApp Files",
+  "canonicalName": "NetApp Files",
   "version": "v1alpha1",
   "revision": "0",
   "title": "netapp API (prod)",
@@ -109,6 +109,58 @@
     }
   },
   "schemas": {
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
     "ListOperationsResponse": {
       "id": "ListOperationsResponse",
       "description": "The response message for Operations.ListOperations.",
@@ -234,7 +286,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the storage pool. Format: `projects\/{project_number}\/locations\/{location_id}\/storagepools\/{storage_pool_id}`.",
+          "description": "Output only. Name of the storage pool",
           "readOnly": true,
           "type": "string"
         },
@@ -275,17 +327,23 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified Storage Pool State",
-            "Ready",
-            "Creating",
-            "Deleting",
-            "Updating"
+            "Storage Pool State is Ready",
+            "Storage Pool State is Creating",
+            "Storage Pool State is Deleting",
+            "Storage Pool State is Updating",
+            "Storage Pool State is Restoring",
+            "Storage Pool State is Disabled",
+            "Storage Pool State is Error"
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "READY",
             "CREATING",
             "DELETING",
-            "UPDATING"
+            "UPDATING",
+            "RESTORING",
+            "DISABLED",
+            "ERROR"
           ]
         },
         "stateDetails": {
@@ -343,12 +401,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the volume. Format: `projects\/{project_number}\/locations\/{location_id}\/volumes\/{volume_id}`.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "volumeId": {
-          "description": "Output only. The ID of the volume.",
+          "description": "Output only. Name of the volume",
           "readOnly": true,
           "type": "string"
         },
@@ -358,12 +411,13 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified Volume State",
-            "Ready",
-            "Creating",
-            "Deleting",
-            "Updating",
-            "Restoring",
-            "Disabled"
+            "Volume State is Ready",
+            "Volume State is Creating",
+            "Volume State is Deleting",
+            "Volume State is Updating",
+            "Volume State is Restoring",
+            "Volume State is Disabled",
+            "Volume State is Error"
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -372,7 +426,8 @@
             "DELETING",
             "UPDATING",
             "RESTORING",
-            "DISABLED"
+            "DISABLED",
+            "ERROR"
           ]
         },
         "stateDetails": {
@@ -391,11 +446,11 @@
           "type": "string"
         },
         "psaRange": {
-          "description": "Name of the Private Service Access allocated range. This is optional. If not provided, any available range will be chosen.",
+          "description": "Optional. Name of the Private Service Access allocated range. This is optional. If not provided, any available range will be chosen.",
           "type": "string"
         },
         "storagePoolName": {
-          "description": "Required. Storage Pool name of the volume",
+          "description": "Required. StoragePool name of the volume",
           "type": "string"
         },
         "network": {
@@ -423,7 +478,7 @@
           "format": "int64"
         },
         "exportPolicy": {
-          "description": "Export policy of the volume",
+          "description": "Optional. Export policy of the volume",
           "$ref": "ExportPolicy"
         },
         "protocols": {
@@ -438,7 +493,7 @@
               "SMB protocol"
             ],
             "enum": [
-              "PROTOCOL_UNSPECIFIED",
+              "PROTOCOLS_UNSPECIFIED",
               "NFSV3",
               "NFSV4",
               "SMB"
@@ -446,20 +501,20 @@
           }
         },
         "smbSettings": {
-          "description": "SMB share settings for the volume.",
+          "description": "Optional. SMB share settings for the volume.",
           "type": "array",
           "items": {
             "type": "string",
             "enumDescriptions": [
-              "Unspecified SMB setting",
-              "Encrypt SMB data",
-              "Browsable",
-              "Change notify",
-              "Non-browsable",
-              "Operation locks",
-              "Show snapshot",
-              "Show previous versions",
-              "Access based enumeration",
+              "Unspecified default option",
+              "SMB setting encrypt data",
+              "SMB setting browsable",
+              "SMB setting notify change",
+              "SMB setting not to notify change",
+              "SMB setting oplocks",
+              "SMB setting to show snapshots",
+              "SMB setting to show previous versions",
+              "SMB setting to access volume based on enumerartion",
               "Continuously available enumeration"
             ],
             "enum": [
@@ -485,31 +540,31 @@
           }
         },
         "unixPermissions": {
-          "description": "Default unix style permission (e.g. 777) the mount point will be created with. Applicable for NFS protocol types only.",
+          "description": "Optional. Default unix style permission (e.g. 777) the mount point will be created with. Applicable for NFS protocol types only.",
           "type": "string"
         },
         "labels": {
-          "description": "Labels as key value pairs",
+          "description": "Optional. Labels as key value pairs",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "description": {
-          "description": "Description of the volume",
+          "description": "Optional. Description of the volume",
           "type": "string"
         },
         "snapshotPolicy": {
-          "description": "SnapshotPolicy for a volume.",
+          "description": "Optional. SnapshotPolicy for a volume.",
           "$ref": "SnapshotPolicy"
         },
         "snapReserve": {
-          "description": "Snap_reserve specifies percentage of volume storage reserved for snapshot storage. Default is 0 percent.",
+          "description": "Optional. Snap_reserve specifies percentage of volume storage reserved for snapshot storage. Default is 0 percent.",
           "type": "number",
           "format": "double"
         },
         "snapshotDirectory": {
-          "description": "Snapshot_directory if enabled (true) the volume will contain a read-only .snapshot directory which provides access to each of the volume's snapshots.",
+          "description": "Optional. Snapshot_directory if enabled (true) the volume will contain a read-only .snapshot directory which provides access to each of the volume's snapshots.",
           "type": "boolean"
         },
         "usedGib": {
@@ -519,12 +574,12 @@
           "format": "int64"
         },
         "securityStyle": {
-          "description": "Security Style of the Volume",
+          "description": "Optional. Security Style of the Volume",
           "type": "string",
           "enumDescriptions": [
-            "",
-            "",
-            ""
+            "SecurityStyle is unspecified",
+            "SecurityStyle uses NTFS",
+            "SecurityStyle uses NTFS"
           ],
           "enum": [
             "SECURITY_STYLE_UNSPECIFIED",
@@ -533,16 +588,20 @@
           ]
         },
         "kerberosEnabled": {
-          "description": "Flag indicating if the volume is a kerberos volume or not, export policy rules control kerberos security modes (krb5, krb5i, krb5p).",
+          "description": "Optional. Flag indicating if the volume is a kerberos volume or not, export policy rules control kerberos security modes (krb5, krb5i, krb5p).",
           "type": "boolean"
         },
         "ldapEnabled": {
-          "description": "Flag indicating if the volume is NFS LDAP enabled or not.",
+          "description": "Optional. Flag indicating if the volume is NFS LDAP enabled or not.",
           "type": "boolean"
         },
         "activeDirectoryName": {
-          "description": "Specifies the AD to be used for creating a SMB volume.",
+          "description": "Optional. Specifies the AD to be used for creating a SMB volume. StoragePool name of the volume",
           "type": "string"
+        },
+        "restoreParameters": {
+          "description": "Optional. Specifies the source of the volume to be created from.",
+          "$ref": "RestoreParameters"
         }
       }
     },
@@ -589,12 +648,12 @@
             "READ_NONE"
           ]
         },
-        "nfsV3": {
-          "description": "NFS V3 protocol",
+        "nfsv3": {
+          "description": "NFS V3 protocol.",
           "type": "boolean"
         },
-        "nfsV4": {
-          "description": "NFS V4 protocol",
+        "nfsv4": {
+          "description": "NFS V4 protocol.",
           "type": "boolean"
         },
         "kerberos5ReadOnly": {
@@ -646,7 +705,7 @@
             "SMB protocol"
           ],
           "enum": [
-            "PROTOCOL_UNSPECIFIED",
+            "PROTOCOLS_UNSPECIFIED",
             "NFSV3",
             "NFSV4",
             "SMB"
@@ -668,26 +727,26 @@
           "type": "boolean"
         },
         "hourlySchedule": {
-          "description": "Hourly schedule policy",
+          "description": "Hourly schedule policy.",
           "$ref": "HourlySchedule"
         },
         "dailySchedule": {
-          "description": "Daily schedule policy",
+          "description": "Daily schedule policy.",
           "$ref": "DailySchedule"
         },
         "weeklySchedule": {
-          "description": "Weekly schedule policy",
+          "description": "Weekly schedule policy.",
           "$ref": "WeeklySchedule"
         },
         "monthlySchedule": {
-          "description": "Monthly schedule policy",
+          "description": "Monthly schedule policy.",
           "$ref": "MonthlySchedule"
         }
       }
     },
     "HourlySchedule": {
       "id": "HourlySchedule",
-      "description": "Make a snapshot every hour e.g. at 04:00, 05:00, 06:00",
+      "description": "Make a snapshot every hour e.g. at 04:00, 05:00, 06:00.",
       "type": "object",
       "properties": {
         "snapshotsToKeep": {
@@ -776,6 +835,17 @@
         }
       }
     },
+    "RestoreParameters": {
+      "id": "RestoreParameters",
+      "description": "The RestoreParameters if volume is created from a snapshot or backup.",
+      "type": "object",
+      "properties": {
+        "sourceSnapshot": {
+          "description": "Full name of the snapshot resource. Format: projects\/{project}\/locations\/{location}\/volumes\/{volume}\/snapshots\/{snapshot}",
+          "type": "string"
+        }
+      }
+    },
     "RevertVolumeRequest": {
       "id": "RevertVolumeRequest",
       "description": "RevertVolumeRequest reverts the given volume to the specified snapshot.",
@@ -822,28 +892,27 @@
           "readOnly": true,
           "type": "string"
         },
-        "snapshotId": {
-          "description": "Output only. The ID of the snapshot.",
-          "readOnly": true,
-          "type": "string"
-        },
         "state": {
           "description": "Output only. The snapshot state.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Unspecified Snapshot State",
-            "Ready",
-            "Creating",
-            "Deleting",
-            "Updating"
+            "Snapshot State is Ready",
+            "Snapshot State is Creating",
+            "Snapshot State is Deleting",
+            "Snapshot State is Updating",
+            "Snapshot State is Disabled",
+            "Snapshot State is Error"
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "READY",
             "CREATING",
             "DELETING",
-            "UPDATING"
+            "UPDATING",
+            "DISABLED",
+            "ERROR"
           ]
         },
         "stateDetails": {
@@ -876,9 +945,9 @@
         }
       }
     },
-    "ListActiveDirectoryResponse": {
-      "id": "ListActiveDirectoryResponse",
-      "description": "ListActiveDirectoryResponse contains all the active directories requested.",
+    "ListActiveDirectoriesResponse": {
+      "id": "ListActiveDirectoriesResponse",
+      "description": "ListActiveDirectoriesResponse contains all the active directories requested.",
       "type": "object",
       "properties": {
         "activeDirectories": {
@@ -907,7 +976,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the active directory. Format: `projects\/{project_number}\/locations\/{location_id}\/activedirectories\/{active_directory_id}`.",
+          "description": "Output only. The resource name of the active directory. Format: `projects\/{project_number}\/locations\/{location_id}\/activeDirectories\/{active_directory_id}`.",
           "readOnly": true,
           "type": "string"
         },
@@ -922,13 +991,13 @@
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
-            "Unspecified state",
-            "Creating",
-            "Ready",
-            "Updating",
-            "In use",
-            "Deleting",
-            "Error"
+            "Unspecified Active Directory State",
+            "Active Directory State is Creating",
+            "Active Directory State is Ready",
+            "Active Directory State is Updating",
+            "Active Directory State is In use",
+            "Active Directory State is Deleting",
+            "Active Directory State is Error"
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -987,7 +1056,7 @@
           }
         },
         "kdcHostname": {
-          "description": "Name of the active directory machine. (ad_name on SDE)",
+          "description": "Name of the active directory machine. This optional parameter is used only while creating kerberos volume",
           "type": "string"
         },
         "kdcIp": {
@@ -1016,58 +1085,11 @@
           "additionalProperties": {
             "type": "string"
           }
-        }
-      }
-    },
-    "ListLocationsResponse": {
-      "id": "ListLocationsResponse",
-      "description": "The response message for Locations.ListLocations.",
-      "type": "object",
-      "properties": {
-        "locations": {
-          "description": "A list of locations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "Location"
-          }
         },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
+        "stateDetails": {
+          "description": "Output only. The state details of the Active Directory.",
+          "readOnly": true,
           "type": "string"
-        }
-      }
-    },
-    "Location": {
-      "id": "Location",
-      "description": "A resource that represents Google Cloud Platform location.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
-          "type": "string"
-        },
-        "locationId": {
-          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
-          "type": "string"
-        },
-        "labels": {
-          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "metadata": {
-          "description": "Service-specific metadata. For example the available capacity at the given location.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
         }
       }
     },
@@ -1313,12 +1335,12 @@
                 }
               }
             },
-            "storagepools": {
+            "storagePools": {
               "methods": {
                 "list": {
-                  "id": "netapp.projects.locations.storagepools.list",
-                  "path": "v1alpha1/{+parent}/storagepools",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/storagepools",
+                  "id": "netapp.projects.locations.storagePools.list",
+                  "path": "v1alpha1/{+parent}/storagePools",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/storagePools",
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
@@ -1362,9 +1384,9 @@
                   "description": "ListStoragePools Returns descriptions of all storage pools owned by the caller."
                 },
                 "create": {
-                  "id": "netapp.projects.locations.storagepools.create",
-                  "path": "v1alpha1/{+parent}/storagepools",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/storagepools",
+                  "id": "netapp.projects.locations.storagePools.create",
+                  "path": "v1alpha1/{+parent}/storagePools",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/storagePools",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
@@ -1375,7 +1397,7 @@
                       "type": "string"
                     },
                     "storagePoolId": {
-                      "description": "Required. ID of storage pool to create.",
+                      "description": "Required. Id of the requesting storage pool If auto-generating Id server-side, remove this field and id from the method_signature of Create RPC",
                       "location": "query",
                       "type": "string"
                     }
@@ -1395,14 +1417,14 @@
                   "description": "CreateStoragePool Creates a new storage pool."
                 },
                 "get": {
-                  "id": "netapp.projects.locations.storagepools.get",
+                  "id": "netapp.projects.locations.storagePools.get",
                   "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/storagepools/{storagepoolsId}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/storagePools/{storagePoolsId}",
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the storage pool",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/storagepools\/[^\/]+$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/storagePools\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1420,14 +1442,14 @@
                   "description": "GetStoragePool Returns the description of the specified storage pool by poolId."
                 },
                 "patch": {
-                  "id": "netapp.projects.locations.storagepools.patch",
+                  "id": "netapp.projects.locations.storagePools.patch",
                   "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/storagepools/{storagepoolsId}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/storagePools/{storagePoolsId}",
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. The resource name of the storage pool. Format: `projects\/{project_number}\/locations\/{location_id}\/storagepools\/{storage_pool_id}`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/storagepools\/[^\/]+$",
+                      "description": "Output only. Name of the storage pool",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/storagePools\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1454,14 +1476,14 @@
                   "description": "UpdateStoragePool Updates the storage pool properties with the full spec"
                 },
                 "delete": {
-                  "id": "netapp.projects.locations.storagepools.delete",
+                  "id": "netapp.projects.locations.storagePools.delete",
                   "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/storagepools/{storagepoolsId}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/storagePools/{storagePoolsId}",
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the storage pool",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/storagepools\/[^\/]+$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/storagePools\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1567,12 +1589,7 @@
                       "type": "string"
                     },
                     "volumeId": {
-                      "description": "Required. ID of the volume to create.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "snapshotId": {
-                      "description": "ID of the snapshot when create volume from snapshot.",
+                      "description": "Required. Id of the requesting volume If auto-generating Id server-side, remove this field and Id from the method_signature of Create RPC",
                       "location": "query",
                       "type": "string"
                     }
@@ -1598,7 +1615,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. The resource name of the volume. Format: `projects\/{project_number}\/locations\/{location_id}\/volumes\/{volume_id}`.",
+                      "description": "Output only. Name of the volume",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1855,16 +1872,16 @@
                 }
               }
             },
-            "activedirectories": {
+            "activeDirectories": {
               "methods": {
                 "list": {
-                  "id": "netapp.projects.locations.activedirectories.list",
-                  "path": "v1alpha1/{+parent}/activedirectories",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories",
+                  "id": "netapp.projects.locations.activeDirectories.list",
+                  "path": "v1alpha1/{+parent}/activeDirectories",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/activeDirectories",
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent value for ListActiveDirectoryRequest",
+                      "description": "Required. Parent value for ListActiveDirectoriesRequest",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1896,7 +1913,7 @@
                     "parent"
                   ],
                   "response": {
-                    "$ref": "ListActiveDirectoryResponse"
+                    "$ref": "ListActiveDirectoriesResponse"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -1904,14 +1921,14 @@
                   "description": "ListActiveDirectories Lists active directories."
                 },
                 "get": {
-                  "id": "netapp.projects.locations.activedirectories.get",
+                  "id": "netapp.projects.locations.activeDirectories.get",
                   "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories/{activedirectoriesId}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/activeDirectories/{activeDirectoriesId}",
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the active directory.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/activedirectories\/[^\/]+$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/activeDirectories\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1929,9 +1946,9 @@
                   "description": "DescribeActiveDirectory Describes a specified active directory."
                 },
                 "create": {
-                  "id": "netapp.projects.locations.activedirectories.create",
-                  "path": "v1alpha1/{+parent}/activedirectories",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories",
+                  "id": "netapp.projects.locations.activeDirectories.create",
+                  "path": "v1alpha1/{+parent}/activeDirectories",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/activeDirectories",
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
@@ -1962,14 +1979,14 @@
                   "description": "CreateActiveDirectory Creates the active directory specified in the request."
                 },
                 "patch": {
-                  "id": "netapp.projects.locations.activedirectories.patch",
+                  "id": "netapp.projects.locations.activeDirectories.patch",
                   "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories/{activedirectoriesId}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/activeDirectories/{activeDirectoriesId}",
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. The resource name of the active directory. Format: `projects\/{project_number}\/locations\/{location_id}\/activedirectories\/{active_directory_id}`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/activedirectories\/[^\/]+$",
+                      "description": "Output only. The resource name of the active directory. Format: `projects\/{project_number}\/locations\/{location_id}\/activeDirectories\/{active_directory_id}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/activeDirectories\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -1996,14 +2013,14 @@
                   "description": "UpdateActiveDirectory Update the parameters of an active directories."
                 },
                 "delete": {
-                  "id": "netapp.projects.locations.activedirectories.delete",
+                  "id": "netapp.projects.locations.activeDirectories.delete",
                   "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories/{activedirectoriesId}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/activeDirectories/{activeDirectoriesId}",
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
                       "description": "Required. Name of the active directory.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/activedirectories\/[^\/]+$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/activeDirectories\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"

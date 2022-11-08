@@ -190,6 +190,8 @@ class CloudFunction(_messages.Message):
   Fields:
     availableMemoryMb: The amount of memory in MB available for a function.
       Defaults to 256MB.
+    buildDockerfile: Local path to the dockerfile for customizing the base
+      image for the builder, located within the source folder.
     buildEnvironmentVariables: Build environment variables that shall be
       available during build time.
     buildId: Output only. The Cloud Build ID of the latest successful
@@ -207,7 +209,9 @@ class CloudFunction(_messages.Message):
       Custom Workers Builder (`roles/cloudbuild.customworkers.builder`) in the
       project.
     buildpackStack: Specifies one of the Google provided buildpack stacks.
-    customStackUri: The URL of a customer provided buildpack stack.
+    customStackUri: Deprecated: customization experience was significantly
+      revised, making this field obsolete. It was never revealed to public.
+      The URL of a customer provided buildpack stack.
     description: User-provided description of a function.
     dockerRegistry: Docker Registry to use for this deployment. If
       `docker_repository` field is specified, this field will be automatically
@@ -284,6 +288,8 @@ class CloudFunction(_messages.Message):
       exclusive with `vpc_connector` and will be replaced by it. See [the VPC
       documentation](https://cloud.google.com/compute/docs/vpc) for more
       information on connecting Cloud projects.
+    runDockerfile: Local path to the dockerfile for customizing the base image
+      for the worker, located within the source folder.
     runtime: The runtime in which to run the function. Required when deploying
       a new function, optional when updating an existing function. For a
       complete list of possible choices, see the [`gcloud` command reference](
@@ -473,40 +479,42 @@ class CloudFunction(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   availableMemoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  buildEnvironmentVariables = _messages.MessageField('BuildEnvironmentVariablesValue', 2)
-  buildId = _messages.StringField(3)
-  buildName = _messages.StringField(4)
-  buildWorkerPool = _messages.StringField(5)
-  buildpackStack = _messages.StringField(6)
-  customStackUri = _messages.StringField(7)
-  description = _messages.StringField(8)
-  dockerRegistry = _messages.EnumField('DockerRegistryValueValuesEnum', 9)
-  dockerRepository = _messages.StringField(10)
-  entryPoint = _messages.StringField(11)
-  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 12)
-  eventTrigger = _messages.MessageField('EventTrigger', 13)
-  httpsTrigger = _messages.MessageField('HttpsTrigger', 14)
-  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 15)
-  kmsKeyName = _messages.StringField(16)
-  labels = _messages.MessageField('LabelsValue', 17)
-  maxInstances = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  minInstances = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  name = _messages.StringField(20)
-  network = _messages.StringField(21)
-  runtime = _messages.StringField(22)
-  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 23, repeated=True)
-  secretVolumes = _messages.MessageField('SecretVolume', 24, repeated=True)
-  serviceAccountEmail = _messages.StringField(25)
-  sourceArchiveUrl = _messages.StringField(26)
-  sourceRepository = _messages.MessageField('SourceRepository', 27)
-  sourceToken = _messages.StringField(28)
-  sourceUploadUrl = _messages.StringField(29)
-  status = _messages.EnumField('StatusValueValuesEnum', 30)
-  timeout = _messages.StringField(31)
-  updateTime = _messages.StringField(32)
-  versionId = _messages.IntegerField(33)
-  vpcConnector = _messages.StringField(34)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 35)
+  buildDockerfile = _messages.StringField(2)
+  buildEnvironmentVariables = _messages.MessageField('BuildEnvironmentVariablesValue', 3)
+  buildId = _messages.StringField(4)
+  buildName = _messages.StringField(5)
+  buildWorkerPool = _messages.StringField(6)
+  buildpackStack = _messages.StringField(7)
+  customStackUri = _messages.StringField(8)
+  description = _messages.StringField(9)
+  dockerRegistry = _messages.EnumField('DockerRegistryValueValuesEnum', 10)
+  dockerRepository = _messages.StringField(11)
+  entryPoint = _messages.StringField(12)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 13)
+  eventTrigger = _messages.MessageField('EventTrigger', 14)
+  httpsTrigger = _messages.MessageField('HttpsTrigger', 15)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 16)
+  kmsKeyName = _messages.StringField(17)
+  labels = _messages.MessageField('LabelsValue', 18)
+  maxInstances = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  minInstances = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  name = _messages.StringField(21)
+  network = _messages.StringField(22)
+  runDockerfile = _messages.StringField(23)
+  runtime = _messages.StringField(24)
+  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 25, repeated=True)
+  secretVolumes = _messages.MessageField('SecretVolume', 26, repeated=True)
+  serviceAccountEmail = _messages.StringField(27)
+  sourceArchiveUrl = _messages.StringField(28)
+  sourceRepository = _messages.MessageField('SourceRepository', 29)
+  sourceToken = _messages.StringField(30)
+  sourceUploadUrl = _messages.StringField(31)
+  status = _messages.EnumField('StatusValueValuesEnum', 32)
+  timeout = _messages.StringField(33)
+  updateTime = _messages.StringField(34)
+  versionId = _messages.IntegerField(35)
+  vpcConnector = _messages.StringField(36)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 37)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):

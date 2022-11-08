@@ -832,7 +832,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The header field name",
+          "description": "Required. The header field name",
           "type": "string"
         },
         "value": {
@@ -901,6 +901,10 @@
         "configMap": {
           "description": "Not supported in Cloud Run.",
           "$ref": "ConfigMapVolumeSource"
+        },
+        "emptyDir": {
+          "description": "Ephemeral storage used as a shared volume.",
+          "$ref": "EmptyDirVolumeSource"
         }
       }
     },
@@ -975,6 +979,21 @@
         "optional": {
           "description": "(Optional) Specify whether the Secret or its keys must be defined.",
           "type": "boolean"
+        }
+      }
+    },
+    "EmptyDirVolumeSource": {
+      "id": "EmptyDirVolumeSource",
+      "description": "Ephemeral storage which can be backed by real disks (HD, SSD), network storage or memory (i.e. tmpfs). For now only in memory (tmpfs) is supported. It is ephemeral in the sense that when the sandbox is taken down, the data is destroyed with it (it does not persist across sandbox runs).",
+      "type": "object",
+      "properties": {
+        "medium": {
+          "description": "The medium on which the data is stored. The default is \"\" which means to use the node's default medium. Must be an empty string (default) or Memory. More info: https:\/\/kubernetes.io\/docs\/concepts\/storage\/volumes#emptydir +optional",
+          "type": "string"
+        },
+        "sizeLimit": {
+          "description": "Limit on the storage usable by this EmptyDir volume. The size limit is also applicable for memory medium. The maximum usage on memory medium EmptyDir would be the minimum value between the SizeLimit specified here and the sum of memory limits of all containers in a pod. This field's values are of the 'Quantity' k8s type: https:\/\/kubernetes.io\/docs\/reference\/kubernetes-api\/common-definitions\/quantity\/. The default is nil which means that the limit is undefined. More info: http:\/\/kubernetes.io\/docs\/user-guide\/volumes#emptydir +optional",
+          "type": "string"
         }
       }
     },
@@ -1624,7 +1643,7 @@
           "format": "int32"
         },
         "template": {
-          "description": "Optional. Describes the task(s) that will be created when executing an execution.",
+          "description": "Optional. The template used to create tasks for this execution.",
           "$ref": "TaskTemplateSpec"
         }
       }
@@ -2173,11 +2192,11 @@
       "type": "object",
       "properties": {
         "configurationName": {
-          "description": "ConfigurationName of a configuration to whose latest revision which will be sent this portion of traffic. When the \"status.latestReadyRevisionName\" of the referenced configuration changes, traffic will automatically migrate from the prior \"latest ready\" revision to the new one. This field is never set in Route's status, only its spec. This is mutually exclusive with RevisionName. Cloud Run currently supports a single ConfigurationName.",
+          "description": "[Deprecated] Not supported in Cloud Run. It must be empty.",
           "type": "string"
         },
         "revisionName": {
-          "description": "RevisionName of a specific revision to which to send this portion of traffic. This is mutually exclusive with ConfigurationName.",
+          "description": "Points this traffic target to a specific Revision. This field is mutually exclusive with latest_revision.",
           "type": "string"
         },
         "percent": {
@@ -2186,15 +2205,16 @@
           "format": "int32"
         },
         "tag": {
-          "description": "Optional. Tag is used to expose a dedicated url for referencing this target exclusively.",
+          "description": "Tag is used to expose a dedicated url for referencing this target exclusively.",
           "type": "string"
         },
         "latestRevision": {
-          "description": "Optional. LatestRevision may be provided to indicate that the latest ready Revision of the Configuration should be used for this traffic target. When provided LatestRevision must be true if RevisionName is empty; it must be false when RevisionName is non-empty.",
+          "description": "Uses the \"status.latestReadyRevisionName\" of the Service to determine the traffic target. When it changes, traffic will automatically migrate from the prior \"latest ready\" revision to the new one. This field must be false if RevisionName is set. This field defaults to true otherwise. If the field is set to true on Status, this means that the Revision was resolved from the Service's latest ready revision.",
           "type": "boolean"
         },
         "url": {
           "description": "Output only. URL displays the URL for accessing tagged traffic targets. URL is displayed in status, and is disallowed on spec. URL must contain a scheme (e.g. https:\/\/) and a hostname, but may not contain anything else (e.g. basic auth, url path, etc.)",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -2205,7 +2225,7 @@
       "type": "object",
       "properties": {
         "observedGeneration": {
-          "description": "ObservedGeneration is the 'Generation' of the Route that was last processed by the controller. Clients polling for completed reconciliation should poll until observedGeneration = metadata.generation and the Ready condition's status is True or False. Note that providing a trafficTarget that only has a configurationName will result in a Route that does not increment either its metadata.generation or its observedGeneration, as new \"latest ready\" revisions from the Configuration are processed without an update to the Route's spec.",
+          "description": "ObservedGeneration is the 'Generation' of the Route that was last processed by the controller. Clients polling for completed reconciliation should poll until observedGeneration = metadata.generation and the Ready condition's status is True or False. Note that providing a TrafficTarget that has latest_revision=True will result in a Route that does not increment either its metadata.generation or its observedGeneration, as new \"latest ready\" revisions from the Configuration are processed without an update to the Route's spec.",
           "type": "integer",
           "format": "int32"
         },

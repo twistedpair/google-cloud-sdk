@@ -5747,7 +5747,8 @@ class RuntimeInfo(_messages.Message):
 
   Fields:
     approximateUsage: Output only. Approximate workload resource usage
-      calculated after workload finishes.
+      calculated after workload finishes (see Dataproc Serverless pricing
+      (https://cloud.google.com/dataproc-serverless/pricing)).
     currentUsage: Output only. Snapshot of current workload resource usage.
     diagnosticOutputUri: Output only. A URI pointing to the location of the
       diagnostics tarball.
@@ -6923,11 +6924,16 @@ class TrinoJob(_messages.Message):
 
 
 class UsageMetrics(_messages.Message):
-  r"""Usage metrics represent total resources consumed by a workload.
+  r"""Usage metrics represent approximate total resources consumed by a
+  workload.
 
   Fields:
-    milliDcuSeconds: Optional. DCU usage in milliDCU*seconds.
-    shuffleStorageGbSeconds: Optional. Shuffle storage usage in GB*Seconds
+    milliDcuSeconds: Optional. DCU (Dataproc Compute Units) usage in (milliDCU
+      x seconds) (see Dataproc Serverless pricing
+      (https://cloud.google.com/dataproc-serverless/pricing)).
+    shuffleStorageGbSeconds: Optional. Shuffle storage usage in (GB x seconds)
+      (see Dataproc Serverless pricing (https://cloud.google.com/dataproc-
+      serverless/pricing)).
   """
 
   milliDcuSeconds = _messages.IntegerField(1)
@@ -6935,12 +6941,16 @@ class UsageMetrics(_messages.Message):
 
 
 class UsageSnapshot(_messages.Message):
-  r"""Usage snaphot represents the resources consumed by a workload at a given
-  time.
+  r"""The usage snaphot represents the resources consumed by a workload at a
+  specified time.
 
   Fields:
-    milliDcu: Optional. Milli (one-thousandth) Dataproc Compute Units.
-    shuffleStorageGb: Optional. Shuffle Storage in gigabytes (GB).
+    milliDcu: Optional. Milli (one-thousandth) Dataproc Compute Units (DCUs)
+      (see Dataproc Serverless pricing (https://cloud.google.com/dataproc-
+      serverless/pricing)).
+    shuffleStorageGb: Optional. Shuffle Storage in gigabytes (GB). (see
+      Dataproc Serverless pricing (https://cloud.google.com/dataproc-
+      serverless/pricing))
     snapshotTime: Optional. The timestamp of the usage snapshot.
   """
 

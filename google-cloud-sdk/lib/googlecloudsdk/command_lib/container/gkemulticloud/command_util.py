@@ -160,7 +160,11 @@ def Delete(resource_ref=None,
   if not validate_only:
     _DeletePrompt(kind, [message])
   async_ = getattr(args, 'async_', False)
-  op = resource_client.Delete(resource_ref, validate_only=validate_only)
+  allow_missing = getattr(args, 'allow_missing', False)
+  ignore_errors = getattr(args, 'ignore_errors', False)
+  op = resource_client.Delete(resource_ref, validate_only=validate_only,
+                              allow_missing=allow_missing,
+                              ignore_errors=ignore_errors)
   if validate_only:
     args.format = 'disable'
     return

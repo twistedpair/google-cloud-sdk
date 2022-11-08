@@ -404,6 +404,7 @@
               }
             },
             "striped": {
+              "description": "Whether or not the backup set being restored is striped. Applies only to Cloud SQL for SQL Server.",
               "type": "boolean"
             }
           }
@@ -505,12 +506,16 @@
           "type": "boolean"
         },
         "bakExportOptions": {
+          "description": "Options for exporting data as BAK files.",
+          "description": "Options for exporting BAK files (SQL Server-only)",
           "type": "object",
           "properties": {
             "striped": {
+              "description": "Whether or not the export should be striped.",
               "type": "boolean"
             },
             "stripeCount": {
+              "description": "Option for specifying how many stripes to use for the export. If blank, and the value of the striped field is true, the number of stripes is automatically chosen.",
               "type": "integer",
               "format": "int32"
             }
@@ -4849,9 +4854,14 @@
               "type": "string"
             },
             "name": {
-              "description": "User of the instance. If the database user has a host, this is specified as {username}@{host} else as {username}.",
+              "description": "User of the instance.",
               "location": "path",
               "required": true,
+              "type": "string"
+            },
+            "host": {
+              "description": "Host of a user of the instance.",
+              "location": "query",
               "type": "string"
             }
           },

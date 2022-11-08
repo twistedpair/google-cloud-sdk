@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "http://cloud.google.com",
+  "documentationLink": "https://cloud.google.com/vpc/docs/configure-serverless-vpc-access",
   "protocol": "rest",
   "rootUrl": "https://vpcaccess.googleapis.com/",
   "mtlsRootUrl": "https://vpcaccess.mtls.googleapis.com/",

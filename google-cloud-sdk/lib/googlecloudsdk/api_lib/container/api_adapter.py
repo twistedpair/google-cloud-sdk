@@ -489,7 +489,9 @@ class CreateClusterOptions(object):
       cloud_run_config=None,
       local_ssd_count=None,
       local_ssd_volume_configs=None,
+      local_nvme_ssd_block=None,
       ephemeral_storage=None,
+      ephemeral_storage_local_ssd=None,
       boot_disk_kms_key=None,
       node_pool_name=None,
       tags=None,
@@ -665,6 +667,8 @@ class CreateClusterOptions(object):
     self.local_ssd_count = local_ssd_count
     self.local_ssd_volume_configs = local_ssd_volume_configs
     self.ephemeral_storage = ephemeral_storage
+    self.ephemeral_storage_local_ssd = ephemeral_storage_local_ssd
+    self.local_nvme_ssd_block = local_nvme_ssd_block
     self.boot_disk_kms_key = boot_disk_kms_key
     self.node_pool_name = node_pool_name
     self.tags = tags
@@ -1080,6 +1084,8 @@ class CreateNodePoolOptions(object):
                local_ssd_count=None,
                local_ssd_volume_configs=None,
                ephemeral_storage=None,
+               local_nvme_ssd_block=None,
+               ephemeral_storage_local_ssd=None,
                boot_disk_kms_key=None,
                tags=None,
                node_labels=None,
@@ -1148,6 +1154,8 @@ class CreateNodePoolOptions(object):
     self.local_ssd_count = local_ssd_count
     self.local_ssd_volume_configs = local_ssd_volume_configs
     self.ephemeral_storage = ephemeral_storage
+    self.ephemeral_storage_local_ssd = ephemeral_storage_local_ssd
+    self.local_nvme_ssd_block = local_nvme_ssd_block
     self.boot_disk_kms_key = boot_disk_kms_key
     self.tags = tags
     self.labels = labels
@@ -1949,6 +1957,8 @@ class APIAdapter(object):
       node_config.localSsdCount = options.local_ssd_count
     self._AddLocalSSDVolumeConfigsToNodeConfig(node_config, options)
     self._AddEphemeralStorageToNodeConfig(node_config, options)
+    self._AddEphemeralStorageLocalSsdToNodeConfig(node_config, options)
+    self._AddLocalNvmeSsdBlockToNodeConfig(node_config, options)
 
     if options.tags:
       node_config.tags = options.tags
@@ -3194,6 +3204,20 @@ class APIAdapter(object):
     node_config.ephemeralStorageConfig = self.messages.EphemeralStorageConfig(
         localSsdCount=config['local-ssd-count'])
 
+  def _AddEphemeralStorageLocalSsdToNodeConfig(self, node_config, options):
+    if not options.ephemeral_storage_local_ssd:
+      return
+    config = options.ephemeral_storage_local_ssd
+    node_config.ephemeralStorageLocalSsdConfig = self.messages.EphemeralStorageLocalSsdConfig(
+        localSsdCount=config['count'])
+
+  def _AddLocalNvmeSsdBlockToNodeConfig(self, node_config, options):
+    if not options.local_nvme_ssd_block:
+      return
+    config = options.local_nvme_ssd_block
+    node_config.localNvmeSsdBlockConfig = self.messages.LocalNvmeSsdBlockConfig(
+        localSsdCount=config['count'])
+
   def _AddNodeTaintsToNodeConfig(self, node_config, options):
     """Add nodeTaints to nodeConfig."""
     if options.node_taints is None:
@@ -3418,6 +3442,8 @@ class APIAdapter(object):
       node_config.localSsdCount = options.local_ssd_count
     self._AddLocalSSDVolumeConfigsToNodeConfig(node_config, options)
     self._AddEphemeralStorageToNodeConfig(node_config, options)
+    self._AddEphemeralStorageLocalSsdToNodeConfig(node_config, options)
+    self._AddLocalNvmeSsdBlockToNodeConfig(node_config, options)
     if options.boot_disk_kms_key:
       node_config.bootDiskKmsKey = options.boot_disk_kms_key
     if options.tags:
@@ -5905,12 +5931,15 @@ def ProjectLocationOperation(project, location, operation):
   return ProjectLocation(project, location) + '/operations/' + operation
 
 
-def GetBinauthzEvaluationModeOptions(messages):
+def GetBinauthzEvaluationModeOptions(messages, release_track):
+  """Returns all valid options for --binauthz-evaluation-mode."""
   options = list(
       messages.BinaryAuthorization.EvaluationModeValueValuesEnum.to_dict())
   options.remove('EVALUATION_MODE_UNSPECIFIED')
-  options.remove('MONITORING')
-  options.remove('MONITORING_AND_PROJECT_SINGLETON_POLICY_ENFORCE')
+  # Only expose MONITORING* evaluation modes in the alpha track.
+  if release_track != base.ReleaseTrack.ALPHA:
+    options.remove('MONITORING')
+    options.remove('MONITORING_AND_PROJECT_SINGLETON_POLICY_ENFORCE')
   return sorted(options)
 
 

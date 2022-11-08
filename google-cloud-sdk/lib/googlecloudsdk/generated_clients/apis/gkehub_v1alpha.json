@@ -832,9 +832,6 @@
           "description": "Anthos Observability spec",
           "$ref": "AnthosObservabilityFeatureSpec"
         },
-        "clusterupgrade": {
-          "$ref": "ClusterUpgradeFeatureSpec"
-        },
         "rbacrolebindingactuation": {
           "description": "RBAC Role Binding Actuation feature spec",
           "$ref": "RBACRoleBindingActuationFeatureSpec"
@@ -1058,73 +1055,6 @@
         }
       }
     },
-    "ClusterUpgradeFeatureSpec": {
-      "id": "ClusterUpgradeFeatureSpec",
-      "description": "**ClusterUpgrade**: The configuration for the ClusterUpgrade feature.",
-      "type": "object",
-      "properties": {
-        "upstreamScopes": {
-          "description": "This scope consumes upgrades that have COMPLETE status code in the upstream scopes. See ScopeGKEUpgradeState.Code for code definitions. The scope name should be in the form: `projects\/{p}\/locations\/global\/scopes\/{s}` Where {p} is the project, {s} is a valid Scope in this project. {p} WILL match the Feature's project. This is defined as repeated for future proof reasons. Initial implementation will enforce at most one upstream scope.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "postConditions": {
-          "description": "Post conditions to evaluate to mark an upgrade COMPLETE.",
-          "$ref": "ClusterUpgradePostConditions"
-        },
-        "gkeUpgradeOverrides": {
-          "description": "Allow users to override some properties of each GKE upgrade.",
-          "type": "array",
-          "items": {
-            "$ref": "ClusterUpgradeGKEUpgradeOverride"
-          }
-        }
-      }
-    },
-    "ClusterUpgradePostConditions": {
-      "id": "ClusterUpgradePostConditions",
-      "description": "Post conditional checks after an upgrade has been applied on all eligible clusters.",
-      "type": "object",
-      "properties": {
-        "soaking": {
-          "description": "Amount of time to \"soak\" after a rollout has been finished before marking it COMPLETE. Cannot exceed 30 days.",
-          "type": "string",
-          "format": "google-duration"
-        }
-      }
-    },
-    "ClusterUpgradeGKEUpgradeOverride": {
-      "id": "ClusterUpgradeGKEUpgradeOverride",
-      "description": "Properties of a GKE upgrade that can be overridden by the user. For example, a user can skip soaking by overriding the soaking to 0.",
-      "type": "object",
-      "properties": {
-        "upgrade": {
-          "description": "Which upgrade to override.",
-          "$ref": "ClusterUpgradeGKEUpgrade"
-        },
-        "postConditions": {
-          "description": "Post conditions to override for the specified upgrade (name + version).",
-          "$ref": "ClusterUpgradePostConditions"
-        }
-      }
-    },
-    "ClusterUpgradeGKEUpgrade": {
-      "id": "ClusterUpgradeGKEUpgrade",
-      "description": "GKEUpgrade represents a GKE provided upgrade, e.g., control plane upgrade.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Name of the upgrade, e.g., \"k8s_control_plane\". It should be a valid upgrade name. It must not exceet 99 characters.",
-          "type": "string"
-        },
-        "version": {
-          "description": "Version of the upgrade, e.g., \"1.22.1-gke.100\". It should be a valid version. It must not exceet 99 characters.",
-          "type": "string"
-        }
-      }
-    },
     "RBACRoleBindingActuationFeatureSpec": {
       "id": "RBACRoleBindingActuationFeatureSpec",
       "description": "**RBAC RoleBinding Actuation**: The Hub-wide input for the RBACRoleBindingActuation feature.",
@@ -1158,10 +1088,6 @@
         "cloudbuild": {
           "description": "Cloud Build-specific spec",
           "$ref": "CloudBuildMembershipSpec"
-        },
-        "apigee": {
-          "description": "Apigee-specific spec.",
-          "$ref": "ApigeeMembershipSpec"
         },
         "identityservice": {
           "description": "Identity Service-specific spec.",
@@ -1453,24 +1379,6 @@
             "NON_PRIVILEGED",
             "PRIVILEGED"
           ]
-        }
-      }
-    },
-    "ApigeeMembershipSpec": {
-      "id": "ApigeeMembershipSpec",
-      "description": "**Apigee**: Per-Membership Feature spec.",
-      "type": "object",
-      "properties": {
-        "location": {
-          "description": "Location of the cluster. This is used by Apigee management plane for making location-based routing decisions.",
-          "type": "string"
-        },
-        "organizationProjects": {
-          "description": "In Apigee hybrid install, a project can contain memberships that serve multiple Apigee org projects. This is the list of Apigee org projects that the membership serves. E.g., In order to get the memberships that serve a specific organization project, Consumers can filter based on this field.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -1824,9 +1732,6 @@
           "description": "Appdevexperience specific state.",
           "$ref": "AppDevExperienceFeatureState"
         },
-        "clusterupgrade": {
-          "$ref": "ClusterUpgradeFeatureState"
-        },
         "rbacrolebindingactuation": {
           "description": "RBAC Role Binding Actuation feature state",
           "$ref": "RBACRoleBindingActuationFeatureState"
@@ -1975,153 +1880,6 @@
         "description": {
           "description": "Description is populated if Code is Failed, explaining why it has failed.",
           "type": "string"
-        }
-      }
-    },
-    "ClusterUpgradeFeatureState": {
-      "id": "ClusterUpgradeFeatureState",
-      "description": "**ClusterUpgrade**: The state for the ClusterUpgrade feature.",
-      "type": "object",
-      "properties": {
-        "downstreamScopes": {
-          "description": "This scopes whose upstream_scopes contain the current scope. The scope name should be in the form: `projects\/{p}\/locations\/global\/scopes\/{s}` Where {p} is the project, {s} is a valid Scope in this project. {p} WILL match the Feature's project.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "ignored": {
-          "description": "A list of memberships ignored by the feature. For example, manually upgraded clusters can be ignored if they are newer than the default versions of its release channel. The membership resource is in the format: `projects\/{p}\/locations\/{l}\/membership\/{l}`.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "ClusterUpgradeIgnoredMembership"
-          }
-        },
-        "gkeState": {
-          "description": "Feature state for GKE clusters.",
-          "$ref": "ClusterUpgradeGKEUpgradeFeatureState"
-        }
-      }
-    },
-    "ClusterUpgradeIgnoredMembership": {
-      "id": "ClusterUpgradeIgnoredMembership",
-      "description": "IgnoredMembership represents a membership ignored by the feature. A membership can be ignored because it was manually upgraded to a newer version than RC default.",
-      "type": "object",
-      "properties": {
-        "reason": {
-          "description": "Reason why the membership is ignored.",
-          "type": "string"
-        },
-        "ignoredTime": {
-          "description": "Time when the membership was first set to ignored.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "ClusterUpgradeGKEUpgradeFeatureState": {
-      "id": "ClusterUpgradeGKEUpgradeFeatureState",
-      "description": "GKEUpgradeFeatureState contains feature states for GKE clusters in the scope.",
-      "type": "object",
-      "properties": {
-        "state": {
-          "description": "Upgrade state.",
-          "type": "array",
-          "items": {
-            "$ref": "ClusterUpgradeScopeGKEUpgradeState"
-          }
-        },
-        "conditions": {
-          "description": "Current conditions of the feature.",
-          "type": "array",
-          "items": {
-            "$ref": "ClusterUpgradeGKEUpgradeFeatureCondition"
-          }
-        }
-      }
-    },
-    "ClusterUpgradeScopeGKEUpgradeState": {
-      "id": "ClusterUpgradeScopeGKEUpgradeState",
-      "description": "ScopeGKEUpgradeState is a GKEUpgrade and its state at the scope level.",
-      "type": "object",
-      "properties": {
-        "upgrade": {
-          "description": "Which upgrade to track the state.",
-          "$ref": "ClusterUpgradeGKEUpgrade"
-        },
-        "status": {
-          "description": "Status of the upgrade.",
-          "$ref": "ClusterUpgradeUpgradeStatus"
-        },
-        "stats": {
-          "description": "Number of GKE clusters in each status code.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string",
-            "format": "int64"
-          }
-        }
-      }
-    },
-    "ClusterUpgradeUpgradeStatus": {
-      "id": "ClusterUpgradeUpgradeStatus",
-      "description": "UpgradeStatus provides status information for each upgrade.",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "Status code of the upgrade.",
-          "type": "string",
-          "enumDescriptions": [
-            "Required by https:\/\/linter.aip.dev\/126\/unspecified.",
-            "The upgrade is ineligible. At the scope level, this means the upgrade is ineligible for all the clusters in the scope.",
-            "The upgrade is pending. At the scope level, this means the upgrade is pending for all the clusters in the scope.",
-            "The upgrade is in progress. At the scope level, this means the upgrade is in progress for at least one cluster in the scope.",
-            "The upgrade has finished and is soaking until the soaking time is up. At the scope level, this means at least one cluster is in soaking while the rest are either soaking or complete.",
-            "A cluster will be forced to enter soaking if an upgrade doesn't finish within a certain limit, despite it's actual status.",
-            "The upgrade has passed all post conditions (soaking). At the scope level, this means all eligible clusters are in COMPLETE status."
-          ],
-          "enum": [
-            "CODE_UNSPECIFIED",
-            "INELIGIBLE",
-            "PENDING",
-            "IN_PROGRESS",
-            "SOAKING",
-            "FORCED_SOAKING",
-            "COMPLETE"
-          ]
-        },
-        "reason": {
-          "description": "Reason for this status.",
-          "type": "string"
-        },
-        "updateTime": {
-          "description": "Last timestamp the status was updated.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "ClusterUpgradeGKEUpgradeFeatureCondition": {
-      "id": "ClusterUpgradeGKEUpgradeFeatureCondition",
-      "description": "GKEUpgradeFeatureCondition describes the condition of the feature for GKE clusters at a certain point of time.",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "Type of the condition, for example, \"ready\".",
-          "type": "string"
-        },
-        "status": {
-          "description": "Status of the condition, one of True, False, Unknown.",
-          "type": "string"
-        },
-        "reason": {
-          "description": "Reason why the feature is in this status.",
-          "type": "string"
-        },
-        "updateTime": {
-          "description": "Last timestamp the condition was updated.",
-          "type": "string",
-          "format": "google-datetime"
         }
       }
     },
@@ -3214,6 +2972,22 @@
         }
       }
     },
+    "ClusterUpgradeIgnoredMembership": {
+      "id": "ClusterUpgradeIgnoredMembership",
+      "description": "IgnoredMembership represents a membership ignored by the feature. A membership can be ignored because it was manually upgraded to a newer version than RC default.",
+      "type": "object",
+      "properties": {
+        "reason": {
+          "description": "Reason why the membership is ignored.",
+          "type": "string"
+        },
+        "ignoredTime": {
+          "description": "Time when the membership was first set to ignored.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "ClusterUpgradeMembershipGKEUpgradeState": {
       "id": "ClusterUpgradeMembershipGKEUpgradeState",
       "description": "ScopeGKEUpgradeState is a GKEUpgrade and its state per-membership.",
@@ -3226,6 +3000,59 @@
         "status": {
           "description": "Status of the upgrade.",
           "$ref": "ClusterUpgradeUpgradeStatus"
+        }
+      }
+    },
+    "ClusterUpgradeGKEUpgrade": {
+      "id": "ClusterUpgradeGKEUpgrade",
+      "description": "GKEUpgrade represents a GKE provided upgrade, e.g., control plane upgrade.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the upgrade, e.g., \"k8s_control_plane\". It should be a valid upgrade name. It must not exceet 99 characters.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Version of the upgrade, e.g., \"1.22.1-gke.100\". It should be a valid version. It must not exceet 99 characters.",
+          "type": "string"
+        }
+      }
+    },
+    "ClusterUpgradeUpgradeStatus": {
+      "id": "ClusterUpgradeUpgradeStatus",
+      "description": "UpgradeStatus provides status information for each upgrade.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Status code of the upgrade.",
+          "type": "string",
+          "enumDescriptions": [
+            "Required by https:\/\/linter.aip.dev\/126\/unspecified.",
+            "The upgrade is ineligible. At the scope level, this means the upgrade is ineligible for all the clusters in the scope.",
+            "The upgrade is pending. At the scope level, this means the upgrade is pending for all the clusters in the scope.",
+            "The upgrade is in progress. At the scope level, this means the upgrade is in progress for at least one cluster in the scope.",
+            "The upgrade has finished and is soaking until the soaking time is up. At the scope level, this means at least one cluster is in soaking while the rest are either soaking or complete.",
+            "A cluster will be forced to enter soaking if an upgrade doesn't finish within a certain limit, despite it's actual status.",
+            "The upgrade has passed all post conditions (soaking). At the scope level, this means all eligible clusters are in COMPLETE status."
+          ],
+          "enum": [
+            "CODE_UNSPECIFIED",
+            "INELIGIBLE",
+            "PENDING",
+            "IN_PROGRESS",
+            "SOAKING",
+            "FORCED_SOAKING",
+            "COMPLETE"
+          ]
+        },
+        "reason": {
+          "description": "Reason for this status.",
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Last timestamp the status was updated.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -3280,10 +3107,6 @@
       "type": "object",
       "properties": {
         "clusterupgrade": {
-          "description": "Upgrade feature spec.",
-          "$ref": "ClusterUpgradeFeatureSpec"
-        },
-        "clusterupgradeNew": {
           "$ref": "ClusterUpgradeScopeSpec"
         }
       }
@@ -3313,16 +3136,39 @@
         }
       }
     },
+    "ClusterUpgradePostConditions": {
+      "id": "ClusterUpgradePostConditions",
+      "description": "Post conditional checks after an upgrade has been applied on all eligible clusters.",
+      "type": "object",
+      "properties": {
+        "soaking": {
+          "description": "Amount of time to \"soak\" after a rollout has been finished before marking it COMPLETE. Cannot exceed 30 days.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "ClusterUpgradeGKEUpgradeOverride": {
+      "id": "ClusterUpgradeGKEUpgradeOverride",
+      "description": "Properties of a GKE upgrade that can be overridden by the user. For example, a user can skip soaking by overriding the soaking to 0.",
+      "type": "object",
+      "properties": {
+        "upgrade": {
+          "description": "Which upgrade to override.",
+          "$ref": "ClusterUpgradeGKEUpgrade"
+        },
+        "postConditions": {
+          "description": "Post conditions to override for the specified upgrade (name + version).",
+          "$ref": "ClusterUpgradePostConditions"
+        }
+      }
+    },
     "ScopeFeatureState": {
       "id": "ScopeFeatureState",
       "description": "ScopeFeatureState contains Scope-wide Feature status information.",
       "type": "object",
       "properties": {
         "clusterupgrade": {
-          "description": "Upgrade specific state.",
-          "$ref": "ClusterUpgradeFeatureState"
-        },
-        "clusterupgradeNew": {
           "$ref": "ClusterUpgradeScopeState"
         },
         "state": {
@@ -3354,6 +3200,74 @@
         "gkeState": {
           "description": "Feature state for GKE clusters.",
           "$ref": "ClusterUpgradeGKEUpgradeFeatureState"
+        }
+      }
+    },
+    "ClusterUpgradeGKEUpgradeFeatureState": {
+      "id": "ClusterUpgradeGKEUpgradeFeatureState",
+      "description": "GKEUpgradeFeatureState contains feature states for GKE clusters in the scope.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Upgrade state.",
+          "type": "array",
+          "items": {
+            "$ref": "ClusterUpgradeScopeGKEUpgradeState"
+          }
+        },
+        "conditions": {
+          "description": "Current conditions of the feature.",
+          "type": "array",
+          "items": {
+            "$ref": "ClusterUpgradeGKEUpgradeFeatureCondition"
+          }
+        }
+      }
+    },
+    "ClusterUpgradeScopeGKEUpgradeState": {
+      "id": "ClusterUpgradeScopeGKEUpgradeState",
+      "description": "ScopeGKEUpgradeState is a GKEUpgrade and its state at the scope level.",
+      "type": "object",
+      "properties": {
+        "upgrade": {
+          "description": "Which upgrade to track the state.",
+          "$ref": "ClusterUpgradeGKEUpgrade"
+        },
+        "status": {
+          "description": "Status of the upgrade.",
+          "$ref": "ClusterUpgradeUpgradeStatus"
+        },
+        "stats": {
+          "description": "Number of GKE clusters in each status code.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "ClusterUpgradeGKEUpgradeFeatureCondition": {
+      "id": "ClusterUpgradeGKEUpgradeFeatureCondition",
+      "description": "GKEUpgradeFeatureCondition describes the condition of the feature for GKE clusters at a certain point of time.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Type of the condition, for example, \"ready\".",
+          "type": "string"
+        },
+        "status": {
+          "description": "Status of the condition, one of True, False, Unknown.",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Reason why the feature is in this status.",
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Last timestamp the condition was updated.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

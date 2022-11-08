@@ -14,6 +14,43 @@ from apitools.base.py import extra_types
 package = 'healthcare'
 
 
+class Action(_messages.Message):
+  r"""Specifies a selection of tags and an `Action` to apply to each one.
+
+  Fields:
+    cleanImageTag: Inspect image and transform sensitive burnt-in text.
+      Doesn't apply to elements nested in a sequence, which revert to `Keep`.
+      Supported [tags](http://dicom.nema.org/medical/dicom/2018e/output/chtml/
+      part06/chapter_6.html): PixelData
+    cleanTextTag: Inspect text and transform sensitive text. Configurable via
+      TextConfig. Supported Value Representations: AE, LO, LT, PN, SH, ST, UC,
+      UT, DA, DT, AS
+    deleteTag: Delete tag.
+    keepTag: Keep tag unchanged.
+    queries: Select all tags with the listed tag IDs, names, or Value
+      Representations (VRs). Examples: ID: "00100010" Keyword: "PatientName"
+      VR: "PN"
+    recurseTag: Recursively apply DICOM de-id to tags nested in a sequence.
+      Supported [Value Representation] (http://dicom.nema.org/medical/dicom/20
+      18e/output/chtml/part05/sect_6.2.html#table_6.2-1): SQ
+    regenUidTag: Replace UID with a new generated UID. Supported [Value
+      Representation] (http://dicom.nema.org/medical/dicom/2018e/output/chtml/
+      part05/sect_6.2.html#table_6.2-1): UI
+    removeTag: Replace with empty tag.
+    resetTag: Reset tag to a placeholder value.
+  """
+
+  cleanImageTag = _messages.MessageField('ImageConfig', 1)
+  cleanTextTag = _messages.MessageField('CleanTextTag', 2)
+  deleteTag = _messages.MessageField('DeleteTag', 3)
+  keepTag = _messages.MessageField('KeepTag', 4)
+  queries = _messages.StringField(5, repeated=True)
+  recurseTag = _messages.MessageField('RecurseTag', 6)
+  regenUidTag = _messages.MessageField('RegenUidTag', 7)
+  removeTag = _messages.MessageField('RemoveTag', 8)
+  resetTag = _messages.MessageField('ResetTag', 9)
+
+
 class ActivateConsentRequest(_messages.Message):
   r"""Activates the latest revision of the specified Consent by committing a
   new revision with `state` updated to `ACTIVE`. If the latest revision of the
@@ -467,6 +504,14 @@ class CharacterMaskConfig(_messages.Message):
   maskingCharacter = _messages.StringField(1)
 
 
+class CharacterMaskField(_messages.Message):
+  r"""Replace field value with masking character. Supported
+  [types](https://www.hl7.org/fhir/datatypes.html): Code, Decimal, HumanName,
+  Id, LanguageCode, Markdown, Oid, String, Uri, Uuid, Xhtml
+  """
+
+
+
 class CheckDataAccessRequest(_messages.Message):
   r"""Checks if a particular data_id of a User data mapping in the given
   consent store is consented for a given use.
@@ -589,6 +634,37 @@ class CheckDataAccessResponse(_messages.Message):
 
   consentDetails = _messages.MessageField('ConsentDetailsValue', 1)
   consented = _messages.BooleanField(2)
+
+
+class CleanDescriptorsOption(_messages.Message):
+  r"""This option is based on the DICOM Standard's [Clean Descriptors Option](
+  http://dicom.nema.org/medical/dicom/2018e/output/chtml/part15/sect_E.3.5.htm
+  l), and the `CleanText` `Action` is applied to all the specified fields.
+  When cleaning text, the process attempts to transform phrases matching any
+  of the tags marked for removal (action codes D, Z, X, and U) in the [Basic P
+  rofile](http://dicom.nema.org/medical/dicom/2018e/output/chtml/part15/chapte
+  r_E.html). These contextual phrases are replaced with the token "[CTX]".
+  This option uses an additional `InfoType` during inspection.
+  """
+
+
+
+class CleanTextField(_messages.Message):
+  r"""Inspect text and transform sensitive text. Configure using `TextConfig`.
+  Supported [types](https://www.hl7.org/fhir/datatypes.html): Code, Date,
+  DateTime, Decimal, HumanName, Id, LanguageCode, Markdown, Oid, String, Uri,
+  Uuid, Xhtml
+  """
+
+
+
+class CleanTextTag(_messages.Message):
+  r"""Inspect text and transform sensitive text. Configurable using
+  `TextConfig`. Supported [Value Representations] (http://dicom.nema.org/medic
+  al/dicom/2018e/output/chtml/part05/sect_6.2.html#table_6.2-1): AE, LO, LT,
+  PN, SH, ST, UC, UT, DA, DT, AS
+  """
+
 
 
 class CloudHealthcareSource(_messages.Message):
@@ -917,6 +993,16 @@ class ConsentStore(_messages.Message):
   name = _messages.StringField(4)
 
 
+class ContextualDeidConfig(_messages.Message):
+  r"""The fields that aren't marked `Keep` or `CleanText` in the `BASIC`
+  profile are collected into a contextual phrase list. For fields marked
+  `CleanText`, the process attempts to transform phrases matching these
+  contextual entries. These contextual phrases are replaced with the token
+  "[CTX]". This feature uses an additional InfoType during inspection.
+  """
+
+
+
 class CreateMessageRequest(_messages.Message):
   r"""Creates a new message.
 
@@ -942,6 +1028,14 @@ class CryptoHashConfig(_messages.Message):
 
   cryptoKey = _messages.BytesField(1)
   kmsWrapped = _messages.MessageField('KmsWrappedCryptoKey', 2)
+
+
+class CryptoHashField(_messages.Message):
+  r"""Replace field value with a hash of that value. Supported
+  [types](https://www.hl7.org/fhir/datatypes.html): Code, Decimal, HumanName,
+  Id, LanguageCode, Markdown, Oid, String, Uri, Uuid, Xhtml
+  """
+
 
 
 class Dataset(_messages.Message):
@@ -979,6 +1073,15 @@ class DateShiftConfig(_messages.Message):
   kmsWrapped = _messages.MessageField('KmsWrappedCryptoKey', 2)
 
 
+class DateShiftField(_messages.Message):
+  r"""Shift the date by a randomized number of days. See [date
+  shifting](https://cloud.google.com/dlp/docs/concepts-date-shifting) for more
+  information. Supported [types](https://www.hl7.org/fhir/datatypes.html):
+  Date, DateTime
+  """
+
+
+
 class DeidentifiedStoreDestination(_messages.Message):
   r"""Contains configuration for streaming de-identified FHIR export.
 
@@ -1005,8 +1108,10 @@ class DeidentifyConfig(_messages.Message):
       identification. If unspecified, no annotations are created.
     dicom: Configures de-id of application/DICOM content. Deprecated. Use
       `dicom_tag_config` instead.
+    dicomTagConfig: Configures de-id of application/DICOM content.
     fhir: Configures de-id of application/FHIR content. Deprecated. Use
       `fhir_field_config` instead.
+    fhirFieldConfig: Configures de-id of application/FHIR content.
     image: Configures the de-identification of image pixels in the
       source_dataset. Deprecated. Use `dicom_tag_config.options.clean_image`
       instead.
@@ -1018,10 +1123,12 @@ class DeidentifyConfig(_messages.Message):
 
   annotation = _messages.MessageField('AnnotationConfig', 1)
   dicom = _messages.MessageField('DicomConfig', 2)
-  fhir = _messages.MessageField('FhirConfig', 3)
-  image = _messages.MessageField('ImageConfig', 4)
-  operationMetadata = _messages.MessageField('DeidentifyOperationMetadata', 5)
-  text = _messages.MessageField('TextConfig', 6)
+  dicomTagConfig = _messages.MessageField('DicomTagConfig', 3)
+  fhir = _messages.MessageField('FhirConfig', 4)
+  fhirFieldConfig = _messages.MessageField('FhirFieldConfig', 5)
+  image = _messages.MessageField('ImageConfig', 6)
+  operationMetadata = _messages.MessageField('DeidentifyOperationMetadata', 7)
+  text = _messages.MessageField('TextConfig', 8)
 
 
 class DeidentifyDatasetRequest(_messages.Message):
@@ -1124,6 +1231,10 @@ class DeidentifyOperationMetadata(_messages.Message):
 
 class DeidentifySummary(_messages.Message):
   r"""Contains a detailed summary of the Deidentify operation."""
+
+
+class DeleteTag(_messages.Message):
+  r"""Delete tag."""
 
 
 class Detail(_messages.Message):
@@ -1278,6 +1389,52 @@ class DicomStore(_messages.Message):
   name = _messages.StringField(2)
   notificationConfig = _messages.MessageField('NotificationConfig', 3)
   streamConfigs = _messages.MessageField('GoogleCloudHealthcareV1beta1DicomStreamConfig', 4, repeated=True)
+
+
+class DicomTagConfig(_messages.Message):
+  r"""Specifies the parameters needed for the de-identification of DICOM
+  stores.
+
+  Enums:
+    ProfileTypeValueValuesEnum: Base profile type for handling DICOM tags.
+
+  Fields:
+    actions: Specifies custom tag selections and `Actions` to apply to them.
+      Overrides `options` and `profile`. Conflicting `Actions` are applied in
+      the order given.
+    options: Specifies additional options to apply, overriding the base
+      `profile`.
+    profileType: Base profile type for handling DICOM tags.
+  """
+
+  class ProfileTypeValueValuesEnum(_messages.Enum):
+    r"""Base profile type for handling DICOM tags.
+
+    Values:
+      PROFILE_TYPE_UNSPECIFIED: No profile provided. Same as
+        `ATTRIBUTE_CONFIDENTIALITY_BASIC_PROFILE`.
+      MINIMAL_KEEP_LIST_PROFILE: Keep only the tags required to produce valid
+        DICOM objects.
+      ATTRIBUTE_CONFIDENTIALITY_BASIC_PROFILE: Remove tags based on DICOM
+        Standard's [Attribute Confidentiality Basic Profile (DICOM Standard
+        Edition 2018e)](http://dicom.nema.org/medical/dicom/2018e/output/chtml
+        /part15/chapter_E.html).
+      KEEP_ALL_PROFILE: Keep all tags.
+      DEIDENTIFY_TAG_CONTENTS: Inspect tag contents and replace sensitive
+        text. The process can be configured using the TextConfig. Applies to
+        all tags with the following [Value Representations] (http://dicom.nema
+        .org/medical/dicom/2018e/output/chtml/part05/sect_6.2.html#table_6.2-1
+        ): AE, LO, LT, PN, SH, ST, UC, UT, DA, DT, AS
+    """
+    PROFILE_TYPE_UNSPECIFIED = 0
+    MINIMAL_KEEP_LIST_PROFILE = 1
+    ATTRIBUTE_CONFIDENTIALITY_BASIC_PROFILE = 2
+    KEEP_ALL_PROFILE = 3
+    DEIDENTIFY_TAG_CONTENTS = 4
+
+  actions = _messages.MessageField('Action', 1, repeated=True)
+  options = _messages.MessageField('Options', 2)
+  profileType = _messages.EnumField('ProfileTypeValueValuesEnum', 3)
 
 
 class Empty(_messages.Message):
@@ -1797,6 +1954,45 @@ class FhirConfig(_messages.Message):
 
   defaultKeepExtensions = _messages.BooleanField(1)
   fieldMetadataList = _messages.MessageField('FieldMetadata', 2, repeated=True)
+
+
+class FhirFieldConfig(_messages.Message):
+  r"""Specifies how to handle the de-identification of a FHIR store.
+
+  Enums:
+    ProfileTypeValueValuesEnum: Base profile type for handling FHIR fields.
+
+  Fields:
+    fieldMetadataList: Specifies FHIR paths to match and how to transform
+      them. Any field that is not matched by a `FieldMetadata` is passed
+      through to the output dataset unmodified. All extensions will be
+      processed according to `keep_extensions`. If a field can be matched by
+      more than one `FieldMetadata`, the first `FieldMetadata.Action` is
+      applied. Overrides `options` and `profile`.
+    options: Specifies additional options, overriding the base `profile`.
+    profileType: Base profile type for handling FHIR fields.
+  """
+
+  class ProfileTypeValueValuesEnum(_messages.Enum):
+    r"""Base profile type for handling FHIR fields.
+
+    Values:
+      PROFILE_TYPE_UNSPECIFIED: No profile provided. Same as `BASIC`.
+      KEEP_ALL: `Keep` all fields.
+      BASIC: Transforms known HIPAA 18 fields and cleans known unstructured
+        text fields.
+      CLEAN_ALL: Cleans all supported tags. Applies to types: Code, Date,
+        DateTime, Decimal, HumanName, Id, LanguageCode, Markdown, Oid, String,
+        Uri, Uuid, Xhtml
+    """
+    PROFILE_TYPE_UNSPECIFIED = 0
+    KEEP_ALL = 1
+    BASIC = 2
+    CLEAN_ALL = 3
+
+  fieldMetadataList = _messages.MessageField('GoogleCloudHealthcareV1beta1DeidentifyFieldMetadata', 1, repeated=True)
+  options = _messages.MessageField('GoogleCloudHealthcareV1beta1DeidentifyOptions', 2)
+  profileType = _messages.EnumField('ProfileTypeValueValuesEnum', 3)
 
 
 class FhirFilter(_messages.Message):
@@ -2376,6 +2572,78 @@ class GoogleCloudHealthcareV1beta1DeidentifyDeidentifyDicomStoreSummary(_message
 
 class GoogleCloudHealthcareV1beta1DeidentifyDeidentifyFhirStoreSummary(_messages.Message):
   r"""Contains a summary of the DeidentifyFhirStore operation."""
+
+
+class GoogleCloudHealthcareV1beta1DeidentifyFieldMetadata(_messages.Message):
+  r"""Specifies the FHIR paths to match and how to handle the de-
+  identification of matching fields.
+
+  Fields:
+    characterMaskField: Replace the field's value with a masking character.
+      Supported [types](https://www.hl7.org/fhir/datatypes.html): Code,
+      Decimal, HumanName, Id, LanguageCode, Markdown, Oid, String, Uri, Uuid,
+      Xhtml
+    cleanTextField: Inspect the field's text and transform sensitive text.
+      Configure using `TextConfig`. Supported
+      [types](https://www.hl7.org/fhir/datatypes.html): Code, Date, DateTime,
+      Decimal, HumanName, Id, LanguageCode, Markdown, Oid, String, Uri, Uuid,
+      Xhtml
+    cryptoHashField: Replace field value with a hash of that value. Supported
+      [types](https://www.hl7.org/fhir/datatypes.html): Code, Decimal,
+      HumanName, Id, LanguageCode, Markdown, Oid, String, Uri, Uuid, Xhtml
+    dateShiftField: Shift the date by a randomized number of days. See [date
+      shifting](https://cloud.google.com/dlp/docs/concepts-date-shifting) for
+      more information. Supported
+      [types](https://www.hl7.org/fhir/datatypes.html): Date, DateTime
+    keepField: Keep the field unchanged.
+    paths: List of paths to FHIR fields to redact. Each path is a period-
+      separated list where each component is either a field name or FHIR type
+      name. All types begin with an upper case letter. For example, the
+      resource field "Patient.Address.city", which uses a string type, can be
+      matched by "Patient.Address.String". Path also supports partialkk
+      matching. For example, "Patient.Address.city" can be matched by
+      "Address.city" (Patient omitted). Partial matching and type matching can
+      be combined, for example "Patient.Address.city" can be matched by
+      "Address.String". For "choice" types (those defined in the FHIR spec
+      with the form: field[x]), use two separate components. For example,
+      "deceasedAge.unit" is matched by "Deceased.Age.unit". Supported
+      [types](https://www.hl7.org/fhir/datatypes.html) are:
+      AdministrativeGenderCode, Base64Binary, Boolean, Code, Date, DateTime,
+      Decimal, HumanName, Id, Instant, Integer, LanguageCode, Markdown, Oid,
+      PositiveInt, String, UnsignedInt, Uri, Uuid, Xhtml. The sub-type for
+      HumanName (for example HumanName.given, HumanName.family) can be
+      omitted.
+    removeField: Remove the field.
+  """
+
+  characterMaskField = _messages.MessageField('CharacterMaskField', 1)
+  cleanTextField = _messages.MessageField('CleanTextField', 2)
+  cryptoHashField = _messages.MessageField('CryptoHashField', 3)
+  dateShiftField = _messages.MessageField('DateShiftField', 4)
+  keepField = _messages.MessageField('KeepField', 5)
+  paths = _messages.StringField(6, repeated=True)
+  removeField = _messages.MessageField('RemoveField', 7)
+
+
+class GoogleCloudHealthcareV1beta1DeidentifyOptions(_messages.Message):
+  r"""Specifies additional options to apply to the base `profile`.
+
+  Fields:
+    characterMaskConfig: Character mask config for `CharacterMaskField`
+      `FieldMetadatas`.
+    contextualDeid: Configure contextual de-id.
+    cryptoHashConfig: Crypo hash config for `CharacterMaskField`
+      `FieldMetadatas`.
+    dateShiftConfig: Date shifting config for `CharacterMaskField`
+      `FieldMetadatas`.
+    keepExtensions: Configure keeping extensions by default.
+  """
+
+  characterMaskConfig = _messages.MessageField('CharacterMaskConfig', 1)
+  contextualDeid = _messages.MessageField('ContextualDeidConfig', 2)
+  cryptoHashConfig = _messages.MessageField('CryptoHashConfig', 3)
+  dateShiftConfig = _messages.MessageField('DateShiftConfig', 4)
+  keepExtensions = _messages.MessageField('KeepExtensionsConfig', 5)
 
 
 class GoogleCloudHealthcareV1beta1DicomBigQueryDestination(_messages.Message):
@@ -5775,6 +6043,15 @@ class ImageConfig(_messages.Message):
       image.
 
   Fields:
+    additionalInfoTypes: Additional InfoTypes to redact in the images in
+      addition to those used by `text_redaction_mode`. Can only be used when
+      `text_redaction_mode` is set to `REDACT_SENSITIVE_TEXT`,
+      `REDACT_SENSITIVE_TEXT_CLEAN_DESCRIPTORS` or
+      `TEXT_REDACTION_MODE_UNSPECIFIED`.
+    excludeInfoTypes: InfoTypes to skip redacting, overriding those used by
+      `text_redaction_mode`. Can only be used when `text_redaction_mode` is
+      set to `REDACT_SENSITIVE_TEXT` or
+      `REDACT_SENSITIVE_TEXT_CLEAN_DESCRIPTORS`.
     textRedactionMode: Determines how to redact text from image.
   """
 
@@ -5789,13 +6066,25 @@ class ImageConfig(_messages.Message):
         DICOM InfoTypes](https://cloud.google.com/healthcare-api/docs/how-
         tos/dicom-deidentify#default_dicom_infotypes).
       REDACT_NO_TEXT: Do not redact text.
+      REDACT_SENSITIVE_TEXT_CLEAN_DESCRIPTORS: This mode is like
+        `REDACT_SENSITIVE_TEXT` with the addition of the [Clean Descriptors
+        Option] (https://dicom.nema.org/medical/dicom/2018e/output/chtml/part1
+        5/sect_E.3.5.html) enabled: When cleaning text, the process attempts
+        to transform phrases matching any of the tags marked for removal
+        (action codes D, Z, X, and U) in the [Basic Profile] (https://dicom.ne
+        ma.org/medical/dicom/2018e/output/chtml/part15/chapter_E.html). These
+        contextual phrases are replaced with the token "[CTX]". This mode uses
+        an additional InfoType during inspection.
     """
     TEXT_REDACTION_MODE_UNSPECIFIED = 0
     REDACT_ALL_TEXT = 1
     REDACT_SENSITIVE_TEXT = 2
     REDACT_NO_TEXT = 3
+    REDACT_SENSITIVE_TEXT_CLEAN_DESCRIPTORS = 4
 
-  textRedactionMode = _messages.EnumField('TextRedactionModeValueValuesEnum', 1)
+  additionalInfoTypes = _messages.StringField(1, repeated=True)
+  excludeInfoTypes = _messages.StringField(2, repeated=True)
+  textRedactionMode = _messages.EnumField('TextRedactionModeValueValuesEnum', 3)
 
 
 class ImportAnnotationsRequest(_messages.Message):
@@ -5976,6 +6265,23 @@ class IngestMessageResponse(_messages.Message):
 
   hl7Ack = _messages.BytesField(1)
   message = _messages.MessageField('Message', 2)
+
+
+class KeepExtensionsConfig(_messages.Message):
+  r"""The behaviour for handling FHIR extensions that aren't otherwise
+  specified for de-identification. If provided, all extensions are preserved
+  during de-identification by default. If unspecified, all extensions are
+  removed during de-identification by default.
+  """
+
+
+
+class KeepField(_messages.Message):
+  r"""Keep field unchanged."""
+
+
+class KeepTag(_messages.Message):
+  r"""Keep tag unchanged."""
 
 
 class KmsWrappedCryptoKey(_messages.Message):
@@ -6550,6 +6856,45 @@ class OperationMetadata(_messages.Message):
   logsUrl = _messages.StringField(6)
 
 
+class Options(_messages.Message):
+  r"""Specifies additional options to apply to the base profile.
+
+  Enums:
+    PrimaryIdsValueValuesEnum: Set `Action` for [`StudyInstanceUID`,
+      `SeriesInstanceUID`, `SOPInstanceUID`, and `MediaStorageSOPInstanceUID`]
+      (http://dicom.nema.org/medical/dicom/2018e/output/chtml/part06/chapter_6
+      .html).
+
+  Fields:
+    cleanDescriptors: Set Clean Descriptors Option.
+    cleanImage: Apply `Action.clean_image` to [`PixelData`](http://dicom.nema.
+      org/medical/dicom/2018e/output/chtml/part06/chapter_6.html) as
+      configured.
+    primaryIds: Set `Action` for [`StudyInstanceUID`, `SeriesInstanceUID`,
+      `SOPInstanceUID`, and `MediaStorageSOPInstanceUID`](http://dicom.nema.or
+      g/medical/dicom/2018e/output/chtml/part06/chapter_6.html).
+  """
+
+  class PrimaryIdsValueValuesEnum(_messages.Enum):
+    r"""Set `Action` for [`StudyInstanceUID`, `SeriesInstanceUID`,
+    `SOPInstanceUID`, and `MediaStorageSOPInstanceUID`](http://dicom.nema.org/
+    medical/dicom/2018e/output/chtml/part06/chapter_6.html).
+
+    Values:
+      PRIMARY_IDS_OPTION_UNSPECIFIED: No value provided. Default to the
+        behavior specified by the base profile.
+      KEEP: Keep primary IDs.
+      REGEN: Regenerate primary IDs.
+    """
+    PRIMARY_IDS_OPTION_UNSPECIFIED = 0
+    KEEP = 1
+    REGEN = 2
+
+  cleanDescriptors = _messages.MessageField('CleanDescriptorsOption', 1)
+  cleanImage = _messages.MessageField('ImageConfig', 2)
+  primaryIds = _messages.EnumField('PrimaryIdsValueValuesEnum', 3)
+
+
 class ParsedData(_messages.Message):
   r"""The content of an HL7v2 message in a structured format.
 
@@ -6818,9 +7163,25 @@ class QueryAccessibleDataResponse(_messages.Message):
   gcsUris = _messages.StringField(1, repeated=True)
 
 
+class RecurseTag(_messages.Message):
+  r"""Recursively apply DICOM de-id to tags nested in a sequence. Supported
+  [Value Representation] (http://dicom.nema.org/medical/dicom/2018e/output/cht
+  ml/part05/sect_6.2.html#table_6.2-1): SQ
+  """
+
+
+
 class RedactConfig(_messages.Message):
   r"""Define how to redact sensitive values. Default behaviour is erase. For
   example, "My name is Jane." becomes "My name is ."
+  """
+
+
+
+class RegenUidTag(_messages.Message):
+  r"""Replace UID with a new generated UID. Supported [Value Representation] (
+  http://dicom.nema.org/medical/dicom/2018e/output/chtml/part05/sect_6.2.html#
+  table_6.2-1): UI
   """
 
 
@@ -6842,12 +7203,24 @@ class RejectConsentRequest(_messages.Message):
   consentArtifact = _messages.StringField(1)
 
 
+class RemoveField(_messages.Message):
+  r"""Remove field."""
+
+
+class RemoveTag(_messages.Message):
+  r"""Replace with empty tag."""
+
+
 class ReplaceWithInfoTypeConfig(_messages.Message):
   r"""When using the INSPECT_AND_TRANSFORM action, each match is replaced with
   the name of the info_type. For example, "My name is Jane" becomes "My name
   is [PERSON_NAME]." The TRANSFORM action is equivalent to redacting.
   """
 
+
+
+class ResetTag(_messages.Message):
+  r"""Reset tag to a placeholder value."""
 
 
 class ResourceAnnotation(_messages.Message):
@@ -6939,6 +7312,8 @@ class SchemaConfig(_messages.Message):
       is required.
 
   Fields:
+    lastUpdatedPartitionConfig: The configuration for exported BigQuery tables
+      to be partitioned by FHIR resource's last updated time column.
     recursiveStructureDepth: The depth for all recursive structures in the
       output analytics schema. For example, `concept` in the CodeSystem
       resource is a recursive structure; when the depth is 2, the CodeSystem
@@ -6973,8 +7348,9 @@ class SchemaConfig(_messages.Message):
     ANALYTICS = 2
     ANALYTICS_V2 = 3
 
-  recursiveStructureDepth = _messages.IntegerField(1)
-  schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 2)
+  lastUpdatedPartitionConfig = _messages.MessageField('TimePartitioning', 1)
+  recursiveStructureDepth = _messages.IntegerField(2)
+  schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 3)
 
 
 class SchemaGroup(_messages.Message):
@@ -7533,12 +7909,35 @@ class TestIamPermissionsResponse(_messages.Message):
 class TextConfig(_messages.Message):
   r"""Configures how to transform sensitive text `InfoTypes`.
 
+  Enums:
+    ProfileTypeValueValuesEnum: Base profile type for text transformation.
+
   Fields:
+    additionalTransformations: Additional transformations to apply to the
+      detected data, overriding `profile`.
+    excludeInfoTypes: InfoTypes to skip transforming, overriding `profile`.
+    profileType: Base profile type for text transformation.
     transformations: The transformations to apply to the detected data.
       Deprecated. Use `additional_transformations` instead.
   """
 
-  transformations = _messages.MessageField('InfoTypeTransformation', 1, repeated=True)
+  class ProfileTypeValueValuesEnum(_messages.Enum):
+    r"""Base profile type for text transformation.
+
+    Values:
+      PROFILE_TYPE_UNSPECIFIED: Same as BASIC.
+      EMPTY: Empty profile which does not perform any transformations.
+      BASIC: Basic profile applies: DATE -> DateShift Default ->
+        ReplaceWithInfoType
+    """
+    PROFILE_TYPE_UNSPECIFIED = 0
+    EMPTY = 1
+    BASIC = 2
+
+  additionalTransformations = _messages.MessageField('InfoTypeTransformation', 1, repeated=True)
+  excludeInfoTypes = _messages.StringField(2, repeated=True)
+  profileType = _messages.EnumField('ProfileTypeValueValuesEnum', 3)
+  transformations = _messages.MessageField('InfoTypeTransformation', 4, repeated=True)
 
 
 class TextSpan(_messages.Message):
@@ -7551,6 +7950,38 @@ class TextSpan(_messages.Message):
 
   beginOffset = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   content = _messages.StringField(2)
+
+
+class TimePartitioning(_messages.Message):
+  r"""Configuration for FHIR BigQuery time-partitioned tables.
+
+  Enums:
+    TypeValueValuesEnum: Type of partitioning.
+
+  Fields:
+    expirationMs: Number of milliseconds for which to keep the storage for a
+      partition.
+    type: Type of partitioning.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of partitioning.
+
+    Values:
+      PARTITION_TYPE_UNSPECIFIED: Default unknown time.
+      HOUR: Data partitioned by hour.
+      DAY: Data partitioned by day.
+      MONTH: Data partitioned by month.
+      YEAR: Data partitioned by year.
+    """
+    PARTITION_TYPE_UNSPECIFIED = 0
+    HOUR = 1
+    DAY = 2
+    MONTH = 3
+    YEAR = 4
+
+  expirationMs = _messages.IntegerField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class Type(_messages.Message):

@@ -53,6 +53,11 @@ def _gsutil_format_byte_values(byte_count):
   return '{:g} {}'.format(rounded_number, final_unit_string)
 
 
+def _gsutil_format_datetime_string(datetime_object):
+  """Returns datetime in gsutil format, e.g. 'Tue, 08 Jun 2021 21:15:33 GMT'."""
+  return datetime_object.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
+
 def get_human_readable_byte_value(byte_count, use_gsutil_style=False):
   """Generates a string for bytes with human-readable units.
 
@@ -67,6 +72,20 @@ def get_human_readable_byte_value(byte_count, use_gsutil_style=False):
   if use_gsutil_style:
     return _gsutil_format_byte_values(byte_count)
   return scaled_integer.FormatBinaryNumber(byte_count, decimal_places=2)
+
+
+def replace_autoclass_value_with_prefixed_time(bucket_resource,
+                                               use_gsutil_time_style=False):
+  """Converts raw datetime to 'Enabled on [formatted string]'."""
+  datetime_object = getattr(bucket_resource, 'autoclass_enabled_time', None)
+  if not datetime_object:
+    return
+  if use_gsutil_time_style:
+    datetime_string = _gsutil_format_datetime_string(datetime_object)
+  else:
+    datetime_string = resource_util.get_formatted_timestamp_in_utc(
+        datetime_object)
+  bucket_resource.autoclass_enabled_time = 'Enabled on ' + datetime_string
 
 
 def replace_bucket_values_with_present_string(bucket_resource):
@@ -102,8 +121,7 @@ def replace_time_values_with_gsutil_style_strings(resource):
   ):
     gcloud_datetime = getattr(resource, key, None)
     if gcloud_datetime is not None:
-      setattr(resource, key,
-              gcloud_datetime.strftime('%a, %d %b %Y %H:%M:%S GMT'))
+      setattr(resource, key, _gsutil_format_datetime_string(gcloud_datetime))
 
 
 def reformat_custom_metadata_for_gsutil(object_resource):

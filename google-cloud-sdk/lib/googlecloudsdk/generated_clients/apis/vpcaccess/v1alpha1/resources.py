@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://vpcaccess.googleapis.com/v1alpha1/'
-DOCS_URL = 'http://cloud.google.com'
+DOCS_URL = 'https://cloud.google.com/vpc/docs/configure-serverless-vpc-access'
 
 
 class Collections(enum.Enum):

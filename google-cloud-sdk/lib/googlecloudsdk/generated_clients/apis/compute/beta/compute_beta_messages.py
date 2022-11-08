@@ -13,6 +13,32 @@ from apitools.base.py import encoding
 package = 'compute'
 
 
+class AWSV4Signature(_messages.Message):
+  r"""Contains the configurations necessary to generate a signature for access
+  to private storage buckets that support Signature Version 4 for
+  authentication. The service name for generating the authentication header
+  will always default to 's3'.
+
+  Fields:
+    accessKey: The access key used for s3 bucket authentication. Required for
+      updating or creating a backend that uses AWS v4 signature
+      authentication, but will not be returned as part of the configuration
+      when queried with a REST API GET request. @InputOnly
+    accessKeyId: The identifier of an access key used for s3 bucket
+      authentication.
+    accessKeyVersion: The optional version identifier for the access key. You
+      can use this to keep track of different iterations of your access key.
+    originRegion: The name of the cloud region of your origin. This is a free-
+      form field with the name of the region your cloud uses to host your
+      origin. For example, "us-east-1" for AWS or "us-ashburn-1" for OCI.
+  """
+
+  accessKey = _messages.StringField(1)
+  accessKeyId = _messages.StringField(2)
+  accessKeyVersion = _messages.StringField(3)
+  originRegion = _messages.StringField(4)
+
+
 class AcceleratorConfig(_messages.Message):
   r"""A specification of the type and number of accelerator cards attached to
   the instance.
@@ -36731,6 +36757,13 @@ class HttpRouteRuleMatch(_messages.Message):
       only applies to load balancers that have loadBalancingScheme set to
       INTERNAL_SELF_MANAGED. Not supported when the URL map is bound to a
       target gRPC proxy that has validateForProxyless field set to true.
+    pathTemplateMatch: If specified, the route is a pattern match expression
+      that must match the :path header once the query string is removed. A
+      pattern match allows you to match - The value must be between 1 and 1024
+      characters - The pattern must start with a leading slash ("/") - There
+      may be no more than 5 operators in pattern Precisely one of
+      prefix_match, full_path_match, regex_match or path_template_match must
+      be set.
     prefixMatch: For satisfying the matchRule condition, the request's path
       must begin with the specified prefixMatch. prefixMatch must begin with a
       /. The value must be from 1 to 1024 characters. Only one of prefixMatch,
@@ -36751,9 +36784,10 @@ class HttpRouteRuleMatch(_messages.Message):
   headerMatches = _messages.MessageField('HttpHeaderMatch', 2, repeated=True)
   ignoreCase = _messages.BooleanField(3)
   metadataFilters = _messages.MessageField('MetadataFilter', 4, repeated=True)
-  prefixMatch = _messages.StringField(5)
-  queryParameterMatches = _messages.MessageField('HttpQueryParameterMatch', 6, repeated=True)
-  regexMatch = _messages.StringField(7)
+  pathTemplateMatch = _messages.StringField(5)
+  prefixMatch = _messages.StringField(6)
+  queryParameterMatches = _messages.MessageField('HttpQueryParameterMatch', 7, repeated=True)
+  regexMatch = _messages.StringField(8)
 
 
 class HttpsHealthCheck(_messages.Message):
@@ -56842,9 +56876,22 @@ class ResourceStatus(_messages.Message):
   Fields:
     physicalHost: [Output Only] An opaque ID of the host on which the VM is
       running.
+    scheduling: A ResourceStatusScheduling attribute.
   """
 
   physicalHost = _messages.StringField(1)
+  scheduling = _messages.MessageField('ResourceStatusScheduling', 2)
+
+
+class ResourceStatusScheduling(_messages.Message):
+  r"""A ResourceStatusScheduling object.
+
+  Fields:
+    terminationTimestamp: Time in future when the instance will be terminated
+      in RFC3339 text format.
+  """
+
+  terminationTimestamp = _messages.StringField(1)
 
 
 class RolloutPolicy(_messages.Message):
@@ -60639,6 +60686,10 @@ class SecuritySettings(_messages.Message):
 
   Fields:
     authentication: [Deprecated] Use clientTlsPolicy instead.
+    awsV4Authentication: The configuration needed to generate a signature for
+      access to private storage buckets that support AWS's Signature Version 4
+      for authentication. Allowed only for INTERNET_IP_PORT and
+      INTERNET_FQDN_PORT NEG backends.
     clientTlsPolicy: Optional. A URL referring to a
       networksecurity.ClientTlsPolicy resource that describes how clients
       should authenticate with this service's backends. clientTlsPolicy only
@@ -60661,8 +60712,9 @@ class SecuritySettings(_messages.Message):
   """
 
   authentication = _messages.StringField(1)
-  clientTlsPolicy = _messages.StringField(2)
-  subjectAltNames = _messages.StringField(3, repeated=True)
+  awsV4Authentication = _messages.MessageField('AWSV4Signature', 2)
+  clientTlsPolicy = _messages.StringField(3)
+  subjectAltNames = _messages.StringField(4, repeated=True)
 
 
 class SerialPortOutput(_messages.Message):
@@ -69963,10 +70015,25 @@ class UrlRewrite(_messages.Message):
     pathPrefixRewrite: Before forwarding the request to the selected backend
       service, the matching portion of the request's path is replaced by
       pathPrefixRewrite. The value must be from 1 to 1024 characters.
+    pathTemplateRewrite:  If specified, the pattern rewrites the URL path
+      (based on the :path header) using the HTTP template syntax. A
+      corresponding path_template_match must be specified. Any template
+      variables must exist in the path_template_match field. - -At least one
+      variable must be specified in the path_template_match field - You can
+      omit variables from the rewritten URL - The * and ** operators cannot be
+      matched unless they have a corresponding variable name - e.g. {format=*}
+      or {var=**}. For example, a path_template_match of /static/{format=**}
+      could be rewritten as /static/content/{format} to prefix /content to the
+      URL. Variables can also be re-ordered in a rewrite, so that
+      /{country}/{format}/{suffix=**} can be rewritten as
+      /content/{format}/{country}/{suffix}. At least one non-empty
+      routeRules[].matchRules[].path_template_match is required. Only one of
+      path_prefix_rewrite or path_template_rewrite may be specified.
   """
 
   hostRewrite = _messages.StringField(1)
   pathPrefixRewrite = _messages.StringField(2)
+  pathTemplateRewrite = _messages.StringField(3)
 
 
 class UsableSubnetwork(_messages.Message):

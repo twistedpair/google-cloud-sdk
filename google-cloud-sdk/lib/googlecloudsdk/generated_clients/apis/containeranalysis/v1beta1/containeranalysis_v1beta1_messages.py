@@ -411,6 +411,134 @@ class BuildSignature(_messages.Message):
   signature = _messages.BytesField(4)
 
 
+class BuildStep(_messages.Message):
+  r"""A step in the build pipeline. Next ID: 20
+
+  Enums:
+    StatusValueValuesEnum: Output only. Status of the build step. At this
+      time, build step status is only updated on build completion; step status
+      is not updated in real-time as the build progresses.
+
+  Fields:
+    allowExitCodes: Allow this build step to fail without failing the entire
+      build if and only if the exit code is one of the specified codes. If
+      allow_failure is also specified, this field will take precedence.
+    allowFailure: Allow this build step to fail without failing the entire
+      build. If false, the entire build will fail if this step fails.
+      Otherwise, the build will succeed, but this step will still have a
+      failure status. Error information will be reported in the failure_detail
+      field.
+    args: A list of arguments that will be presented to the step when it is
+      started. If the image used to run the step's container has an
+      entrypoint, the `args` are used as arguments to that entrypoint. If the
+      image does not define an entrypoint, the first element in args is used
+      as the entrypoint, and the remainder will be used as arguments.
+    dir: Working directory to use when running this step's container. If this
+      value is a relative path, it is relative to the build's working
+      directory. If this value is absolute, it may be outside the build's
+      working directory, in which case the contents of the path may not be
+      persisted across build step executions, unless a `volume` for that path
+      is specified. If the build specifies a `RepoSource` with `dir` and a
+      step with a `dir`, which specifies an absolute path, the `RepoSource`
+      `dir` is ignored for the step's execution.
+    entrypoint: Entrypoint to be used instead of the build step image's
+      default entrypoint. If unset, the image's default entrypoint is used.
+    env: A list of environment variable definitions to be used when running a
+      step. The elements are of the form "KEY=VALUE" for the environment
+      variable "KEY" being given the value "VALUE".
+    exitCode: Output only. Return code from running the step.
+    id: Unique identifier for this build step, used in `wait_for` to reference
+      this build step as a dependency.
+    name: Required. The name of the container image that will run this
+      particular build step. If the image is available in the host's Docker
+      daemon's cache, it will be run directly. If not, the host will attempt
+      to pull the image first, using the builder service account's credentials
+      if necessary. The Docker daemon's cache will already have the latest
+      versions of all of the officially supported build steps
+      ([https://github.com/GoogleCloudPlatform/cloud-
+      builders](https://github.com/GoogleCloudPlatform/cloud-builders)). The
+      Docker daemon will also have cached many of the layers for some popular
+      images, like "ubuntu", "debian", but they will be refreshed at the time
+      you attempt to use them. If you built an image in a previous build step,
+      it will be stored in the host's Docker daemon's cache and is available
+      to use as the name for a later build step.
+    pullTiming: Output only. Stores timing information for pulling this build
+      step's builder image only.
+    script: A shell script to be executed in the step. When script is
+      provided, the user cannot specify the entrypoint or args.
+    secretEnv: A list of environment variables which are encrypted using a
+      Cloud Key Management Service crypto key. These values must be specified
+      in the build's `Secret`.
+    status: Output only. Status of the build step. At this time, build step
+      status is only updated on build completion; step status is not updated
+      in real-time as the build progresses.
+    timeout: Time limit for executing this build step. If not defined, the
+      step has no time limit and will be allowed to continue to run until
+      either it completes or the build itself times out.
+    timing: Output only. Stores timing information for executing this build
+      step.
+    volumes: List of volumes to mount into the build step. Each volume is
+      created as an empty volume prior to execution of the build step. Upon
+      completion of the build, volumes and their contents are discarded. Using
+      a named volume in only one step is not valid as it is indicative of a
+      build request with an incorrect configuration.
+    waitFor: The ID(s) of the step(s) that this build step depends on. This
+      build step will not start until all the build steps in `wait_for` have
+      completed successfully. If `wait_for` is empty, this build step will
+      start when all previous build steps in the `Build.Steps` list have
+      completed successfully.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Output only. Status of the build step. At this time, build step status
+    is only updated on build completion; step status is not updated in real-
+    time as the build progresses.
+
+    Values:
+      STATUS_UNKNOWN: Status of the build is unknown.
+      PENDING: Build has been created and is pending execution and queuing. It
+        has not been queued.
+      QUEUING: Build has been received and is being queued.
+      QUEUED: Build or step is queued; work has not yet begun.
+      WORKING: Build or step is being executed.
+      SUCCESS: Build or step finished successfully.
+      FAILURE: Build or step failed to complete successfully.
+      INTERNAL_ERROR: Build or step failed due to an internal cause.
+      TIMEOUT: Build or step took longer than was allowed.
+      CANCELLED: Build or step was canceled by a user.
+      EXPIRED: Build was enqueued for longer than the value of `queue_ttl`.
+    """
+    STATUS_UNKNOWN = 0
+    PENDING = 1
+    QUEUING = 2
+    QUEUED = 3
+    WORKING = 4
+    SUCCESS = 5
+    FAILURE = 6
+    INTERNAL_ERROR = 7
+    TIMEOUT = 8
+    CANCELLED = 9
+    EXPIRED = 10
+
+  allowExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  allowFailure = _messages.BooleanField(2)
+  args = _messages.StringField(3, repeated=True)
+  dir = _messages.StringField(4)
+  entrypoint = _messages.StringField(5)
+  env = _messages.StringField(6, repeated=True)
+  exitCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  id = _messages.StringField(8)
+  name = _messages.StringField(9)
+  pullTiming = _messages.MessageField('TimeSpan', 10)
+  script = _messages.StringField(11)
+  secretEnv = _messages.StringField(12, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  timeout = _messages.StringField(14)
+  timing = _messages.MessageField('TimeSpan', 15)
+  volumes = _messages.MessageField('Volume', 16, repeated=True)
+  waitFor = _messages.StringField(17, repeated=True)
+
+
 class ByProducts(_messages.Message):
   r"""Defines an object for the byproducts field in in-toto links. The
   suggested fields are "stderr", "stdout", and "return-value".
@@ -892,6 +1020,12 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Artifacts(_messages.Message):
       account's credentials. The digests of the pushed images will be stored
       in the Build resource's results field. If any of the images fail to be
       pushed, the build is marked FAILURE.
+    mavenArtifacts: A list of Maven artifacts to be uploaded to Artifact
+      Registry upon successful completion of all build steps. Artifacts in the
+      workspace matching specified paths globs will be uploaded to the
+      specified Artifact Registry repository using the builder service
+      account's credentials. If any artifacts fail to be pushed, the build is
+      marked FAILURE.
     objects: A list of objects to be uploaded to Cloud Storage upon successful
       completion of all build steps. Files in the workspace matching specified
       paths globs will be uploaded to the specified Cloud Storage location
@@ -899,10 +1033,16 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Artifacts(_messages.Message):
       generation of the uploaded objects will be stored in the Build
       resource's results field. If any objects fail to be pushed, the build is
       marked FAILURE.
+    pythonPackages: A list of Python packages to be uploaded to Artifact
+      Registry upon successful completion of all build steps. The build
+      service account credentials will be used to perform the upload. If any
+      objects fail to be pushed, the build is marked FAILURE.
   """
 
   images = _messages.StringField(1, repeated=True)
-  objects = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsArtifactObjects', 2)
+  mavenArtifacts = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsMavenArtifact', 2, repeated=True)
+  objects = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsArtifactObjects', 3)
+  pythonPackages = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsPythonPackage', 4, repeated=True)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsArtifactObjects(_messages.Message):
@@ -923,6 +1063,53 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsArtifactObjects(_messa
   location = _messages.StringField(1)
   paths = _messages.StringField(2, repeated=True)
   timing = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 3)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsMavenArtifact(_messages.Message):
+  r"""A Maven artifact to upload to Artifact Registry upon successful
+  completion of all build steps.
+
+  Fields:
+    artifactId: Maven `artifactId` value used when uploading the artifact to
+      Artifact Registry.
+    groupId: Maven `groupId` value used when uploading the artifact to
+      Artifact Registry.
+    path: Path to an artifact in the build's workspace to be uploaded to
+      Artifact Registry. This can be either an absolute path, e.g.
+      /workspace/my-app/target/my-app-1.0.SNAPSHOT.jar or a relative path from
+      /workspace, e.g. my-app/target/my-app-1.0.SNAPSHOT.jar.
+    repository: Artifact Registry repository, in the form "https://$REGION-
+      maven.pkg.dev/$PROJECT/$REPOSITORY" Artifact in the workspace specified
+      by path will be uploaded to Artifact Registry with this location as a
+      prefix.
+    version: Maven `version` value used when uploading the artifact to
+      Artifact Registry.
+  """
+
+  artifactId = _messages.StringField(1)
+  groupId = _messages.StringField(2)
+  path = _messages.StringField(3)
+  repository = _messages.StringField(4)
+  version = _messages.StringField(5)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsPythonPackage(_messages.Message):
+  r"""Python package to upload to Artifact Registry upon successful completion
+  of all build steps. A package can encapsulate multiple objects to be
+  uploaded to a single repository.
+
+  Fields:
+    paths: Path globs used to match files in the build's workspace. For
+      Python/ Twine, this is usually `dist/*`, and sometimes additionally an
+      `.asc` file.
+    repository: Artifact Registry repository, in the form "https://$REGION-
+      python.pkg.dev/$PROJECT/$REPOSITORY" Files in the workspace matching any
+      path pattern will be uploaded to Artifact Registry with this location as
+      a prefix.
+  """
+
+  paths = _messages.StringField(1, repeated=True)
+  repository = _messages.StringField(2)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1Build(_messages.Message):
@@ -946,9 +1133,10 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Build(_messages.Message):
     SubstitutionsValue: Substitutions data for `Build` resource.
     TimingValue: Output only. Stores timing information for phases of the
       build. Valid keys are: * BUILD: time to execute all build steps. * PUSH:
-      time to push all specified images. * FETCHSOURCE: time to fetch source.
-      * SETUPBUILD: time to set up build. If the build does not specify source
-      or images, these keys will not be included.
+      time to push all artifacts including docker images and non docker
+      artifacts. * FETCHSOURCE: time to fetch source. * SETUPBUILD: time to
+      set up build. If the build does not specify source or images, these keys
+      will not be included.
 
   Fields:
     approval: Output only. Describes this build's approval configuration,
@@ -1009,9 +1197,10 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Build(_messages.Message):
       ticking from `startTime`. Default time is ten minutes.
     timing: Output only. Stores timing information for phases of the build.
       Valid keys are: * BUILD: time to execute all build steps. * PUSH: time
-      to push all specified images. * FETCHSOURCE: time to fetch source. *
-      SETUPBUILD: time to set up build. If the build does not specify source
-      or images, these keys will not be included.
+      to push all artifacts including docker images and non docker artifacts.
+      * FETCHSOURCE: time to fetch source. * SETUPBUILD: time to set up build.
+      If the build does not specify source or images, these keys will not be
+      included.
     warnings: Output only. Non-fatal problems encountered during the execution
       of the build.
   """
@@ -1072,9 +1261,10 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Build(_messages.Message):
   class TimingValue(_messages.Message):
     r"""Output only. Stores timing information for phases of the build. Valid
     keys are: * BUILD: time to execute all build steps. * PUSH: time to push
-    all specified images. * FETCHSOURCE: time to fetch source. * SETUPBUILD:
-    time to set up build. If the build does not specify source or images,
-    these keys will not be included.
+    all artifacts including docker images and non docker artifacts. *
+    FETCHSOURCE: time to fetch source. * SETUPBUILD: time to set up build. If
+    the build does not specify source or images, these keys will not be
+    included.
 
     Messages:
       AdditionalProperty: An additional property for a TimingValue object.
@@ -1708,9 +1898,10 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Results(_messages.Message):
   r"""Artifacts created by the build pipeline.
 
   Fields:
-    artifactManifest: Path to the artifact manifest. Only populated when
-      artifacts are uploaded.
-    artifactTiming: Time to push all non-container artifacts.
+    artifactManifest: Path to the artifact manifest for non-container
+      artifacts uploaded to Cloud Storage. Only populated when artifacts are
+      uploaded to Cloud Storage.
+    artifactTiming: Time to push all non-container artifacts to Cloud Storage.
     buildStepImages: List of build step digests, in the order corresponding to
       build step indices.
     buildStepOutputs: List of build step outputs, produced by builder images,
@@ -1719,8 +1910,12 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Results(_messages.Message):
       produce this output by writing to `$BUILDER_OUTPUT/output`. Only the
       first 4KB of data is stored.
     images: Container images that were built as a part of the build.
-    numArtifacts: Number of artifacts uploaded. Only populated when artifacts
-      are uploaded.
+    mavenArtifacts: Maven artifacts uploaded to Artifact Registry at the end
+      of the build.
+    numArtifacts: Number of non-container artifacts uploaded to Cloud Storage.
+      Only populated when artifacts are uploaded to Cloud Storage.
+    pythonPackages: Python artifacts uploaded to Artifact Registry at the end
+      of the build.
   """
 
   artifactManifest = _messages.StringField(1)
@@ -1728,7 +1923,9 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Results(_messages.Message):
   buildStepImages = _messages.StringField(3, repeated=True)
   buildStepOutputs = _messages.BytesField(4, repeated=True)
   images = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuiltImage', 5, repeated=True)
-  numArtifacts = _messages.IntegerField(6)
+  mavenArtifacts = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1UploadedMavenArtifact', 6, repeated=True)
+  numArtifacts = _messages.IntegerField(7)
+  pythonPackages = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1UploadedPythonPackage', 8, repeated=True)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1Secret(_messages.Message):
@@ -1954,6 +2151,36 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan(_messages.Message):
 
   endTime = _messages.StringField(1)
   startTime = _messages.StringField(2)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1UploadedMavenArtifact(_messages.Message):
+  r"""A Maven artifact uploaded using the MavenArtifact directive.
+
+  Fields:
+    fileHashes: Hash types and values of the Maven Artifact.
+    pushTiming: Output only. Stores timing information for pushing the
+      specified artifact.
+    uri: URI of the uploaded artifact.
+  """
+
+  fileHashes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1FileHashes', 1)
+  pushTiming = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 2)
+  uri = _messages.StringField(3)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1UploadedPythonPackage(_messages.Message):
+  r"""Artifact uploaded using the PythonPackage directive.
+
+  Fields:
+    fileHashes: Hash types and values of the Python Artifact.
+    pushTiming: Output only. Stores timing information for pushing the
+      specified artifact.
+    uri: URI of the uploaded artifact.
+  """
+
+  fileHashes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1FileHashes', 1)
+  pushTiming = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 2)
+  uri = _messages.StringField(3)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1Volume(_messages.Message):
@@ -2276,34 +2503,6 @@ class ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest(_messages.Me
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class ContaineranalysisProjectsScanConfigsGetRequest(_messages.Message):
-  r"""A ContaineranalysisProjectsScanConfigsGetRequest object.
-
-  Fields:
-    name: Required. The name of the scan configuration in the form of
-      `projects/[PROJECT_ID]/scanConfigs/[SCAN_CONFIG_ID]`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ContaineranalysisProjectsScanConfigsListRequest(_messages.Message):
-  r"""A ContaineranalysisProjectsScanConfigsListRequest object.
-
-  Fields:
-    filter: Required. The filter expression.
-    pageSize: The number of scan configs to return in the list.
-    pageToken: Token to provide to skip to a particular spot in the list.
-    parent: Required. The name of the project to list scan configurations for
-      in the form of `projects/[PROJECT_ID]`.
-  """
-
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
 
 
 class Deployable(_messages.Message):
@@ -3602,20 +3801,6 @@ class ListOccurrencesResponse(_messages.Message):
   occurrences = _messages.MessageField('Occurrence', 2, repeated=True)
 
 
-class ListScanConfigsResponse(_messages.Message):
-  r"""Response for listing scan configurations.
-
-  Fields:
-    nextPageToken: The next pagination token in the list response. It should
-      be used as `page_token` for the following request. An empty value means
-      no more results.
-    scanConfigs: The scan configurations requested.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  scanConfigs = _messages.MessageField('ScanConfig', 2, repeated=True)
-
-
 class Location(_messages.Message):
   r"""An occurrence of a particular package installation found within a
   system's filesystem. E.g., glibc was found in `/var/lib/dpkg/status`.
@@ -4516,28 +4701,6 @@ class Resource(_messages.Message):
   uri = _messages.StringField(3)
 
 
-class ScanConfig(_messages.Message):
-  r"""A scan configuration specifies whether Cloud components in a project
-  have a particular type of analysis being run. For example, it can configure
-  whether vulnerability scanning is being done on Docker images or not.
-
-  Fields:
-    createTime: Output only. The time this scan config was created.
-    description: Output only. A human-readable description of what the scan
-      configuration does.
-    enabled: Whether the scan is enabled.
-    name: Output only. The name of the scan configuration in the form of
-      `projects/[PROJECT_ID]/scanConfigs/[SCAN_CONFIG_ID]`.
-    updateTime: Output only. The time this scan config was last updated.
-  """
-
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  enabled = _messages.BooleanField(3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
-
-
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -4868,6 +5031,18 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+class TimeSpan(_messages.Message):
+  r"""Start and end times for a build execution phase. Next ID: 3
+
+  Fields:
+    endTime: End of time span.
+    startTime: Start of time span.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+
+
 class Version(_messages.Message):
   r"""Version contains structured information about the version of a package.
 
@@ -4910,6 +5085,23 @@ class Version(_messages.Message):
   kind = _messages.EnumField('KindValueValuesEnum', 3)
   name = _messages.StringField(4)
   revision = _messages.StringField(5)
+
+
+class Volume(_messages.Message):
+  r"""Volume describes a Docker container volume which is mounted into build
+  steps in order to persist files across build step execution. Next ID: 3
+
+  Fields:
+    name: Name of the volume to mount. Volume names must be unique per build
+      step and must be valid names for Docker volumes. Each named volume must
+      be used by at least two build steps.
+    path: Path at which to mount the volume. Paths must be absolute and cannot
+      conflict with other volume paths on the same build step or with certain
+      reserved volume paths.
+  """
+
+  name = _messages.StringField(1)
+  path = _messages.StringField(2)
 
 
 class Vulnerability(_messages.Message):

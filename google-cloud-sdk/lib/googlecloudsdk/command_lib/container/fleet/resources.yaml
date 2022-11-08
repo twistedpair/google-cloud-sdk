@@ -92,14 +92,26 @@ rbacrolebinding:
     attribute_name: rbacrolebinding
     help: The rbacrolebinding name.
 
-workspace:
-  name: scope
-  collection: gkehub.projects.locations.workspaces
+binding:
+  name: binding
+  collection: gkehub.projects.locations.memberships.bindings
   attributes:
   - *project
   - *location
-  - &workspace
-    parameter_name: workspacesId
+  - *membership
+  - &binding
+    parameter_name: bindingsId
+    attribute_name: binding
+    help: The binding name.
+
+scope:
+  name: scope
+  collection: gkehub.projects.locations.scopes
+  attributes:
+  - *project
+  - *location
+  - &scope
+    parameter_name: scopesId
     attribute_name: scope
-    help: The workspace name.
-  request_id_field: workspaceId
+    help: The scope name.
+  request_id_field: scopeId

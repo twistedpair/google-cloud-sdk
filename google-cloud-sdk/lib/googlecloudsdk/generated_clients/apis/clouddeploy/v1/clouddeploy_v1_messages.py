@@ -1143,7 +1143,8 @@ class DeliveryPipelineNotificationEvent(_messages.Message):
       TYPE_UNSPECIFIED: Type is unspecified.
       TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
         sent.
-      TYPE_RENDER_STATUES_CHANGE: Release render status changed notification.
+      TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
+        release_render log type instead.
     """
     TYPE_UNSPECIFIED = 0
     TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
@@ -1467,7 +1468,8 @@ class JobRunNotificationEvent(_messages.Message):
       TYPE_UNSPECIFIED: Type is unspecified.
       TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
         sent.
-      TYPE_RENDER_STATUES_CHANGE: Release render status changed notification.
+      TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
+        release_render log type instead.
     """
     TYPE_UNSPECIFIED = 0
     TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
@@ -2214,7 +2216,8 @@ class ReleaseNotificationEvent(_messages.Message):
       TYPE_UNSPECIFIED: Type is unspecified.
       TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
         sent.
-      TYPE_RENDER_STATUES_CHANGE: Release render status changed notification.
+      TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
+        release_render log type instead.
     """
     TYPE_UNSPECIFIED = 0
     TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
@@ -2497,7 +2500,8 @@ class RolloutNotificationEvent(_messages.Message):
       TYPE_UNSPECIFIED: Type is unspecified.
       TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
         sent.
-      TYPE_RENDER_STATUES_CHANGE: Release render status changed notification.
+      TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
+        release_render log type instead.
     """
     TYPE_UNSPECIFIED = 0
     TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
@@ -2879,7 +2883,8 @@ class TargetNotificationEvent(_messages.Message):
       TYPE_UNSPECIFIED: Type is unspecified.
       TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
         sent.
-      TYPE_RENDER_STATUES_CHANGE: Release render status changed notification.
+      TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
+        release_render log type instead.
     """
     TYPE_UNSPECIFIED = 0
     TYPE_PUBSUB_NOTIFICATION_FAILURE = 1

@@ -9077,6 +9077,8 @@ class GoogleCloudDialogflowV2AutomatedAgentReply(_messages.Message):
       interruptible when a later reply message arrives. e.g. if the agent
       specified some music as partial response, it can be cancelled.
     automatedAgentReplyType: AutomatedAgentReply type.
+    cxCurrentPage: The unique identifier of the current Dialogflow CX
+      conversation page. Format: `projects//locations//agents//flows//pages/`.
     detectIntentResponse: Response of the Dialogflow Sessions.DetectIntent
       call.
   """
@@ -9098,7 +9100,8 @@ class GoogleCloudDialogflowV2AutomatedAgentReply(_messages.Message):
 
   allowCancellation = _messages.BooleanField(1)
   automatedAgentReplyType = _messages.EnumField('AutomatedAgentReplyTypeValueValuesEnum', 2)
-  detectIntentResponse = _messages.MessageField('GoogleCloudDialogflowV2DetectIntentResponse', 3)
+  cxCurrentPage = _messages.StringField(3)
+  detectIntentResponse = _messages.MessageField('GoogleCloudDialogflowV2DetectIntentResponse', 4)
 
 
 class GoogleCloudDialogflowV2BatchCreateEntitiesRequest(_messages.Message):
@@ -12724,6 +12727,20 @@ class GoogleCloudDialogflowV2Participant(_messages.Message):
       value: "agent" } ```
     name: Optional. The unique identifier of this participant. Format:
       `projects//locations//conversations//participants/`.
+    obfuscatedExternalUserId: Optional. Obfuscated user id that should be
+      associated with the created participant. You can specify a user id as
+      follows: 1. If you set this field in CreateParticipantRequest or
+      UpdateParticipantRequest, Dialogflow adds the obfuscated user id with
+      the participant. 2. If you set this field in AnalyzeContent or
+      StreamingAnalyzeContent, Dialogflow will update
+      Participant.obfuscated_external_user_id. Dialogflow returns an error if
+      you try to add a user id for a non-END_USER participant. Dialogflow uses
+      this user id for billing and measurement purposes. For example,
+      Dialogflow determines whether a user in one conversation returned in a
+      later conversation. Note: * Please never pass raw user ids to
+      Dialogflow. Always obfuscate your user id first. * Dialogflow only
+      accepts a UTF-8 encoded string, e.g., a hex digest of a hash function
+      like SHA-512. * The length of the user id must be <= 256 characters.
     role: Immutable. The role this participant plays in the conversation. This
       field must be set during participant creation and is then immutable.
     sipRecordingMediaLabel: Optional. Label applied to streams representing
@@ -12784,8 +12801,9 @@ class GoogleCloudDialogflowV2Participant(_messages.Message):
 
   documentsMetadataFilters = _messages.MessageField('DocumentsMetadataFiltersValue', 1)
   name = _messages.StringField(2)
-  role = _messages.EnumField('RoleValueValuesEnum', 3)
-  sipRecordingMediaLabel = _messages.StringField(4)
+  obfuscatedExternalUserId = _messages.StringField(3)
+  role = _messages.EnumField('RoleValueValuesEnum', 4)
+  sipRecordingMediaLabel = _messages.StringField(5)
 
 
 class GoogleCloudDialogflowV2QueryInput(_messages.Message):
@@ -13483,6 +13501,11 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
       language does not exist, then it would emit an error.
 
   Fields:
+    model: Which Speech model to select. Select the model best suited to your
+      domain to get best results. If a model is not explicitly specified, then
+      a default model is used. Refer to [Cloud Speech API
+      documentation](https://cloud.google.com/speech-to-
+      text/docs/basics#select-model) for more details.
     speechModelVariant: The speech model used in speech to text.
       `SPEECH_MODEL_VARIANT_UNSPECIFIED`, `USE_BEST_AVAILABLE` will be treated
       as `USE_ENHANCED`. It can be overridden in AnalyzeContentRequest and
@@ -13525,7 +13548,8 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
     USE_STANDARD = 2
     USE_ENHANCED = 3
 
-  speechModelVariant = _messages.EnumField('SpeechModelVariantValueValuesEnum', 1)
+  model = _messages.StringField(1)
+  speechModelVariant = _messages.EnumField('SpeechModelVariantValueValuesEnum', 2)
 
 
 class GoogleCloudDialogflowV2SuggestArticlesRequest(_messages.Message):

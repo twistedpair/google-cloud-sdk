@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1",
-  "revision": "20220926",
+  "revision": "20221103",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -274,12 +274,26 @@
           "enumDescriptions": [
             "The query scope is unspecified. Not a valid option.",
             "Indexes with a collection query scope specified allow queries against a collection that is the child of a specific document, specified at query time, and that has the collection id specified by the index.",
-            "Indexes with a collection group query scope specified allow queries against all collections that has the collection id specified by the index."
+            "Indexes with a collection group query scope specified allow queries against all collections that has the collection id specified by the index.",
+            "Include all the collections's ancestor in the index. Only available for Datastore Mode databases."
           ],
           "enum": [
             "QUERY_SCOPE_UNSPECIFIED",
             "COLLECTION",
-            "COLLECTION_GROUP"
+            "COLLECTION_GROUP",
+            "COLLECTION_RECURSIVE"
+          ]
+        },
+        "apiScope": {
+          "description": "The API scope supported by this index.",
+          "type": "string",
+          "enumDescriptions": [
+            "The index can be used by both Firestore Native and Firestore in Datastore Mode query API. This is the default.",
+            "The index can only be used by the Firestore in Datastore Mode query API."
+          ],
+          "enum": [
+            "ANY_API",
+            "DATASTORE_MODE_API"
           ]
         },
         "fields": {

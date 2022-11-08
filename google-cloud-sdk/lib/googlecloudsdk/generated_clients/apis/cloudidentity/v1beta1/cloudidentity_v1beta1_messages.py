@@ -14,6 +14,25 @@ from apitools.base.py import extra_types
 package = 'cloudidentity'
 
 
+class AddIdpCredentialOperationMetadata(_messages.Message):
+  r"""LRO response metadata for
+  InboundSamlSsoProfilesService.AddIdpCredential.
+  """
+
+
+
+class AddIdpCredentialRequest(_messages.Message):
+  r"""The request for creating an IdpCredential with its associated payload.
+  An InboundSamlSsoProfile can own up to 2 credentials.
+
+  Fields:
+    pemData: PEM encoded x509 certificate containing the public key for
+      verifying IdP signatures.
+  """
+
+  pemData = _messages.StringField(1)
+
+
 class AndroidAttributes(_messages.Message):
   r"""Resource representing the Android specific attributes of a Device.
 
@@ -1154,6 +1173,206 @@ class CloudidentityGroupsUpdateSecuritySettingsRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class CloudidentityInboundSamlSsoProfilesDeleteRequest(_messages.Message):
+  r"""A CloudidentityInboundSamlSsoProfilesDeleteRequest object.
+
+  Fields:
+    name: Required. The [resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      InboundSamlSsoProfile to delete. Format:
+      `inboundSamlSsoProfiles/{sso_profile_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudidentityInboundSamlSsoProfilesGetRequest(_messages.Message):
+  r"""A CloudidentityInboundSamlSsoProfilesGetRequest object.
+
+  Fields:
+    name: Required. The [resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      InboundSamlSsoProfile to get. Format:
+      `inboundSamlSsoProfiles/{sso_profile_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudidentityInboundSamlSsoProfilesIdpCredentialsAddRequest(_messages.Message):
+  r"""A CloudidentityInboundSamlSsoProfilesIdpCredentialsAddRequest object.
+
+  Fields:
+    addIdpCredentialRequest: A AddIdpCredentialRequest resource to be passed
+      as the request body.
+    parent: Required. The InboundSamlSsoProfile that owns the IdpCredential.
+      Format: `inboundSamlSsoProfiles/{sso_profile_id}`
+  """
+
+  addIdpCredentialRequest = _messages.MessageField('AddIdpCredentialRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class CloudidentityInboundSamlSsoProfilesIdpCredentialsDeleteRequest(_messages.Message):
+  r"""A CloudidentityInboundSamlSsoProfilesIdpCredentialsDeleteRequest object.
+
+  Fields:
+    name: Required. The [resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      IdpCredential to delete. Format: `inboundSamlSsoProfiles/{sso_profile_id
+      }/idpCredentials/{idp_credential_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudidentityInboundSamlSsoProfilesIdpCredentialsGetRequest(_messages.Message):
+  r"""A CloudidentityInboundSamlSsoProfilesIdpCredentialsGetRequest object.
+
+  Fields:
+    name: Required. The [resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      IdpCredential to retrieve. Format: `inboundSamlSsoProfiles/{sso_profile_
+      id}/idpCredentials/{idp_credential_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudidentityInboundSamlSsoProfilesIdpCredentialsListRequest(_messages.Message):
+  r"""A CloudidentityInboundSamlSsoProfilesIdpCredentialsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of `IdpCredential`s to return. The service
+      may return fewer than this value.
+    pageToken: A page token, received from a previous `ListIdpCredentials`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListIdpCredentials` must match the call
+      that provided the page token.
+    parent: Required. The parent, which owns this collection of
+      `IdpCredential`s. Format: `inboundSamlSsoProfiles/{sso_profile_id}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class CloudidentityInboundSamlSsoProfilesListRequest(_messages.Message):
+  r"""A CloudidentityInboundSamlSsoProfilesListRequest object.
+
+  Fields:
+    filter: A [Common Expression Language](https://github.com/google/cel-spec)
+      expression to filter the results. The only currently-supported filter is
+      filtering by customer. For example: `customer=="customers/C0123abc"`.
+      Omitting the filter or specifying a filter of
+      `customer=="customers/my_customer"` will return the profiles for the
+      customer that the caller (authenticated user) belongs to.
+    pageSize: The maximum number of InboundSamlSsoProfiles to return. The
+      service may return fewer than this value. If omitted (or defaulted to
+      zero) the server will use a sensible default. This default may change
+      over time. The maximum allowed value is 100. Requests with page_size
+      greater than that will be silently interpreted as having this maximum
+      value.
+    pageToken: A page token, received from a previous
+      `ListInboundSamlSsoProfiles` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListInboundSamlSsoProfiles` must match the call that provided the page
+      token.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class CloudidentityInboundSamlSsoProfilesPatchRequest(_messages.Message):
+  r"""A CloudidentityInboundSamlSsoProfilesPatchRequest object.
+
+  Fields:
+    inboundSamlSsoProfile: A InboundSamlSsoProfile resource to be passed as
+      the request body.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the SAML
+      SSO profile.
+    updateMask: Required. The list of fields to be updated.
+  """
+
+  inboundSamlSsoProfile = _messages.MessageField('InboundSamlSsoProfile', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class CloudidentityInboundSsoAssignmentsDeleteRequest(_messages.Message):
+  r"""A CloudidentityInboundSsoAssignmentsDeleteRequest object.
+
+  Fields:
+    name: Required. The [resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      InboundSsoAssignment to delete. Format:
+      `inboundSsoAssignments/{assignment}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudidentityInboundSsoAssignmentsGetRequest(_messages.Message):
+  r"""A CloudidentityInboundSsoAssignmentsGetRequest object.
+
+  Fields:
+    name: Required. The [resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      InboundSsoAssignment to fetch. Format:
+      `inboundSsoAssignments/{assignment}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudidentityInboundSsoAssignmentsListRequest(_messages.Message):
+  r"""A CloudidentityInboundSsoAssignmentsListRequest object.
+
+  Fields:
+    filter: A CEL expression to filter the results. The only currently-
+      supported filter is filtering by customer. For example:
+      `customer==customers/C0123abc`. Omitting the filter or specifying a
+      filter of `customer==customers/my_customer` will return the assignments
+      for the customer that the caller (authenticated user) belongs to.
+    pageSize: The maximum number of assignments to return. The service may
+      return fewer than this value. If omitted (or defaulted to zero) the
+      server will use a sensible default. This default may change over time.
+      The maximum allowed value is 100, though requests with page_size greater
+      than that will be silently interpreted as having this maximum value.
+      This may increase in the futue.
+    pageToken: A page token, received from a previous
+      `ListInboundSsoAssignments` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListInboundSsoAssignments` must match the call that provided the page
+      token.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class CloudidentityInboundSsoAssignmentsPatchRequest(_messages.Message):
+  r"""A CloudidentityInboundSsoAssignmentsPatchRequest object.
+
+  Fields:
+    inboundSsoAssignment: A InboundSsoAssignment resource to be passed as the
+      request body.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Inbound SSO Assignment.
+    updateMask: Required. The list of fields to be updated.
+  """
+
+  inboundSsoAssignment = _messages.MessageField('InboundSsoAssignment', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class CloudidentityOrgUnitsMembershipsListRequest(_messages.Message):
   r"""A CloudidentityOrgUnitsMembershipsListRequest object.
 
@@ -1231,6 +1450,20 @@ class CreateDeviceRequest(_messages.Message):
   device = _messages.MessageField('Device', 1)
 
 
+class CreateInboundSamlSsoProfileOperationMetadata(_messages.Message):
+  r"""LRO response metadata for
+  InboundSamlSsoProfilesService.CreateInboundSamlSsoProfile.
+  """
+
+
+
+class CreateInboundSsoAssignmentOperationMetadata(_messages.Message):
+  r"""LRO response metadata for
+  InboundSsoAssignmentsService.CreateInboundSsoAssignment.
+  """
+
+
+
 class CustomAttributeValue(_messages.Message):
   r"""Additional custom attribute values may be one of these types
 
@@ -1245,12 +1478,34 @@ class CustomAttributeValue(_messages.Message):
   stringValue = _messages.StringField(3)
 
 
+class DeleteIdpCredentialOperationMetadata(_messages.Message):
+  r"""LRO response metadata for
+  InboundSamlSsoProfilesService.DeleteIdpCredential.
+  """
+
+
+
+class DeleteInboundSamlSsoProfileOperationMetadata(_messages.Message):
+  r"""LRO response metadata for
+  InboundSamlSsoProfilesService.DeleteInboundSamlSsoProfile.
+  """
+
+
+
+class DeleteInboundSsoAssignmentOperationMetadata(_messages.Message):
+  r"""LRO response metadata for
+  InboundSsoAssignmentsService.DeleteInboundSsoAssignment.
+  """
+
+
+
 class Device(_messages.Message):
   r"""A Device within the Cloud Identity Devices API. Represents a Device
   known to Google Cloud, independent of the device ownership, type, and
   whether it is assigned or in use by a user.
 
   Enums:
+    ClientTypesValueListEntryValuesEnum:
     CompromisedStateValueValuesEnum: Output only. Represents whether the
       Device is compromised.
     DeviceTypeValueValuesEnum: Output only. Type of device.
@@ -1268,6 +1523,7 @@ class Device(_messages.Message):
     bootloaderVersion: Output only. Device bootloader version. Example: 0.6.7.
     brand: Output only. Device brand. Example: Samsung.
     buildNumber: Output only. Build number of the device.
+    clientTypes: List of the clients the device is reporting to.
     compromisedState: Output only. Represents whether the Device is
       compromised.
     createTime: Output only. When the Company-Owned device was imported. This
@@ -1281,6 +1537,7 @@ class Device(_messages.Message):
     encryptionState: Output only. Device encryption state.
     endpointVerificationSpecificAttributes: Output only. Attributes specific
       to Endpoint Verification devices.
+    hostname: Host name of the device.
     imei: Output only. IMEI number of device if GSM device; empty otherwise.
     kernelVersion: Output only. Kernel version of the device.
     lastSyncTime: Most recent time when device synced with this service.
@@ -1307,6 +1564,25 @@ class Device(_messages.Message):
     serialNumber: Serial Number of device. Example: HT82V1A01076.
     wifiMacAddresses: WiFi MAC addresses of device.
   """
+
+  class ClientTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""ClientTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      CLIENT_TYPE_UNSPECIFIED: Default value
+      DRIVE_FS: Managed by DriveFS
+      FUNDAMENTAL: Management type for every secure device
+      ENDPOINT_VERIFICATION: Managed by Endpoint Verification
+      WINDOWS_ADVANCED: Managed by Windows
+      GOOGLE_CREDENTIALS_PROVIDER_FOR_WINDOWS: Managed by Google credential
+        provider for windows
+    """
+    CLIENT_TYPE_UNSPECIFIED = 0
+    DRIVE_FS = 1
+    FUNDAMENTAL = 2
+    ENDPOINT_VERIFICATION = 3
+    WINDOWS_ADVANCED = 4
+    GOOGLE_CREDENTIALS_PROVIDER_FOR_WINDOWS = 5
 
   class CompromisedStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents whether the Device is compromised.
@@ -1399,30 +1675,32 @@ class Device(_messages.Message):
   bootloaderVersion = _messages.StringField(4)
   brand = _messages.StringField(5)
   buildNumber = _messages.StringField(6)
-  compromisedState = _messages.EnumField('CompromisedStateValueValuesEnum', 7)
-  createTime = _messages.StringField(8)
-  deviceId = _messages.StringField(9)
-  deviceType = _messages.EnumField('DeviceTypeValueValuesEnum', 10)
-  enabledDeveloperOptions = _messages.BooleanField(11)
-  enabledUsbDebugging = _messages.BooleanField(12)
-  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 13)
-  endpointVerificationSpecificAttributes = _messages.MessageField('EndpointVerificationSpecificAttributes', 14)
-  imei = _messages.StringField(15)
-  kernelVersion = _messages.StringField(16)
-  lastSyncTime = _messages.StringField(17)
-  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 18)
-  manufacturer = _messages.StringField(19)
-  meid = _messages.StringField(20)
-  model = _messages.StringField(21)
-  name = _messages.StringField(22)
-  networkOperator = _messages.StringField(23)
-  osVersion = _messages.StringField(24)
-  otherAccounts = _messages.StringField(25, repeated=True)
-  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 26)
-  releaseVersion = _messages.StringField(27)
-  securityPatchTime = _messages.StringField(28)
-  serialNumber = _messages.StringField(29)
-  wifiMacAddresses = _messages.StringField(30, repeated=True)
+  clientTypes = _messages.EnumField('ClientTypesValueListEntryValuesEnum', 7, repeated=True)
+  compromisedState = _messages.EnumField('CompromisedStateValueValuesEnum', 8)
+  createTime = _messages.StringField(9)
+  deviceId = _messages.StringField(10)
+  deviceType = _messages.EnumField('DeviceTypeValueValuesEnum', 11)
+  enabledDeveloperOptions = _messages.BooleanField(12)
+  enabledUsbDebugging = _messages.BooleanField(13)
+  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 14)
+  endpointVerificationSpecificAttributes = _messages.MessageField('EndpointVerificationSpecificAttributes', 15)
+  hostname = _messages.StringField(16)
+  imei = _messages.StringField(17)
+  kernelVersion = _messages.StringField(18)
+  lastSyncTime = _messages.StringField(19)
+  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 20)
+  manufacturer = _messages.StringField(21)
+  meid = _messages.StringField(22)
+  model = _messages.StringField(23)
+  name = _messages.StringField(24)
+  networkOperator = _messages.StringField(25)
+  osVersion = _messages.StringField(26)
+  otherAccounts = _messages.StringField(27, repeated=True)
+  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 28)
+  releaseVersion = _messages.StringField(29)
+  securityPatchTime = _messages.StringField(30)
+  serialNumber = _messages.StringField(31)
+  wifiMacAddresses = _messages.StringField(32, repeated=True)
 
 
 class DeviceUser(_messages.Message):
@@ -1511,6 +1789,16 @@ class DeviceUser(_messages.Message):
   passwordState = _messages.EnumField('PasswordStateValueValuesEnum', 8)
   userAgent = _messages.StringField(9)
   userEmail = _messages.StringField(10)
+
+
+class DsaPublicKeyInfo(_messages.Message):
+  r"""Information of a DSA public key.
+
+  Fields:
+    keySize: Key size in bits (size of parameter P).
+  """
+
+  keySize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class DynamicGroupMetadata(_messages.Message):
@@ -2413,6 +2701,102 @@ class GroupRelation(_messages.Message):
   roles = _messages.MessageField('TransitiveMembershipRole', 6, repeated=True)
 
 
+class IdpCredential(_messages.Message):
+  r"""Credential for verifying signatures produced by the Identity Provider.
+
+  Fields:
+    dsaKeyInfo: Output only. Information of a DSA public key.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      credential.
+    rsaKeyInfo: Output only. Information of a RSA public key.
+    updateTime: Output only. Time when the `IdpCredential` was last updated.
+  """
+
+  dsaKeyInfo = _messages.MessageField('DsaPublicKeyInfo', 1)
+  name = _messages.StringField(2)
+  rsaKeyInfo = _messages.MessageField('RsaPublicKeyInfo', 3)
+  updateTime = _messages.StringField(4)
+
+
+class InboundSamlSsoProfile(_messages.Message):
+  r"""A [SAML 2.0](https://www.oasis-open.org/standards#samlv2.0) federation
+  between a Google enterprise customer and a SAML identity provider.
+
+  Fields:
+    customer: Immutable. The customer. For example: `customers/C0123abc`.
+    displayName: Human-readable name of the SAML SSO profile.
+    idpConfig: SAML identity provider configuration.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the SAML
+      SSO profile.
+    spConfig: SAML service provider configuration for this SAML SSO profile.
+      These are the service provider details provided by Google that should be
+      configured on the corresponding identity provider.
+  """
+
+  customer = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  idpConfig = _messages.MessageField('SamlIdpConfig', 3)
+  name = _messages.StringField(4)
+  spConfig = _messages.MessageField('SamlSpConfig', 5)
+
+
+class InboundSsoAssignment(_messages.Message):
+  r"""Targets with "set" SSO assignments and their respective assignments.
+
+  Enums:
+    SsoModeValueValuesEnum: Inbound SSO behavior.
+
+  Fields:
+    customer: Immutable. The customer. For example: `customers/C0123abc`.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Inbound SSO Assignment.
+    rank: Must be zero (which is the default value so it can be omitted) for
+      assignments with `target_org_unit` set and must be greater-than-or-
+      equal-to one for assignments with `target_group` set.
+    samlSsoInfo: SAML SSO details. Must be set if and only if `sso_mode` is
+      set to `SAML_SSO`.
+    signInBehavior: Assertions about users assigned to an IdP will always be
+      accepted from that IdP. This controls whether/when Google should
+      redirect a user to the IdP. Unset (defaults) is the recommended
+      configuration.
+    ssoMode: Inbound SSO behavior.
+    targetGroup: Immutable. Must be of the form `groups/{group}`.
+    targetOrgUnit: Immutable. Must be of the form `orgUnits/{org_unit}`.
+  """
+
+  class SsoModeValueValuesEnum(_messages.Enum):
+    r"""Inbound SSO behavior.
+
+    Values:
+      SSO_MODE_UNSPECIFIED: Not allowed.
+      SSO_OFF: Disable SSO for the targeted users.
+      SAML_SSO: Use an external SAML Identity Provider for SSO for the
+        targeted users.
+      DOMAIN_WIDE_SAML_IF_ENABLED: Use the domain-wide SAML Identity Provider
+        for the targeted users if one is configured; otherwise, this is
+        equivalent to `SSO_OFF`. Note that this will also be equivalent to
+        `SSO_OFF` if/when support for domain-wide SAML is removed. Google may
+        disallow this mode at that point and existing assignments with this
+        mode may be automatically changed to `SSO_OFF`.
+    """
+    SSO_MODE_UNSPECIFIED = 0
+    SSO_OFF = 1
+    SAML_SSO = 2
+    DOMAIN_WIDE_SAML_IF_ENABLED = 3
+
+  customer = _messages.StringField(1)
+  name = _messages.StringField(2)
+  rank = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  samlSsoInfo = _messages.MessageField('SamlSsoInfo', 4)
+  signInBehavior = _messages.MessageField('SignInBehavior', 5)
+  ssoMode = _messages.EnumField('SsoModeValueValuesEnum', 6)
+  targetGroup = _messages.StringField(7)
+  targetOrgUnit = _messages.StringField(8)
+
+
 class IsInvitableUserResponse(_messages.Message):
   r"""Response for IsInvitableUser RPC.
 
@@ -2473,6 +2857,48 @@ class ListGroupsResponse(_messages.Message):
   """
 
   groups = _messages.MessageField('Group', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListIdpCredentialsResponse(_messages.Message):
+  r"""Response of the InboundSamlSsoProfilesService.ListIdpCredentials method.
+
+  Fields:
+    idpCredentials: The IdpCredentials from the specified
+      InboundSamlSsoProfile.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  idpCredentials = _messages.MessageField('IdpCredential', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListInboundSamlSsoProfilesResponse(_messages.Message):
+  r"""Response of the InboundSamlSsoProfilesService.ListInboundSamlSsoProfiles
+  method.
+
+  Fields:
+    inboundSamlSsoProfiles: List of InboundSamlSsoProfiles.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  inboundSamlSsoProfiles = _messages.MessageField('InboundSamlSsoProfile', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListInboundSsoAssignmentsResponse(_messages.Message):
+  r"""Response of the InboundSsoAssignmentsService.ListInboundSsoAssignments
+  method.
+
+  Fields:
+    inboundSsoAssignments: The assignments.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  inboundSsoAssignments = _messages.MessageField('InboundSsoAssignment', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -2548,8 +2974,8 @@ class LookupSelfDeviceUsersResponse(_messages.Message):
   the caller's credentials.
 
   Fields:
-    customer: The obfuscated customer Id that may be passed back to other
-      Devices API methods such as List, Get, etc.
+    customer: The customer Id that may be passed back to other Devices API
+      methods such as List, Get, etc.
     names: [Resource
       names](https://cloud.google.com/apis/design/resource_names) of the
       DeviceUsers in the format:
@@ -3019,6 +3445,68 @@ class RestrictionEvaluations(_messages.Message):
   memberRestrictionEvaluation = _messages.MessageField('MembershipRoleRestrictionEvaluation', 1)
 
 
+class RsaPublicKeyInfo(_messages.Message):
+  r"""Information of a RSA public key.
+
+  Fields:
+    keySize: Key size in bits (size of the modulus).
+  """
+
+  keySize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class SamlIdpConfig(_messages.Message):
+  r"""SAML IDP (identity provider) configuration.
+
+  Fields:
+    changePasswordUri: The **Change Password URL** of the identity provider.
+      Users will be sent to this URL when changing their passwords at
+      `myaccount.google.com`. This takes precedence over the change password
+      URL configured at customer-level. Must use `HTTPS`.
+    entityId: Required. The SAML **Entity ID** of the identity provider.
+    logoutRedirectUri: The **Logout Redirect URL** (sign-out page URL) of the
+      identity provider. When a user clicks the sign-out link on a Google
+      page, they will be redirected to this URL. This is a pure redirect with
+      no attached SAML `LogoutRequest` i.e. SAML single logout is currently
+      not supported. Must use `HTTPS`.
+    singleSignOnServiceUri: Required. The `SingleSignOnService` endpoint
+      location (sign-in page URL) of the identity provider. This is the URL
+      where the `AuthnRequest` will be sent. Must use `HTTPS`. Currently
+      assumed to accept the `HTTP-Redirect` binding.
+  """
+
+  changePasswordUri = _messages.StringField(1)
+  entityId = _messages.StringField(2)
+  logoutRedirectUri = _messages.StringField(3)
+  singleSignOnServiceUri = _messages.StringField(4)
+
+
+class SamlSpConfig(_messages.Message):
+  r"""SAML SP (service provider) configuration.
+
+  Fields:
+    assertionConsumerServiceUri: Output only. The SAML **Assertion Consumer
+      Service (ACS) URL** to be used for the IDP-initiated login. Currently
+      assumed to accept response messages via the `HTTP-POST` binding.
+    entityId: Output only. The SAML **Entity ID** for this service provider.
+  """
+
+  assertionConsumerServiceUri = _messages.StringField(1)
+  entityId = _messages.StringField(2)
+
+
+class SamlSsoInfo(_messages.Message):
+  r"""Details that are applicable when `sso_mode` == `SAML_SSO`.
+
+  Fields:
+    inboundSamlSsoProfile: Required. Name of the `InboundSamlSsoProfile` to
+      use. Must be of the form
+      `inboundSamlSsoProfiles/{inbound_saml_sso_profile}`.
+  """
+
+  inboundSamlSsoProfile = _messages.StringField(1)
+
+
 class SearchGroupsResponse(_messages.Message):
   r"""The response message for GroupsService.SearchGroups.
 
@@ -3076,6 +3564,33 @@ class SendUserInvitationRequest(_messages.Message):
   UserInvitation.
   """
 
+
+
+class SignInBehavior(_messages.Message):
+  r"""Controls sign-in behavior.
+
+  Enums:
+    RedirectConditionValueValuesEnum: When to redirect sign-ins to the IdP.
+
+  Fields:
+    redirectCondition: When to redirect sign-ins to the IdP.
+  """
+
+  class RedirectConditionValueValuesEnum(_messages.Enum):
+    r"""When to redirect sign-ins to the IdP.
+
+    Values:
+      REDIRECT_CONDITION_UNSPECIFIED: Default and means "always"
+      NEVER: Sign-in flows where the user is prompted for their identity will
+        not redirect to the IdP (so the user will most likely be prompted by
+        Google for a password), but special flows like IdP-initiated SAML and
+        sign-in following automatic redirection to the IdP by domain-specific
+        service URLs will accept the IdP's assertion of the user's identity.
+    """
+    REDIRECT_CONDITION_UNSPECIFIED = 0
+    NEVER = 1
+
+  redirectCondition = _messages.EnumField('RedirectConditionValueValuesEnum', 1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -3201,6 +3716,20 @@ class TransitiveMembershipRole(_messages.Message):
   """
 
   role = _messages.StringField(1)
+
+
+class UpdateInboundSamlSsoProfileOperationMetadata(_messages.Message):
+  r"""LRO response metadata for
+  InboundSamlSsoProfilesService.UpdateInboundSamlSsoProfile.
+  """
+
+
+
+class UpdateInboundSsoAssignmentOperationMetadata(_messages.Message):
+  r"""LRO response metadata for
+  InboundSsoAssignmentsService.UpdateInboundSsoAssignment.
+  """
+
 
 
 class UpdateMembershipRolesParams(_messages.Message):

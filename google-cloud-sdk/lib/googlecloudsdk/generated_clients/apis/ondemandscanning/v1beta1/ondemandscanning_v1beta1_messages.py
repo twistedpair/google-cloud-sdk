@@ -1541,10 +1541,10 @@ class PackageData(_messages.Message):
     hashDigest: HashDigest stores the SHA512 hash digest of the jar file if
       the package is of type Maven. This field will be unset for non Maven
       packages.
-    os: The OS affected by a vulnerability This field is deprecated and the
-      information is in cpe_uri
-    osVersion: The version of the OS This field is deprecated and the
-      information is in cpe_uri
+    os: The OS affected by a vulnerability Used to generate the cpe_uri for OS
+      packages
+    osVersion: The version of the OS Used to generate the cpe_uri for OS
+      packages
     package: The package being analysed for vulnerabilities
     packageType: The type of package: os, maven, go, etc.
     patchedCve: CVEs that this package is no longer vulnerable to go/drydock-

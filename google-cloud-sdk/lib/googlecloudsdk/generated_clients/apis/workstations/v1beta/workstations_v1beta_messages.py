@@ -235,7 +235,14 @@ class Expr(_messages.Message):
 
 
 class GceConfidentialInstanceConfig(_messages.Message):
-  r"""A set of Confidential Google Compute Engine Instance option."""
+  r"""A set of Confidential Google Compute Engine Instance option.
+
+  Fields:
+    enableConfidentialCompute: Whether the instance has confidential compute
+      enabled.
+  """
+
+  enableConfidentialCompute = _messages.BooleanField(1)
 
 
 class GceInstance(_messages.Message):
@@ -280,10 +287,11 @@ class GceRegionalPersistentDisk(_messages.Message):
   Fields:
     diskType: Type of the disk to use.
     fsType: Type of file system that the disk should be formatted with. The
-      Workstation image must support this file system type.
+      Workstation image must support this file system type. Must be empty if
+      source_snapshot is set.
     reclaimPolicy: What should happen to the disk after the Workstation is
       deleted. Defaults to DELETE.
-    sizeGb: Size of the disk in GB.
+    sizeGb: Size of the disk in GB. Must be empty if source_snapshot is set.
   """
 
   class ReclaimPolicyValueValuesEnum(_messages.Enum):

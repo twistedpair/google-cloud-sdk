@@ -871,14 +871,18 @@ class BigtableadminProjectsInstancesTablesGetRequest(_messages.Message):
         table's replication state.
       ENCRYPTION_VIEW: Only populates `name` and fields related to the table's
         encryption state.
-      FULL: Populates all fields.
+      STATS_VIEW: Only populates `name` and fields related to the table's
+        stats (e.g. TableStats and ColumnFamilyStats).
+      FULL: Populates all fields except for stats. See STATS_VIEW to request
+        stats.
     """
     VIEW_UNSPECIFIED = 0
     NAME_ONLY = 1
     SCHEMA_VIEW = 2
     REPLICATION_VIEW = 3
     ENCRYPTION_VIEW = 4
-    FULL = 5
+    STATS_VIEW = 5
+    FULL = 6
 
   name = _messages.StringField(1, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 2)
@@ -923,14 +927,18 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
         table's replication state.
       ENCRYPTION_VIEW: Only populates `name` and fields related to the table's
         encryption state.
-      FULL: Populates all fields.
+      STATS_VIEW: Only populates `name` and fields related to the table's
+        stats (e.g. TableStats and ColumnFamilyStats).
+      FULL: Populates all fields except for stats. See STATS_VIEW to request
+        stats.
     """
     VIEW_UNSPECIFIED = 0
     NAME_ONLY = 1
     SCHEMA_VIEW = 2
     REPLICATION_VIEW = 3
     ENCRYPTION_VIEW = 4
-    FULL = 5
+    STATS_VIEW = 5
+    FULL = 6
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
@@ -960,7 +968,7 @@ class BigtableadminProjectsInstancesTablesPatchRequest(_messages.Message):
   Fields:
     name: The unique name of the table. Values are of the form
       `projects/{project}/instances/{instance}/tables/_a-zA-Z0-9*`. Views:
-      `NAME_ONLY`, `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`
+      `NAME_ONLY`, `SCHEMA_VIEW`, `REPLICATION_VIEW`, `STATS_VIEW`, `FULL`
     table: A Table resource to be passed as the request body.
     updateMask: Required. The list of fields to update. A mask specifying
       which fields (e.g. `change_stream_config`) in the `table` field should
@@ -982,8 +990,7 @@ class BigtableadminProjectsInstancesTablesRestoreRequest(_messages.Message):
 
   Fields:
     parent: Required. The name of the instance in which to create the restored
-      table. This instance must be in the same project as the source backup.
-      Values are of the form `projects//instances/`.
+      table. Values are of the form `projects//instances/`.
     restoreTableRequest: A RestoreTableRequest resource to be passed as the
       request body.
   """
@@ -1334,9 +1341,46 @@ class ColumnFamily(_messages.Message):
       at most 500 bytes. NOTE: Garbage collection executes opportunistically
       in the background, and so it's possible for reads to return a cell even
       if it matches the active GC expression for its family.
+    stats: Only available with STATS_VIEW, this includes summary statistics
+      about column family contents. For statistics over an entire table, see
+      TableStats above.
   """
 
   gcRule = _messages.MessageField('GcRule', 1)
+  stats = _messages.MessageField('ColumnFamilyStats', 2)
+
+
+class ColumnFamilyStats(_messages.Message):
+  r"""Approximate statistics related to a single column family within a table.
+  This information may change rapidly, interpreting these values at a point in
+  time may already preset out-of-date information. Everything below is
+  approximate, unless otherwise specified.
+
+  Fields:
+    averageCellsPerColumn: How many cells are present per column qualifier in
+      this column family, averaged over all rows containing any column in the
+      column family. e.g. For column family "family" in a table with 3 rows: *
+      A row with 3 cells in "family:col" and 1 cell in "other:col" (3 cells /
+      1 column in "family") * A row with 1 cell in "family:col", 7 cells in
+      "family:other_col", and 7 cells in "other:data" (8 cells / 2 columns in
+      "family") * A row with 3 cells in "other:col" (0 columns in "family",
+      "family" not present) would report (3 + 8 + 0)/(1 + 2 + 0) = 3.66 in
+      this field.
+    averageColumnsPerRow: How many column qualifiers are present in this
+      column family, averaged over all rows in the table. e.g. For column
+      family "family" in a table with 3 rows: * A row with cells in
+      "family:col" and "other:col" (1 column in "family") * A row with cells
+      in "family:col", "family:other_col", and "other:data" (2 columns in
+      "family") * A row with cells in "other:col" (0 columns in "family",
+      "family" not present) would report (1 + 2 + 0)/3 = 1.5 in this field.
+    logicalDataBytes: How much space the data in the column family occupies.
+      This is roughly how many bytes would be needed to read the contents of
+      the entire column family (e.g. by streaming all contents out).
+  """
+
+  averageCellsPerColumn = _messages.FloatField(1)
+  averageColumnsPerRow = _messages.FloatField(2)
+  logicalDataBytes = _messages.IntegerField(3)
 
 
 class CopyBackupMetadata(_messages.Message):
@@ -2757,7 +2801,7 @@ class Table(_messages.Message):
       `replication_status`. Views: `REPLICATION_VIEW`, `ENCRYPTION_VIEW`,
       `FULL`
     ColumnFamiliesValue: The column families configured for this table, mapped
-      by column family ID. Views: `SCHEMA_VIEW`, `FULL`
+      by column family ID. Views: `SCHEMA_VIEW`, `STATS_VIEW`, `FULL`
 
   Fields:
     changeStreamConfig: If specified, enable the change stream on this table.
@@ -2770,7 +2814,7 @@ class Table(_messages.Message):
       `replication_status`. Views: `REPLICATION_VIEW`, `ENCRYPTION_VIEW`,
       `FULL`
     columnFamilies: The column families configured for this table, mapped by
-      column family ID. Views: `SCHEMA_VIEW`, `FULL`
+      column family ID. Views: `SCHEMA_VIEW`, `STATS_VIEW`, `FULL`
     deletionProtection: Set to true to make the table protected against data
       loss. i.e. deleting the following resources through Admin APIs are
       prohibited: - The table. - The column families in the table. - The
@@ -2782,10 +2826,14 @@ class Table(_messages.Message):
       will be set to `MILLIS`. Views: `SCHEMA_VIEW`, `FULL`.
     name: The unique name of the table. Values are of the form
       `projects/{project}/instances/{instance}/tables/_a-zA-Z0-9*`. Views:
-      `NAME_ONLY`, `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`
+      `NAME_ONLY`, `SCHEMA_VIEW`, `REPLICATION_VIEW`, `STATS_VIEW`, `FULL`
     restoreInfo: Output only. If this table was restored from another data
       source (e.g. a backup), this field will be populated with information
       about the restore.
+    stats: Only available with STATS_VIEW, this includes summary statistics
+      about the entire table contents. For statistics about a specific column
+      family, see ColumnFamilyStats in the mapped ColumnFamily collection
+      above.
   """
 
   class GranularityValueValuesEnum(_messages.Enum):
@@ -2835,7 +2883,7 @@ class Table(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ColumnFamiliesValue(_messages.Message):
     r"""The column families configured for this table, mapped by column family
-    ID. Views: `SCHEMA_VIEW`, `FULL`
+    ID. Views: `SCHEMA_VIEW`, `STATS_VIEW`, `FULL`
 
     Messages:
       AdditionalProperty: An additional property for a ColumnFamiliesValue
@@ -2865,6 +2913,7 @@ class Table(_messages.Message):
   granularity = _messages.EnumField('GranularityValueValuesEnum', 5)
   name = _messages.StringField(6)
   restoreInfo = _messages.MessageField('RestoreInfo', 7)
+  stats = _messages.MessageField('TableStats', 8)
 
 
 class TableProgress(_messages.Message):
@@ -2902,6 +2951,39 @@ class TableProgress(_messages.Message):
   estimatedCopiedBytes = _messages.IntegerField(1)
   estimatedSizeBytes = _messages.IntegerField(2)
   state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
+class TableStats(_messages.Message):
+  r"""Approximate statistics related to a table. These statistics are
+  calculated infrequently, while simultaneously, data in the table can change
+  rapidly. Thus the values reported here (e.g. row count) are very likely out-
+  of date, even the instant they are received in this API. Thus, only treat
+  these values as approximate. IMPORTANT: Everything below is approximate,
+  unless otherwise specified.
+
+  Fields:
+    averageCellsPerColumn: How many cells are present per column (column
+      family, column qualifier) combinations, averaged over all columns in all
+      rows in the table. e.g. A table with 2 rows: * A row with 3 cells in
+      "family:col" and 1 cell in "other:col" (4 cells / 2 columns) * A row
+      with 1 cell in "family:col", 7 cells in "family:other_col", and 7 cells
+      in "other:data" (15 cells / 3 columns) would report (4 + 15)/(2 + 3) =
+      3.8 in this field.
+    averageColumnsPerRow: How many (column family, column qualifier)
+      combinations are present per row in the table, averaged over all rows in
+      the table. e.g. A table with 2 rows: * A row with cells in "family:col"
+      and "other:col" (2 distinct columns) * A row with cells in "family:col",
+      "family:other_col", and "other:data" (3 distinct columns) would report
+      (2 + 3)/2 = 2.5 in this field.
+    logicalDataBytes: This is roughly how many bytes would be needed to read
+      the entire table (e.g. by streaming all contents out).
+    rowCount: How many rows are in the table.
+  """
+
+  averageCellsPerColumn = _messages.FloatField(1)
+  averageColumnsPerRow = _messages.FloatField(2)
+  logicalDataBytes = _messages.IntegerField(3)
+  rowCount = _messages.IntegerField(4)
 
 
 class TestIamPermissionsRequest(_messages.Message):

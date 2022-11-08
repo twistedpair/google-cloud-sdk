@@ -642,7 +642,7 @@
           "$ref": "PublicKeys"
         },
         "approximateUsage": {
-          "description": "Output only. Approximate workload resource usage calculated after workload finishes.",
+          "description": "Output only. Approximate workload resource usage calculated after workload finishes (see Dataproc Serverless pricing (https:\/\/cloud.google.com\/dataproc-serverless\/pricing)).",
           "readOnly": true,
           "$ref": "UsageMetrics"
         },
@@ -697,16 +697,16 @@
     },
     "UsageMetrics": {
       "id": "UsageMetrics",
-      "description": "Usage metrics represent total resources consumed by a workload.",
+      "description": "Usage metrics represent approximate total resources consumed by a workload.",
       "type": "object",
       "properties": {
         "milliDcuSeconds": {
-          "description": "Optional. DCU usage in milliDCU*seconds.",
+          "description": "Optional. DCU (Dataproc Compute Units) usage in (milliDCU x seconds) (see Dataproc Serverless pricing (https:\/\/cloud.google.com\/dataproc-serverless\/pricing)).",
           "type": "string",
           "format": "int64"
         },
         "shuffleStorageGbSeconds": {
-          "description": "Optional. Shuffle storage usage in GB*Seconds",
+          "description": "Optional. Shuffle storage usage in (GB x seconds) (see Dataproc Serverless pricing (https:\/\/cloud.google.com\/dataproc-serverless\/pricing)).",
           "type": "string",
           "format": "int64"
         }
@@ -714,16 +714,16 @@
     },
     "UsageSnapshot": {
       "id": "UsageSnapshot",
-      "description": "Usage snaphot represents the resources consumed by a workload at a given time.",
+      "description": "The usage snaphot represents the resources consumed by a workload at a specified time.",
       "type": "object",
       "properties": {
         "milliDcu": {
-          "description": "Optional. Milli (one-thousandth) Dataproc Compute Units.",
+          "description": "Optional. Milli (one-thousandth) Dataproc Compute Units (DCUs) (see Dataproc Serverless pricing (https:\/\/cloud.google.com\/dataproc-serverless\/pricing)).",
           "type": "string",
           "format": "int64"
         },
         "shuffleStorageGb": {
-          "description": "Optional. Shuffle Storage in gigabytes (GB).",
+          "description": "Optional. Shuffle Storage in gigabytes (GB). (see Dataproc Serverless pricing (https:\/\/cloud.google.com\/dataproc-serverless\/pricing))",
           "type": "string",
           "format": "int64"
         },

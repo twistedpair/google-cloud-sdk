@@ -577,8 +577,6 @@
           "type": "string",
           "enumDescriptions": [
             "No error code was specified.",
-            "A Cloud Storage bucket failed due to a permissions issue. Deprecated in favor of equivalent ErrorCode on Deployment.",
-            "A Cloud Storage bucket failed for a non-permissions-related issue. Deprecated in favor of equivalent ErrorCode on Deployment.",
             "Cloud Build failed due to a permissions issue.",
             "The pipeline Cloud Build failed before logs could be generated.",
             "The pipeline Cloud Build failed after logs could be generated.",
@@ -589,8 +587,6 @@
           ],
           "enum": [
             "ERROR_CODE_UNSPECIFIED",
-            "BUCKET_CREATION_PERMISSION_DENIED",
-            "BUCKET_CREATION_FAILED",
             "CLOUD_BUILD_PERMISSION_DENIED",
             "PIPELINE_BUILD_API_FAILED",
             "PIPELINE_BUILD_RUN_FAILED",

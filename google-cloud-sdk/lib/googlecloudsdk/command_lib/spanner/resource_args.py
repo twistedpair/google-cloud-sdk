@@ -115,6 +115,7 @@ _DEFAULT_STORAGE_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
                            'v1').Instance.DefaultStorageTypeValueValuesEnum,
     help_str='Specifies the default storage type for this instance.',
     required=False,
+    hidden=True,
     custom_mappings={
         'SSD': ('ssd', ('Use ssd as default storage type for this instance')),
         'HDD': ('hdd', ('Use hdd as default storage type for this instance')),

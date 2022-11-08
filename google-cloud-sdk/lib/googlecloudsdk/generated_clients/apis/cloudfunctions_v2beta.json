@@ -442,6 +442,10 @@
         "kmsKeyName": {
           "description": "Resource name of a KMS crypto key (managed by the user) used to encrypt\/decrypt function resources. It must match the pattern `projects\/{project}\/locations\/{location}\/keyRings\/{key_ring}\/cryptoKeys\/{crypto_key}`.",
           "type": "string"
+        },
+        "buildpackStack": {
+          "description": "Specifies a Google provided Buildpack Stack -- pair of base images (for building and runtime) that include a curated set of pre-installed packages.",
+          "type": "string"
         }
       }
     },
@@ -483,8 +487,26 @@
             "type": "string"
           }
         },
+        "dockerRegistry": {
+          "description": "Optional. Docker Registry to use for this deployment. This configuration is only applicable to 1st Gen functions, 2nd Gen functions can only use Artifact Registry. If `docker_repository` field is specified, this field will be automatically set as `ARTIFACT_REGISTRY`. If unspecified, it currently defaults to `CONTAINER_REGISTRY`. This field may be overridden by the backend for eligible deployments.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Docker images will be stored in multi-regional Container Registry repositories named `gcf`.",
+            "Docker images will be stored in regional Artifact Registry repositories. By default, GCF will create and use repositories named `gcf-artifacts` in every region in which a function is deployed. But the repository to use can also be specified by the user using the `docker_repository` field."
+          ],
+          "enum": [
+            "DOCKER_REGISTRY_UNSPECIFIED",
+            "CONTAINER_REGISTRY",
+            "ARTIFACT_REGISTRY"
+          ]
+        },
         "dockerRepository": {
-          "description": "Optional. User managed repository created in Artifact Registry optionally with a customer managed encryption key. This is the repository to which the function docker image will be pushed after it is built by Cloud Build. If unspecified, GCF will create and use a repository named 'gcf-artifacts' for every deployed region. It must match the pattern `projects\/{project}\/locations\/{location}\/repositories\/{repository}`. Cross-project repositories are not supported. Cross-location repositories are not supported. Repository format must be 'DOCKER'.",
+          "description": "User managed repository created in Artifact Registry optionally with a customer managed encryption key. This is the repository to which the function docker image will be pushed after it is built by Cloud Build. If unspecified, GCF will create and use a repository named 'gcf-artifacts' for every deployed region. It must match the pattern `projects\/{project}\/locations\/{location}\/repositories\/{repository}`. Cross-project repositories are not supported. Cross-location repositories are not supported. Repository format must be 'DOCKER'.",
+          "type": "string"
+        },
+        "buildpackStack": {
+          "description": "Specifies one of the Google provided buildpack stacks.",
           "type": "string"
         }
       }
@@ -576,7 +598,7 @@
     },
     "ServiceConfig": {
       "id": "ServiceConfig",
-      "description": "Describes the Service being deployed. Currently Supported : Cloud Run (fully managed).",
+      "description": "Describes the Service being deployed. Currently Supported : Cloud Run (fully managed). Next tag: 23",
       "type": "object",
       "properties": {
         "service": {
@@ -591,6 +613,10 @@
         },
         "availableMemory": {
           "description": "The amount of memory available for a function. Defaults to 256M. Supported units are k, M, G, Mi, Gi. If no unit is supplied the value is interpreted as bytes. See https:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apimachinery\/pkg\/api\/resource\/quantity.go a full description.",
+          "type": "string"
+        },
+        "availableCpu": {
+          "description": "The number of CPUs used in a single container instance. Default value is calculated from available memory. Supports the same values as Cloud Run, see https:\/\/cloud.google.com\/run\/docs\/reference\/rest\/v1\/Container#resourcerequirements Example: \"1\" indicates 1 vCPU",
           "type": "string"
         },
         "environmentVariables": {
@@ -675,6 +701,25 @@
           "description": "Output only. The name of service revision.",
           "readOnly": true,
           "type": "string"
+        },
+        "maxInstanceRequestConcurrency": {
+          "description": "Sets the maximum number of concurrent requests that each instance can receive. Defaults to 1.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "securityLevel": {
+          "description": "Optional. Security level configure whether the function only accepts https. This configuration is only applicable to 1st Gen functions with Http trigger. By default https is optional for 1st Gen functions; 2nd Gen functions are https ONLY.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Requests for a URL that match this handler that do not use HTTPS are automatically redirected to the HTTPS URL with the same path. Query parameters are reserved for the redirect.",
+            "Both HTTP and HTTPS requests with URLs that match the handler succeed without redirects. The application can examine the request to determine which protocol was used and respond accordingly."
+          ],
+          "enum": [
+            "SECURITY_LEVEL_UNSPECIFIED",
+            "SECURE_ALWAYS",
+            "SECURE_OPTIONAL"
+          ]
         }
       }
     },

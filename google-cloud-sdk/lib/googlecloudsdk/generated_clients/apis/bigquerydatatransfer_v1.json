@@ -301,7 +301,7 @@
           "format": "double"
         },
         "maxValue": {
-          "description": "For integer and double values specifies maxminum allowed value.",
+          "description": "For integer and double values specifies maximum allowed value.",
           "type": "number",
           "format": "double"
         },

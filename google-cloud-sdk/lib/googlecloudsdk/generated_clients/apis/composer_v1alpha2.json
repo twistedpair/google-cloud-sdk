@@ -346,6 +346,10 @@
         "doXcomPush": {
           "description": "if true, an XCom is pushed containing the Operator\u2019s result.",
           "type": "boolean"
+        },
+        "isDynamicallyMapped": {
+          "description": "Whether this task will be mapped to multiple task instances during runtime.",
+          "type": "boolean"
         }
       }
     },
@@ -482,7 +486,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The resource name of the task instance, in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\/dags\/{dagId}\/dagRuns\/{dagRunId}\/taskInstances\/{taskInstanceId}\".",
+          "description": "Required. The resource name of the task instance, in the form: \"projects\/{project_id}\/locations\/{location_id}\/environments\/{environment_id}\/dags\/{dag_id}\/dagRuns\/{dag_run_id}\/taskInstances\/{task_instance_id_with_optional_map_index}\".",
           "type": "string"
         },
         "id": {
@@ -589,6 +593,15 @@
           "description": "The number of tries that should be performed before failing the task.",
           "type": "integer",
           "format": "int32"
+        },
+        "isDynamicallyMapped": {
+          "description": "Whether this TaskInstance is dynamically mapped.",
+          "type": "boolean"
+        },
+        "mapIndex": {
+          "description": "If is_dynamically_mapped is set to true, this field contains index of the dynamically-mapped TaskInstance, If is_dynamically_mapped is set to false, this field has no meaning.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -651,6 +664,17 @@
           "description": "The execution date of the DAG run.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "SourceCode": {
+      "id": "SourceCode",
+      "description": "A source code of a DAG.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The source code of the user-defined DAG.",
+          "type": "string"
         }
       }
     },
@@ -2384,6 +2408,31 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Trigger a DAG run."
+                    },
+                    "getSourceCode": {
+                      "id": "composer.projects.locations.environments.dags.getSourceCode",
+                      "path": "v1alpha2/{+dag}:getSourceCode",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/dags/{dagsId}:getSourceCode",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "dag": {
+                          "description": "Required. The resource name of the DAG to fetch source code of. Must be in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\/dags\/{dagId}\".",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+\/dags\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "dag"
+                      ],
+                      "response": {
+                        "$ref": "SourceCode"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Retrieves DAG source code."
                     }
                   }
                   ,

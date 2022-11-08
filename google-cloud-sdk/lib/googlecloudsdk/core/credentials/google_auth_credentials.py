@@ -293,7 +293,7 @@ def _HandleErrorResponse(response_body):
       error_subtype == oauth2client_client.REAUTH_NEEDED_ERROR_RAPT_REQUIRED):
     raise ReauthRequiredError('reauth is required.')
   try:
-    google_auth_client._handle_error_response(error_data)  # pylint: disable=protected-access
+    google_auth_client._handle_error_response(error_data, False)  # pylint: disable=protected-access
   except google_auth_exceptions.RefreshError as e:
     if context_aware.IsContextAwareAccessDeniedError(e):
       raise ContextAwareAccessDeniedError()

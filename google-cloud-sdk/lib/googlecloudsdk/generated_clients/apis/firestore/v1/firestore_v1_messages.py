@@ -1674,6 +1674,7 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
   documents in a database.
 
   Enums:
+    ApiScopeValueValuesEnum: The API scope supported by this index.
     QueryScopeValueValuesEnum: Indexes with a collection query scope specified
       allow queries against a collection that is the child of a specific
       document, specified at query time, and that has the same collection id.
@@ -1683,6 +1684,7 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
     StateValueValuesEnum: Output only. The serving state of the index.
 
   Fields:
+    apiScope: The API scope supported by this index.
     fields: The fields supported by this index. For composite indexes, this
       requires a minimum of 2 and a maximum of 100 fields. The last field
       entry is always for the field path `__name__`. If, on creation,
@@ -1705,6 +1707,18 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
     state: Output only. The serving state of the index.
   """
 
+  class ApiScopeValueValuesEnum(_messages.Enum):
+    r"""The API scope supported by this index.
+
+    Values:
+      ANY_API: The index can be used by both Firestore Native and Firestore in
+        Datastore Mode query API. This is the default.
+      DATASTORE_MODE_API: The index can only be used by the Firestore in
+        Datastore Mode query API.
+    """
+    ANY_API = 0
+    DATASTORE_MODE_API = 1
+
   class QueryScopeValueValuesEnum(_messages.Enum):
     r"""Indexes with a collection query scope specified allow queries against
     a collection that is the child of a specific document, specified at query
@@ -1723,10 +1737,13 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
       COLLECTION_GROUP: Indexes with a collection group query scope specified
         allow queries against all collections that has the collection id
         specified by the index.
+      COLLECTION_RECURSIVE: Include all the collections's ancestor in the
+        index. Only available for Datastore Mode databases.
     """
     QUERY_SCOPE_UNSPECIFIED = 0
     COLLECTION = 1
     COLLECTION_GROUP = 2
+    COLLECTION_RECURSIVE = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The serving state of the index.
@@ -1751,10 +1768,11 @@ class GoogleFirestoreAdminV1Index(_messages.Message):
     READY = 2
     NEEDS_REPAIR = 3
 
-  fields = _messages.MessageField('GoogleFirestoreAdminV1IndexField', 1, repeated=True)
-  name = _messages.StringField(2)
-  queryScope = _messages.EnumField('QueryScopeValueValuesEnum', 3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  apiScope = _messages.EnumField('ApiScopeValueValuesEnum', 1)
+  fields = _messages.MessageField('GoogleFirestoreAdminV1IndexField', 2, repeated=True)
+  name = _messages.StringField(3)
+  queryScope = _messages.EnumField('QueryScopeValueValuesEnum', 4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class GoogleFirestoreAdminV1IndexConfig(_messages.Message):

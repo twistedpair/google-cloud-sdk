@@ -23,6 +23,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='${api_def.apitools.class_path}',
                     client_classpath='${api_def.apitools.client_classpath}',
+                    base_url='${api_def.apitools.base_url}',
                     messages_modulepath='${api_def.apitools.messages_modulepath}'),
                 % if api_def.gapic:
                 GapicClientDef(

@@ -15,6 +15,21 @@ from apitools.base.py import extra_types
 package = 'metastore'
 
 
+class AlterMetadataResourceLocationRequest(_messages.Message):
+  r"""Request message for DataprocMetastore.AlterMetadataResourceLocation.
+
+  Fields:
+    locationUri: Required. The new location URI for the metadata resource.
+    resourceName: Required. The relative metadata resource name in the
+      following format.databases/{database_id} or
+      databases/{database_id}/tables/{table_id} or
+      databases/{database_id}/tables/{table_id}/partitions/{partition_id}
+  """
+
+  locationUri = _messages.StringField(1)
+  resourceName = _messages.StringField(2)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -278,8 +293,8 @@ class Consumer(_messages.Message):
   Fields:
     endpointUri: Output only. The URI of the endpoint used to access the
       metastore service.
-    subnetwork: The subnetwork of the customer project from which an IP
-      address is reserved and used as the Dataproc Metastore service's
+    subnetwork: Immutable. The subnetwork of the customer project from which
+      an IP address is reserved and used as the Dataproc Metastore service's
       endpoint. It is accessible to hosts in the subnet and to all hosts in a
       subnet in the same region and same network. There must be at least one
       IP address available in the subnet's primary range. The subnet is
@@ -1386,6 +1401,22 @@ class MetastoreProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class MetastoreProjectsLocationsServicesAlterLocationRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesAlterLocationRequest object.
+
+  Fields:
+    alterMetadataResourceLocationRequest: A
+      AlterMetadataResourceLocationRequest resource to be passed as the
+      request body.
+    service: Required. The relative resource name of the metastore service to
+      mutate metadata, in the following format:projects/{project_id}/locations
+      /{location_id}/services/{service_id}.
+  """
+
+  alterMetadataResourceLocationRequest = _messages.MessageField('AlterMetadataResourceLocationRequest', 1)
+  service = _messages.StringField(2, required=True)
+
+
 class MetastoreProjectsLocationsServicesBackupsCreateRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsServicesBackupsCreateRequest object.
 
@@ -1888,6 +1919,21 @@ class MetastoreProjectsLocationsServicesMetadataImportsPatchRequest(_messages.Me
   updateMask = _messages.StringField(4)
 
 
+class MetastoreProjectsLocationsServicesMoveTableToDatabaseRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesMoveTableToDatabaseRequest object.
+
+  Fields:
+    moveTableToDatabaseRequest: A MoveTableToDatabaseRequest resource to be
+      passed as the request body.
+    service: Required. The relative resource name of the metastore service to
+      mutate metadata, in the following format:projects/{project_id}/locations
+      /{location_id}/services/{service_id}.
+  """
+
+  moveTableToDatabaseRequest = _messages.MessageField('MoveTableToDatabaseRequest', 1)
+  service = _messages.StringField(2, required=True)
+
+
 class MetastoreProjectsLocationsServicesPatchRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsServicesPatchRequest object.
 
@@ -1915,6 +1961,21 @@ class MetastoreProjectsLocationsServicesPatchRequest(_messages.Message):
   requestId = _messages.StringField(2)
   service = _messages.MessageField('Service', 3)
   updateMask = _messages.StringField(4)
+
+
+class MetastoreProjectsLocationsServicesQueryMetadataRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesQueryMetadataRequest object.
+
+  Fields:
+    queryMetadataRequest: A QueryMetadataRequest resource to be passed as the
+      request body.
+    service: Required. The relative resource name of the metastore service to
+      query metadata, in the following format:projects/{project_id}/locations/
+      {location_id}/services/{service_id}.
+  """
+
+  queryMetadataRequest = _messages.MessageField('QueryMetadataRequest', 1)
+  service = _messages.StringField(2, required=True)
 
 
 class MetastoreProjectsLocationsServicesRemoveIamPolicyRequest(_messages.Message):
@@ -1978,6 +2039,21 @@ class MetastoreProjectsLocationsServicesTestIamPermissionsRequest(_messages.Mess
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class MoveTableToDatabaseRequest(_messages.Message):
+  r"""Request message for DataprocMetastore.MoveTableToDatabase.
+
+  Fields:
+    dbName: Required. The name of the database where the table resides.
+    destinationDbName: Required. The name of the database where the table
+      should be moved.
+    tableName: Required. The name of the table to be moved.
+  """
+
+  dbName = _messages.StringField(1)
+  destinationDbName = _messages.StringField(2)
+  tableName = _messages.StringField(3)
 
 
 class NetworkConfig(_messages.Message):
@@ -2201,6 +2277,30 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class QueryMetadataRequest(_messages.Message):
+  r"""Request message for DataprocMetastore.QueryMetadata.
+
+  Fields:
+    query: Required. A read-only SQL query to execute against the metadata
+      database. The query cannot change or mutate the data.
+  """
+
+  query = _messages.StringField(1)
+
+
+class QueryMetadataResponse(_messages.Message):
+  r"""Response message for DataprocMetastore.QueryMetadata.
+
+  Fields:
+    resultManifestUri: The manifest URI is link to a JSON instance in Cloud
+      Storage. This instance manifests immediately along with
+      QueryMetadataResponse. The content of the URI is not retriable until the
+      long-running operation query against the metadata finishes.
+  """
+
+  resultManifestUri = _messages.StringField(1)
+
+
 class RemoveIamPolicyRequest(_messages.Message):
   r"""Request message for DataprocMetastore.RemoveIamPolicy."""
 
@@ -2367,8 +2467,8 @@ class Service(_messages.Message):
     network: Immutable. The relative resource name of the VPC network on which
       the instance can be accessed. It is specified in the following
       form:projects/{project_number}/global/networks/{network_id}.
-    networkConfig: Immutable. The configuration specifying the network
-      settings for the Dataproc Metastore service.
+    networkConfig: The configuration specifying the network settings for the
+      Dataproc Metastore service.
     port: The TCP port at which the metastore service is reached. Default:
       9083.
     releaseChannel: Immutable. The release channel of the service. If
@@ -2376,6 +2476,8 @@ class Service(_messages.Message):
     state: Output only. The current state of the metastore service.
     stateMessage: Output only. Additional information about the current state
       of the metastore service, if available.
+    telemetryConfig: The configuration specifying telemetry settings for the
+      Dataproc Metastore service. If unspecified defaults to JSON.
     tier: The tier of the service.
     uid: Output only. The globally unique resource identifier of the metastore
       service.
@@ -2496,9 +2598,10 @@ class Service(_messages.Message):
   releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 15)
   state = _messages.EnumField('StateValueValuesEnum', 16)
   stateMessage = _messages.StringField(17)
-  tier = _messages.EnumField('TierValueValuesEnum', 18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
+  telemetryConfig = _messages.MessageField('TelemetryConfig', 18)
+  tier = _messages.EnumField('TierValueValuesEnum', 19)
+  uid = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2630,6 +2733,31 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TelemetryConfig(_messages.Message):
+  r"""Telemetry Configuration for the Dataproc Metastore service.
+
+  Enums:
+    LogFormatValueValuesEnum:
+
+  Fields:
+    logFormat: A LogFormatValueValuesEnum attribute.
+  """
+
+  class LogFormatValueValuesEnum(_messages.Enum):
+    r"""LogFormatValueValuesEnum enum type.
+
+    Values:
+      LOG_FORMAT_UNSPECIFIED: The LOG_FORMAT is not set.
+      LEGACY: Logging output uses the legacy textPayload format.
+      JSON: Logging output uses the jsonPayload format.
+    """
+    LOG_FORMAT_UNSPECIFIED = 0
+    LEGACY = 1
+    JSON = 2
+
+  logFormat = _messages.EnumField('LogFormatValueValuesEnum', 1)
 
 
 class TestIamPermissionsRequest(_messages.Message):

@@ -73,9 +73,9 @@ class BlockchainnodeengineV1alpha1(base_api.BaseApiClient):
         method_id='blockchainnodeengine.projects.locations.blockchainNodes.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['nodeId', 'requestId'],
+        query_params=['blockchainNodeId', 'requestId'],
         relative_path='v1alpha1/{+parent}/blockchainNodes',
-        request_field='blockchainNodeSpec',
+        request_field='blockchainNode',
         request_type_name='BlockchainnodeengineProjectsLocationsBlockchainNodesCreateRequest',
         response_type_name='Operation',
         supports_download=False,
@@ -115,7 +115,7 @@ class BlockchainnodeengineV1alpha1(base_api.BaseApiClient):
         request: (BlockchainnodeengineProjectsLocationsBlockchainNodesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (BlockchainNodeSpec) The response message.
+        (BlockchainNode) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -131,7 +131,7 @@ class BlockchainnodeengineV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='BlockchainnodeengineProjectsLocationsBlockchainNodesGetRequest',
-        response_type_name='BlockchainNodeSpec',
+        response_type_name='BlockchainNode',
         supports_download=False,
     )
 
@@ -183,7 +183,7 @@ class BlockchainnodeengineV1alpha1(base_api.BaseApiClient):
         path_params=['name'],
         query_params=['requestId', 'updateMask'],
         relative_path='v1alpha1/{+name}',
-        request_field='blockchainNodeSpec',
+        request_field='blockchainNode',
         request_type_name='BlockchainnodeengineProjectsLocationsBlockchainNodesPatchRequest',
         response_type_name='Operation',
         supports_download=False,
@@ -206,7 +206,7 @@ class BlockchainnodeengineV1alpha1(base_api.BaseApiClient):
         request: (BlockchainnodeengineProjectsLocationsOperationsCancelRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (GoogleProtobufEmpty) The response message.
       """
       config = self.GetMethodConfig('Cancel')
       return self._RunMethod(
@@ -222,7 +222,7 @@ class BlockchainnodeengineV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}:cancel',
         request_field='cancelOperationRequest',
         request_type_name='BlockchainnodeengineProjectsLocationsOperationsCancelRequest',
-        response_type_name='Empty',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -233,7 +233,7 @@ class BlockchainnodeengineV1alpha1(base_api.BaseApiClient):
         request: (BlockchainnodeengineProjectsLocationsOperationsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (GoogleProtobufEmpty) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -249,7 +249,7 @@ class BlockchainnodeengineV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='BlockchainnodeengineProjectsLocationsOperationsDeleteRequest',
-        response_type_name='Empty',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 

@@ -100,6 +100,7 @@ class _UserBucketArgs(_UserResourceArgs):
                default_encryption_key=None,
                default_event_based_hold=None,
                default_storage_class=None,
+               enable_autoclass=None,
                labels_file_path=None,
                labels_to_append=None,
                labels_to_remove=None,
@@ -121,6 +122,7 @@ class _UserBucketArgs(_UserResourceArgs):
     self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
     self.default_storage_class = default_storage_class
+    self.enable_autoclass = enable_autoclass
     self.labels_file_path = labels_file_path
     self.labels_to_append = labels_to_append
     self.labels_to_remove = labels_to_remove
@@ -144,6 +146,7 @@ class _UserBucketArgs(_UserResourceArgs):
             self.default_encryption_key == other.default_encryption_key and
             self.default_event_based_hold == other.default_event_based_hold and
             self.default_storage_class == other.default_storage_class and
+            self.enable_autoclass == other.enable_autoclass and
             self.labels_file_path == other.labels_file_path and
             self.labels_to_append == other.labels_to_append and
             self.labels_to_remove == other.labels_to_remove and
@@ -318,6 +321,7 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           default_event_based_hold=getattr(args, 'default_event_based_hold',
                                            None),
           default_storage_class=default_storage_class,
+          enable_autoclass=getattr(args, 'enable_autoclass', None),
           labels_file_path=labels_file_path,
           labels_to_append=getattr(args, 'update_labels', None),
           labels_to_remove=getattr(args, 'remove_labels', None),

@@ -502,6 +502,10 @@
         "customizedAttribution": {
           "description": "Optional. This flag is to support user customized attribution. If not provided, the default is `Machine Translated by Google`. Customized attribution should follow rules in https:\/\/cloud.google.com\/translate\/attribution#attribution_and_logos",
           "type": "string"
+        },
+        "isTranslateNativePdfOnly": {
+          "description": "Optional. is_translate_native_pdf_only field for external customers. If true, the page limit of online native pdf translation is 300 and only native pdf pages will be translated.",
+          "type": "boolean"
         }
       }
     },

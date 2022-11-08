@@ -825,3 +825,16 @@ def GetMonitoringConfig(args):
   return messages.GoogleCloudGkemulticloudV1MonitoringConfig(
       managedPrometheusConfig=config)
 
+
+def AddAllowMissing(parser):
+  help_txt = """Allow idempotent deletion of cluster.
+  The request will still succeed in case the cluster does not exist.
+  """
+  parser.add_argument(
+      '--allow-missing',
+      action='store_true',
+      help=help_txt)
+
+
+def GetAllowMissing(args):
+  return getattr(args, 'allow_missing', None)

@@ -39,6 +39,7 @@ S3_REQUEST_ERROR_FIELDS = {
     'gzip_settings': 'Gzip Transforms',
 }
 S3_RESOURCE_ERROR_FIELDS = {
+    'enable_autoclass': 'Enabling Autoclass',
     'public_access_prevention': 'Public Access Prevention',
     'retention_period': 'Setting Retention Period',
 }
@@ -169,6 +170,9 @@ class _GcsBucketConfig(_BucketConfig):
       automatically be applied to new objects in bucket.
     default_storage_class (str|None): Storage class assigned to objects in the
       bucket by default.
+    enable_autoclass (bool|None): Enable, disable, or don't do anything to the
+      autoclass feature. Autoclass automatically changes object storage class
+      based on usage.
     public_access_prevention (bool|None): Blocks public access to bucket.
       See docs for specifics:
       https://cloud.google.com/storage/docs/public-access-prevention
@@ -186,6 +190,7 @@ class _GcsBucketConfig(_BucketConfig):
                default_encryption_key=None,
                default_event_based_hold=None,
                default_storage_class=None,
+               enable_autoclass=None,
                labels_file_path=None,
                labels_to_append=None,
                labels_to_remove=None,
@@ -210,6 +215,7 @@ class _GcsBucketConfig(_BucketConfig):
     self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
     self.default_storage_class = default_storage_class
+    self.enable_autoclass = enable_autoclass
     self.requester_pays = requester_pays
     self.retention_period = retention_period
     self.uniform_bucket_level_access = uniform_bucket_level_access
@@ -222,6 +228,7 @@ class _GcsBucketConfig(_BucketConfig):
             self.default_encryption_key == other.default_encryption_key and
             self.default_event_based_hold == other.default_event_based_hold and
             self.default_storage_class == other.default_storage_class and
+            self.enable_autoclass == other.enable_autoclass and
             self.requester_pays == other.requester_pays and
             self.retention_period == other.retention_period and
             self.uniform_bucket_level_access
@@ -531,6 +538,8 @@ def _get_request_config_resource_args(url,
               user_resource_args.default_event_based_hold)
           new_resource_args.default_storage_class = (
               user_resource_args.default_storage_class)
+          new_resource_args.enable_autoclass = (
+              user_resource_args.enable_autoclass)
           new_resource_args.public_access_prevention = (
               user_resource_args.public_access_prevention)
           new_resource_args.retention_period = (

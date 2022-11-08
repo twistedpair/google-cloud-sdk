@@ -1216,6 +1216,10 @@ class Service(_messages.Message):
     updateTime: Output only. The timestamp when the service was last updated.
       Note: endpoints being created/deleted/updated within the service are not
       considered service updates for the purpose of this timestamp.
+    workloads: Output only. Service to Workload relationship is 1:1, 1:N, N:1,
+      N:M The list could be empty if the service is opaque (i.e. PSC endpoint
+      of SaaS) and do not have workloads. Example: /projects/123/locations/us-
+      east1/namespaces/ns/serviceWorkloads/sw1
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1264,6 +1268,7 @@ class Service(_messages.Message):
   serviceIdentities = _messages.MessageField('ServiceIdentity', 7, repeated=True)
   uid = _messages.StringField(8)
   updateTime = _messages.StringField(9)
+  workloads = _messages.StringField(10, repeated=True)
 
 
 class ServiceIdentity(_messages.Message):
@@ -1320,6 +1325,12 @@ class ServiceWorkload(_messages.Message):
     createTime: Output only. The timestamp when this service workload was
       created in Service Directory.
     displayName: Optional. Friendly name. User modifiable.
+    incomingServices: Output only. List of services that front this workload.
+      Multiple services are due to multiple endpoints configured either
+      because of different protocols or desire to separate traffic or
+      different APIs. This list could be empty if this is not a serving
+      workload. Example: /projects/123/locations/us-
+      east1/namespaces/ns/services/s1"
     name: Immutable. The resource name for the service workload in the format
       `projects/*/locations/*/namespaces/*/serviceWorkloads/*`.
     uid: Output only. A globally unique identifier (in UUID4 format) for this
@@ -1359,9 +1370,10 @@ class ServiceWorkload(_messages.Message):
   components = _messages.StringField(4, repeated=True)
   createTime = _messages.StringField(5)
   displayName = _messages.StringField(6)
-  name = _messages.StringField(7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  incomingServices = _messages.StringField(7, repeated=True)
+  name = _messages.StringField(8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class ServiceWorkloadAttributes(_messages.Message):

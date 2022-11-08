@@ -758,7 +758,7 @@
     },
     "TagBinding": {
       "id": "TagBinding",
-      "description": "A TagBinding represents a connection between a TagValue and a cloud resource (currently project, folder, or organization). Once a TagBinding is created, the TagValue is applied to all the descendants of the cloud resource.",
+      "description": "A TagBinding represents a connection between a TagValue and a cloud resource Once a TagBinding is created, the TagValue is applied to all the descendants of the Google Cloud resource.",
       "type": "object",
       "properties": {
         "name": {
@@ -934,7 +934,7 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified purpose.",
-            "Purpose for Compute Engine firewalls. A corresponding purpose_data should be set for the network the tag is intended for. The key should be 'network' and the value should be in the format of the network url id string: https:\/\/compute.googleapis.com\/v1\/projects\/{project_number}\/global\/networks\/{network_id}"
+            "Purpose for Compute Engine firewalls. A corresponding purpose_data should be set for the network the tag is intended for. The key should be 'network' and the value should be in either of these two formats: -https:\/\/www.googleapis.com\/compute\/{compute_version}\/projects\/{project_id}\/global\/networks\/{network_id} -{project_id}\/{network_name} Examples: -https:\/\/www.googleapis.com\/compute\/staging_v1\/projects\/fail-closed-load-testing\/global\/networks\/6992953698831725600 -fail-closed-load-testing\/load-testing-network"
           ],
           "enum": [
             "PURPOSE_UNSPECIFIED",
@@ -2051,7 +2051,8 @@
             "$ref": "SearchProjectsResponse"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
           ],
           "description": "Search for projects that the caller has both `resourcemanager.projects.get` permission on, and also satisfy the specified query. This method returns projects in an unspecified order. This method is eventually consistent with project mutations; this means that a newly created project may not appear in the results or recent updates to an existing project may not be reflected in the results. To retrieve the latest state of a project, use the GetProject method."
         },
@@ -2312,7 +2313,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-platform.read-only"
           ],
-          "description": "Lists the TagBindings for the given cloud resource, as specified with `parent`. NOTE: The `parent` field is expected to be a full resource name: https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name"
+          "description": "Lists the TagBindings for the given Google Cloud resource, as specified with `parent`. NOTE: The `parent` field is expected to be a full resource name: https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name"
         },
         "create": {
           "id": "cloudresourcemanager.tagBindings.create",
@@ -2337,7 +2338,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Creates a TagBinding between a TagValue and a cloud resource (currently project, folder, or organization)."
+          "description": "Creates a TagBinding between a TagValue and a Google Cloud resource."
         },
         "delete": {
           "id": "cloudresourcemanager.tagBindings.delete",
@@ -2400,7 +2401,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-platform.read-only"
           ],
-          "description": "Return a list of effective tags for the given cloud resource, as specified in `parent`."
+          "description": "Return a list of effective tags for the given Google Cloud resource, as specified in `parent`."
         }
       }
     },

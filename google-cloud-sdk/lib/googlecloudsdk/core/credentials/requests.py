@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from google.auth import external_account as google_auth_external_account
 from google.auth.transport import requests as google_auth_requests
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
@@ -107,6 +108,8 @@ class RequestWrapper(transport.CredentialWrappingMixin,
           method, url, data=data, headers=headers or {}, **kwargs)
 
       if (response.status_code in REFRESH_STATUS_CODES and
+          not (isinstance(creds, google_auth_external_account.Credentials) and
+               creds.valid) and
           credential_refresh_state['attempt'] < MAX_REFRESH_ATTEMPTS):
         credential_refresh_state['attempt'] += 1
         creds.refresh(requests.GoogleAuthRequest())

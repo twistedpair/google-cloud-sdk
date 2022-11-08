@@ -1268,7 +1268,8 @@ class VpcProject(_messages.Message):
       configured by user. It is used to create/delete Cloud Router and Cloud
       HA VPNs for VPN connection. If this SA is changed during/after a VPN
       connection is created, you need to remove the Cloud Router and Cloud VPN
-      resources in |project_id|.
+      resources in |project_id|. It is in the form of
+      service-{project_number}@gcp-sa-edgecontainer.iam.gserviceaccount.com.
   """
 
   projectId = _messages.StringField(1)

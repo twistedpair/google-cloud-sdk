@@ -411,6 +411,11 @@
           "readOnly": true,
           "type": "string",
           "format": "int64"
+        },
+        "satisfiesPzs": {
+          "description": "Output only. If set, the repository satisfies physical zone separation.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },

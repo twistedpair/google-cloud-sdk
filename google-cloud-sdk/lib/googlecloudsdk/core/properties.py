@@ -37,6 +37,7 @@ from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import scaled_integer
 from googlecloudsdk.core.util import times
+from googlecloudsdk.generated_clients.apis import apis_map
 import six
 
 # Try to parse the command line flags at import time to see if someone provided
@@ -1279,13 +1280,27 @@ class _SectionApiEndpointOverrides(_Section):
 
   def _Add(self, name, help_text=None, hidden=False, command=None):
     if not help_text and command:
-      help_text = 'Overrides API endpoint for `{}` command group.'.format(
-          command)
+      help_text = (
+          'Overrides API endpoint for `{}` command group.').format(command)
+
+    default_endpoint = self.GetDefaultEndpoint(name)
+    if command and default_endpoint:
+      help_text = ('{} Defaults to {}').format(help_text, default_endpoint)
+
     return super(_SectionApiEndpointOverrides, self)._Add(
         name,
         help_text=help_text,
         hidden=hidden,
         validator=self.EndpointValidator)
+
+  def GetDefaultEndpoint(self, api_name):
+    """Returns the BASE_URL for the repective api and version."""
+    api = apis_map.MAP.get(api_name)
+    if api:
+      for api_version in api:
+        api_def = api.get(api_version)
+        if api_def.default_version:
+          return api_def.apitools.base_url
 
 
 class _SectionApp(_Section):
@@ -3187,6 +3202,12 @@ class _SectionStorage(_Section):
         help_text='If set, boto3 client will connect to this endpoint.'
         ' Otherwise, boto3 selects a default endpoint based on the AWS service'
         ' used.')
+
+    self.suggest_transfer = self._AddBool(
+        'suggest_transfer',
+        default=True,
+        help_text='If True, logs messages about when Storage Transfer Service'
+        ' might be a better tool than gcloud storage.')
 
     self.tracker_files_directory = self._Add(
         'tracker_files_directory',

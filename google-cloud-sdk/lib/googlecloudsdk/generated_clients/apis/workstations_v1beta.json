@@ -500,6 +500,10 @@
       "description": "A set of Confidential Google Compute Engine Instance option.",
       "type": "object",
       "properties": {
+        "enableConfidentialCompute": {
+          "description": "Whether the instance has confidential compute enabled.",
+          "type": "boolean"
+        }
       }
     },
     "PersistentDirectory": {
@@ -523,12 +527,12 @@
       "type": "object",
       "properties": {
         "sizeGb": {
-          "description": "Size of the disk in GB.",
+          "description": "Size of the disk in GB. Must be empty if source_snapshot is set.",
           "type": "integer",
           "format": "int32"
         },
         "fsType": {
-          "description": "Type of file system that the disk should be formatted with. The Workstation image must support this file system type.",
+          "description": "Type of file system that the disk should be formatted with. The Workstation image must support this file system type. Must be empty if source_snapshot is set.",
           "type": "string"
         },
         "diskType": {

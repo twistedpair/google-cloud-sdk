@@ -967,7 +967,8 @@ class OSPolicyAssignment(_messages.Message):
   An OS policy is used to define the desired state configuration for a Compute
   Engine VM instance through a set of configuration resources that provide
   capabilities such as installing or removing software packages, or executing
-  a script. For more information, see [OS policy and OS policy
+  a script. For more information about the OS policy resource definitions and
+  examples, see [OS policy and OS policy
   assignment](https://cloud.google.com/compute/docs/os-configuration-
   management/working-with-os-policies).
 
@@ -2154,7 +2155,8 @@ class OsconfigProjectsLocationsOsPolicyAssignmentsCreateRequest(_messages.Messag
       a letter. * Must be between 1-63 characters. * Must end with a number or
       a letter. * Must be unique within the project.
     parent: Required. The parent resource name in the form:
-      projects/{project}/locations/{location}
+      projects/{project}/locations/{location}. Note: Specify the zone of your
+      VMs as the location.
   """
 
   oSPolicyAssignment = _messages.MessageField('OSPolicyAssignment', 1)

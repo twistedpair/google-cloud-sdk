@@ -1297,6 +1297,8 @@ class GoogleCloudDatacatalogV1ColumnSchema(_messages.Message):
     description: Optional. Description of the column. Default value is an
       empty string. The description must be a UTF-8 string with the maximum
       size of 2000 bytes.
+    gcRule: Optional. Garbage collection policy for the column or column
+      family. Applies to systems like Cloud Bigtable.
     mode: Optional. A column's mode indicates whether values in this column
       are required, nullable, or repeated. Only `NULLABLE`, `REQUIRED`, and
       `REPEATED` values are supported. Default mode is `NULLABLE`.
@@ -1308,9 +1310,10 @@ class GoogleCloudDatacatalogV1ColumnSchema(_messages.Message):
 
   column = _messages.StringField(1)
   description = _messages.StringField(2)
-  mode = _messages.StringField(3)
-  subcolumns = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchema', 4, repeated=True)
-  type = _messages.StringField(5)
+  gcRule = _messages.StringField(3)
+  mode = _messages.StringField(4)
+  subcolumns = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchema', 5, repeated=True)
+  type = _messages.StringField(6)
 
 
 class GoogleCloudDatacatalogV1Contacts(_messages.Message):

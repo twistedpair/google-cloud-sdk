@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com",
+  "documentationLink": "https://cloud.google.com/learnmoreurl",
   "protocol": "rest",
   "rootUrl": "https://assuredworkloads.googleapis.com/",
   "mtlsRootUrl": "https://assuredworkloads.mtls.googleapis.com/",
@@ -192,7 +192,7 @@
     },
     "GoogleCloudAssuredworkloadsV1beta1Workload": {
       "id": "GoogleCloudAssuredworkloadsV1beta1Workload",
-      "description": "An Workload object for managing highly regulated workloads of cloud customers.",
+      "description": "A Workload object for managing highly regulated workloads of cloud customers.",
       "type": "object",
       "properties": {
         "il4Settings": {
@@ -242,7 +242,9 @@
             "Assured Workloads For EU Regions and Support controls",
             "Assured Workloads For Canada Regions and Support controls",
             "International Traffic in Arms Regulations",
-            "Assured Workloads for Partners;"
+            "Assured Workloads for Australia Regions and Support controls Available for public preview consumption. Don't create production workloads.",
+            "Assured Workloads for Partners;",
+            "Assured Workloads for Israel"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -256,7 +258,9 @@
             "EU_REGIONS_AND_SUPPORT",
             "CA_REGIONS_AND_SUPPORT",
             "ITAR",
-            "ASSURED_WORKLOADS_FOR_PARTNERS"
+            "AU_REGIONS_AND_US_SUPPORT",
+            "ASSURED_WORKLOADS_FOR_PARTNERS",
+            "ISR_REGIONS"
           ]
         },
         "createTime": {
@@ -336,12 +340,14 @@
           "description": "Optional. Compliance Regime associated with this workload.",
           "type": "string",
           "enumDescriptions": [
-            "Unknown compliance regime.",
-            "S3NS regime"
+            "Unknown partner regime\/controls.",
+            "S3NS regime\/controls.",
+            "TSystems regime\/controls."
           ],
           "enum": [
             "PARTNER_UNSPECIFIED",
-            "LOCAL_CONTROLS_BY_S3NS"
+            "LOCAL_CONTROLS_BY_S3NS",
+            "SOVEREIGN_CONTROLS_BY_T_SYSTEMS"
           ]
         }
       }
@@ -540,12 +546,14 @@
           "enumDescriptions": [
             "Unknown restriction type.",
             "Allow the use all of all gcp products, irrespective of the compliance posture. This effectively removes gcp.restrictServiceUsage OrgPolicy on the AssuredWorkloads Folder.",
-            "Based on Workload's compliance regime, allowed list changes. See - https:\/\/cloud.google.com\/assured-workloads\/docs\/supported-products for the list of supported resources."
+            "Based on Workload's compliance regime, allowed list changes. See - https:\/\/cloud.google.com\/assured-workloads\/docs\/supported-products for the list of supported resources.",
+            "Similar to ALLOW_COMPLIANT_RESOURCES but adds the list of compliant resources to the existing list of compliant resources. Effective org-policy of the Folder is considered to ensure there is no disruption to the existing customer workflows."
           ],
           "enum": [
             "RESTRICTION_TYPE_UNSPECIFIED",
             "ALLOW_ALL_GCP_RESOURCES",
-            "ALLOW_COMPLIANT_RESOURCES"
+            "ALLOW_COMPLIANT_RESOURCES",
+            "APPEND_COMPLIANT_RESOURCES"
           ]
         }
       }
@@ -697,6 +705,11 @@
           "description": "Optional. Timestamp when this violation was acknowledged last. This will be absent when acknowledged field is marked as false.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "exceptionAuditLogLink": {
+          "description": "Output only. Immutable. Audit Log link to find business justification provided for violation exception. Format: https:\/\/console.cloud.google.com\/logs\/query;query={logName}{protoPayload.resourceName}{protoPayload.methodName}{timeRange}{organization}",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -818,7 +831,7 @@
           "type": "string"
         },
         "nonCompliantOrgPolicy": {
-          "description": "Optional. Name of the OrgPolicy which was modified with non-compliant change and resulted in this violation. Format: projects\/{project_number}\/policies\/{constraint_name} folders\/{folder_id}\/policies\/{constraint_name} organizations\/{organization_id}\/policies\/{constraint_name}",
+          "description": "Optional. This field is deprecated and will be removed in future version of the API. Name of the OrgPolicy which was modified with non-compliant change and resulted in this violation. Format: projects\/{project_number}\/policies\/{constraint_name} folders\/{folder_id}\/policies\/{constraint_name} organizations\/{organization_id}\/policies\/{constraint_name}",
           "type": "string"
         }
       }

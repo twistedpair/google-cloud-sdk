@@ -229,6 +229,11 @@
           "description": "Required. The Kubernetes distribution of the underlying attached cluster. Supported values: [\"eks\", \"aks\"].",
           "type": "string"
         },
+        "clusterRegion": {
+          "description": "Output only. The region where this cluster runs. For EKS clusters, this is a AWS region. For AKS clusters, this is an Azure region.",
+          "readOnly": true,
+          "type": "string"
+        },
         "fleet": {
           "description": "Required. Fleet configuration.",
           "$ref": "GoogleCloudGkemulticloudV1Fleet"
@@ -1113,6 +1118,10 @@
         "instancePlacement": {
           "description": "Optional. Placement related info for this node. When unspecified, the VPC's default tenancy will be used.",
           "$ref": "GoogleCloudGkemulticloudV1AwsInstancePlacement"
+        },
+        "autoscalingMetricsCollection": {
+          "description": "Optional. Configuration related to CloudWatch metrics collection on the Auto Scaling group of the node pool. When unspecified, metrics collection is disabled.",
+          "$ref": "GoogleCloudGkemulticloudV1AwsAutoscalingGroupMetricsCollection"
         }
       }
     },
@@ -1144,6 +1153,24 @@
             "PREFER_NO_SCHEDULE",
             "NO_EXECUTE"
           ]
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1AwsAutoscalingGroupMetricsCollection": {
+      "id": "GoogleCloudGkemulticloudV1AwsAutoscalingGroupMetricsCollection",
+      "description": "Configuration related to CloudWatch metrics collection in an AWS Auto Scaling group.",
+      "type": "object",
+      "properties": {
+        "granularity": {
+          "description": "Required. The frequency at which EC2 Auto Scaling sends aggregated data to AWS CloudWatch. The only valid value is \"1Minute\".",
+          "type": "string"
+        },
+        "metrics": {
+          "description": "Optional. The metrics to enable. For a list of valid metrics, see https:\/\/docs.aws.amazon.com\/autoscaling\/ec2\/APIReference\/API_EnableMetricsCollection.html. If you specify Granularity and don't specify any metrics, all metrics are enabled.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

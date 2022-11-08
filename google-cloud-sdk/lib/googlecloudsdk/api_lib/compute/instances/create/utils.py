@@ -799,7 +799,8 @@ def CreateNetworkInterfaceMessage(resources,
                                   ipv6_address=None,
                                   ipv6_prefix_length=None,
                                   internal_ipv6_address=None,
-                                  internal_ipv6_prefix_length=None):
+                                  internal_ipv6_prefix_length=None,
+                                  network_attachment=None):
   """Returns a new NetworkInterface message."""
   # TODO(b/30460572): instance reference should have zone name, not zone URI.
   if scope == compute_scopes.ScopeEnum.ZONE:
@@ -825,12 +826,18 @@ def CreateNetworkInterfaceMessage(resources,
             'project': project,
         }, collection='compute.networks')
     network_interface.network = network_ref.SelfLink()
-  elif subnet is None:
+  # We only populate the default network when network-attachment is not
+  # specified because for a network interface targeting a network attachment,
+  # both network and subnetwork should not be there.
+  elif subnet is None and network_attachment is None:
     network_ref = resources.Parse(
         constants.DEFAULT_NETWORK,
         params={'project': project},
         collection='compute.networks')
     network_interface.network = network_ref.SelfLink()
+
+  if network_attachment is not None:
+    network_interface.networkAttachment = network_attachment
 
   if private_network_ip is not None:
     # Try interpreting the address as IP address.
@@ -859,7 +866,9 @@ def CreateNetworkInterfaceMessage(resources,
     network_interface.stackType = messages.NetworkInterface.StackTypeValueValuesEnum(
         stack_type)
 
-  if not no_address:
+  # Again, for a network interface targeting a network attachment, access
+  # config is not needed/wanted.
+  if not no_address and network_attachment is None:
     access_config = messages.AccessConfig(
         name=constants.DEFAULT_ACCESS_CONFIG_NAME,
         type=messages.AccessConfig.TypeValueValuesEnum.ONE_TO_ONE_NAT)
@@ -987,7 +996,8 @@ def CreateNetworkInterfaceMessages(resources,
               ipv6_network_tier=interface.get('ipv6-network-tier', None),
               ipv6_public_ptr_domain=interface.get('ipv6-public-ptr-domain',
                                                    None),
-              queue_count=interface.get('queue-count', None)))
+              queue_count=interface.get('queue-count', None),
+              network_attachment=interface.get('network-attachment', None)))
   elif network_interface_json is not None:
     network_interfaces = yaml.load(network_interface_json)
     if not network_interfaces:  # Empty json.

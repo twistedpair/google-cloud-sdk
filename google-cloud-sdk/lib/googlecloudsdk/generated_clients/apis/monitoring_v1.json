@@ -403,6 +403,10 @@
           "description": "A query used to fetch time series with MQL.",
           "type": "string"
         },
+        "prometheusQuery": {
+          "description": "A query used to fetch time series with PromQL.",
+          "type": "string"
+        },
         "unitOverride": {
           "description": "The unit of data contained in fetched time series. If non-empty, this unit will override any unit that accompanies fetched data. The format is the same as the unit (https:\/\/cloud.google.com\/monitoring\/api\/ref_v3\/rest\/v3\/projects.metricDescriptors) field in MetricDescriptor.",
           "type": "string"
@@ -892,6 +896,13 @@
             "NUMBER",
             "BAR"
           ]
+        },
+        "columnSettings": {
+          "description": "Optional. The list of the persistent column settings for the table.",
+          "type": "array",
+          "items": {
+            "$ref": "ColumnSettings"
+          }
         }
       }
     },
@@ -924,6 +935,28 @@
       "description": "Table display options that can be reused.",
       "type": "object",
       "properties": {
+        "shownColumns": {
+          "description": "Optional. This field is unused and has been replaced by TimeSeriesTable.column_settings",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ColumnSettings": {
+      "id": "ColumnSettings",
+      "description": "The persistent settings for a table's columns.",
+      "type": "object",
+      "properties": {
+        "column": {
+          "description": "Required. The id of the column.",
+          "type": "string"
+        },
+        "visible": {
+          "description": "Required. Whether the column should be visible on page load.",
+          "type": "boolean"
+        }
       }
     },
     "CollapsibleGroup": {

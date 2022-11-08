@@ -349,6 +349,53 @@ class BeyondcorpOrganizationsLocationsInsightsListRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 6)
 
 
+class BeyondcorpOrganizationsLocationsSubscriptionsCreateRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsSubscriptionsCreateRequest object.
+
+  Fields:
+    googleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription: A
+      GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription
+      resource to be passed as the request body.
+    parent: Required. The resource name of the subscription location using the
+      form: `organizations/{organization_id}/locations/{location}`
+  """
+
+  googleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription = _messages.MessageField('GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class BeyondcorpOrganizationsLocationsSubscriptionsGetRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsSubscriptionsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of Subscription using the form: `organiz
+      ations/{organization_id}/locations/{location}/subscriptions/{subscriptio
+      n_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BeyondcorpOrganizationsLocationsSubscriptionsListRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsSubscriptionsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return. If not
+      specified, a default value of 50 will be used by the service. Regardless
+      of the page_size value, the response may include a partial list and a
+      caller should only rely on response's next_page_token to determine if
+      there are more instances left to be queried.
+    pageToken: Optional. The next_page_token value returned from a previous
+      ListSubscriptionsRequest, if any.
+    parent: Required. The resource name of Subscription using the form:
+      `organizations/{organization_id}/locations/{location}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class BeyondcorpProjectsLocationsAppConnectionsCreateRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsAppConnectionsCreateRequest object.
 
@@ -1966,66 +2013,6 @@ class BeyondcorpProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class BeyondcorpProjectsLocationsNetConnectionsCreateRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsNetConnectionsCreateRequest object.
-
-  Fields:
-    googleCloudBeyondcorpNetconnectionsV1alphaNetConnection: A
-      GoogleCloudBeyondcorpNetconnectionsV1alphaNetConnection resource to be
-      passed as the request body.
-    netConnectionId: Optional. User-settable NetConnection resource ID. * Must
-      start with a letter. * Must contain between 4-63 characters from
-      `/a-z-/`. * Must end with a number or a letter.
-    parent: Required. The resource project name of the NetConnection location
-      using the form: `projects/{project_id}/locations/{location_id}`
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, validates request by executing a dry-run
-      which would not alter the resource in any way.
-  """
-
-  googleCloudBeyondcorpNetconnectionsV1alphaNetConnection = _messages.MessageField('GoogleCloudBeyondcorpNetconnectionsV1alphaNetConnection', 1)
-  netConnectionId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  validateOnly = _messages.BooleanField(5)
-
-
-class BeyondcorpProjectsLocationsNetConnectionsDeleteRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsNetConnectionsDeleteRequest object.
-
-  Fields:
-    name: Required. BeyondCorp Connector name using the form: `projects/{proje
-      ct_id}/locations/{location_id}/netConnections/{net_connection_id}`
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, validates request by executing a dry-run
-      which would not alter the resource in any way.
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  validateOnly = _messages.BooleanField(3)
-
-
 class BeyondcorpProjectsLocationsNetConnectionsGetIamPolicyRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsNetConnectionsGetIamPolicyRequest object.
 
@@ -2050,81 +2037,6 @@ class BeyondcorpProjectsLocationsNetConnectionsGetIamPolicyRequest(_messages.Mes
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
-
-
-class BeyondcorpProjectsLocationsNetConnectionsGetRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsNetConnectionsGetRequest object.
-
-  Fields:
-    name: Required. BeyondCorp NetConnection name using the form: `projects/{p
-      roject_id}/locations/{location_id}/netConnections/{net_connection_id}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class BeyondcorpProjectsLocationsNetConnectionsListRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsNetConnectionsListRequest object.
-
-  Fields:
-    filter: Optional. A filter specifying constraints of a list operation.
-    orderBy: Optional. Specifies the ordering of results. See [Sorting
-      order](https://cloud.google.com/apis/design/design_patterns#sorting_orde
-      r) for more information.
-    pageSize: Optional. The maximum number of items to return. If not
-      specified, a default value of 50 will be used by the service. Regardless
-      of the page_size value, the response may include a partial list and a
-      caller should only rely on response's next_page_token to determine if
-      there are more instances left to be queried.
-    pageToken: Optional. The next_page_token value returned from a previous
-      ListNetConnectionsRequest, if any.
-    parent: Required. The resource name of the NetConnection location using
-      the form: `projects/{project_id}/locations/{location_id}`
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class BeyondcorpProjectsLocationsNetConnectionsPatchRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsNetConnectionsPatchRequest object.
-
-  Fields:
-    allowMissing: Optional. If set as true, will create the resource if it is
-      not found.
-    googleCloudBeyondcorpNetconnectionsV1alphaNetConnection: A
-      GoogleCloudBeyondcorpNetconnectionsV1alphaNetConnection resource to be
-      passed as the request body.
-    name: Required. Unique resource name of the NetConnection. The name is
-      ignored when creating a NetConnection.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. The elements of the repeated paths field may
-      only include these fields from [BeyondCorp.NetConnection]: * `labels` *
-      `display_name`
-    validateOnly: Optional. If set, validates request by executing a dry-run
-      which would not alter the resource in any way.
-  """
-
-  allowMissing = _messages.BooleanField(1)
-  googleCloudBeyondcorpNetconnectionsV1alphaNetConnection = _messages.MessageField('GoogleCloudBeyondcorpNetconnectionsV1alphaNetConnection', 2)
-  name = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  updateMask = _messages.StringField(5)
-  validateOnly = _messages.BooleanField(6)
 
 
 class BeyondcorpProjectsLocationsNetConnectionsSetIamPolicyRequest(_messages.Message):
@@ -3641,31 +3553,6 @@ class GoogleCloudBeyondcorpAppgatewaysV1AppGatewayOperationMetadata(_messages.Me
   verb = _messages.StringField(7)
 
 
-class GoogleCloudBeyondcorpApplicationsV1alphaApplicationOperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have been
-      cancelled successfully have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  createTime = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  requestedCancellation = _messages.BooleanField(3)
-  statusMessage = _messages.StringField(4)
-  target = _messages.StringField(5)
-  verb = _messages.StringField(6)
-
-
 class GoogleCloudBeyondcorpClientconnectorservicesV1ClientConnectorServiceOperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -3703,136 +3590,6 @@ class GoogleCloudBeyondcorpClientgatewaysV1ClientGatewayOperationMetadata(_messa
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have been
       cancelled successfully have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-
-
-class GoogleCloudBeyondcorpNetconnectionsV1alphaListNetConnectionsResponse(_messages.Message):
-  r"""Response message for BeyondCorp.ListNetConnections.
-
-  Fields:
-    netConnections: A list of BeyondCorp NetConnections in the project.
-    nextPageToken: A token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-    unreachable: A list of locations that could not be reached.
-  """
-
-  netConnections = _messages.MessageField('GoogleCloudBeyondcorpNetconnectionsV1alphaNetConnection', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class GoogleCloudBeyondcorpNetconnectionsV1alphaNetConnection(_messages.Message):
-  r"""A BeyondCorp NetConnection resource represents a BeyondCorp protected
-  connection from BeyondCorp Client Connector to a remote application through
-  a BeyondCorp AppConnector gateway.
-
-  Enums:
-    StateValueValuesEnum: Output only. The current state of the NetConnection.
-
-  Messages:
-    LabelsValue: Optional. Resource labels to represent user provided
-      metadata.
-
-  Fields:
-    connectors: Optional. List of
-      [google.cloud.beyondcorp.v1main.AppConnector.name] that are authorized
-      to be associated with this NetConnection. e.g.
-      projects/{project}/locations/{location}/appConnectors/{app_connector}
-    createTime: Output only. Timestamp when the resource was created.
-    destinationCidrs: Required. CIDRs for the remote networks to connect to.
-      e.g. IPv4: 198.51.100.14/24 IPv6: 2001:db8::/48
-    displayName: Optional. An arbitrary user-provided name for the
-      NetConnection. Cannot exceed 64 characters.
-    labels: Optional. Resource labels to represent user provided metadata.
-    name: Required. Unique resource name of the NetConnection. The name is
-      ignored when creating a NetConnection.
-    networkVpc: Output only. The full name of the VPC network connected to the
-      applications. Client Connector will send traffic here.
-    state: Output only. The current state of the NetConnection.
-    uid: Output only. A unique identifier for the instance generated by the
-      system.
-    updateTime: Output only. Timestamp when the resource was last modified.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The current state of the NetConnection.
-
-    Values:
-      STATE_UNSPECIFIED: Default value. This value is unused.
-      CREATING: NetConnection is being created.
-      CREATED: NetConnection has been created.
-      UPDATING: NetConnection's configuration is being updated.
-      DELETING: NetConnection is being deleted.
-      DOWN: NetConnection is down and may be restored in the future. This
-        happens when CCFE sends ProjectState = OFF.
-    """
-    STATE_UNSPECIFIED = 0
-    CREATING = 1
-    CREATED = 2
-    UPDATING = 3
-    DELETING = 4
-    DOWN = 5
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Resource labels to represent user provided metadata.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  connectors = _messages.StringField(1, repeated=True)
-  createTime = _messages.StringField(2)
-  destinationCidrs = _messages.StringField(3, repeated=True)
-  displayName = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  networkVpc = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
-
-
-class GoogleCloudBeyondcorpNetconnectionsV1alphaNetConnectionOperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
       google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
@@ -4065,6 +3822,90 @@ class GoogleCloudBeyondcorpSaasplatformInsightsV1alphaRowFieldVal(_messages.Mess
   filterAlias = _messages.StringField(2)
   id = _messages.StringField(3)
   value = _messages.StringField(4)
+
+
+class GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaListSubscriptionsResponse(_messages.Message):
+  r"""Response message for BeyondCorp.ListSubscriptions.
+
+  Fields:
+    nextPageToken: A token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    subscriptions: A list of BeyondCorp Subscriptions in the organization.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  subscriptions = _messages.MessageField('GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription', 2, repeated=True)
+
+
+class GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription(_messages.Message):
+  r"""A BeyondCorp Subscription resource represents BeyondCorp Enterprise
+  Subscription. BeyondCorp Enterprise Subscription enables BeyondCorp
+  Enterprise permium features for an organization.
+
+  Enums:
+    SkuValueValuesEnum: Required. SKU of subscription.
+    StateValueValuesEnum: Output only. The current state of the subscription.
+    TypeValueValuesEnum: Required. Type of subscription.
+
+  Fields:
+    autoRenewEnabled: Output only. Represents that, if subscription will renew
+      or end when the term ends.
+    createTime: Output only. Create time of the subscription.
+    endTime: Output only. End time of the subscription.
+    name: Required. Unique resource name of the Subscription. The name is
+      ignored when creating a subscription.
+    seatCount: Output only. Number of seats in the subscription.
+    sku: Required. SKU of subscription.
+    startTime: Output only. Start time of the subscription.
+    state: Output only. The current state of the subscription.
+    type: Required. Type of subscription.
+  """
+
+  class SkuValueValuesEnum(_messages.Enum):
+    r"""Required. SKU of subscription.
+
+    Values:
+      SKU_UNSPECIFIED: Default value. This value is unused.
+      BCE_STANDARD_SKU: Represents BeyondCorp Standard SKU.
+    """
+    SKU_UNSPECIFIED = 0
+    BCE_STANDARD_SKU = 1
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the subscription.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: Represents an active subscription.
+      INACTIVE: Represents an upcomming subscription.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    INACTIVE = 2
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of subscription.
+
+    Values:
+      TYPE_UNSPECIFIED: Default value. This value is unused.
+      TRIAL: Represents a trial subscription.
+      PAID: Represents a paid subscription.
+      ALLOWLIST: Reresents an allowlisted subscription.
+    """
+    TYPE_UNSPECIFIED = 0
+    TRIAL = 1
+    PAID = 2
+    ALLOWLIST = 3
+
+  autoRenewEnabled = _messages.BooleanField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  seatCount = _messages.IntegerField(5)
+  sku = _messages.EnumField('SkuValueValuesEnum', 6)
+  startTime = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):

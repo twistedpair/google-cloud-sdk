@@ -124,7 +124,7 @@ def _RecordProblems(operation, warnings, errors):
     warnings.append(warning.message)
   if operation.error:
     for error in operation.error.errors or []:
-      errors.append((operation.httpErrorStatusCode, error.message))
+      errors.append((operation.httpErrorStatusCode, error))
 
 
 def _RecordUnfinishedOperations(operations, errors):

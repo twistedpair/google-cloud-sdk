@@ -251,6 +251,18 @@ class ComposerProjectsLocationsEnvironmentsDagsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ComposerProjectsLocationsEnvironmentsDagsGetSourceCodeRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsDagsGetSourceCodeRequest object.
+
+  Fields:
+    dag: Required. The resource name of the DAG to fetch source code of. Must
+      be in the form: "projects/{projectId}/locations/{locationId}/environment
+      s/{environmentId}/dags/{dagId}".
+  """
+
+  dag = _messages.StringField(1, required=True)
+
+
 class ComposerProjectsLocationsEnvironmentsDagsListRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsDagsListRequest object.
 
@@ -2108,6 +2120,16 @@ class SoftwareConfig(_messages.Message):
   schedulerCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
+class SourceCode(_messages.Message):
+  r"""A source code of a DAG.
+
+  Fields:
+    code: The source code of the user-defined DAG.
+  """
+
+  code = _messages.StringField(1)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -2239,6 +2261,8 @@ class Task(_messages.Message):
     executionTimeout: Maximum time allowed for the execution of this task
       instance, if it goes beyond it will raise and fail.
     id: The task ID.
+    isDynamicallyMapped: Whether this task will be mapped to multiple task
+      instances during runtime.
     maxRetryDelay: Maximum delay interval between retries.
     name: Required. The resource name of the task, in the form: "projects/{pro
       jectId}/locations/{locationId}/environments/{environmentId}/dags/{dagId}
@@ -2281,26 +2305,27 @@ class Task(_messages.Message):
   endDate = _messages.StringField(8)
   executionTimeout = _messages.StringField(9)
   id = _messages.StringField(10)
-  maxRetryDelay = _messages.StringField(11)
-  name = _messages.StringField(12)
-  owner = _messages.StringField(13)
-  pool = _messages.StringField(14)
-  poolSlots = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  priorityWeight = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  queue = _messages.StringField(17)
-  retries = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  retryDelay = _messages.StringField(19)
-  retryExponentialBackoff = _messages.BooleanField(20)
-  runAsUser = _messages.StringField(21)
-  sla = _messages.StringField(22)
-  startDate = _messages.StringField(23)
-  taskConcurrency = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  taskId = _messages.StringField(25)
-  taskType = _messages.StringField(26)
-  triggerRule = _messages.StringField(27)
-  upstreamTasks = _messages.StringField(28, repeated=True)
-  waitForDownstream = _messages.BooleanField(29)
-  weightRule = _messages.StringField(30)
+  isDynamicallyMapped = _messages.BooleanField(11)
+  maxRetryDelay = _messages.StringField(12)
+  name = _messages.StringField(13)
+  owner = _messages.StringField(14)
+  pool = _messages.StringField(15)
+  poolSlots = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  priorityWeight = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  queue = _messages.StringField(18)
+  retries = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  retryDelay = _messages.StringField(20)
+  retryExponentialBackoff = _messages.BooleanField(21)
+  runAsUser = _messages.StringField(22)
+  sla = _messages.StringField(23)
+  startDate = _messages.StringField(24)
+  taskConcurrency = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  taskId = _messages.StringField(26)
+  taskType = _messages.StringField(27)
+  triggerRule = _messages.StringField(28)
+  upstreamTasks = _messages.StringField(29, repeated=True)
+  waitForDownstream = _messages.BooleanField(30)
+  weightRule = _messages.StringField(31)
 
 
 class TaskInstance(_messages.Message):
@@ -2317,11 +2342,16 @@ class TaskInstance(_messages.Message):
     executionDate: Execution date for the task.
     hostname: Hostname of the machine or pod the task runs on.
     id: The task instance ID. It is the same as the task ID of a DAG.
+    isDynamicallyMapped: Whether this TaskInstance is dynamically mapped.
+    mapIndex: If is_dynamically_mapped is set to true, this field contains
+      index of the dynamically-mapped TaskInstance, If is_dynamically_mapped
+      is set to false, this field has no meaning.
     maxTries: The number of tries that should be performed before failing the
       task.
     name: Required. The resource name of the task instance, in the form: "proj
-      ects/{projectId}/locations/{locationId}/environments/{environmentId}/dag
-      s/{dagId}/dagRuns/{dagRunId}/taskInstances/{taskInstanceId}".
+      ects/{project_id}/locations/{location_id}/environments/{environment_id}/
+      dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances/{task_instance_id_with_
+      optional_map_index}".
     pool: The slot pool this task runs in.
     priorityWeight: Priority weight of this task against other tasks.
     queue: Which queue to target when running this task.
@@ -2377,17 +2407,19 @@ class TaskInstance(_messages.Message):
   executionDate = _messages.StringField(4)
   hostname = _messages.StringField(5)
   id = _messages.StringField(6)
-  maxTries = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  name = _messages.StringField(8)
-  pool = _messages.StringField(9)
-  priorityWeight = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  queue = _messages.StringField(11)
-  queuedDttm = _messages.StringField(12)
-  startDate = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  taskId = _messages.StringField(15)
-  taskType = _messages.StringField(16)
-  tryNumber = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  isDynamicallyMapped = _messages.BooleanField(7)
+  mapIndex = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  maxTries = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  name = _messages.StringField(10)
+  pool = _messages.StringField(11)
+  priorityWeight = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  queue = _messages.StringField(13)
+  queuedDttm = _messages.StringField(14)
+  startDate = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  taskId = _messages.StringField(17)
+  taskType = _messages.StringField(18)
+  tryNumber = _messages.IntegerField(19, variant=_messages.Variant.INT32)
 
 
 class TriggerDagRequest(_messages.Message):

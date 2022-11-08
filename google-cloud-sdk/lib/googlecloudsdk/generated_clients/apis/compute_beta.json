@@ -4,7 +4,7 @@
   "id": "compute:beta",
   "name": "compute",
   "version": "beta",
-  "revision": "20221024",
+  "revision": "20221103",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -5903,8 +5903,21 @@
       "description": "Contains output only fields. Use this sub-message for actual values set on Instance attributes as compared to the value requested by the user (intent) in their instance CRUD calls.",
       "type": "object",
       "properties": {
+        "scheduling": {
+          "$ref": "ResourceStatusScheduling"
+        },
         "physicalHost": {
           "description": "[Output Only] An opaque ID of the host on which the VM is running.",
+          "type": "string"
+        }
+      }
+    },
+    "ResourceStatusScheduling": {
+      "id": "ResourceStatusScheduling",
+      "type": "object",
+      "properties": {
+        "terminationTimestamp": {
+          "description": "Time in future when the instance will be terminated in RFC3339 text format.",
           "type": "string"
         }
       }
@@ -12681,6 +12694,33 @@
           "items": {
             "type": "string"
           }
+        },
+        "awsV4Authentication": {
+          "description": "The configuration needed to generate a signature for access to private storage buckets that support AWS's Signature Version 4 for authentication. Allowed only for INTERNET_IP_PORT and INTERNET_FQDN_PORT NEG backends.",
+          "$ref": "AWSV4Signature"
+        }
+      }
+    },
+    "AWSV4Signature": {
+      "id": "AWSV4Signature",
+      "description": "Contains the configurations necessary to generate a signature for access to private storage buckets that support Signature Version 4 for authentication. The service name for generating the authentication header will always default to 's3'.",
+      "type": "object",
+      "properties": {
+        "accessKeyId": {
+          "description": "The identifier of an access key used for s3 bucket authentication.",
+          "type": "string"
+        },
+        "accessKey": {
+          "description": "The access key used for s3 bucket authentication. Required for updating or creating a backend that uses AWS v4 signature authentication, but will not be returned as part of the configuration when queried with a REST API GET request. @InputOnly",
+          "type": "string"
+        },
+        "accessKeyVersion": {
+          "description": "The optional version identifier for the access key. You can use this to keep track of different iterations of your access key.",
+          "type": "string"
+        },
+        "originRegion": {
+          "description": "The name of the cloud region of your origin. This is a free-form field with the name of the region your cloud uses to host your origin. For example, \"us-east-1\" for AWS or \"us-ashburn-1\" for OCI.",
+          "type": "string"
         }
       }
     },
@@ -35025,6 +35065,10 @@
         "hostRewrite": {
           "description": "Before forwarding the request to the selected service, the request's host header is replaced with contents of hostRewrite. The value must be from 1 to 255 characters.",
           "type": "string"
+        },
+        "pathTemplateRewrite": {
+          "description": " If specified, the pattern rewrites the URL path (based on the :path header) using the HTTP template syntax. A corresponding path_template_match must be specified. Any template variables must exist in the path_template_match field. - -At least one variable must be specified in the path_template_match field - You can omit variables from the rewritten URL - The * and ** operators cannot be matched unless they have a corresponding variable name - e.g. {format=*} or {var=**}. For example, a path_template_match of \/static\/{format=**} could be rewritten as \/static\/content\/{format} to prefix \/content to the URL. Variables can also be re-ordered in a rewrite, so that \/{country}\/{format}\/{suffix=**} can be rewritten as \/content\/{format}\/{country}\/{suffix}. At least one non-empty routeRules[].matchRules[].path_template_match is required. Only one of path_prefix_rewrite or path_template_rewrite may be specified.",
+          "type": "string"
         }
       }
     },
@@ -35330,6 +35374,10 @@
           "items": {
             "$ref": "MetadataFilter"
           }
+        },
+        "pathTemplateMatch": {
+          "description": "If specified, the route is a pattern match expression that must match the :path header once the query string is removed. A pattern match allows you to match - The value must be between 1 and 1024 characters - The pattern must start with a leading slash (\"\/\") - There may be no more than 5 operators in pattern Precisely one of prefix_match, full_path_match, regex_match or path_template_match must be set.",
+          "type": "string"
         }
       }
     },

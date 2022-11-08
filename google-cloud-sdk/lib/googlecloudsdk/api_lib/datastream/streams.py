@@ -64,27 +64,33 @@ class StreamsClient:
     data = console_io.ReadFromFileOrStdin(
         oracle_source_config_file, binary=False)
     try:
-      oracle_sorce_config_head_data = yaml.load(data)
+      oracle_source_config_head_data = yaml.load(data)
     except yaml.YAMLParseError as e:
       raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
 
-    oracle_sorce_config_data_object = oracle_sorce_config_head_data.get(
+    oracle_sorce_config_data_object = oracle_source_config_head_data.get(
         'oracle_source_config')
-    oracle_rdbms_data = oracle_sorce_config_data_object if oracle_sorce_config_data_object else oracle_sorce_config_head_data
-    include_objects_raw = oracle_rdbms_data.get(
+    oracle_source_config = oracle_sorce_config_data_object if oracle_sorce_config_data_object else oracle_source_config_head_data
+    include_objects_raw = oracle_source_config.get(
         util.GetRDBMSV1alpha1ToV1FieldName('allowlist', release_track), {})
     include_objects_data = util.ParseOracleSchemasListToOracleRdbmsMessage(
         self._messages, include_objects_raw, release_track)
 
-    exclude_objects_raw = oracle_rdbms_data.get(
+    exclude_objects_raw = oracle_source_config.get(
         util.GetRDBMSV1alpha1ToV1FieldName('rejectlist', release_track), {})
     exclude_objects_data = util.ParseOracleSchemasListToOracleRdbmsMessage(
         self._messages, exclude_objects_raw, release_track)
 
-    oracle_sourec_config_msg = self._messages.OracleSourceConfig(
+    oracle_source_config_msg = self._messages.OracleSourceConfig(
         includeObjects=include_objects_data,
-        excludeObjects=exclude_objects_data)
-    return oracle_sourec_config_msg
+        excludeObjects=exclude_objects_data,
+    )
+
+    if oracle_source_config.get('max_concurrent_cdc_tasks'):
+      oracle_source_config_msg.maxConcurrentCdcTasks = oracle_source_config.get(
+          'max_concurrent_cdc_tasks')
+
+    return oracle_source_config_msg
 
   def _ParseMysqlSourceConfig(self, mysql_source_config_file, release_track):
     """Parses a mysql_sorce_config into the MysqlSourceConfig message."""
@@ -97,21 +103,27 @@ class StreamsClient:
 
     mysql_sorce_config_data_object = mysql_sorce_config_head_data.get(
         'mysql_source_config')
-    mysql_rdbms_data = mysql_sorce_config_data_object if mysql_sorce_config_data_object else mysql_sorce_config_head_data
+    mysql_source_config = mysql_sorce_config_data_object if mysql_sorce_config_data_object else mysql_sorce_config_head_data
 
-    include_objects_raw = mysql_rdbms_data.get(
+    include_objects_raw = mysql_source_config.get(
         util.GetRDBMSV1alpha1ToV1FieldName('allowlist', release_track), {})
     include_objects_data = util.ParseMysqlSchemasListToMysqlRdbmsMessage(
         self._messages, include_objects_raw, release_track)
 
-    exclude_objects_raw = mysql_rdbms_data.get(
+    exclude_objects_raw = mysql_source_config.get(
         util.GetRDBMSV1alpha1ToV1FieldName('rejectlist', release_track), {})
     exclude_objects_data = util.ParseMysqlSchemasListToMysqlRdbmsMessage(
         self._messages, exclude_objects_raw, release_track)
 
     mysql_sourec_config_msg = self._messages.MysqlSourceConfig(
         includeObjects=include_objects_data,
-        excludeObjects=exclude_objects_data)
+        excludeObjects=exclude_objects_data,
+    )
+
+    if mysql_source_config.get('max_concurrent_cdc_tasks'):
+      mysql_sourec_config_msg.maxConcurrentCdcTasks = mysql_source_config.get(
+          'max_concurrent_cdc_tasks')
+
     return mysql_sourec_config_msg
 
   def _ParsePostgresqlSourceConfig(self, postgresql_source_config_file):

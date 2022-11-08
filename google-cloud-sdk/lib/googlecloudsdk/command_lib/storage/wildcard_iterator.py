@@ -194,7 +194,8 @@ class CloudWildcardIterator(WildcardIterator):
       fields_scope (cloud_api.FieldsScope): Determines amount of metadata
           returned by API.
       get_bucket_metadata (bool): If true, perform a bucket GET request when
-          fetching bucket resources
+          fetching bucket resources. Otherwise, bucket URLs without wildcards
+          may be returned without verifying the buckets exist.
     """
     super(CloudWildcardIterator, self).__init__()
     self._url = _compress_url_wildcards(url)
@@ -417,6 +418,7 @@ class CloudWildcardIterator(WildcardIterator):
           self._client.get_bucket(self._url.bucket_name, self._fields_scope)
       ]
     else:
+      # TODO(b/256156346): Make UnknownResource because existence not verified.
       return [resource_reference.BucketResource(self._url)]
 
   def _expand_bucket_wildcards(self, bucket_name):

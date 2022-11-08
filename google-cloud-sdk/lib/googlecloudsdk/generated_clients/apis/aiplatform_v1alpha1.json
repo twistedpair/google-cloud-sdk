@@ -629,11 +629,11 @@
       "type": "object",
       "properties": {
         "operation": {
-          "description": "For API calls that return a long running operation. Resource name of the long running operation. Format: 'projects\/{project}\/locations\/{location}\/operations\/{operation}'",
+          "description": "For API calls that return a long running operation. Resource name of the long running operation. Format: `projects\/{project}\/locations\/{location}\/operations\/{operation}`",
           "type": "string"
         },
         "dataLabelingJob": {
-          "description": "For API calls that start a LabelingJob. Resource name of the LabelingJob. Format: 'projects\/{project}\/locations\/{location}\/dataLabelingJobs\/{data_labeling_job}'",
+          "description": "For API calls that start a LabelingJob. Resource name of the LabelingJob. Format: `projects\/{project}\/locations\/{location}\/dataLabelingJobs\/{data_labeling_job}`",
           "type": "string"
         },
         "method": {
@@ -1546,7 +1546,7 @@
           "format": "google-datetime"
         },
         "network": {
-          "description": "Optional. The full name of the Google Compute Engine [network](https:\/\/cloud.google.com\/compute\/docs\/networks-and-firewalls#networks) to which the IndexEndpoint should be peered. Private services access must already be configured for the network. If left unspecified, the Endpoint is not peered with any network. network and private_service_connect_config are mutually exclusive. [Format](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert): projects\/{project}\/global\/networks\/{network}. Where {project} is a project number, as in '12345', and {network} is network name.",
+          "description": "Optional. The full name of the Google Compute Engine [network](https:\/\/cloud.google.com\/compute\/docs\/networks-and-firewalls#networks) to which the IndexEndpoint should be peered. Private services access must already be configured for the network. If left unspecified, the Endpoint is not peered with any network. network and private_service_connect_config are mutually exclusive. [Format](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert): `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in '12345', and {network} is network name.",
           "type": "string"
         },
         "enablePrivateServiceConnect": {
@@ -5788,7 +5788,7 @@
       "type": "object",
       "properties": {
         "artifactId": {
-          "description": "Artifact resource id from MLMD. Which is the last portion of an artifact resource name(projects\/{project}\/locations\/{location}\/metadataStores\/default\/artifacts\/{artifact_id}). The artifact must stay within the same project, location and default metadatastore as the pipeline.",
+          "description": "Artifact resource id from MLMD. Which is the last portion of an artifact resource name: `projects\/{project}\/locations\/{location}\/metadataStores\/default\/artifacts\/{artifact_id}`. The artifact must stay within the same project, location and default metadatastore as the pipeline.",
           "type": "string"
         }
       }
@@ -7540,7 +7540,7 @@
           "$ref": "GoogleCloudAiplatformInternalAutomaticResources"
         },
         "sharedResources": {
-          "description": "The resource name of the shared DeploymentResourcePool to deploy on. Format: projects\/{project}\/locations\/{location}\/deploymentResourcePools\/{deployment_resource_pool}",
+          "description": "The resource name of the shared DeploymentResourcePool to deploy on. Format: `projects\/{project}\/locations\/{location}\/deploymentResourcePools\/{deployment_resource_pool}`",
           "type": "string"
         },
         "id": {
@@ -8711,7 +8711,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the human in the loop entitlement. Format: projects\/{project}\/locations\/{location}\/humanInTheLoopEntitlements\/{human_in_the_loop_entitlement}",
+          "description": "Output only. The resource name of the human in the loop entitlement. Format: `projects\/{project}\/locations\/{location}\/humanInTheLoopEntitlements\/{human_in_the_loop_entitlement}`",
           "readOnly": true,
           "type": "string"
         },
@@ -9914,6 +9914,17 @@
         }
       }
     },
+    "GoogleCloudAiplatformUiCreateDeploymentResourcePoolOperationMetadata": {
+      "id": "GoogleCloudAiplatformUiCreateDeploymentResourcePoolOperationMetadata",
+      "description": "Runtime operation information for CreateDeploymentResourcePool method.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformUiCreateEdgeDeviceOperationMetadata": {
       "id": "GoogleCloudAiplatformUiCreateEdgeDeviceOperationMetadata",
       "description": "Metadata message for EdgeDeviceService.CreateEdgeDevice.",
@@ -10693,7 +10704,7 @@
           "$ref": "GoogleCloudAiplatformUiAutomaticResources"
         },
         "sharedResources": {
-          "description": "The resource name of the shared DeploymentResourcePool to deploy on. Format: projects\/{project}\/locations\/{location}\/deploymentResourcePools\/{deployment_resource_pool}",
+          "description": "The resource name of the shared DeploymentResourcePool to deploy on. Format: `projects\/{project}\/locations\/{location}\/deploymentResourcePools\/{deployment_resource_pool}`",
           "type": "string"
         },
         "id": {
@@ -12526,6 +12537,17 @@
       "description": "Response message for IndexEndpointService.UndeployIndex.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudAiplatformUiUpdateDeploymentResourcePoolOperationMetadata": {
+      "id": "GoogleCloudAiplatformUiUpdateDeploymentResourcePoolOperationMetadata",
+      "description": "Runtime operation information for UpdateDeploymentResourcePool method.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        }
       }
     },
     "GoogleCloudAiplatformUiUpdateExplanationDatasetOperationMetadata": {
@@ -17381,7 +17403,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1AutomaticResources"
         },
         "sharedResources": {
-          "description": "The resource name of the shared DeploymentResourcePool to deploy on. Format: projects\/{project}\/locations\/{location}\/deploymentResourcePools\/{deployment_resource_pool}",
+          "description": "The resource name of the shared DeploymentResourcePool to deploy on. Format: `projects\/{project}\/locations\/{location}\/deploymentResourcePools\/{deployment_resource_pool}`",
           "type": "string"
         },
         "id": {
@@ -19314,6 +19336,22 @@
           "description": "The upper bound of the prediction interval.",
           "type": "number",
           "format": "float"
+        },
+        "quantileValues": {
+          "description": "Quantile values.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "quantilePredictions": {
+          "description": "Quantile predictions, in 1-1 correspondence with quantile_values.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
         }
       }
     },
@@ -24673,6 +24711,22 @@
           "description": "The upper bound of the prediction interval.",
           "type": "number",
           "format": "float"
+        },
+        "quantileValues": {
+          "description": "Quantile values.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "quantilePredictions": {
+          "description": "Quantile predictions, in 1-1 correspondence with quantile_values.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
         }
       }
     },
@@ -25870,10 +25924,6 @@
         },
         "enableWebAccess": {
           "description": "Optional. Whether you want Vertex AI to enable [interactive shell access](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) to training containers. If set to `true`, you can access interactive shells at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
-          "type": "boolean"
-        },
-        "bqmlJob": {
-          "description": "Optional. True if the job is from BigQuery ML.",
           "type": "boolean"
         }
       }
@@ -34926,7 +34976,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The resource name of the Tensorboard to list TensorboardExperiments. Format: 'projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}'",
+                          "description": "Required. The resource name of the Tensorboard to list TensorboardExperiments. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -35309,7 +35359,7 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "parent": {
-                              "description": "Required. The resource name of the TensorboardExperiment to list TensorboardRuns. Format: 'projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}'",
+                              "description": "Required. The resource name of the TensorboardExperiment to list TensorboardRuns. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}`",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+$",
                               "location": "path",
                               "required": true,
@@ -35698,7 +35748,7 @@
                               "httpMethod": "GET",
                               "parameters": {
                                 "parent": {
-                                  "description": "Required. The resource name of the TensorboardRun to list TensorboardTimeSeries. Format: 'projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}'",
+                                  "description": "Required. The resource name of the TensorboardRun to list TensorboardTimeSeries. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}`",
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+$",
                                   "location": "path",
                                   "required": true,
@@ -35856,7 +35906,7 @@
                               "httpMethod": "GET",
                               "parameters": {
                                 "timeSeries": {
-                                  "description": "Required. The resource name of the TensorboardTimeSeries to list Blobs. Format: 'projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}\/timeSeries\/{time_series}'",
+                                  "description": "Required. The resource name of the TensorboardTimeSeries to list Blobs. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}\/timeSeries\/{time_series}`",
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+$",
                                   "location": "path",
                                   "required": true,

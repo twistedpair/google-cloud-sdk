@@ -24,6 +24,7 @@ from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.container.gkeonprem import flags
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 
 
 def Get(args, flag_name, default=None):
@@ -59,6 +60,28 @@ def IsSet(kwargs):
     True if there exists a field that contains a user specified argument.
   """
   return any(value is not None for value in kwargs.values())
+
+
+def GetOperationResourceSpec():
+  return concepts.ResourceSpec(
+      'gkeonprem.projects.locations.operations',
+      resource_name='operation',
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def AddOperationResourceArg(parser, verb):
+  """Adds a resource argument for operation in VMware.
+
+  Args:
+    parser: The argparse parser to add the resource arg to.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'operation_id',
+      GetOperationResourceSpec(),
+      'operation {}.'.format(verb),
+      required=True).AddToParser(parser)
 
 
 def LocationAttributeConfig():
@@ -136,6 +159,17 @@ def AddClusterResourceArg(parser,
       required=required,
       flag_name_overrides=flag_name_overrides,
   ).AddToParser(parser)
+
+
+def GetAdminClusterResource(admin_cluster_name):
+  relative_name = admin_cluster_name
+  if admin_cluster_name.startswith('//'):
+    # Remove '//gkeonprem.googleapis.com/' from the resource name.
+    parts = admin_cluster_name.split('/')
+    relative_name = '/'.join(parts[3:])
+  return resources.REGISTRY.ParseRelativeName(
+      relative_name,
+      collection='gkeonprem.projects.locations.vmwareAdminClusters')
 
 
 def AdminClusterAttributeConfig():
@@ -377,7 +411,7 @@ def _AddMemoryMb(vmware_node_config_group):
     vmware_node_config_group: The parent group to add the flag to.
   """
   vmware_node_config_group.add_argument(
-      '--memory-mb',
+      '--memory',
       help='Size of memory for each node in the node pool in MB.',
       type=arg_parsers.BinarySize(default_unit='MB', type_abbr='MB'),
   )
@@ -403,7 +437,7 @@ def _AddBootDiskSizeGb(vmware_node_config_group):
     vmware_node_config_group: The parent group to add the flag to.
   """
   vmware_node_config_group.add_argument(
-      '--boot-disk-size-gb',
+      '--boot-disk-size',
       help='Size of VMware disk to be used during creation in GB.',
       type=arg_parsers.BinarySize(default_unit='GB', type_abbr='GB'),
   )
@@ -466,20 +500,17 @@ def AddVmwareNodeConfig(parser, for_update=False):
       for create command.
   """
   vmware_node_config_group = parser.add_group(
-      help='Configuration of the node pool.',
+      help='Configuration of the node pool',
       required=False if for_update else True,
   )
-  # Workaround when not yet exposed to update command surface.
-  if not for_update:
-    _AddCpus(vmware_node_config_group)
-    _AddMemoryMb(vmware_node_config_group)
-    _AddImage(vmware_node_config_group)
-    _AddBootDiskSizeGb(vmware_node_config_group)
-    _AddNodeLabels(vmware_node_config_group)
-    _AddNodeTaint(vmware_node_config_group)
-
+  _AddCpus(vmware_node_config_group)
+  _AddMemoryMb(vmware_node_config_group)
   _AddReplicas(vmware_node_config_group)
   _AddImageType(vmware_node_config_group, for_update=for_update)
+  _AddImage(vmware_node_config_group)
+  _AddBootDiskSizeGb(vmware_node_config_group)
+  _AddNodeTaint(vmware_node_config_group)
+  _AddNodeLabels(vmware_node_config_group)
   _AddEnableLoadBalancer(vmware_node_config_group, for_update=for_update)
 
 
@@ -587,7 +618,7 @@ def _AddManualLbConfig(lb_config_mutex_group):
     lb_config_mutex_group: The parent mutex group to add the flags to.
   """
   manual_lb_config_group = lb_config_mutex_group.add_group(
-      help='Manual load balancer configuration.',)
+      help='Manual load balancer configuration',)
   manual_lb_config_group.add_argument(
       '--ingress-http-node-port',
       help='NodePort for ingress service\'s http.',
@@ -620,7 +651,7 @@ def _AddVmwareVipConfig(vmware_load_balancer_config_group, for_update=False):
   """
   required = False if for_update else True
   vmware_vip_config_group = vmware_load_balancer_config_group.add_group(
-      help=' VIPs used by the load balancer.',
+      help=' VIPs used by the load balancer',
       required=required,
   )
   vmware_vip_config_group.add_argument(
@@ -645,7 +676,7 @@ def AddVmwareLoadBalancerConfig(parser, for_update=False):
   """
   required = False if for_update else True
   vmware_load_balancer_config_group = parser.add_group(
-      help='Anthos on Vmware cluster load balancer configuration.',
+      help='Anthos on VMware cluster load balancer configurations',
       required=required,
   )
   _AddVmwareVipConfig(vmware_load_balancer_config_group)
@@ -680,7 +711,7 @@ def AddNodePoolDisplayName(parser):
       '--display-name', type=str, help='Display name for the resource.')
 
 
-def AddAnnotations(parser):
+def AddNodePoolAnnotations(parser):
   """Adds a flag to specify node pool annotations."""
   parser.add_argument(
       '--annotations',
@@ -742,7 +773,7 @@ def AddVmwareNetworkConfig(parser, for_update=False):
   """
   required = False if for_update else True
   vmware_network_config_group = parser.add_group(
-      help='VMware User Cluster network configuration.',
+      help='VMware User Cluster network configurations',
       required=required,
   )
   _AddServiceAddressCidrBlocks(vmware_network_config_group, for_update)
@@ -780,7 +811,7 @@ def _AddIpConfiguration(vmware_network_config_group):
   """
   ip_configuration_mutex_group = vmware_network_config_group.add_group(
       mutex=True,
-      help='IP configuration used by the VMware User Cluster.',
+      help='IP configuration used by the VMware User Cluster',
   )
   dhcp_config_group = ip_configuration_mutex_group.add_group(
       help='DHCP configuration group.')
@@ -790,7 +821,7 @@ def _AddIpConfiguration(vmware_network_config_group):
   )
 
   static_ip_config_group = ip_configuration_mutex_group.add_group(
-      help='Static IP configuration group.')
+      help='Static IP configuration group')
   static_ip_config_group.add_argument(
       '--netmask',
       help='Netmask used by the VMware user cluster.',
@@ -817,7 +848,7 @@ def _AddVmwareHostConfig(vmware_network_config_group):
     vmware_network_config_group: The parent group to add the flags to.
   """
   vmware_host_config_group = vmware_network_config_group.add_group(
-      help='Common parameters for all hosts irrespective of their IP address.')
+      help='Common parameters for all hosts irrespective of their IP address')
 
   vmware_host_config_group.add_argument(
       '--dns-servers',
@@ -847,3 +878,151 @@ def AddRequiredPlatformVersion(parser):
             'version, the platform version will be updated to the required '
             'version. If it is not installed in the platform, '
             'download the required version bundle.'))
+
+
+def AddClusterAnnotations(parser):
+  """Adds a flag to specify cluster annotations.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--annotations',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help='Annotations on the VMware user cluster.',
+  )
+
+
+def AddVmwareControlPlaneNodeConfig(parser):
+  """Adds flags to specify VMware user cluster control plane node configurations.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  vmware_control_plane_node_config_group = parser.add_group(
+      help='Control plane node configurations',)
+  vmware_control_plane_node_config_group.add_argument(
+      '--cpus',
+      type=int,
+      help='Number of CPUs for each admin cluster node that serve as control planes for this VMware user cluster. (default: 4 CPUs)',
+  )
+  vmware_control_plane_node_config_group.add_argument(
+      '--memory',
+      type=arg_parsers.BinarySize(default_unit='MB', type_abbr='MB'),
+      help='Megabytes of memory for each admin cluster node that serves as a control plane for this VMware User Cluster (default: 8192 MB memory).',
+  )
+  vmware_control_plane_node_config_group.add_argument(
+      '--replicas',
+      type=int,
+      help='Number of control plane nodes for this VMware user cluster. (default: 1 replica).',
+  )
+  AddVmwareAutoResizeConfig(vmware_control_plane_node_config_group)
+
+
+def AddVmwareAutoResizeConfig(vmware_control_plane_node_config_group):
+  """Adds flags to specify control plane auto resizing configurations.
+
+  Args:
+    vmware_control_plane_node_config_group: The parent group to add the flag to.
+  """
+  vmware_auto_resize_config_group = vmware_control_plane_node_config_group.add_group(
+      help='Auto resize configurations')
+  vmware_auto_resize_config_group.add_argument(
+      '--enable-auto-resize',
+      action='store_true',
+      help='Enable controle plane node auto resize.',
+  )
+
+
+def AddVmwareAAGConfig(parser):
+  """Adds flags to specify VMware user cluster node pool anti-affinity group configurations.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  vmware_aag_config_group = parser.add_group(
+      help='Anti-affinity group configurations',)
+  vmware_aag_config_group.add_argument(
+      '--disable-aag-config',
+      action='store_true',
+      help='If set, spread nodes across at least three physical hosts (requires at least three hosts). Enabled by default.',
+  )
+
+
+def AddVmwareStorageConfig(parser):
+  """Adds flags to specify VMware storage configurations.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  vmware_storage_group = parser.add_group(help='Storage configurations')
+  vmware_storage_group.add_argument(
+      '--disable-vsphere-csi',
+      action='store_true',
+      help='If set, vSphere CSI components are not deployed in the VMware User Cluster. Enabled by default.',
+  )
+
+
+def AddVmwareDataplaneV2Config(parser):
+  """Adds flags to specify configurations for Dataplane V2, which is optimized dataplane for Kubernetes networking.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  vmware_dataplane_v2_config_group = parser.add_group(
+      help='Dataplane V2 configurations')
+  vmware_dataplane_v2_config_group.add_argument(
+      '--enable-dataplane-v2',
+      action='store_true',
+      help='If set, enables Dataplane V2.',
+  )
+  vmware_dataplane_v2_config_group.add_argument(
+      '--enable-advanced-networking',
+      action='store_true',
+      help='If set, enable advanced networking. Requires dataplane_v2_enabled to be set true.',
+  )
+
+
+def AddEnableVmwareTracking(parser):
+  """Adds flags to specify vmware tracking configurations.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--enable-vm-tracking',
+      action='store_true',
+      help='If set, enable VM tracking.',
+  )
+
+
+def AddVmwareAutoRepairConfig(parser):
+  """Adds flags to specify auto-repair configurations.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  vmware_auto_repair_config_group = parser.add_group(
+      help='Auto-repair configurations')
+  vmware_auto_repair_config_group.add_argument(
+      '--enable-auto-repair',
+      action='store_true',
+      help='If set, deploy the cluster-health-controller.',
+  )
+
+
+def AddAuthorization(parser):
+  """Adds flags to specify applied and managed RBAC policy.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  authorization_group = parser.add_group(
+      help='User cluster authorization configurations to bootstrap onto the admin cluster'
+  )
+  authorization_group.add_argument(
+      '--admin-users',
+      help='Users that will be granted the cluster-admin role on the cluster, providing full access to the cluster.',
+      action='append',
+  )

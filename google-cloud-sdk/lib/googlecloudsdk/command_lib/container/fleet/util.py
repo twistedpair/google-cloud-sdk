@@ -57,6 +57,13 @@ RB_LIST_FORMAT = """
       role.predefinedRole:label=ROLE
     )
 """
+B_LIST_FORMAT = """
+    table(
+      name.segment(7):sort=1:label=NAME,
+      scope:sort=2:label=SCOPE,
+      fleet:sort=2:label=FLEET
+    )
+"""
 
 
 def DefaultFleetID():

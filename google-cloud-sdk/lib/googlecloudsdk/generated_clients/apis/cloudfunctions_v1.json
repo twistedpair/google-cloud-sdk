@@ -431,7 +431,15 @@
           "type": "string"
         },
         "customStackUri": {
-          "description": "The URL of a customer provided buildpack stack.",
+          "description": "Deprecated: customization experience was significantly revised, making this field obsolete. It was never revealed to public. The URL of a customer provided buildpack stack.",
+          "type": "string"
+        },
+        "buildDockerfile": {
+          "description": "Local path to the dockerfile for customizing the base image for the builder, located within the source folder.",
+          "type": "string"
+        },
+        "runDockerfile": {
+          "description": "Local path to the dockerfile for customizing the base image for the worker, located within the source folder.",
           "type": "string"
         }
       }

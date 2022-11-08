@@ -228,6 +228,19 @@ class AppengineAppsAuthorizedDomainsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class AppengineAppsCreateRequest(_messages.Message):
+  r"""A AppengineAppsCreateRequest object.
+
+  Fields:
+    application: A Application resource to be passed as the request body.
+    parent: The project and location in which the application should be
+      created, specified in the format projects/*/locations/*
+  """
+
+  application = _messages.MessageField('Application', 1)
+  parent = _messages.StringField(2)
+
+
 class AppengineAppsDomainMappingsCreateRequest(_messages.Message):
   r"""A AppengineAppsDomainMappingsCreateRequest object.
 
@@ -717,6 +730,98 @@ class AppengineAppsServicesVersionsPatchRequest(_messages.Message):
   version = _messages.MessageField('Version', 3)
 
 
+class AppengineProjectsLocationsApplicationsCreateRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsApplicationsCreateRequest object.
+
+  Fields:
+    application: A Application resource to be passed as the request body.
+    parent: The project and location in which the application should be
+      created, specified in the format projects/*/locations/*
+  """
+
+  application = _messages.MessageField('Application', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AppengineProjectsLocationsApplicationsGetRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsApplicationsGetRequest object.
+
+  Fields:
+    name: Name of the Application resource to get. Example: apps/myapp.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AppengineProjectsLocationsApplicationsRepairRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsApplicationsRepairRequest object.
+
+  Fields:
+    name: Name of the application to repair. Example: apps/myapp
+    repairApplicationRequest: A RepairApplicationRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  repairApplicationRequest = _messages.MessageField('RepairApplicationRequest', 2)
+
+
+class AppengineProjectsLocationsGetRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AppengineProjectsLocationsListRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsListRequest object.
+
+  Fields:
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in AIP-160 (https://google.aip.dev/160).
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The maximum number of results to return. If not set, the service
+      selects a default.
+    pageToken: A page token received from the next_page_token field in the
+      response. Send that page token to receive the subsequent page.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AppengineProjectsLocationsOperationsGetRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AppengineProjectsLocationsOperationsListRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class Application(_messages.Message):
   r"""An Application resource contains the top-level configuration of an App
   Engine application.
@@ -730,24 +835,24 @@ class Application(_messages.Message):
     authDomain: Google Apps authentication domain that controls which users
       can access this application.Defaults to open access for any Google
       Account.
-    codeBucket: Google Cloud Storage bucket that can be used for storing files
-      associated with this application. This bucket is associated with the
-      application and can be used by the gcloud deployment
+    codeBucket: Output only. Google Cloud Storage bucket that can be used for
+      storing files associated with this application. This bucket is
+      associated with the application and can be used by the gcloud deployment
       commands.@OutputOnly
     databaseType: The type of the Cloud Firestore or Cloud Datastore database
       associated with this application.
-    defaultBucket: Google Cloud Storage bucket that can be used by this
-      application to store content.@OutputOnly
+    defaultBucket: Output only. Google Cloud Storage bucket that can be used
+      by this application to store content.@OutputOnly
     defaultCookieExpiration: Cookie expiration policy for this application.
-    defaultHostname: Hostname used to reach this application, as resolved by
-      App Engine.@OutputOnly
+    defaultHostname: Output only. Hostname used to reach this application, as
+      resolved by App Engine.@OutputOnly
     dispatchRules: HTTP path dispatch rules for requests to the application
       that do not explicitly target a service or version. Rules are order-
       dependent. Up to 20 dispatch rules can be supported.
     featureSettings: The feature specific settings to be used in the
       application.
-    gcrDomain: The Google Container Registry domain used for storing managed
-      build docker images for this application.
+    gcrDomain: Output only. The Google Container Registry domain used for
+      storing managed build docker images for this application.
     iap: A IdentityAwareProxy attribute.
     id: Identifier of the Application resource. This identifier is equivalent
       to the project ID of the Google Cloud Platform project where you want to
@@ -757,8 +862,8 @@ class Application(_messages.Message):
       is also where all of the application's end user content is
       stored.Defaults to us-central.View the list of supported locations
       (https://cloud.google.com/appengine/docs/locations).
-    name: Full path to the Application resource in the API. Example:
-      apps/myapp.@OutputOnly
+    name: Output only. Full path to the Application resource in the API.
+      Example: apps/myapp.@OutputOnly
     serviceAccount: The service account associated with the application. This
       is the app-level default identity. If no identity provided during create
       version, Admin API will fallback to this one.
@@ -1458,8 +1563,8 @@ class IdentityAwareProxy(_messages.Message):
       flow.For security reasons, this value cannot be retrieved via the API.
       Instead, the SHA-256 hash of the value is returned in the
       oauth2_client_secret_sha256 field.@InputOnly
-    oauth2ClientSecretSha256: Hex-encoded SHA-256 hash of the client
-      secret.@OutputOnly
+    oauth2ClientSecretSha256: Output only. Hex-encoded SHA-256 hash of the
+      client secret.@OutputOnly
   """
 
   enabled = _messages.BooleanField(1)

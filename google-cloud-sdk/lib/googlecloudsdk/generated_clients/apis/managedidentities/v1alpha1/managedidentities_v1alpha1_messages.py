@@ -430,7 +430,6 @@ class DomainJoinMachineRequest(_messages.Message):
   method
 
   Fields:
-    machine: Optional.
     ouName: Optional. OU name where the VM needs to be domain joined
     vmIdToken: Required. Full instance id token of compute engine VM to verify
       instance identity. More about this:
@@ -438,9 +437,8 @@ class DomainJoinMachineRequest(_messages.Message):
       identity#request_signature
   """
 
-  machine = _messages.MessageField('Machine', 1)
-  ouName = _messages.StringField(2)
-  vmIdToken = _messages.StringField(3)
+  ouName = _messages.StringField(1)
+  vmIdToken = _messages.StringField(2)
 
 
 class DomainJoinMachineResponse(_messages.Message):
@@ -1387,22 +1385,6 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
-
-
-class Machine(_messages.Message):
-  r"""Machine is the resource containing VM information to be domain joined
-
-  Fields:
-    hostName: Required. Host name of the Compute Engine VM which will be used
-      as host name for domain join
-    id: Required. Instance Id of the Compute Engine VM
-    token: Required. Instance token of the Compute Engine VM to verify
-      instance identity
-  """
-
-  hostName = _messages.StringField(1)
-  id = _messages.StringField(2)
-  token = _messages.StringField(3)
 
 
 class MaintenancePolicy(_messages.Message):

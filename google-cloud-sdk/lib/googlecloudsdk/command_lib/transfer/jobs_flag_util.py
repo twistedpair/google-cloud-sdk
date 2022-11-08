@@ -446,6 +446,12 @@ def setup_parser(parser, is_update=False):
         action='store_true',
         help="Remove the job's full logging config.")
   logging_config.add_argument(
+      '--enable-posix-transfer-logs',
+      action=arg_parsers.StoreTrueFalseAction,
+      help='Sets whether to generate logs for transfers with a POSIX'
+      ' filesystem source. This setting will later be merged with other log'
+      ' configurations.')
+  logging_config.add_argument(
       '--log-actions',
       type=arg_parsers.ArgList(
           choices=sorted(option.value for option in LogAction)),

@@ -79,7 +79,7 @@ class CloudcommerceconsumerprocurementBillingAccountsConsentsCheckRequest(_messa
       GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest
       resource to be passed as the request body.
     parent: Required. Parent of consents. Current supported format includes: -
-      billingAccounts/{billing_account}
+      billingAccounts/{billing_account} - projects/{project_id}
   """
 
   googleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest', 1)
@@ -95,7 +95,7 @@ class CloudcommerceconsumerprocurementBillingAccountsConsentsGrantRequest(_messa
       GoogleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest
       resource to be passed as the request body.
     parent: Required. Parent of the consent to grant. Current supported format
-      includes: - billingAccounts/{billing_account}
+      includes: - billingAccounts/{billing_account} - projects/{project_id}
   """
 
   googleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest', 1)
@@ -116,7 +116,7 @@ class CloudcommerceconsumerprocurementBillingAccountsConsentsListRequest(_messag
       result sets. To get the next page of results, set this parameter to the
       value of `nextPageToken` from the previous response.
     parent: Required. Parent of consents. Current supported format includes: -
-      billingAccounts/{billing_account}
+      billingAccounts/{billing_account} - projects/{project_id}
   """
 
   agreement = _messages.StringField(1)
@@ -134,7 +134,8 @@ class CloudcommerceconsumerprocurementBillingAccountsConsentsRevokeRequest(_mess
       GoogleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest
       resource to be passed as the request body.
     name: Required. A consent to be reovked. Examples of valid names would be:
-      - billingAccounts/{billing_account}/consents/{consent_id}
+      - billingAccounts/{billing_account}/consents/{consent_id} -
+      projects/{project_id}/consents/{consent_id}
   """
 
   googleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest', 1)
@@ -409,6 +410,74 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersPlaceRequest(_message
 
   googleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class CloudcommerceconsumerprocurementProjectsConsentsCheckRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementProjectsConsentsCheckRequest object.
+
+  Fields:
+    googleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest: A
+      GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest
+      resource to be passed as the request body.
+    parent: Required. Parent of consents. Current supported format includes: -
+      billingAccounts/{billing_account} - projects/{project_id}
+  """
+
+  googleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class CloudcommerceconsumerprocurementProjectsConsentsGrantRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementProjectsConsentsGrantRequest object.
+
+  Fields:
+    googleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest: A
+      GoogleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest
+      resource to be passed as the request body.
+    parent: Required. Parent of the consent to grant. Current supported format
+      includes: - billingAccounts/{billing_account} - projects/{project_id}
+  """
+
+  googleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class CloudcommerceconsumerprocurementProjectsConsentsListRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementProjectsConsentsListRequest object.
+
+  Fields:
+    agreement: Leave this field unset will return consents of agreements that
+      user has access to. A valid format would be - commerceoffercatalog.googl
+      eapis.com/billingAccounts/{billing_account}/offers/{offer_id}/agreements
+      /{agreement_id}
+    pageSize: The maximum number of results returned by this request.
+    pageToken: The continuation token, which is used to page through large
+      result sets. To get the next page of results, set this parameter to the
+      value of `nextPageToken` from the previous response.
+    parent: Required. Parent of consents. Current supported format includes: -
+      billingAccounts/{billing_account} - projects/{project_id}
+  """
+
+  agreement = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class CloudcommerceconsumerprocurementProjectsConsentsRevokeRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementProjectsConsentsRevokeRequest object.
+
+  Fields:
+    googleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest: A
+      GoogleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest
+      resource to be passed as the request body.
+    name: Required. A consent to be reovked. Examples of valid names would be:
+      - billingAccounts/{billing_account}/consents/{consent_id} -
+      projects/{project_id}/consents/{consent_id}
+  """
+
+  googleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class CloudcommerceconsumerprocurementProjectsEntitlementsGetRequest(_messages.Message):
@@ -985,10 +1054,10 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementService(_messages
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial(_messages.Message):
-  r"""FreeTrial represents the free trial created for a specific provider,
-  product id and billing id with argentum. Free Trial resource are created for
-  products by placing orders for 3p or just enabling free trials for 1p
-  product. Next Id: 6
+  r"""FreeTrial represents the free trial created for a specific product and
+  billing account with argentum. Free Trial resources are created by placing
+  orders for 3p non-VM products, or just enabling free trials for 1p products
+  and 3P VM products. Next Id: 6
 
   Fields:
     credit: Output only. Credit tracking the real time credit status.
@@ -1036,9 +1105,13 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest(_message
   Fields:
     consent: Required. A consent to be granted. Set only agreement_document
       field.
+    validateOnly: Optional. Flag is used to dry run grant consent behavior for
+      the VMs and K8s products. If set, returns empty consent if consent can
+      be granted. If unset, grants consent if consent can be granted.
   """
 
   consent = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Consent', 1)
+  validateOnly = _messages.BooleanField(2)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1LineItem(_messages.Message):
@@ -1936,6 +2009,83 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1TestConfig(_messages.Message
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1UpdateOrderAllocationMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.UpdateOrderAllocation.
+  """
+
+
+
+class GoogleCloudCommerceConsumerProcurementV1mainCancelOrderMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.CancelOrder.
+  """
+
+
+
+class GoogleCloudCommerceConsumerProcurementV1mainCreateAccountMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.CreateAccount.
+  """
+
+
+
+class GoogleCloudCommerceConsumerProcurementV1mainCreateFreeTrialMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.CreateFreeTrial.
+  """
+
+
+
+class GoogleCloudCommerceConsumerProcurementV1mainCreateOrderAllocationMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.CreateOrderAllocation.
+  """
+
+
+
+class GoogleCloudCommerceConsumerProcurementV1mainDeleteAccountMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.DeleteAccount.
+  """
+
+
+
+class GoogleCloudCommerceConsumerProcurementV1mainDeleteOrderAllocationMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.DeleteOrderAllocation.
+  """
+
+
+
+class GoogleCloudCommerceConsumerProcurementV1mainMigrateOrderMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.MigrateOrder.
+  """
+
+
+
+class GoogleCloudCommerceConsumerProcurementV1mainModifyOrderMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.ModifyOrder.
+  """
+
+
+
+class GoogleCloudCommerceConsumerProcurementV1mainPlaceOrderMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.PlaceOrder.
+  """
+
+
+
+class GoogleCloudCommerceConsumerProcurementV1mainReplaceOrderAllocationsMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.ReplaceOrderAllocations.
+  """
+
+
+
+class GoogleCloudCommerceConsumerProcurementV1mainUpdateOrderAllocationMetadata(_messages.Message):
   r"""Message stored in the metadata field of the Operation returned by
   ConsumerProcurementService.UpdateOrderAllocation.
   """

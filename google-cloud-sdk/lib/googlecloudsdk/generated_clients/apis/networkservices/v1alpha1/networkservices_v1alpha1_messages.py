@@ -258,7 +258,7 @@ class CDNPolicy(_messages.Message):
       `signed_request_maximum_expiration_ttl`, where `now` is the time at
       which the signed request is first handled by the CDN. - The TTL must be
       > 0. - Fractions of a second are not allowed. By default,
-      `signed_requess_maximum_expiration_ttl` is not set and the expiration
+      `signed_request_maximum_expiration_ttl` is not set and the expiration
       time of a signed request may be arbitrarily far into future.
     signedRequestMode: Optional. Whether to enforce signed requests. The
       default value is DISABLED, which means all content is public, and does
@@ -5506,7 +5506,11 @@ class PublicKey(_messages.Message):
       means the first character must be a letter, and all following characters
       must be a dash, underscore, letter or digit.
     managed: Optional. Set to true to have the CDN automatically manage this
-      public key value. Either `value` or `managed` must be specified.
+      public key. Managed keys are used by the CDN for dual-token
+      authentication. Media CDN internally generates, uses, and rotates the
+      underlying public and private key pair. It is not possible to use a
+      managed key outside of dual-token authentication. Either `value` or
+      `managed` must be specified.
     value: Optional. The base64-encoded value of the Ed25519 public key. The
       base64 encoding can be padded (44 bytes) or unpadded (43 bytes).
       Representations or encodings of the public key other than this are

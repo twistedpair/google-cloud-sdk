@@ -64,10 +64,13 @@ class HubCommand(object):
         HubCommand.Project(use_number), location=location)
 
   @staticmethod
-  def FeatureResourceName(name, location='global', use_number=False):
-    """Builds the full resource name, using the core project property."""
-    return util.FeatureResourceName(
-        HubCommand.Project(use_number), name, location=location)
+  def FeatureResourceName(name,
+                          project=None,
+                          location='global',
+                          use_number=False):
+    """Builds the full resource name, using the core project property if no project is specified.."""
+    project = project or HubCommand.Project(use_number)
+    return util.FeatureResourceName(project, name, location=location)
 
   @staticmethod
   def MembershipResourceName(name, location='global', use_number=False):
@@ -79,6 +82,12 @@ class HubCommand(object):
   def WorkspaceResourceName(name, location='global', use_number=False):
     """Builds a full Workspace name, using the core project property."""
     return util.WorkspaceResourceName(
+        HubCommand.Project(use_number), name, location=location)
+
+  @staticmethod
+  def ScopeResourceName(name, location='global', use_number=False):
+    """Builds a full Scope name, using the core project property."""
+    return util.ScopeResourceName(
         HubCommand.Project(use_number), name, location=location)
 
   # TODO(b/177098463): All Hub LROs _should_ watch for warnings, but they don't.

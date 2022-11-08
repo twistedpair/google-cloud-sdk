@@ -2330,8 +2330,10 @@ class GooglePrivacyDlpV2Action(_messages.Message):
 
   Fields:
     deidentify: Create a de-identified copy of the input data.
-    jobNotificationEmails: Enable email notification for project owners and
-      editors on job's completion/failure.
+    jobNotificationEmails: Sends an email when the job completes. The email
+      goes to IAM project owners and technical [Essential
+      Contacts](https://cloud.google.com/resource-manager/docs/managing-
+      notification-contacts).
     pubSub: Publish a notification to a Pub/Sub topic.
     publishFindingsToCloudDataCatalog: Publish findings to Cloud Datahub.
     publishSummaryToCscc: Publish summary to Cloud Security Command Center
@@ -3013,7 +3015,7 @@ class GooglePrivacyDlpV2Container(_messages.Message):
 
 
 class GooglePrivacyDlpV2ContentItem(_messages.Message):
-  r"""Container structure for the content to inspect.
+  r"""A GooglePrivacyDlpV2ContentItem object.
 
   Fields:
     byteItem: Content data to inspect or redact. Replaces `type` and `data`.
@@ -4060,6 +4062,24 @@ class GooglePrivacyDlpV2Error(_messages.Message):
   timestamps = _messages.StringField(2, repeated=True)
 
 
+class GooglePrivacyDlpV2ExcludeByHotword(_messages.Message):
+  r"""The rule to exclude findings based on a hotword. For record inspection
+  of tables, column names are considered hotwords. An example of this is to
+  exclude a finding if a BigQuery column matches a specific pattern.
+
+  Fields:
+    hotwordRegex: Regular expression pattern defining what qualifies as a
+      hotword.
+    proximity: Range of characters within which the entire hotword must
+      reside. The total length of the window cannot exceed 1000 characters.
+      The windowBefore property in proximity should be set to 1 if the hotword
+      needs to be included in a column header.
+  """
+
+  hotwordRegex = _messages.MessageField('GooglePrivacyDlpV2Regex', 1)
+  proximity = _messages.MessageField('GooglePrivacyDlpV2Proximity', 2)
+
+
 class GooglePrivacyDlpV2ExcludeInfoTypes(_messages.Message):
   r"""List of excluded infoTypes.
 
@@ -4087,6 +4107,8 @@ class GooglePrivacyDlpV2ExclusionRule(_messages.Message):
 
   Fields:
     dictionary: Dictionary which defines the rule.
+    excludeByHotword: Drop if the hotword rule is contained in the proximate
+      context. For tabular data, the context includes the column name.
     excludeInfoTypes: Set of infoTypes for which findings would affect this
       rule.
     matchingType: How the rule is applied, see MatchingType documentation for
@@ -4118,9 +4140,10 @@ class GooglePrivacyDlpV2ExclusionRule(_messages.Message):
     MATCHING_TYPE_INVERSE_MATCH = 3
 
   dictionary = _messages.MessageField('GooglePrivacyDlpV2Dictionary', 1)
-  excludeInfoTypes = _messages.MessageField('GooglePrivacyDlpV2ExcludeInfoTypes', 2)
-  matchingType = _messages.EnumField('MatchingTypeValueValuesEnum', 3)
-  regex = _messages.MessageField('GooglePrivacyDlpV2Regex', 4)
+  excludeByHotword = _messages.MessageField('GooglePrivacyDlpV2ExcludeByHotword', 2)
+  excludeInfoTypes = _messages.MessageField('GooglePrivacyDlpV2ExcludeInfoTypes', 3)
+  matchingType = _messages.EnumField('MatchingTypeValueValuesEnum', 4)
+  regex = _messages.MessageField('GooglePrivacyDlpV2Regex', 5)
 
 
 class GooglePrivacyDlpV2Export(_messages.Message):
@@ -4696,7 +4719,7 @@ class GooglePrivacyDlpV2InfoType(_messages.Message):
       creating a CustomInfoType, or one of the names listed at
       https://cloud.google.com/dlp/docs/infotypes-reference when specifying a
       built-in type. When sending Cloud DLP results to Data Catalog, infoType
-      names should conform to the pattern `[A-Za-z0-9$-_]{1,64}`.
+      names should conform to the pattern `[A-Za-z0-9$_-]{1,64}`.
     version: Optional version name for this InfoType.
   """
 
@@ -4786,6 +4809,7 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
       URUGUAY: The infoType is typically used in Uruguay.
       VENEZUELA: The infoType is typically used in Venezuela.
       INTERNAL: The infoType is typically used in Google internally.
+      NEW_ZEALAND: The infoType is typically used in New Zealand.
     """
     LOCATION_UNSPECIFIED = 0
     GLOBAL = 1
@@ -4828,6 +4852,7 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
     URUGUAY = 38
     VENEZUELA = 39
     INTERNAL = 40
+    NEW_ZEALAND = 41
 
   class TypeCategoryValueValuesEnum(_messages.Enum):
     r"""The class of identifiers where this infoType belongs
@@ -4873,6 +4898,7 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
       provided in the request.
     displayName: Human readable form of the infoType name.
     name: Internal name of the infoType.
+    sensitivityScore: The default sensitivity of the infoType.
     supportedBy: Which parts of the API supports this InfoType.
     versions: A list of available versions for the infotype.
   """
@@ -4893,8 +4919,9 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
   name = _messages.StringField(4)
-  supportedBy = _messages.EnumField('SupportedByValueListEntryValuesEnum', 5, repeated=True)
-  versions = _messages.MessageField('GooglePrivacyDlpV2VersionDescription', 6, repeated=True)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 5)
+  supportedBy = _messages.EnumField('SupportedByValueListEntryValuesEnum', 6, repeated=True)
+  versions = _messages.MessageField('GooglePrivacyDlpV2VersionDescription', 7, repeated=True)
 
 
 class GooglePrivacyDlpV2InfoTypeLimit(_messages.Message):
@@ -4929,10 +4956,12 @@ class GooglePrivacyDlpV2InfoTypeSummary(_messages.Message):
   r"""The infoType details for this column.
 
   Fields:
+    estimatedPrevalence: Not populated for predicted infotypes.
     infoType: The infoType.
   """
 
-  infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 1)
+  estimatedPrevalence = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 2)
 
 
 class GooglePrivacyDlpV2InfoTypeTransformation(_messages.Message):

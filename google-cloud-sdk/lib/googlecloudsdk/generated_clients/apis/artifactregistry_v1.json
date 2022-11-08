@@ -231,6 +231,12 @@
           "description": "The time this image was built. This field is returned as the 'metadata.buildTime' field in the Version resource. The build time is returned to the client as an RFC 3339 string, which can be easily used with the JavaScript Date constructor.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the docker image was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -525,14 +531,59 @@
     },
     "UploadGenericArtifactRequest": {
       "id": "UploadGenericArtifactRequest",
-      "description": "The request to upload a generic artifact.",
+      "description": "The request to upload a generic artifact. The created GenericArtifact will have the resource name {parent}\/genericArtifacts\/package_id:version_id. The created file will have the resource name {parent}\/files\/package_id:version_id:filename.",
       "type": "object",
       "properties": {
+        "name": {
+          "description": "Deprecated. Use package_id, version_id and filename instead. The resource name of the generic artifact. E.g. \"projects\/math\/locations\/us\/repositories\/operations\/genericArtifacts\/addition\/1.0.0\/add.py\"",
+          "type": "string"
+        },
+        "packageId": {
+          "description": "The ID of the package of the generic artifact. If the package does not exist, a new package will be created. E.g. \"pkg-1\" The package_id must start with a letter, end with a letter or number, only contain letters, numbers, and hyphens, i.e. [a-z0-9-], and cannot exceed 64 characters.",
+          "type": "string"
+        },
+        "versionId": {
+          "description": "The ID of the version of the generic artifact. If the version does not exist, a new version will be created. E.g.\"1.0.0\" The version_id must start and end with a letter or number, can only contain letters, numbers, hyphens and periods,i.e. [a-z0-9-.] and cannot exceed a total of 64 characters. While \"latest\" is a well-known name for the latest version of a package, it is not yet supported and is reserved for future use. Creating a version called \"latest\" is not allowed.",
+          "type": "string"
+        },
+        "filename": {
+          "description": "The name of the file of the generic artifact to be uploaded. E.g. \"example-file.zip\" The filename should only include letters, numbers, and url safe characters, i.e. [a-zA-Z0-9-_.~@], and cannot exceed 64 characters.",
+          "type": "string"
+        }
       }
     },
     "UploadGenericArtifactMediaResponse": {
       "id": "UploadGenericArtifactMediaResponse",
       "description": "The response to upload a generic artifact.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "description": "Operation that will be returned to the user.",
+          "$ref": "Operation"
+        }
+      }
+    },
+    "UploadKfpArtifactRequest": {
+      "id": "UploadKfpArtifactRequest",
+      "description": "The request to upload an artifact.",
+      "type": "object",
+      "properties": {
+        "tags": {
+          "description": "Tags to be created with the version.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Description of the package version.",
+          "type": "string"
+        }
+      }
+    },
+    "UploadKfpArtifactMediaResponse": {
+      "id": "UploadKfpArtifactMediaResponse",
+      "description": "The response to upload an artifact.",
       "type": "object",
       "properties": {
         "operation": {
@@ -699,6 +750,11 @@
           "readOnly": true,
           "type": "string",
           "format": "int64"
+        },
+        "satisfiesPzs": {
+          "description": "Output only. If set, the repository satisfies physical zone separation.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },
@@ -870,12 +926,24 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "The user-provided ID of the upstream policy.",
+          "description": "The user-provided ID of the cleanup policy.",
           "type": "string"
         },
         "condition": {
           "description": "Policy condition that indicates when versions should be deleted.",
           "$ref": "CleanupPolicyCondition"
+        },
+        "action": {
+          "description": "Policy action.",
+          "type": "string",
+          "enumDescriptions": [
+            "Action not specified.",
+            "Delete action."
+          ],
+          "enum": [
+            "ACTION_UNSPECIFIED",
+            "DELETE"
+          ]
         }
       }
     },
@@ -983,7 +1051,7 @@
           }
         },
         "metadata": {
-          "description": "Output only. Repository-specific Metadata stored against this version. The fields returned are defined by the underlying repository-specific resource. Currently, the only resource in use is DockerImage",
+          "description": "Output only. Repository-specific Metadata stored against this version. The fields returned are defined by the underlying repository-specific resource. Currently, the resources could be: DockerImage MavenArtifact",
           "readOnly": true,
           "type": "object",
           "additionalProperties": {
@@ -1159,7 +1227,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
@@ -1458,6 +1526,22 @@
         }
       }
     },
+    "KfpArtifact": {
+      "id": "KfpArtifact",
+      "description": "A detailed representation of a GooGet artifact.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the KFP artifact. Since users don't directly interact with this resource, the name will be derived from the associated version. For example, when version = \"...\/versions\/sha256:abcdef...\", the name will be \"...\/kfpArtifacts\/sha256:abcdef...\".",
+          "readOnly": true,
+          "type": "string"
+        },
+        "version": {
+          "description": "The version associated with the KFP artifact. Must follow the Semantic Versioning standard.",
+          "type": "string"
+        }
+      }
+    },
     "UploadAptArtifactResponse": {
       "id": "UploadAptArtifactResponse",
       "description": "The response of the completed artifact upload operation. This response is contained in the Operation and available to users.",
@@ -1496,6 +1580,13 @@
     "UploadYumArtifactMetadata": {
       "id": "UploadYumArtifactMetadata",
       "description": "The operation metadata for uploading artifacts.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "UploadKfpArtifactMetadata": {
+      "id": "UploadKfpArtifactMetadata",
+      "description": "The operation metadata for uploading KFP artifacts.",
       "type": "object",
       "properties": {
       }
@@ -2013,6 +2104,11 @@
                           "description": "The next_page_token value returned from a previous list request, if any.",
                           "location": "query",
                           "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "The field to order the results by.",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -2480,13 +2576,6 @@
                       "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/genericArtifacts:create",
                       "httpMethod": "POST",
                       "parameters": {
-                        "name": {
-                          "description": "The resource name of the generic artifact.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/genericArtifacts\/[^\/]+\/[^\/]+\/[^\/]$",
-                          "location": "query",
-                          "required": true,
-                          "type": "string"
-                        },
                         "parent": {
                           "description": "The resource name of the repository where the generic artifact will be uploaded.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
@@ -2495,7 +2584,7 @@
                           "type": "string"
                         }
                       },
-                      "parameterOrder": [ 
+                      "parameterOrder": [
                         "parent"
                       ],
                       "supportsMediaUpload": true,
@@ -2523,16 +2612,16 @@
                     }
                   }
                 },
-                "goModules": {
+                "kfpArtifacts": {
                   "methods": {
                     "upload": {
-                      "id": "artifactregistry.projects.locations.repositories.goModules.upload",
-                      "path": "v1/{+parent}/goModules:create",
-                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/goModules:create",
+                      "id": "artifactregistry.projects.locations.repositories.kfpArtifacts.upload",
+                      "path": "v1/{+parent}/kfpArtifacts:create",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/kfpArtifacts:create",
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "The resource name of the repository where the Go module will be uploaded.",
+                          "description": "The resource name of the repository where the KFP artifact will be uploaded.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2550,61 +2639,25 @@
                         "protocols": {
                           "simple": {
                             "multipart": true,
-                            "path": "/upload/v1/{+parent}/goModules:create"
+                            "path": "/upload/v1/{+parent}/kfpArtifacts:create"
                           }
                         }
                       },
                       "request": {
-                        "$ref": "UploadGoModuleRequest"
+                        "$ref": "UploadKfpArtifactRequest"
                       },
                       "response": {
-                        "$ref": "UploadGoModuleMediaResponse"
+                        "$ref": "UploadKfpArtifactMediaResponse"
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Directly uploads a Go module. The returned Operation will complete once the Go module is uploaded. Package, Version, and File resources are created based on the uploaded Go module."
-                    },
-                    "upload": {
-                      "id": "artifactregistry.projects.locations.repositories.goModules.upload",
-                      "path": "v1/{+parent}/goArtifacts:create",
-                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/goArtifacts:create",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "The resource name of the repository where the Go module will be uploaded.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "supportsMediaUpload": true,
-                      "mediaUpload": {
-                        "accept": [
-                          "*/*"
-                        ],
-                        "protocols": {
-                          "simple": {
-                            "multipart": true,
-                            "path": "/upload/v1/{+parent}/goArtifacts:create"
-                          }
-                        }
-                      },
-                      "request": {
-                        "$ref": "UploadGoModuleRequest"
-                      },
-                      "response": {
-                        "$ref": "UploadGoModuleMediaResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Directly uploads a Go module. The returned Operation will complete once the Go module is uploaded. Package, Version, and File resources are created based on the uploaded Go module."
-                    },
+                      "description": "Directly uploads a KFP artifact. The returned Operation will complete once the resource is uploaded. Package, Version, and File resources will be created based on the uploaded artifact. Uploaded artifacts that conflict with existing resources will be overwritten."
+                    }
+                  }
+                },
+                "goModules": {
+                  "methods": {
                     "upload": {
                       "id": "artifactregistry.projects.locations.repositories.goModules.upload",
                       "path": "v1/{+parent}/goModules:create",

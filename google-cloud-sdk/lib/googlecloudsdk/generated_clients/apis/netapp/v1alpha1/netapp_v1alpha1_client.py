@@ -39,21 +39,21 @@ class NetappV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.projects_locations_activedirectories = self.ProjectsLocationsActivedirectoriesService(self)
+    self.projects_locations_activeDirectories = self.ProjectsLocationsActiveDirectoriesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
-    self.projects_locations_storagepools = self.ProjectsLocationsStoragepoolsService(self)
+    self.projects_locations_storagePools = self.ProjectsLocationsStoragePoolsService(self)
     self.projects_locations_volumes_snapshots = self.ProjectsLocationsVolumesSnapshotsService(self)
     self.projects_locations_volumes = self.ProjectsLocationsVolumesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
-  class ProjectsLocationsActivedirectoriesService(base_api.BaseApiService):
-    """Service class for the projects_locations_activedirectories resource."""
+  class ProjectsLocationsActiveDirectoriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_activeDirectories resource."""
 
-    _NAME = 'projects_locations_activedirectories'
+    _NAME = 'projects_locations_activeDirectories'
 
     def __init__(self, client):
-      super(NetappV1alpha1.ProjectsLocationsActivedirectoriesService, self).__init__(client)
+      super(NetappV1alpha1.ProjectsLocationsActiveDirectoriesService, self).__init__(client)
       self._upload_configs = {
           }
 
@@ -61,7 +61,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
       r"""CreateActiveDirectory Creates the active directory specified in the request.
 
       Args:
-        request: (NetappProjectsLocationsActivedirectoriesCreateRequest) input message
+        request: (NetappProjectsLocationsActiveDirectoriesCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -71,15 +71,15 @@ class NetappV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/activeDirectories',
         http_method='POST',
-        method_id='netapp.projects.locations.activedirectories.create',
+        method_id='netapp.projects.locations.activeDirectories.create',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=['activeDirectoryId'],
-        relative_path='v1alpha1/{+parent}/activedirectories',
+        relative_path='v1alpha1/{+parent}/activeDirectories',
         request_field='activeDirectory',
-        request_type_name='NetappProjectsLocationsActivedirectoriesCreateRequest',
+        request_type_name='NetappProjectsLocationsActiveDirectoriesCreateRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -88,7 +88,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
       r"""DeleteActiveDirectory Delete the active directory specified in the request.
 
       Args:
-        request: (NetappProjectsLocationsActivedirectoriesDeleteRequest) input message
+        request: (NetappProjectsLocationsActiveDirectoriesDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -98,15 +98,15 @@ class NetappV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories/{activedirectoriesId}',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/activeDirectories/{activeDirectoriesId}',
         http_method='DELETE',
-        method_id='netapp.projects.locations.activedirectories.delete',
+        method_id='netapp.projects.locations.activeDirectories.delete',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name='NetappProjectsLocationsActivedirectoriesDeleteRequest',
+        request_type_name='NetappProjectsLocationsActiveDirectoriesDeleteRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -115,7 +115,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
       r"""DescribeActiveDirectory Describes a specified active directory.
 
       Args:
-        request: (NetappProjectsLocationsActivedirectoriesGetRequest) input message
+        request: (NetappProjectsLocationsActiveDirectoriesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ActiveDirectory) The response message.
@@ -125,15 +125,15 @@ class NetappV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories/{activedirectoriesId}',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/activeDirectories/{activeDirectoriesId}',
         http_method='GET',
-        method_id='netapp.projects.locations.activedirectories.get',
+        method_id='netapp.projects.locations.activeDirectories.get',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name='NetappProjectsLocationsActivedirectoriesGetRequest',
+        request_type_name='NetappProjectsLocationsActiveDirectoriesGetRequest',
         response_type_name='ActiveDirectory',
         supports_download=False,
     )
@@ -142,26 +142,26 @@ class NetappV1alpha1(base_api.BaseApiClient):
       r"""ListActiveDirectories Lists active directories.
 
       Args:
-        request: (NetappProjectsLocationsActivedirectoriesListRequest) input message
+        request: (NetappProjectsLocationsActiveDirectoriesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListActiveDirectoryResponse) The response message.
+        (ListActiveDirectoriesResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/activeDirectories',
         http_method='GET',
-        method_id='netapp.projects.locations.activedirectories.list',
+        method_id='netapp.projects.locations.activeDirectories.list',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/activedirectories',
+        relative_path='v1alpha1/{+parent}/activeDirectories',
         request_field='',
-        request_type_name='NetappProjectsLocationsActivedirectoriesListRequest',
-        response_type_name='ListActiveDirectoryResponse',
+        request_type_name='NetappProjectsLocationsActiveDirectoriesListRequest',
+        response_type_name='ListActiveDirectoriesResponse',
         supports_download=False,
     )
 
@@ -169,7 +169,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
       r"""UpdateActiveDirectory Update the parameters of an active directories.
 
       Args:
-        request: (NetappProjectsLocationsActivedirectoriesPatchRequest) input message
+        request: (NetappProjectsLocationsActiveDirectoriesPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -179,15 +179,15 @@ class NetappV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/activedirectories/{activedirectoriesId}',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/activeDirectories/{activeDirectoriesId}',
         http_method='PATCH',
-        method_id='netapp.projects.locations.activedirectories.patch',
+        method_id='netapp.projects.locations.activeDirectories.patch',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['updateMask'],
         relative_path='v1alpha1/{+name}',
         request_field='activeDirectory',
-        request_type_name='NetappProjectsLocationsActivedirectoriesPatchRequest',
+        request_type_name='NetappProjectsLocationsActiveDirectoriesPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -310,13 +310,13 @@ class NetappV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsStoragepoolsService(base_api.BaseApiService):
-    """Service class for the projects_locations_storagepools resource."""
+  class ProjectsLocationsStoragePoolsService(base_api.BaseApiService):
+    """Service class for the projects_locations_storagePools resource."""
 
-    _NAME = 'projects_locations_storagepools'
+    _NAME = 'projects_locations_storagePools'
 
     def __init__(self, client):
-      super(NetappV1alpha1.ProjectsLocationsStoragepoolsService, self).__init__(client)
+      super(NetappV1alpha1.ProjectsLocationsStoragePoolsService, self).__init__(client)
       self._upload_configs = {
           }
 
@@ -324,7 +324,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
       r"""CreateStoragePool Creates a new storage pool.
 
       Args:
-        request: (NetappProjectsLocationsStoragepoolsCreateRequest) input message
+        request: (NetappProjectsLocationsStoragePoolsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -334,15 +334,15 @@ class NetappV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/storagepools',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/storagePools',
         http_method='POST',
-        method_id='netapp.projects.locations.storagepools.create',
+        method_id='netapp.projects.locations.storagePools.create',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=['storagePoolId'],
-        relative_path='v1alpha1/{+parent}/storagepools',
+        relative_path='v1alpha1/{+parent}/storagePools',
         request_field='storagePool',
-        request_type_name='NetappProjectsLocationsStoragepoolsCreateRequest',
+        request_type_name='NetappProjectsLocationsStoragePoolsCreateRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -351,7 +351,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
       r"""DeleteStoragePool Warning! This operation will permanently delete the storage pool.
 
       Args:
-        request: (NetappProjectsLocationsStoragepoolsDeleteRequest) input message
+        request: (NetappProjectsLocationsStoragePoolsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -361,15 +361,15 @@ class NetappV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/storagepools/{storagepoolsId}',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/storagePools/{storagePoolsId}',
         http_method='DELETE',
-        method_id='netapp.projects.locations.storagepools.delete',
+        method_id='netapp.projects.locations.storagePools.delete',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name='NetappProjectsLocationsStoragepoolsDeleteRequest',
+        request_type_name='NetappProjectsLocationsStoragePoolsDeleteRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -378,7 +378,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
       r"""GetStoragePool Returns the description of the specified storage pool by poolId.
 
       Args:
-        request: (NetappProjectsLocationsStoragepoolsGetRequest) input message
+        request: (NetappProjectsLocationsStoragePoolsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (StoragePool) The response message.
@@ -388,15 +388,15 @@ class NetappV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/storagepools/{storagepoolsId}',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/storagePools/{storagePoolsId}',
         http_method='GET',
-        method_id='netapp.projects.locations.storagepools.get',
+        method_id='netapp.projects.locations.storagePools.get',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name='NetappProjectsLocationsStoragepoolsGetRequest',
+        request_type_name='NetappProjectsLocationsStoragePoolsGetRequest',
         response_type_name='StoragePool',
         supports_download=False,
     )
@@ -405,7 +405,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
       r"""ListStoragePools Returns descriptions of all storage pools owned by the caller.
 
       Args:
-        request: (NetappProjectsLocationsStoragepoolsListRequest) input message
+        request: (NetappProjectsLocationsStoragePoolsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ListStoragePoolsResponse) The response message.
@@ -415,15 +415,15 @@ class NetappV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/storagepools',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/storagePools',
         http_method='GET',
-        method_id='netapp.projects.locations.storagepools.list',
+        method_id='netapp.projects.locations.storagePools.list',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/storagepools',
+        relative_path='v1alpha1/{+parent}/storagePools',
         request_field='',
-        request_type_name='NetappProjectsLocationsStoragepoolsListRequest',
+        request_type_name='NetappProjectsLocationsStoragePoolsListRequest',
         response_type_name='ListStoragePoolsResponse',
         supports_download=False,
     )
@@ -432,7 +432,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
       r"""UpdateStoragePool Updates the storage pool properties with the full spec.
 
       Args:
-        request: (NetappProjectsLocationsStoragepoolsPatchRequest) input message
+        request: (NetappProjectsLocationsStoragePoolsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -442,15 +442,15 @@ class NetappV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/storagepools/{storagepoolsId}',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/storagePools/{storagePoolsId}',
         http_method='PATCH',
-        method_id='netapp.projects.locations.storagepools.patch',
+        method_id='netapp.projects.locations.storagePools.patch',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['updateMask'],
         relative_path='v1alpha1/{+name}',
         request_field='storagePool',
-        request_type_name='NetappProjectsLocationsStoragepoolsPatchRequest',
+        request_type_name='NetappProjectsLocationsStoragePoolsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -629,7 +629,7 @@ class NetappV1alpha1(base_api.BaseApiClient):
         method_id='netapp.projects.locations.volumes.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['snapshotId', 'volumeId'],
+        query_params=['volumeId'],
         relative_path='v1alpha1/{+parent}/volumes',
         request_field='volume',
         request_type_name='NetappProjectsLocationsVolumesCreateRequest',

@@ -13,22 +13,42 @@ from apitools.base.py import extra_types
 package = 'blockchainnodeengine'
 
 
-class BlockchainNodeSpec(_messages.Message):
-  r"""Message describing BlockchainNodeSpec object
+class BlockchainNode(_messages.Message):
+  r"""Client-facing representation of a Blockchain Node.
+
+  Enums:
+    BlockchainTypeValueValuesEnum:
 
   Messages:
-    LabelsValue: Labels as key value pairs
+    LabelsValue: User-provided key-value pairs.
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
-    labels: Labels as key value pairs
-    name: name of resource
-    updateTime: Output only. [Output only] Update time stamp
+    blockchainType: A BlockchainTypeValueValuesEnum attribute.
+    connectionInfo: A ConnectionInformation attribute.
+    createTime: Output only. The timestamp at which the Blockchain Node was
+      first created.
+    ethereumDetails: A EthereumDetails attribute.
+    labels: User-provided key-value pairs.
+    name: Output only. The resource name. Resource names are scheme-less URIs
+      that follow conventions in http://cloud/apis/design/resource_names. e.g.
+      projects/my-project/locations/us-central1/blockchainNodes/my-node.
+    updateTime: Output only. The timestamp at which the Blockchain Node was
+      last updated.
   """
+
+  class BlockchainTypeValueValuesEnum(_messages.Enum):
+    r"""BlockchainTypeValueValuesEnum enum type.
+
+    Values:
+      BLOCKCHAIN_TYPE_UNSPECIFIED: <no description>
+      ETHEREUM: <no description>
+    """
+    BLOCKCHAIN_TYPE_UNSPECIFIED = 0
+    ETHEREUM = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
+    r"""User-provided key-value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -50,10 +70,13 @@ class BlockchainNodeSpec(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  blockchainType = _messages.EnumField('BlockchainTypeValueValuesEnum', 1)
+  connectionInfo = _messages.MessageField('ConnectionInformation', 2)
+  createTime = _messages.StringField(3)
+  ethereumDetails = _messages.MessageField('EthereumDetails', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class BlockchainnodeengineProjectsLocationsBlockchainNodesCreateRequest(_messages.Message):
@@ -61,11 +84,11 @@ class BlockchainnodeengineProjectsLocationsBlockchainNodesCreateRequest(_message
   object.
 
   Fields:
-    blockchainNodeSpec: A BlockchainNodeSpec resource to be passed as the
-      request body.
-    nodeId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and node_id from the method_signature of
-      Create RPC
+    blockchainNode: A BlockchainNode resource to be passed as the request
+      body.
+    blockchainNodeId: Required. Id of the requesting object If auto-generating
+      Id server-side, remove this field and node_id from the method_signature
+      of Create RPC
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -80,8 +103,8 @@ class BlockchainnodeengineProjectsLocationsBlockchainNodesCreateRequest(_message
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  blockchainNodeSpec = _messages.MessageField('BlockchainNodeSpec', 1)
-  nodeId = _messages.StringField(2)
+  blockchainNode = _messages.MessageField('BlockchainNode', 1)
+  blockchainNodeId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
 
@@ -144,9 +167,11 @@ class BlockchainnodeengineProjectsLocationsBlockchainNodesPatchRequest(_messages
   object.
 
   Fields:
-    blockchainNodeSpec: A BlockchainNodeSpec resource to be passed as the
-      request body.
-    name: name of resource
+    blockchainNode: A BlockchainNode resource to be passed as the request
+      body.
+    name: Output only. The resource name. Resource names are scheme-less URIs
+      that follow conventions in http://cloud/apis/design/resource_names. e.g.
+      projects/my-project/locations/us-central1/blockchainNodes/my-node.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -165,7 +190,7 @@ class BlockchainnodeengineProjectsLocationsBlockchainNodesPatchRequest(_messages
       provide a mask then all fields will be overwritten.
   """
 
-  blockchainNodeSpec = _messages.MessageField('BlockchainNodeSpec', 1)
+  blockchainNode = _messages.MessageField('BlockchainNode', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
@@ -254,7 +279,82 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class Empty(_messages.Message):
+class ConnectionInformation(_messages.Message):
+  r"""The connection information through which to interact with a Blockchain
+  Node.
+
+  Fields:
+    ipInfo: A IpInformation attribute.
+  """
+
+  ipInfo = _messages.MessageField('IpInformation', 1)
+
+
+class EthereumDetails(_messages.Message):
+  r"""Ethereum-specific Blockchain Node details.
+
+  Enums:
+    ConsensusClientValueValuesEnum:
+    ExecutionClientValueValuesEnum:
+    NetworkValueValuesEnum:
+    NodeTypeValueValuesEnum:
+
+  Fields:
+    consensusClient: A ConsensusClientValueValuesEnum attribute.
+    executionClient: A ExecutionClientValueValuesEnum attribute.
+    network: A NetworkValueValuesEnum attribute.
+    nodeType: A NodeTypeValueValuesEnum attribute.
+  """
+
+  class ConsensusClientValueValuesEnum(_messages.Enum):
+    r"""ConsensusClientValueValuesEnum enum type.
+
+    Values:
+      CONSENSUS_CLIENT_UNSPECIFIED: <no description>
+      LIGHTHOUSE: <no description>
+    """
+    CONSENSUS_CLIENT_UNSPECIFIED = 0
+    LIGHTHOUSE = 1
+
+  class ExecutionClientValueValuesEnum(_messages.Enum):
+    r"""ExecutionClientValueValuesEnum enum type.
+
+    Values:
+      EXECUTION_CLIENT_UNSPECIFIED: <no description>
+      GETH: <no description>
+    """
+    EXECUTION_CLIENT_UNSPECIFIED = 0
+    GETH = 1
+
+  class NetworkValueValuesEnum(_messages.Enum):
+    r"""NetworkValueValuesEnum enum type.
+
+    Values:
+      NETWORK_UNSPECIFIED: <no description>
+      MAINNET: <no description>
+    """
+    NETWORK_UNSPECIFIED = 0
+    MAINNET = 1
+
+  class NodeTypeValueValuesEnum(_messages.Enum):
+    r"""NodeTypeValueValuesEnum enum type.
+
+    Values:
+      NODE_TYPE_UNSPECIFIED: <no description>
+      LIGHT: <no description>
+      FULL: <no description>
+    """
+    NODE_TYPE_UNSPECIFIED = 0
+    LIGHT = 1
+    FULL = 2
+
+  consensusClient = _messages.EnumField('ConsensusClientValueValuesEnum', 1)
+  executionClient = _messages.EnumField('ExecutionClientValueValuesEnum', 2)
+  network = _messages.EnumField('NetworkValueValuesEnum', 3)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 4)
+
+
+class GoogleProtobufEmpty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
@@ -263,18 +363,39 @@ class Empty(_messages.Message):
 
 
 
+class IpInformation(_messages.Message):
+  r"""The public IP information through which to interact with a Blockchain
+  Node.
+
+  Fields:
+    p2pIpv4Address: Output only. The IPv4 address for the node peer-to-peer
+      endpoint.
+    p2pIpv6Address: Output only. The IPv6 address for the node peer-to-peer
+      endpoint.
+    rpcIpv4Address: Output only. The IPv4 address for the node RPC API
+      endpoint.
+    rpcIpv6Address: Output only. The IPv6 address for the node RPC API
+      endpoint.
+  """
+
+  p2pIpv4Address = _messages.StringField(1)
+  p2pIpv6Address = _messages.StringField(2)
+  rpcIpv4Address = _messages.StringField(3)
+  rpcIpv6Address = _messages.StringField(4)
+
+
 class ListBlockchainNodesResponse(_messages.Message):
   r"""Message for response to listing Nodes
 
   Fields:
+    blockchainNodes: The list of nodes
     nextPageToken: A token identifying a page of results the server should
       return.
-    nodes: The list of nodes
     unreachable: Locations that could not be reached.
   """
 
-  nextPageToken = _messages.StringField(1)
-  nodes = _messages.MessageField('BlockchainNodeSpec', 2, repeated=True)
+  blockchainNodes = _messages.MessageField('BlockchainNode', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
 

@@ -6,7 +6,7 @@
   "canonicalName": "Stream",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "Stream API",
+  "title": "Immersive Stream for XR API",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -301,6 +301,14 @@
           "description": "Build time stamp",
           "type": "string",
           "format": "google-datetime"
+        },
+        "isFailed": {
+          "description": "Boolean value whether build failed.",
+          "type": "boolean"
+        },
+        "buildLogUri": {
+          "description": "Build log uri.",
+          "type": "string"
         }
       }
     },

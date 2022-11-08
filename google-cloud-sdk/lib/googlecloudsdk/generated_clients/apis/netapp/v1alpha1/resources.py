@@ -42,12 +42,12 @@ class Collections(enum.Enum):
       True
   )
   PROJECTS_LOCATIONS_ACTIVEDIRECTORIES = (
-      'projects.locations.activedirectories',
+      'projects.locations.activeDirectories',
       '{+name}',
       {
           '':
               'projects/{projectsId}/locations/{locationsId}/'
-              'activedirectories/{activedirectoriesId}',
+              'activeDirectories/{activeDirectoriesId}',
       },
       ['name'],
       True
@@ -64,12 +64,12 @@ class Collections(enum.Enum):
       True
   )
   PROJECTS_LOCATIONS_STORAGEPOOLS = (
-      'projects.locations.storagepools',
+      'projects.locations.storagePools',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}/storagepools/'
-              '{storagepoolsId}',
+              'projects/{projectsId}/locations/{locationsId}/storagePools/'
+              '{storagePoolsId}',
       },
       ['name'],
       True

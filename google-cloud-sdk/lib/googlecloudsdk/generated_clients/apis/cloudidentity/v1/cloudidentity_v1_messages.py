@@ -1787,7 +1787,7 @@ class GoogleAppsCloudidentityDevicesV1LookupSelfDeviceUsersResponse(_messages.Me
   the caller's credentials.
 
   Fields:
-    customer: The obfuscated customer Id that may be passed back to other
+    customer: The customer resource name that may be passed back to other
       Devices API methods such as List, Get, etc.
     names: [Resource
       names](https://cloud.google.com/apis/design/resource_names) of the

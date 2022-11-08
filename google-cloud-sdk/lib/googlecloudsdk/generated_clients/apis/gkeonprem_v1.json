@@ -222,6 +222,7 @@
           "type": "string"
         },
         "bareMetalVersion": {
+          "description": "Required. The Anthos clusters on Bare Metal version for your Bare Metal User Cluster.",
           "type": "string"
         },
         "uid": {
@@ -347,6 +348,11 @@
         "securityConfig": {
           "description": "Security related setting configuration.",
           "$ref": "BareMetalSecurityConfig"
+        },
+        "maintenanceStatus": {
+          "description": "Output only. Status of on-going maintenance tasks.",
+          "readOnly": true,
+          "$ref": "BareMetalMaintenanceStatus"
         }
       }
     },
@@ -948,6 +954,65 @@
         }
       }
     },
+    "BareMetalMaintenanceStatus": {
+      "id": "BareMetalMaintenanceStatus",
+      "description": "BareMetalMaintenanceStatus represents the maintenance status for Bare Metal user clusters.",
+      "type": "object",
+      "properties": {
+        "machineDrainStatus": {
+          "description": "The maintenance status of node machines.",
+          "$ref": "BareMetalMachineDrainStatus"
+        }
+      }
+    },
+    "BareMetalMachineDrainStatus": {
+      "id": "BareMetalMachineDrainStatus",
+      "description": "BareMetalAdminMachineDrainStatus represents the status of Bare Metal node machines that are undergoing drain operations.",
+      "type": "object",
+      "properties": {
+        "drainingMachines": {
+          "description": "The list of draning machines.",
+          "type": "array",
+          "items": {
+            "$ref": "BareMetalDrainingMachine"
+          }
+        },
+        "drainedMachines": {
+          "description": "The list of drained machines.",
+          "type": "array",
+          "items": {
+            "$ref": "BareMetalDrainedMachine"
+          }
+        }
+      }
+    },
+    "BareMetalDrainingMachine": {
+      "id": "BareMetalDrainingMachine",
+      "description": "BareMetalDrainingMachine represents a machine that is currently draining.",
+      "type": "object",
+      "properties": {
+        "nodeIp": {
+          "description": "Draining machine IP address.",
+          "type": "string"
+        },
+        "podCount": {
+          "description": "The count of pods yet to drain.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "BareMetalDrainedMachine": {
+      "id": "BareMetalDrainedMachine",
+      "description": "BareMetalDrainedMachine represents a machine that is currently drained.",
+      "type": "object",
+      "properties": {
+        "nodeIp": {
+          "description": "Drained machine IP address.",
+          "type": "string"
+        }
+      }
+    },
     "EnrollBareMetalClusterRequest": {
       "id": "EnrollBareMetalClusterRequest",
       "description": "Message for enrolling an existing Bare Metal Cluster to the GKE on-prem API.",
@@ -1192,6 +1257,11 @@
           "description": "Output only. ValidationCheck represents the result of the preflight check job.",
           "readOnly": true,
           "$ref": "ValidationCheck"
+        },
+        "adminClusterName": {
+          "description": "Output only. The resource name of the Vmware Admin Cluster hosting this User Cluster.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },

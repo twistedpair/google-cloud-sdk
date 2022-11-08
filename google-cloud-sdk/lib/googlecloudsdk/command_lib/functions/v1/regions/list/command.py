@@ -19,34 +19,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import exceptions as api_exceptions
-from apitools.base.py import list_pager
-
 from googlecloudsdk.api_lib.functions.v1 import util
-from googlecloudsdk.calliope import exceptions as base_exceptions
-from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import properties
 
 
 def Run(args):
   """Lists regions available with the given args."""
   del args  # unused by list command
-  client = util.GetApiClientInstance()
-  list_generator = list_pager.YieldFromList(
-      service=client.projects_locations,
-      request=_BuildRequest(),
-      field='locations',
-      batch_size_attribute='pageSize')
-  try:
-    for item in list_generator:
-      yield item
-  except api_exceptions.HttpError as error:
-    msg = util.GetHttpErrorMessage(error)
-    exceptions.reraise(base_exceptions.HttpException(msg))
-
-
-def _BuildRequest():
-  messages = util.GetApiMessagesModule()
-  project = properties.VALUES.core.project.GetOrFail()
-  return messages.CloudfunctionsProjectsLocationsListRequest(
-      name='projects/' + project)
+  return util.ListRegions()

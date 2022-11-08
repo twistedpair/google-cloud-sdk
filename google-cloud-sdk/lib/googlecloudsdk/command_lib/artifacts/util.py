@@ -212,9 +212,9 @@ def AppendUpstreamPoliciesToRequest(repo_ref, repo_args, request):
     if isinstance(
         request,
         messages.ArtifactregistryProjectsLocationsRepositoriesPatchRequest):
-      if request.updateMask:
-        request.updateMask += ","
-      request.updateMask += "virtual_repository_config"
+      # Clear the updateMask for update request, so AR will replace all old
+      # policies with policies from the file.
+      request.updateMask = ""
     content = console_io.ReadFromFileOrStdin(
         repo_args.upstream_policy_file, binary=False)
     policies = json.loads(content)

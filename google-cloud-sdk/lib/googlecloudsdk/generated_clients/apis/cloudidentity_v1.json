@@ -617,7 +617,7 @@
           }
         },
         "customer": {
-          "description": "The obfuscated customer Id that may be passed back to other Devices API methods such as List, Get, etc.",
+          "description": "The customer resource name that may be passed back to other Devices API methods such as List, Get, etc.",
           "type": "string"
         },
         "nextPageToken": {

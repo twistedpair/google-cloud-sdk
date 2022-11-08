@@ -33,8 +33,7 @@ class Backup(_messages.Message):
       `projects//instances//databases/`.
     databaseDialect: Output only. The database dialect information for the
       backup.
-    encryptionInfo: Output only. Output only. The encryption information for
-      the backup. .
+    encryptionInfo: Output only. The encryption information for the backup.
     expireTime: Required for the CreateBackup operation. The expiration time
       of the backup, with microseconds granularity that must be at least 6
       hours and at most 366 days from the time the CreateBackup request is

@@ -52,17 +52,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_INSTANCES_SSHKEYS = (
-      'projects.locations.instances.sshkeys',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/instances/'
-              '{instancesId}/sshkeys/{sshkeysId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

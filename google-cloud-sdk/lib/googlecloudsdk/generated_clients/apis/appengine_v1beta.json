@@ -200,7 +200,8 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Full path to the Application resource in the API. Example: apps\/myapp.@OutputOnly",
+          "description": "Output only. Full path to the Application resource in the API. Example: apps\/myapp.@OutputOnly",
+          "readOnly": true,
           "type": "string"
         },
         "id": {
@@ -223,7 +224,8 @@
           "type": "string"
         },
         "codeBucket": {
-          "description": "Google Cloud Storage bucket that can be used for storing files associated with this application. This bucket is associated with the application and can be used by the gcloud deployment commands.@OutputOnly",
+          "description": "Output only. Google Cloud Storage bucket that can be used for storing files associated with this application. This bucket is associated with the application and can be used by the gcloud deployment commands.@OutputOnly",
+          "readOnly": true,
           "type": "string"
         },
         "defaultCookieExpiration": {
@@ -248,11 +250,13 @@
           ]
         },
         "defaultHostname": {
-          "description": "Hostname used to reach this application, as resolved by App Engine.@OutputOnly",
+          "description": "Output only. Hostname used to reach this application, as resolved by App Engine.@OutputOnly",
+          "readOnly": true,
           "type": "string"
         },
         "defaultBucket": {
-          "description": "Google Cloud Storage bucket that can be used by this application to store content.@OutputOnly",
+          "description": "Output only. Google Cloud Storage bucket that can be used by this application to store content.@OutputOnly",
+          "readOnly": true,
           "type": "string"
         },
         "serviceAccount": {
@@ -263,7 +267,8 @@
           "$ref": "IdentityAwareProxy"
         },
         "gcrDomain": {
-          "description": "The Google Container Registry domain used for storing managed build docker images for this application.",
+          "description": "Output only. The Google Container Registry domain used for storing managed build docker images for this application.",
+          "readOnly": true,
           "type": "string"
         },
         "databaseType": {
@@ -325,7 +330,8 @@
           "type": "string"
         },
         "oauth2ClientSecretSha256": {
-          "description": "Hex-encoded SHA-256 hash of the client secret.@OutputOnly",
+          "description": "Output only. Hex-encoded SHA-256 hash of the client secret.@OutputOnly",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -2342,6 +2348,248 @@
     }
   },
   "resources": {
+    "projects": {
+      "resources": {
+        "locations": {
+          "methods": {
+            "list": {
+              "id": "appengine.projects.locations.list",
+              "path": "v1beta/{+name}/locations",
+              "flatPath": "v1beta/projects/{projectsId}/locations",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in AIP-160 (https:\/\/google.aip.dev\/160).",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token received from the next_page_token field in the response. Send that page token to receive the subsequent page.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ListLocationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/appengine.admin",
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ],
+              "description": "Lists information about the supported locations for this service."
+            },
+            "get": {
+              "id": "appengine.projects.locations.get",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Location"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/appengine.admin",
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ],
+              "description": "Gets information about a location."
+            }
+          }
+          ,
+          "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "appengine.projects.locations.operations.list",
+                  "path": "v1beta/{+name}/operations",
+                  "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/appengine.admin",
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users\/*\/operations. To override the binding, API services can add a binding such as \"\/v1\/{name=users\/*}\/operations\" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "appengine.projects.locations.operations.get",
+                  "path": "v1beta/{+name}",
+                  "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/appengine.admin",
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                }
+              }
+            },
+            "applications": {
+              "methods": {
+                "get": {
+                  "id": "appengine.projects.locations.applications.get",
+                  "path": "v1beta/{+name}",
+                  "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Name of the Application resource to get. Example: apps\/myapp.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/applications\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Application"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/appengine.admin",
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only"
+                  ],
+                  "description": "Gets information about an application."
+                },
+                "create": {
+                  "id": "appengine.projects.locations.applications.create",
+                  "path": "v1beta/{+parent}/applications",
+                  "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/applications",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "The project and location in which the application should be created, specified in the format projects\/*\/locations\/*",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Application"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates an App Engine application for a Google Cloud Platform project. Required fields: id - The ID of the target Cloud Platform project. location - The region (https:\/\/cloud.google.com\/appengine\/docs\/locations) where you want the App Engine application located.For more information about App Engine applications, see Managing Projects, Applications, and Billing (https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/console\/)."
+                },
+                "repair": {
+                  "id": "appengine.projects.locations.applications.repair",
+                  "path": "v1beta/{+name}:repair",
+                  "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}:repair",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Name of the application to repair. Example: apps\/myapp",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/applications\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RepairApplicationRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Recreates the required App Engine features for the specified App Engine application, for example a Cloud Storage bucket or App Engine service account. Use this method if you receive an error message about a missing feature, for example, Error retrieving the App Engine service account. If you have deleted your App Engine service account, this will not be able to recreate it. Instead, you should attempt to use the IAM undelete API if possible at https:\/\/cloud.google.com\/iam\/reference\/rest\/v1\/projects.serviceAccounts\/undelete?apix_params=%7B\"name\"%3A\"projects%2F-%2FserviceAccounts%2Funique_id\"%2C\"resource\"%3A%7B%7D%7D . If the deletion was recent, the numeric ID can be found in the Cloud Console Activity Log."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "apps": {
       "methods": {
         "get": {
@@ -2377,6 +2625,11 @@
           "flatPath": "v1beta/apps",
           "httpMethod": "POST",
           "parameters": {
+            "parent": {
+              "description": "The project and location in which the application should be created, specified in the format projects\/*\/locations\/*",
+              "location": "query",
+              "type": "string"
+            }
           },
           "parameterOrder": [
           ],

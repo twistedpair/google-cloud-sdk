@@ -69,6 +69,11 @@ class AbortInfo(_messages.Message):
       MISMATCHED_DESTINATION_NETWORK: Aborted because the destination network
         does not match the destination endpoint.
       UNSUPPORTED: Aborted because the test scenario is not supported.
+      MISMATCHED_IP_VERSION: Aborted because the source and destination
+        resources have no common IP version.
+      GKE_KONNECTIVITY_PROXY_UNSUPPORTED: Aborted because the connection
+        between the control plane and the node of the source cluster is
+        initiated by the node and managed by the Konnectivity proxy.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_NETWORK = 1
@@ -86,6 +91,8 @@ class AbortInfo(_messages.Message):
     DESTINATION_ENDPOINT_NOT_FOUND = 13
     MISMATCHED_DESTINATION_NETWORK = 14
     UNSUPPORTED = 15
+    MISMATCHED_IP_VERSION = 16
+    GKE_KONNECTIVITY_PROXY_UNSUPPORTED = 17
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   projectsMissingPermission = _messages.StringField(2, repeated=True)
@@ -374,13 +381,13 @@ class DeliverInfo(_messages.Message):
       GOOGLE_API: Target is a Google API.
       GKE_MASTER: Target is a Google Kubernetes Engine cluster master.
       CLOUD_SQL_INSTANCE: Target is a Cloud SQL instance.
-      PSC_PUBLISHED_SERVICE: Target is a published service using [Private
+      PSC_PUBLISHED_SERVICE: Target is a published service that uses [Private
         Service Connect](https://cloud.google.com/vpc/docs/configure-private-
         service-connect-services).
-      PSC_GOOGLE_API: Target is all Google APIs using [Private Service
+      PSC_GOOGLE_API: Target is all Google APIs that use [Private Service
         Connect](https://cloud.google.com/vpc/docs/configure-private-service-
         connect-apis).
-      PSC_VPC_SC: Target is VPC-SC using [Private Service
+      PSC_VPC_SC: Target is a VPC-SC that uses [Private Service
         Connect](https://cloud.google.com/vpc/docs/configure-private-service-
         connect-apis).
     """
@@ -442,6 +449,9 @@ class DropInfo(_messages.Message):
         if the IP address is being used in the project.
       FORWARDING_RULE_MISMATCH: Forwarding rule's protocol and ports do not
         match the packet header.
+      FORWARDING_RULE_REGION_MISMATCH: Packet could be dropped because it was
+        sent from a different region to a regional forwarding without global
+        access.
       FORWARDING_RULE_NO_INSTANCES: Forwarding rule does not have backends
         configured.
       FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK: Firewalls block
@@ -451,6 +461,10 @@ class DropInfo(_messages.Message):
         balancing/docs/health-checks#firewall_rules).
       INSTANCE_NOT_RUNNING: Packet is sent from or to a Compute Engine
         instance that is not in a running state.
+      GKE_CLUSTER_NOT_RUNNING: Packet sent from or to a GKE cluster that is
+        not in running state.
+      CLOUD_SQL_INSTANCE_NOT_RUNNING: Packet sent from or to a Cloud SQL
+        instance that is not in running state.
       TRAFFIC_TYPE_BLOCKED: The type of traffic is blocked and the user cannot
         configure a firewall rule to enable it. See [Always blocked
         traffic](https://cloud.google.com/vpc/docs/firewalls#blockedtraffic)
@@ -473,14 +487,30 @@ class DropInfo(_messages.Message):
         Services Network.
       CLOUD_SQL_INSTANCE_NO_IP_ADDRESS: Packet was dropped because the Cloud
         SQL instance has neither a private nor a public IP address.
+      GKE_CONTROL_PLANE_REGION_MISMATCH: Packet was dropped because a GKE
+        cluster private endpoint is unreachable from a region different from
+        the cluster's region.
+      PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION: Packet sent from a
+        public GKE cluster control plane to a private IP address.
+      GKE_CONTROL_PLANE_NO_ROUTE: Packet was dropped because there is no route
+        from a GKE cluster control plane to a destination network.
+      CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC: Packet sent from
+        a Cloud SQL instance to an external IP address is not allowed. The
+        Cloud SQL instance is not configured to send packets to external IP
+        addresses.
+      PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION: Packet sent from a
+        Cloud SQL instance with only a public IP address to a private IP
+        address.
+      CLOUD_SQL_INSTANCE_NO_ROUTE: Packet was dropped because there is no
+        route from a Cloud SQL instance to a destination network.
       CLOUD_FUNCTION_NOT_ACTIVE: Packet could be dropped because the Cloud
         Function is not in an active status.
       VPC_CONNECTOR_NOT_SET: Packet could be dropped because no VPC connector
         is set.
       VPC_CONNECTOR_NOT_RUNNING: Packet could be dropped because the VPC
         connector is not in a running state.
-      PSC_CONNECTION_NOT_ACCEPTED: Privte Service Connect (PSC) connection is
-        not in accepted state.
+      PSC_CONNECTION_NOT_ACCEPTED: The Private Service Connect endpoint is in
+        a project that is not approved to connect to the service.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -494,20 +524,29 @@ class DropInfo(_messages.Message):
     NO_EXTERNAL_ADDRESS = 9
     UNKNOWN_INTERNAL_ADDRESS = 10
     FORWARDING_RULE_MISMATCH = 11
-    FORWARDING_RULE_NO_INSTANCES = 12
-    FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK = 13
-    INSTANCE_NOT_RUNNING = 14
-    TRAFFIC_TYPE_BLOCKED = 15
-    GKE_MASTER_UNAUTHORIZED_ACCESS = 16
-    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 17
-    DROPPED_INSIDE_GKE_SERVICE = 18
-    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 19
-    GOOGLE_MANAGED_SERVICE_NO_PEERING = 20
-    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 21
-    CLOUD_FUNCTION_NOT_ACTIVE = 22
-    VPC_CONNECTOR_NOT_SET = 23
-    VPC_CONNECTOR_NOT_RUNNING = 24
-    PSC_CONNECTION_NOT_ACCEPTED = 25
+    FORWARDING_RULE_REGION_MISMATCH = 12
+    FORWARDING_RULE_NO_INSTANCES = 13
+    FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK = 14
+    INSTANCE_NOT_RUNNING = 15
+    GKE_CLUSTER_NOT_RUNNING = 16
+    CLOUD_SQL_INSTANCE_NOT_RUNNING = 17
+    TRAFFIC_TYPE_BLOCKED = 18
+    GKE_MASTER_UNAUTHORIZED_ACCESS = 19
+    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 20
+    DROPPED_INSIDE_GKE_SERVICE = 21
+    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 22
+    GOOGLE_MANAGED_SERVICE_NO_PEERING = 23
+    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 24
+    GKE_CONTROL_PLANE_REGION_MISMATCH = 25
+    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 26
+    GKE_CONTROL_PLANE_NO_ROUTE = 27
+    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 28
+    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 29
+    CLOUD_SQL_INSTANCE_NO_ROUTE = 30
+    CLOUD_FUNCTION_NOT_ACTIVE = 31
+    VPC_CONNECTOR_NOT_SET = 32
+    VPC_CONNECTOR_NOT_RUNNING = 33
+    PSC_CONNECTION_NOT_ACCEPTED = 34
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)
@@ -740,6 +779,7 @@ class ForwardInfo(_messages.Message):
       IMPORTED_CUSTOM_ROUTE_NEXT_HOP: Forwarded to the next hop of a custom
         route imported from a peering VPC.
       CLOUD_SQL_INSTANCE: Forwarded to a Cloud SQL instance.
+      ANOTHER_PROJECT: Forwarded to a VPC network in another project.
     """
     TARGET_UNSPECIFIED = 0
     PEERING_VPC = 1
@@ -748,6 +788,7 @@ class ForwardInfo(_messages.Message):
     GKE_MASTER = 4
     IMPORTED_CUSTOM_ROUTE_NEXT_HOP = 5
     CLOUD_SQL_INSTANCE = 6
+    ANOTHER_PROJECT = 7
 
   resourceUri = _messages.StringField(1)
   target = _messages.EnumField('TargetValueValuesEnum', 2)

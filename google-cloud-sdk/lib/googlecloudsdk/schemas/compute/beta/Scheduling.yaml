@@ -51,6 +51,12 @@ properties:
       resources. This field is for use by internal tools that use the public
       API.
     type: string
+  maxRunDuration:
+    description: |-
+      Specifies the max run duration for the given instance. If specified, the
+      instance termination action will be performed at the end of the run
+      duration.
+    $ref: Duration.yaml
   minNodeCpus:
     description: |-
       The minimum number of virtual CPUs this instance will consume when running
@@ -86,3 +92,9 @@ properties:
     type: string
     enum:
     - SPOT
+  terminationTime:
+    description: |-
+      Specifies the timestamp, when the instance will be terminated, in
+      RFC3339 text format. If specified, the instance termination action
+      will be performed at the termination time.
+    type: string

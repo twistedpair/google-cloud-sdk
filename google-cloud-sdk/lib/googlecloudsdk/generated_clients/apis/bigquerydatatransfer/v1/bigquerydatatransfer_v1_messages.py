@@ -956,7 +956,7 @@ class DataSourceParameter(_messages.Message):
     displayName: Parameter display name in the user interface.
     fields: Deprecated. This field has no effect.
     immutable: Cannot be changed after initial creation.
-    maxValue: For integer and double values specifies maxminum allowed value.
+    maxValue: For integer and double values specifies maximum allowed value.
     minValue: For integer and double values specifies minimum allowed value.
     paramId: Parameter identifier.
     recurse: Deprecated. This field has no effect.

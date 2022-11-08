@@ -758,29 +758,9 @@
           "description": "The unqualified resource name. Should follow the ^[A-Za-z0-9_.~+%-]+$ regex format. This is only specified when requesting a single node. In case of multi-node requests, multi_node_params must be populated instead. It's an error to specify both node_id and multi_node_params.",
           "type": "string"
         },
-        "multiNodeParams": {
-          "description": "Fields to specify in case of multi-node request.",
-          "$ref": "MultiNodeParams"
-        },
         "node": {
           "description": "Required. The node.",
           "$ref": "Node"
-        }
-      }
-    },
-    "MultiNodeParams": {
-      "id": "MultiNodeParams",
-      "description": "Parameters to specify for multi-node QueuedResource requests. This field must be populated in case of multi-node requests instead of node_id. It's an error to specify both node_id and multi_node_params.",
-      "type": "object",
-      "properties": {
-        "nodeCount": {
-          "description": "Required. Number of nodes with this spec. The system will attempt to provison \"node_count\" nodes as part of the request. This needs to be > 1.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "nodeIdPrefix": {
-          "description": "Prefix of node_ids in case of multi-node request Should follow the ^[A-Za-z0-9_.~+%-]+$ regex format. If node_count = 3 and node_id_prefix = \"np\", node ids of nodes created will be \"np-0\", \"np-1\", \"np-2\". If this field is not provided we use queued_resource_id as the node_id_prefix.",
-          "type": "string"
         }
       }
     },
@@ -1051,8 +1031,15 @@
           "type": "string"
         },
         "type": {
-          "description": "the accelerator type.",
+          "description": "The accelerator type.",
           "type": "string"
+        },
+        "acceleratorConfigs": {
+          "description": "The accelerator config.",
+          "type": "array",
+          "items": {
+            "$ref": "AcceleratorConfig"
+          }
         }
       }
     },

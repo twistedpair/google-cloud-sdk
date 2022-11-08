@@ -136,6 +136,33 @@ class ComposerV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExecuteAirflowCommand(self, request, global_params=None):
+      r"""Executes Airflow CLI command.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsExecuteAirflowCommandRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExecuteAirflowCommandResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExecuteAirflowCommand')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExecuteAirflowCommand.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:executeAirflowCommand',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.executeAirflowCommand',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1beta1/{+environment}:executeAirflowCommand',
+        request_field='executeAirflowCommandRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsExecuteAirflowCommandRequest',
+        response_type_name='ExecuteAirflowCommandResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Get an existing environment.
 
@@ -241,6 +268,33 @@ class ComposerV1beta1(base_api.BaseApiClient):
         request_field='environment',
         request_type_name='ComposerProjectsLocationsEnvironmentsPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def PollAirflowCommand(self, request, global_params=None):
+      r"""Polls Airflow CLI command execution and fetches logs.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsPollAirflowCommandRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PollAirflowCommandResponse) The response message.
+      """
+      config = self.GetMethodConfig('PollAirflowCommand')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PollAirflowCommand.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:pollAirflowCommand',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.pollAirflowCommand',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1beta1/{+environment}:pollAirflowCommand',
+        request_field='pollAirflowCommandRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsPollAirflowCommandRequest',
+        response_type_name='PollAirflowCommandResponse',
         supports_download=False,
     )
 

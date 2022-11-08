@@ -189,10 +189,11 @@ class HostConfig(_messages.Message):
   r"""HostConfig has different instance endpoints.
 
   Fields:
-    api: API endpoint.
-    gitHttp: Git HTTP endpoint.
-    gitSsh: Git SSH endpoint.
-    html: HTML endpoint.
+    api: API hostname. This is the hostname to use for **Host: Data Plane**
+      endpoints.
+    gitHttp: Git HTTP hostname.
+    gitSsh: Git SSH hostname.
+    html: HTML hostname.
   """
 
   api = _messages.StringField(1)
@@ -202,7 +203,7 @@ class HostConfig(_messages.Message):
 
 
 class InitialConfig(_messages.Message):
-  r"""Repository initialization configs.
+  r"""Repository initialization configuration.
 
   Fields:
     defaultBranch: Default branch name of the repository.
@@ -347,21 +348,18 @@ class Instance(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs.
 
   Fields:
-    adminAccount: Optional. The email account used to set up the Gitea admin.
-      This must support authentication for both Gaia users and third-party
-      users.
     createTime: Output only. Create timestamp.
-    hostConfig: Output only. The proto for different host endpoints.
+    hostConfig: Output only. A list of hostnames for this Instance.
     labels: Optional. Labels as key value pairs.
     name: Optional. A unique identifier for an instance. The name should be of
-      the format: projects/{project_number}/locations/{location_id}/instances/
-      {instance_id} project_number: Maps to a unique int64 id assigned to each
-      project. We use project_number instead of project_id as per the external
-      API recommendation. location_id: Refers to the region where the instance
-      should be deployed. Since SecureSourceManager is a regional service, it
-      must be one of the valid GCP regions. instance_id: User provided name
-      for the instance, must be unique for a project_number and location_id
-      combination.
+      the format: `projects/{project_number}/locations/{location_id}/instances
+      /{instance_id}` `project_number`: Maps to a unique int64 id assigned to
+      each project. We use project_number instead of project_id as per the
+      external API recommendation. `location_id`: Refers to the region where
+      the instance will be deployed. Since SecureSourceManager is a regional
+      service, it must be one of the valid GCP regions. `instance_id`: User
+      provided name for the instance, must be unique for a project_number and
+      location_id combination.
     state: Output only. Current state of the instance.
     updateTime: Output only. Update timestamp.
   """
@@ -405,13 +403,34 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  adminAccount = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  hostConfig = _messages.MessageField('HostConfig', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  createTime = _messages.StringField(1)
+  hostConfig = _messages.MessageField('HostConfig', 2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  updateTime = _messages.StringField(6)
+
+
+class IssueRedirectTicketInternalRequest(_messages.Message):
+  r"""IssueRedirectTicketInternalRequest is the request to issue a redirect
+  ticket for an instance. For internal use only.
+
+  Fields:
+    redirectUri: Required. URI to be used in the redirect.
+  """
+
+  redirectUri = _messages.StringField(1)
+
+
+class IssueRedirectTicketInternalResponse(_messages.Message):
+  r"""IssueRedirectTicketInternalResponse is the response for issuing a
+  redirect ticket. For internal use only.
+
+  Fields:
+    ticketId: ID of the created redirect ticket.
+  """
+
+  ticketId = _messages.StringField(1)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -466,19 +485,6 @@ class ListRepositoriesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   repositories = _messages.MessageField('Repository', 2, repeated=True)
-
-
-class ListSshKeysResponse(_messages.Message):
-  r"""ListSshKeysResponse is the response for listing SSH Keys.
-
-  Fields:
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    sshkeys: The list of SSH keys.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  sshkeys = _messages.MessageField('SshKey', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -775,89 +781,36 @@ class Policy(_messages.Message):
 
 
 class Repository(_messages.Message):
-  r"""Metadata of a SecureSourceManager Repository.
-
-  Messages:
-    AnnotationsValue: Optional. User annotations. These attributes can only be
-      set and used by the user. See https://google.aip.dev/128#annotations for
-      more details such as format and size limitations.
+  r"""Metadata of a Secure Source Manager Repository.
 
   Fields:
-    annotations: Optional. User annotations. These attributes can only be set
-      and used by the user. See https://google.aip.dev/128#annotations for
-      more details such as format and size limitations.
     createTime: Output only. Create timestamp.
-    description: Optional. Description of the repository, this should not
+    description: Optional. Description of the repository, which cannot not
       exceed 500 characters.
     etag: Optional. This checksum is computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
     initialConfig: Input only. Initial configurations for the repository.
-    instance: Output only. The name of the instance that the repository is
-      created in.
+    instance: Output only. The name of the instance in which the repository is
+      hosted, formatted as `projects/{project_number}/locations/{location_id}/
+      instances/{instance_id}`
     name: Optional. A unique identifier for a repository. The name should be
-      of the format:
-      projects/{project}/locations/{location_id}/repositories/{repository_id}
+      of the format: `projects/{project}/locations/{location_id}/repositories/
+      {repository_id}`
     uid: Output only. Unique identifier of the repository.
     updateTime: Output only. Update timestamp.
-    uris: Output only. uris for the repository.
+    uris: Output only. URIs for the repository.
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AnnotationsValue(_messages.Message):
-    r"""Optional. User annotations. These attributes can only be set and used
-    by the user. See https://google.aip.dev/128#annotations for more details
-    such as format and size limitations.
-
-    Messages:
-      AdditionalProperty: An additional property for a AnnotationsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AnnotationsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AnnotationsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  initialConfig = _messages.MessageField('InitialConfig', 5)
-  instance = _messages.StringField(6)
-  name = _messages.StringField(7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
-  uris = _messages.MessageField('URIs', 10)
-
-
-class SecuresourcemanagerOrganizationsLocationsRepositoriesCreateRepositoryInternalRequest(_messages.Message):
-  r"""A SecuresourcemanagerOrganizationsLocationsRepositoriesCreateRepositoryI
-  nternalRequest object.
-
-  Fields:
-    parent: Required. The project in which to create the repo. Values are of
-      the form `projects/{project_number}/locations/{location_id}`
-    repository: A Repository resource to be passed as the request body.
-    repositoryId: Required. The ID to use for the repository, which will
-      become the final component of the repository's resource name. This value
-      should be 4-63 characters, and valid characters are /a-z-/.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  repository = _messages.MessageField('Repository', 2)
-  repositoryId = _messages.StringField(3)
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  initialConfig = _messages.MessageField('InitialConfig', 4)
+  instance = _messages.StringField(5)
+  name = _messages.StringField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  uris = _messages.MessageField('URIs', 9)
 
 
 class SecuresourcemanagerProjectsLocationsGetRequest(_messages.Message):
@@ -955,6 +908,20 @@ class SecuresourcemanagerProjectsLocationsInstancesGetRequest(_messages.Message)
   name = _messages.StringField(1, required=True)
 
 
+class SecuresourcemanagerProjectsLocationsInstancesIssueRedirectTicketInternalRequest(_messages.Message):
+  r"""A SecuresourcemanagerProjectsLocationsInstancesIssueRedirectTicketIntern
+  alRequest object.
+
+  Fields:
+    instance: Required. The instance resource to issue a redirect ticket for.
+    issueRedirectTicketInternalRequest: A IssueRedirectTicketInternalRequest
+      resource to be passed as the request body.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  issueRedirectTicketInternalRequest = _messages.MessageField('IssueRedirectTicketInternalRequest', 2)
+
+
 class SecuresourcemanagerProjectsLocationsInstancesListRequest(_messages.Message):
   r"""A SecuresourcemanagerProjectsLocationsInstancesListRequest object.
 
@@ -974,44 +941,6 @@ class SecuresourcemanagerProjectsLocationsInstancesListRequest(_messages.Message
   parent = _messages.StringField(5, required=True)
 
 
-class SecuresourcemanagerProjectsLocationsInstancesPatchRequest(_messages.Message):
-  r"""A SecuresourcemanagerProjectsLocationsInstancesPatchRequest object.
-
-  Fields:
-    instance: A Instance resource to be passed as the request body.
-    name: Optional. A unique identifier for an instance. The name should be of
-      the format: projects/{project_number}/locations/{location_id}/instances/
-      {instance_id} project_number: Maps to a unique int64 id assigned to each
-      project. We use project_number instead of project_id as per the external
-      API recommendation. location_id: Refers to the region where the instance
-      should be deployed. Since SecureSourceManager is a regional service, it
-      must be one of the valid GCP regions. instance_id: User provided name
-      for the instance, must be unique for a project_number and location_id
-      combination.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the Instance resource by the update. The fields specified
-      in the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields will be overwritten.
-  """
-
-  instance = _messages.MessageField('Instance', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
-
-
 class SecuresourcemanagerProjectsLocationsInstancesSetIamPolicyRequest(_messages.Message):
   r"""A SecuresourcemanagerProjectsLocationsInstancesSetIamPolicyRequest
   object.
@@ -1027,70 +956,6 @@ class SecuresourcemanagerProjectsLocationsInstancesSetIamPolicyRequest(_messages
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class SecuresourcemanagerProjectsLocationsInstancesSshkeysCreateRequest(_messages.Message):
-  r"""A SecuresourcemanagerProjectsLocationsInstancesSshkeysCreateRequest
-  object.
-
-  Fields:
-    parent: Required. The project in which to create the repo. Values are of
-      the form `projects/{project_number}/locations/{location_id}/instances/{i
-      nstance_id}`
-    sshKey: A SshKey resource to be passed as the request body.
-    sshkeyId: Optional. This field is no longer used. IDs will be assigned by
-      the API itself.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  sshKey = _messages.MessageField('SshKey', 2)
-  sshkeyId = _messages.StringField(3)
-
-
-class SecuresourcemanagerProjectsLocationsInstancesSshkeysDeleteRequest(_messages.Message):
-  r"""A SecuresourcemanagerProjectsLocationsInstancesSshkeysDeleteRequest
-  object.
-
-  Fields:
-    allowMissing: Optional. If set to true, and the repository is not found,
-      the request will succeed but no action will be taken on the server.
-    name: Required. Name of the repository to delete. The format is projects/{
-      project_number}/locations/{location_id}/instances/{instance_id}/sshkeys/
-      {sshkey_id}.
-  """
-
-  allowMissing = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-
-
-class SecuresourcemanagerProjectsLocationsInstancesSshkeysGetRequest(_messages.Message):
-  r"""A SecuresourcemanagerProjectsLocationsInstancesSshkeysGetRequest object.
-
-  Fields:
-    name: Required. Name of the SSH key to retrieve. The format is projects/{p
-      roject_number}/locations/{location_id}/instances/{instance_id}/sshkeys/{
-      sshkey_id}.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class SecuresourcemanagerProjectsLocationsInstancesSshkeysListRequest(_messages.Message):
-  r"""A SecuresourcemanagerProjectsLocationsInstancesSshkeysListRequest
-  object.
-
-  Fields:
-    filter: Filter for filtering results.
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListSshKeysRequest.
-  """
-
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
 
 
 class SecuresourcemanagerProjectsLocationsInstancesTestIamPermissionsRequest(_messages.Message):
@@ -1270,8 +1135,9 @@ class SecuresourcemanagerProjectsLocationsRepositoriesGetRequest(_messages.Messa
   r"""A SecuresourcemanagerProjectsLocationsRepositoriesGetRequest object.
 
   Fields:
-    name: Required. Name of the repository to retrieve. The format is projects
-      /{project_number}/locations/{location_id}/repositories/{repository_id}.
+    name: Required. Name of the repository to retrieve. The format is `project
+      s/{project_number}/locations/{location_id}/repositories/{repository_id}`
+      .
   """
 
   name = _messages.StringField(1, required=True)
@@ -1292,30 +1158,6 @@ class SecuresourcemanagerProjectsLocationsRepositoriesListRequest(_messages.Mess
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
-
-
-class SecuresourcemanagerProjectsLocationsRepositoriesPatchRequest(_messages.Message):
-  r"""A SecuresourcemanagerProjectsLocationsRepositoriesPatchRequest object.
-
-  Fields:
-    name: Optional. A unique identifier for a repository. The name should be
-      of the format:
-      projects/{project}/locations/{location_id}/repositories/{repository_id}
-    repository: A Repository resource to be passed as the request body.
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the Repository resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
-    validateOnly: Optional. False by default. If set to true, the request is
-      validated and the user is provided with an expected result, but no
-      actual change is made.
-  """
-
-  name = _messages.StringField(1, required=True)
-  repository = _messages.MessageField('Repository', 2)
-  updateMask = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
 
 
 class SecuresourcemanagerProjectsLocationsRepositoriesSetIamPolicyRequest(_messages.Message):
@@ -1368,104 +1210,6 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
-
-
-class SshKey(_messages.Message):
-  r"""Metadata of a SecureSourceManager SSH Key
-
-  Messages:
-    AnnotationsValue: Optional. User annotations. These attributes can only be
-      set and used by the user. See https://google.aip.dev/128#annotations for
-      more details such as format and size limitations.
-    LabelsValue: Optional. Labels are attributes that can be set and used by
-      both the user and Secure Source Manager.
-
-  Fields:
-    annotations: Optional. User annotations. These attributes can only be set
-      and used by the user. See https://google.aip.dev/128#annotations for
-      more details such as format and size limitations.
-    createTime: Output only. Create timestamp.
-    etag: Optional. This checksum is computed by the server based on the value
-      of other fields, and may be sent on update and delete requests to ensure
-      the client has an up-to-date value before proceeding.
-    labels: Optional. Labels are attributes that can be set and used by both
-      the user and Secure Source Manager.
-    name: Output only. A unique identifier for an SSH key. The name should be
-      of the format: projects/{project}/locations/{location_id}/instances/{ins
-      tance_id}/sshkeys/{sshkey_id}
-    owner: Immutable. Email of the SSH key owner. This by default is the SSH
-      key creator, but users with the canActAs permission on a service account
-      can also set the owner of the SSH key to that service account.
-    publicKey: Required. Input only. Immutable. The SSH key text.
-    title: Required. Title of ssh key. This value is provided by the ssh key
-      owner upon creation. Format: This value should be 4-63 characters, and
-      valid characters are /a-z-/.
-    uid: Output only. Unique identifier of the SSH key.
-    updateTime: Output only. Update timestamp.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AnnotationsValue(_messages.Message):
-    r"""Optional. User annotations. These attributes can only be set and used
-    by the user. See https://google.aip.dev/128#annotations for more details
-    such as format and size limitations.
-
-    Messages:
-      AdditionalProperty: An additional property for a AnnotationsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AnnotationsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AnnotationsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Labels are attributes that can be set and used by both the
-    user and Secure Source Manager.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  owner = _messages.StringField(6)
-  publicKey = _messages.BytesField(7)
-  title = _messages.StringField(8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1607,12 +1351,12 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class URIs(_messages.Message):
-  r"""URIs holds the uris for the repository.
+  r"""URIs for the repository.
 
   Fields:
-    api: api is the uri for the user to access the repository on the API.
-    gitHttps: git_https is the git http uri for user to do git operations.
-    html: html is the uri for user to check the repository in a browser.
+    api: API is the URI for API access.
+    gitHttps: git_https is the git HTTPS URI for git operations.
+    html: HTML is the URI for user to view the repository in a browser.
   """
 
   api = _messages.StringField(1)

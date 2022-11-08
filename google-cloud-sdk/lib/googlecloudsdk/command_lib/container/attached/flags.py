@@ -170,3 +170,19 @@ def AddContext(parser):
 
 def GetContext(args):
   return getattr(args, 'context', None)
+
+
+def AddIgnoreErrors(parser):
+  help_txt = """Force delete an Attached cluster.
+  Deletion of Attached cluster will succeed even if errors occur
+  during deleting in-cluster resources. Using this parameter may
+  result in orphaned resources in the cluster.
+  """
+  parser.add_argument(
+      '--ignore-errors',
+      action='store_true',
+      help=help_txt)
+
+
+def GetIgnoreErrors(args):
+  return getattr(args, 'ignore_errors', None)

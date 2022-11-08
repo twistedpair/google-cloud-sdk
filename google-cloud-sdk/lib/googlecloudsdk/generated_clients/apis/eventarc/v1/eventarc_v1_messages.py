@@ -1724,9 +1724,9 @@ class Trigger(_messages.Message):
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and might be sent only on create requests to
       ensure that the client has an up-to-date value before proceeding.
-    eventFilters: Required. null The list of filters that applies to event
-      attributes. Only events that match all the provided filters are sent to
-      the destination.
+    eventFilters: Required. Unordered list. The list of filters that applies
+      to event attributes. Only events that match all the provided filters are
+      sent to the destination.
     labels: Optional. User labels attached to the triggers that can be used to
       group resources.
     name: Required. The resource name of the trigger. Must be unique within

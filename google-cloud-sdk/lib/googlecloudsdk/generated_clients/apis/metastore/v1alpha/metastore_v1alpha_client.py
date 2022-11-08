@@ -875,6 +875,33 @@ class MetastoreV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AlterLocation(self, request, global_params=None):
+      r"""Alter metadata resource location. The metadata resource can be a database, table, or partition. This functionality only updates the parent directory for the respective metadata resource and does not transfer any existing data to the new location.
+
+      Args:
+        request: (MetastoreProjectsLocationsServicesAlterLocationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AlterLocation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AlterLocation.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:alterLocation',
+        http_method='POST',
+        method_id='metastore.projects.locations.services.alterLocation',
+        ordered_params=['service'],
+        path_params=['service'],
+        query_params=[],
+        relative_path='v1alpha/{+service}:alterLocation',
+        request_field='alterMetadataResourceLocationRequest',
+        request_type_name='MetastoreProjectsLocationsServicesAlterLocationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a metastore service in a project and location.
 
@@ -1034,6 +1061,33 @@ class MetastoreV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='MetastoreProjectsLocationsServicesListRequest',
         response_type_name='ListServicesResponse',
+        supports_download=False,
+    )
+
+    def MoveTableToDatabase(self, request, global_params=None):
+      r"""Move a table to another database.
+
+      Args:
+        request: (MetastoreProjectsLocationsServicesMoveTableToDatabaseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('MoveTableToDatabase')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MoveTableToDatabase.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:moveTableToDatabase',
+        http_method='POST',
+        method_id='metastore.projects.locations.services.moveTableToDatabase',
+        ordered_params=['service'],
+        path_params=['service'],
+        query_params=[],
+        relative_path='v1alpha/{+service}:moveTableToDatabase',
+        request_field='moveTableToDatabaseRequest',
+        request_type_name='MetastoreProjectsLocationsServicesMoveTableToDatabaseRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

@@ -4,6 +4,107 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
+
+## 409.0.0 (2022-11-08)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Modified stockout errors to show entire error object to user in yaml format instead of just error message.
+*   **(Compute Engine)** 
+*   **(Compute Engine)** Modified quota exceeded errors to show additional information to user instead of just error message.
+
+
+### Google Cloud CLI
+
+*   Modified `gcloud config list` to accept both a section name and `--all`
+    flag. The command will display all the set and unset properties when
+    specifying both.
+
+### Anthos Multi-Cloud
+
+*   Added `--allow-missing` flag to the following command groups:
+    `gcloud container aws clusters delete`,
+    `gcloud container aws node-pools delete`,
+    `gcloud container azure clients delete`,
+    `gcloud container azure clusters delete`,
+    `gcloud container azure node-pools delete`,
+    to allow the delete request to succeed, even if the cluster, node-pool
+    or client resource does not exist.
+
+### Cloud Composer
+
+* Added  `--skip-airflow-overrides-setting` to `gcloud beta composer snapshots load` to allow skipping setting Airflow overrides from the snapshot.
+* Added  `--skip-environment-variables-setting` to `gcloud beta composer snapshots load` to allow skipping setting environment variables from the snapshot.
+* Added  `--skip-gcs-data-copying` to `gcloud beta composer snapshots load` to allow skipping copying dags, plugins and data folders from the snapshot.
+
+### Cloud Datastream
+
+* Added the `max_concurrent_cdc_tasks` support to `--mysql-source-config` and `--oracle-source-config` flags in `gcloud datastream streams`.
+
+### Cloud Filestore
+
+*  Fixed issue where `--kms-key` was being ignored in `gcloud filestore backups create` command.
+
+### Cloud Firestore Emulator
+
+* Promoted `gcloud emulators firestore` to GA.
+*   Release Cloud Firestore emulator v1.15.1
+    *   feat: allow users to configure websocket port
+
+### Cloud Functions
+
+*   Fixed issue where `gcloud functions list` would crash when a 2nd Gen-only
+    region was specified using `--regions`.
+
+### Cloud Logging
+
+*   Updated `gcloud logging read` to accept multiple resources to query using a
+    new `--resource-names` flag.
+
+### Cloud SQL
+
+* Added the following flags to `gcloud sql instances create` in BETA:
+   * `--timeout`
+
+### Compute Engine
+
+* Added `--split-source-commitment` to `gcloud compute commitments create` for beta and GA.
+* Promoted `any-single-zone` value support for the flag
+  `--target-distribution-shape` of `gcloud compute instance-groups managed
+  create` / `update` to beta.
+* Added keyword `network-attachment` for `--network-interface` in `gcloud compute instances create`.
+* Promoted `--max-run-duration` flag of `gcloud compute instances create` to beta.
+  * Allows specifying the duration of time after which the instance will terminate.
+* Promoted `--termination-time` flag of `gcloud compute instances create` to beta.
+  * Allows specifying the timestamp that the instance will terminate.
+* Added 3 additional accepted values to `--enforce-on-key` for  `gcloud compute security-policies rules create|update` and promoted it to GA.
+* Promoted `gcloud compute network-edge-security-services` command group to GA.
+* Promoted `--region` and '--global' flags of `gcloud compute security-policies` to GA.
+* Promoted `--network-ddos-protection` flag of `gcloud compute security-policies update` to GA.
+
+### Distributed Cloud Edge
+
+*  Removed unsupported GPU_TYPE field from `gcloud edge-cloud container machines list`. This field will be restored once the API provides accurate GPU information.
+
+### GKE Hub
+
+* Fixed a bug where `gcloud container fleet memberships get-credentials` and `gcloud container hub memberships get-credentials` would not return an error when the membership argument was left empty.
+
+### Kubernetes Engine
+
+*   Corrected outdated description help text of `gcloud container node-pools delete`.
+*   Added `--private-endpoint-subnetwork` and `--enable-google-cloud-access` flags to `gcloud container clusters create` and `gcloud container clusters create-auto`.
+*   Added `--enable-google-cloud-access` and `--enable-private-endpoint` flags to `gcloud container clusters update`.
+*   Added `--enable-private-nodes` flag to `gcloud container node-pools create` and `gcloud container node-pools update`.
+
+### Notebooks
+
+* Added `gcloud notebooks instances diagnose` and `gcloud notebooks runtimes diagnose` commands to GA.
+  These commands provide access to the AI Platform Notebooks new Diagnose API.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
 ## 408.0.1 (2022-11-02)
 
 ### BigQuery
@@ -69,7 +170,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
-## 407.0.0 (2022-08-25)
+## 407.0.0 (2022-10-25)
 
 ### Breaking Changes
 

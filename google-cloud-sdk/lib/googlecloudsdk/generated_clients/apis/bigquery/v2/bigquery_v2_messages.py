@@ -894,6 +894,8 @@ class Dataset(_messages.Message):
     satisfiesPzs: [Output-only] Reserved for future use.
     selfLink: [Output-only] A URL that can be used to access the resource
       again. You can use this URL in Get or Update requests to the resource.
+    storageBillingModel: [Optional] Storage billing model to be used for all
+      tables in the dataset. Can be set to PHYSICAL. Default is LOGICAL.
     tags: [Optional]The tags associated with this dataset. Tag keys are
       globally unique.
   """
@@ -1011,7 +1013,8 @@ class Dataset(_messages.Message):
   maxTimeTravelHours = _messages.IntegerField(17)
   satisfiesPzs = _messages.BooleanField(18)
   selfLink = _messages.StringField(19)
-  tags = _messages.MessageField('TagsValueListEntry', 20, repeated=True)
+  storageBillingModel = _messages.StringField(20)
+  tags = _messages.MessageField('TagsValueListEntry', 21, repeated=True)
 
 
 class DatasetAccessEntry(_messages.Message):
@@ -1381,6 +1384,12 @@ class ExternalDataConfiguration(_messages.Message):
       valid for CSV, JSON, and Google Sheets. The default value is 0, which
       requires that all records are valid. This setting is ignored for Google
       Cloud Bigtable, Google Cloud Datastore backups and Avro formats.
+    metadataCacheMode: [Optional] Metadata Cache Mode for the table. Set this
+      to enable caching of metadata from external data source.
+    objectMetadata: ObjectMetadata is used to create Object Tables. Object
+      Tables contain a listing of objects (with their metadata) found at the
+      source_uris. If ObjectMetadata is set, source_format should be omitted.
+      Currently SIMPLE is the only supported Object Metadata type.
     parquetOptions: Additional properties to set if sourceFormat is set to
       Parquet.
     referenceFileSchemaUri: [Optional] Provide a referencing file with the
@@ -1414,11 +1423,13 @@ class ExternalDataConfiguration(_messages.Message):
   hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 9)
   ignoreUnknownValues = _messages.BooleanField(10)
   maxBadRecords = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  parquetOptions = _messages.MessageField('ParquetOptions', 12)
-  referenceFileSchemaUri = _messages.StringField(13)
-  schema = _messages.MessageField('TableSchema', 14)
-  sourceFormat = _messages.StringField(15)
-  sourceUris = _messages.StringField(16, repeated=True)
+  metadataCacheMode = _messages.StringField(12)
+  objectMetadata = _messages.StringField(13)
+  parquetOptions = _messages.MessageField('ParquetOptions', 14)
+  referenceFileSchemaUri = _messages.StringField(15)
+  schema = _messages.MessageField('TableSchema', 16)
+  sourceFormat = _messages.StringField(17)
+  sourceUris = _messages.StringField(18, repeated=True)
 
 
 class GetQueryResultsResponse(_messages.Message):

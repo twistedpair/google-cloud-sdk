@@ -254,8 +254,7 @@ class GoogleCloudBillingBudgetsV1beta1Filter(_messages.Message):
     projects: Optional. A set of projects of the form `projects/{project}`,
       specifying that usage from only this set of projects should be included
       in the budget. If omitted, the report will include all usage for the
-      billing account, regardless of which project the usage occurred on. Only
-      zero or one project can be specified currently.
+      billing account, regardless of which project the usage occurred on.
     services: Optional. A set of services of the form `services/{service_id}`,
       specifying that usage from only this set of services should be included
       in the budget. If omitted, the report will include usage for all the

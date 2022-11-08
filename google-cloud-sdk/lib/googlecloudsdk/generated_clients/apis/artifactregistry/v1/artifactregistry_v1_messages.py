@@ -175,6 +175,7 @@ class ArtifactregistryProjectsLocationsRepositoriesDockerImagesListRequest(_mess
   object.
 
   Fields:
+    orderBy: The field to order the results by.
     pageSize: The maximum number of artifacts to return.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
@@ -182,9 +183,10 @@ class ArtifactregistryProjectsLocationsRepositoriesDockerImagesListRequest(_mess
       be listed.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesFilesGetRequest(_messages.Message):
@@ -230,16 +232,14 @@ class ArtifactregistryProjectsLocationsRepositoriesGenericArtifactsUploadRequest
   object.
 
   Fields:
-    name: The resource name of the generic artifact.
     parent: The resource name of the repository where the generic artifact
       will be uploaded.
     uploadGenericArtifactRequest: A UploadGenericArtifactRequest resource to
       be passed as the request body.
   """
 
-  name = _messages.StringField(1, required=True)
-  parent = _messages.StringField(2, required=True)
-  uploadGenericArtifactRequest = _messages.MessageField('UploadGenericArtifactRequest', 3)
+  parent = _messages.StringField(1, required=True)
+  uploadGenericArtifactRequest = _messages.MessageField('UploadGenericArtifactRequest', 2)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesGetIamPolicyRequest(_messages.Message):
@@ -324,6 +324,21 @@ class ArtifactregistryProjectsLocationsRepositoriesGoogetArtifactsUploadRequest(
 
   parent = _messages.StringField(1, required=True)
   uploadGoogetArtifactRequest = _messages.MessageField('UploadGoogetArtifactRequest', 2)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesKfpArtifactsUploadRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesKfpArtifactsUploadRequest
+  object.
+
+  Fields:
+    parent: The resource name of the repository where the KFP artifact will be
+      uploaded.
+    uploadKfpArtifactRequest: A UploadKfpArtifactRequest resource to be passed
+      as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  uploadKfpArtifactRequest = _messages.MessageField('UploadKfpArtifactRequest', 2)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message):
@@ -761,10 +776,18 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -798,14 +821,29 @@ class Binding(_messages.Message):
 class CleanupPolicy(_messages.Message):
   r"""Artifact policy configuration for repository cleanup policies.
 
+  Enums:
+    ActionValueValuesEnum: Policy action.
+
   Fields:
+    action: Policy action.
     condition: Policy condition that indicates when versions should be
       deleted.
-    id: The user-provided ID of the upstream policy.
+    id: The user-provided ID of the cleanup policy.
   """
 
-  condition = _messages.MessageField('CleanupPolicyCondition', 1)
-  id = _messages.StringField(2)
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Policy action.
+
+    Values:
+      ACTION_UNSPECIFIED: Action not specified.
+      DELETE: Delete action.
+    """
+    ACTION_UNSPECIFIED = 0
+    DELETE = 1
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  condition = _messages.MessageField('CleanupPolicyCondition', 2)
+  id = _messages.StringField(3)
 
 
 class CleanupPolicyCondition(_messages.Message):
@@ -846,6 +884,7 @@ class DockerImage(_messages.Message):
       "nginx@sha256:e9954c1fc875017be1c3e36eca16be2d9e9bccc4bf072163515467d6a8
       23c7cf" is the image's digest.
     tags: Tags attached to this image.
+    updateTime: Output only. The time when the docker image was last updated.
     uploadTime: Time the image was uploaded.
     uri: Required. URL to access the image. Example: us-
       west4-docker.pkg.dev/test-project/test-repo/nginx@sha256:e9954c1fc875017
@@ -857,8 +896,9 @@ class DockerImage(_messages.Message):
   mediaType = _messages.StringField(3)
   name = _messages.StringField(4)
   tags = _messages.StringField(5, repeated=True)
-  uploadTime = _messages.StringField(6)
-  uri = _messages.StringField(7)
+  updateTime = _messages.StringField(6)
+  uploadTime = _messages.StringField(7)
+  uri = _messages.StringField(8)
 
 
 class DockerRepository(_messages.Message):
@@ -1122,6 +1162,23 @@ class ImportYumArtifactsResponse(_messages.Message):
 
   errors = _messages.MessageField('ImportYumArtifactsErrorInfo', 1, repeated=True)
   yumArtifacts = _messages.MessageField('YumArtifact', 2, repeated=True)
+
+
+class KfpArtifact(_messages.Message):
+  r"""A detailed representation of a GooGet artifact.
+
+  Fields:
+    name: Output only. Resource name of the KFP artifact. Since users don't
+      directly interact with this resource, the name will be derived from the
+      associated version. For example, when version =
+      ".../versions/sha256:abcdef...", the name will be
+      ".../kfpArtifacts/sha256:abcdef...".
+    version: The version associated with the KFP artifact. Must follow the
+      Semantic Versioning standard.
+  """
+
+  name = _messages.StringField(1)
+  version = _messages.StringField(2)
 
 
 class ListDockerImagesResponse(_messages.Message):
@@ -1829,6 +1886,8 @@ class Repository(_messages.Message):
     name: The name of the repository, for example: "projects/p1/locations/us-
       central1/repositories/repo1".
     remoteRepositoryConfig: Configuration specific for a Remote Repository.
+    satisfiesPzs: Output only. If set, the repository satisfies physical zone
+      separation.
     sizeBytes: Output only. The size, in bytes, of all artifact storage in
       this repository. Repositories that are generally available or in public
       preview use this to calculate storage costs.
@@ -1945,9 +2004,10 @@ class Repository(_messages.Message):
   mode = _messages.EnumField('ModeValueValuesEnum', 8)
   name = _messages.StringField(9)
   remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 10)
-  sizeBytes = _messages.IntegerField(11)
-  updateTime = _messages.StringField(12)
-  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 13)
+  satisfiesPzs = _messages.BooleanField(11)
+  sizeBytes = _messages.IntegerField(12)
+  updateTime = _messages.StringField(13)
+  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 14)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2162,7 +2222,37 @@ class UploadGenericArtifactMediaResponse(_messages.Message):
 
 
 class UploadGenericArtifactRequest(_messages.Message):
-  r"""The request to upload a generic artifact."""
+  r"""The request to upload a generic artifact. The created GenericArtifact
+  will have the resource name {parent}/genericArtifacts/package_id:version_id.
+  The created file will have the resource name
+  {parent}/files/package_id:version_id:filename.
+
+  Fields:
+    filename: The name of the file of the generic artifact to be uploaded.
+      E.g. "example-file.zip" The filename should only include letters,
+      numbers, and url safe characters, i.e. [a-zA-Z0-9-_.~@], and cannot
+      exceed 64 characters.
+    name: Deprecated. Use package_id, version_id and filename instead. The
+      resource name of the generic artifact. E.g. "projects/math/locations/us/
+      repositories/operations/genericArtifacts/addition/1.0.0/add.py"
+    packageId: The ID of the package of the generic artifact. If the package
+      does not exist, a new package will be created. E.g. "pkg-1" The
+      package_id must start with a letter, end with a letter or number, only
+      contain letters, numbers, and hyphens, i.e. [a-z0-9-], and cannot exceed
+      64 characters.
+    versionId: The ID of the version of the generic artifact. If the version
+      does not exist, a new version will be created. E.g."1.0.0" The
+      version_id must start and end with a letter or number, can only contain
+      letters, numbers, hyphens and periods,i.e. [a-z0-9-.] and cannot exceed
+      a total of 64 characters. While "latest" is a well-known name for the
+      latest version of a package, it is not yet supported and is reserved for
+      future use. Creating a version called "latest" is not allowed.
+  """
+
+  filename = _messages.StringField(1)
+  name = _messages.StringField(2)
+  packageId = _messages.StringField(3)
+  versionId = _messages.StringField(4)
 
 
 class UploadGoModuleMediaResponse(_messages.Message):
@@ -2195,6 +2285,32 @@ class UploadGoogetArtifactMediaResponse(_messages.Message):
 
 class UploadGoogetArtifactRequest(_messages.Message):
   r"""The request to upload an artifact."""
+
+
+class UploadKfpArtifactMediaResponse(_messages.Message):
+  r"""The response to upload an artifact.
+
+  Fields:
+    operation: Operation that will be returned to the user.
+  """
+
+  operation = _messages.MessageField('Operation', 1)
+
+
+class UploadKfpArtifactMetadata(_messages.Message):
+  r"""The operation metadata for uploading KFP artifacts."""
+
+
+class UploadKfpArtifactRequest(_messages.Message):
+  r"""The request to upload an artifact.
+
+  Fields:
+    description: Description of the package version.
+    tags: Tags to be created with the version.
+  """
+
+  description = _messages.StringField(1)
+  tags = _messages.StringField(2, repeated=True)
 
 
 class UploadYumArtifactMediaResponse(_messages.Message):
@@ -2250,8 +2366,8 @@ class Version(_messages.Message):
   Messages:
     MetadataValue: Output only. Repository-specific Metadata stored against
       this version. The fields returned are defined by the underlying
-      repository-specific resource. Currently, the only resource in use is
-      DockerImage
+      repository-specific resource. Currently, the resources could be:
+      DockerImage MavenArtifact
 
   Fields:
     createTime: The time when the version was created.
@@ -2259,7 +2375,8 @@ class Version(_messages.Message):
       metadata.
     metadata: Output only. Repository-specific Metadata stored against this
       version. The fields returned are defined by the underlying repository-
-      specific resource. Currently, the only resource in use is DockerImage
+      specific resource. Currently, the resources could be: DockerImage
+      MavenArtifact
     name: The name of the version, for example: "projects/p1/locations/us-
       central1/repositories/repo1/packages/pkg1/versions/art1". If the package
       or version ID parts contain slashes, the slashes are escaped.
@@ -2272,7 +2389,7 @@ class Version(_messages.Message):
   class MetadataValue(_messages.Message):
     r"""Output only. Repository-specific Metadata stored against this version.
     The fields returned are defined by the underlying repository-specific
-    resource. Currently, the only resource in use is DockerImage
+    resource. Currently, the resources could be: DockerImage MavenArtifact
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.

@@ -275,6 +275,14 @@
       "description": "Request message for ConsumerProcurementService.PlaceOrder.",
       "type": "object",
       "properties": {
+        "placeProductsOrderRequest": {
+          "description": "Optional. Places order for non-quote products.",
+          "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceProductsOrderRequest"
+        },
+        "placeQuoteOrderRequest": {
+          "description": "Optional. Places order for quote.",
+          "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceQuoteOrderRequest"
+        },
         "displayName": {
           "description": "Required. The user-specified name of the order being placed. Must be unique within a billing account.",
           "type": "string"
@@ -286,14 +294,6 @@
         "provider": {
           "description": "Required. Provider of the items being purchased. Provider has the format of `providers\/{provider_id}`. Optional when an offer is specified. TODO(b\/241564581) Hide provider id in the consumer API.",
           "type": "string"
-        },
-        "placeProductsOrderRequest": {
-          "description": "Optional. Places order for non-quote products.",
-          "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceProductsOrderRequest"
-        },
-        "placeQuoteOrderRequest": {
-          "description": "Optional. Places order for quote.",
-          "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceQuoteOrderRequest"
         },
         "lineItemInfo": {
           "description": "Optional. Places order for offer. Required when an offer-based order is being placed.",
@@ -770,13 +770,6 @@
       "description": "Request message for ConsumerProcurementService.ModifyOrder. Next Id: 10",
       "type": "object",
       "properties": {
-        "modifications": {
-          "description": "Optional. Modifications for an existing Order created by an Offer. Required when Offer based Order is being modified, except for when going from an offer to a public plan.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModification"
-          }
-        },
         "modifyProductsOrderRequest": {
           "description": "Required. Modifies an existing non-quote order. Should only be used for offer-based orders when going from an offer to a public plan.",
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyProductsOrderRequest"
@@ -785,6 +778,13 @@
           "description": "Required. Modifies an existing order for quote.",
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyQuoteOrderRequest"
         },
+        "modifications": {
+          "description": "Optional. Modifications for an existing Order created by an Offer. Required when Offer based Order is being modified, except for when going from an offer to a public plan.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModification"
+          }
+        },
         "displayName": {
           "description": "Optional. Updated display name of the order, leave as empty if you do not want to update current display name.",
           "type": "string"
@@ -792,53 +792,6 @@
         "etag": {
           "description": "The weak etag, which can be optionally populated, of the order that this modify request is based on. Validation checking will only happen if the invoker supplies this field.",
           "type": "string"
-        }
-      }
-    },
-    "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModification": {
-      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModification",
-      "description": "Modifications to make on the order.",
-      "type": "object",
-      "properties": {
-        "lineItemId": {
-          "description": "ID of the existing line item to make change to. Required when change type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE] or [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CANCEL].",
-          "type": "string"
-        },
-        "changeType": {
-          "description": "Required. Type of change to make.",
-          "type": "string",
-          "enumDescriptions": [
-            "Sentinel value. Do not use.",
-            "The change is to create a new line item.",
-            "The change is to update an existing line item.",
-            "The change is to cancel an existing line item.",
-            "The change is to revert a cancellation."
-          ],
-          "enum": [
-            "LINE_ITEM_CHANGE_TYPE_UNSPECIFIED",
-            "LINE_ITEM_CHANGE_TYPE_CREATE",
-            "LINE_ITEM_CHANGE_TYPE_UPDATE",
-            "LINE_ITEM_CHANGE_TYPE_CANCEL",
-            "LINE_ITEM_CHANGE_TYPE_REVERT_CANCELLATION"
-          ]
-        },
-        "newLineItemInfo": {
-          "description": "The line item to update to. Required when change_type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CREATE] or [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE].",
-          "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo"
-        },
-        "autoRenewalBehavior": {
-          "description": "Auto renewal behavior of the subscription for the update. Applied when change_type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE]. Follows plan default config when this field is not specified.",
-          "type": "string",
-          "enumDescriptions": [
-            "If unspecified, the auto renewal behavior will follow the default config.",
-            "Auto Renewal will be enabled on subscription.",
-            "Auto Renewal will be disabled on subscription."
-          ],
-          "enum": [
-            "AUTO_RENEWAL_BEHAVIOR_UNSPECIFIED",
-            "AUTO_RENEWAL_BEHAVIOR_ENABLE",
-            "AUTO_RENEWAL_BEHAVIOR_DISABLE"
-          ]
         }
       }
     },
@@ -929,6 +882,53 @@
         },
         "autoRenewalBehavior": {
           "description": "Auto renewal behavior of the subscription for the update. Applied when change_type is [QuoteChangeType.QUOTE_CHANGE_TYPE_UPDATE].",
+          "type": "string",
+          "enumDescriptions": [
+            "If unspecified, the auto renewal behavior will follow the default config.",
+            "Auto Renewal will be enabled on subscription.",
+            "Auto Renewal will be disabled on subscription."
+          ],
+          "enum": [
+            "AUTO_RENEWAL_BEHAVIOR_UNSPECIFIED",
+            "AUTO_RENEWAL_BEHAVIOR_ENABLE",
+            "AUTO_RENEWAL_BEHAVIOR_DISABLE"
+          ]
+        }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModification": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModification",
+      "description": "Modifications to make on the order.",
+      "type": "object",
+      "properties": {
+        "lineItemId": {
+          "description": "ID of the existing line item to make change to. Required when change type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE] or [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CANCEL].",
+          "type": "string"
+        },
+        "changeType": {
+          "description": "Required. Type of change to make.",
+          "type": "string",
+          "enumDescriptions": [
+            "Sentinel value. Do not use.",
+            "The change is to create a new line item.",
+            "The change is to update an existing line item.",
+            "The change is to cancel an existing line item.",
+            "The change is to revert a cancellation."
+          ],
+          "enum": [
+            "LINE_ITEM_CHANGE_TYPE_UNSPECIFIED",
+            "LINE_ITEM_CHANGE_TYPE_CREATE",
+            "LINE_ITEM_CHANGE_TYPE_UPDATE",
+            "LINE_ITEM_CHANGE_TYPE_CANCEL",
+            "LINE_ITEM_CHANGE_TYPE_REVERT_CANCELLATION"
+          ]
+        },
+        "newLineItemInfo": {
+          "description": "The line item to update to. Required when change_type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CREATE] or [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE].",
+          "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo"
+        },
+        "autoRenewalBehavior": {
+          "description": "Auto renewal behavior of the subscription for the update. Applied when change_type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE]. Follows plan default config when this field is not specified.",
           "type": "string",
           "enumDescriptions": [
             "If unspecified, the auto renewal behavior will follow the default config.",
@@ -1174,7 +1174,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial",
-      "description": "FreeTrial represents the free trial created for a specific provider, product id and billing id with argentum. Free Trial resource are created for products by placing orders for 3p or just enabling free trials for 1p product. Next Id: 6",
+      "description": "FreeTrial represents the free trial created for a specific product and billing account with argentum. Free Trial resources are created by placing orders for 3p non-VM products, or just enabling free trials for 1p products and 3P VM products. Next Id: 6",
       "type": "object",
       "properties": {
         "name": {
@@ -1408,6 +1408,12 @@
       "description": "Determines how credits generated by this Order are assigned to specific targets (e.g. projects).",
       "type": "object",
       "properties": {
+        "intTotalAttributable": {
+          "description": "Output only. An integer amount of attributable resources.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
         "name": {
           "description": "Output only. Resource name of the attribution configuration Format: billingAccounts\/{billing_account}\/orders\/{order}\/orderAttributions\/{order_attribution} attribution_target references the Order parameter that defines the total attributable amount of this resource.",
           "readOnly": true,
@@ -1419,12 +1425,6 @@
           "items": {
             "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1OrderAttributionAllotment"
           }
-        },
-        "intTotalAttributable": {
-          "description": "Output only. An integer amount of attributable resources.",
-          "readOnly": true,
-          "type": "string",
-          "format": "int64"
         },
         "unit": {
           "description": "Output only. Human friendly name for what's being attributed",
@@ -1460,6 +1460,10 @@
         "consent": {
           "description": "Required. A consent to be granted. Set only agreement_document field.",
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1Consent"
+        },
+        "validateOnly": {
+          "description": "Optional. Flag is used to dry run grant consent behavior for the VMs and K8s products. If set, returns empty consent if consent can be granted. If unset, grants consent if consent can be granted.",
+          "type": "boolean"
         }
       }
     },
@@ -1654,6 +1658,83 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1UpdateOrderAllocationMetadata": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1UpdateOrderAllocationMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.UpdateOrderAllocation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1mainCancelOrderMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1mainCancelOrderMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.CancelOrder.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1mainCreateAccountMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1mainCreateAccountMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.CreateAccount.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1mainCreateFreeTrialMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1mainCreateFreeTrialMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.CreateFreeTrial.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1mainCreateOrderAllocationMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1mainCreateOrderAllocationMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.CreateOrderAllocation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1mainDeleteAccountMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1mainDeleteAccountMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.DeleteAccount.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1mainDeleteOrderAllocationMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1mainDeleteOrderAllocationMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.DeleteOrderAllocation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1mainMigrateOrderMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1mainMigrateOrderMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.MigrateOrder.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1mainModifyOrderMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1mainModifyOrderMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.ModifyOrder.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1mainPlaceOrderMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1mainPlaceOrderMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.PlaceOrder.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1mainReplaceOrderAllocationsMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1mainReplaceOrderAllocationsMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.ReplaceOrderAllocations.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1mainUpdateOrderAllocationMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1mainUpdateOrderAllocationMetadata",
       "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.UpdateOrderAllocation.",
       "type": "object",
       "properties": {
@@ -2304,7 +2385,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent of the consent to grant. Current supported format includes: - billingAccounts\/{billing_account}",
+                  "description": "Required. Parent of the consent to grant. Current supported format includes: - billingAccounts\/{billing_account} - projects\/{project_id}",
                   "pattern": "^billingAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -2332,7 +2413,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "name": {
-                  "description": "Required. A consent to be reovked. Examples of valid names would be: - billingAccounts\/{billing_account}\/consents\/{consent_id}",
+                  "description": "Required. A consent to be reovked. Examples of valid names would be: - billingAccounts\/{billing_account}\/consents\/{consent_id} - projects\/{project_id}\/consents\/{consent_id}",
                   "pattern": "^billingAccounts\/[^\/]+\/consents\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -2360,7 +2441,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent of consents. Current supported format includes: - billingAccounts\/{billing_account}",
+                  "description": "Required. Parent of consents. Current supported format includes: - billingAccounts\/{billing_account} - projects\/{project_id}",
                   "pattern": "^billingAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -2388,7 +2469,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent of consents. Current supported format includes: - billingAccounts\/{billing_account}",
+                  "description": "Required. Parent of consents. Current supported format includes: - billingAccounts\/{billing_account} - projects\/{project_id}",
                   "pattern": "^billingAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -2593,6 +2674,135 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Lists FreeTrial resources that the user has access to, within the scope of the parent resource."
+            }
+          }
+        },
+        "consents": {
+          "methods": {
+            "grant": {
+              "id": "cloudcommerceconsumerprocurement.projects.consents.grant",
+              "path": "v1alpha1/{+parent}/consents:grant",
+              "flatPath": "v1alpha1/projects/{projectsId}/consents:grant",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Parent of the consent to grant. Current supported format includes: - billingAccounts\/{billing_account} - projects\/{project_id}",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest"
+              },
+              "response": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1Consent"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Grants consent."
+            },
+            "revoke": {
+              "id": "cloudcommerceconsumerprocurement.projects.consents.revoke",
+              "path": "v1alpha1/{+name}:revoke",
+              "flatPath": "v1alpha1/projects/{projectsId}/consents/{consentsId}:revoke",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. A consent to be reovked. Examples of valid names would be: - billingAccounts\/{billing_account}\/consents\/{consent_id} - projects\/{project_id}\/consents\/{consent_id}",
+                  "pattern": "^projects\/[^\/]+\/consents\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest"
+              },
+              "response": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1Consent"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Revokes a consent. Revocation is only allowed on a revokable agreement with a current Consent."
+            },
+            "check": {
+              "id": "cloudcommerceconsumerprocurement.projects.consents.check",
+              "path": "v1alpha1/{+parent}/consents:check",
+              "flatPath": "v1alpha1/projects/{projectsId}/consents:check",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Parent of consents. Current supported format includes: - billingAccounts\/{billing_account} - projects\/{project_id}",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest"
+              },
+              "response": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Checks if a customer's consents satisfy the current agreement."
+            },
+            "list": {
+              "id": "cloudcommerceconsumerprocurement.projects.consents.list",
+              "path": "v1alpha1/{+parent}/consents",
+              "flatPath": "v1alpha1/projects/{projectsId}/consents",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Parent of consents. Current supported format includes: - billingAccounts\/{billing_account} - projects\/{project_id}",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of results returned by this request.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The continuation token, which is used to page through large result sets. To get the next page of results, set this parameter to the value of `nextPageToken` from the previous response.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "agreement": {
+                  "description": "Leave this field unset will return consents of agreements that user has access to. A valid format would be - commerceoffercatalog.googleapis.com\/billingAccounts\/{billing_account}\/offers\/{offer_id}\/agreements\/{agreement_id}",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1ListConsentsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists current consents."
             }
           }
         }

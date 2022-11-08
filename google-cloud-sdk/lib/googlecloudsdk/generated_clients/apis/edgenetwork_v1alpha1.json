@@ -838,7 +838,7 @@
           "type": "string"
         },
         "router": {
-          "description": "Optional. The canonical Router name in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/routers\/{router}.",
+          "description": "Optional. The canonical Router name in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/routers\/{router}. During creates, if network is specified, this field will be ignored.",
           "type": "string"
         },
         "network": {

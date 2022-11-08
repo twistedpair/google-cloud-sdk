@@ -1287,6 +1287,8 @@ class Repository(_messages.Message):
       configuration for the repositories of maven type.
     name: The name of the repository, for example: "projects/p1/locations/us-
       central1/repositories/repo1".
+    satisfiesPzs: Output only. If set, the repository satisfies physical zone
+      separation.
     sizeBytes: Output only. The size, in bytes, of all artifact storage in
       this repository. Repositories that are generally available or in public
       preview use this to calculate storage costs.
@@ -1349,8 +1351,9 @@ class Repository(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   mavenConfig = _messages.MessageField('MavenRepositoryConfig', 6)
   name = _messages.StringField(7)
-  sizeBytes = _messages.IntegerField(8)
-  updateTime = _messages.StringField(9)
+  satisfiesPzs = _messages.BooleanField(8)
+  sizeBytes = _messages.IntegerField(9)
+  updateTime = _messages.StringField(10)
 
 
 class SetIamPolicyRequest(_messages.Message):

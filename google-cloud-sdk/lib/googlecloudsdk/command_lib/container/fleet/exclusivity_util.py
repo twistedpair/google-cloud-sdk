@@ -76,9 +76,9 @@ spec:
 
 
 def GetMembershipCROwnerID(kube_client):
-  """Returns the project id of the hub the cluster is a member of.
+  """Returns the project id of the fleet the cluster is a member of.
 
-  The Membership Custom Resource stores the project id of the hub the cluster
+  The Membership Custom Resource stores the project id of the fleet the cluster
   is registered to in the `.spec.owner.id` field.
 
   Args:

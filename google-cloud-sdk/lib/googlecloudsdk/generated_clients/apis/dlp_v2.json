@@ -216,7 +216,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of the information type. Either a name of your choosing when creating a CustomInfoType, or one of the names listed at https:\/\/cloud.google.com\/dlp\/docs\/infotypes-reference when specifying a built-in type. When sending Cloud DLP results to Data Catalog, infoType names should conform to the pattern `[A-Za-z0-9$-_]{1,64}`.",
+          "description": "Name of the information type. Either a name of your choosing when creating a CustomInfoType, or one of the names listed at https:\/\/cloud.google.com\/dlp\/docs\/infotypes-reference when specifying a built-in type. When sending Cloud DLP results to Data Catalog, infoType names should conform to the pattern `[A-Za-z0-9$_-]{1,64}`.",
           "type": "string"
         },
         "version": {
@@ -545,6 +545,10 @@
           "description": "Set of infoTypes for which findings would affect this rule.",
           "$ref": "GooglePrivacyDlpV2ExcludeInfoTypes"
         },
+        "excludeByHotword": {
+          "description": "Drop if the hotword rule is contained in the proximate context. For tabular data, the context includes the column name.",
+          "$ref": "GooglePrivacyDlpV2ExcludeByHotword"
+        },
         "matchingType": {
           "description": "How the rule is applied, see MatchingType documentation for details.",
           "type": "string",
@@ -577,9 +581,23 @@
         }
       }
     },
+    "GooglePrivacyDlpV2ExcludeByHotword": {
+      "id": "GooglePrivacyDlpV2ExcludeByHotword",
+      "description": "The rule to exclude findings based on a hotword. For record inspection of tables, column names are considered hotwords. An example of this is to exclude a finding if a BigQuery column matches a specific pattern.",
+      "type": "object",
+      "properties": {
+        "hotwordRegex": {
+          "description": "Regular expression pattern defining what qualifies as a hotword.",
+          "$ref": "GooglePrivacyDlpV2Regex"
+        },
+        "proximity": {
+          "description": "Range of characters within which the entire hotword must reside. The total length of the window cannot exceed 1000 characters. The windowBefore property in proximity should be set to 1 if the hotword needs to be included in a column header.",
+          "$ref": "GooglePrivacyDlpV2Proximity"
+        }
+      }
+    },
     "GooglePrivacyDlpV2ContentItem": {
       "id": "GooglePrivacyDlpV2ContentItem",
-      "description": "Container structure for the content to inspect.",
       "type": "object",
       "properties": {
         "value": {
@@ -2345,6 +2363,10 @@
           "items": {
             "$ref": "GooglePrivacyDlpV2InfoTypeCategory"
           }
+        },
+        "sensitivityScore": {
+          "description": "The default sensitivity of the infoType.",
+          "$ref": "GooglePrivacyDlpV2SensitivityScore"
         }
       }
     },
@@ -2412,7 +2434,8 @@
             "The infoType is typically used in the United States.",
             "The infoType is typically used in Uruguay.",
             "The infoType is typically used in Venezuela.",
-            "The infoType is typically used in Google internally."
+            "The infoType is typically used in Google internally.",
+            "The infoType is typically used in New Zealand."
           ],
           "enum": [
             "LOCATION_UNSPECIFIED",
@@ -2455,7 +2478,8 @@
             "UNITED_STATES",
             "URUGUAY",
             "VENEZUELA",
-            "INTERNAL"
+            "INTERNAL",
+            "NEW_ZEALAND"
           ]
         },
         "industryCategory": {
@@ -2496,6 +2520,29 @@
             "GOVERNMENT_ID",
             "DOCUMENT",
             "CONTEXTUAL_INFORMATION"
+          ]
+        }
+      }
+    },
+    "GooglePrivacyDlpV2SensitivityScore": {
+      "id": "GooglePrivacyDlpV2SensitivityScore",
+      "description": "Score is a summary of all elements in the data profile. A higher number means more sensitive.",
+      "type": "object",
+      "properties": {
+        "score": {
+          "description": "The score applied to the resource.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unused.",
+            "No sensitive information detected. Limited access.",
+            "Medium risk - PII, potentially sensitive data, or fields with free-text data that are at higher risk of having intermittent sensitive data. Consider limiting access.",
+            "High risk \u2013 SPII may be present. Exfiltration of data may lead to user data loss. Re-identification of users may be possible. Consider limiting usage and or removing SPII."
+          ],
+          "enum": [
+            "SENSITIVITY_SCORE_UNSPECIFIED",
+            "SENSITIVITY_LOW",
+            "SENSITIVITY_MODERATE",
+            "SENSITIVITY_HIGH"
           ]
         }
       }
@@ -3115,7 +3162,7 @@
           "$ref": "GooglePrivacyDlpV2Deidentify"
         },
         "jobNotificationEmails": {
-          "description": "Enable email notification for project owners and editors on job's completion\/failure.",
+          "description": "Sends an email when the job completes. The email goes to IAM project owners and technical [Essential Contacts](https:\/\/cloud.google.com\/resource-manager\/docs\/managing-notification-contacts).",
           "$ref": "GooglePrivacyDlpV2JobNotificationEmails"
         },
         "publishToStackdriver": {
@@ -4841,29 +4888,6 @@
         }
       }
     },
-    "GooglePrivacyDlpV2SensitivityScore": {
-      "id": "GooglePrivacyDlpV2SensitivityScore",
-      "description": "Score is a summary of all elements in the data profile. A higher number means more sensitive.",
-      "type": "object",
-      "properties": {
-        "score": {
-          "description": "The score applied to the resource.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unused.",
-            "No sensitive information detected. Limited access.",
-            "Medium risk - PII, potentially sensitive data, or fields with free-text data that are at higher risk of having intermittent sensitive data. Consider limiting access.",
-            "High risk \u2013 SPII may be present. Exfiltration of data may lead to user data loss. Re-identification of users may be possible. Consider limiting usage and or removing SPII."
-          ],
-          "enum": [
-            "SENSITIVITY_SCORE_UNSPECIFIED",
-            "SENSITIVITY_LOW",
-            "SENSITIVITY_MODERATE",
-            "SENSITIVITY_HIGH"
-          ]
-        }
-      }
-    },
     "GooglePrivacyDlpV2DataRiskLevel": {
       "id": "GooglePrivacyDlpV2DataRiskLevel",
       "description": "Score is a summary of all elements in the data profile. A higher number means more risk.",
@@ -4895,6 +4919,11 @@
         "infoType": {
           "description": "The infoType.",
           "$ref": "GooglePrivacyDlpV2InfoType"
+        },
+        "estimatedPrevalence": {
+          "description": "Not populated for predicted infotypes.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

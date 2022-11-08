@@ -7482,7 +7482,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id='compute.instances.simulateMaintenanceEvent',
         ordered_params=['project', 'zone', 'instance'],
         path_params=['instance', 'project', 'zone'],
-        query_params=['requestId'],
+        query_params=['requestId', 'withExtendedNotifications'],
         relative_path='projects/{project}/zones/{zone}/instances/{instance}/simulateMaintenanceEvent',
         request_field='',
         request_type_name='ComputeInstancesSimulateMaintenanceEventRequest',

@@ -167,6 +167,25 @@ class HubClient(object):
         (p.key, p.value) for p in proto_map_value.additionalProperties)
 
   @staticmethod
+  def ToPyDefaultDict(default_factory, proto_map_value):
+    """Helper to convert proto map Values to default dictionaries.
+
+    encoding.MessageToPyValue recursively converts values to dicts, while this
+    method leaves the map values as proto objects.
+
+    Args:
+      default_factory: Pass-through to collections.defaultdict.
+      proto_map_value: The map field "Value". For example, the `Feature.labels`
+        value (of type `Features.LabelsValue`). Can be None.
+
+    Returns:
+      An defaultdict of the map's keys/values.
+    """
+    return collections.defaultdict(default_factory,
+                                   {} if proto_map_value is None else
+                                   HubClient.ToPyDict(proto_map_value))
+
+  @staticmethod
   def ToProtoMap(map_value_cls, value):
     """encoding.DictToAdditionalPropertyMessage wrapper to match ToPyDict."""
     return encoding.DictToAdditionalPropertyMessage(
@@ -175,6 +194,10 @@ class HubClient(object):
   def ToMembershipSpecs(self, spec_map):
     """Convenience wrapper for ToProtoMap for Feature.membershipSpecs."""
     return self.ToProtoMap(self.messages.Feature.MembershipSpecsValue, spec_map)
+
+  def ToScopeSpecs(self, spec_map):
+    """Convenience wrapper for ToProtoMap for Feature.scopeSpecs."""
+    return self.ToProtoMap(self.messages.Feature.ScopeSpecsValue, spec_map)
 
 
 class FleetClient(object):
@@ -517,3 +540,120 @@ class FleetClient(object):
         req,
         field='rbacrolebindings',
         batch_size_attribute=None)
+
+  def GetMembershipBinding(self, name):
+    """Gets a Membership-Binding resource from the GKEHub API.
+
+    Args:
+      name: the full membership-binding resource name.
+
+    Returns:
+      A Membership-Binding resource
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    req = self.messages.GkehubProjectsLocationsMembershipsBindingsGetRequest(
+        name=name)
+    return self.client.projects_locations_memberships_bindings.Get(req)
+
+  def CreateMembershipBinding(self, name, scope, fleet):
+    """Creates a Membership-Binding resource from the GKEHub API.
+
+    Args:
+      name: the full binding resource name.
+      scope: the Scope to be associated with Binding.
+      fleet: the Fleet for which all related scopes are updated.
+
+    Returns:
+      A Membership-Binding resource
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+      calliope_exceptions.RequiredArgumentException: if a required field is
+        missing
+    """
+    binding = self.messages.MembershipBinding(
+        name=name,
+        scope=scope,
+        fleet=fleet)
+    resource = resources.REGISTRY.ParseRelativeName(
+        name,
+        'gkehub.projects.locations.memberships.bindings',
+        api_version='v1alpha')
+    req = self.messages.GkehubProjectsLocationsMembershipsBindingsCreateRequest(
+        membershipBinding=binding,
+        membershipBindingId=resource.Name(),
+        parent=resource.Parent().RelativeName(),
+    )
+    return self.client.projects_locations_memberships_bindings.Create(
+        req)
+
+  def ListMembershipBindings(self, project, membership, location='global'):
+    """Lists Bindings in a Membership.
+
+    Args:
+      project: the project containing the Membership to list Bindings from.
+      membership: the Membership to list Bindings from.
+      location: the Membrship location to list Bindings
+
+    Returns:
+      A ListMembershipBindingResponse (list of bindings and next page token)
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    req = self.messages.GkehubProjectsLocationsMembershipsBindingsListRequest(
+        pageToken='', parent=util.MembershipBindingParentName(
+            project, membership, location))
+    return list_pager.YieldFromList(
+        self.client.projects_locations_memberships_bindings,
+        req,
+        field='membershipBindings',
+        batch_size_attribute=None)
+
+  def UpdateMembershipBinding(self, name, scope, fleet, mask):
+    """Updates a Membership-Binding resource.
+
+    Args:
+      name: the Binding name.
+      scope: the Scope associated with binding.
+      fleet: the Fleet for which all related scopes are updated.
+      mask: a mask of the fields to update.
+
+    Returns:
+      An operation
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    # Binding containing fields with updated value(s)
+    binding = self.messages.MembershipBinding(
+        name=name,
+        scope=scope,
+        fleet=fleet
+    )
+    req = self.messages.GkehubProjectsLocationsMembershipsBindingsPatchRequest(
+        membershipBinding=binding,
+        name=binding.name,
+        updateMask=mask)
+    return self.client.projects_locations_memberships_bindings.Patch(req)
+
+  def DeleteMembershipBinding(self, name):
+    """Deletes a Membership-Binding resource.
+
+    Args:
+      name: the resource name of the Binding.
+
+    Returns:
+      An operation
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    req = self.messages.GkehubProjectsLocationsMembershipsBindingsDeleteRequest(
+        name=name)
+    return self.client.projects_locations_memberships_bindings.Delete(
+        req)
+
+

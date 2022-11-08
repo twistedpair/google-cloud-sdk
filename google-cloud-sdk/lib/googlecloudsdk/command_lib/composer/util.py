@@ -70,6 +70,7 @@ SUBCOMMAND_DEPRECATION = {
 # support. {'cmd': ('1.10.14', '2.0.0')} - command `cmd` is supported for
 # Airflow versions greater or equal to 1.10.14, prior to 2.0.0 (exclusive).
 # None - means no boundary.
+# LINT.IfChange
 SUBCOMMAND_ALLOWLIST = {
     'backfill': (None, '2.0.0'),
     'clear': (None, '2.0.0'),
@@ -102,6 +103,9 @@ SUBCOMMAND_ALLOWLIST = {
     'variables': (None, '3.0.0'),
     'version': (None, '3.0.0'),
 }
+# Code paths are prohibited from being included in this file.
+# LINT.ThenChange()
+
 SUBCOMMAND_ALLOWLIST.update(SUBCOMMAND_DEPRECATION)
 
 DEFAULT_NAMESPACE = 'default'

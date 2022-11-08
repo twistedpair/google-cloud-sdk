@@ -409,12 +409,14 @@
           "enumDescriptions": [
             "Reauthentication disabled.",
             "Prompts the user to log in again.",
-            "User must use their secure key 2nd factor device."
+            "User must use their secure key 2nd factor device.",
+            "User can use any enabled 2nd factor."
           ],
           "enum": [
             "METHOD_UNSPECIFIED",
             "LOGIN",
-            "SECURE_KEY"
+            "SECURE_KEY",
+            "ENROLLED_SECOND_FACTORS"
           ]
         },
         "maxAge": {
@@ -571,14 +573,14 @@
           "type": "string"
         },
         "cidrs": {
-          "description": "null List of CIDRs that this group applies to.",
+          "description": "Unordered list. List of CIDRs that this group applies to.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "fqdns": {
-          "description": "null List of FQDNs that this group applies to.",
+          "description": "Unordered list. List of FQDNs that this group applies to.",
           "type": "array",
           "items": {
             "type": "string"

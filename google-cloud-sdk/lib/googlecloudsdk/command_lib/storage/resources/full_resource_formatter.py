@@ -71,6 +71,7 @@ BucketDisplayTitlesAndDefaults = collections.namedtuple(
         'update_time',
         'metageneration',
         'uniform_bucket_level_access',
+        'autoclass_enabled_time',
         'satisfies_pzs',
         ACL_KEY,
         'default_acl',

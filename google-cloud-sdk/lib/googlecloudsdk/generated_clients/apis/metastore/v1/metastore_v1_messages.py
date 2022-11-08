@@ -222,8 +222,8 @@ class Consumer(_messages.Message):
   Fields:
     endpointUri: Output only. The URI of the endpoint used to access the
       metastore service.
-    subnetwork: The subnetwork of the customer project from which an IP
-      address is reserved and used as the Dataproc Metastore service's
+    subnetwork: Immutable. The subnetwork of the customer project from which
+      an IP address is reserved and used as the Dataproc Metastore service's
       endpoint. It is accessible to hosts in the subnet and to all hosts in a
       subnet in the same region and same network. There must be at least one
       IP address available in the subnet's primary range. The subnet is
@@ -2005,8 +2005,8 @@ class Service(_messages.Message):
     network: Immutable. The relative resource name of the VPC network on which
       the instance can be accessed. It is specified in the following
       form:projects/{project_number}/global/networks/{network_id}.
-    networkConfig: Immutable. The configuration specifying the network
-      settings for the Dataproc Metastore service.
+    networkConfig: The configuration specifying the network settings for the
+      Dataproc Metastore service.
     port: The TCP port at which the metastore service is reached. Default:
       9083.
     releaseChannel: Immutable. The release channel of the service. If
@@ -2014,6 +2014,8 @@ class Service(_messages.Message):
     state: Output only. The current state of the metastore service.
     stateMessage: Output only. Additional information about the current state
       of the metastore service, if available.
+    telemetryConfig: The configuration specifying telemetry settings for the
+      Dataproc Metastore service. If unspecified defaults to JSON.
     tier: The tier of the service.
     uid: Output only. The globally unique resource identifier of the metastore
       service.
@@ -2133,9 +2135,10 @@ class Service(_messages.Message):
   releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 14)
   state = _messages.EnumField('StateValueValuesEnum', 15)
   stateMessage = _messages.StringField(16)
-  tier = _messages.EnumField('TierValueValuesEnum', 17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
+  telemetryConfig = _messages.MessageField('TelemetryConfig', 17)
+  tier = _messages.EnumField('TierValueValuesEnum', 18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2267,6 +2270,31 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TelemetryConfig(_messages.Message):
+  r"""Telemetry Configuration for the Dataproc Metastore service.
+
+  Enums:
+    LogFormatValueValuesEnum:
+
+  Fields:
+    logFormat: A LogFormatValueValuesEnum attribute.
+  """
+
+  class LogFormatValueValuesEnum(_messages.Enum):
+    r"""LogFormatValueValuesEnum enum type.
+
+    Values:
+      LOG_FORMAT_UNSPECIFIED: The LOG_FORMAT is not set.
+      LEGACY: Logging output uses the legacy textPayload format.
+      JSON: Logging output uses the jsonPayload format.
+    """
+    LOG_FORMAT_UNSPECIFIED = 0
+    LEGACY = 1
+    JSON = 2
+
+  logFormat = _messages.EnumField('LogFormatValueValuesEnum', 1)
 
 
 class TestIamPermissionsRequest(_messages.Message):

@@ -361,6 +361,7 @@ def InProdRegionalAllowlist(project, track=None):
       'anthonytong-hub2',
       'wenjuntoy2',
       'hub-regionalisation-test',  # For Cloud Console UI testing.
+      'hub-regionalisation-test-2',  # For Cloud Console UI testing.
       'a4vm-ui-tests-3',  # For Cloud Console UI testing.
       'm4a-ui-playground-1',  # For Cloud Console UI testing.
       'pikalov-tb',
@@ -463,3 +464,40 @@ def RBACResourceName(args):
     projects/x/locations/global/namespaces/y/rbacrolebindings/z)
   """
   return args.CONCEPTS.name.Parse().RelativeName()
+
+
+def AddMembershipBindingResourceArg(parser, api_version='v1', binding_help=''):
+  """Add resource arg for projects/{}/locations/{}/memberships/{}/bindings/{}."""
+  # Flags without '--' prefix are automatically positional
+  flag_name = 'BINDING'
+  spec = concepts.ResourceSpec(
+      'gkehub.projects.locations.memberships.bindings',
+      api_version=api_version,
+      resource_name='binding',
+      plural_name='bindings',
+      disable_auto_completers=True,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=_LocationAttributeConfig(),
+      membershipsId=_BasicAttributeConfig('membership', ''),
+      bindingsId=_BasicAttributeConfig('binding', binding_help))
+  concept_parsers.ConceptParser.ForResource(
+      flag_name,
+      spec,
+      'The group of arguments defining a Membership Binding.',
+      plural=False,
+      required=True).AddToParser(parser)
+
+
+def MembershipBindingResourceName(args):
+  """Gets a Membership-Binding resource name from a resource argument.
+
+  Assumes the argument is called BINDING.
+
+  Args:
+    args: arguments provided to a command, including a Binding resource arg
+
+  Returns:
+    The Binding resource name (e.g.
+    projects/x/locations/l/memberships/y/bindings/z)
+  """
+  return args.CONCEPTS.binding.Parse().RelativeName()

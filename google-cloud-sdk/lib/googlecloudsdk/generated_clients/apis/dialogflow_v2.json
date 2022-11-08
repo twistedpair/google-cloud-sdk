@@ -2238,6 +2238,10 @@
           "description": "Optional. Label applied to streams representing this participant in SIPREC XML metadata and SDP. This is used to assign transcriptions from that media stream to this participant. This field can be updated.",
           "type": "string"
         },
+        "obfuscatedExternalUserId": {
+          "description": "Optional. Obfuscated user id that should be associated with the created participant. You can specify a user id as follows: 1. If you set this field in CreateParticipantRequest or UpdateParticipantRequest, Dialogflow adds the obfuscated user id with the participant. 2. If you set this field in AnalyzeContent or StreamingAnalyzeContent, Dialogflow will update Participant.obfuscated_external_user_id. Dialogflow returns an error if you try to add a user id for a non-END_USER participant. Dialogflow uses this user id for billing and measurement purposes. For example, Dialogflow determines whether a user in one conversation returned in a later conversation. Note: * Please never pass raw user ids to Dialogflow. Always obfuscate your user id first. * Dialogflow only accepts a UTF-8 encoded string, e.g., a hex digest of a hash function like SHA-512. * The length of the user id must be <= 256 characters.",
+          "type": "string"
+        },
         "documentsMetadataFilters": {
           "description": "Optional. Key-value filters on the metadata of documents returned by article suggestion. If specified, article suggestion only returns suggested documents that match all filters in their Document.metadata. Multiple values for a metadata key should be concatenated by comma. For example, filters to match all documents that have 'US' or 'CA' in their market metadata values and 'agent' in their user metadata values will be ``` documents_metadata_filters { key: \"market\" value: \"US,CA\" } documents_metadata_filters { key: \"user\" value: \"agent\" } ```",
           "type": "object",
@@ -2401,6 +2405,10 @@
         "allowCancellation": {
           "description": "Indicates whether the partial automated agent reply is interruptible when a later reply message arrives. e.g. if the agent specified some music as partial response, it can be cancelled.",
           "type": "boolean"
+        },
+        "cxCurrentPage": {
+          "description": "The unique identifier of the current Dialogflow CX conversation page. Format: `projects\/\/locations\/\/agents\/\/flows\/\/pages\/`.",
+          "type": "string"
         }
       }
     },
@@ -3762,6 +3770,10 @@
             "USE_STANDARD",
             "USE_ENHANCED"
           ]
+        },
+        "model": {
+          "description": "Which Speech model to select. Select the model best suited to your domain to get best results. If a model is not explicitly specified, then a default model is used. Refer to [Cloud Speech API documentation](https:\/\/cloud.google.com\/speech-to-text\/docs\/basics#select-model) for more details.",
+          "type": "string"
         }
       }
     },

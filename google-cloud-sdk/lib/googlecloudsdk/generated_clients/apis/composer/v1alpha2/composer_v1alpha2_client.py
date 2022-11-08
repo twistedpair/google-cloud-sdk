@@ -224,6 +224,33 @@ class ComposerV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetSourceCode(self, request, global_params=None):
+      r"""Retrieves DAG source code.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsDagsGetSourceCodeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SourceCode) The response message.
+      """
+      config = self.GetMethodConfig('GetSourceCode')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSourceCode.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/dags/{dagsId}:getSourceCode',
+        http_method='GET',
+        method_id='composer.projects.locations.environments.dags.getSourceCode',
+        ordered_params=['dag'],
+        path_params=['dag'],
+        query_params=[],
+        relative_path='v1alpha2/{+dag}:getSourceCode',
+        request_field='',
+        request_type_name='ComposerProjectsLocationsEnvironmentsDagsGetSourceCodeRequest',
+        response_type_name='SourceCode',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists DAGs in an environment.
 

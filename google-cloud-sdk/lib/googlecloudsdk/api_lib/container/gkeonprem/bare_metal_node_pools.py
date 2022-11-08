@@ -21,10 +21,56 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
+from googlecloudsdk.api_lib.container.gkeonprem import update_mask
 
 
-# pylint: disable=protected-access
-class NodePoolsClient(client.ClientBase):
+class _BareMetalNodePoolsClient(client.ClientBase):
+  """Base class for GKE OnPrem Bare Metal API clients."""
+
+  def _node_pool_config(self, args):
+    """Constructs proto message BareMetalNodePoolConfig."""
+    kwargs = {
+        'nodeConfigs': self._node_configs(args)
+    }
+
+    if any(kwargs.values()):
+      return self._messages.BareMetalNodePoolConfig(**kwargs)
+
+    return None
+
+  def _node_configs(self, args):
+    """Constructs proto message field node_configs."""
+    node_configs = []
+    node_config_flag_value = getattr(args, 'node_configs',
+                                     None)
+    if node_config_flag_value:
+      for node_config in node_config_flag_value:
+        node_configs.append(self._node_config(node_config))
+
+    return node_configs
+
+  def _node_config(self, node_config_args):
+    """Constructs proto message BareMetalNodeConfig."""
+    kwargs = {
+        'nodeIp': node_config_args.get('node-ip', ''),
+    }
+
+    if any(kwargs.values()):
+      return self._messages.BareMetalNodeConfig(**kwargs)
+
+    return None
+
+  def _bare_metal_node_pool(self, args):
+    """Constructs proto message BareMetalNodePool."""
+    kwargs = {
+        'name': self._node_pool_name(args),
+        'nodePoolConfig': self._node_pool_config(args),
+    }
+
+    return self._messages.BareMetalNodePool(**kwargs)
+
+
+class NodePoolsClient(_BareMetalNodePoolsClient):
   """Client for node pools in Anthos clusters on bare metal API."""
 
   def __init__(self, **kwargs):
@@ -63,3 +109,31 @@ class NodePoolsClient(client.ClientBase):
         **kwargs)
 
     return self._service.Delete(req)
+
+  def Create(self, args):
+    """Creates a GKE On-Prem Bare Metal API node pool resource."""
+    node_pool_ref = self._node_pool_ref(args)
+    kwargs = {
+        'parent': node_pool_ref.Parent().RelativeName(),
+        'validateOnly': getattr(args, 'validate_only', False),
+        'bareMetalNodePool': self._bare_metal_node_pool(args),
+        'bareMetalNodePoolId': self._node_pool_id(args),
+    }
+    req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsCreateRequest(
+        **kwargs)
+    return self._service.Create(req)
+
+  def Update(self, args):
+    """Updates a GKE On-Prem Bare Metal API node pool resource."""
+    kwargs = {
+        'allowMissing': getattr(args, 'allow_missing', False),
+        'name': self._node_pool_name(args),
+        'updateMask':
+            update_mask.get_update_mask(
+                args, update_mask.BARE_METAL_NODE_POOL_ARGS_TO_UPDATE_MASKS),
+        'validateOnly': getattr(args, 'validate_only', False),
+        'bareMetalNodePool': self._bare_metal_node_pool(args),
+    }
+    req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsPatchRequest(
+        **kwargs)
+    return self._service.Patch(req)

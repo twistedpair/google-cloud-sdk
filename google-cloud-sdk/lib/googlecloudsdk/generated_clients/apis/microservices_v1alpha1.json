@@ -7,7 +7,7 @@
   "version": "v1alpha1",
   "revision": "0",
   "title": "Microservices API",
-  "description": "",
+  "description": "Manages microservices features, such as observability for gRPC workloads.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

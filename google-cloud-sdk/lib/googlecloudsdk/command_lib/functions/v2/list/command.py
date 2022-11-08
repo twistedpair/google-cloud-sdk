@@ -18,12 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import itertools
-
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.functions.v1 import util as api_v1_util
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
-from googlecloudsdk.command_lib.functions.v1.list import command
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -73,22 +69,4 @@ def Run(args, release_track):
   project = properties.VALUES.core.project.GetOrFail()
   limit = args.limit
 
-  list_v2_generator = _YieldFromLocations(args.regions, project, limit,
-                                          messages, client)
-
-  # v1 autopush and staging are the same in routing perspective, they share the
-  # staging-cloudfunctions endpoint. The mixer will route the request to the
-  # corresponding manager instances in autopush and staging.
-  # autopush-cloudfunctions.sandbox.googleapi.com endpoint is not used by v1
-  # at all, the GFE will route the traffic to 2nd Gen frontend even if you
-  # specifed v1.  it's safe to assume when user specified this override,
-  # they are tending to talk to v2 only
-  if api_util.GetCloudFunctionsApiEnv() == api_util.ApiEnv.AUTOPUSH:
-    return list_v2_generator
-  # respect the user overrides for all other cases.
-  else:
-    client = api_v1_util.GetApiClientInstance()
-    messages = api_v1_util.GetApiMessagesModule()
-    list_v1_generator = command.YieldFromLocations(args.regions, project, limit,
-                                                   messages, client)
-    return itertools.chain(list_v2_generator, list_v1_generator)
+  return _YieldFromLocations(args.regions, project, limit, messages, client)

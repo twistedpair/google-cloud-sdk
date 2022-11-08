@@ -171,7 +171,7 @@ class CloudApi(object):
     """Patches bucket metadata.
 
     Args:
-      bucket_resource (UnknownResource): The bucket to patch.
+      bucket_resource (BucketResource): The bucket to patch.
       request_config (RequestConfig): Contains new metadata for the bucket.
       fields_scope (FieldsScope): Determines the fields and projection
         parameters of API call.

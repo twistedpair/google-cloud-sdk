@@ -129,12 +129,20 @@ def get_bucket_resource_from_metadata(metadata):
   """
   url = storage_url.CloudUrl(
       scheme=storage_url.ProviderPrefix.GCS, bucket_name=metadata.name)
+
+  if metadata.autoclass and metadata.autoclass.enabled:
+    autoclass_enabled_time = metadata.autoclass.toggleTime
+  else:
+    autoclass_enabled_time = None
+
   uniform_bucket_level_access = getattr(
       getattr(metadata.iamConfiguration, 'uniformBucketLevelAccess', None),
       'enabled', None)
+
   return gcs_resource_reference.GcsBucketResource(
       url,
       acl=_message_to_dict(metadata.acl),
+      autoclass_enabled_time=autoclass_enabled_time,
       cors_config=_message_to_dict(metadata.cors),
       creation_time=metadata.timeCreated,
       default_acl=_message_to_dict(metadata.defaultObjectAcl),
@@ -247,12 +255,91 @@ def get_object_resource_from_metadata(metadata):
       update_time=metadata.updated)
 
 
+def _get_list_with_added_and_removed_acl_grants(acl_list,
+                                                resource_args,
+                                                is_bucket=False):
+  """Returns shallow copy of ACL policy object with requested changes.
+
+  Args:
+    acl_list (list): Contains Apitools ACL objects for buckets or objects.
+    resource_args (request_config_factory._ResourceConfig): Contains desired
+      changes for the ACL policy.
+    is_bucket (bool): Used to determine if ACL for bucket or object. False
+      implies a cloud storage object.
+
+  Returns:
+    list: Shallow copy of acl_list with added and removed grants.
+  """
+  new_acl_list = []
+  acl_grants_to_remove = set(resource_args.acl_grants_to_remove or [])
+  for existing_grant in acl_list:
+    if existing_grant.entity not in acl_grants_to_remove:
+      new_acl_list.append(existing_grant)
+
+  acl_grants_to_add = resource_args.acl_grants_to_add or []
+  messages = apis.GetMessagesModule('storage', 'v1')
+  if is_bucket:
+    acl_class = messages.BucketAccessControl
+  else:
+    acl_class = messages.ObjectAccessControl
+  for new_grant in acl_grants_to_add:
+    new_acl_list.append(
+        acl_class(entity=new_grant['entity'], role=new_grant['role']))
+
+  return new_acl_list
+
+
+def _get_labels_object_with_added_and_removed_labels(labels_object,
+                                                     resource_args):
+  """Returns shallow copy of bucket labels object with requested changes.
+
+  Args:
+    labels_object (messages.Bucket.LabelsValue|None): Existing labels.
+    resource_args (request_config_factory._BucketConfig): Contains desired
+      changes for labels list.
+
+  Returns:
+    messages.Bucket.LabelsValue|None: Contains shallow copy of labels list with
+      added and removed values or None if there was no original object.
+  """
+  messages = apis.GetMessagesModule('storage', 'v1')
+  if labels_object:
+    existing_labels = labels_object.additionalProperties
+  else:
+    existing_labels = []
+  new_labels = []
+
+  labels_to_remove = set(resource_args.labels_to_remove or [])
+  for existing_label in existing_labels:
+    if existing_label.key in labels_to_remove:
+      # The backend deletes labels whose value is None.
+      new_labels.append(
+          messages.Bucket.LabelsValue.AdditionalProperty(
+              key=existing_label.key, value=None))
+    else:
+      new_labels.append(existing_label)
+
+  labels_to_append = resource_args.labels_to_append or {}
+  for key, value in labels_to_append.items():
+    new_labels.append(
+        messages.Bucket.LabelsValue.AdditionalProperty(key=key, value=value))
+
+  if not (labels_object or new_labels):
+    # Don't send extra data to the API if we're not adding or removing anything.
+    return None
+  # If all label objects have a None value, backend removes the whole property.
+  return messages.Bucket.LabelsValue(additionalProperties=new_labels)
+
+
 def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
   """Sets Apitools Bucket fields based on values in request_config."""
   resource_args = getattr(request_config, 'resource_args', None)
   if not resource_args:
     return
 
+  if resource_args.enable_autoclass is not None:
+    bucket_metadata.autoclass = gcs_metadata_field_converters.process_autoclass(
+        resource_args.enable_autoclass)
   if resource_args.cors_file_path is not None:
     bucket_metadata.cors = gcs_metadata_field_converters.process_cors(
         resource_args.cors_file_path)
@@ -267,9 +354,6 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
     bucket_metadata.storageClass = (
         gcs_metadata_field_converters.process_default_storage_class(
             resource_args.default_storage_class))
-  if resource_args.labels_file_path is not None:
-    bucket_metadata.labels = gcs_metadata_field_converters.process_labels(
-        resource_args.labels_file_path)
   if resource_args.lifecycle_file_path is not None:
     bucket_metadata.lifecycle = (
         gcs_metadata_field_converters.process_lifecycle(
@@ -307,6 +391,19 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
       resource_args.web_main_page_suffix is not None):
     bucket_metadata.website = gcs_metadata_field_converters.process_website(
         resource_args.web_error_page, resource_args.web_main_page_suffix)
+  if resource_args.acl_file_path is not None:
+    bucket_metadata.acl = gcs_metadata_field_converters.process_acl_file(
+        resource_args.acl_file_path)
+  bucket_metadata.acl = (
+      _get_list_with_added_and_removed_acl_grants(
+          bucket_metadata.acl, resource_args, is_bucket=True))
+
+  if resource_args.labels_file_path is not None:
+    bucket_metadata.labels = gcs_metadata_field_converters.process_labels(
+        resource_args.labels_file_path)
+  # Can still add labels after clear.
+  bucket_metadata.labels = _get_labels_object_with_added_and_removed_labels(
+      bucket_metadata.labels, resource_args)
 
 
 def get_cleared_bucket_fields(request_config):
@@ -449,3 +546,7 @@ def update_object_metadata_from_request_config(object_metadata,
     object_metadata.eventBasedHold = resource_args.event_based_hold
   if resource_args.temporary_hold is not None:
     object_metadata.temporaryHold = resource_args.temporary_hold
+
+  object_metadata.acl = (
+      _get_list_with_added_and_removed_acl_grants(
+          object_metadata.acl, resource_args, is_bucket=False))

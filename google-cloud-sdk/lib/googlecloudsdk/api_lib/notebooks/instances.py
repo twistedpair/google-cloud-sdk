@@ -285,6 +285,25 @@ def CreateInstanceRollbackRequest(args, messages):
       name=instance, rollbackInstanceRequest=rollback_request)
 
 
+def CreateInstanceDiagnoseRequest(args, messages):
+  """"Create and return Diagnose request."""
+  instance = GetInstanceResource(args).RelativeName()
+  diagnostic_config = messages.DiagnosticConfig(
+      gcsBucket=args.gcs_bucket,
+  )
+  if args.IsSpecified('relative_path'):
+    diagnostic_config.relativePath = args.relative_path
+  if args.IsSpecified('enable-repair'):
+    diagnostic_config.repairFlagEnabled = True
+  if args.IsSpecified('enable-packet-capture'):
+    diagnostic_config.packetCaptureFlagEnabled = True
+  if args.IsSpecified('enable-copy-home-files'):
+    diagnostic_config. copyHomeFilesFlagEnabled = True
+  return messages.NotebooksProjectsLocationsInstancesDiagnoseRequest(
+      name=instance, diagnoseInstanceRequest=messages.DiagnoseInstanceRequest(
+          diagnosticConfig=diagnostic_config))
+
+
 def GetInstanceResource(args):
   return args.CONCEPTS.instance.Parse()
 

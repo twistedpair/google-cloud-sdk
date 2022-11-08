@@ -19,10 +19,8 @@ from __future__ import unicode_literals
 
 import argparse
 
-from googlecloudsdk.command_lib.container.fleet.features import base
 from googlecloudsdk.command_lib.projects import util
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core.console import console_io
 
 
 ENFORCEMENT_ACTION_LABEL_MAP = {
@@ -50,43 +48,6 @@ def get_enforcement_action_label(enforcement_action):
   if enforcement_action in ENFORCEMENT_ACTION_LABEL_MAP:
     return ENFORCEMENT_ACTION_LABEL_MAP[enforcement_action]
   return ENFORCEMENT_ACTION_LABEL_MAP['ENFORCEMENT_ACTION_UNSPECIFIED']
-
-
-def select_memberships(args):
-  """Returns a list of memberships to which to apply the command, given the arguments.
-
-  This will be deleted and replaced with resources.ParseMemberships when
-  regionalization is ready.
-
-  Args:
-    args: object containing arguments passed as flags with the command
-
-  Returns:
-    memberships: A list of membership name strings
-  """
-  memberships = []
-  all_memberships = base.ListMemberships()
-  if not all_memberships:
-    raise exceptions.Error('A membership is required for this command.')
-
-  if args.all_memberships:
-    memberships = all_memberships
-  elif args.memberships:
-    memberships = args.memberships.split(',')
-  else:
-    index = console_io.PromptChoice(
-        options=all_memberships, message='Please specify a membership:\n')
-    if index is not None:
-      memberships.append(all_memberships[index])
-
-  if not memberships:
-    raise exceptions.Error('A membership is required for this command.')
-
-  for membership in memberships:
-    if membership not in all_memberships:
-      raise exceptions.Error('Membership {} not found'.format(membership))
-
-  return memberships
 
 
 def set_poco_hub_config_parameters_from_args(args, messages):

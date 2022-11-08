@@ -591,7 +591,8 @@ class AssetType(_messages.Message):
       id are: 1. 1 character minimum, 63 characters maximum 2. only contains
       letters, digits, underscore and hyphen 3. starts with a letter if length
       == 1, starts with a letter or underscore if length > 1
-    FacetConfigsValue: Mapping of facet name to its configuration.
+    FacetConfigsValue: Mapping of facet name to its configuration. To update
+      facets, use either "*" or "facet_configs" update mask.
     IndexedFieldConfigsValue: List of indexed fields (e.g.
       "metadata.file.url") to make available in searches with their
       corresponding properties.
@@ -611,7 +612,10 @@ class AssetType(_messages.Message):
       starts with a letter or underscore if length > 1
     assetTypeStats: asset_type_stats stores stats on this asset type.
     createTime: Output only. The creation time.
-    facetConfigs: Mapping of facet name to its configuration.
+    facetConfigs: Mapping of facet name to its configuration. To update
+      facets, use either "*" or "facet_configs" update mask.
+    featureConfigs: Configuration for IMS features, including languages for
+      speech transcription.
     indexedFieldConfigs: List of indexed fields (e.g. "metadata.file.url") to
       make available in searches with their corresponding properties.
     labels: The labels associated with this resource. Each label is a key-
@@ -680,7 +684,8 @@ class AssetType(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FacetConfigsValue(_messages.Message):
-    r"""Mapping of facet name to its configuration.
+    r"""Mapping of facet name to its configuration. To update facets, use
+    either "*" or "facet_configs" update mask.
 
     Messages:
       AdditionalProperty: An additional property for a FacetConfigsValue
@@ -834,15 +839,16 @@ class AssetType(_messages.Message):
   assetTypeStats = _messages.MessageField('AssetTypeStats', 2)
   createTime = _messages.StringField(3)
   facetConfigs = _messages.MessageField('FacetConfigsValue', 4)
-  indexedFieldConfigs = _messages.MessageField('IndexedFieldConfigsValue', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  linkConfigs = _messages.MessageField('LinkConfigsValue', 7)
-  linkSetConfigs = _messages.MessageField('LinkSetConfigsValue', 8)
-  mediaType = _messages.EnumField('MediaTypeValueValuesEnum', 9)
-  metadataConfigs = _messages.MessageField('MetadataConfigsValue', 10)
-  name = _messages.StringField(11)
-  sortOrder = _messages.MessageField('SortOrderConfig', 12)
-  updateTime = _messages.StringField(13)
+  featureConfigs = _messages.MessageField('FeatureConfigs', 5)
+  indexedFieldConfigs = _messages.MessageField('IndexedFieldConfigsValue', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  linkConfigs = _messages.MessageField('LinkConfigsValue', 8)
+  linkSetConfigs = _messages.MessageField('LinkSetConfigsValue', 9)
+  mediaType = _messages.EnumField('MediaTypeValueValuesEnum', 10)
+  metadataConfigs = _messages.MessageField('MetadataConfigsValue', 11)
+  name = _messages.StringField(12)
+  sortOrder = _messages.MessageField('SortOrderConfig', 13)
+  updateTime = _messages.StringField(14)
 
 
 class AssetTypeConfig(_messages.Message):
@@ -1436,6 +1442,17 @@ class FacetValue(_messages.Message):
 
   count = _messages.IntegerField(1)
   stringValue = _messages.StringField(2)
+
+
+class FeatureConfigs(_messages.Message):
+  r"""FeatureConfigs configure different IMS properties.
+
+  Fields:
+    speechTranscriptionConfig: Configure transcription options for speech:
+      keyword.
+  """
+
+  speechTranscriptionConfig = _messages.MessageField('SpeechTranscriptionConfig', 1)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):
@@ -4279,6 +4296,21 @@ class SortOrderConfig(_messages.Message):
 
   descending = _messages.BooleanField(1)
   field = _messages.StringField(2)
+
+
+class SpeechTranscriptionConfig(_messages.Message):
+  r"""Configure transcription options for speech: keyword.
+
+  Fields:
+    languageCode: Language code to use for configuring `speech:` search
+      keyword. If unset, the default language will be English (en-US). This
+      language code will be validated under [BCP-47](https://www.rfc-
+      editor.org/rfc/bcp/bcp47.txt). Example: "en-US". See [Language
+      Support](https://cloud.google.com/speech/docs/languages) for a list of
+      the currently supported language codes.
+  """
+
+  languageCode = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):

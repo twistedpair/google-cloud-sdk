@@ -32,7 +32,7 @@ def AddsCreateFlags(parser):
   AddsRegionResourceArg(parser)
 
 
-def AddsRegionResourceArg(parser):
+def AddsRegionResourceArg(parser, is_required=True):
   """Add region resource argument to parser."""
   region_resource_spec = concepts.ResourceSpec(
       'cloudbuild.projects.locations',
@@ -44,7 +44,7 @@ def AddsRegionResourceArg(parser):
       '--region',
       region_resource_spec,
       'Region for Cloud Build.',
-      required=True).AddToParser(parser)
+      required=is_required).AddToParser(parser)
 
 
 def AddsRunFlags(parser):

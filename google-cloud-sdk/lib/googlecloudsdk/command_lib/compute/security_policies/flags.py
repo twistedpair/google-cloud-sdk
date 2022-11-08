@@ -87,6 +87,20 @@ def SecurityPolicyArgumentForTargetResource(resource, required=False):
           resource)))
 
 
+def SecurityPolicyRegionalArgumentForTargetResource(resource, required=False):
+  return compute_flags.ResourceArgument(
+      resource_name='security policy',
+      name='--security-policy',
+      completer=RegionalSecurityPoliciesCompleter,
+      plural=False,
+      required=required,
+      regional_collection='compute.regionSecurityPolicies',
+      short_help=(
+          ('The security policy that will be set for this {0}. To remove the '
+           'policy from this {0} set the policy to an empty string.'
+          ).format(resource)))
+
+
 def SecurityPolicyMultiScopeArgumentForTargetResource(resource, required=False):
   return compute_flags.ResourceArgument(
       resource_name='security policy',

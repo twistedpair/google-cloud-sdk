@@ -166,6 +166,25 @@ def CreateRuntimeDescribeRequest(args, messages):
   return messages.NotebooksProjectsLocationsRuntimesGetRequest(name=runtime)
 
 
+def CreateRuntimeDiagnoseRequest(args, messages):
+  """"Create and return Diagnose request."""
+  runtime = GetRuntimeResource(args).RelativeName()
+  diagnostic_config = messages.DiagnosticConfig(
+      gcsBucket=args.gcs_bucket,
+  )
+  if args.IsSpecified('relative_path'):
+    diagnostic_config.relativePath = args.relative_path
+  if args.IsSpecified('enable-repair'):
+    diagnostic_config.repairFlagEnabled = True
+  if args.IsSpecified('enable-packet-capture'):
+    diagnostic_config.packetCaptureFlagEnabled = True
+  if args.IsSpecified('enable-copy-home-files'):
+    diagnostic_config. copyHomeFilesFlagEnabled = True
+  return messages.NotebooksProjectsLocationsRuntimesDiagnoseRequest(
+      name=runtime, diagnoseRuntimeRequest=messages.DiagnoseRuntimeRequest(
+          diagnosticConfig=diagnostic_config))
+
+
 def GetRuntimeURI(resource):
   instance = resources.REGISTRY.ParseRelativeName(
       resource.name, collection='notebooks.projects.locations.runtimes')

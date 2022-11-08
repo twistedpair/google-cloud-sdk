@@ -15,6 +15,135 @@ from apitools.base.py import extra_types
 package = 'datastore'
 
 
+class Aggregation(_messages.Message):
+  r"""Defines a aggregation that produces a single result.
+
+  Fields:
+    alias: Optional. Optional name of the property to store the result of the
+      aggregation. If not provided, Datastore will pick a default name
+      following the format `property_`. For example: ``` AGGREGATE
+      COUNT_UP_TO(1) AS count_up_to_1, COUNT_UP_TO(2), COUNT_UP_TO(3) AS
+      count_up_to_3, COUNT_UP_TO(4) OVER ( ... ); ``` becomes: ``` AGGREGATE
+      COUNT_UP_TO(1) AS count_up_to_1, COUNT_UP_TO(2) AS property_1,
+      COUNT_UP_TO(3) AS count_up_to_3, COUNT_UP_TO(4) AS property_2 OVER ( ...
+      ); ``` Requires: * Must be unique across all aggregation aliases. *
+      Conform to entity property name limitations.
+    count: Count aggregator.
+  """
+
+  alias = _messages.StringField(1)
+  count = _messages.MessageField('Count', 2)
+
+
+class AggregationQuery(_messages.Message):
+  r"""Datastore query for running an aggregation over a Query.
+
+  Fields:
+    aggregations: Optional. Series of aggregations to apply over the results
+      of the `nested_query`. Requires: * A minimum of one and maximum of five
+      aggregations per query.
+    nestedQuery: Nested query for aggregation
+  """
+
+  aggregations = _messages.MessageField('Aggregation', 1, repeated=True)
+  nestedQuery = _messages.MessageField('Query', 2)
+
+
+class AggregationResult(_messages.Message):
+  r"""The result of a single bucket from a Datastore aggregation query. The
+  keys of `aggregate_properties` are the same for all results in an
+  aggregation query, unlike entity queries which can have different fields
+  present for each result.
+
+  Messages:
+    AggregatePropertiesValue: The result of the aggregation functions, ex:
+      `COUNT(*) AS total_entities`. The key is the alias assigned to the
+      aggregation function on input and the size of this map equals the number
+      of aggregation functions in the query.
+
+  Fields:
+    aggregateProperties: The result of the aggregation functions, ex:
+      `COUNT(*) AS total_entities`. The key is the alias assigned to the
+      aggregation function on input and the size of this map equals the number
+      of aggregation functions in the query.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AggregatePropertiesValue(_messages.Message):
+    r"""The result of the aggregation functions, ex: `COUNT(*) AS
+    total_entities`. The key is the alias assigned to the aggregation function
+    on input and the size of this map equals the number of aggregation
+    functions in the query.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AggregatePropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AggregatePropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AggregatePropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Value attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Value', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  aggregateProperties = _messages.MessageField('AggregatePropertiesValue', 1)
+
+
+class AggregationResultBatch(_messages.Message):
+  r"""A batch of aggregation results produced by an aggregation query.
+
+  Enums:
+    MoreResultsValueValuesEnum: The state of the query after the current
+      batch. Only COUNT(*) aggregations are supported in the initial launch.
+      Therefore, expected result type is limited to `NO_MORE_RESULTS`.
+
+  Fields:
+    aggregationResults: The aggregation results for this batch.
+    moreResults: The state of the query after the current batch. Only COUNT(*)
+      aggregations are supported in the initial launch. Therefore, expected
+      result type is limited to `NO_MORE_RESULTS`.
+    readTime: Read timestamp this batch was returned from. In a single
+      transaction, subsequent query result batches for the same query can have
+      a greater timestamp. Each batch's read timestamp is valid for all
+      preceding batches.
+  """
+
+  class MoreResultsValueValuesEnum(_messages.Enum):
+    r"""The state of the query after the current batch. Only COUNT(*)
+    aggregations are supported in the initial launch. Therefore, expected
+    result type is limited to `NO_MORE_RESULTS`.
+
+    Values:
+      MORE_RESULTS_TYPE_UNSPECIFIED: Unspecified. This value is never used.
+      NOT_FINISHED: There may be additional batches to fetch from this query.
+      MORE_RESULTS_AFTER_LIMIT: The query is finished, but there may be more
+        results after the limit.
+      MORE_RESULTS_AFTER_CURSOR: The query is finished, but there may be more
+        results after the end cursor.
+      NO_MORE_RESULTS: The query is finished, and there are no more results.
+    """
+    MORE_RESULTS_TYPE_UNSPECIFIED = 0
+    NOT_FINISHED = 1
+    MORE_RESULTS_AFTER_LIMIT = 2
+    MORE_RESULTS_AFTER_CURSOR = 3
+    NO_MORE_RESULTS = 4
+
+  aggregationResults = _messages.MessageField('AggregationResult', 1, repeated=True)
+  moreResults = _messages.EnumField('MoreResultsValueValuesEnum', 2)
+  readTime = _messages.StringField(3)
+
+
 class AllocateIdsRequest(_messages.Message):
   r"""The request for Datastore.AllocateIds.
 
@@ -163,6 +292,24 @@ class CompositeFilter(_messages.Message):
 
   filters = _messages.MessageField('Filter', 1, repeated=True)
   op = _messages.EnumField('OpValueValuesEnum', 2)
+
+
+class Count(_messages.Message):
+  r"""Count of entities that match the query. The `COUNT(*)` aggregation
+  function operates on the entire entity so it does not require a field
+  reference.
+
+  Fields:
+    upTo: Optional. Optional constraint on the maximum number of entities to
+      count. This provides a way to set an upper bound on the number of
+      entities to scan, limiting latency and cost. Unspecified is interpreted
+      as no bound. If a zero value is provided, a count result of zero should
+      always be expected. High-Level Example: ``` AGGREGATE COUNT_UP_TO(1000)
+      OVER ( SELECT * FROM k ); ``` Requires: * Must be non-negative when
+      present.
+  """
+
+  upTo = _messages.IntegerField(1)
 
 
 class DatastoreProjectsAllocateIdsRequest(_messages.Message):
@@ -361,6 +508,20 @@ class DatastoreProjectsRollbackRequest(_messages.Message):
 
   projectId = _messages.StringField(1, required=True)
   rollbackRequest = _messages.MessageField('RollbackRequest', 2)
+
+
+class DatastoreProjectsRunAggregationQueryRequest(_messages.Message):
+  r"""A DatastoreProjectsRunAggregationQueryRequest object.
+
+  Fields:
+    projectId: Required. The ID of the project against which to make the
+      request.
+    runAggregationQueryRequest: A RunAggregationQueryRequest resource to be
+      passed as the request body.
+  """
+
+  projectId = _messages.StringField(1, required=True)
+  runAggregationQueryRequest = _messages.MessageField('RunAggregationQueryRequest', 2)
 
 
 class DatastoreProjectsRunQueryRequest(_messages.Message):
@@ -1996,6 +2157,40 @@ class RollbackRequest(_messages.Message):
 
 class RollbackResponse(_messages.Message):
   r"""The response for Datastore.Rollback. (an empty message)."""
+
+
+class RunAggregationQueryRequest(_messages.Message):
+  r"""The request for Datastore.RunAggregationQuery.
+
+  Fields:
+    aggregationQuery: The query to run.
+    databaseId: The ID of the database against which to make the request.
+      '(default)' is not allowed; please use empty string '' to refer the
+      default database.
+    gqlQuery: The GQL query to run. This query must be an aggregation query.
+    partitionId: Entities are partitioned into subsets, identified by a
+      partition ID. Queries are scoped to a single partition. This partition
+      ID is normalized with the standard default context partition ID.
+    readOptions: The options for this query.
+  """
+
+  aggregationQuery = _messages.MessageField('AggregationQuery', 1)
+  databaseId = _messages.StringField(2)
+  gqlQuery = _messages.MessageField('GqlQuery', 3)
+  partitionId = _messages.MessageField('PartitionId', 4)
+  readOptions = _messages.MessageField('ReadOptions', 5)
+
+
+class RunAggregationQueryResponse(_messages.Message):
+  r"""The response for Datastore.RunAggregationQuery.
+
+  Fields:
+    batch: A batch of aggregation results. Always present.
+    query: The parsed form of the `GqlQuery` from the request, if it was set.
+  """
+
+  batch = _messages.MessageField('AggregationResultBatch', 1)
+  query = _messages.MessageField('AggregationQuery', 2)
 
 
 class RunQueryRequest(_messages.Message):

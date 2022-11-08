@@ -213,6 +213,9 @@ class CloudSqlConnectionProfile(_messages.Message):
   parameters required to create a Cloud SQL destination database instance.
 
   Fields:
+    additionalPublicIp: Output only. The Cloud SQL database instance's
+      additional (outgoing) public IP. Used when the Cloud SQL database
+      availability type is REGIONAL (i.e. multiple zones / highly available).
     cloudSqlId: Output only. The Cloud SQL instance ID that this connection
       profile is associated with.
     privateIp: Output only. The Cloud SQL database instance's private IP.
@@ -221,10 +224,11 @@ class CloudSqlConnectionProfile(_messages.Message):
       database.
   """
 
-  cloudSqlId = _messages.StringField(1)
-  privateIp = _messages.StringField(2)
-  publicIp = _messages.StringField(3)
-  settings = _messages.MessageField('CloudSqlSettings', 4)
+  additionalPublicIp = _messages.StringField(1)
+  cloudSqlId = _messages.StringField(2)
+  privateIp = _messages.StringField(3)
+  publicIp = _messages.StringField(4)
+  settings = _messages.MessageField('CloudSqlSettings', 5)
 
 
 class CloudSqlSettings(_messages.Message):
@@ -236,6 +240,10 @@ class CloudSqlSettings(_messages.Message):
       'RUNNABLE'. Valid values: 'ALWAYS': The instance is on, and remains so
       even in the absence of connection requests. `NEVER`: The instance is
       off; it is not activated, even if a connection request arrives.
+    AvailabilityTypeValueValuesEnum: Optional. Availability type. Potential
+      values: * `ZONAL`: The instance serves data from only one zone. Outages
+      in that zone affect data availability. * `REGIONAL`: The instance can
+      serve data from more than one zone in a region (it is highly available).
     DataDiskTypeValueValuesEnum: The type of storage: `PD_SSD` (default) or
       `PD_HDD`.
     DatabaseVersionValueValuesEnum: The database engine type and version.
@@ -261,6 +269,10 @@ class CloudSqlSettings(_messages.Message):
       storage capacity. If the available storage repeatedly falls below the
       threshold size, Cloud SQL continues to add storage until it reaches the
       maximum of 30 TB.
+    availabilityType: Optional. Availability type. Potential values: *
+      `ZONAL`: The instance serves data from only one zone. Outages in that
+      zone affect data availability. * `REGIONAL`: The instance can serve data
+      from more than one zone in a region (it is highly available).
     cmekKeyName: The KMS key name used for the csql instance.
     collation: The Cloud SQL default instance level collation.
     dataDiskSizeGb: The storage capacity available to the database, in GB. The
@@ -276,6 +288,9 @@ class CloudSqlSettings(_messages.Message):
     rootPassword: Input only. Initial root password.
     rootPasswordSet: Output only. Indicates If this connection profile root
       password is stored.
+    secondaryZone: Optional. The Google Cloud Platform zone where the failover
+      Cloud SQL database instance is located. Used when the Cloud SQL database
+      availability type is REGIONAL (i.e. multiple zones / highly available).
     sourceId: The Database Migration Service source connection profile ID, in
       the format: `projects/my_project_name/locations/us-
       central1/connectionProfiles/connection_profile_ID`
@@ -309,6 +324,21 @@ class CloudSqlSettings(_messages.Message):
     SQL_ACTIVATION_POLICY_UNSPECIFIED = 0
     ALWAYS = 1
     NEVER = 2
+
+  class AvailabilityTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Availability type. Potential values: * `ZONAL`: The instance
+    serves data from only one zone. Outages in that zone affect data
+    availability. * `REGIONAL`: The instance can serve data from more than one
+    zone in a region (it is highly available).
+
+    Values:
+      SQL_AVAILABILITY_TYPE_UNSPECIFIED: This is an unknown Availability type.
+      ZONAL: Zonal availablility instance.
+      REGIONAL: Regional availability instance.
+    """
+    SQL_AVAILABILITY_TYPE_UNSPECIFIED = 0
+    ZONAL = 1
+    REGIONAL = 2
 
   class DataDiskTypeValueValuesEnum(_messages.Enum):
     r"""The type of storage: `PD_SSD` (default) or `PD_HDD`.
@@ -404,20 +434,22 @@ class CloudSqlSettings(_messages.Message):
 
   activationPolicy = _messages.EnumField('ActivationPolicyValueValuesEnum', 1)
   autoStorageIncrease = _messages.BooleanField(2)
-  cmekKeyName = _messages.StringField(3)
-  collation = _messages.StringField(4)
-  dataDiskSizeGb = _messages.IntegerField(5)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 6)
-  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 7)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 8)
-  ipConfig = _messages.MessageField('SqlIpConfig', 9)
-  rootPassword = _messages.StringField(10)
-  rootPasswordSet = _messages.BooleanField(11)
-  sourceId = _messages.StringField(12)
-  storageAutoResizeLimit = _messages.IntegerField(13)
-  tier = _messages.StringField(14)
-  userLabels = _messages.MessageField('UserLabelsValue', 15)
-  zone = _messages.StringField(16)
+  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 3)
+  cmekKeyName = _messages.StringField(4)
+  collation = _messages.StringField(5)
+  dataDiskSizeGb = _messages.IntegerField(6)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 7)
+  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 8)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 9)
+  ipConfig = _messages.MessageField('SqlIpConfig', 10)
+  rootPassword = _messages.StringField(11)
+  rootPasswordSet = _messages.BooleanField(12)
+  secondaryZone = _messages.StringField(13)
+  sourceId = _messages.StringField(14)
+  storageAutoResizeLimit = _messages.IntegerField(15)
+  tier = _messages.StringField(16)
+  userLabels = _messages.MessageField('UserLabelsValue', 17)
+  zone = _messages.StringField(18)
 
 
 class ConnectionProfile(_messages.Message):

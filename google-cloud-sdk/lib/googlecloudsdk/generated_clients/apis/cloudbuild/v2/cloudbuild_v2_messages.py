@@ -46,127 +46,6 @@ class AccessReadWriteTokenResponse(_messages.Message):
   token = _messages.StringField(2)
 
 
-class ApprovalConfig(_messages.Message):
-  r"""ApprovalConfig describes configuration for manual approval of a build.
-
-  Fields:
-    approvalRequired: Whether or not approval is needed. If this is set on a
-      build, it will become pending when created, and will need to be
-      explicitly approved to start.
-  """
-
-  approvalRequired = _messages.BooleanField(1)
-
-
-class ApprovalResult(_messages.Message):
-  r"""ApprovalResult describes the decision and associated metadata of a
-  manual approval of a build.
-
-  Enums:
-    DecisionValueValuesEnum: Required. The decision of this manual approval.
-
-  Fields:
-    approvalTime: Output only. The time when the approval decision was made.
-    approverAccount: Output only. Email of the user that called the
-      ApproveBuild API to approve or reject a build at the time that the API
-      was called.
-    comment: Optional. An optional comment for this manual approval result.
-    decision: Required. The decision of this manual approval.
-    url: Optional. An optional URL tied to this manual approval result. This
-      field is essentially the same as comment, except that it will be
-      rendered by the UI differently. An example use case is a link to an
-      external job that approved this Build.
-  """
-
-  class DecisionValueValuesEnum(_messages.Enum):
-    r"""Required. The decision of this manual approval.
-
-    Values:
-      DECISION_UNSPECIFIED: Default enum type. This should not be used.
-      APPROVED: Build is approved.
-      REJECTED: Build is rejected.
-    """
-    DECISION_UNSPECIFIED = 0
-    APPROVED = 1
-    REJECTED = 2
-
-  approvalTime = _messages.StringField(1)
-  approverAccount = _messages.StringField(2)
-  comment = _messages.StringField(3)
-  decision = _messages.EnumField('DecisionValueValuesEnum', 4)
-  url = _messages.StringField(5)
-
-
-class ArtifactObjects(_messages.Message):
-  r"""Files in the workspace to upload to Cloud Storage upon successful
-  completion of all build steps.
-
-  Fields:
-    location: Cloud Storage bucket and optional object path, in the form
-      "gs://bucket/path/to/somewhere/". (see [Bucket Name
-      Requirements](https://cloud.google.com/storage/docs/bucket-
-      naming#requirements)). Files in the workspace matching any path pattern
-      will be uploaded to Cloud Storage with this location as a prefix.
-    paths: Path globs used to match files in the build's workspace.
-    timing: Output only. Stores timing information for pushing all artifact
-      objects.
-  """
-
-  location = _messages.StringField(1)
-  paths = _messages.StringField(2, repeated=True)
-  timing = _messages.MessageField('TimeSpan', 3)
-
-
-class ArtifactResult(_messages.Message):
-  r"""An artifact that was uploaded during a build. This is a single record in
-  the artifact manifest JSON file.
-
-  Fields:
-    fileHash: The file hash of the artifact.
-    location: The path of an artifact in a Google Cloud Storage bucket, with
-      the generation number. For example,
-      `gs://mybucket/path/to/output.jar#generation`.
-  """
-
-  fileHash = _messages.MessageField('FileHashes', 1, repeated=True)
-  location = _messages.StringField(2)
-
-
-class Artifacts(_messages.Message):
-  r"""Artifacts produced by a build that should be uploaded upon successful
-  completion of all build steps.
-
-  Fields:
-    images: A list of images to be pushed upon the successful completion of
-      all build steps. The images will be pushed using the builder service
-      account's credentials. The digests of the pushed images will be stored
-      in the Build resource's results field. If any of the images fail to be
-      pushed, the build is marked FAILURE.
-    mavenArtifacts: A list of Maven artifacts to be uploaded to Artifact
-      Registry upon successful completion of all build steps. Artifacts in the
-      workspace matching specified paths globs will be uploaded to the
-      specified Artifact Registry repository using the builder service
-      account's credentials. If any artifacts fail to be pushed, the build is
-      marked FAILURE.
-    objects: A list of objects to be uploaded to Cloud Storage upon successful
-      completion of all build steps. Files in the workspace matching specified
-      paths globs will be uploaded to the specified Cloud Storage location
-      using the builder service account's credentials. The location and
-      generation of the uploaded objects will be stored in the Build
-      resource's results field. If any objects fail to be pushed, the build is
-      marked FAILURE.
-    pythonPackages: A list of Python packages to be uploaded to Artifact
-      Registry upon successful completion of all build steps. The build
-      service account credentials will be used to perform the upload. If any
-      objects fail to be pushed, the build is marked FAILURE.
-  """
-
-  images = _messages.StringField(1, repeated=True)
-  mavenArtifacts = _messages.MessageField('MavenArtifact', 2, repeated=True)
-  objects = _messages.MessageField('ArtifactObjects', 3)
-  pythonPackages = _messages.MessageField('PythonPackage', 4, repeated=True)
-
-
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -230,59 +109,25 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
-class BatchCreateBitbucketServerConnectedRepositoriesResponse(_messages.Message):
-  r"""Response of BatchCreateBitbucketServerConnectedRepositories RPC method
-  including all successfully connected Bitbucket Server repositories.
+class BatchCreateRepositoriesRequest(_messages.Message):
+  r"""Message for creating repositoritories in batch.
 
   Fields:
-    bitbucketServerConnectedRepositories: The connected Bitbucket Server
-      repositories.
+    requests: Required. The request messages specifying the repositories to
+      create.
   """
 
-  bitbucketServerConnectedRepositories = _messages.MessageField('BitbucketServerConnectedRepository', 1, repeated=True)
+  requests = _messages.MessageField('CreateRepositoryRequest', 1, repeated=True)
 
 
-class BatchCreateBitbucketServerConnectedRepositoriesResponseMetadata(_messages.Message):
-  r"""Metadata for `BatchCreateBitbucketServerConnectedRepositories`
-  operation.
+class BatchCreateRepositoriesResponse(_messages.Message):
+  r"""Message for response of creating repositories in batch.
 
   Fields:
-    completeTime: Time the operation was completed.
-    config: The name of the `BitbucketServerConfig` that added connected
-      repositories. Format: `projects/{project}/locations/{location}/bitbucket
-      ServerConfigs/{config}`
-    createTime: Time the operation was created.
+    repositories: Repository resources created.
   """
 
-  completeTime = _messages.StringField(1)
-  config = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-
-
-class BatchCreateGitLabConnectedRepositoriesResponse(_messages.Message):
-  r"""Response of BatchCreateGitLabConnectedRepositories RPC method.
-
-  Fields:
-    gitlabConnectedRepositories: The GitLab connected repository requests'
-      responses.
-  """
-
-  gitlabConnectedRepositories = _messages.MessageField('GitLabConnectedRepository', 1, repeated=True)
-
-
-class BatchCreateGitLabConnectedRepositoriesResponseMetadata(_messages.Message):
-  r"""Metadata for `BatchCreateGitLabConnectedRepositories` operation.
-
-  Fields:
-    completeTime: Time the operation was completed.
-    config: The name of the `GitLabConfig` that added connected repositories.
-      Format: `projects/{project}/locations/{location}/gitLabConfigs/{config}`
-    createTime: Time the operation was created.
-  """
-
-  completeTime = _messages.StringField(1)
-  config = _messages.StringField(2)
-  createTime = _messages.StringField(3)
+  repositories = _messages.MessageField('Repository', 1, repeated=True)
 
 
 class Binding(_messages.Message):
@@ -343,597 +188,6 @@ class Binding(_messages.Message):
   condition = _messages.MessageField('Expr', 1)
   members = _messages.StringField(2, repeated=True)
   role = _messages.StringField(3)
-
-
-class BitbucketServerConnectedRepository(_messages.Message):
-  r"""/ BitbucketServerConnectedRepository represents a connected Bitbucket
-  Server / repository.
-
-  Fields:
-    parent: The name of the `BitbucketServerConfig` that added connected
-      repository. Format: `projects/{project}/locations/{location}/bitbucketSe
-      rverConfigs/{config}`
-    repo: The Bitbucket Server repositories to connect.
-    status: Output only. The status of the repo connection request.
-  """
-
-  parent = _messages.StringField(1)
-  repo = _messages.MessageField('BitbucketServerRepositoryId', 2)
-  status = _messages.MessageField('Status', 3)
-
-
-class BitbucketServerRepositoryId(_messages.Message):
-  r"""BitbucketServerRepositoryId identifies a specific repository hosted on a
-  Bitbucket Server.
-
-  Fields:
-    projectKey: Required. Identifier for the project storing the repository.
-    repoSlug: Required. Identifier for the repository.
-    webhookId: Output only. The ID of the webhook that was created for
-      receiving events from this repo. We only create and manage a single
-      webhook for each repo.
-  """
-
-  projectKey = _messages.StringField(1)
-  repoSlug = _messages.StringField(2)
-  webhookId = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-
-
-class Build(_messages.Message):
-  r"""A build resource in the Cloud Build API. At a high level, a `Build`
-  describes where to find source code, how to build it (for example, the
-  builder image to run on the source), and where to store the built artifacts.
-  Fields can include the following variables, which will be expanded when the
-  build is created: - $PROJECT_ID: the project ID of the build. -
-  $PROJECT_NUMBER: the project number of the build. - $LOCATION: the
-  location/region of the build. - $BUILD_ID: the autogenerated ID of the
-  build. - $REPO_NAME: the source repository name specified by RepoSource. -
-  $BRANCH_NAME: the branch name specified by RepoSource. - $TAG_NAME: the tag
-  name specified by RepoSource. - $REVISION_ID or $COMMIT_SHA: the commit SHA
-  specified by RepoSource or resolved from the specified branch or tag. -
-  $SHORT_SHA: first 7 characters of $REVISION_ID or $COMMIT_SHA.
-
-  Enums:
-    StatusValueValuesEnum: Output only. Status of the build.
-
-  Messages:
-    SubstitutionsValue: Substitutions data for `Build` resource.
-    TimingValue: Output only. Stores timing information for phases of the
-      build. Valid keys are: * BUILD: time to execute all build steps. * PUSH:
-      time to push all artifacts including docker images and non docker
-      artifacts. * FETCHSOURCE: time to fetch source. * SETUPBUILD: time to
-      set up build. If the build does not specify source or images, these keys
-      will not be included.
-
-  Fields:
-    approval: Output only. Describes this build's approval configuration,
-      status, and result.
-    artifacts: Artifacts produced by the build that should be uploaded upon
-      successful completion of all build steps.
-    availableSecrets: Secrets and secret environment variables.
-    buildTriggerId: Output only. The ID of the `BuildTrigger` that triggered
-      this build, if it was triggered automatically.
-    createTime: Output only. Time at which the request to create the build was
-      received.
-    failureInfo: Output only. Contains information about the build when
-      status=FAILURE.
-    finishTime: Output only. Time at which execution of the build was
-      finished. The difference between finish_time and start_time is the
-      duration of the build's execution.
-    id: Output only. Unique identifier of the build.
-    images: A list of images to be pushed upon the successful completion of
-      all build steps. The images are pushed using the builder service
-      account's credentials. The digests of the pushed images will be stored
-      in the `Build` resource's results field. If any of the images fail to be
-      pushed, the build status is marked `FAILURE`.
-    logUrl: Output only. URL to logs for this build in Google Cloud Console.
-    logsBucket: Google Cloud Storage bucket where logs should be written (see
-      [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
-      naming#requirements)). Logs file names will be of the format
-      `${logs_bucket}/log-${build_id}.txt`.
-    name: Output only. The 'Build' name with format:
-      `projects/{project}/locations/{location}/builds/{build}`, where {build}
-      is a unique identifier generated by the service.
-    options: Special options for this build.
-    projectId: Output only. ID of the project.
-    queueTtl: TTL in queue for this build. If provided and the build is
-      enqueued longer than this value, the build will expire and the build
-      status will be `EXPIRED`. The TTL starts ticking from create_time.
-    results: Output only. Results of the build.
-    secrets: Secrets to decrypt using Cloud Key Management Service. Note:
-      Secret Manager is the recommended technique for managing sensitive data
-      with Cloud Build. Use `available_secrets` to configure builds to access
-      secrets from Secret Manager. For instructions, see:
-      https://cloud.google.com/cloud-build/docs/securing-builds/use-secrets
-    serviceAccount: IAM service account whose credentials will be used at
-      build runtime. Must be of the format
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. ACCOUNT can be email
-      address or uniqueId of the service account.
-    source: The location of the source files to build.
-    sourceProvenance: Output only. A permanent fixed identifier for source.
-    startTime: Output only. Time at which execution of the build was started.
-    status: Output only. Status of the build.
-    statusDetail: Output only. Customer-readable message about the current
-      status.
-    steps: Required. The operations to be performed on the workspace.
-    substitutions: Substitutions data for `Build` resource.
-    tags: Tags for annotation of a `Build`. These are not docker tags.
-    timeout: Amount of time that this build should be allowed to run, to
-      second granularity. If this amount of time elapses, work on the build
-      will cease and the build status will be `TIMEOUT`. `timeout` starts
-      ticking from `startTime`. Default time is ten minutes.
-    timing: Output only. Stores timing information for phases of the build.
-      Valid keys are: * BUILD: time to execute all build steps. * PUSH: time
-      to push all artifacts including docker images and non docker artifacts.
-      * FETCHSOURCE: time to fetch source. * SETUPBUILD: time to set up build.
-      If the build does not specify source or images, these keys will not be
-      included.
-    warnings: Output only. Non-fatal problems encountered during the execution
-      of the build.
-  """
-
-  class StatusValueValuesEnum(_messages.Enum):
-    r"""Output only. Status of the build.
-
-    Values:
-      STATUS_UNKNOWN: Status of the build is unknown.
-      PENDING: Build has been created and is pending execution and queuing. It
-        has not been queued.
-      QUEUED: Build or step is queued; work has not yet begun.
-      WORKING: Build or step is being executed.
-      SUCCESS: Build or step finished successfully.
-      FAILURE: Build or step failed to complete successfully.
-      INTERNAL_ERROR: Build or step failed due to an internal cause.
-      TIMEOUT: Build or step took longer than was allowed.
-      CANCELLED: Build or step was canceled by a user.
-      EXPIRED: Build was enqueued for longer than the value of `queue_ttl`.
-    """
-    STATUS_UNKNOWN = 0
-    PENDING = 1
-    QUEUED = 2
-    WORKING = 3
-    SUCCESS = 4
-    FAILURE = 5
-    INTERNAL_ERROR = 6
-    TIMEOUT = 7
-    CANCELLED = 8
-    EXPIRED = 9
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class SubstitutionsValue(_messages.Message):
-    r"""Substitutions data for `Build` resource.
-
-    Messages:
-      AdditionalProperty: An additional property for a SubstitutionsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type SubstitutionsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a SubstitutionsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class TimingValue(_messages.Message):
-    r"""Output only. Stores timing information for phases of the build. Valid
-    keys are: * BUILD: time to execute all build steps. * PUSH: time to push
-    all artifacts including docker images and non docker artifacts. *
-    FETCHSOURCE: time to fetch source. * SETUPBUILD: time to set up build. If
-    the build does not specify source or images, these keys will not be
-    included.
-
-    Messages:
-      AdditionalProperty: An additional property for a TimingValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type TimingValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a TimingValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A TimeSpan attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('TimeSpan', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  approval = _messages.MessageField('BuildApproval', 1)
-  artifacts = _messages.MessageField('Artifacts', 2)
-  availableSecrets = _messages.MessageField('Secrets', 3)
-  buildTriggerId = _messages.StringField(4)
-  createTime = _messages.StringField(5)
-  failureInfo = _messages.MessageField('FailureInfo', 6)
-  finishTime = _messages.StringField(7)
-  id = _messages.StringField(8)
-  images = _messages.StringField(9, repeated=True)
-  logUrl = _messages.StringField(10)
-  logsBucket = _messages.StringField(11)
-  name = _messages.StringField(12)
-  options = _messages.MessageField('BuildOptions', 13)
-  projectId = _messages.StringField(14)
-  queueTtl = _messages.StringField(15)
-  results = _messages.MessageField('Results', 16)
-  secrets = _messages.MessageField('Secret', 17, repeated=True)
-  serviceAccount = _messages.StringField(18)
-  source = _messages.MessageField('Source', 19)
-  sourceProvenance = _messages.MessageField('SourceProvenance', 20)
-  startTime = _messages.StringField(21)
-  status = _messages.EnumField('StatusValueValuesEnum', 22)
-  statusDetail = _messages.StringField(23)
-  steps = _messages.MessageField('BuildStep', 24, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 25)
-  tags = _messages.StringField(26, repeated=True)
-  timeout = _messages.StringField(27)
-  timing = _messages.MessageField('TimingValue', 28)
-  warnings = _messages.MessageField('Warning', 29, repeated=True)
-
-
-class BuildApproval(_messages.Message):
-  r"""BuildApproval describes a build's approval configuration, state, and
-  result.
-
-  Enums:
-    StateValueValuesEnum: Output only. The state of this build's approval.
-
-  Fields:
-    config: Output only. Configuration for manual approval of this build.
-    result: Output only. Result of manual approval for this Build.
-    state: Output only. The state of this build's approval.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of this build's approval.
-
-    Values:
-      STATE_UNSPECIFIED: Default enum type. This should not be used.
-      PENDING: Build approval is pending.
-      APPROVED: Build approval has been approved.
-      REJECTED: Build approval has been rejected.
-      CANCELLED: Build was cancelled while it was still pending approval.
-    """
-    STATE_UNSPECIFIED = 0
-    PENDING = 1
-    APPROVED = 2
-    REJECTED = 3
-    CANCELLED = 4
-
-  config = _messages.MessageField('ApprovalConfig', 1)
-  result = _messages.MessageField('ApprovalResult', 2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
-
-
-class BuildOperationMetadata(_messages.Message):
-  r"""Metadata for build operations.
-
-  Fields:
-    build: The build that the operation is tracking.
-  """
-
-  build = _messages.MessageField('Build', 1)
-
-
-class BuildOptions(_messages.Message):
-  r"""Optional arguments to enable specific features of builds.
-
-  Enums:
-    LogStreamingOptionValueValuesEnum: Option to define build log streaming
-      behavior to Google Cloud Storage.
-    LoggingValueValuesEnum: Option to specify the logging mode, which
-      determines if and where build logs are stored.
-    MachineTypeValueValuesEnum: Compute Engine machine type on which to run
-      the build.
-    RequestedVerifyOptionValueValuesEnum: Requested verifiability options.
-    SourceProvenanceHashValueListEntryValuesEnum:
-    SubstitutionOptionValueValuesEnum: Option to specify behavior when there
-      is an error in the substitution checks. NOTE: this is always set to
-      ALLOW_LOOSE for triggered builds and cannot be overridden in the build
-      configuration file.
-
-  Fields:
-    diskSizeGb: Requested disk size for the VM that runs the build. Note that
-      this is *NOT* "disk free"; some of the space will be used by the
-      operating system and build utilities. Also note that this is the minimum
-      disk size that will be allocated for the build -- the build may run with
-      a larger disk than requested. At present, the maximum disk size is
-      1000GB; builds that request more than the maximum are rejected with an
-      error.
-    dynamicSubstitutions: Option to specify whether or not to apply bash style
-      string operations to the substitutions. NOTE: this is always enabled for
-      triggered builds and cannot be overridden in the build configuration
-      file.
-    env: A list of global environment variable definitions that will exist for
-      all build steps in this build. If a variable is defined in both globally
-      and in a build step, the variable will use the build step value. The
-      elements are of the form "KEY=VALUE" for the environment variable "KEY"
-      being given the value "VALUE".
-    logStreamingOption: Option to define build log streaming behavior to
-      Google Cloud Storage.
-    logging: Option to specify the logging mode, which determines if and where
-      build logs are stored.
-    machineType: Compute Engine machine type on which to run the build.
-    pool: Optional. Specification for execution on a `WorkerPool`. See
-      [running builds in a private
-      pool](https://cloud.google.com/build/docs/private-pools/run-builds-in-
-      private-pool) for more information.
-    requestedVerifyOption: Requested verifiability options.
-    secretEnv: A list of global environment variables, which are encrypted
-      using a Cloud Key Management Service crypto key. These values must be
-      specified in the build's `Secret`. These variables will be available to
-      all build steps in this build.
-    sourceProvenanceHash: Requested hash for SourceProvenance.
-    substitutionOption: Option to specify behavior when there is an error in
-      the substitution checks. NOTE: this is always set to ALLOW_LOOSE for
-      triggered builds and cannot be overridden in the build configuration
-      file.
-    volumes: Global list of volumes to mount for ALL build steps Each volume
-      is created as an empty volume prior to starting the build process. Upon
-      completion of the build, volumes and their contents are discarded.
-      Global volume names and paths cannot conflict with the volumes defined a
-      build step. Using a global volume in a build with only one step is not
-      valid as it is indicative of a build request with an incorrect
-      configuration.
-    workerPool: This field deprecated; please use `pool.name` instead.
-  """
-
-  class LogStreamingOptionValueValuesEnum(_messages.Enum):
-    r"""Option to define build log streaming behavior to Google Cloud Storage.
-
-    Values:
-      STREAM_DEFAULT: Service may automatically determine build log streaming
-        behavior.
-      STREAM_ON: Build logs should be streamed to Google Cloud Storage.
-      STREAM_OFF: Build logs should not be streamed to Google Cloud Storage;
-        they will be written when the build is completed.
-    """
-    STREAM_DEFAULT = 0
-    STREAM_ON = 1
-    STREAM_OFF = 2
-
-  class LoggingValueValuesEnum(_messages.Enum):
-    r"""Option to specify the logging mode, which determines if and where
-    build logs are stored.
-
-    Values:
-      LOGGING_UNSPECIFIED: The service determines the logging mode. The
-        default is `LEGACY`. Do not rely on the default logging behavior as it
-        may change in the future.
-      LEGACY: Build logs are stored in Cloud Logging and Cloud Storage.
-      GCS_ONLY: Build logs are stored in Cloud Storage.
-      STACKDRIVER_ONLY: This option is the same as CLOUD_LOGGING_ONLY.
-      CLOUD_LOGGING_ONLY: Build logs are stored in Cloud Logging. Selecting
-        this option will not allow [logs
-        streaming](https://cloud.google.com/sdk/gcloud/reference/builds/log).
-      NONE: Turn off all logging. No build logs will be captured.
-    """
-    LOGGING_UNSPECIFIED = 0
-    LEGACY = 1
-    GCS_ONLY = 2
-    STACKDRIVER_ONLY = 3
-    CLOUD_LOGGING_ONLY = 4
-    NONE = 5
-
-  class MachineTypeValueValuesEnum(_messages.Enum):
-    r"""Compute Engine machine type on which to run the build.
-
-    Values:
-      UNSPECIFIED: Standard machine type.
-      N1_HIGHCPU_8: Highcpu machine with 8 CPUs.
-      N1_HIGHCPU_32: Highcpu machine with 32 CPUs.
-      E2_HIGHCPU_8: Highcpu e2 machine with 8 CPUs.
-      E2_HIGHCPU_32: Highcpu e2 machine with 32 CPUs.
-    """
-    UNSPECIFIED = 0
-    N1_HIGHCPU_8 = 1
-    N1_HIGHCPU_32 = 2
-    E2_HIGHCPU_8 = 3
-    E2_HIGHCPU_32 = 4
-
-  class RequestedVerifyOptionValueValuesEnum(_messages.Enum):
-    r"""Requested verifiability options.
-
-    Values:
-      NOT_VERIFIED: Not a verifiable build (the default).
-      VERIFIED: Build must be verified.
-    """
-    NOT_VERIFIED = 0
-    VERIFIED = 1
-
-  class SourceProvenanceHashValueListEntryValuesEnum(_messages.Enum):
-    r"""SourceProvenanceHashValueListEntryValuesEnum enum type.
-
-    Values:
-      NONE: No hash requested.
-      SHA256: Use a sha256 hash.
-      MD5: Use a md5 hash.
-    """
-    NONE = 0
-    SHA256 = 1
-    MD5 = 2
-
-  class SubstitutionOptionValueValuesEnum(_messages.Enum):
-    r"""Option to specify behavior when there is an error in the substitution
-    checks. NOTE: this is always set to ALLOW_LOOSE for triggered builds and
-    cannot be overridden in the build configuration file.
-
-    Values:
-      MUST_MATCH: Fails the build if error in substitutions checks, like
-        missing a substitution in the template or in the map.
-      ALLOW_LOOSE: Do not fail the build if error in substitutions checks.
-    """
-    MUST_MATCH = 0
-    ALLOW_LOOSE = 1
-
-  diskSizeGb = _messages.IntegerField(1)
-  dynamicSubstitutions = _messages.BooleanField(2)
-  env = _messages.StringField(3, repeated=True)
-  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 4)
-  logging = _messages.EnumField('LoggingValueValuesEnum', 5)
-  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 6)
-  pool = _messages.MessageField('PoolOption', 7)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 8)
-  secretEnv = _messages.StringField(9, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 10, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 11)
-  volumes = _messages.MessageField('Volume', 12, repeated=True)
-  workerPool = _messages.StringField(13)
-
-
-class BuildStep(_messages.Message):
-  r"""A step in the build pipeline.
-
-  Enums:
-    StatusValueValuesEnum: Output only. Status of the build step. At this
-      time, build step status is only updated on build completion; step status
-      is not updated in real-time as the build progresses.
-
-  Fields:
-    allowExitCodes: Allow this build step to fail without failing the entire
-      build if and only if the exit code is one of the specified codes. If
-      allow_failure is also specified, this field will take precedence.
-    allowFailure: Allow this build step to fail without failing the entire
-      build. If false, the entire build will fail if this step fails.
-      Otherwise, the build will succeed, but this step will still have a
-      failure status. Error information will be reported in the failure_detail
-      field.
-    args: A list of arguments that will be presented to the step when it is
-      started. If the image used to run the step's container has an
-      entrypoint, the `args` are used as arguments to that entrypoint. If the
-      image does not define an entrypoint, the first element in args is used
-      as the entrypoint, and the remainder will be used as arguments.
-    dir: Working directory to use when running this step's container. If this
-      value is a relative path, it is relative to the build's working
-      directory. If this value is absolute, it may be outside the build's
-      working directory, in which case the contents of the path may not be
-      persisted across build step executions, unless a `volume` for that path
-      is specified. If the build specifies a `RepoSource` with `dir` and a
-      step with a `dir`, which specifies an absolute path, the `RepoSource`
-      `dir` is ignored for the step's execution.
-    entrypoint: Entrypoint to be used instead of the build step image's
-      default entrypoint. If unset, the image's default entrypoint is used.
-    env: A list of environment variable definitions to be used when running a
-      step. The elements are of the form "KEY=VALUE" for the environment
-      variable "KEY" being given the value "VALUE".
-    exitCode: Output only. Return code from running the step.
-    id: Unique identifier for this build step, used in `wait_for` to reference
-      this build step as a dependency.
-    name: Required. The name of the container image that will run this
-      particular build step. If the image is available in the host's Docker
-      daemon's cache, it will be run directly. If not, the host will attempt
-      to pull the image first, using the builder service account's credentials
-      if necessary. The Docker daemon's cache will already have the latest
-      versions of all of the officially supported build steps
-      ([https://github.com/GoogleCloudPlatform/cloud-
-      builders](https://github.com/GoogleCloudPlatform/cloud-builders)). The
-      Docker daemon will also have cached many of the layers for some popular
-      images, like "ubuntu", "debian", but they will be refreshed at the time
-      you attempt to use them. If you built an image in a previous build step,
-      it will be stored in the host's Docker daemon's cache and is available
-      to use as the name for a later build step.
-    pullTiming: Output only. Stores timing information for pulling this build
-      step's builder image only.
-    script: A shell script to be executed in the step. When script is
-      provided, the user cannot specify the entrypoint or args.
-    secretEnv: A list of environment variables which are encrypted using a
-      Cloud Key Management Service crypto key. These values must be specified
-      in the build's `Secret`.
-    status: Output only. Status of the build step. At this time, build step
-      status is only updated on build completion; step status is not updated
-      in real-time as the build progresses.
-    timeout: Time limit for executing this build step. If not defined, the
-      step has no time limit and will be allowed to continue to run until
-      either it completes or the build itself times out.
-    timing: Output only. Stores timing information for executing this build
-      step.
-    volumes: List of volumes to mount into the build step. Each volume is
-      created as an empty volume prior to execution of the build step. Upon
-      completion of the build, volumes and their contents are discarded. Using
-      a named volume in only one step is not valid as it is indicative of a
-      build request with an incorrect configuration.
-    waitFor: The ID(s) of the step(s) that this build step depends on. This
-      build step will not start until all the build steps in `wait_for` have
-      completed successfully. If `wait_for` is empty, this build step will
-      start when all previous build steps in the `Build.Steps` list have
-      completed successfully.
-  """
-
-  class StatusValueValuesEnum(_messages.Enum):
-    r"""Output only. Status of the build step. At this time, build step status
-    is only updated on build completion; step status is not updated in real-
-    time as the build progresses.
-
-    Values:
-      STATUS_UNKNOWN: Status of the build is unknown.
-      PENDING: Build has been created and is pending execution and queuing. It
-        has not been queued.
-      QUEUED: Build or step is queued; work has not yet begun.
-      WORKING: Build or step is being executed.
-      SUCCESS: Build or step finished successfully.
-      FAILURE: Build or step failed to complete successfully.
-      INTERNAL_ERROR: Build or step failed due to an internal cause.
-      TIMEOUT: Build or step took longer than was allowed.
-      CANCELLED: Build or step was canceled by a user.
-      EXPIRED: Build was enqueued for longer than the value of `queue_ttl`.
-    """
-    STATUS_UNKNOWN = 0
-    PENDING = 1
-    QUEUED = 2
-    WORKING = 3
-    SUCCESS = 4
-    FAILURE = 5
-    INTERNAL_ERROR = 6
-    TIMEOUT = 7
-    CANCELLED = 8
-    EXPIRED = 9
-
-  allowExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
-  allowFailure = _messages.BooleanField(2)
-  args = _messages.StringField(3, repeated=True)
-  dir = _messages.StringField(4)
-  entrypoint = _messages.StringField(5)
-  env = _messages.StringField(6, repeated=True)
-  exitCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  id = _messages.StringField(8)
-  name = _messages.StringField(9)
-  pullTiming = _messages.MessageField('TimeSpan', 10)
-  script = _messages.StringField(11)
-  secretEnv = _messages.StringField(12, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  timeout = _messages.StringField(14)
-  timing = _messages.MessageField('TimeSpan', 15)
-  volumes = _messages.MessageField('Volume', 16, repeated=True)
-  waitFor = _messages.StringField(17, repeated=True)
-
-
-class BuiltImage(_messages.Message):
-  r"""An image built by the pipeline.
-
-  Fields:
-    digest: Docker Registry 2.0 digest.
-    name: Name used to push the container image to Google Container Registry,
-      as presented to `docker push`.
-    pushTiming: Output only. Stores timing information for pushing the
-      specified image.
-  """
-
-  digest = _messages.StringField(1)
-  name = _messages.StringField(2)
-  pushTiming = _messages.MessageField('TimeSpan', 3)
 
 
 class CEL(_messages.Message):
@@ -1158,6 +412,23 @@ class CloudbuildProjectsLocationsConnectionsRepositoriesAccessReadWriteTokenRequ
   repository = _messages.StringField(2, required=True)
 
 
+class CloudbuildProjectsLocationsConnectionsRepositoriesBatchCreateRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsConnectionsRepositoriesBatchCreateRequest
+  object.
+
+  Fields:
+    batchCreateRepositoriesRequest: A BatchCreateRepositoriesRequest resource
+      to be passed as the request body.
+    parent: Required. The connection to contain all the repositories being
+      created. Format: projects/*/locations/*/connections/* The parent field
+      in the CreateRepositoryRequest messages must either be empty or match
+      this field.
+  """
+
+  batchCreateRepositoriesRequest = _messages.MessageField('BatchCreateRepositoriesRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class CloudbuildProjectsLocationsConnectionsRepositoriesCreateRequest(_messages.Message):
   r"""A CloudbuildProjectsLocationsConnectionsRepositoriesCreateRequest
   object.
@@ -1256,6 +527,36 @@ class CloudbuildProjectsLocationsConnectionsTestIamPermissionsRequest(_messages.
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class CloudbuildProjectsLocationsGetRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudbuildProjectsLocationsListRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsListRequest object.
+
+  Fields:
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like `"displayName=tokyo"`, and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The maximum number of results to return. If not set, the service
+      selects a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class CloudbuildProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1397,7 +698,8 @@ class CloudbuildProjectsLocationsResultsRecordsListRequest(_messages.Message):
 
   Fields:
     filter: Filter for the Records.
-    pageSize: Size of the page to return.
+    pageSize: Size of the page to return. Default page_size = 50 Maximum
+      page_size = 1000
     pageToken: Page start.
     parent: Required. The parent, which owns this collection of Records.
       Format: projects/{project}/locations/{location}/results/{result}/
@@ -1684,7 +986,7 @@ class Connection(_messages.Message):
   disabled = _messages.BooleanField(3)
   etag = _messages.StringField(4)
   githubConfig = _messages.MessageField('GitHubConfig', 5)
-  githubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 6)
+  githubEnterpriseConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV2GitHubEnterpriseConfig', 6)
   installationState = _messages.MessageField('InstallationState', 7)
   name = _messages.StringField(8)
   reconciling = _messages.BooleanField(9)
@@ -1731,128 +1033,21 @@ class ContainerStateWaiting(_messages.Message):
   reason = _messages.StringField(2)
 
 
-class CreateBitbucketServerConfigOperationMetadata(_messages.Message):
-  r"""Metadata for `CreateBitbucketServerConfig` operation.
+class CreateRepositoryRequest(_messages.Message):
+  r"""Message for creating a Repository.
 
   Fields:
-    bitbucketServerConfig: The resource name of the BitbucketServerConfig to
-      be created. Format:
-      `projects/{project}/locations/{location}/bitbucketServerConfigs/{id}`.
-    completeTime: Time the operation was completed.
-    createTime: Time the operation was created.
+    parent: Required. The connection to contain the repository. If the request
+      is part of a BatchCreateRepositoriesRequest, this field should be empty
+      or match the parent specified there.
+    repository: Required. The repository to create.
+    repositoryId: Required. The ID to use for the repository, which will
+      become the final component of the repository's resource name.
   """
 
-  bitbucketServerConfig = _messages.StringField(1)
-  completeTime = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-
-
-class CreateGitHubEnterpriseConfigOperationMetadata(_messages.Message):
-  r"""Metadata for `CreateGithubEnterpriseConfig` operation.
-
-  Fields:
-    completeTime: Time the operation was completed.
-    createTime: Time the operation was created.
-    githubEnterpriseConfig: The resource name of the GitHubEnterprise to be
-      created. Format:
-      `projects/{project}/locations/{location}/githubEnterpriseConfigs/{id}`.
-  """
-
-  completeTime = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  githubEnterpriseConfig = _messages.StringField(3)
-
-
-class CreateGitLabConfigOperationMetadata(_messages.Message):
-  r"""Metadata for `CreateGitLabConfig` operation.
-
-  Fields:
-    completeTime: Time the operation was completed.
-    createTime: Time the operation was created.
-    gitlabConfig: The resource name of the GitLabConfig to be created. Format:
-      `projects/{project}/locations/{location}/gitlabConfigs/{id}`.
-  """
-
-  completeTime = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  gitlabConfig = _messages.StringField(3)
-
-
-class CreateWorkerPoolOperationMetadata(_messages.Message):
-  r"""Metadata for the `CreateWorkerPool` operation.
-
-  Fields:
-    completeTime: Time the operation was completed.
-    createTime: Time the operation was created.
-    workerPool: The resource name of the `WorkerPool` to create. Format:
-      `projects/{project}/locations/{location}/workerPools/{worker_pool}`.
-  """
-
-  completeTime = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  workerPool = _messages.StringField(3)
-
-
-class DeleteBitbucketServerConfigOperationMetadata(_messages.Message):
-  r"""Metadata for `DeleteBitbucketServerConfig` operation.
-
-  Fields:
-    bitbucketServerConfig: The resource name of the BitbucketServerConfig to
-      be deleted. Format:
-      `projects/{project}/locations/{location}/bitbucketServerConfigs/{id}`.
-    completeTime: Time the operation was completed.
-    createTime: Time the operation was created.
-  """
-
-  bitbucketServerConfig = _messages.StringField(1)
-  completeTime = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-
-
-class DeleteGitHubEnterpriseConfigOperationMetadata(_messages.Message):
-  r"""Metadata for `DeleteGitHubEnterpriseConfig` operation.
-
-  Fields:
-    completeTime: Time the operation was completed.
-    createTime: Time the operation was created.
-    githubEnterpriseConfig: The resource name of the GitHubEnterprise to be
-      deleted. Format:
-      `projects/{project}/locations/{location}/githubEnterpriseConfigs/{id}`.
-  """
-
-  completeTime = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  githubEnterpriseConfig = _messages.StringField(3)
-
-
-class DeleteGitLabConfigOperationMetadata(_messages.Message):
-  r"""Metadata for `DeleteGitLabConfig` operation.
-
-  Fields:
-    completeTime: Time the operation was completed.
-    createTime: Time the operation was created.
-    gitlabConfig: The resource name of the GitLabConfig to be created. Format:
-      `projects/{project}/locations/{location}/gitlabConfigs/{id}`.
-  """
-
-  completeTime = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  gitlabConfig = _messages.StringField(3)
-
-
-class DeleteWorkerPoolOperationMetadata(_messages.Message):
-  r"""Metadata for the `DeleteWorkerPool` operation.
-
-  Fields:
-    completeTime: Time the operation was completed.
-    createTime: Time the operation was created.
-    workerPool: The resource name of the `WorkerPool` being deleted. Format:
-      `projects/{project}/locations/{location}/workerPools/{worker_pool}`.
-  """
-
-  completeTime = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  workerPool = _messages.StringField(3)
+  parent = _messages.StringField(1)
+  repository = _messages.MessageField('Repository', 2)
+  repositoryId = _messages.StringField(3)
 
 
 class EmbeddedTask(_messages.Message):
@@ -2014,41 +1209,6 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class FailureInfo(_messages.Message):
-  r"""A fatal problem encountered during the execution of the build.
-
-  Enums:
-    TypeValueValuesEnum: The name of the failure.
-
-  Fields:
-    detail: Explains the failure issue in more detail using hard-coded text.
-    type: The name of the failure.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""The name of the failure.
-
-    Values:
-      FAILURE_TYPE_UNSPECIFIED: Type unspecified
-      PUSH_FAILED: Unable to push the image to the repository.
-      PUSH_IMAGE_NOT_FOUND: Final image not found.
-      PUSH_NOT_AUTHORIZED: Unauthorized push of the final image.
-      LOGGING_FAILURE: Backend logging failures. Should retry.
-      USER_BUILD_STEP: A build step has failed.
-      FETCH_SOURCE_FAILED: The source fetching has failed.
-    """
-    FAILURE_TYPE_UNSPECIFIED = 0
-    PUSH_FAILED = 1
-    PUSH_IMAGE_NOT_FOUND = 2
-    PUSH_NOT_AUTHORIZED = 3
-    LOGGING_FAILURE = 4
-    USER_BUILD_STEP = 5
-    FETCH_SOURCE_FAILED = 6
-
-  detail = _messages.StringField(1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
-
-
 class FetchLinkableRepositoriesResponse(_messages.Message):
   r"""Response message for FetchLinkableRepositories.
 
@@ -2096,17 +1256,6 @@ class FetchReadWriteTokenResponse(_messages.Message):
   token = _messages.StringField(2)
 
 
-class FileHashes(_messages.Message):
-  r"""Container message for hashes of byte content of files, used in
-  SourceProvenance messages to verify integrity of source input to the build.
-
-  Fields:
-    fileHash: Collection of file hashes.
-  """
-
-  fileHash = _messages.MessageField('Hash', 1, repeated=True)
-
-
 class GCEPersistentDiskVolumeSource(_messages.Message):
   r"""Represents a Compute Engine Disk resource that is attached to a
   kubelet's host machine and then exposed to the pod. More info:
@@ -2143,7 +1292,19 @@ class GitHubConfig(_messages.Message):
   authorizerCredential = _messages.MessageField('OAuthCredential', 2)
 
 
-class GitHubEnterpriseConfig(_messages.Message):
+class GitRef(_messages.Message):
+  r"""Git ref configuration for filters.
+
+  Fields:
+    inverse: If true, the regex matching result is inversed.
+    nameRegex: Regex to match the branch or tag of SCM.
+  """
+
+  inverse = _messages.BooleanField(1)
+  nameRegex = _messages.StringField(2)
+
+
+class GoogleDevtoolsCloudbuildV2GitHubEnterpriseConfig(_messages.Message):
   r"""Configuration for connections to an instance of GitHub Enterprise.
 
   Fields:
@@ -2188,53 +1349,9 @@ class GitHubEnterpriseConfig(_messages.Message):
   oauthSecretSecretVersion = _messages.StringField(8)
   privateKeySecretVersion = _messages.StringField(9)
   serverVersion = _messages.StringField(10)
-  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 11)
+  serviceDirectoryConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV2ServiceDirectoryConfig', 11)
   sslCa = _messages.StringField(12)
   webhookSecretSecretVersion = _messages.StringField(13)
-
-
-class GitLabConnectedRepository(_messages.Message):
-  r"""GitLabConnectedRepository represents a GitLab connected repository
-  request response.
-
-  Fields:
-    parent: The name of the `GitLabConfig` that added connected repository.
-      Format: `projects/{project}/locations/{location}/gitLabConfigs/{config}`
-    repo: The GitLab repositories to connect.
-    status: Output only. The status of the repo connection request.
-  """
-
-  parent = _messages.StringField(1)
-  repo = _messages.MessageField('GitLabRepositoryId', 2)
-  status = _messages.MessageField('Status', 3)
-
-
-class GitLabRepositoryId(_messages.Message):
-  r"""GitLabRepositoryId identifies a specific repository hosted on GitLab.com
-  or GitLabEnterprise
-
-  Fields:
-    id: Required. Identifier for the repository. example: "namespace/project-
-      slug", namespace is usually the username or group ID
-    webhookId: Output only. The ID of the webhook that was created for
-      receiving events from this repo. We only create and manage a single
-      webhook for each repo.
-  """
-
-  id = _messages.StringField(1)
-  webhookId = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
-class GitRef(_messages.Message):
-  r"""Git ref configuration for filters.
-
-  Fields:
-    inverse: If true, the regex matching result is inversed.
-    nameRegex: Regex to match the branch or tag of SCM.
-  """
-
-  inverse = _messages.BooleanField(1)
-  nameRegex = _messages.StringField(2)
 
 
 class GoogleDevtoolsCloudbuildV2OperationMetadata(_messages.Message):
@@ -2278,41 +1395,16 @@ class GoogleDevtoolsCloudbuildV2SecretManagerSecret(_messages.Message):
   secretVersion = _messages.StringField(2)
 
 
-class HTTPDelivery(_messages.Message):
-  r"""HTTPDelivery is the delivery configuration for an HTTP notification.
+class GoogleDevtoolsCloudbuildV2ServiceDirectoryConfig(_messages.Message):
+  r"""ServiceDirectoryConfig represents Service Directory configuration for a
+  connection.
 
   Fields:
-    uri: The URI to which JSON-containing HTTP POST requests should be sent.
+    service: Required. The Service Directory service name. Format: projects/{p
+      roject}/locations/{location}/namespaces/{namespace}/services/{service}.
   """
 
-  uri = _messages.StringField(1)
-
-
-class Hash(_messages.Message):
-  r"""Container message for hash values.
-
-  Enums:
-    TypeValueValuesEnum: The type of hash that was performed.
-
-  Fields:
-    type: The type of hash that was performed.
-    value: The hash value.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of hash that was performed.
-
-    Values:
-      NONE: No hash requested.
-      SHA256: Use a sha256 hash.
-      MD5: Use a md5 hash.
-    """
-    NONE = 0
-    SHA256 = 1
-    MD5 = 2
-
-  type = _messages.EnumField('TypeValueValuesEnum', 1)
-  value = _messages.BytesField(2)
+  service = _messages.StringField(1)
 
 
 class HttpBody(_messages.Message):
@@ -2374,59 +1466,6 @@ class HttpBody(_messages.Message):
   contentType = _messages.StringField(1)
   data = _messages.BytesField(2)
   extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
-
-
-class InlineSecret(_messages.Message):
-  r"""Pairs a set of secret environment variables mapped to encrypted values
-  with the Cloud KMS key to use to decrypt the value.
-
-  Messages:
-    EnvMapValue: Map of environment variable name to its encrypted value.
-      Secret environment variables must be unique across all of a build's
-      secrets, and must be used by at least one build step. Values can be at
-      most 64 KB in size. There can be at most 100 secret values across all of
-      a build's secrets.
-
-  Fields:
-    envMap: Map of environment variable name to its encrypted value. Secret
-      environment variables must be unique across all of a build's secrets,
-      and must be used by at least one build step. Values can be at most 64 KB
-      in size. There can be at most 100 secret values across all of a build's
-      secrets.
-    kmsKeyName: Resource name of Cloud KMS crypto key to decrypt the encrypted
-      value. In format: projects/*/locations/*/keyRings/*/cryptoKeys/*
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class EnvMapValue(_messages.Message):
-    r"""Map of environment variable name to its encrypted value. Secret
-    environment variables must be unique across all of a build's secrets, and
-    must be used by at least one build step. Values can be at most 64 KB in
-    size. There can be at most 100 secret values across all of a build's
-    secrets.
-
-    Messages:
-      AdditionalProperty: An additional property for a EnvMapValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type EnvMapValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a EnvMapValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A byte attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.BytesField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  envMap = _messages.MessageField('EnvMapValue', 1)
-  kmsKeyName = _messages.StringField(2)
 
 
 class InstallationState(_messages.Message):
@@ -2494,6 +1533,19 @@ class ListConnectionsResponse(_messages.Message):
   """
 
   connections = _messages.MessageField('Connection', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListLocationsResponse(_messages.Message):
+  r"""The response message for Locations.ListLocations.
+
+  Fields:
+    locations: A list of locations that matches the specified filter in the
+      request.
+    nextPageToken: The standard List next-page token.
+  """
+
+  locations = _messages.MessageField('Location', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -2575,66 +1627,68 @@ class ListWorkflowsResponse(_messages.Message):
   workflows = _messages.MessageField('Workflow', 2, repeated=True)
 
 
-class MavenArtifact(_messages.Message):
-  r"""A Maven artifact to upload to Artifact Registry upon successful
-  completion of all build steps.
-
-  Fields:
-    artifactId: Maven `artifactId` value used when uploading the artifact to
-      Artifact Registry.
-    groupId: Maven `groupId` value used when uploading the artifact to
-      Artifact Registry.
-    path: Path to an artifact in the build's workspace to be uploaded to
-      Artifact Registry. This can be either an absolute path, e.g.
-      /workspace/my-app/target/my-app-1.0.SNAPSHOT.jar or a relative path from
-      /workspace, e.g. my-app/target/my-app-1.0.SNAPSHOT.jar.
-    repository: Artifact Registry repository, in the form "https://$REGION-
-      maven.pkg.dev/$PROJECT/$REPOSITORY" Artifact in the workspace specified
-      by path will be uploaded to Artifact Registry with this location as a
-      prefix.
-    version: Maven `version` value used when uploading the artifact to
-      Artifact Registry.
-  """
-
-  artifactId = _messages.StringField(1)
-  groupId = _messages.StringField(2)
-  path = _messages.StringField(3)
-  repository = _messages.StringField(4)
-  version = _messages.StringField(5)
-
-
-class Notification(_messages.Message):
-  r"""Notification is the container which holds the data that is relevant to
-  this particular notification.
+class Location(_messages.Message):
+  r"""A resource that represents Google Cloud Platform location.
 
   Messages:
-    StructDeliveryValue: Escape hatch for users to supply custom delivery
-      configs.
+    LabelsValue: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    MetadataValue: Service-specific metadata. For example the available
+      capacity at the given location.
 
   Fields:
-    filter: The filter string to use for notification filtering. Currently,
-      this is assumed to be a CEL program. See
-      https://opensource.google/projects/cel for more.
-    httpDelivery: Configuration for HTTP delivery.
-    slackDelivery: Configuration for Slack delivery.
-    smtpDelivery: Configuration for SMTP (email) delivery.
-    structDelivery: Escape hatch for users to supply custom delivery configs.
+    displayName: The friendly name for this location, typically a nearby city
+      name. For example, "Tokyo".
+    labels: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    locationId: The canonical id for this location. For example: `"us-east1"`.
+    metadata: Service-specific metadata. For example the available capacity at
+      the given location.
+    name: Resource name for the location, which may vary between
+      implementations. For example: `"projects/example-project/locations/us-
+      east1"`
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class StructDeliveryValue(_messages.Message):
-    r"""Escape hatch for users to supply custom delivery configs.
+  class LabelsValue(_messages.Message):
+    r"""Cross-service attributes for the location. For example
+    {"cloud.googleapis.com/region": "us-east1"}
 
     Messages:
-      AdditionalProperty: An additional property for a StructDeliveryValue
-        object.
+      AdditionalProperty: An additional property for a LabelsValue object.
 
     Fields:
-      additionalProperties: Properties of the object.
+      additionalProperties: Additional properties of type LabelsValue
     """
 
     class AdditionalProperty(_messages.Message):
-      r"""An additional property for a StructDeliveryValue object.
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata. For example the available capacity at the
+    given location.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -2646,85 +1700,11 @@ class Notification(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  filter = _messages.StringField(1)
-  httpDelivery = _messages.MessageField('HTTPDelivery', 2)
-  slackDelivery = _messages.MessageField('SlackDelivery', 3)
-  smtpDelivery = _messages.MessageField('SMTPDelivery', 4)
-  structDelivery = _messages.MessageField('StructDeliveryValue', 5)
-
-
-class NotifierConfig(_messages.Message):
-  r"""NotifierConfig is the top-level configuration message.
-
-  Fields:
-    apiVersion: The API version of this configuration format.
-    kind: The type of notifier to use (e.g. SMTPNotifier).
-    metadata: Metadata for referring to/handling/deploying this notifier.
-    spec: The actual configuration for this notifier.
-  """
-
-  apiVersion = _messages.StringField(1)
-  kind = _messages.StringField(2)
-  metadata = _messages.MessageField('NotifierMetadata', 3)
-  spec = _messages.MessageField('NotifierSpec', 4)
-
-
-class NotifierMetadata(_messages.Message):
-  r"""NotifierMetadata contains the data which can be used to reference or
-  describe this notifier.
-
-  Fields:
-    name: The human-readable and user-given name for the notifier. For
-      example: "repo-merge-email-notifier".
-    notifier: The string representing the name and version of notifier to
-      deploy. Expected to be of the form of "/:". For example: "gcr.io/my-
-      project/notifiers/smtp:1.2.34".
-  """
-
-  name = _messages.StringField(1)
-  notifier = _messages.StringField(2)
-
-
-class NotifierSecret(_messages.Message):
-  r"""NotifierSecret is the container that maps a secret name (reference) to
-  its Google Cloud Secret Manager resource path.
-
-  Fields:
-    name: Name is the local name of the secret, such as the verbatim string
-      "my-smtp-password".
-    value: Value is interpreted to be a resource path for fetching the actual
-      (versioned) secret data for this secret. For example, this would be a
-      Google Cloud Secret Manager secret version resource path like:
-      "projects/my-project/secrets/my-secret/versions/latest".
-  """
-
-  name = _messages.StringField(1)
-  value = _messages.StringField(2)
-
-
-class NotifierSecretRef(_messages.Message):
-  r"""NotifierSecretRef contains the reference to a secret stored in the
-  corresponding NotifierSpec.
-
-  Fields:
-    secretRef: The value of `secret_ref` should be a `name` that is registered
-      in a `Secret` in the `secrets` list of the `Spec`.
-  """
-
-  secretRef = _messages.StringField(1)
-
-
-class NotifierSpec(_messages.Message):
-  r"""NotifierSpec is the configuration container for notifications.
-
-  Fields:
-    notification: The configuration of this particular notifier.
-    secrets: Configurations for secret resources used by this particular
-      notifier.
-  """
-
-  notification = _messages.MessageField('Notification', 1)
-  secrets = _messages.MessageField('NotifierSecret', 2, repeated=True)
+  displayName = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  locationId = _messages.StringField(3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
 
 
 class OAuthCredential(_messages.Message):
@@ -2735,7 +1715,7 @@ class OAuthCredential(_messages.Message):
     oauthTokenSecretVersion: A SecretManager resource containing the OAuth
       token that authorizes the Cloud Build connection. Format:
       `projects/*/secrets/*/versions/*`.
-    username: The username associated to this token.
+    username: Output only. The username associated to this token.
   """
 
   oauthTokenSecretVersion = _messages.StringField(1)
@@ -3289,38 +2269,6 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
-class PoolOption(_messages.Message):
-  r"""Details about how a build should be executed on a `WorkerPool`. See
-  [running builds in a private
-  pool](https://cloud.google.com/build/docs/private-pools/run-builds-in-
-  private-pool) for more information.
-
-  Fields:
-    name: The `WorkerPool` resource to execute the build on. You must have
-      `cloudbuild.workerpools.use` on the project hosting the WorkerPool.
-      Format
-      projects/{project}/locations/{location}/workerPools/{workerPoolId}
-  """
-
-  name = _messages.StringField(1)
-
-
-class ProcessAppManifestCallbackOperationMetadata(_messages.Message):
-  r"""Metadata for `ProcessAppManifestCallback` operation.
-
-  Fields:
-    completeTime: Time the operation was completed.
-    createTime: Time the operation was created.
-    githubEnterpriseConfig: The resource name of the GitHubEnterprise to be
-      created. Format:
-      `projects/{project}/locations/{location}/githubEnterpriseConfigs/{id}`.
-  """
-
-  completeTime = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  githubEnterpriseConfig = _messages.StringField(3)
-
-
 class PullRequest(_messages.Message):
   r"""Pull request configuration for filters.
 
@@ -3349,25 +2297,6 @@ class PullRequest(_messages.Message):
 
   comment = _messages.StringField(1)
   pusher = _messages.EnumField('PusherValueValuesEnum', 2)
-
-
-class PythonPackage(_messages.Message):
-  r"""Python package to upload to Artifact Registry upon successful completion
-  of all build steps. A package can encapsulate multiple objects to be
-  uploaded to a single repository.
-
-  Fields:
-    paths: Path globs used to match files in the build's workspace. For
-      Python/ Twine, this is usually `dist/*`, and sometimes additionally an
-      `.asc` file.
-    repository: Artifact Registry repository, in the form "https://$REGION-
-      python.pkg.dev/$PROJECT/$REPOSITORY" Files in the workspace matching any
-      path pattern will be uploaded to Artifact Registry with this location as
-      a prefix.
-  """
-
-  paths = _messages.StringField(1, repeated=True)
-  repository = _messages.StringField(2)
 
 
 class Record(_messages.Message):
@@ -3437,69 +2366,6 @@ class RecordSummary(_messages.Message):
   recordData = _messages.MessageField('RecordDataValue', 3)
   type = _messages.StringField(4)
   updateTime = _messages.StringField(5)
-
-
-class RepoSource(_messages.Message):
-  r"""Location of the source in a Google Cloud Source Repository.
-
-  Messages:
-    SubstitutionsValue: Substitutions to use in a triggered build. Should only
-      be used with RunBuildTrigger
-
-  Fields:
-    branchName: Regex matching branches to build. The syntax of the regular
-      expressions accepted is the syntax accepted by RE2 and described at
-      https://github.com/google/re2/wiki/Syntax
-    commitSha: Explicit commit SHA to build.
-    dir: Directory, relative to the source root, in which to run the build.
-      This must be a relative path. If a step's `dir` is specified and is an
-      absolute path, this value is ignored for that step's execution.
-    invertRegex: Only trigger a build if the revision regex does NOT match the
-      revision regex.
-    projectId: ID of the project that owns the Cloud Source Repository. If
-      omitted, the project ID requesting the build is assumed.
-    repoName: Name of the Cloud Source Repository.
-    substitutions: Substitutions to use in a triggered build. Should only be
-      used with RunBuildTrigger
-    tagName: Regex matching tags to build. The syntax of the regular
-      expressions accepted is the syntax accepted by RE2 and described at
-      https://github.com/google/re2/wiki/Syntax
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class SubstitutionsValue(_messages.Message):
-    r"""Substitutions to use in a triggered build. Should only be used with
-    RunBuildTrigger
-
-    Messages:
-      AdditionalProperty: An additional property for a SubstitutionsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type SubstitutionsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a SubstitutionsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  branchName = _messages.StringField(1)
-  commitSha = _messages.StringField(2)
-  dir = _messages.StringField(3)
-  invertRegex = _messages.BooleanField(4)
-  projectId = _messages.StringField(5)
-  repoName = _messages.StringField(6)
-  substitutions = _messages.MessageField('SubstitutionsValue', 7)
-  tagName = _messages.StringField(8)
 
 
 class Repository(_messages.Message):
@@ -3657,40 +2523,6 @@ class Result(_messages.Message):
   updateTime = _messages.StringField(5)
 
 
-class Results(_messages.Message):
-  r"""Artifacts created by the build pipeline.
-
-  Fields:
-    artifactManifest: Path to the artifact manifest for non-container
-      artifacts uploaded to Cloud Storage. Only populated when artifacts are
-      uploaded to Cloud Storage.
-    artifactTiming: Time to push all non-container artifacts to Cloud Storage.
-    buildStepImages: List of build step digests, in the order corresponding to
-      build step indices.
-    buildStepOutputs: List of build step outputs, produced by builder images,
-      in the order corresponding to build step indices. [Cloud
-      Builders](https://cloud.google.com/cloud-build/docs/cloud-builders) can
-      produce this output by writing to `$BUILDER_OUTPUT/output`. Only the
-      first 4KB of data is stored.
-    images: Container images that were built as a part of the build.
-    mavenArtifacts: Maven artifacts uploaded to Artifact Registry at the end
-      of the build.
-    numArtifacts: Number of non-container artifacts uploaded to Cloud Storage.
-      Only populated when artifacts are uploaded to Cloud Storage.
-    pythonPackages: Python artifacts uploaded to Artifact Registry at the end
-      of the build.
-  """
-
-  artifactManifest = _messages.StringField(1)
-  artifactTiming = _messages.MessageField('TimeSpan', 2)
-  buildStepImages = _messages.StringField(3, repeated=True)
-  buildStepOutputs = _messages.BytesField(4, repeated=True)
-  images = _messages.MessageField('BuiltImage', 5, repeated=True)
-  mavenArtifacts = _messages.MessageField('UploadedMavenArtifact', 6, repeated=True)
-  numArtifacts = _messages.IntegerField(7)
-  pythonPackages = _messages.MessageField('UploadedPythonPackage', 8, repeated=True)
-
-
 class RunWorkflowCustomOperationMetadata(_messages.Message):
   r"""Represents the custom metadata of the RunWorkflow long-running
   operation.
@@ -3732,101 +2564,6 @@ class RunWorkflowRequest(_messages.Message):
   validateOnly = _messages.BooleanField(3)
 
 
-class SMTPDelivery(_messages.Message):
-  r"""SMTPDelivery is the delivery configuration for an SMTP (email)
-  notification.
-
-  Fields:
-    fromAddress: This is the SMTP account/email that appears in the `From:` of
-      the email. If empty, it is assumed to be sender.
-    password: The SMTP sender's password.
-    port: The SMTP port of the server.
-    recipientAddresses: This is the list of addresses to which we send the
-      email (i.e. in the `To:` of the email).
-    senderAddress: This is the SMTP account/email that is used to send the
-      message.
-    server: The address of the SMTP server.
-  """
-
-  fromAddress = _messages.StringField(1)
-  password = _messages.MessageField('NotifierSecretRef', 2)
-  port = _messages.StringField(3)
-  recipientAddresses = _messages.StringField(4, repeated=True)
-  senderAddress = _messages.StringField(5)
-  server = _messages.StringField(6)
-
-
-class Secret(_messages.Message):
-  r"""Pairs a set of secret environment variables containing encrypted values
-  with the Cloud KMS key to use to decrypt the value. Note: Use `kmsKeyName`
-  with `available_secrets` instead of using `kmsKeyName` with `secret`. For
-  instructions see: https://cloud.google.com/cloud-build/docs/securing-
-  builds/use-encrypted-credentials.
-
-  Messages:
-    SecretEnvValue: Map of environment variable name to its encrypted value.
-      Secret environment variables must be unique across all of a build's
-      secrets, and must be used by at least one build step. Values can be at
-      most 64 KB in size. There can be at most 100 secret values across all of
-      a build's secrets.
-
-  Fields:
-    kmsKeyName: Cloud KMS key name to use to decrypt these envs.
-    secretEnv: Map of environment variable name to its encrypted value. Secret
-      environment variables must be unique across all of a build's secrets,
-      and must be used by at least one build step. Values can be at most 64 KB
-      in size. There can be at most 100 secret values across all of a build's
-      secrets.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class SecretEnvValue(_messages.Message):
-    r"""Map of environment variable name to its encrypted value. Secret
-    environment variables must be unique across all of a build's secrets, and
-    must be used by at least one build step. Values can be at most 64 KB in
-    size. There can be at most 100 secret values across all of a build's
-    secrets.
-
-    Messages:
-      AdditionalProperty: An additional property for a SecretEnvValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type SecretEnvValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a SecretEnvValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A byte attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.BytesField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  kmsKeyName = _messages.StringField(1)
-  secretEnv = _messages.MessageField('SecretEnvValue', 2)
-
-
-class SecretManagerSecret(_messages.Message):
-  r"""Pairs a secret environment variable with a SecretVersion in Secret
-  Manager.
-
-  Fields:
-    env: Environment variable name to associate with the secret. Secret
-      environment variables must be unique across all of a build's secrets,
-      and must be used by at least one build step.
-    versionName: Resource name of the SecretVersion. In format:
-      projects/*/secrets/*/versions/*
-  """
-
-  env = _messages.StringField(1)
-  versionName = _messages.StringField(2)
-
-
 class SecretVolumeSource(_messages.Message):
   r"""Secret Volume Source.
 
@@ -3840,20 +2577,6 @@ class SecretVolumeSource(_messages.Message):
   secretVersion = _messages.StringField(2)
 
 
-class Secrets(_messages.Message):
-  r"""Secrets and secret environment variables.
-
-  Fields:
-    inline: Secrets encrypted with KMS key and the associated secret
-      environment variable.
-    secretManager: Secrets in Secret Manager and associated secret environment
-      variable.
-  """
-
-  inline = _messages.MessageField('InlineSecret', 1, repeated=True)
-  secretManager = _messages.MessageField('SecretManagerSecret', 2, repeated=True)
-
-
 class SecurityContext(_messages.Message):
   r"""Security options the container should be run with.
 
@@ -3862,18 +2585,6 @@ class SecurityContext(_messages.Message):
   """
 
   privileged = _messages.BooleanField(1)
-
-
-class ServiceDirectoryConfig(_messages.Message):
-  r"""ServiceDirectoryConfig represents Service Directory configuration for a
-  connection.
-
-  Fields:
-    service: Required. The Service Directory service name. Format: projects/{p
-      roject}/locations/{location}/namespaces/{namespace}/services/{service}.
-  """
-
-  service = _messages.StringField(1)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -3951,106 +2662,6 @@ class SkippedTask(_messages.Message):
 
   name = _messages.StringField(1)
   whenExpressions = _messages.MessageField('WhenExpression', 2, repeated=True)
-
-
-class SlackDelivery(_messages.Message):
-  r"""SlackDelivery is the delivery configuration for delivering Slack
-  messages via webhooks. See Slack webhook documentation at:
-  https://api.slack.com/messaging/webhooks.
-
-  Fields:
-    webhookUri: The secret reference for the Slack webhook URI for sending
-      messages to a channel.
-  """
-
-  webhookUri = _messages.MessageField('NotifierSecretRef', 1)
-
-
-class Source(_messages.Message):
-  r"""Location of the source in a supported storage service.
-
-  Fields:
-    repoSource: If provided, get the source from this location in a Cloud
-      Source Repository.
-    storageSource: If provided, get the source from this location in Google
-      Cloud Storage.
-    storageSourceManifest: If provided, get the source from this manifest in
-      Google Cloud Storage. This feature is in Preview; see description
-      [here](https://github.com/GoogleCloudPlatform/cloud-
-      builders/tree/master/gcs-fetcher).
-  """
-
-  repoSource = _messages.MessageField('RepoSource', 1)
-  storageSource = _messages.MessageField('StorageSource', 2)
-  storageSourceManifest = _messages.MessageField('StorageSourceManifest', 3)
-
-
-class SourceProvenance(_messages.Message):
-  r"""Provenance of the source. Ways to find the original source, or verify
-  that some source was used for this build.
-
-  Messages:
-    FileHashesValue: Output only. Hash(es) of the build source, which can be
-      used to verify that the original source integrity was maintained in the
-      build. Note that `FileHashes` will only be populated if `BuildOptions`
-      has requested a `SourceProvenanceHash`. The keys to this map are file
-      paths used as build source and the values contain the hash values for
-      those files. If the build source came in a single package such as a
-      gzipped tarfile (`.tar.gz`), the `FileHash` will be for the single path
-      to that file.
-
-  Fields:
-    fileHashes: Output only. Hash(es) of the build source, which can be used
-      to verify that the original source integrity was maintained in the
-      build. Note that `FileHashes` will only be populated if `BuildOptions`
-      has requested a `SourceProvenanceHash`. The keys to this map are file
-      paths used as build source and the values contain the hash values for
-      those files. If the build source came in a single package such as a
-      gzipped tarfile (`.tar.gz`), the `FileHash` will be for the single path
-      to that file.
-    resolvedRepoSource: A copy of the build's `source.repo_source`, if exists,
-      with any revisions resolved.
-    resolvedStorageSource: A copy of the build's `source.storage_source`, if
-      exists, with any generations resolved.
-    resolvedStorageSourceManifest: A copy of the build's
-      `source.storage_source_manifest`, if exists, with any revisions
-      resolved. This feature is in Preview.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class FileHashesValue(_messages.Message):
-    r"""Output only. Hash(es) of the build source, which can be used to verify
-    that the original source integrity was maintained in the build. Note that
-    `FileHashes` will only be populated if `BuildOptions` has requested a
-    `SourceProvenanceHash`. The keys to this map are file paths used as build
-    source and the values contain the hash values for those files. If the
-    build source came in a single package such as a gzipped tarfile
-    (`.tar.gz`), the `FileHash` will be for the single path to that file.
-
-    Messages:
-      AdditionalProperty: An additional property for a FileHashesValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type FileHashesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a FileHashesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A FileHashes attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('FileHashes', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  fileHashes = _messages.MessageField('FileHashesValue', 1)
-  resolvedRepoSource = _messages.MessageField('RepoSource', 2)
-  resolvedStorageSource = _messages.MessageField('StorageSource', 3)
-  resolvedStorageSourceManifest = _messages.MessageField('StorageSourceManifest', 4)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -4208,46 +2819,6 @@ class StepState(_messages.Message):
   running = _messages.MessageField('ContainerStateRunning', 3)
   terminated = _messages.MessageField('ContainerStateTerminated', 4)
   waiting = _messages.MessageField('ContainerStateWaiting', 5)
-
-
-class StorageSource(_messages.Message):
-  r"""Location of the source in an archive file in Google Cloud Storage.
-
-  Fields:
-    bucket: Google Cloud Storage bucket containing the source (see [Bucket
-      Name Requirements](https://cloud.google.com/storage/docs/bucket-
-      naming#requirements)).
-    generation: Google Cloud Storage generation for the object. If the
-      generation is omitted, the latest generation will be used.
-    object: Google Cloud Storage object containing the source. This object
-      must be a zipped (`.zip`) or gzipped archive file (`.tar.gz`) containing
-      source to build.
-  """
-
-  bucket = _messages.StringField(1)
-  generation = _messages.IntegerField(2)
-  object = _messages.StringField(3)
-
-
-class StorageSourceManifest(_messages.Message):
-  r"""Location of the source manifest in Google Cloud Storage. This feature is
-  in Preview; see description
-  [here](https://github.com/GoogleCloudPlatform/cloud-
-  builders/tree/master/gcs-fetcher).
-
-  Fields:
-    bucket: Google Cloud Storage bucket containing the source manifest (see
-      [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
-      naming#requirements)).
-    generation: Google Cloud Storage generation for the object. If the
-      generation is omitted, the latest generation will be used.
-    object: Google Cloud Storage object containing the source manifest. This
-      object must be a JSON file.
-  """
-
-  bucket = _messages.StringField(1)
-  generation = _messages.IntegerField(2)
-  object = _messages.StringField(3)
 
 
 class TaskRef(_messages.Message):
@@ -4503,18 +3074,6 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
-class TimeSpan(_messages.Message):
-  r"""Start and end times for a build execution phase.
-
-  Fields:
-    endTime: End of time span.
-    startTime: Start of time span.
-  """
-
-  endTime = _messages.StringField(1)
-  startTime = _messages.StringField(2)
-
-
 class TimeoutFields(_messages.Message):
   r"""TimeoutFields allows granular specification of pipeline, task, and
   finally timeouts
@@ -4531,115 +3090,6 @@ class TimeoutFields(_messages.Message):
   finally_ = _messages.StringField(1)
   pipeline = _messages.StringField(2)
   tasks = _messages.StringField(3)
-
-
-class UpdateBitbucketServerConfigOperationMetadata(_messages.Message):
-  r"""Metadata for `UpdateBitbucketServerConfig` operation.
-
-  Fields:
-    bitbucketServerConfig: The resource name of the BitbucketServerConfig to
-      be updated. Format:
-      `projects/{project}/locations/{location}/bitbucketServerConfigs/{id}`.
-    completeTime: Time the operation was completed.
-    createTime: Time the operation was created.
-  """
-
-  bitbucketServerConfig = _messages.StringField(1)
-  completeTime = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-
-
-class UpdateGitHubEnterpriseConfigOperationMetadata(_messages.Message):
-  r"""Metadata for `UpdateGitHubEnterpriseConfig` operation.
-
-  Fields:
-    completeTime: Time the operation was completed.
-    createTime: Time the operation was created.
-    githubEnterpriseConfig: The resource name of the GitHubEnterprise to be
-      updated. Format:
-      `projects/{project}/locations/{location}/githubEnterpriseConfigs/{id}`.
-  """
-
-  completeTime = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  githubEnterpriseConfig = _messages.StringField(3)
-
-
-class UpdateGitLabConfigOperationMetadata(_messages.Message):
-  r"""Metadata for `UpdateGitLabConfig` operation.
-
-  Fields:
-    completeTime: Time the operation was completed.
-    createTime: Time the operation was created.
-    gitlabConfig: The resource name of the GitLabConfig to be created. Format:
-      `projects/{project}/locations/{location}/gitlabConfigs/{id}`.
-  """
-
-  completeTime = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  gitlabConfig = _messages.StringField(3)
-
-
-class UpdateWorkerPoolOperationMetadata(_messages.Message):
-  r"""Metadata for the `UpdateWorkerPool` operation.
-
-  Fields:
-    completeTime: Time the operation was completed.
-    createTime: Time the operation was created.
-    workerPool: The resource name of the `WorkerPool` being updated. Format:
-      `projects/{project}/locations/{location}/workerPools/{worker_pool}`.
-  """
-
-  completeTime = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  workerPool = _messages.StringField(3)
-
-
-class UploadedMavenArtifact(_messages.Message):
-  r"""A Maven artifact uploaded using the MavenArtifact directive.
-
-  Fields:
-    fileHashes: Hash types and values of the Maven Artifact.
-    pushTiming: Output only. Stores timing information for pushing the
-      specified artifact.
-    uri: URI of the uploaded artifact.
-  """
-
-  fileHashes = _messages.MessageField('FileHashes', 1)
-  pushTiming = _messages.MessageField('TimeSpan', 2)
-  uri = _messages.StringField(3)
-
-
-class UploadedPythonPackage(_messages.Message):
-  r"""Artifact uploaded using the PythonPackage directive.
-
-  Fields:
-    fileHashes: Hash types and values of the Python Artifact.
-    pushTiming: Output only. Stores timing information for pushing the
-      specified artifact.
-    uri: URI of the uploaded artifact.
-  """
-
-  fileHashes = _messages.MessageField('FileHashes', 1)
-  pushTiming = _messages.MessageField('TimeSpan', 2)
-  uri = _messages.StringField(3)
-
-
-class Volume(_messages.Message):
-  r"""Volume describes a Docker container volume which is mounted into build
-  steps in order to persist files across build step execution.
-
-  Fields:
-    name: Name of the volume to mount. Volume names must be unique per build
-      step and must be valid names for Docker volumes. Each named volume must
-      be used by at least two build steps.
-    path: Path at which to mount the volume. Paths must be absolute and cannot
-      conflict with other volume paths on the same build step or with certain
-      reserved volume paths.
-  """
-
-  name = _messages.StringField(1)
-  path = _messages.StringField(2)
 
 
 class VolumeMount(_messages.Message):
@@ -4681,35 +3131,6 @@ class VolumeSource(_messages.Message):
   emptyDir = _messages.MessageField('EmptyDirVolumeSource', 1)
   gcePersistentDisk = _messages.MessageField('GCEPersistentDiskVolumeSource', 2)
   name = _messages.StringField(3)
-
-
-class Warning(_messages.Message):
-  r"""A non-fatal problem encountered during the execution of the build.
-
-  Enums:
-    PriorityValueValuesEnum: The priority for this warning.
-
-  Fields:
-    priority: The priority for this warning.
-    text: Explanation of the warning generated.
-  """
-
-  class PriorityValueValuesEnum(_messages.Enum):
-    r"""The priority for this warning.
-
-    Values:
-      PRIORITY_UNSPECIFIED: Should not be used.
-      INFO: e.g. deprecation warnings and alternative feature highlights.
-      WARNING: e.g. automated detection of possible issues with the build.
-      ALERT: e.g. alerts that a feature used in the build is pending removal
-    """
-    PRIORITY_UNSPECIFIED = 0
-    INFO = 1
-    WARNING = 2
-    ALERT = 3
-
-  priority = _messages.EnumField('PriorityValueValuesEnum', 1)
-  text = _messages.StringField(2)
 
 
 class WhenExpression(_messages.Message):
@@ -4790,8 +3211,8 @@ class Workflow(_messages.Message):
     secrets: Pairs a secret environment variable with a SecretVersion in
       Secret Manager.
     serviceAccount: If omitted, the default Cloud Build Service Account is
-      used instead. Format: `projects/{project}/locations/{location}/serviceAc
-      counts/{serviceAccount}`
+      used instead. Format:
+      `projects/{project}/serviceAccounts/{serviceAccount}`
     uid: Output only. A unique identifier for the `Workflow`.
     updateTime: Output only. Server assigned timestamp for when the workflow
       was last updated.

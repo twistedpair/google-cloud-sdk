@@ -74,7 +74,9 @@ class SpeechV2Client(object):
                        enable_word_confidence=False,
                        enable_automatic_punctuation=False,
                        enable_spoken_punctuation=False,
-                       enable_spoken_emojis=False):
+                       enable_spoken_emojis=False,
+                       min_speaker_count=None,
+                       max_speaker_count=None):
     """Call API CreateRecognizer method with provided arguments."""
     recognizer = self._messages.Recognizer(
         displayName=display_name, model=model, languageCodes=language_codes)
@@ -93,6 +95,12 @@ class SpeechV2Client(object):
         enable_spoken_punctuation)
     recognizer.defaultRecognitionConfig.features.enableSpokenEmojis = (
         enable_spoken_emojis)
+
+    if min_speaker_count is not None and max_speaker_count is not None:
+      recognizer.defaultRecognitionConfig.features.diarizationConfig = self._messages.SpeakerDiarizationConfig(
+      )
+      recognizer.defaultRecognitionConfig.features.diarizationConfig.minSpeakerCount = min_speaker_count
+      recognizer.defaultRecognitionConfig.features.diarizationConfig.maxSpeakerCount = max_speaker_count
 
     request = self._messages.SpeechProjectsLocationsRecognizersCreateRequest(
         parent=resource.Parent().RelativeName(),
@@ -136,7 +144,9 @@ class SpeechV2Client(object):
                        enable_word_confidence=None,
                        enable_automatic_punctuation=None,
                        enable_spoken_punctuation=None,
-                       enable_spoken_emojis=None):
+                       enable_spoken_emojis=None,
+                       min_speaker_count=None,
+                       max_speaker_count=None):
     """Call API UpdateRecognizer method with provided arguments."""
     recognizer = self._messages.Recognizer()
     update_mask = []
@@ -150,9 +160,11 @@ class SpeechV2Client(object):
       recognizer.languageCodes = language_codes
       update_mask.append('language_codes')
 
-    recognizer.defaultRecognitionConfig = self._messages.RecognitionConfig()
-    recognizer.defaultRecognitionConfig.features = (
-        self._messages.RecognitionFeatures())
+    if recognizer.defaultRecognitionConfig is None:
+      recognizer.defaultRecognitionConfig = self._messages.RecognitionConfig()
+    if recognizer.defaultRecognitionConfig.features is None:
+      recognizer.defaultRecognitionConfig.features = (
+          self._messages.RecognitionFeatures())
     features = recognizer.defaultRecognitionConfig.features
 
     if profanity_filter is not None:
@@ -183,6 +195,22 @@ class SpeechV2Client(object):
       features.enableSpokenEmojis = enable_spoken_emojis
       update_mask.append(
           'default_recognition_config.features.enable_spoken_emojis')
+
+    if features.diarizationConfig is None and (min_speaker_count is not None or
+                                               max_speaker_count is not None):
+      features.diarizationConfig = self._messages.SpeakerDiarizationConfig()
+
+    if min_speaker_count is not None:
+      features.diarizationConfig.minSpeakerCount = min_speaker_count
+      update_mask.append(
+          'default_recognition_config.features.diarization_config.min_speaker_count'
+      )
+
+    if max_speaker_count is not None:
+      features.diarizationConfig.maxSpeakerCount = max_speaker_count
+      update_mask.append(
+          'default_recognition_config.features.diarization_config.max_speaker_count'
+      )
 
     request = self._messages.SpeechProjectsLocationsRecognizersPatchRequest(
         name=resource.RelativeName(),

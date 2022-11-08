@@ -20,6 +20,12 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import resources
+
+
+def GetAdminClusterMembershipResource(membership_name):
+  return resources.REGISTRY.ParseRelativeName(
+      membership_name, collection='gkehub.projects.locations.memberships')
 
 
 def AdminClusterMembershipAttributeConfig():
@@ -34,7 +40,7 @@ def LocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='location',
       help_text='Google Cloud location for the {resource}.',
-      )
+  )
 
 
 def GetAdminClusterMembershipResourceSpec():

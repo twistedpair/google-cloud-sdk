@@ -243,6 +243,14 @@
         "attributes": {
           "description": "Optional. Attributes associated with this Service.",
           "$ref": "Attributes"
+        },
+        "workloads": {
+          "description": "Output only. Service to Workload relationship is 1:1, 1:N, N:1, N:M The list could be empty if the service is opaque (i.e. PSC endpoint of SaaS) and do not have workloads. Example: \/projects\/123\/locations\/us-east1\/namespaces\/ns\/serviceWorkloads\/sw1",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -554,6 +562,14 @@
         },
         "backendServices": {
           "description": "Optional. List of backend services (as schemeless URIs) used as grouping constructs for this ServiceWorkload. Populated for service workloads that are auto-registered from Google Compute Engine. For service workloads auto-registed from Google Kubernetes Engine, this field is not populated. Example: [ \/\/compute.googleapis.com\/projects\/123\/zones\/us-east1-c\/backend_services\/bs1, \/\/compute.googleapis.com\/projects\/123\/regions\/us-east1\/backend_services\/bs2]",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "incomingServices": {
+          "description": "Output only. List of services that front this workload. Multiple services are due to multiple endpoints configured either because of different protocols or desire to separate traffic or different APIs. This list could be empty if this is not a serving workload. Example: \/projects\/123\/locations\/us-east1\/namespaces\/ns\/services\/s1\"",
+          "readOnly": true,
           "type": "array",
           "items": {
             "type": "string"

@@ -30,24 +30,33 @@ class AdminClustersClient(client.ClientBase):
     super(AdminClustersClient, self).__init__(**kwargs)
     self._service = self._client.projects_locations_vmwareAdminClusters
 
-  def Enroll(self, args):
+  def Enroll(self,
+             args,
+             membership=None,
+             vmware_admin_cluster_id=None,
+             parent=None):
     """Enrolls an admin cluster to Anthos on VMware."""
     kwargs = {
-        'membership': self._admin_cluster_membership_name(args),
-        'vmwareAdminClusterId': self._admin_cluster_id(args),
+        'membership':
+            membership
+            if membership else self._admin_cluster_membership_name(args),
+        'vmwareAdminClusterId':
+            vmware_admin_cluster_id
+            if vmware_admin_cluster_id else self._admin_cluster_id(args),
     }
     req = self._messages.GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest(
-        parent=self._admin_cluster_parent(args),
+        parent=parent if parent else self._admin_cluster_parent(args),
         enrollVmwareAdminClusterRequest=self._messages
         .EnrollVmwareAdminClusterRequest(**kwargs),
     )
     return self._service.Enroll(req)
 
-  def Update(self, args):
+  def Update(self, args, cluster_ref=None):
     """Updates an admin cluster to Anthos on VMware."""
     kwargs = {
         'name':
-            self._admin_cluster_name(args),
+            cluster_ref.RelativeName()
+            if cluster_ref else self._admin_cluster_name(args),
         'updateMask':
             update_mask.get_update_mask(
                 args, update_mask.VMWARE_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS),
@@ -69,8 +78,12 @@ class AdminClustersClient(client.ClientBase):
 
   def _platform_config(self, args):
     """Constructs proto message field platform_config."""
+    required_platform_version = flags.Get(args, 'required_platform_version')
+    if required_platform_version is None:
+      required_platform_version = flags.Get(args, 'version')
+
     kwargs = {
-        'requiredPlatformVersion': flags.Get(args, 'required_platform_version'),
+        'requiredPlatformVersion': required_platform_version,
     }
     if any(kwargs.values()):
       return self._messages.VmwarePlatformConfig(**kwargs)

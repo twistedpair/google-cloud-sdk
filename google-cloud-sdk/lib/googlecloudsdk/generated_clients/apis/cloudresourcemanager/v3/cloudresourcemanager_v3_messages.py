@@ -2152,9 +2152,8 @@ class Status(_messages.Message):
 
 class TagBinding(_messages.Message):
   r"""A TagBinding represents a connection between a TagValue and a cloud
-  resource (currently project, folder, or organization). Once a TagBinding is
-  created, the TagValue is applied to all the descendants of the cloud
-  resource.
+  resource Once a TagBinding is created, the TagValue is applied to all the
+  descendants of the Google Cloud resource.
 
   Fields:
     name: Output only. The name of the TagBinding. This is a String of the
@@ -2261,9 +2260,13 @@ class TagKey(_messages.Message):
       PURPOSE_UNSPECIFIED: Unspecified purpose.
       GCE_FIREWALL: Purpose for Compute Engine firewalls. A corresponding
         purpose_data should be set for the network the tag is intended for.
-        The key should be 'network' and the value should be in the format of
-        the network url id string: https://compute.googleapis.com/v1/projects/
-        {project_number}/global/networks/{network_id}
+        The key should be 'network' and the value should be in either of these
+        two formats: -https://www.googleapis.com/compute/{compute_version}/pro
+        jects/{project_id}/global/networks/{network_id}
+        -{project_id}/{network_name} Examples:
+        -https://www.googleapis.com/compute/staging_v1/projects/fail-closed-
+        load-testing/global/networks/6992953698831725600 -fail-closed-load-
+        testing/load-testing-network
     """
     PURPOSE_UNSPECIFIED = 0
     GCE_FIREWALL = 1

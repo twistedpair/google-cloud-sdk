@@ -283,10 +283,6 @@
           "description": "The specification for Cloud Build for Anthos.",
           "$ref": "CloudBuildFeatureSpec"
         },
-        "apigeeFeatureSpec": {
-          "description": "The specification for Apigee.",
-          "$ref": "ApigeeFeatureSpec"
-        },
         "servicedirectoryFeatureSpec": {
           "description": "The specification for Service Directory.",
           "$ref": "ServiceDirectoryFeatureSpec"
@@ -306,10 +302,6 @@
         "policycontrollerFeatureSpec": {
           "description": "The specification for Policy Controller.",
           "$ref": "PolicyControllerFeatureSpec"
-        },
-        "anthosvmFeatureSpec": {
-          "description": "The specification for the Anthos For VM Feature.",
-          "$ref": "AnthosVMFeatureSpec"
         },
         "rbacrolebindingactuationFeatureSpec": {
           "description": "The specification for RBAC Role Binding Actuation.",
@@ -861,38 +853,6 @@
         }
       }
     },
-    "ApigeeFeatureSpec": {
-      "id": "ApigeeFeatureSpec",
-      "description": "Feature spec for Apigee",
-      "type": "object",
-      "properties": {
-        "membershipSpecs": {
-          "description": "Map of Hub-based Membership IDs to individual membership spec. Membership IDs are in this format: `projects\/[project-number]\/locations\/global\/memberships\/[membership-name]`",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "MembershipSpec"
-          }
-        }
-      }
-    },
-    "MembershipSpec": {
-      "id": "MembershipSpec",
-      "description": "Membership information",
-      "type": "object",
-      "properties": {
-        "location": {
-          "description": "Location of the cluster. This is used by Apigee management plane for making location-based routing decisions.",
-          "type": "string"
-        },
-        "organizationProjects": {
-          "description": "In Apigee hybrid install, a project can contain memberships that serve multiple Apigee org projects. This is the list of Apigee org projects that the membership serves. E.g., In order to get the memberships that serve a specific organization project, Consumers can filter based on this field.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "ServiceDirectoryFeatureSpec": {
       "id": "ServiceDirectoryFeatureSpec",
       "description": "An empty spec for service directory feature. This is required since Feature proto requires a spec.",
@@ -1269,67 +1229,6 @@
         }
       }
     },
-    "AnthosVMFeatureSpec": {
-      "id": "AnthosVMFeatureSpec",
-      "description": "AnthosVMFeatureSpec contains the configuration for the AnthosVM feature",
-      "type": "object",
-      "properties": {
-        "membershipSpecs": {
-          "description": "Map of Membership IDs to their individual configuration. A map entry consists of a membershipID and the desired anthosvm spec for that membership\/cluster. The MembershipID needs to be the full path to the membership eg: projects\/p1\/locations\/l1\/memberships\/m1",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "AnthosVMMembershipSpec"
-          }
-        }
-      }
-    },
-    "AnthosVMMembershipSpec": {
-      "id": "AnthosVMMembershipSpec",
-      "description": "AnthosVMMembershipSpec contains the AnthosVM feature configuration for a membership\/cluster.",
-      "type": "object",
-      "properties": {
-        "subfeaturesSpec": {
-          "description": "List of configurations of the Anthos For VM subfeatures that are to be enabled",
-          "type": "array",
-          "items": {
-            "$ref": "AnthosVMSubFeatureSpec"
-          }
-        }
-      }
-    },
-    "AnthosVMSubFeatureSpec": {
-      "id": "AnthosVMSubFeatureSpec",
-      "description": "AnthosVMSubFeatureSpec contains the subfeature configuration for a membership\/cluster.",
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "description": "Indicates whether the subfeature should be enabled on the cluster or not. If set to true, the subfeature's control plane and resources will be installed in the cluster. If set to false, the oneof spec if present will be ignored and nothing will be installed in the cluster.",
-          "type": "boolean"
-        },
-        "serviceMeshSpec": {
-          "description": "ServiceMeshSpec repsents the configuration for Service Mesh subfeature.",
-          "$ref": "ServiceMeshSpec"
-        },
-        "migrateSpec": {
-          "description": "MigrateSpec repsents the configuration for Migrate subfeature.",
-          "$ref": "MigrateSpec"
-        }
-      }
-    },
-    "ServiceMeshSpec": {
-      "id": "ServiceMeshSpec",
-      "description": "ServiceMeshSpec contains the serviceMesh subfeature configuration. Other fields to be added later",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "MigrateSpec": {
-      "id": "MigrateSpec",
-      "description": "MigrateSpec contains the migrate subfeature configuration. Other fields to be added later",
-      "type": "object",
-      "properties": {
-      }
-    },
     "RBACRoleBindingActuationFeatureSpec": {
       "id": "RBACRoleBindingActuationFeatureSpec",
       "description": "**RBAC RoleBinding Actuation**: The Hub-wide input for the RBACRoleBindingActuation feature.",
@@ -1450,10 +1349,6 @@
           "description": "The state of the Anthos Cloud Audit Logging feature.",
           "$ref": "CloudAuditLoggingFeatureState"
         },
-        "apigeeFeatureState": {
-          "description": "State for the Apigee Feature.",
-          "$ref": "ApigeeFeatureState"
-        },
         "servicedirectoryFeatureState": {
           "description": "State for the Service Directory Feature.",
           "$ref": "ServiceDirectoryFeatureState"
@@ -1473,10 +1368,6 @@
         "policycontrollerFeatureState": {
           "description": "State for the Policy Controller Feature.",
           "$ref": "PolicyControllerFeatureState"
-        },
-        "anthosvmFeatureState": {
-          "description": "State for the Anthos For VM Feature.",
-          "$ref": "AnthosVMFeatureState"
         },
         "rbacrolebindingactuationFeatureState": {
           "description": "State for RBAC Role Binding Actuation.",
@@ -2492,13 +2383,6 @@
       "properties": {
       }
     },
-    "ApigeeFeatureState": {
-      "id": "ApigeeFeatureState",
-      "description": "An empty state for Apigee feature.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "ServiceDirectoryFeatureState": {
       "id": "ServiceDirectoryFeatureState",
       "description": "An empty state for service directory feature. This is rqeuired since FeatureStateDetails requires a state.",
@@ -2628,100 +2512,6 @@
           "description": "Surface potential errors or information logs.",
           "type": "string"
         }
-      }
-    },
-    "AnthosVMFeatureState": {
-      "id": "AnthosVMFeatureState",
-      "description": "AnthosVMFeatureState contains the state of the AnthosVM feature. It represents the actual state in the cluster, while the AnthosVMMembershipSpec represents the desired state.",
-      "type": "object",
-      "properties": {
-        "localControllerState": {
-          "description": "State of the local PE-controller in the cluster",
-          "$ref": "LocalControllerState"
-        },
-        "subfeatureState": {
-          "description": "List of AnthosVM subfeature states",
-          "type": "array",
-          "items": {
-            "$ref": "AnthosVMSubFeatureState"
-          }
-        }
-      }
-    },
-    "LocalControllerState": {
-      "id": "LocalControllerState",
-      "description": "LocalControllerState contains the state of the local controller deployed in the cluster.",
-      "type": "object",
-      "properties": {
-        "installationState": {
-          "description": "InstallationState represents the state of deployment of the local PE controller in the cluster.",
-          "type": "string",
-          "enumDescriptions": [
-            "state of installation is unknown",
-            "component is not installed",
-            "component is successfully installed",
-            "installation failed"
-          ],
-          "enum": [
-            "INSTALLATION_STATE_UNSPECIFIED",
-            "INSTALLATION_STATE_NOT_INSTALLED",
-            "INSTALLATION_STATE_INSTALLED",
-            "INSTALLATION_STATE_FAILED"
-          ]
-        },
-        "description": {
-          "description": "Description represents the human readable description of the current state of the local PE controller",
-          "type": "string"
-        }
-      }
-    },
-    "AnthosVMSubFeatureState": {
-      "id": "AnthosVMSubFeatureState",
-      "description": "AnthosVMSubFeatureState contains the state of the AnthosVM subfeatures.",
-      "type": "object",
-      "properties": {
-        "installationState": {
-          "description": "InstallationState represents the state of installation of the subfeature in the cluster.",
-          "type": "string",
-          "enumDescriptions": [
-            "state of installation is unknown",
-            "component is not installed",
-            "component is successfully installed",
-            "installation failed"
-          ],
-          "enum": [
-            "INSTALLATION_STATE_UNSPECIFIED",
-            "INSTALLATION_STATE_NOT_INSTALLED",
-            "INSTALLATION_STATE_INSTALLED",
-            "INSTALLATION_STATE_FAILED"
-          ]
-        },
-        "description": {
-          "description": "Description represents human readable description of the subfeature state. If the deployment failed, this should also contain the reason for the failure.",
-          "type": "string"
-        },
-        "serviceMeshState": {
-          "description": "ServiceMeshState represents the state of the Service Mesh subfeature.",
-          "$ref": "ServiceMeshState"
-        },
-        "migrateState": {
-          "description": "MigrateState represents the state of the Migrate subfeature.",
-          "$ref": "MigrateState"
-        }
-      }
-    },
-    "ServiceMeshState": {
-      "id": "ServiceMeshState",
-      "description": "ServiceMeshState contains the state of Service Mesh subfeature",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "MigrateState": {
-      "id": "MigrateState",
-      "description": "MigrateState contains the state of Migrate subfeature",
-      "type": "object",
-      "properties": {
       }
     },
     "RBACRoleBindingActuationFeatureState": {

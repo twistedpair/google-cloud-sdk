@@ -560,27 +560,27 @@
     },
     "Volume": {
       "id": "Volume",
-      "description": "Volume and mount parameters to be associated with a TaskSpec. A TaskSpec might describe zero, one, or multiple volumes to be mounted as part of the task.",
+      "description": "Volume describes a volume and parameters for it to be mounted to a VM.",
       "type": "object",
       "properties": {
         "nfs": {
-          "description": "An NFS source for the volume (could be a Filestore, for example).",
+          "description": "A Network File System (NFS) volume. For example, a Filestore file share.",
           "$ref": "NFS"
         },
         "gcs": {
-          "description": "A Google Cloud Storage source for the volume.",
+          "description": "A Google Cloud Storage (GCS) volume.",
           "$ref": "GCS"
         },
         "deviceName": {
-          "description": "Device name of an attached disk",
+          "description": "Device name of an attached disk volume, which should align with a device_name specified by job.allocation_policy.instances[0].policy.disks[i].device_name or defined by the given instance template in job.allocation_policy.instances[0].instance_template.",
           "type": "string"
         },
         "mountPath": {
-          "description": "Mount path for the volume, e.g. \/mnt\/share",
+          "description": "The mount path for the volume, e.g. \/mnt\/disks\/share.",
           "type": "string"
         },
         "mountOptions": {
-          "description": "Mount options For Google Cloud Storage, mount options are the global options supported by gcsfuse tool. Batch will use them to mount the volume with the following command: \"gcsfuse [global options] bucket mountpoint\". For PD, NFS, mount options are these supported by \/etc\/fstab. Batch will use Fstab to mount such volumes. https:\/\/help.ubuntu.com\/community\/Fstab",
+          "description": "For Google Cloud Storage (GCS), mount options are the options supported by the gcsfuse tool (https:\/\/github.com\/GoogleCloudPlatform\/gcsfuse). For existing persistent disks, mount options provided by the mount command (https:\/\/man7.org\/linux\/man-pages\/man8\/mount.8.html) except writing are supported. This is due to restrictions of multi-writer mode (https:\/\/cloud.google.com\/compute\/docs\/disks\/sharing-disks-between-vms). For other attached disks and Network File System (NFS), mount options are these supported by the mount command (https:\/\/man7.org\/linux\/man-pages\/man8\/mount.8.html).",
           "type": "array",
           "items": {
             "type": "string"
@@ -590,22 +590,22 @@
     },
     "NFS": {
       "id": "NFS",
-      "description": "Represents an NFS server and remote path: :",
+      "description": "Represents an NFS volume.",
       "type": "object",
       "properties": {
         "server": {
-          "description": "URI of the NFS server, e.g. an IP address.",
+          "description": "The IP address of the NFS.",
           "type": "string"
         },
         "remotePath": {
-          "description": "Remote source path exported from NFS, e.g., \"\/share\".",
+          "description": "Remote source path exported from the NFS, e.g., \"\/share\".",
           "type": "string"
         }
       }
     },
     "GCS": {
       "id": "GCS",
-      "description": "Represents a Google Cloud Storage volume source config.",
+      "description": "Represents a Google Cloud Storage volume.",
       "type": "object",
       "properties": {
         "remotePath": {
@@ -629,6 +629,10 @@
           "items": {
             "$ref": "InstancePolicyOrTemplate"
           }
+        },
+        "serviceAccount": {
+          "description": "Service account that VMs will run as.",
+          "$ref": "ServiceAccount"
         },
         "labels": {
           "description": "Labels applied to all VM instances and other resources created by AllocationPolicy. Labels could be user provided or system generated. You can assign up to 64 labels. [Google Compute Engine label restrictions](https:\/\/cloud.google.com\/compute\/docs\/labeling-resources#restrictions) apply. Label names that start with \"goog-\" or \"google-\" are reserved.",
@@ -705,14 +709,14 @@
           ]
         },
         "accelerators": {
-          "description": "The accelerators attached to each VM instance. Not yet implemented.",
+          "description": "The accelerators attached to each VM instance.",
           "type": "array",
           "items": {
             "$ref": "Accelerator"
           }
         },
         "disks": {
-          "description": "Non-boot disks to be attached for each VM created by this InstancePolicy. New disks will be deleted when the attached VM is deleted.",
+          "description": "Non-boot disks to be attached for each VM created by this InstancePolicy. New disks will be deleted when the VM is deleted.",
           "type": "array",
           "items": {
             "$ref": "AttachedDisk"
@@ -722,7 +726,7 @@
     },
     "Accelerator": {
       "id": "Accelerator",
-      "description": "Accelerator describes Compute Engine accelerators to be attached to VMs.",
+      "description": "Accelerator describes Compute Engine accelerators to be attached to the VM.",
       "type": "object",
       "properties": {
         "type": {
@@ -742,7 +746,7 @@
     },
     "AttachedDisk": {
       "id": "AttachedDisk",
-      "description": "A new or an existing persistent disk or a local ssd attached to a VM instance.",
+      "description": "A new or an existing persistent disk (PD) or a local ssd attached to a VM instance.",
       "type": "object",
       "properties": {
         "newDisk": {
@@ -782,6 +786,17 @@
         },
         "diskInterface": {
           "description": "Local SSDs are available through both \"SCSI\" and \"NVMe\" interfaces. If not indicated, \"NVMe\" will be the default one for local ssds. We only support \"SCSI\" for persistent disks now.",
+          "type": "string"
+        }
+      }
+    },
+    "ServiceAccount": {
+      "id": "ServiceAccount",
+      "description": "Carries information about a Google Cloud service account.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "description": "Email address of the service account. If not specified, the default Compute Engine service account for the project will be used. If instance template is being used, the service account has to be specified in the instance template and it has to match the email field here.",
           "type": "string"
         }
       }
@@ -1637,7 +1652,7 @@
                       "type": "string"
                     },
                     "jobId": {
-                      "description": "ID used to uniquely identify the Job within its parent scope. This field should contain at most 63 characters. Only alphanumeric characters or '-' are accepted. The '-' character cannot be the first or the last one. A system generated ID will be used if the field is not set. The job.name field in the request will be ignored and the created resource name of the Job will be \"{parent}\/jobs\/{job_id}\".",
+                      "description": "ID used to uniquely identify the Job within its parent scope. This field should contain at most 63 characters and must start with lowercase characters. Only lowercase characters, numbers and '-' are accepted. The '-' character cannot be the first or the last one. A system generated ID will be used if the field is not set. The job.name field in the request will be ignored and the created resource name of the Job will be \"{parent}\/jobs\/{job_id}\".",
                       "location": "query",
                       "type": "string"
                     },
@@ -1925,188 +1940,6 @@
                       }
                     }
                   }
-                }
-              }
-            },
-            "tasks": {
-              "methods": {
-                "setIamPolicy": {
-                  "id": "batch.projects.locations.tasks.setIamPolicy",
-                  "path": "v1/{+resource}:setIamPolicy",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/tasks/{tasksId}:setIamPolicy",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tasks\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "SetIamPolicyRequest"
-                  },
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
-                },
-                "getIamPolicy": {
-                  "id": "batch.projects.locations.tasks.getIamPolicy",
-                  "path": "v1/{+resource}:getIamPolicy",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/tasks/{tasksId}:getIamPolicy",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tasks\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "options.requestedPolicyVersion": {
-                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
-                },
-                "testIamPermissions": {
-                  "id": "batch.projects.locations.tasks.testIamPermissions",
-                  "path": "v1/{+resource}:testIamPermissions",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/tasks/{tasksId}:testIamPermissions",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tasks\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "TestIamPermissionsRequest"
-                  },
-                  "response": {
-                    "$ref": "TestIamPermissionsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
-                }
-              }
-            },
-            "nodes": {
-              "methods": {
-                "setIamPolicy": {
-                  "id": "batch.projects.locations.nodes.setIamPolicy",
-                  "path": "v1/{+resource}:setIamPolicy",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:setIamPolicy",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "SetIamPolicyRequest"
-                  },
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
-                },
-                "getIamPolicy": {
-                  "id": "batch.projects.locations.nodes.getIamPolicy",
-                  "path": "v1/{+resource}:getIamPolicy",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:getIamPolicy",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "options.requestedPolicyVersion": {
-                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
-                },
-                "testIamPermissions": {
-                  "id": "batch.projects.locations.nodes.testIamPermissions",
-                  "path": "v1/{+resource}:testIamPermissions",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:testIamPermissions",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "TestIamPermissionsRequest"
-                  },
-                  "response": {
-                    "$ref": "TestIamPermissionsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                 }
               }
             }

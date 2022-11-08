@@ -114,3 +114,15 @@ def AddAllFlagsToParser(parser, create=False):
       help="""\
       If true, adds spoken emoji formatting.
       """)
+  parser.add_argument(
+      '--min-speaker-count',
+      type=arg_parsers.BoundedInt(1, 6),
+      help="""\
+        Minimum number of speakers in the conversation.
+        """)
+  parser.add_argument(
+      '--max-speaker-count',
+      type=arg_parsers.BoundedInt(1, 6),
+      help="""\
+        Maximum number of speakers in the conversation.
+        """)

@@ -1422,3 +1422,19 @@ def AddConnectorEnforcement(parser):
       required=False,
       default=None,
       help=help_text)
+
+
+def AddTimeout(
+    parser,
+    default_max_wait,
+    help_text='Time to synchronously wait for the operation to complete, after'
+    ' which the operation continues asynchronously. Ignored if '
+    '--async flag is specified. By default, set to 3600s. Set to '
+    '*unlimited* to wait indefinitely.'):
+  """Adds --timeout flag."""
+  parser.add_argument(
+      '--timeout',
+      required=False,
+      default=default_max_wait,
+      help=help_text,
+      type=arg_parsers.BoundedInt(lower_bound=0, unlimited=True))

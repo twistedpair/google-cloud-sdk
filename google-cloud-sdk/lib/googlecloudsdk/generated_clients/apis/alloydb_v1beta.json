@@ -7,7 +7,7 @@
   "version": "v1beta",
   "revision": "0",
   "title": "AlloyDB API",
-  "description": "",
+  "description": "AlloyDB for PostgreSQL is an open source-compatible database service that\u2019s a powerful option for migrating, modernizing, or building commercial-grade applications. It offers full compatibility with standard PostgreSQL, and is more than 4x faster for transactional workloads and up to 100x faster for analytical queries than standard PostgreSQL in our performance tests. AlloyDB for PostgreSQL offers a 99.99 percent availability SLA inclusive of maintenance. AlloyDB is optimized for the most demanding use cases, allowing you to build new applications that require high transaction throughput, large database sizes, or multiple read resources; scale existing PostgreSQL workloads with no application changes; and modernize legacy proprietary databases. ",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -231,7 +231,7 @@
     },
     "Cluster": {
       "id": "Cluster",
-      "description": "A cluster is a collection of regional AlloyDB resources. It can include a primary instance and one or more read pool instances. All cluster resources share a storage layer, which scales as needed. NEXT_ID: 27",
+      "description": "A cluster is a collection of regional AlloyDB resources. It can include a primary instance and one or more read pool instances. All cluster resources share a storage layer, which scales as needed.",
       "type": "object",
       "properties": {
         "backupSource": {
@@ -296,7 +296,8 @@
             "The cluster is being deleted.",
             "The creation of the cluster failed.",
             "The cluster is bootstrapping with data from some other source. Direct mutations to the cluster (e.g. adding read pool) are not allowed.",
-            "The cluster is under maintenance. AlloyDB regularly performs maintenance and upgrades on customer clusters. Updates on the cluster are not allowed while the cluster is in this state."
+            "The cluster is under maintenance. AlloyDB regularly performs maintenance and upgrades on customer clusters. Updates on the cluster are not allowed while the cluster is in this state.",
+            "The cluster is being promoted."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -307,7 +308,8 @@
             "DELETING",
             "FAILED",
             "BOOTSTRAPPING",
-            "MAINTENANCE"
+            "MAINTENANCE",
+            "PROMOTING"
           ]
         },
         "clusterType": {
@@ -316,11 +318,13 @@
           "type": "string",
           "enumDescriptions": [
             "The type of the cluster is unknown.",
-            "Primary cluster that support read and write operations."
+            "Primary cluster that support read and write operations.",
+            "Secondary cluster that is replicating from another region. This only supports read."
           ],
           "enum": [
             "CLUSTER_TYPE_UNSPECIFIED",
-            "PRIMARY"
+            "PRIMARY",
+            "SECONDARY"
           ]
         },
         "databaseVersion": {
@@ -363,7 +367,7 @@
           "$ref": "UserPassword"
         },
         "automatedBackupPolicy": {
-          "description": "The automated backup policy for this cluster. If no policy is provided then the default policy will be used. The default policy takes one backup a day, has a backup window of 1 hour, and retains backups for 14 days. For more information on the defaults, consult the documentation for the message type.",
+          "description": "The automated backup policy for this cluster. If no policy is provided then the default policy will be used. If backups are supported for the cluster, the default policy takes one backup a day, has a backup window of 1 hour, and retains backups for 14 days. For more information on the defaults, consult the documentation for the message type.",
           "$ref": "AutomatedBackupPolicy"
         },
         "sslConfig": {
@@ -386,6 +390,11 @@
         "secondaryConfig": {
           "description": "Cross Region replication config specific to SECONDARY cluster.",
           "$ref": "SecondaryConfig"
+        },
+        "primaryConfig": {
+          "description": "Output only. Cross Region replication config specific to PRIMARY cluster.",
+          "readOnly": true,
+          "$ref": "PrimaryConfig"
         }
       }
     },
@@ -402,7 +411,7 @@
     },
     "MigrationSource": {
       "id": "MigrationSource",
-      "description": "Subset of the source instance configuration that is available when reading the cluster resource. NEXT_ID: 4",
+      "description": "Subset of the source instance configuration that is available when reading the cluster resource.",
       "type": "object",
       "properties": {
         "hostPort": {
@@ -447,7 +456,7 @@
     },
     "AutomatedBackupPolicy": {
       "id": "AutomatedBackupPolicy",
-      "description": "Message describing the user-specified automated backup policy. All fields in the automated backup policy are optional. Defaults for each field are provided if they are not set. NEXT_ID: 9",
+      "description": "Message describing the user-specified automated backup policy. All fields in the automated backup policy are optional. Defaults for each field are provided if they are not set.",
       "type": "object",
       "properties": {
         "weeklySchedule": {
@@ -628,7 +637,7 @@
     },
     "EncryptionInfo": {
       "id": "EncryptionInfo",
-      "description": "EncryptionInfo describes the encryption information of a cluster or a backup. NEXT_ID: 3",
+      "description": "EncryptionInfo describes the encryption information of a cluster or a backup.",
       "type": "object",
       "properties": {
         "encryptionType": {
@@ -658,7 +667,7 @@
     },
     "PitrConfig": {
       "id": "PitrConfig",
-      "description": "PitrConfig describes the point-in-time recovery configurations of a cluster. NEXT_ID: 4",
+      "description": "PitrConfig describes the point-in-time recovery configurations of a cluster.",
       "type": "object",
       "properties": {
         "enabled": {
@@ -686,6 +695,21 @@
         "primaryClusterName": {
           "description": "The name of the primary cluster name with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
           "type": "string"
+        }
+      }
+    },
+    "PrimaryConfig": {
+      "id": "PrimaryConfig",
+      "description": "Configuration for the primary cluster. It has the list of clusters that are replicating from this cluster. This should be set if and only if the cluster is of type PRIMARY.",
+      "type": "object",
+      "properties": {
+        "secondaryClusterNames": {
+          "description": "Output only. Names of the clusters that are replicating from this cluster.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1043,7 +1067,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/backups\/{backup_id} where the cluster and backup ID segments should satisfy the regex expression \"[a-z]([a-z0-9-]{0,61}[a-z0-9])?\", e.g. 1-63 characters of lowercase letters, numbers, and dashes, starting with a letter, and ending with a letter or number. For more details see https:\/\/google.aip.dev\/122. The prefix of the backup resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
+          "description": "Output only. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/backups\/{backup_id} where the cluster and backup ID segments should satisfy the regex expression `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`, e.g. 1-63 characters of lowercase letters, numbers, and dashes, starting with a letter, and ending with a letter or number. For more details see https:\/\/google.aip.dev\/122. The prefix of the backup resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
           "readOnly": true,
           "type": "string"
         },
@@ -1962,7 +1986,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Generate a client certificate signed by a Cluster CA."
+                  "description": "Generate a client certificate signed by a Cluster CA. The sole purpose of this endpoint is to support the Auth Proxy client and the endpoint's behavior is subject to change without notice, so do not rely on its behavior remaining constant. Future changes will not break the Auth Proxy client."
                 }
               }
               ,
@@ -2443,7 +2467,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/backups\/{backup_id} where the cluster and backup ID segments should satisfy the regex expression \"[a-z]([a-z0-9-]{0,61}[a-z0-9])?\", e.g. 1-63 characters of lowercase letters, numbers, and dashes, starting with a letter, and ending with a letter or number. For more details see https:\/\/google.aip.dev\/122. The prefix of the backup resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
+                      "description": "Output only. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/backups\/{backup_id} where the cluster and backup ID segments should satisfy the regex expression `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`, e.g. 1-63 characters of lowercase letters, numbers, and dashes, starting with a letter, and ending with a letter or number. For more details see https:\/\/google.aip.dev\/122. The prefix of the backup resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backups\/[^\/]+$",
                       "location": "path",
                       "required": true,

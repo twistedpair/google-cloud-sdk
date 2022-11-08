@@ -887,6 +887,7 @@ class InterconnectAttachment(_messages.Message):
       projects/{project}/locations/{location}/zones/{zone}/networks/{network}.
     router: Optional. The canonical Router name in the form of
       projects/{project}/locations/{location}/zones/{zone}/routers/{router}.
+      During creates, if network is specified, this field will be ignored.
     state: Output only. Current stage of the resource to the device by config
       push.
     updateTime: Output only. The time when the interconnect attachment was

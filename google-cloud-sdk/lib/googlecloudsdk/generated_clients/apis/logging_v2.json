@@ -403,7 +403,7 @@
             "The resource has been marked for an update by the user. It will remain in this state until the update is complete.",
             "The resource has been marked for creation by the user. It will remain in this state until the creation is complete.",
             "The resource is in an INTERNAL error state.",
-            "The resource has been moved to a different location and this is the before-move record and should no longer be used."
+            "The resource has been archived such that it can still be queried but can no longer be modified or used as a sink destination. The leftover bucket after a move bucket operation enters this state."
           ],
           "enum": [
             "LIFECYCLE_STATE_UNSPECIFIED",
@@ -412,7 +412,7 @@
             "UPDATING",
             "CREATING",
             "FAILED",
-            "MOVED"
+            "ARCHIVED"
           ]
         },
         "analyticsEnabled": {
@@ -793,7 +793,7 @@
             "The resource has been marked for an update by the user. It will remain in this state until the update is complete.",
             "The resource has been marked for creation by the user. It will remain in this state until the creation is complete.",
             "The resource is in an INTERNAL error state.",
-            "The resource has been moved to a different location and this is the before-move record and should no longer be used."
+            "The resource has been archived such that it can still be queried but can no longer be modified or used as a sink destination. The leftover bucket after a move bucket operation enters this state."
           ],
           "enum": [
             "LIFECYCLE_STATE_UNSPECIFIED",
@@ -802,7 +802,7 @@
             "UPDATING",
             "CREATING",
             "FAILED",
-            "MOVED"
+            "ARCHIVED"
           ]
         },
         "bigqueryDataset": {

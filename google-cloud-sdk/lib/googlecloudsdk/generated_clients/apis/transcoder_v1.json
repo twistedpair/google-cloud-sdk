@@ -7,7 +7,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Transcoder API",
-  "description": "This API converts video files into formats suitable for consumer distribution. ",
+  "description": "This API converts video files into formats suitable for consumer distribution. For more information, see the Transcoder API overview. ",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

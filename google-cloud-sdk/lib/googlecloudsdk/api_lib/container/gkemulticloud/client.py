@@ -100,7 +100,8 @@ class ClientBase(object):
     req = self._service.GetRequestType('Get')(name=resource_ref.RelativeName())
     return self._service.Get(req)
 
-  def Delete(self, resource_ref, validate_only=None, allow_missing=None):
+  def Delete(self, resource_ref, validate_only=None, allow_missing=None,
+             ignore_errors=None):
     """Deletes a gkemulticloud API resource."""
     req = self._service.GetRequestType('Delete')(
         name=resource_ref.RelativeName())
@@ -108,6 +109,8 @@ class ClientBase(object):
       req.validateOnly = True
     if allow_missing:
       req.allowMissing = True
+    if ignore_errors:
+      req.ignoreErrors = True
     return self._service.Delete(req)
 
   def HasNodePools(self, cluster_ref):

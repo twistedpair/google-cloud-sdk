@@ -536,8 +536,9 @@ class Link(_messages.Message):
       CREATING: The resource has been marked for creation by the user. It will
         remain in this state until the creation is complete.
       FAILED: The resource is in an INTERNAL error state.
-      MOVED: The resource has been moved to a different location and this is
-        the before-move record and should no longer be used.
+      ARCHIVED: The resource has been archived such that it can still be
+        queried but can no longer be modified or used as a sink destination.
+        The leftover bucket after a move bucket operation enters this state.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -545,7 +546,7 @@ class Link(_messages.Message):
     UPDATING = 3
     CREATING = 4
     FAILED = 5
-    MOVED = 6
+    ARCHIVED = 6
 
   bigqueryDataset = _messages.MessageField('BigQueryDataset', 1)
   createTime = _messages.StringField(2)
@@ -969,8 +970,9 @@ class LogBucket(_messages.Message):
       CREATING: The resource has been marked for creation by the user. It will
         remain in this state until the creation is complete.
       FAILED: The resource is in an INTERNAL error state.
-      MOVED: The resource has been moved to a different location and this is
-        the before-move record and should no longer be used.
+      ARCHIVED: The resource has been archived such that it can still be
+        queried but can no longer be modified or used as a sink destination.
+        The leftover bucket after a move bucket operation enters this state.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -978,7 +980,7 @@ class LogBucket(_messages.Message):
     UPDATING = 3
     CREATING = 4
     FAILED = 5
-    MOVED = 6
+    ARCHIVED = 6
 
   class UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum(_messages.Enum):
     r"""UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum enum type.

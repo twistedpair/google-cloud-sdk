@@ -3800,7 +3800,7 @@ class AiplatformProjectsLocationsTensorboardsExperimentsListRequest(_messages.Me
       call that provided the page token.
     parent: Required. The resource name of the Tensorboard to list
       TensorboardExperiments. Format:
-      'projects/{project}/locations/{location}/tensorboards/{tensorboard}'
+      `projects/{project}/locations/{location}/tensorboards/{tensorboard}`
     readMask: Mask specifying which fields to read.
   """
 
@@ -3988,8 +3988,8 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsListRequest(_message
       TensorboardService.ListTensorboardRuns must match the call that provided
       the page token.
     parent: Required. The resource name of the TensorboardExperiment to list
-      TensorboardRuns. Format: 'projects/{project}/locations/{location}/tensor
-      boards/{tensorboard}/experiments/{experiment}'
+      TensorboardRuns. Format: `projects/{project}/locations/{location}/tensor
+      boards/{tensorboard}/experiments/{experiment}`
     readMask: Mask specifying which fields to read.
   """
 
@@ -4225,8 +4225,8 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesListReques
       provided to TensorboardService.ListTensorboardTimeSeries must match the
       call that provided the page token.
     parent: Required. The resource name of the TensorboardRun to list
-      TensorboardTimeSeries. Format: 'projects/{project}/locations/{location}/
-      tensorboards/{tensorboard}/experiments/{experiment}/runs/{run}'
+      TensorboardTimeSeries. Format: `projects/{project}/locations/{location}/
+      tensorboards/{tensorboard}/experiments/{experiment}/runs/{run}`
     readMask: Mask specifying which fields to read.
   """
 
@@ -4334,9 +4334,9 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadBlobDa
   Fields:
     blobIds: IDs of the blobs to read.
     timeSeries: Required. The resource name of the TensorboardTimeSeries to
-      list Blobs. Format: 'projects/{project}/locations/{location}/tensorboard
+      list Blobs. Format: `projects/{project}/locations/{location}/tensorboard
       s/{tensorboard}/experiments/{experiment}/runs/{run}/timeSeries/{time_ser
-      ies}'
+      ies}`
   """
 
   blobIds = _messages.StringField(1, repeated=True)
@@ -5228,8 +5228,8 @@ class GoogleCloudAiplatformInternalDeployedModel(_messages.Message):
       deploying the Model must have the `iam.serviceAccounts.actAs` permission
       on this service account.
     sharedResources: The resource name of the shared DeploymentResourcePool to
-      deploy on. Format: projects/{project}/locations/{location}/deploymentRes
-      ourcePools/{deployment_resource_pool}
+      deploy on. Format: `projects/{project}/locations/{location}/deploymentRe
+      sourcePools/{deployment_resource_pool}`
   """
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformInternalAutomaticResources', 1)
@@ -6612,8 +6612,8 @@ class GoogleCloudAiplatformInternalHumanInTheLoopEntitlement(_messages.Message):
     displayName: Human-friendly display name of the entitlement. This can be
       updated regardless of state.
     name: Output only. The resource name of the human in the loop entitlement.
-      Format: projects/{project}/locations/{location}/humanInTheLoopEntitlemen
-      ts/{human_in_the_loop_entitlement}
+      Format: `projects/{project}/locations/{location}/humanInTheLoopEntitleme
+      nts/{human_in_the_loop_entitlement}`
     specialistPool: The resource name of the specialist pool that this
       entitlement is associated with.
     state: State of the human in the loop entitlement.
@@ -7727,6 +7727,16 @@ class GoogleCloudAiplatformUiCreateDatasetOperationMetadata(_messages.Message):
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformUiCreateDeploymentResourcePoolOperationMetadata(_messages.Message):
+  r"""Runtime operation information for CreateDeploymentResourcePool method.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformUiCreateEdgeDeviceOperationMetadata(_messages.Message):
   r"""Metadata message for EdgeDeviceService.CreateEdgeDevice.
 
@@ -8271,8 +8281,8 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
       deploying the Model must have the `iam.serviceAccounts.actAs` permission
       on this service account.
     sharedResources: The resource name of the shared DeploymentResourcePool to
-      deploy on. Format: projects/{project}/locations/{location}/deploymentRes
-      ourcePools/{deployment_resource_pool}
+      deploy on. Format: `projects/{project}/locations/{location}/deploymentRe
+      sourcePools/{deployment_resource_pool}`
     uiState: Output only. The state of the model deployment. Different from
       public API, BEING_DEPLOYED and FAILED deployment state model will also
       be returned in Ui ListEndpoints.
@@ -13580,6 +13590,16 @@ class GoogleCloudAiplatformUiUndeployModelResponse(_messages.Message):
   r"""Response message for EndpointService.UndeployModel."""
 
 
+class GoogleCloudAiplatformUiUpdateDeploymentResourcePoolOperationMetadata(_messages.Message):
+  r"""Runtime operation information for UpdateDeploymentResourcePool method.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformUiUpdateExplanationDatasetOperationMetadata(_messages.Message):
   r"""Runtime operation information for ModelService.UpdateExplanationDataset.
 
@@ -14055,7 +14075,6 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
       backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `//model/`
       * AIP_CHECKPOINT_DIR = `//checkpoints/` * AIP_TENSORBOARD_LOG_DIR =
       `//logs/`
-    bqmlJob: Optional. True if the job is from BigQuery ML.
     enableWebAccess: Optional. Whether you want Vertex AI to enable
       [interactive shell access](https://cloud.google.com/vertex-
       ai/docs/training/monitor-debug-interactive-shell) to training
@@ -14093,14 +14112,13 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
   """
 
   baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformV1GcsDestination', 1)
-  bqmlJob = _messages.BooleanField(2)
-  enableWebAccess = _messages.BooleanField(3)
-  network = _messages.StringField(4)
-  reservedIpRanges = _messages.StringField(5, repeated=True)
-  scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 6)
-  serviceAccount = _messages.StringField(7)
-  tensorboard = _messages.StringField(8)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 9, repeated=True)
+  enableWebAccess = _messages.BooleanField(2)
+  network = _messages.StringField(3)
+  reservedIpRanges = _messages.StringField(4, repeated=True)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 5)
+  serviceAccount = _messages.StringField(6)
+  tensorboard = _messages.StringField(7)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 8, repeated=True)
 
 
 class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
@@ -16453,13 +16471,18 @@ class GoogleCloudAiplatformV1SchemaPredictPredictionTabularRegressionPredictionR
 
   Fields:
     lowerBound: The lower bound of the prediction interval.
+    quantilePredictions: Quantile predictions, in 1-1 correspondence with
+      quantile_values.
+    quantileValues: Quantile values.
     upperBound: The upper bound of the prediction interval.
     value: The regression value.
   """
 
   lowerBound = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  upperBound = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  value = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  quantilePredictions = _messages.FloatField(2, repeated=True, variant=_messages.Variant.FLOAT)
+  quantileValues = _messages.FloatField(3, repeated=True, variant=_messages.Variant.FLOAT)
+  upperBound = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  value = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformV1SchemaPredictPredictionTextExtractionPredictionResult(_messages.Message):
@@ -23279,7 +23302,7 @@ class GoogleCloudAiplatformV1alpha1IndexEndpoint(_messages.Message):
       unspecified, the Endpoint is not peered with any network. network and
       private_service_connect_config are mutually exclusive. [Format](https://
       cloud.google.com/compute/docs/reference/rest/v1/networks/insert):
-      projects/{project}/global/networks/{network}. Where {project} is a
+      `projects/{project}/global/networks/{network}`. Where {project} is a
       project number, as in '12345', and {network} is network name.
     updateTime: Output only. Timestamp when this IndexEndpoint was last
       updated. This timestamp is not updated when the endpoint's
@@ -25727,9 +25750,10 @@ class GoogleCloudAiplatformV1alpha1PipelineJobRuntimeConfigInputArtifact(_messag
 
   Fields:
     artifactId: Artifact resource id from MLMD. Which is the last portion of
-      an artifact resource name(projects/{project}/locations/{location}/metada
-      taStores/default/artifacts/{artifact_id}). The artifact must stay within
-      the same project, location and default metadatastore as the pipeline.
+      an artifact resource name: `projects/{project}/locations/{location}/meta
+      dataStores/default/artifacts/{artifact_id}`. The artifact must stay
+      within the same project, location and default metadatastore as the
+      pipeline.
   """
 
   artifactId = _messages.StringField(1)
@@ -28556,13 +28580,13 @@ class GoogleCloudAiplatformV1alpha1UserActionReference(_messages.Message):
 
   Fields:
     dataLabelingJob: For API calls that start a LabelingJob. Resource name of
-      the LabelingJob. Format: 'projects/{project}/locations/{location}/dataLa
-      belingJobs/{data_labeling_job}'
+      the LabelingJob. Format: `projects/{project}/locations/{location}/dataLa
+      belingJobs/{data_labeling_job}`
     method: The method name of the API RPC call. For example,
       "/google.cloud.aiplatform.{apiVersion}.DatasetService.CreateDataset"
     operation: For API calls that return a long running operation. Resource
       name of the long running operation. Format:
-      'projects/{project}/locations/{location}/operations/{operation}'
+      `projects/{project}/locations/{location}/operations/{operation}`
   """
 
   dataLabelingJob = _messages.StringField(1)
@@ -29309,8 +29333,8 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
       deploying the Model must have the `iam.serviceAccounts.actAs` permission
       on this service account.
     sharedResources: The resource name of the shared DeploymentResourcePool to
-      deploy on. Format: projects/{project}/locations/{location}/deploymentRes
-      ourcePools/{deployment_resource_pool}
+      deploy on. Format: `projects/{project}/locations/{location}/deploymentRe
+      sourcePools/{deployment_resource_pool}`
   """
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformV1beta1AutomaticResources', 1)
@@ -31627,13 +31651,18 @@ class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTabularRegressionPredic
 
   Fields:
     lowerBound: The lower bound of the prediction interval.
+    quantilePredictions: Quantile predictions, in 1-1 correspondence with
+      quantile_values.
+    quantileValues: Quantile values.
     upperBound: The upper bound of the prediction interval.
     value: The regression value.
   """
 
   lowerBound = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  upperBound = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  value = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  quantilePredictions = _messages.FloatField(2, repeated=True, variant=_messages.Variant.FLOAT)
+  quantileValues = _messages.FloatField(3, repeated=True, variant=_messages.Variant.FLOAT)
+  upperBound = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  value = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextExtractionPredictionResult(_messages.Message):

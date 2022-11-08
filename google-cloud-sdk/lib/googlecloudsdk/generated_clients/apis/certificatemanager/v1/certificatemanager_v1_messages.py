@@ -271,9 +271,9 @@ class CertificateMap(_messages.Message):
     createTime: Output only. The creation timestamp of a Certificate Map.
     description: One or more paragraphs of text description of a certificate
       map.
-    gclbTargets: Output only. A list of GCLB targets which use this
-      Certificate Map. A Target Proxy is only present on this list if it's
-      attached to a Forwarding Rule.
+    gclbTargets: Output only. A list of GCLB targets that use this Certificate
+      Map. A Target Proxy is only present on this list if it's attached to a
+      Forwarding Rule.
     labels: Set of labels associated with a Certificate Map.
     name: A user-defined name of the Certificate Map. Certificate Map names
       must be unique globally and match pattern
@@ -992,7 +992,7 @@ class DnsAuthorization(_messages.Message):
       DnsAuthorization.
     dnsResourceRecord: Output only. DNS Resource Record that needs to be added
       to DNS configuration.
-    domain: Required. Immutable. A domain which is being authorized. A
+    domain: Required. Immutable. A domain that is being authorized. A
       DnsAuthorization resource covers a single domain and its wildcard, e.g.
       authorization for `example.com` can be used to issue certificates for
       `example.com` and `*.example.com`.
@@ -1063,7 +1063,7 @@ class Empty(_messages.Message):
 
 
 class GclbTarget(_messages.Message):
-  r"""Describes a Target Proxy which uses this Certificate Map.
+  r"""Describes a Target Proxy that uses this Certificate Map.
 
   Fields:
     ipConfigs: Output only. IP configurations for this Target Proxy where the

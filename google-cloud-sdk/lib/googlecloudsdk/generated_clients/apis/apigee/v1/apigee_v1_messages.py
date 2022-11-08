@@ -1333,9 +1333,9 @@ class ApigeeOrganizationsEndpointAttachmentsCreateRequest(_messages.Message):
   r"""A ApigeeOrganizationsEndpointAttachmentsCreateRequest object.
 
   Fields:
-    endpointAttachmentId: ID to use for the endpoint attachment. The ID can
-      contain lowercase letters and numbers, must start with a letter, and
-      must be 1-20 characters in length.
+    endpointAttachmentId: ID to use for the endpoint attachment. ID must start
+      with a lowercase letter followed by up to 31 lowercase letters, numbers,
+      or hyphens, and cannot end with a hyphen. The minimum length is 2.
     googleCloudApigeeV1EndpointAttachment: A
       GoogleCloudApigeeV1EndpointAttachment resource to be passed as the
       request body.

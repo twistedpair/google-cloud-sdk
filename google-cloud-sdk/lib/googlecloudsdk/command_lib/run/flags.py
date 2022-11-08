@@ -597,19 +597,27 @@ def AddTimeoutFlag(parser):
       '10 seconds.')
 
 
-def AddServiceAccountFlag(parser):
-  parser.add_argument(
-      '--service-account',
-      help='Service account associated with the revision of the service. '
+def AddServiceAccountFlag(parser, managed_only=False):
+  """Add the --service-account flag."""
+  help_text = (
+      'Service account associated with the revision of the service. '
       'The service account represents the identity of '
       'the running revision, and determines what permissions the revision has. '
-      'For the {} platform, this is the email address of an IAM '
-      'service account. For the Kubernetes-based platforms ({}, {}), this is '
-      'the name of a Kubernetes service account in the same namespace as the '
-      'service. If not provided, the revision will use the default service '
-      'account of the project, or default Kubernetes namespace service account '
-      'respectively.'.format(platforms.PLATFORM_MANAGED, platforms.PLATFORM_GKE,
-                             platforms.PLATFORM_KUBERNETES))
+  )
+  if managed_only:
+    help_text += 'This is the email address of an IAM service account.'
+  else:
+    help_text += (
+        'For the {} platform, this is the email address of an IAM service '
+        'account. For the Kubernetes-based platforms ({}, {}), this is the '
+        'name of a Kubernetes service account in the same namespace as the '
+        'service. If not provided, the revision will use the default service '
+        'account of the project, or default Kubernetes namespace service '
+        'account respectively.'.format(platforms.PLATFORM_MANAGED,
+                                       platforms.PLATFORM_GKE,
+                                       platforms.PLATFORM_KUBERNETES))
+
+  parser.add_argument('--service-account', help=help_text)
 
 
 def AddPlatformArg(parser, managed_only=False, anthos_only=False):
@@ -958,7 +966,8 @@ def AddParallelismFlag(parser):
 
 
 def AddTasksFlag(parser):
-  """Add job number of tasks flag which maps to job.spec.template.spec.task_count."""
+  """Add job number of tasks flag which maps to job.spec.template.spec.task_count.
+  """
   parser.add_argument(
       '--tasks',
       type=arg_parsers.BoundedInt(lower_bound=1),
@@ -1378,7 +1387,8 @@ def _GetIngressChanges(args):
 
 
 def _PrependClientNameAndVersionChange(args, changes):
-  """Set client name and version regardless of whether or not it was specified."""
+  """Set client name and version regardless of whether or not it was specified.
+  """
   if 'client_name' in args:
     is_either_specified = (
         args.IsSpecified('client_name') or args.IsSpecified('client_version'))
@@ -1392,7 +1402,8 @@ def _PrependClientNameAndVersionChange(args, changes):
 
 
 def _GetConfigurationChanges(args):
-  """Returns a list of changes shared by multiple resources, based on the flags set."""
+  """Returns a list of changes shared by multiple resources, based on the flags set.
+  """
   changes = []
 
   # FlagIsExplicitlySet can't be used here because args.image is also set from
@@ -2051,7 +2062,8 @@ def VerifyGKEFlags(args, release_track, product):
 
 
 def VerifyKubernetesFlags(args, release_track, product):
-  """Raise ConfigurationError if args includes OnePlatform or GKE only arguments."""
+  """Raise ConfigurationError if args includes OnePlatform or GKE only arguments.
+  """
   error_msg = ('The `{flag}` flag is not supported with Cloud Run for Anthos '
                'deployed on VMware. Specify `--platform {platform}` or run '
                '`gcloud config set run/platform {platform}` to work with '

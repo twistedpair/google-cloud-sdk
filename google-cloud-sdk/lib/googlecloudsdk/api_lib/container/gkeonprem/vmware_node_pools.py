@@ -196,11 +196,11 @@ class NodePoolsClient(client.ClientBase):
     """Constructs proto message VmwareNodeConfig."""
     kwargs = {
         'cpus': flags.Get(args, 'cpus'),
-        'memoryMb': flags.Get(args, 'memory_mb'),
+        'memoryMb': flags.Get(args, 'memory'),
         'replicas': flags.Get(args, 'replicas'),
         'imageType': flags.Get(args, 'image_type'),
         'image': flags.Get(args, 'image'),
-        'bootDiskSizeGb': flags.Get(args, 'boot_disk_size_gb'),
+        'bootDiskSizeGb': flags.Get(args, 'boot_disk_size'),
         'taints': self._node_taints(args),
         'labels': self._labels_value(args),
         'enableLoadBalancer': self._enable_load_balancer(args),

@@ -73,15 +73,18 @@ class ApitoolsClientDef(object):
       version.
     messages_full_modulepath: str, Full path to the messages module for an API
       version.
+    base_url: str, The base_url used for the default version of the API.
   """
 
   def __init__(self,
                class_path,
                client_classpath,
-               messages_modulepath):
+               messages_modulepath,
+               base_url):
     self.class_path = class_path
     self.client_classpath = client_classpath
     self.messages_modulepath = messages_modulepath
+    self.base_url = base_url
 
   @property
   def client_full_classpath(self):
@@ -99,9 +102,9 @@ class ApitoolsClientDef(object):
     return not self.__eq__(other)
 
   def get_init_source(self):
-    src_fmt = 'ApitoolsClientDef("{0}", "{1}", "{2}")'
+    src_fmt = 'ApitoolsClientDef("{0}", "{1}", "{2}", "{3}")'
     return src_fmt.format(self.class_path, self.client_classpath,
-                          self.messages_modulepath)
+                          self.messages_modulepath, self.base_url)
 
   def __repr__(self):
     return self.get_init_source()

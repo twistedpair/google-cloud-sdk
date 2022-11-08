@@ -172,10 +172,16 @@ class AnalyzerOrgPolicy(_messages.Message):
   analysis purpose.
 
   Fields:
+    appliedResource: The [full resource name] (https://cloud.google.com/asset-
+      inventory/docs/resource-name-format) of an organization/folder/project
+      resource where this organization policy applies to. For any user defined
+      org policies, this field has the same value as the [attached_resource]
+      field. Only for default policy, this field has the different value.
     attachedResource: The [full resource name]
       (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
       an organization/folder/project resource where this organization policy
-      is set.
+      is set. Notice that some type of constraints are defined with default
+      policy. This field will be empty for them.
     inheritFromParent: If `inherit_from_parent` is true, Rules set higher up
       in the hierarchy (up to the closest root) are inherited and present in
       the effective policy. If it is false, then no rules are inherited, and
@@ -187,22 +193,24 @@ class AnalyzerOrgPolicy(_messages.Message):
     rules: List of rules for this organization policy.
   """
 
-  attachedResource = _messages.StringField(1)
-  inheritFromParent = _messages.BooleanField(2)
-  reset = _messages.BooleanField(3)
-  rules = _messages.MessageField('GoogleCloudAssetV1Rule', 4, repeated=True)
+  appliedResource = _messages.StringField(1)
+  attachedResource = _messages.StringField(2)
+  inheritFromParent = _messages.BooleanField(3)
+  reset = _messages.BooleanField(4)
+  rules = _messages.MessageField('GoogleCloudAssetV1Rule', 5, repeated=True)
 
 
 class AnalyzerOrgPolicyConstraint(_messages.Message):
   r"""The organization policy constraint definition.
 
   Fields:
-    constraint: The definition of the constraint.
     customConstraint: The definition of the custom constraint.
+    googleDefinedConstraint: The definition of the canned constraint defined
+      by Google.
   """
 
-  constraint = _messages.MessageField('GoogleCloudAssetV1Constraint', 1)
-  customConstraint = _messages.MessageField('GoogleCloudAssetV1CustomConstraint', 2)
+  customConstraint = _messages.MessageField('GoogleCloudAssetV1CustomConstraint', 1)
+  googleDefinedConstraint = _messages.MessageField('GoogleCloudAssetV1Constraint', 2)
 
 
 class Asset(_messages.Message):
@@ -1322,9 +1330,9 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       the field name to indicate descending order. Redundant space characters
       are ignored. Example: "location DESC, name". Only singular primitive
       fields in the response are sortable: * name * assetType * project *
-      displayName * description * location * kmsKey * createTime * updateTime
-      * state * parentFullResourceName * parentAssetType All the other fields
-      such as repeated fields (e.g., `networkTags`), map fields (e.g.,
+      displayName * description * location * createTime * updateTime * state *
+      parentFullResourceName * parentAssetType All the other fields such as
+      repeated fields (e.g., `networkTags`, `kmsKeys`), map fields (e.g.,
       `labels`) and struct fields (e.g., `additionalAttributes`) are not
       supported.
     pageSize: Optional. The page size for search result pagination. Page size
@@ -1351,6 +1359,9 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       that have a label "env" and its value is "prod". * `labels.env:*` to
       find Cloud resources that have a label "env". * `kmsKey:key` to find
       Cloud resources encrypted with a customer-managed encryption key whose
+      name contains "key" as a word. This field is deprecated. Please use the
+      `kmsKeys` field to retrieve KMS key information. * `kmsKeys:key` to find
+      Cloud resources encrypted with customer-managed encryption keys whose
       name contains the word "key". * `relationships:instance-group-1` to find
       Cloud resources that have relationships with "instance-group-1" in the
       related resource name. * `relationships:INSTANCE_TO_INSTANCEGROUP` to
@@ -1382,11 +1393,12 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       paths listed but not limited to (both snake_case and camelCase are
       supported): * name * assetType * project * displayName * description *
       location * tagKeys * tagValues * tagValueIds * labels * networkTags *
-      kmsKey * createTime * updateTime * state * additionalAttributes *
-      versionedResources If read_mask is not specified, all fields except
-      versionedResources will be returned. If only '*' is specified, all
-      fields including versionedResources will be returned. Any invalid field
-      path will trigger INVALID_ARGUMENT error.
+      kmsKey (This field is deprecated. Please use the `kmsKeys` field to
+      retrieve KMS key information.) * kmsKeys * createTime * updateTime *
+      state * additionalAttributes * versionedResources If read_mask is not
+      specified, all fields except versionedResources will be returned. If
+      only '*' is specified, all fields including versionedResources will be
+      returned. Any invalid field path will trigger INVALID_ARGUMENT error.
     scope: Required. A scope can be a project, a folder, or an organization.
       The search is limited to the resources within the `scope`. The caller
       must be granted the
@@ -1871,14 +1883,26 @@ class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedAsset(_mes
   AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
 
   Fields:
+    consolidatedPolicy: The consolidated policy for the analyzed asset. The
+      consolidated policy is computed by merging and evaluating
+      AnalyzeOrgPolicyGovernedAssetsResponse.GovernedAsset.policy_bundle. The
+      evaluation will respect the organization policy [hierarchy
+      rules](https://cloud.google.com/resource-manager/docs/organization-
+      policy/understanding-hierarchy).
     governedIamPolicy: An IAM policy governed by the organization policies of
       the AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
     governedResource: A GCP resource governed by the organization policies of
       the AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
+    policyBundle: The ordered list of all organization policies from the Analy
+      zeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resou
+      rce to the scope specified in the request. If the constraint is defined
+      with default policy, it will also appear in the list.
   """
 
-  governedIamPolicy = _messages.MessageField('GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedIamPolicy', 1)
-  governedResource = _messages.MessageField('GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedResource', 2)
+  consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 1)
+  governedIamPolicy = _messages.MessageField('GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedIamPolicy', 2)
+  governedResource = _messages.MessageField('GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedResource', 3)
+  policyBundle = _messages.MessageField('AnalyzerOrgPolicy', 4, repeated=True)
 
 
 class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedIamPolicy(_messages.Message):
@@ -1891,12 +1915,6 @@ class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedIamPolicy(
       123/zones/zone1/instances/instance1`. See [Cloud Asset Inventory
       Resource Name Format](https://cloud.google.com/asset-
       inventory/docs/resource-name-format) for more information.
-    consolidatedPolicy: The consolidated policy for the analyzed IAM policy.
-      The consolidated policy is computed by merging and evaluating
-      AnalyzeOrgPolicyGovernedAssetsResponse.GovernedAsset.policy_bundle. The
-      evaluation will respect the organization policy [hierarchy
-      rules](https://cloud.google.com/resource-manager/docs/organization-
-      policy/understanding-hierarchy).
     folders: The folder(s) that this IAM policy belongs to, in the form of
       folders/{FOLDER_NUMBER}. This field is available when the IAM policy
       belongs(directly or cascadingly) to one or more folders.
@@ -1904,21 +1922,16 @@ class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedIamPolicy(
       form of organizations/{ORGANIZATION_NUMBER}. This field is available
       when the IAM policy belongs(directly or cascadingly) to an organization.
     policy: The IAM policy directly set on the given resource.
-    policyBundle: The ordered list of all organization policies from the
-      consolidated_policy.attached_resource. to the scope specified in the
-      request.
     project: The project that this IAM policy belongs to, in the form of
       projects/{PROJECT_NUMBER}. This field is available when the IAM policy
       belongs to a project.
   """
 
   attachedResource = _messages.StringField(1)
-  consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 2)
-  folders = _messages.StringField(3, repeated=True)
-  organization = _messages.StringField(4)
-  policy = _messages.MessageField('Policy', 5)
-  policyBundle = _messages.MessageField('AnalyzerOrgPolicy', 6, repeated=True)
-  project = _messages.StringField(7)
+  folders = _messages.StringField(2, repeated=True)
+  organization = _messages.StringField(3)
+  policy = _messages.MessageField('Policy', 4)
+  project = _messages.StringField(5)
 
 
 class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedResource(_messages.Message):
@@ -1926,12 +1939,6 @@ class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedResource(_
   AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
 
   Fields:
-    consolidatedPolicy: The consolidated policy for the analyzed resource. The
-      consolidated policy is computed by merging and evaluating
-      AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource.policy_bundle.
-      The evaluation will respect the organization policy [hierarchy
-      rules](https://cloud.google.com/resource-manager/docs/organization-
-      policy/understanding-hierarchy).
     folders: The folder(s) that this resource belongs to, in the form of
       folders/{FOLDER_NUMBER}. This field is available when the resource
       belongs(directly or cascadingly) to one or more folders.
@@ -1944,21 +1951,16 @@ class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedResource(_
     parent: The [full resource name] (https://cloud.google.com/asset-
       inventory/docs/resource-name-format) of the parent of AnalyzeOrgPolicyGo
       vernedAssetsResponse.GovernedResource.full_resource_name.
-    policyBundle: The ordered list of all organization policies from the Analy
-      zeOrgPolicyGovernedAssetsResponse.GovernedResource.consolidated_policy.a
-      ttached_resource. to the scope specified in the request.
     project: The project that this resource belongs to, in the form of
       projects/{PROJECT_NUMBER}. This field is available when the resource
       belongs to a project.
   """
 
-  consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 1)
-  folders = _messages.StringField(2, repeated=True)
-  fullResourceName = _messages.StringField(3)
-  organization = _messages.StringField(4)
-  parent = _messages.StringField(5)
-  policyBundle = _messages.MessageField('AnalyzerOrgPolicy', 6, repeated=True)
-  project = _messages.StringField(7)
+  folders = _messages.StringField(1, repeated=True)
+  fullResourceName = _messages.StringField(2)
+  organization = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  project = _messages.StringField(5)
 
 
 class GoogleCloudAssetV1BigQueryDestination(_messages.Message):
@@ -2034,13 +2036,11 @@ class GoogleCloudAssetV1Constraint(_messages.Message):
       absence of 'Policy'.
     description: Detailed description of what this `Constraint` controls as
       well as how and where it is enforced.
-    displayName: The human readable name.
+    displayName: The human readable name of the constraint.
     listConstraint: Defines this constraint as being a ListConstraint.
-    name: The resource name of the Constraint. Must be in one of the following
-      forms: * `projects/{project_number}/constraints/{constraint_name}` *
-      `folders/{folder_id}/constraints/{constraint_name}` *
-      `organizations/{organization_id}/constraints/{constraint_name}` For
-      example, "/projects/123/constraints/compute.disableSerialPortAccess".
+    name: The unique name of the constraint. Format of the name should be *
+      `constraints/{constraint_name}` For example,
+      `constraints/compute.disableSerialPortAccess`.
   """
 
   class ConstraintDefaultValueValuesEnum(_messages.Enum):
@@ -2175,7 +2175,8 @@ class GoogleCloudAssetV1GovernedContainer(_messages.Message):
       vernedContainersResponse.GovernedContainer.full_resource_name.
     policyBundle: The ordered list of all organization policies from the Analy
       zeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resou
-      rce. to the scope specified in the request.
+      rce. to the scope specified in the request. If the constraint is defined
+      with default policy, it will also appear in the list.
   """
 
   consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 1)
@@ -4086,7 +4087,8 @@ class OrgPolicyResult(_messages.Message):
       policy/understanding-hierarchy).
     policyBundle: The ordered list of all organization policies from the Analy
       zeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resou
-      rce. to the scope specified in the request.
+      rce. to the scope specified in the request. If the constraint is defined
+      with default policy, it will also appear in the list.
   """
 
   consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 1)
@@ -4670,12 +4672,19 @@ class ResourceSearchResult(_messages.Message):
       field query. Example: `folders:(123 OR 456)` * Use a free text query.
       Example: `123` * Specify the `scope` field as this folder in your search
       request.
-    kmsKey: This field only presents for the purpose of backward-
-      compatibility. Please use `kms_keys` field to retrieve KMS key
-      information. This field will only be populated for the resource types
-      included in this list for backward compatible purpose. To search against
-      the `kms_key`: * Use a field query. Example: `kmsKey:key` * Use a free
-      text query. Example: `key`
+    kmsKey: The Cloud KMS [CryptoKey](https://cloud.google.com/kms/docs/refere
+      nce/rest/v1/projects.locations.keyRings.cryptoKeys) name or [CryptoKeyVe
+      rsion](https://cloud.google.com/kms/docs/reference/rest/v1/projects.loca
+      tions.keyRings.cryptoKeys.cryptoKeyVersions) name. This field only
+      presents for the purpose of backward compatibility. Please use the
+      `kms_keys` field to retrieve KMS key information. This field is
+      available only when the resource's Protobuf contains it and will only be
+      populated for [these resource types](https://cloud.google.com/asset-
+      inventory/docs/legacy-field-
+      names#resource_types_with_the_to_be_deprecated_kmskey_field) for
+      backward compatible purposes. To search against the `kms_key`: * Use a
+      field query. Example: `kmsKey:key` * Use a free text query. Example:
+      `key`
     kmsKeys: The Cloud KMS [CryptoKey](https://cloud.google.com/kms/docs/refer
       ence/rest/v1/projects.locations.keyRings.cryptoKeys) names or [CryptoKey
       Version](https://cloud.google.com/kms/docs/reference/rest/v1/projects.lo

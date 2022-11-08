@@ -54,7 +54,7 @@ class Access(_messages.Message):
       to, e.g. "iam.googleapis.com"
     userAgentFamily: What kind of user agent is associated, e.g. operating
       system shells, embedded or stand-alone applications, etc.
-    username: A string representing a username. This is likely not an IAM
+    userName: A string representing a username. This is likely not an IAM
       principal. For instance, this may be the system user name if the finding
       is VM-related, or this may be some type of application login user name,
       depending on the type of finding.
@@ -69,7 +69,7 @@ class Access(_messages.Message):
   serviceAccountKeyName = _messages.StringField(7)
   serviceName = _messages.StringField(8)
   userAgentFamily = _messages.StringField(9)
-  username = _messages.StringField(10)
+  userName = _messages.StringField(10)
 
 
 class AccessReview(_messages.Message):
@@ -207,6 +207,20 @@ class AssetDiscoveryConfig(_messages.Message):
   folderIds = _messages.StringField(1, repeated=True)
   inclusionMode = _messages.EnumField('InclusionModeValueValuesEnum', 2)
   projectIds = _messages.StringField(3, repeated=True)
+
+
+class AssociatedFinding(_messages.Message):
+  r"""A finding that is associated with this node in the exposure path.
+
+  Fields:
+    canonicalFindingName: Canonical name of the associated findings. Example:
+      organizations/123/sources/456/findings/789
+    findingCategory: The additional taxonomy group within findings from a
+      given source.
+  """
+
+  canonicalFindingName = _messages.StringField(1)
+  findingCategory = _messages.StringField(2)
 
 
 class AuditConfig(_messages.Message):
@@ -727,6 +741,19 @@ class Detection(_messages.Message):
   percentPagesMatched = _messages.FloatField(2)
 
 
+class Edge(_messages.Message):
+  r"""Represents a connection between a source node and a destination node in
+  this exposure path.
+
+  Fields:
+    destination: This is the resource name of the destination node.
+    source: This is the resource name of the source node.
+  """
+
+  destination = _messages.StringField(1)
+  source = _messages.StringField(2)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -918,6 +945,7 @@ class Finding(_messages.Message):
       Security Command Center where additional information about the finding
       can be found. This field is guaranteed to be either empty or a well
       formed URL.
+    files: File associated with the finding.
     findingClass: The class of the finding.
     iamBindings: Represents IAM bindings associated with the Finding.
     indicator: Represents what's commonly known as an Indicator of compromise
@@ -1174,26 +1202,27 @@ class Finding(_messages.Message):
   exfiltration = _messages.MessageField('Exfiltration', 12)
   externalSystems = _messages.MessageField('ExternalSystemsValue', 13)
   externalUri = _messages.StringField(14)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 15)
-  iamBindings = _messages.MessageField('IamBinding', 16, repeated=True)
-  indicator = _messages.MessageField('Indicator', 17)
-  kubernetes = _messages.MessageField('Kubernetes', 18)
-  mitreAttack = _messages.MessageField('MitreAttack', 19)
-  mute = _messages.EnumField('MuteValueValuesEnum', 20)
-  muteAnnotation = _messages.StringField(21)
-  muteInitiator = _messages.StringField(22)
-  muteUpdateTime = _messages.StringField(23)
-  name = _messages.StringField(24)
-  nextSteps = _messages.StringField(25)
-  parent = _messages.StringField(26)
-  parentDisplayName = _messages.StringField(27)
-  processes = _messages.MessageField('Process', 28, repeated=True)
-  resourceName = _messages.StringField(29)
-  securityMarks = _messages.MessageField('SecurityMarks', 30)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 31)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 32)
-  state = _messages.EnumField('StateValueValuesEnum', 33)
-  vulnerability = _messages.MessageField('Vulnerability', 34)
+  files = _messages.MessageField('File', 15, repeated=True)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 16)
+  iamBindings = _messages.MessageField('IamBinding', 17, repeated=True)
+  indicator = _messages.MessageField('Indicator', 18)
+  kubernetes = _messages.MessageField('Kubernetes', 19)
+  mitreAttack = _messages.MessageField('MitreAttack', 20)
+  mute = _messages.EnumField('MuteValueValuesEnum', 21)
+  muteAnnotation = _messages.StringField(22)
+  muteInitiator = _messages.StringField(23)
+  muteUpdateTime = _messages.StringField(24)
+  name = _messages.StringField(25)
+  nextSteps = _messages.StringField(26)
+  parent = _messages.StringField(27)
+  parentDisplayName = _messages.StringField(28)
+  processes = _messages.MessageField('Process', 29, repeated=True)
+  resourceName = _messages.StringField(30)
+  securityMarks = _messages.MessageField('SecurityMarks', 31)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 32)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 33)
+  state = _messages.EnumField('StateValueValuesEnum', 34)
+  vulnerability = _messages.MessageField('Vulnerability', 35)
 
 
 class Folder(_messages.Message):
@@ -1422,11 +1451,60 @@ class GoogleCloudSecuritycenterV1EffectiveSecurityHealthAnalyticsCustomModule(_m
 
 
 class GoogleCloudSecuritycenterV1ExposedResource(_messages.Message):
-  r"""A resource that is exposed as a result of a finding."""
+  r"""A resource that is exposed as a result of a finding.
+
+  Enums:
+    ResourceValueValueValuesEnum: How valuable this resource is.
+
+  Fields:
+    displayName: Human readable name of the resource that is exposed.
+    methods: The ways in which this resource is exposed. Examples: Read, Write
+    name: Exposed Resource Name e.g.:
+      `organizations/123/attackExposureResults/456/exposedResources/789`
+    resource: The name of the resource that is exposed. See:
+      https://cloud.google.com/apis/design/resource_names#full_resource_name
+    resourceType: The resource type of the exposed resource. See:
+      https://cloud.google.com/asset-inventory/docs/supported-asset-types
+    resourceValue: How valuable this resource is.
+  """
+
+  class ResourceValueValueValuesEnum(_messages.Enum):
+    r"""How valuable this resource is.
+
+    Values:
+      RESOURCE_VALUE_UNSPECIFIED: The resource value isn't specified.
+      RESOURCE_VALUE_LOW: This is a low value resource.
+      RESOURCE_VALUE_MEDIUM: This is a medium value resource.
+      RESOURCE_VALUE_HIGH: This is a high value resource.
+    """
+    RESOURCE_VALUE_UNSPECIFIED = 0
+    RESOURCE_VALUE_LOW = 1
+    RESOURCE_VALUE_MEDIUM = 2
+    RESOURCE_VALUE_HIGH = 3
+
+  displayName = _messages.StringField(1)
+  methods = _messages.StringField(2, repeated=True)
+  name = _messages.StringField(3)
+  resource = _messages.StringField(4)
+  resourceType = _messages.StringField(5)
+  resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 6)
 
 
 class GoogleCloudSecuritycenterV1ExposurePath(_messages.Message):
-  r"""A path that an attacker could take to reach an exposed resource."""
+  r"""A path that an attacker could take to reach an exposed resource.
+
+  Fields:
+    edges: A list of the edges between nodes in this exposure path.
+    exposedResource: The leaf node of this exposure path.
+    name: Exposure Path Name e.g.:
+      `organizations/123/attackExposureResults/456/exposurePaths/789`
+    pathNodes: A list of nodes that exist in this exposure path.
+  """
+
+  edges = _messages.MessageField('Edge', 1, repeated=True)
+  exposedResource = _messages.MessageField('GoogleCloudSecuritycenterV1ExposedResource', 2)
+  name = _messages.StringField(3)
+  pathNodes = _messages.MessageField('PathNode', 4, repeated=True)
 
 
 class GoogleCloudSecuritycenterV1ExternalSystem(_messages.Message):
@@ -1573,7 +1651,15 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
 
   Fields:
     name: Name for the resource value config
+    resourceType: Apply resource_value only to resources that match
+      resource_type. resource_type will be checked with "AND" of other
+      resources. E.g. "storage.googleapis.com/Bucket" with resource_value
+      "HIGH" will apply "HIGH" value only to "storage.googleapis.com/Bucket"
+      resources.
     resourceValue: Required. Resource value level this expression represents
+    scope: Project or folder to scope this config to. For example,
+      "project/456" would apply this config only to resources in "project/456"
+      scope will be checked with "AND" of other resources.
     tagValues: Required. Tag values combined with AND to check against. Values
       in the form "tagValues/123" E.g. [ "tagValues/123", "tagValues/456",
       "tagValues/789" ] https://cloud.google.com/resource-
@@ -1597,8 +1683,10 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
     NONE = 4
 
   name = _messages.StringField(1)
-  resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 2)
-  tagValues = _messages.StringField(3, repeated=True)
+  resourceType = _messages.StringField(2)
+  resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 3)
+  scope = _messages.StringField(4)
+  tagValues = _messages.StringField(5, repeated=True)
 
 
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
@@ -2699,6 +2787,7 @@ class MitreAttack(_messages.Message):
       NETWORK_SERVICE_DISCOVERY: T1046
       ACCESS_TOKEN_MANIPULATION: T1134
       ABUSE_ELEVATION_CONTROL_MECHANISM: T1548
+      DEFAULT_ACCOUNTS: T1078.001
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -2735,6 +2824,7 @@ class MitreAttack(_messages.Message):
     NETWORK_SERVICE_DISCOVERY = 32
     ACCESS_TOKEN_MANIPULATION = 33
     ABUSE_ELEVATION_CONTROL_MECHANISM = 34
+    DEFAULT_ACCOUNTS = 35
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -2812,6 +2902,7 @@ class MitreAttack(_messages.Message):
       NETWORK_SERVICE_DISCOVERY: T1046
       ACCESS_TOKEN_MANIPULATION: T1134
       ABUSE_ELEVATION_CONTROL_MECHANISM: T1548
+      DEFAULT_ACCOUNTS: T1078.001
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -2848,6 +2939,7 @@ class MitreAttack(_messages.Message):
     NETWORK_SERVICE_DISCOVERY = 32
     ACCESS_TOKEN_MANIPULATION = 33
     ABUSE_ELEVATION_CONTROL_MECHANISM = 34
+    DEFAULT_ACCOUNTS = 35
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
@@ -3031,6 +3123,27 @@ class OrganizationSettings(_messages.Message):
   assetDiscoveryConfig = _messages.MessageField('AssetDiscoveryConfig', 1)
   enableAssetDiscovery = _messages.BooleanField(2)
   name = _messages.StringField(3)
+
+
+class PathNode(_messages.Message):
+  r"""Represents one point that an attacker passes through in this exposure
+  path.
+
+  Fields:
+    associatedFindings: The findings associated with this node in the exposure
+      path.
+    displayName: Human readable name of this resource.
+    resource: The name of the resource at this point in the exposure path. The
+      format of the name is:
+      https://cloud.google.com/apis/design/resource_names#full_resource_name
+    resourceType: The resource type of this resource. See:
+      https://cloud.google.com/asset-inventory/docs/supported-asset-types
+  """
+
+  associatedFindings = _messages.MessageField('AssociatedFinding', 1, repeated=True)
+  displayName = _messages.StringField(2)
+  resource = _messages.StringField(3)
+  resourceType = _messages.StringField(4)
 
 
 class Pod(_messages.Message):
@@ -3693,6 +3806,86 @@ class SecuritycenterFoldersMuteConfigsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class SecuritycenterFoldersNotificationConfigsCreateRequest(_messages.Message):
+  r"""A SecuritycenterFoldersNotificationConfigsCreateRequest object.
+
+  Fields:
+    configId: Required. Unique identifier provided by the client within the
+      parent scope. It must be between 1 and 128 characters, and contains
+      alphanumeric characters, underscores or hyphens only.
+    notificationConfig: A NotificationConfig resource to be passed as the
+      request body.
+    parent: Required. Resource name of the new notification config's parent.
+      Its format is "organizations/[organization_id]", "folders/[folder_id]",
+      or "projects/[project_id]".
+  """
+
+  configId = _messages.StringField(1)
+  notificationConfig = _messages.MessageField('NotificationConfig', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterFoldersNotificationConfigsDeleteRequest(_messages.Message):
+  r"""A SecuritycenterFoldersNotificationConfigsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the notification config to delete. Its format is
+      "organizations/[organization_id]/notificationConfigs/[config_id]".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterFoldersNotificationConfigsGetRequest(_messages.Message):
+  r"""A SecuritycenterFoldersNotificationConfigsGetRequest object.
+
+  Fields:
+    name: Required. Name of the notification config to get. Its format is
+      "organizations/[organization_id]/notificationConfigs/[config_id]".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterFoldersNotificationConfigsListRequest(_messages.Message):
+  r"""A SecuritycenterFoldersNotificationConfigsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last
+      `ListNotificationConfigsResponse`; indicates that this is a continuation
+      of a prior `ListNotificationConfigs` call, and that the system should
+      return the next page of data.
+    parent: Required. Name of the organization to list notification configs.
+      Its format is "organizations/[organization_id]", "folders/[folder_id]",
+      or "projects/[project_id]".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterFoldersNotificationConfigsPatchRequest(_messages.Message):
+  r"""A SecuritycenterFoldersNotificationConfigsPatchRequest object.
+
+  Fields:
+    name: The relative resource name of this notification config. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Example: "organizations/{organization_id}/notificationConfigs/notify_
+      public_bucket".
+    notificationConfig: A NotificationConfig resource to be passed as the
+      request body.
+    updateMask: The FieldMask to use when updating the notification config. If
+      empty all mutable fields will be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  notificationConfig = _messages.MessageField('NotificationConfig', 2)
+  updateMask = _messages.StringField(3)
+
+
 class SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesCreateRequest(_messages.Message):
   r"""A SecuritycenterFoldersSecurityHealthAnalyticsSettingsCustomModulesCreat
   eRequest object.
@@ -4022,9 +4215,9 @@ class SecuritycenterFoldersSourcesFindingsSetMuteRequest(_messages.Message):
     name: Required. The relative resource name of the finding. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/sources/{source_id}/finding
-      /{finding_id}",
-      "folders/{folder_id}/sources/{source_id}/finding/{finding_id}",
-      "projects/{project_id}/sources/{source_id}/finding/{finding_id}".
+      s/{finding_id}",
+      "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
+      "projects/{project_id}/sources/{source_id}/findings/{finding_id}".
     setMuteRequest: A SetMuteRequest resource to be passed as the request
       body.
   """
@@ -4040,7 +4233,7 @@ class SecuritycenterFoldersSourcesFindingsSetStateRequest(_messages.Message):
     name: Required. The relative resource name of the finding. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/sources/{source_id}/finding
-      /{finding_id}".
+      s/{finding_id}".
     setFindingStateRequest: A SetFindingStateRequest resource to be passed as
       the request body.
   """
@@ -4465,8 +4658,8 @@ class SecuritycenterOrganizationsNotificationConfigsCreateRequest(_messages.Mess
     notificationConfig: A NotificationConfig resource to be passed as the
       request body.
     parent: Required. Resource name of the new notification config's parent.
-      Its format is "organizations/[organization_id]" or
-      "projects/[project_id]".
+      Its format is "organizations/[organization_id]", "folders/[folder_id]",
+      or "projects/[project_id]".
   """
 
   configId = _messages.StringField(1)
@@ -4507,8 +4700,8 @@ class SecuritycenterOrganizationsNotificationConfigsListRequest(_messages.Messag
       of a prior `ListNotificationConfigs` call, and that the system should
       return the next page of data.
     parent: Required. Name of the organization to list notification configs.
-      Its format is "organizations/[organization_id]" or
-      "projects/[project_id]".
+      Its format is "organizations/[organization_id]", "folders/[folder_id]",
+      or "projects/[project_id]".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4937,9 +5130,9 @@ class SecuritycenterOrganizationsSourcesFindingsSetMuteRequest(_messages.Message
     name: Required. The relative resource name of the finding. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/sources/{source_id}/finding
-      /{finding_id}",
-      "folders/{folder_id}/sources/{source_id}/finding/{finding_id}",
-      "projects/{project_id}/sources/{source_id}/finding/{finding_id}".
+      s/{finding_id}",
+      "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
+      "projects/{project_id}/sources/{source_id}/findings/{finding_id}".
     setMuteRequest: A SetMuteRequest resource to be passed as the request
       body.
   """
@@ -4955,7 +5148,7 @@ class SecuritycenterOrganizationsSourcesFindingsSetStateRequest(_messages.Messag
     name: Required. The relative resource name of the finding. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/sources/{source_id}/finding
-      /{finding_id}".
+      s/{finding_id}".
     setFindingStateRequest: A SetFindingStateRequest resource to be passed as
       the request body.
   """
@@ -5440,6 +5633,86 @@ class SecuritycenterProjectsMuteConfigsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class SecuritycenterProjectsNotificationConfigsCreateRequest(_messages.Message):
+  r"""A SecuritycenterProjectsNotificationConfigsCreateRequest object.
+
+  Fields:
+    configId: Required. Unique identifier provided by the client within the
+      parent scope. It must be between 1 and 128 characters, and contains
+      alphanumeric characters, underscores or hyphens only.
+    notificationConfig: A NotificationConfig resource to be passed as the
+      request body.
+    parent: Required. Resource name of the new notification config's parent.
+      Its format is "organizations/[organization_id]", "folders/[folder_id]",
+      or "projects/[project_id]".
+  """
+
+  configId = _messages.StringField(1)
+  notificationConfig = _messages.MessageField('NotificationConfig', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterProjectsNotificationConfigsDeleteRequest(_messages.Message):
+  r"""A SecuritycenterProjectsNotificationConfigsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the notification config to delete. Its format is
+      "organizations/[organization_id]/notificationConfigs/[config_id]".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterProjectsNotificationConfigsGetRequest(_messages.Message):
+  r"""A SecuritycenterProjectsNotificationConfigsGetRequest object.
+
+  Fields:
+    name: Required. Name of the notification config to get. Its format is
+      "organizations/[organization_id]/notificationConfigs/[config_id]".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterProjectsNotificationConfigsListRequest(_messages.Message):
+  r"""A SecuritycenterProjectsNotificationConfigsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last
+      `ListNotificationConfigsResponse`; indicates that this is a continuation
+      of a prior `ListNotificationConfigs` call, and that the system should
+      return the next page of data.
+    parent: Required. Name of the organization to list notification configs.
+      Its format is "organizations/[organization_id]", "folders/[folder_id]",
+      or "projects/[project_id]".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterProjectsNotificationConfigsPatchRequest(_messages.Message):
+  r"""A SecuritycenterProjectsNotificationConfigsPatchRequest object.
+
+  Fields:
+    name: The relative resource name of this notification config. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Example: "organizations/{organization_id}/notificationConfigs/notify_
+      public_bucket".
+    notificationConfig: A NotificationConfig resource to be passed as the
+      request body.
+    updateMask: The FieldMask to use when updating the notification config. If
+      empty all mutable fields will be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  notificationConfig = _messages.MessageField('NotificationConfig', 2)
+  updateMask = _messages.StringField(3)
+
+
 class SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesCreateRequest(_messages.Message):
   r"""A SecuritycenterProjectsSecurityHealthAnalyticsSettingsCustomModulesCrea
   teRequest object.
@@ -5767,9 +6040,9 @@ class SecuritycenterProjectsSourcesFindingsSetMuteRequest(_messages.Message):
     name: Required. The relative resource name of the finding. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/sources/{source_id}/finding
-      /{finding_id}",
-      "folders/{folder_id}/sources/{source_id}/finding/{finding_id}",
-      "projects/{project_id}/sources/{source_id}/finding/{finding_id}".
+      s/{finding_id}",
+      "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
+      "projects/{project_id}/sources/{source_id}/findings/{finding_id}".
     setMuteRequest: A SetMuteRequest resource to be passed as the request
       body.
   """
@@ -5785,7 +6058,7 @@ class SecuritycenterProjectsSourcesFindingsSetStateRequest(_messages.Message):
     name: Required. The relative resource name of the finding. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/sources/{source_id}/finding
-      /{finding_id}".
+      s/{finding_id}".
     setFindingStateRequest: A SetFindingStateRequest resource to be passed as
       the request body.
   """

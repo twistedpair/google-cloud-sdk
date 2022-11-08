@@ -49,6 +49,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_SUBSCRIPTIONS = (
+      'organizations.locations.subscriptions',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'subscriptions/{subscriptionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
@@ -150,17 +161,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/insights/'
               '{insightsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_NETCONNECTIONS = (
-      'projects.locations.netConnections',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/netConnections/'
-              '{netConnectionsId}',
       },
       ['name'],
       True

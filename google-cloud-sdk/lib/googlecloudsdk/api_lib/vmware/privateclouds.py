@@ -45,35 +45,21 @@ class PrivateCloudsClient(util.VmwareClientBase):
              node_type=None,
              node_count=None,
              network_cidr=None,
-             network=None,
              vmware_engine_network_id=None,
-             network_project=None,
              node_custom_core_count=None):
     parent = resource.Parent().RelativeName()
     project = resource.Parent().Parent().Name()
     private_cloud_id = resource.Name()
     private_cloud = self.messages.PrivateCloud(description=description)
-    network_config = self.messages.NetworkConfig(managementCidr=network_cidr)
 
-    # old networking model
-    if network_project is None:
-      network_project = project
-
-    if network is not None:
-      if not network.startswith('project'):
-        network = 'projects/{}/global/networks/{}'.format(
-            network_project, network)
-
-      network_config.network = network
-
-    # new networking model
-    if vmware_engine_network_id is not None:
-      ven = self.networks_client.GetByID(project, vmware_engine_network_id)
-      network_config.vmwareEngineNetwork = ven.name
+    ven = self.networks_client.GetByID(project, vmware_engine_network_id)
+    network_config = self.messages.NetworkConfig(
+        managementCidr=network_cidr, vmwareEngineNetwork=ven.name)
 
     management_cluster = self.messages.ManagementCluster(
         clusterId=cluster_id, nodeCount=node_count,
         nodeTypeId=node_type, nodeCustomCoreCount=node_custom_core_count)
+
     private_cloud.managementCluster = management_cluster
     private_cloud.networkConfig = network_config
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsCreateRequest(

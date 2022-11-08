@@ -63,6 +63,8 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = (
             title='Metageneration', default=None),
         uniform_bucket_level_access=base.FieldDisplayTitleAndDefault(
             title='Bucket Policy Only enabled', default=None),
+        autoclass_enabled_time=base.FieldDisplayTitleAndDefault(
+            title='Autoclass', default=None),
         satisfies_pzs=base.FieldDisplayTitleAndDefault(
             title='Satisfies PZS', default=None),
         acl=base.FieldDisplayTitleAndDefault(
@@ -132,6 +134,8 @@ class GsutilFullResourceFormatter(base.FullResourceFormatter):
 
   def format_bucket(self, url, bucket_resource):
     """See super class."""
+    shim_format_util.replace_autoclass_value_with_prefixed_time(
+        bucket_resource, use_gsutil_time_style=True)
     shim_format_util.replace_time_values_with_gsutil_style_strings(
         bucket_resource)
     shim_format_util.replace_bucket_values_with_present_string(bucket_resource)

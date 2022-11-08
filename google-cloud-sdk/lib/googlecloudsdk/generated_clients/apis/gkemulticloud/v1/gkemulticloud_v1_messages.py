@@ -962,6 +962,9 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
       alphanumerics between.
     authorization: Optional. Configuration related to the cluster RBAC
       settings.
+    clusterRegion: Output only. The region where this cluster runs. For EKS
+      clusters, this is a AWS region. For AKS clusters, this is an Azure
+      region.
     createTime: Output only. The time at which this cluster was registered.
     description: Optional. A human readable description of this cluster.
       Cannot be longer than 255 UTF-8 encoded bytes.
@@ -1049,22 +1052,23 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   authorization = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClustersAuthorization', 2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  distribution = _messages.StringField(5)
-  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClusterError', 6, repeated=True)
-  etag = _messages.StringField(7)
-  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 8)
-  kubernetesVersion = _messages.StringField(9)
-  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 10)
-  name = _messages.StringField(11)
-  oidcConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedOidcConfig', 12)
-  platformVersion = _messages.StringField(13)
-  reconciling = _messages.BooleanField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 18)
+  clusterRegion = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  distribution = _messages.StringField(6)
+  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedClusterError', 7, repeated=True)
+  etag = _messages.StringField(8)
+  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 9)
+  kubernetesVersion = _messages.StringField(10)
+  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 11)
+  name = _messages.StringField(12)
+  oidcConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedOidcConfig', 13)
+  platformVersion = _messages.StringField(14)
+  reconciling = _messages.BooleanField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 19)
 
 
 class GoogleCloudGkemulticloudV1AttachedClusterError(_messages.Message):
@@ -1162,6 +1166,23 @@ class GoogleCloudGkemulticloudV1AwsAuthorization(_messages.Message):
   """
 
   adminUsers = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterUser', 1, repeated=True)
+
+
+class GoogleCloudGkemulticloudV1AwsAutoscalingGroupMetricsCollection(_messages.Message):
+  r"""Configuration related to CloudWatch metrics collection in an AWS Auto
+  Scaling group.
+
+  Fields:
+    granularity: Required. The frequency at which EC2 Auto Scaling sends
+      aggregated data to AWS CloudWatch. The only valid value is "1Minute".
+    metrics: Optional. The metrics to enable. For a list of valid metrics, see
+      https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_EnableMetri
+      csCollection.html. If you specify Granularity and don't specify any
+      metrics, all metrics are enabled.
+  """
+
+  granularity = _messages.StringField(1)
+  metrics = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
@@ -1519,6 +1540,9 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
       be up to 255 Unicode characters.
 
   Fields:
+    autoscalingMetricsCollection: Optional. Configuration related to
+      CloudWatch metrics collection on the Auto Scaling group of the node
+      pool. When unspecified, metrics collection is disabled.
     configEncryption: Required. Config encryption for user data.
     iamInstanceProfile: Required. The name or ARN of the AWS IAM role assigned
       to nodes in the pool.
@@ -1602,18 +1626,19 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  configEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AwsConfigEncryption', 1)
-  iamInstanceProfile = _messages.StringField(2)
-  imageType = _messages.StringField(3)
-  instancePlacement = _messages.MessageField('GoogleCloudGkemulticloudV1AwsInstancePlacement', 4)
-  instanceType = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsProxyConfig', 7)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 8)
-  securityGroupIds = _messages.StringField(9, repeated=True)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 10)
-  tags = _messages.MessageField('TagsValue', 11)
-  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 12, repeated=True)
+  autoscalingMetricsCollection = _messages.MessageField('GoogleCloudGkemulticloudV1AwsAutoscalingGroupMetricsCollection', 1)
+  configEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AwsConfigEncryption', 2)
+  iamInstanceProfile = _messages.StringField(3)
+  imageType = _messages.StringField(4)
+  instancePlacement = _messages.MessageField('GoogleCloudGkemulticloudV1AwsInstancePlacement', 5)
+  instanceType = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsProxyConfig', 8)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 9)
+  securityGroupIds = _messages.StringField(10, repeated=True)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 11)
+  tags = _messages.MessageField('TagsValue', 12)
+  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 13, repeated=True)
 
 
 class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):

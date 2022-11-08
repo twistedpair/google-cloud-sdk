@@ -144,6 +144,11 @@ class Cluster(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. State of the resource.
 
+  Messages:
+    NodeTypeConfigsValue: Required. The map of cluster node types in this
+      cluster, where the key is canonical identifier of the node type
+      (corresponds to the `NodeType`).
+
   Fields:
     createTime: Output only. Creation time of this resource.
     management: Output only. True if the cluster is a management cluster;
@@ -154,13 +159,16 @@ class Cluster(_messages.Message):
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-west1-a/privateClouds/my-
       cloud/clusters/my-cluster`
-    nodeCount: Required. Number of bare metal nodes in this cluster.
-    nodeCustomCoreCount: Optional. Customized number of cores available to
-      each node of the cluster. This number must always be one of
-      `NodeType.available_custom_core_counts`. If zero is provided max value
-      from `NodeType.available_custom_core_counts` will be used.
-    nodeTypeId: Required. The canonical identifier of node types (`NodeType`)
-      in this cluster. For example: standard-72.
+    nodeCount: Optional. Deprecated: Number of nodes in this cluster.
+    nodeCustomCoreCount: Optional. Deprecated: Customized number of cores
+      available to each node of the cluster. This number must always be one of
+      `nodeType.availableCustomCoreCounts`. If zero is provided max value from
+      `nodeType.availableCustomCoreCounts` will be used.
+    nodeTypeConfigs: Required. The map of cluster node types in this cluster,
+      where the key is canonical identifier of the node type (corresponds to
+      the `NodeType`).
+    nodeTypeId: Optional. Deprecated: The canonical identifier of node types
+      (`NodeType`) in this cluster. For example: standard-72.
     state: Output only. State of the resource.
     uid: Output only. System-generated unique identifier for the resource.
     updateTime: Output only. Last update time of this resource.
@@ -186,15 +194,42 @@ class Cluster(_messages.Message):
     DELETING = 4
     REPAIRING = 5
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NodeTypeConfigsValue(_messages.Message):
+    r"""Required. The map of cluster node types in this cluster, where the key
+    is canonical identifier of the node type (corresponds to the `NodeType`).
+
+    Messages:
+      AdditionalProperty: An additional property for a NodeTypeConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type NodeTypeConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NodeTypeConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A NodeTypeConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('NodeTypeConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   management = _messages.BooleanField(2)
   name = _messages.StringField(3)
   nodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   nodeCustomCoreCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  nodeTypeId = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  nodeTypeConfigs = _messages.MessageField('NodeTypeConfigsValue', 6)
+  nodeTypeId = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class Credentials(_messages.Message):
@@ -804,6 +839,11 @@ class Location(_messages.Message):
 class ManagementCluster(_messages.Message):
   r"""Management cluster configuration.
 
+  Messages:
+    NodeTypeConfigsValue: Required. The map of cluster node types in this
+      cluster, where the key is canonical identifier of the node type
+      (corresponds to the `NodeType`).
+
   Fields:
     clusterId: Required. The user-provided identifier of the new `Cluster`.
       The identifier must meet the following requirements: * Only contains
@@ -811,19 +851,49 @@ class ManagementCluster(_messages.Message):
       character * Ends with a non-hyphen character * Not formatted as a UUID *
       Complies with [RFC 1034](https://datatracker.ietf.org/doc/html/rfc1034)
       (section 3.5)
-    nodeCount: Required. Number of nodes in this cluster.
-    nodeCustomCoreCount: Optional. Customized number of cores available to
-      each node of the cluster. This number must always be one of
-      `NodeType.available_custom_core_counts`. If zero is provided max value
-      from `NodeType.available_custom_core_counts` will be used.
-    nodeTypeId: Required. The canonical identifier of node types (`NodeType`)
-      in this cluster. For example: standard-72.
+    nodeCount: Optional. Deprecated: Number of nodes in this cluster.
+    nodeCustomCoreCount: Optional. Deprecated: Customized number of cores
+      available to each node of the cluster. This number must always be one of
+      `nodeType.availableCustomCoreCounts`. If zero is provided max value from
+      `nodeType.availableCustomCoreCounts` will be used.
+    nodeTypeConfigs: Required. The map of cluster node types in this cluster,
+      where the key is canonical identifier of the node type (corresponds to
+      the `NodeType`).
+    nodeTypeId: Optional. Deprecated: The canonical identifier of node types
+      (`NodeType`) in this cluster. For example: standard-72.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NodeTypeConfigsValue(_messages.Message):
+    r"""Required. The map of cluster node types in this cluster, where the key
+    is canonical identifier of the node type (corresponds to the `NodeType`).
+
+    Messages:
+      AdditionalProperty: An additional property for a NodeTypeConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type NodeTypeConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NodeTypeConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A NodeTypeConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('NodeTypeConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   clusterId = _messages.StringField(1)
   nodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   nodeCustomCoreCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  nodeTypeId = _messages.StringField(4)
+  nodeTypeConfigs = _messages.MessageField('NodeTypeConfigsValue', 4)
+  nodeTypeId = _messages.StringField(5)
 
 
 class NetworkConfig(_messages.Message):
@@ -859,6 +929,9 @@ class NetworkConfig(_messages.Message):
       following form: `projects/{project}/locations/{location}/vmwareEngineNet
       works/{vmware_engine_network_id}` where `{project}` can either be a
       project number or a project ID.
+    vmwareEngineNetworkCanonical: Output only. The canonical name of the
+      VMware Engine network in the form: `projects/{project_number}/locations/
+      {location}/vmwareEngineNetworks/{vmware_engine_network_id}`
   """
 
   externalIpAccess = _messages.BooleanField(1)
@@ -867,6 +940,7 @@ class NetworkConfig(_messages.Message):
   network = _messages.StringField(4)
   serviceNetwork = _messages.StringField(5)
   vmwareEngineNetwork = _messages.StringField(6)
+  vmwareEngineNetworkCanonical = _messages.StringField(7)
 
 
 class NetworkPeering(_messages.Message):
@@ -949,6 +1023,8 @@ class NetworkPeering(_messages.Message):
         party services. Most third-party services require manual setup of
         reverse peering on the VPC network associated with the third-party
         service.
+      DELL_POWERSCALE: Peering connection used for connecting to Dell
+        PowerScale Filers
     """
     PEER_NETWORK_TYPE_UNSPECIFIED = 0
     STANDARD = 1
@@ -956,6 +1032,7 @@ class NetworkPeering(_messages.Message):
     PRIVATE_SERVICES_ACCESS = 3
     NETAPP_CLOUD_VOLUMES = 4
     THIRD_PARTY_SERVICE = 5
+    DELL_POWERSCALE = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the network peering. This field has a value of
@@ -1033,6 +1110,9 @@ class NetworkPolicy(_messages.Message):
       Engine network. Specify the name in the following form: `projects/{proje
       ct}/locations/{location}/vmwareEngineNetworks/{vmware_engine_network_id}
       ` where `{project}` can either be a project number or a project ID.
+    vmwareEngineNetworkCanonical: Output only. The canonical name of the
+      VMware Engine network in the form: `projects/{project_number}/locations/
+      {location}/vmwareEngineNetworks/{vmware_engine_network_id}`
   """
 
   createTime = _messages.StringField(1)
@@ -1045,6 +1125,7 @@ class NetworkPolicy(_messages.Message):
   uid = _messages.StringField(8)
   updateTime = _messages.StringField(9)
   vmwareEngineNetwork = _messages.StringField(10)
+  vmwareEngineNetworkCanonical = _messages.StringField(11)
 
 
 class NetworkService(_messages.Message):
@@ -1115,6 +1196,22 @@ class NodeType(_messages.Message):
   nodeTypeId = _messages.StringField(6)
   totalCoreCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   virtualCpuCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+
+
+class NodeTypeConfig(_messages.Message):
+  r"""Information about the type and number of nodes associated with the
+  cluster.
+
+  Fields:
+    customCoreCount: Optional. Customized number of cores available to each
+      node of the type. This number must always be one of
+      `nodeType.availableCustomCoreCounts`. If zero is provided max value from
+      `nodeType.availableCustomCoreCounts` will be used.
+    nodeCount: Required. The number of nodes of this type in the cluster
+  """
+
+  customCoreCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  nodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class Nsx(_messages.Message):
@@ -1683,9 +1780,8 @@ class Status(_messages.Message):
 
 
 class Subnet(_messages.Message):
-  r"""Subnet in a private cloud. Either management subnets (e.g. vMotion) that
-  are read-only or NSX-T segments that can also be created/updated/deleted.
-  NSX-T segments can be used to connect workload VMs to.
+  r"""Subnet in a private cloud. Either `management` subnets (such as vMotion)
+  that are read-only, or `userDefined`, which can also be updated.
 
   Enums:
     StateValueValuesEnum: Output only. The state of the resource.
@@ -1719,7 +1815,8 @@ class Subnet(_messages.Message):
     standardConfig: Output only. Whether the NSX-T configuration in the
       backend follows the standard configuration supported by Google Cloud. If
       false, the subnet cannot be modified through Google Cloud, only through
-      NSX-T directly.
+      NSX-T directly. Note: This field defaults to `false` until NSX-T
+      segments are not supported.
     state: Output only. The state of the resource.
     type: Output only. The type of the subnet. For example "management" or
       "userDefined".
@@ -2467,32 +2564,6 @@ class VmwareengineProjectsLocationsNetworkPoliciesPatchRequest(_messages.Message
   updateMask = _messages.StringField(4)
 
 
-class VmwareengineProjectsLocationsNodeTypesGetIamPolicyRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsNodeTypesGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class VmwareengineProjectsLocationsNodeTypesGetRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsNodeTypesGetRequest object.
 
@@ -2539,39 +2610,6 @@ class VmwareengineProjectsLocationsNodeTypesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
-
-
-class VmwareengineProjectsLocationsNodeTypesSetIamPolicyRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsNodeTypesSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class VmwareengineProjectsLocationsNodeTypesTestIamPermissionsRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsNodeTypesTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class VmwareengineProjectsLocationsOperationsDeleteRequest(_messages.Message):
@@ -3155,7 +3193,7 @@ class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysListRequest(_me
   object.
 
   Fields:
-    pageSize: The maximum number of autoscale policies to return in one page.
+    pageSize: The maximum number of HCX activation keys to return in one page.
       The service may return fewer than this value. The maximum value is
       coerced to 1000. The default value of this field is 500.
     pageToken: A page token, received from a previous `ListHcxActivationKeys`

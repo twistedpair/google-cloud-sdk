@@ -1168,6 +1168,8 @@ class Instance(_messages.Message):
         and may be unusable during this time.
       SUSPENDED: The instance is suspended. You can get further details from
         the `suspension_reasons` field of the `Instance` resource.
+      SUSPENDING: The instance is in the process of becoming suspended.
+      RESUMING: The instance is in the process of becoming active.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1177,6 +1179,8 @@ class Instance(_messages.Message):
     ERROR = 5
     RESTORING = 6
     SUSPENDED = 7
+    SUSPENDING = 8
+    RESUMING = 9
 
   class SuspensionReasonsValueListEntryValuesEnum(_messages.Enum):
     r"""SuspensionReasonsValueListEntryValuesEnum enum type.

@@ -256,7 +256,9 @@
             "The instance is experiencing an issue and might be unusable. You can get further details from the `statusMessage` field of the `Instance` resource.",
             "The instance is restoring a snapshot or backup to an existing file share and may be unusable during this time.",
             "The instance is suspended. You can get further details from the `suspension_reasons` field of the `Instance` resource.",
-            "The instance is reverting to a snapshot."
+            "The instance is reverting to a snapshot.",
+            "The instance is in the process of becoming suspended.",
+            "The instance is in the process of becoming active."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -267,7 +269,9 @@
             "ERROR",
             "RESTORING",
             "SUSPENDED",
-            "REVERTING"
+            "REVERTING",
+            "SUSPENDING",
+            "RESUMING"
           ]
         },
         "statusMessage": {

@@ -495,7 +495,7 @@ def CreateRateLimitOptions(client, args, support_fairshare):
   if args.IsSpecified('enforce_on_key'):
     rate_limit_options.enforceOnKey = (
         messages.SecurityPolicyRuleRateLimitOptions.EnforceOnKeyValueValuesEnum(
-            _ConvertEnforceOnKey(args.enforce_on_key)))
+            ConvertEnforceOnKey(args.enforce_on_key)))
     is_updated = True
   if args.IsSpecified('enforce_on_key_name'):
     rate_limit_options.enforceOnKeyName = args.enforce_on_key_name
@@ -543,14 +543,17 @@ def _ConvertExceedAction(action):
   }.get(action, action)
 
 
-def _ConvertEnforceOnKey(enforce_on_key):
+def ConvertEnforceOnKey(enforce_on_key):
   return {
       'ip': 'IP',
       'all-ips': 'ALL_IPS',
       'all': 'ALL',
       'http-header': 'HTTP_HEADER',
       'xff-ip': 'XFF_IP',
-      'http-cookie': 'HTTP_COOKIE'
+      'http-cookie': 'HTTP_COOKIE',
+      'http-path': 'HTTP_PATH',
+      'sni': 'SNI',
+      'region-code': 'REGION_CODE'
   }.get(enforce_on_key, enforce_on_key)
 
 

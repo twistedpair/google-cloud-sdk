@@ -655,20 +655,18 @@ class GoogleCloudRecaptchaenterpriseV1ScoreMetrics(_messages.Message):
   Messages:
     ActionMetricsValue: Action-based metrics. The map key is the action name
       which specified by the site owners at time of the "execute" client-side
-      call. Populated only for SCORE keys.
+      call.
 
   Fields:
     actionMetrics: Action-based metrics. The map key is the action name which
       specified by the site owners at time of the "execute" client-side call.
-      Populated only for SCORE keys.
     overallMetrics: Aggregated score metrics for all traffic.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ActionMetricsValue(_messages.Message):
     r"""Action-based metrics. The map key is the action name which specified
-    by the site owners at time of the "execute" client-side call. Populated
-    only for SCORE keys.
+    by the site owners at time of the "execute" client-side call.
 
     Messages:
       AdditionalProperty: An additional property for a ActionMetricsValue
@@ -779,10 +777,14 @@ class GoogleCloudRecaptchaenterpriseV1TokenProperties(_messages.Message):
 
   Fields:
     action: Action name provided at token generation.
+    androidPackageName: The name of the Android package with which the token
+      was generated (Android keys only).
     createTime: The timestamp corresponding to the generation of the token.
     hostname: The hostname of the page on which the token was generated (Web
       keys only).
     invalidReason: Reason associated with the response when valid = false.
+    iosBundleId: The ID of the iOS bundle with which the token was generated
+      (iOS keys only).
     valid: Whether the provided user response token is valid. When valid =
       false, the reason could be specified in invalid_reason or it could also
       be due to a user failing to solve a challenge or a sitekey mismatch (i.e
@@ -812,10 +814,12 @@ class GoogleCloudRecaptchaenterpriseV1TokenProperties(_messages.Message):
     BROWSER_ERROR = 6
 
   action = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  hostname = _messages.StringField(3)
-  invalidReason = _messages.EnumField('InvalidReasonValueValuesEnum', 4)
-  valid = _messages.BooleanField(5)
+  androidPackageName = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  hostname = _messages.StringField(4)
+  invalidReason = _messages.EnumField('InvalidReasonValueValuesEnum', 5)
+  iosBundleId = _messages.StringField(6)
+  valid = _messages.BooleanField(7)
 
 
 class GoogleCloudRecaptchaenterpriseV1WafSettings(_messages.Message):

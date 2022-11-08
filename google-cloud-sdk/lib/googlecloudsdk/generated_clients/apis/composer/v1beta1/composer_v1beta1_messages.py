@@ -199,6 +199,21 @@ class ComposerProjectsLocationsEnvironmentsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ComposerProjectsLocationsEnvironmentsExecuteAirflowCommandRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsExecuteAirflowCommandRequest
+  object.
+
+  Fields:
+    environment: The resource name of the environment in the form: "projects/{
+      projectId}/locations/{locationId}/environments/{environmentId}".
+    executeAirflowCommandRequest: A ExecuteAirflowCommandRequest resource to
+      be passed as the request body.
+  """
+
+  environment = _messages.StringField(1, required=True)
+  executeAirflowCommandRequest = _messages.MessageField('ExecuteAirflowCommandRequest', 2)
+
+
 class ComposerProjectsLocationsEnvironmentsGetRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsGetRequest object.
 
@@ -350,6 +365,21 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
   environment = _messages.MessageField('Environment', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class ComposerProjectsLocationsEnvironmentsPollAirflowCommandRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsPollAirflowCommandRequest object.
+
+  Fields:
+    environment: The resource name of the environment in the form:
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
+    pollAirflowCommandRequest: A PollAirflowCommandRequest resource to be
+      passed as the request body.
+  """
+
+  environment = _messages.StringField(1, required=True)
+  pollAirflowCommandRequest = _messages.MessageField('PollAirflowCommandRequest', 2)
 
 
 class ComposerProjectsLocationsEnvironmentsRestartWebServerRequest(_messages.Message):
@@ -762,6 +792,51 @@ class EnvironmentConfig(_messages.Message):
   workloadsConfig = _messages.MessageField('WorkloadsConfig', 17)
 
 
+class ExecuteAirflowCommandRequest(_messages.Message):
+  r"""Execute Airflow Command request.
+
+  Fields:
+    command: Airflow command.
+    parameters: Parameters for the Airflow command/subcommand as an array of
+      arguments. It may contain positional arguments like `["my-dag-id"]`,
+      key-value parameters like `["--foo=bar"]` or `["--foo","bar"]`, or other
+      flags like `["-f"]`.
+    subcommand: Airflow subcommand.
+  """
+
+  command = _messages.StringField(1)
+  parameters = _messages.StringField(2, repeated=True)
+  subcommand = _messages.StringField(3)
+
+
+class ExecuteAirflowCommandResponse(_messages.Message):
+  r"""Response to ExecuteAirflowCommandRequest.
+
+  Fields:
+    error: Error message. Empty if there was no error.
+    executionId: The unique ID of the command execution for polling.
+    pod: The name of the pod where the command is executed.
+    podNamespace: The namespace of the pod where the command is executed.
+  """
+
+  error = _messages.StringField(1)
+  executionId = _messages.StringField(2)
+  pod = _messages.StringField(3)
+  podNamespace = _messages.StringField(4)
+
+
+class ExitInfo(_messages.Message):
+  r"""Information about how a command ended.
+
+  Fields:
+    error: Error message. Empty if there was no error.
+    exitCode: The exit code from the command execution.
+  """
+
+  error = _messages.StringField(1)
+  exitCode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class IPAllocationPolicy(_messages.Message):
   r"""Configuration for controlling how IPs are allocated in the GKE cluster.
 
@@ -836,6 +911,18 @@ class ImageVersion(_messages.Message):
   releaseDate = _messages.MessageField('Date', 4)
   supportedPythonVersions = _messages.StringField(5, repeated=True)
   upgradeDisabled = _messages.BooleanField(6)
+
+
+class Line(_messages.Message):
+  r"""Contains information about a single line from logs.
+
+  Fields:
+    content: Text content of the log line.
+    lineNumber: Number of the line.
+  """
+
+  content = _messages.StringField(1)
+  lineNumber = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class ListEnvironmentsResponse(_messages.Message):
@@ -1255,6 +1342,38 @@ class OperationMetadata(_messages.Message):
   resource = _messages.StringField(4)
   resourceUuid = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class PollAirflowCommandRequest(_messages.Message):
+  r"""Poll Airflow Command request.
+
+  Fields:
+    executionId: The unique ID of the command execution.
+    nextLineNumber: Line number from which new logs should be fetched.
+    pod: The name of the pod where the command is executed.
+    podNamespace: The namespace of the pod where the command is executed.
+  """
+
+  executionId = _messages.StringField(1)
+  nextLineNumber = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pod = _messages.StringField(3)
+  podNamespace = _messages.StringField(4)
+
+
+class PollAirflowCommandResponse(_messages.Message):
+  r"""Response to PollAirflowCommandRequest.
+
+  Fields:
+    exitInfo: The result exit status of the command.
+    output: Output from the command execution. It may not contain the full
+      output and the caller may need to poll for more lines.
+    outputEnd: Whether the command execution has finished and there is no more
+      output.
+  """
+
+  exitInfo = _messages.MessageField('ExitInfo', 1)
+  output = _messages.MessageField('Line', 2, repeated=True)
+  outputEnd = _messages.BooleanField(3)
 
 
 class PrivateClusterConfig(_messages.Message):

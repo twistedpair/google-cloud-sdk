@@ -42,7 +42,6 @@ class ContaineranalysisV1beta1(base_api.BaseApiClient):
     self.projects_notes_occurrences = self.ProjectsNotesOccurrencesService(self)
     self.projects_notes = self.ProjectsNotesService(self)
     self.projects_occurrences = self.ProjectsOccurrencesService(self)
-    self.projects_scanConfigs = self.ProjectsScanConfigsService(self)
     self.projects = self.ProjectsService(self)
 
   class ProjectsNotesOccurrencesService(base_api.BaseApiService):
@@ -639,97 +638,6 @@ class ContaineranalysisV1beta1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsScanConfigsService(base_api.BaseApiService):
-    """Service class for the projects_scanConfigs resource."""
-
-    _NAME = 'projects_scanConfigs'
-
-    def __init__(self, client):
-      super(ContaineranalysisV1beta1.ProjectsScanConfigsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Gets the specified scan configuration.
-
-      Args:
-        request: (ContaineranalysisProjectsScanConfigsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ScanConfig) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/scanConfigs/{scanConfigsId}',
-        http_method='GET',
-        method_id='containeranalysis.projects.scanConfigs.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='ContaineranalysisProjectsScanConfigsGetRequest',
-        response_type_name='ScanConfig',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists scan configurations for the specified project.
-
-      Args:
-        request: (ContaineranalysisProjectsScanConfigsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListScanConfigsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/scanConfigs',
-        http_method='GET',
-        method_id='containeranalysis.projects.scanConfigs.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1beta1/{+parent}/scanConfigs',
-        request_field='',
-        request_type_name='ContaineranalysisProjectsScanConfigsListRequest',
-        response_type_name='ListScanConfigsResponse',
-        supports_download=False,
-    )
-
-    def Update(self, request, global_params=None):
-      r"""Updates the specified scan configuration.
-
-      Args:
-        request: (ScanConfig) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ScanConfig) The response message.
-      """
-      config = self.GetMethodConfig('Update')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/scanConfigs/{scanConfigsId}',
-        http_method='PUT',
-        method_id='containeranalysis.projects.scanConfigs.update',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta1/{+name}',
-        request_field='<request>',
-        request_type_name='ScanConfig',
-        response_type_name='ScanConfig',
         supports_download=False,
     )
 

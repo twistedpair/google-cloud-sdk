@@ -1449,6 +1449,10 @@ class CryptoKeyVersion(_messages.Message):
       EC_SIGN_SECP256K1_SHA256: ECDSA on the non-NIST secp256k1 curve. This
         curve is only supported for HSM protection level.
       HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
+      HMAC_SHA1: HMAC-SHA1 signing with a 160 bit key.
+      HMAC_SHA384: HMAC-SHA384 signing with a 384 bit key.
+      HMAC_SHA512: HMAC-SHA512 signing with a 512 bit key.
+      HMAC_SHA224: HMAC-SHA224 signing with a 224 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
     """
@@ -1476,7 +1480,11 @@ class CryptoKeyVersion(_messages.Message):
     EC_SIGN_P384_SHA384 = 21
     EC_SIGN_SECP256K1_SHA256 = 22
     HMAC_SHA256 = 23
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 24
+    HMAC_SHA1 = 24
+    HMAC_SHA384 = 25
+    HMAC_SHA512 = 26
+    HMAC_SHA224 = 27
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 28
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""Output only. The ProtectionLevel describing how crypto operations are
@@ -1615,6 +1623,10 @@ class CryptoKeyVersionTemplate(_messages.Message):
       EC_SIGN_SECP256K1_SHA256: ECDSA on the non-NIST secp256k1 curve. This
         curve is only supported for HSM protection level.
       HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
+      HMAC_SHA1: HMAC-SHA1 signing with a 160 bit key.
+      HMAC_SHA384: HMAC-SHA384 signing with a 384 bit key.
+      HMAC_SHA512: HMAC-SHA512 signing with a 512 bit key.
+      HMAC_SHA224: HMAC-SHA224 signing with a 224 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
     """
@@ -1642,7 +1654,11 @@ class CryptoKeyVersionTemplate(_messages.Message):
     EC_SIGN_P384_SHA384 = 21
     EC_SIGN_SECP256K1_SHA256 = 22
     HMAC_SHA256 = 23
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 24
+    HMAC_SHA1 = 24
+    HMAC_SHA384 = 25
+    HMAC_SHA512 = 26
+    HMAC_SHA224 = 27
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 28
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""ProtectionLevel to use when creating a CryptoKeyVersion based on this
@@ -1786,9 +1802,7 @@ class EkmConnection(_messages.Message):
 
   Fields:
     createTime: Output only. The time at which the EkmConnection was created.
-    etag: Optional. This checksum is computed by the server based on the value
-      of other fields, and may be sent on update requests to ensure the client
-      has an up-to-date value before proceeding.
+    etag: Optional. Etag of the currently stored EkmConnection.
     name: Output only. The resource name for the EkmConnection in the format
       `projects/*/locations/*/ekmConnections/*`.
     serviceResolvers: A list of ServiceResolvers where the EKM can be reached.
@@ -2118,6 +2132,10 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
       EC_SIGN_SECP256K1_SHA256: ECDSA on the non-NIST secp256k1 curve. This
         curve is only supported for HSM protection level.
       HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
+      HMAC_SHA1: HMAC-SHA1 signing with a 160 bit key.
+      HMAC_SHA384: HMAC-SHA384 signing with a 384 bit key.
+      HMAC_SHA512: HMAC-SHA512 signing with a 512 bit key.
+      HMAC_SHA224: HMAC-SHA224 signing with a 224 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
     """
@@ -2145,7 +2163,11 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     EC_SIGN_P384_SHA384 = 21
     EC_SIGN_SECP256K1_SHA256 = 22
     HMAC_SHA256 = 23
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 24
+    HMAC_SHA1 = 24
+    HMAC_SHA384 = 25
+    HMAC_SHA512 = 26
+    HMAC_SHA224 = 27
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 28
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   cryptoKeyVersion = _messages.StringField(2)
@@ -2875,6 +2897,10 @@ class PublicKey(_messages.Message):
       EC_SIGN_SECP256K1_SHA256: ECDSA on the non-NIST secp256k1 curve. This
         curve is only supported for HSM protection level.
       HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
+      HMAC_SHA1: HMAC-SHA1 signing with a 160 bit key.
+      HMAC_SHA384: HMAC-SHA384 signing with a 384 bit key.
+      HMAC_SHA512: HMAC-SHA512 signing with a 512 bit key.
+      HMAC_SHA224: HMAC-SHA224 signing with a 224 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
     """
@@ -2902,7 +2928,11 @@ class PublicKey(_messages.Message):
     EC_SIGN_P384_SHA384 = 21
     EC_SIGN_SECP256K1_SHA256 = 22
     HMAC_SHA256 = 23
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 24
+    HMAC_SHA1 = 24
+    HMAC_SHA384 = 25
+    HMAC_SHA512 = 26
+    HMAC_SHA224 = 27
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 28
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""The ProtectionLevel of the CryptoKeyVersion public key.

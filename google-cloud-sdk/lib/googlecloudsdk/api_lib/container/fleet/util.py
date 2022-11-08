@@ -198,13 +198,45 @@ def RBACRoleBindingResourceName(project,
       api_version=VERSION_MAP[release_track]).RelativeName()
 
 
-def WorkspaceResourceName(project,
-                          workspace,
-                          location='global'):
+def MembershipBindingResourceName(project,
+                                  name,
+                                  membership,
+                                  location='global',
+                                  release_track=base.ReleaseTrack.ALPHA):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Parse(
+      line=None,
+      params={
+          'projectsId': project,
+          'locationsId': location,
+          'membershipsId': membership,
+          'bindingsId': name,
+      },
+      collection='gkehub.projects.locations.memberships.bindings',
+      api_version=VERSION_MAP[release_track]).RelativeName()
+
+
+def MembershipBindingParentName(project,
+                                membership,
+                                location='global',
+                                release_track=base.ReleaseTrack.ALPHA):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Parse(
+      line=None,
+      params={
+          'projectsId': project,
+          'locationsId': location,
+          'membershipsId': membership,
+      },
+      collection='gkehub.projects.locations.memberships',
+      api_version=VERSION_MAP[release_track]).RelativeName()
+
+
+def ScopeResourceName(project, scope, location='global'):
   # See command_lib/container/fleet/resources.yaml
   return resources.REGISTRY.Create(
-      'gkehub.projects.locations.workspaces',
+      'gkehub.projects.locations.scopes',
       projectsId=project,
       locationsId=location,
-      workspacesId=workspace,
+      scopesId=scope,
   ).RelativeName()

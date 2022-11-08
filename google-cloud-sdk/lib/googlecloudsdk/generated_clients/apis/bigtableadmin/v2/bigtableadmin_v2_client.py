@@ -1077,7 +1077,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     )
 
     def Restore(self, request, global_params=None):
-      r"""Create a new table by restoring from a completed backup. The new table must be in the same project as the instance containing the backup. The returned table long-running operation can be used to track the progress of the operation, and to cancel it. The metadata field type is RestoreTableMetadata. The response type is Table, if successful.
+      r"""Create a new table by restoring from a completed backup. The returned table long-running operation can be used to track the progress of the operation, and to cancel it. The metadata field type is RestoreTableMetadata. The response type is Table, if successful.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesRestoreRequest) input message

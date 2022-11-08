@@ -15,7 +15,8 @@ package = 'batch'
 
 
 class Accelerator(_messages.Message):
-  r"""Accelerator describes Compute Engine accelerators to be attached to VMs.
+  r"""Accelerator describes Compute Engine accelerators to be attached to the
+  VM.
 
   Fields:
     count: The number of accelerators of this type.
@@ -66,6 +67,7 @@ class AllocationPolicy(_messages.Message):
     location: Location where compute resources should be allocated for the
       Job.
     network: The network policy.
+    serviceAccount: Service account that VMs will run as.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -101,11 +103,12 @@ class AllocationPolicy(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   location = _messages.MessageField('LocationPolicy', 3)
   network = _messages.MessageField('NetworkPolicy', 4)
+  serviceAccount = _messages.MessageField('ServiceAccount', 5)
 
 
 class AttachedDisk(_messages.Message):
-  r"""A new or an existing persistent disk or a local ssd attached to a VM
-  instance.
+  r"""A new or an existing persistent disk (PD) or a local ssd attached to a
+  VM instance.
 
   Fields:
     deviceName: Device name that the guest operating system will see. It is
@@ -211,11 +214,12 @@ class BatchProjectsLocationsJobsCreateRequest(_messages.Message):
   Fields:
     job: A Job resource to be passed as the request body.
     jobId: ID used to uniquely identify the Job within its parent scope. This
-      field should contain at most 63 characters. Only alphanumeric characters
-      or '-' are accepted. The '-' character cannot be the first or the last
-      one. A system generated ID will be used if the field is not set. The
-      job.name field in the request will be ignored and the created resource
-      name of the Job will be "{parent}/jobs/{job_id}".
+      field should contain at most 63 characters and must start with lowercase
+      characters. Only lowercase characters, numbers and '-' are accepted. The
+      '-' character cannot be the first or the last one. A system generated ID
+      will be used if the field is not set. The job.name field in the request
+      will be ignored and the created resource name of the Job will be
+      "{parent}/jobs/{job_id}".
     parent: Required. The parent resource name where the Job will be created.
       Pattern: "projects/{project}/locations/{location}"
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -394,64 +398,6 @@ class BatchProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class BatchProjectsLocationsNodesGetIamPolicyRequest(_messages.Message):
-  r"""A BatchProjectsLocationsNodesGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class BatchProjectsLocationsNodesSetIamPolicyRequest(_messages.Message):
-  r"""A BatchProjectsLocationsNodesSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class BatchProjectsLocationsNodesTestIamPermissionsRequest(_messages.Message):
-  r"""A BatchProjectsLocationsNodesTestIamPermissionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
 class BatchProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A BatchProjectsLocationsOperationsCancelRequest object.
 
@@ -499,64 +445,6 @@ class BatchProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-
-
-class BatchProjectsLocationsTasksGetIamPolicyRequest(_messages.Message):
-  r"""A BatchProjectsLocationsTasksGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class BatchProjectsLocationsTasksSetIamPolicyRequest(_messages.Message):
-  r"""A BatchProjectsLocationsTasksSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class BatchProjectsLocationsTasksTestIamPermissionsRequest(_messages.Message):
-  r"""A BatchProjectsLocationsTasksTestIamPermissionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class Binding(_messages.Message):
@@ -783,7 +671,7 @@ class Expr(_messages.Message):
 
 
 class GCS(_messages.Message):
-  r"""Represents a Google Cloud Storage volume source config.
+  r"""Represents a Google Cloud Storage volume.
 
   Fields:
     remotePath: Remote path, either a bucket name or a subdirectory of a
@@ -801,11 +689,9 @@ class InstancePolicy(_messages.Message):
     ProvisioningModelValueValuesEnum: The provisioning model.
 
   Fields:
-    accelerators: The accelerators attached to each VM instance. Not yet
-      implemented.
+    accelerators: The accelerators attached to each VM instance.
     disks: Non-boot disks to be attached for each VM created by this
-      InstancePolicy. New disks will be deleted when the attached VM is
-      deleted.
+      InstancePolicy. New disks will be deleted when the VM is deleted.
     machineType: The Compute Engine machine type.
     minCpuPlatform: The minimum CPU platform. See
       `https://cloud.google.com/compute/docs/instances/specify-min-cpu-
@@ -1354,11 +1240,11 @@ class Message(_messages.Message):
 
 
 class NFS(_messages.Message):
-  r"""Represents an NFS server and remote path: :
+  r"""Represents an NFS volume.
 
   Fields:
-    remotePath: Remote source path exported from NFS, e.g., "/share".
-    server: URI of the NFS server, e.g. an IP address.
+    remotePath: Remote source path exported from the NFS, e.g., "/share".
+    server: The IP address of the NFS.
   """
 
   remotePath = _messages.StringField(1)
@@ -1654,6 +1540,19 @@ class Script(_messages.Message):
 
   path = _messages.StringField(1)
   text = _messages.StringField(2)
+
+
+class ServiceAccount(_messages.Message):
+  r"""Carries information about a Google Cloud service account.
+
+  Fields:
+    email: Email address of the service account. If not specified, the default
+      Compute Engine service account for the project will be used. If instance
+      template is being used, the service account has to be specified in the
+      instance template and it has to match the email field here.
+  """
+
+  email = _messages.StringField(1)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2043,21 +1942,28 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class Volume(_messages.Message):
-  r"""Volume and mount parameters to be associated with a TaskSpec. A TaskSpec
-  might describe zero, one, or multiple volumes to be mounted as part of the
-  task.
+  r"""Volume describes a volume and parameters for it to be mounted to a VM.
 
   Fields:
-    deviceName: Device name of an attached disk
-    gcs: A Google Cloud Storage source for the volume.
-    mountOptions: Mount options For Google Cloud Storage, mount options are
-      the global options supported by gcsfuse tool. Batch will use them to
-      mount the volume with the following command: "gcsfuse [global options]
-      bucket mountpoint". For PD, NFS, mount options are these supported by
-      /etc/fstab. Batch will use Fstab to mount such volumes.
-      https://help.ubuntu.com/community/Fstab
-    mountPath: Mount path for the volume, e.g. /mnt/share
-    nfs: An NFS source for the volume (could be a Filestore, for example).
+    deviceName: Device name of an attached disk volume, which should align
+      with a device_name specified by
+      job.allocation_policy.instances[0].policy.disks[i].device_name or
+      defined by the given instance template in
+      job.allocation_policy.instances[0].instance_template.
+    gcs: A Google Cloud Storage (GCS) volume.
+    mountOptions: For Google Cloud Storage (GCS), mount options are the
+      options supported by the gcsfuse tool
+      (https://github.com/GoogleCloudPlatform/gcsfuse). For existing
+      persistent disks, mount options provided by the mount command
+      (https://man7.org/linux/man-pages/man8/mount.8.html) except writing are
+      supported. This is due to restrictions of multi-writer mode
+      (https://cloud.google.com/compute/docs/disks/sharing-disks-between-vms).
+      For other attached disks and Network File System (NFS), mount options
+      are these supported by the mount command (https://man7.org/linux/man-
+      pages/man8/mount.8.html).
+    mountPath: The mount path for the volume, e.g. /mnt/disks/share.
+    nfs: A Network File System (NFS) volume. For example, a Filestore file
+      share.
   """
 
   deviceName = _messages.StringField(1)

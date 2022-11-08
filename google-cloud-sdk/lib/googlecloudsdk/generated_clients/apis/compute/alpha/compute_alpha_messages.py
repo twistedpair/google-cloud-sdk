@@ -15197,13 +15197,16 @@ class ComputeInstancesSimulateMaintenanceEventRequest(_messages.Message):
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       ( 00000000-0000-0000-0000-000000000000).
+    withExtendedNotifications: Determines whether the customers receive
+      notifications before migration. Only applicable to SF vms.
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
-  zone = _messages.StringField(4, required=True)
+  withExtendedNotifications = _messages.BooleanField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesStartRequest(_messages.Message):
@@ -65763,9 +65766,11 @@ class ResourcePolicyGroupPlacementPolicy(_messages.Message):
       they are not in the same low latency network.
     collocation: Specifies network collocation
     locality: Specifies network locality
+    maxDistance: Specifies the number of max logical switches.
     scope: Scope specifies the availability domain to which the VMs should be
       spread.
     style: Specifies instances to hosts placement relationship
+    tpuTopology: Specifies the shape of the TPU slice
     vmCount: Number of VMs in this placement group. Google does not recommend
       that you use this field unless you use a compact policy and you want
       your policy to work only if it contains this exact number of VMs.
@@ -65824,9 +65829,11 @@ class ResourcePolicyGroupPlacementPolicy(_messages.Message):
   availabilityDomainCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   collocation = _messages.EnumField('CollocationValueValuesEnum', 2)
   locality = _messages.EnumField('LocalityValueValuesEnum', 3)
-  scope = _messages.EnumField('ScopeValueValuesEnum', 4)
-  style = _messages.EnumField('StyleValueValuesEnum', 5)
-  vmCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  maxDistance = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 5)
+  style = _messages.EnumField('StyleValueValuesEnum', 6)
+  tpuTopology = _messages.StringField(7)
+  vmCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
 class ResourcePolicyHourlyCycle(_messages.Message):
@@ -71035,12 +71042,14 @@ class ServiceAttachmentConsumerProjectLimit(_messages.Message):
 
   Fields:
     connectionLimit: The value of the limit to set.
+    networkUrl: The network URL for the network to set the limit for.
     projectIdOrNum: The project id or number for the project to set the limit
       for.
   """
 
   connectionLimit = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
-  projectIdOrNum = _messages.StringField(2)
+  networkUrl = _messages.StringField(2)
+  projectIdOrNum = _messages.StringField(3)
 
 
 class ServiceAttachmentList(_messages.Message):

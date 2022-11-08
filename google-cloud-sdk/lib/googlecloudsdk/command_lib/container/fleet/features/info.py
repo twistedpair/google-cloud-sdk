@@ -66,6 +66,12 @@ _INFO = {
             api='clouddeploy.googleapis.com',
             cmd_group='deploy',
         ),
+    'clusterupgrade':
+        Info(
+            display_name='Cluster Upgrade',
+            api='gkehub.googleapis.com',
+            cmd_group='scopes',
+        ),
     'configmanagement':
         Info(
             display_name='Config Management',

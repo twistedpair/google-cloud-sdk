@@ -249,6 +249,14 @@
           "description": "The hostname of the page on which the token was generated (Web keys only).",
           "type": "string"
         },
+        "androidPackageName": {
+          "description": "The name of the Android package with which the token was generated (Android keys only).",
+          "type": "string"
+        },
+        "iosBundleId": {
+          "description": "The ID of the iOS bundle with which the token was generated (iOS keys only).",
+          "type": "string"
+        },
         "action": {
           "description": "Action name provided at token generation.",
           "type": "string"
@@ -675,7 +683,7 @@
           "$ref": "GoogleCloudRecaptchaenterpriseV1ScoreDistribution"
         },
         "actionMetrics": {
-          "description": "Action-based metrics. The map key is the action name which specified by the site owners at time of the \"execute\" client-side call. Populated only for SCORE keys.",
+          "description": "Action-based metrics. The map key is the action name which specified by the site owners at time of the \"execute\" client-side call.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudRecaptchaenterpriseV1ScoreDistribution"

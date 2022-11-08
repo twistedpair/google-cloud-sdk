@@ -18,34 +18,57 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.util import apis
+from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.command_lib.container.vmware import flags
 from googlecloudsdk.core import resources
 
+MAX_LRO_POLL_INTERVAL_MS = 10000  # 10 seconds
 
-class OperationsClient(object):
+MAX_LRO_WAIT_MS = 7200000  # 2 hours
+
+
+class OperationsClient(client.ClientBase):
   """Client for operations in Anthos GKE On-Prem API resources."""
 
-  def __init__(self, client=None):
-    self.client = client or apis.GetClientInstance('gkeonprem', 'v1')
-    self._service = self.client.projects_locations_operations
+  def __init__(self, **kwargs):
+    super(OperationsClient, self).__init__(**kwargs)
+    self._service = self._client.projects_locations_operations
 
-  def Wait(self, operation):
+  def Wait(self, operation=None, operation_ref=None):
     """Waits for an LRO to complete.
 
     Args:
       operation: object, operation to wait for.
+      operation_ref: operation resource argument reference.
 
     Returns:
       The GetOperation API response after the operation completes.
     """
-    operation_ref = resources.REGISTRY.ParseRelativeName(
-        operation.name,
-        collection='gkeonprem.projects.locations.operations',
-    )
+    if operation:
+      operation_ref = resources.REGISTRY.ParseRelativeName(
+          operation.name,
+          collection='gkeonprem.projects.locations.operations',
+      )
 
     return waiter.WaitFor(
         waiter.CloudOperationPollerNoResources(self._service),
         operation_ref,
-        'Waiting for operation [{}] to complete'.format(operation.name),
+        'Waiting for operation [{}] to complete'.format(
+            operation_ref.RelativeName()),
+        wait_ceiling_ms=MAX_LRO_POLL_INTERVAL_MS,
+        max_wait_ms=MAX_LRO_WAIT_MS)
+
+  def List(self, args):
+    """List operations."""
+    list_req = self._messages.GkeonpremProjectsLocationsOperationsListRequest(
+        name=self._location_name(args))
+    return list_pager.YieldFromList(
+        self._service,
+        list_req,
+        field='operations',
+        batch_size=flags.Get(args, 'page_size'),
+        limit=flags.Get(args, 'limit'),
+        batch_size_attribute='pageSize',
     )

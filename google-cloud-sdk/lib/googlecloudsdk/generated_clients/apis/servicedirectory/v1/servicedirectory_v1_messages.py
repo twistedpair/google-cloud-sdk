@@ -133,6 +133,8 @@ class Endpoint(_messages.Message):
       that you have the servicedirectory.networks.attach permission on the
       project specified.
     port: Optional. Service Directory rejects values outside of `[0, 65535]`.
+    uid: Output only. The globally unique identifier of the endpoint in the
+      UUID4 format.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -178,6 +180,7 @@ class Endpoint(_messages.Message):
   name = _messages.StringField(3)
   network = _messages.StringField(4)
   port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  uid = _messages.StringField(6)
 
 
 class Expr(_messages.Message):
@@ -395,6 +398,8 @@ class Namespace(_messages.Message):
       and values can be no longer than 63 characters.
     name: Immutable. The resource name for the namespace in the format
       `projects/*/locations/*/namespaces/*`.
+    uid: Output only. The globally unique identifier of the namespace in the
+      UUID4 format.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -425,6 +430,7 @@ class Namespace(_messages.Message):
 
   labels = _messages.MessageField('LabelsValue', 1)
   name = _messages.StringField(2)
+  uid = _messages.StringField(3)
 
 
 class Policy(_messages.Message):
@@ -594,6 +600,8 @@ class Service(_messages.Message):
       RegistrationService.ListEndpoints.
     name: Immutable. The resource name for the service in the format
       `projects/*/locations/*/namespaces/*/services/*`.
+    uid: Output only. The globally unique identifier of the service in the
+      UUID4 format.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -637,6 +645,7 @@ class Service(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   endpoints = _messages.MessageField('Endpoint', 2, repeated=True)
   name = _messages.StringField(3)
+  uid = _messages.StringField(4)
 
 
 class ServicedirectoryProjectsLocationsGetRequest(_messages.Message):

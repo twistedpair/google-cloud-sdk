@@ -447,6 +447,18 @@ class ColumnLayout(_messages.Message):
   columns = _messages.MessageField('Column', 1, repeated=True)
 
 
+class ColumnSettings(_messages.Message):
+  r"""The persistent settings for a table's columns.
+
+  Fields:
+    column: Required. The id of the column.
+    visible: Required. Whether the column should be visible on page load.
+  """
+
+  column = _messages.StringField(1)
+  visible = _messages.BooleanField(2)
+
+
 class Dashboard(_messages.Message):
   r"""A Google Stackdriver dashboard. Dashboards define the content and layout
   of pages in the Stackdriver web application.
@@ -1921,7 +1933,14 @@ class TableDataSet(_messages.Message):
 
 
 class TableDisplayOptions(_messages.Message):
-  r"""Table display options that can be reused."""
+  r"""Table display options that can be reused.
+
+  Fields:
+    shownColumns: Optional. This field is unused and has been replaced by
+      TimeSeriesTable.column_settings
+  """
+
+  shownColumns = _messages.StringField(1, repeated=True)
 
 
 class Text(_messages.Message):
@@ -2100,6 +2119,7 @@ class TimeSeriesQuery(_messages.Message):
   series data from the Stackdriver metrics API.
 
   Fields:
+    prometheusQuery: A query used to fetch time series with PromQL.
     timeSeriesFilter: Filter parameters to fetch time series.
     timeSeriesFilterRatio: Parameters to fetch a ratio between two time series
       filters.
@@ -2111,10 +2131,11 @@ class TimeSeriesQuery(_messages.Message):
       MetricDescriptor.
   """
 
-  timeSeriesFilter = _messages.MessageField('TimeSeriesFilter', 1)
-  timeSeriesFilterRatio = _messages.MessageField('TimeSeriesFilterRatio', 2)
-  timeSeriesQueryLanguage = _messages.StringField(3)
-  unitOverride = _messages.StringField(4)
+  prometheusQuery = _messages.StringField(1)
+  timeSeriesFilter = _messages.MessageField('TimeSeriesFilter', 2)
+  timeSeriesFilterRatio = _messages.MessageField('TimeSeriesFilterRatio', 3)
+  timeSeriesQueryLanguage = _messages.StringField(4)
+  unitOverride = _messages.StringField(5)
 
 
 class TimeSeriesTable(_messages.Message):
@@ -2124,6 +2145,8 @@ class TimeSeriesTable(_messages.Message):
     MetricVisualizationValueValuesEnum: Optional. Store rendering strategy
 
   Fields:
+    columnSettings: Optional. The list of the persistent column settings for
+      the table.
     dataSets: Required. The data displayed in this table.
     metricVisualization: Optional. Store rendering strategy
   """
@@ -2140,8 +2163,9 @@ class TimeSeriesTable(_messages.Message):
     NUMBER = 1
     BAR = 2
 
-  dataSets = _messages.MessageField('TableDataSet', 1, repeated=True)
-  metricVisualization = _messages.EnumField('MetricVisualizationValueValuesEnum', 2)
+  columnSettings = _messages.MessageField('ColumnSettings', 1, repeated=True)
+  dataSets = _messages.MessageField('TableDataSet', 2, repeated=True)
+  metricVisualization = _messages.EnumField('MetricVisualizationValueValuesEnum', 3)
 
 
 class Type(_messages.Message):

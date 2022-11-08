@@ -2157,6 +2157,156 @@ class GoogleCloudDataplexV1ContentSqlScript(_messages.Message):
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
 
 
+class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
+  r"""These messages contain information about the execution of a datascan.
+  The monitored resource is 'DataScan'
+
+  Enums:
+    ScopeValueValuesEnum: The scope of the data scan (e.g. full, incremental).
+    StateValueValuesEnum: The status of the data scan job.
+    TriggerValueValuesEnum: The trigger type of the data scan job.
+    TypeValueValuesEnum: The type of the data scan.
+
+  Fields:
+    dataProfile: Data profile result for data profile type data scan.
+    dataQuality: Data quality result for data quality type data scan.
+    dataSource: The data source of the data scan
+    endTime: The time when the data scan job finished.
+    jobId: The identifier of the specific data scan job this log entry is for.
+    message: The message describing the data scan job event.
+    scope: The scope of the data scan (e.g. full, incremental).
+    specVersion: A version identifier of the spec which was used to execute
+      this job.
+    startTime: The time when the data scan job started to run.
+    state: The status of the data scan job.
+    trigger: The trigger type of the data scan job.
+    type: The type of the data scan.
+  """
+
+  class ScopeValueValuesEnum(_messages.Enum):
+    r"""The scope of the data scan (e.g. full, incremental).
+
+    Values:
+      SCOPE_UNSPECIFIED: An unspecified scope type.
+      FULL: Data scan runs on all of the data.
+      INCREMENTAL: Data scan runs on incremental data.
+    """
+    SCOPE_UNSPECIFIED = 0
+    FULL = 1
+    INCREMENTAL = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The status of the data scan job.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified job state.
+      STARTED: Data scan started.
+      SUCCEEDED: Data scan successfully completed.
+      FAILED: Data scan was unsuccessful.
+      CANCELLED: Data scan was cancelled.
+    """
+    STATE_UNSPECIFIED = 0
+    STARTED = 1
+    SUCCEEDED = 2
+    FAILED = 3
+    CANCELLED = 4
+
+  class TriggerValueValuesEnum(_messages.Enum):
+    r"""The trigger type of the data scan job.
+
+    Values:
+      TRIGGER_UNSPECIFIED: An unspecified trigger type.
+      ON_DEMAND: Data scan triggers on demand.
+      SCHEDULE: Data scan triggers as per schedule.
+    """
+    TRIGGER_UNSPECIFIED = 0
+    ON_DEMAND = 1
+    SCHEDULE = 2
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of the data scan.
+
+    Values:
+      SCAN_TYPE_UNSPECIFIED: An unspecified data scan type.
+      DATA_PROFILE: Data scan for data profile.
+      DATA_QUALITY: Data scan for data quality.
+    """
+    SCAN_TYPE_UNSPECIFIED = 0
+    DATA_PROFILE = 1
+    DATA_QUALITY = 2
+
+  dataProfile = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataProfileResult', 1)
+  dataQuality = _messages.MessageField('GoogleCloudDataplexV1DataScanEventDataQualityResult', 2)
+  dataSource = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  jobId = _messages.StringField(5)
+  message = _messages.StringField(6)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 7)
+  specVersion = _messages.StringField(8)
+  startTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  trigger = _messages.EnumField('TriggerValueValuesEnum', 11)
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
+
+
+class GoogleCloudDataplexV1DataScanEventDataProfileResult(_messages.Message):
+  r"""Data profile result for data scan job.
+
+  Fields:
+    rowCount: The count of rows processed in the data scan job.
+  """
+
+  rowCount = _messages.IntegerField(1)
+
+
+class GoogleCloudDataplexV1DataScanEventDataQualityResult(_messages.Message):
+  r"""Data quality result for data scan job.
+
+  Messages:
+    DimensionPassedValue: The result of each dimension for data quality
+      result. The key of the map is the name of the dimension. The value is
+      the bool value depicting whether the dimension result was pass or not.
+
+  Fields:
+    dimensionPassed: The result of each dimension for data quality result. The
+      key of the map is the name of the dimension. The value is the bool value
+      depicting whether the dimension result was pass or not.
+    passed: Whether the data quality result was pass or not.
+    rowCount: The count of rows processed in the data scan job.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DimensionPassedValue(_messages.Message):
+    r"""The result of each dimension for data quality result. The key of the
+    map is the name of the dimension. The value is the bool value depicting
+    whether the dimension result was pass or not.
+
+    Messages:
+      AdditionalProperty: An additional property for a DimensionPassedValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type DimensionPassedValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DimensionPassedValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A boolean attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.BooleanField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  dimensionPassed = _messages.MessageField('DimensionPassedValue', 1)
+  passed = _messages.BooleanField(2)
+  rowCount = _messages.IntegerField(3)
+
+
 class GoogleCloudDataplexV1DiscoveryEvent(_messages.Message):
   r"""The payload associated with Discovery data processing.
 
@@ -3456,8 +3606,10 @@ class GoogleCloudDataplexV1StorageFormat(_messages.Message):
     mimeType: Required. The mime type descriptor for the data. Must match the
       pattern {type}/{subtype}. Supported values: application/x-parquet
       application/x-avro application/x-orc application/x-tfrecord
-      application/json application/{subtypes} text/csv text/ image/{image
-      subtype} video/{video subtype} audio/{audio subtype}
+      application/x-parquet+iceberg application/x-avro+iceberg
+      application/x-orc+iceberg application/json application/{subtypes}
+      text/csv text/ image/{image subtype} video/{video subtype} audio/{audio
+      subtype}
   """
 
   class CompressionFormatValueValuesEnum(_messages.Enum):

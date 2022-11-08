@@ -23,6 +23,7 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
 from googlecloudsdk.command_lib.container.vmware import flags
+from googlecloudsdk.core import properties
 
 
 class ClustersClient(client.ClientBase):
@@ -36,7 +37,7 @@ class ClustersClient(client.ClientBase):
     """Lists Clusters in the GKE On-Prem VMware API."""
     list_req = (
         self._messages.GkeonpremProjectsLocationsVmwareClustersListRequest(
-            parent=self._location_ref(args).RelativeName()))
+            parent=self._location_name(args)))
 
     return list_pager.YieldFromList(
         self._service,
@@ -44,7 +45,8 @@ class ClustersClient(client.ClientBase):
         field='vmwareClusters',
         batch_size=flags.Get(args, 'page_size'),
         limit=flags.Get(args, 'limit'),
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize',
+    )
 
   def Enroll(self, args):
     """Enrolls a VMware cluster to Anthos."""
@@ -101,12 +103,12 @@ class ClustersClient(client.ClientBase):
         'name':
             self._user_cluster_name(args),
         'allowMissing':
-            args.allow_missing,
+            flags.Get(args, 'allow_missing'),
         'updateMask':
             update_mask.get_update_mask(
                 args, update_mask.VMWARE_CLUSTER_ARGS_TO_UPDATE_MASKS),
         'validateOnly':
-            args.validate_only,
+            flags.Get(args, 'validate_only'),
         'vmwareCluster':
             self._vmware_cluster(args),
     }
@@ -133,8 +135,7 @@ class ClustersClient(client.ClientBase):
     encoding.AddCustomJsonFieldMapping(
         self._messages
         .GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest,
-        'upgradeConfig_clusterName',
-        'upgradeConfig.clusterName')
+        'upgradeConfig_clusterName', 'upgradeConfig.clusterName')
 
     req = self._messages.GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest(
         **kwargs)
@@ -147,12 +148,129 @@ class ClustersClient(client.ClientBase):
         'adminClusterMembership': self._admin_cluster_membership_name(args),
         'description': flags.Get(args, 'description'),
         'onPremVersion': flags.Get(args, 'version'),
+        'annotations': self._annotations(args),
+        'controlPlaneNode': self._vmware_control_plane_node_config(args),
+        'antiAffinityGroups': self._vmware_aag_config(args),
+        'storage': self._vmware_storage_config(args),
         'networkConfig': self._vmware_network_config(args),
         'loadBalancer': self._vmware_load_balancer_config(args),
+        'dataplaneV2': self._vmware_dataplane_v2_config(args),
+        'vmTrackingEnabled': flags.Get(args, 'enable_vm_tracking'),
+        'autoRepairConfig': self._vmware_auto_repair_config(args),
+        'authorization': self._authorization(args),
     }
     if any(kwargs.values()):
       return self._messages.VmwareCluster(**kwargs)
     return None
+
+  def _vmware_auto_repair_config(self, args):
+    """Constructs proto message VmwareAutoRepairConfig."""
+    kwargs = {
+        'enabled': flags.Get(args, 'enable_auto_repair'),
+    }
+    if flags.IsSet(kwargs):
+      return self._messages.VmwareAutoRepairConfig(**kwargs)
+    return None
+
+  def _cluster_users(self, args):
+    """Constructs repeated proto message ClusterUser."""
+    cluster_user_messages = []
+    admin_users = flags.Get(args, 'admin_users')
+    if admin_users:
+      for admin_user in admin_users:
+        cluster_user_message = self._messages.ClusterUser(username=admin_user)
+        cluster_user_messages.append(cluster_user_message)
+      return cluster_user_messages
+
+    # On update, skip setting default value.
+    if args.command_path[-1] == 'update':
+      return None
+
+    # On create, client side default admin user to the current gcloud user.
+    gcloud_config_core_account = properties.VALUES.core.account.Get()
+    if gcloud_config_core_account:
+      default_admin_user_message = self._messages.ClusterUser(
+          username=gcloud_config_core_account)
+      cluster_user_messages.append(default_admin_user_message)
+      return cluster_user_messages
+
+    return None
+
+  def _authorization(self, args):
+    """Constructs proto message Authorization."""
+    kwargs = {
+        'adminUsers': self._cluster_users(args),
+    }
+    if flags.IsSet(kwargs):
+      return self._messages.Authorization(**kwargs)
+    return None
+
+  def _vmware_dataplane_v2_config(self, args):
+    """Constructs proto message VmwareDataplaneV2Config."""
+    kwargs = {
+        'dataplaneV2Enabled':
+            flags.Get(args, 'enable_dataplane_v2'),
+        'advancedNetworking':
+            flags.Get(args, 'enable_advanced_networking'),
+    }
+    if flags.IsSet(kwargs):
+      return self._messages.VmwareDataplaneV2Config(**kwargs)
+    return None
+
+  def _vmware_storage_config(self, args):
+    """Constructs proto message VmwareStorageConfig."""
+    kwargs = {
+        'vsphereCsiDisabled': flags.Get(args, 'disable_vsphere_csi'),
+    }
+    if flags.IsSet(kwargs):
+      return self._messages.VmwareStorageConfig(**kwargs)
+    return None
+
+  def _vmware_aag_config(self, args):
+    """Constructs proto message VmwareAAGConfig."""
+    kwargs = {
+        'aagConfigDisabled': flags.Get(args, 'disable_aag_config'),
+    }
+    if flags.IsSet(kwargs):
+      return self._messages.VmwareAAGConfig(**kwargs)
+    return None
+
+  def _vmware_auto_resize_config(self, args):
+    """Constructs proto message VmwareAutoResizeConfig."""
+    kwargs = {
+        'enabled': flags.Get(args, 'enable_auto_resize'),
+    }
+    if flags.IsSet(kwargs):
+      return self._messages.VmwareAutoResizeConfig(**kwargs)
+    return None
+
+  def _vmware_control_plane_node_config(self, args):
+    """Constructs proto message VmwareControlPlaneNodeConfig."""
+    kwargs = {
+        'autoResizeConfig': self._vmware_auto_resize_config(args),
+        'cpus': flags.Get(args, 'cpus'),
+        'memory': flags.Get(args, 'memory'),
+        'replicas': flags.Get(args, 'replicas'),
+    }
+    if flags.IsSet(kwargs):
+      return self._messages.VmwareControlPlaneNodeConfig(**kwargs)
+    return None
+
+  def _annotations(self, args):
+    """Constructs proto message AnnotationsValue."""
+    annotations = flags.Get(args, 'annotations', {})
+    additional_property_messages = []
+    if not annotations:
+      return None
+
+    for key, value in annotations.items():
+      additional_property_messages.append(
+          self._messages.VmwareCluster.AnnotationsValue.AdditionalProperty(
+              key=key, value=value))
+
+    annotation_value_message = self._messages.VmwareCluster.AnnotationsValue(
+        additionalProperties=additional_property_messages)
+    return annotation_value_message
 
   def _vmware_host_ip(self, args):
     """Constructs proto message VmwareHostIp."""
@@ -192,7 +310,7 @@ class ClustersClient(client.ClientBase):
   def _vmware_dhcp_ip_config(self, args):
     """Constructs proto message VmwareDhcpIpConfig."""
     kwargs = {
-        'enabled': flags.Get(args, 'enable-dhcp'),
+        'enabled': flags.Get(args, 'enable_dhcp'),
     }
     if flags.IsSet(kwargs):
       return self._messages.VmwareDhcpIpConfig(**kwargs)

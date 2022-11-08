@@ -1092,6 +1092,40 @@ class PrivateServiceConnect(_messages.Message):
   serviceAttachment = _messages.StringField(1)
 
 
+class ReconciliationOperationMetadata(_messages.Message):
+  r"""Operation metadata returned by the CLH during resource state
+  reconciliation.
+
+  Enums:
+    ExclusiveActionValueValuesEnum: Excluisive action returned by the CLH.
+
+  Fields:
+    deleteResource: DEPRECATED. Use exclusive_action instead.
+    exclusiveAction: Excluisive action returned by the CLH.
+  """
+
+  class ExclusiveActionValueValuesEnum(_messages.Enum):
+    r"""Excluisive action returned by the CLH.
+
+    Values:
+      UNKNOWN_REPAIR_ACTION: Unknown repair action.
+      DELETE: The resource has to be deleted. When using this bit, the CLH
+        should fail the operation. DEPRECATED. Instead use DELETE_RESOURCE
+        OperationSignal in SideChannel. For more information - go/ccfe-delete-
+        on-upsert, go/ccfe-reconciliation-protocol-ug#apply_delete
+      RETRY: This resource could not be repaired but the repair should be
+        tried again at a later time. This can happen if there is a dependency
+        that needs to be resolved first- e.g. if a parent resource must be
+        repaired before a child resource.
+    """
+    UNKNOWN_REPAIR_ACTION = 0
+    DELETE = 1
+    RETRY = 2
+
+  deleteResource = _messages.BooleanField(1)
+  exclusiveAction = _messages.EnumField('ExclusiveActionValueValuesEnum', 2)
+
+
 class RedisProjectsLocationsClustersCreateRequest(_messages.Message):
   r"""A RedisProjectsLocationsClustersCreateRequest object.
 
@@ -1100,7 +1134,7 @@ class RedisProjectsLocationsClustersCreateRequest(_messages.Message):
     clusterId: Required. The logical name of the Redis cluster in the customer
       project with the following restrictions: * Must contain only lowercase
       letters, numbers, and hyphens. * Must start with a letter. * Must be
-      between 1-40 characters. * Must end with a number or a letter. * Must be
+      between 1-63 characters. * Must end with a number or a letter. * Must be
       unique within the customer project / location
     parent: Required. The resource name of the cluster location using the
       form: `projects/{project_id}/locations/{location_id}` where

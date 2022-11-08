@@ -589,6 +589,24 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SCHEDULES = (
+      'projects.locations.schedules',
+      'projects/{projectsId}/locations/{locationsId}/schedules/{schedulesId}',
+      {},
+      ['projectsId', 'locationsId', 'schedulesId'],
+      True
+  )
+  PROJECTS_LOCATIONS_SCHEDULES_OPERATIONS = (
+      'projects.locations.schedules.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/schedules/'
+              '{schedulesId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SPECIALISTPOOLS = (
       'projects.locations.specialistPools',
       '{+name}',

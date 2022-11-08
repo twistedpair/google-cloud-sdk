@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.compute import exceptions
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
@@ -34,8 +35,18 @@ class OperationErrors(Error):
   """Encapsulates multiple errors reported about single operation."""
 
   def __init__(self, errors):
-    messages = [error.message for error in errors]
-    super(OperationErrors, self).__init__(', '.join(messages))
+    use_construct_list = False
+    for error in errors:
+      if utils.ShouldUseYaml(error):
+        use_construct_list = True
+        break
+    if use_construct_list:
+      formatted_errors = utils.ConstructList(
+          title='', items=utils.ParseErrors(errors))
+      super(OperationErrors, self).__init__(formatted_errors)
+    else:
+      messages = [error.message for error in errors]
+      super(OperationErrors, self).__init__(', '.join(messages))
 
 
 class Poller(waiter.OperationPoller):

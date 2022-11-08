@@ -2198,6 +2198,20 @@ class NotebooksProjectsLocationsRuntimesTestIamPermissionsRequest(_messages.Mess
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NotebooksProjectsLocationsRuntimesUpgradeRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsRuntimesUpgradeRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/runtimes/{runtime_id}`
+    upgradeRuntimeRequest: A UpgradeRuntimeRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  upgradeRuntimeRequest = _messages.MessageField('UpgradeRuntimeRequest', 2)
+
+
 class NotebooksProjectsLocationsSchedulesCreateRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsSchedulesCreateRequest object.
 
@@ -2734,8 +2748,7 @@ class RuntimeAcceleratorConfig(_messages.Message):
 
     Values:
       ACCELERATOR_TYPE_UNSPECIFIED: Accelerator type is not specified.
-      NVIDIA_TESLA_K80: b/241005111 K80 deprecation in Google Managed
-        Notebooks Accelerator type is Nvidia Tesla K80.
+      NVIDIA_TESLA_K80: Accelerator type is Nvidia Tesla K80.
       NVIDIA_TESLA_P100: Accelerator type is Nvidia Tesla P100.
       NVIDIA_TESLA_V100: Accelerator type is Nvidia Tesla V100.
       NVIDIA_TESLA_P4: Accelerator type is Nvidia Tesla P4.
@@ -3605,6 +3618,18 @@ class UpgradeInstanceRequest(_messages.Message):
     UPGRADE_ALL = 4
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
+class UpgradeRuntimeRequest(_messages.Message):
+  r"""Request for upgrading a Managed Notebook Runtime to the latest version.
+  option (google.api.message_visibility).restriction =
+  "TRUSTED_TESTER,SPECIAL_TESTER";
+
+  Fields:
+    requestId: Idempotent request UUID.
+  """
+
+  requestId = _messages.StringField(1)
 
 
 class VertexAIParameters(_messages.Message):

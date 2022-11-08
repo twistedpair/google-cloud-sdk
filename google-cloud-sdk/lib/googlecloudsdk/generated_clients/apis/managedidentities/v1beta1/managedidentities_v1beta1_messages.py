@@ -421,6 +421,43 @@ class Domain(_messages.Message):
   updateTime = _messages.StringField(13)
 
 
+class DomainJoinMachineRequest(_messages.Message):
+  r"""DomainJoinMachineRequest is the request message for DomainJoinMachine
+  method
+
+  Fields:
+    ouName: Optional. OU name to which the VM needs to be domain joined. If
+      the field is not provided, the VM is joined to the default OU which is
+      created. The default OU for the domain join api is created as GCE
+      Instances under the Cloud OU. Example - OU=GCE
+      Instances,OU=Cloud,DC=ad,DC=test,DC=com If the field is provided, then
+      the custom OU is searched for under GCE Instances OU. Example - if
+      ou_name=test_ou then the VM is domain joined to the following OU:
+      OU=test_ou,OU=GCE Instances,OU=Cloud,DC=ad,DC=test,DC=com if present. If
+      OU is not present under GCE Instances, then error is returned.
+    vmIdToken: Required. Full instance id token of compute engine VM to verify
+      instance identity. More about this:
+      https://cloud.google.com/compute/docs/instances/verifying-instance-
+      identity#request_signature
+  """
+
+  ouName = _messages.StringField(1)
+  vmIdToken = _messages.StringField(2)
+
+
+class DomainJoinMachineResponse(_messages.Message):
+  r"""DomainJoinMachineResponse is the response message for DomainJoinMachine
+  method
+
+  Fields:
+    domainJoinBlob: The response is the offline domain join blob that is
+      returned after running the djoin command. To correctly use the response
+      of the API, please refer to the sample usage.
+  """
+
+  domainJoinBlob = _messages.StringField(1)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1681,6 +1718,22 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsDisableMigrationRequest(_me
 
   disableMigrationRequest = _messages.MessageField('DisableMigrationRequest', 1)
   domain = _messages.StringField(2, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsDomainJoinMachineRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalDomainsDomainJoinMachineRequest
+  object.
+
+  Fields:
+    domain: Required. The domain resource name using the form:
+      projects/{project_id}/locations/global/domains/{domain_name}
+    domainJoinMachineRequest: A DomainJoinMachineRequest resource to be passed
+      as the request body.
+  """
+
+  domain = _messages.StringField(1, required=True)
+  domainJoinMachineRequest = _messages.MessageField('DomainJoinMachineRequest', 2)
 
 
 class ManagedidentitiesProjectsLocationsGlobalDomainsEnableMigrationRequest(_messages.Message):

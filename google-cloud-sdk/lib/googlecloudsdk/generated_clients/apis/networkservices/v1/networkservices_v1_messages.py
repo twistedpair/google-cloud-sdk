@@ -258,7 +258,7 @@ class CDNPolicy(_messages.Message):
       `signed_request_maximum_expiration_ttl`, where `now` is the time at
       which the signed request is first handled by the CDN. - The TTL must be
       > 0. - Fractions of a second are not allowed. By default,
-      `signed_requess_maximum_expiration_ttl` is not set and the expiration
+      `signed_request_maximum_expiration_ttl` is not set and the expiration
       time of a signed request may be arbitrarily far into future.
     signedRequestMode: Optional. Whether to enforce signed requests. The
       default value is DISABLED, which means all content is public, and does
@@ -1208,6 +1208,11 @@ class Gateway(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
+    gatewaySecurityPolicy: Optional. A fully-qualified GatewaySecurityPolicy
+      URL reference. Defines how a server should apply security policy to
+      inbound (VM to Proxy) initiated connections. For example:
+      `projects/*/locations/*/gatewaySecurityPolicies/swg-policy`. This policy
+      is specific to gateways of type 'SECURE_WEB_GATEWAY'.
     labels: Optional. Set of label tags associated with the Gateway resource.
     name: Required. Name of the Gateway resource. It matches pattern
       `projects/*/locations/*/gateways/`.
@@ -1225,10 +1230,11 @@ class Gateway(_messages.Message):
       single coniguration to the proxy/load balancer. Max length 64
       characters. Scope should start with a letter and can only have letters,
       numbers, hyphens.
-    securityPolicy: Optional. A fully-qualified SecurityPolicy URL reference.
-      Defines how a server should apply security policy to inbound (VM to
-      Proxy) initiated connections. This policy is specific to gateways of
-      type 'SECURE_WEB_GATEWAY'.
+    securityPolicy: Optional. A fully-qualified GatewaySecurityPolicy URL
+      reference. Defines how a server should apply security policy to inbound
+      (VM to Proxy) initiated connections. This policy is specific to gateways
+      of type 'SECURE_WEB_GATEWAY'. DEPRECATED!!!! Use the
+      gateway_security_policy field instead.
     selfLink: Output only. Server-defined URL of this resource
     serverTlsPolicy: Optional. A fully-qualified ServerTLSPolicy URL
       reference. Specifies how TLS traffic is terminated. If empty, TLS
@@ -1287,17 +1293,18 @@ class Gateway(_messages.Message):
   certificateUrls = _messages.StringField(3, repeated=True)
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  ports = _messages.IntegerField(9, repeated=True, variant=_messages.Variant.INT32)
-  scope = _messages.StringField(10)
-  securityPolicy = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  serverTlsPolicy = _messages.StringField(13)
-  subnetwork = _messages.StringField(14)
-  type = _messages.EnumField('TypeValueValuesEnum', 15)
-  updateTime = _messages.StringField(16)
+  gatewaySecurityPolicy = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  ports = _messages.IntegerField(10, repeated=True, variant=_messages.Variant.INT32)
+  scope = _messages.StringField(11)
+  securityPolicy = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  serverTlsPolicy = _messages.StringField(14)
+  subnetwork = _messages.StringField(15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  updateTime = _messages.StringField(17)
 
 
 class GrpcRoute(_messages.Message):
@@ -4362,7 +4369,11 @@ class PublicKey(_messages.Message):
       means the first character must be a letter, and all following characters
       must be a dash, underscore, letter or digit.
     managed: Optional. Set to true to have the CDN automatically manage this
-      public key value. Either `value` or `managed` must be specified.
+      public key. Managed keys are used by the CDN for dual-token
+      authentication. Media CDN internally generates, uses, and rotates the
+      underlying public and private key pair. It is not possible to use a
+      managed key outside of dual-token authentication. Either `value` or
+      `managed` must be specified.
     value: Optional. The base64-encoded value of the Ed25519 public key. The
       base64 encoding can be padded (44 bytes) or unpadded (43 bytes).
       Representations or encodings of the public key other than this are

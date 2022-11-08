@@ -6,7 +6,7 @@
   "canonicalName": "Blockchain Node Engine",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "blockchainnodeengine API (prod)",
+  "title": "Blockchain Node Engine API",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/blockchainnodeengine",
+  "documentationLink": "https://cloud.google.com/web3",
   "protocol": "rest",
   "rootUrl": "https://blockchainnodeengine.googleapis.com/",
   "mtlsRootUrl": "https://blockchainnodeengine.mtls.googleapis.com/",
@@ -189,8 +189,8 @@
         }
       }
     },
-    "Empty": {
-      "id": "Empty",
+    "GoogleProtobufEmpty": {
+      "id": "GoogleProtobufEmpty",
       "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
       "type": "object",
       "properties": {
@@ -208,11 +208,11 @@
       "description": "Message for response to listing Nodes",
       "type": "object",
       "properties": {
-        "nodes": {
+        "blockchainNodes": {
           "description": "The list of nodes",
           "type": "array",
           "items": {
-            "$ref": "BlockchainNodeSpec"
+            "$ref": "BlockchainNode"
           }
         },
         "nextPageToken": {
@@ -228,33 +228,143 @@
         }
       }
     },
-    "BlockchainNodeSpec": {
-      "id": "BlockchainNodeSpec",
-      "description": "Message describing BlockchainNodeSpec object",
+    "BlockchainNode": {
+      "id": "BlockchainNode",
+      "description": "Client-facing representation of a Blockchain Node.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "name of resource",
+          "description": "Output only. The resource name. Resource names are scheme-less URIs that follow conventions in http:\/\/cloud\/apis\/design\/resource_names. e.g. projects\/my-project\/locations\/us-central1\/blockchainNodes\/my-node.",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. [Output only] Create time stamp",
+          "description": "Output only. The timestamp at which the Blockchain Node was first created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. [Output only] Update time stamp",
+          "description": "Output only. The timestamp at which the Blockchain Node was last updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "labels": {
-          "description": "Labels as key value pairs",
+          "description": "User-provided key-value pairs.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "blockchainType": {
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            ""
+          ],
+          "enum": [
+            "BLOCKCHAIN_TYPE_UNSPECIFIED",
+            "ETHEREUM"
+          ]
+        },
+        "connectionInfo": {
+          "readOnly": true,
+          "$ref": "ConnectionInformation"
+        },
+        "ethereumDetails": {
+          "$ref": "EthereumDetails"
+        }
+      }
+    },
+    "ConnectionInformation": {
+      "id": "ConnectionInformation",
+      "description": "The connection information through which to interact with a Blockchain Node.",
+      "type": "object",
+      "properties": {
+        "ipInfo": {
+          "readOnly": true,
+          "$ref": "IpInformation"
+        }
+      }
+    },
+    "IpInformation": {
+      "id": "IpInformation",
+      "description": "The public IP information through which to interact with a Blockchain Node.",
+      "type": "object",
+      "properties": {
+        "p2pIpv4Address": {
+          "description": "Output only. The IPv4 address for the node peer-to-peer endpoint.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "p2pIpv6Address": {
+          "description": "Output only. The IPv6 address for the node peer-to-peer endpoint.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "rpcIpv4Address": {
+          "description": "Output only. The IPv4 address for the node RPC API endpoint.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "rpcIpv6Address": {
+          "description": "Output only. The IPv6 address for the node RPC API endpoint.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "EthereumDetails": {
+      "id": "EthereumDetails",
+      "description": "Ethereum-specific Blockchain Node details.",
+      "type": "object",
+      "properties": {
+        "network": {
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            ""
+          ],
+          "enum": [
+            "NETWORK_UNSPECIFIED",
+            "MAINNET"
+          ]
+        },
+        "nodeType": {
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "",
+            ""
+          ],
+          "enum": [
+            "NODE_TYPE_UNSPECIFIED",
+            "LIGHT",
+            "FULL"
+          ]
+        },
+        "executionClient": {
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            ""
+          ],
+          "enum": [
+            "EXECUTION_CLIENT_UNSPECIFIED",
+            "GETH"
+          ]
+        },
+        "consensusClient": {
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            ""
+          ],
+          "enum": [
+            "CONSENSUS_CLIENT_UNSPECIFIED",
+            "LIGHTHOUSE"
+          ]
         }
       }
     },
@@ -515,7 +625,7 @@
                     "name"
                   ],
                   "response": {
-                    "$ref": "Empty"
+                    "$ref": "GoogleProtobufEmpty"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -543,7 +653,7 @@
                     "$ref": "CancelOperationRequest"
                   },
                   "response": {
-                    "$ref": "Empty"
+                    "$ref": "GoogleProtobufEmpty"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -618,7 +728,7 @@
                     "name"
                   ],
                   "response": {
-                    "$ref": "BlockchainNodeSpec"
+                    "$ref": "BlockchainNode"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -638,7 +748,7 @@
                       "required": true,
                       "type": "string"
                     },
-                    "nodeId": {
+                    "blockchainNodeId": {
                       "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and node_id from the method_signature of Create RPC",
                       "location": "query",
                       "type": "string"
@@ -653,7 +763,7 @@
                     "parent"
                   ],
                   "request": {
-                    "$ref": "BlockchainNodeSpec"
+                    "$ref": "BlockchainNode"
                   },
                   "response": {
                     "$ref": "Operation"
@@ -670,7 +780,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "name of resource",
+                      "description": "Output only. The resource name. Resource names are scheme-less URIs that follow conventions in http:\/\/cloud\/apis\/design\/resource_names. e.g. projects\/my-project\/locations\/us-central1\/blockchainNodes\/my-node.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/blockchainNodes\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -692,7 +802,7 @@
                     "name"
                   ],
                   "request": {
-                    "$ref": "BlockchainNodeSpec"
+                    "$ref": "BlockchainNode"
                   },
                   "response": {
                     "$ref": "Operation"

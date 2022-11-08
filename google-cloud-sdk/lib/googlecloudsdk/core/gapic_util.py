@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from google.auth import external_account as google_auth_external_account
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import requests
 from googlecloudsdk.core.credentials import creds
@@ -71,6 +72,12 @@ def GetGapicCredentials(enable_resource_quota=True,
   original_refresh = credentials.refresh
   def WrappedRefresh(request):
     del request  # unused
+    # Currently we don't do any revokes on credentials. If a credential is still
+    # valid, we don't refresh on 401 error
+    if isinstance(
+        credentials,
+        google_auth_external_account.Credentials) and credentials.valid:
+      return None
     return original_refresh(requests.GoogleAuthRequest())
   credentials.refresh = WrappedRefresh
 
