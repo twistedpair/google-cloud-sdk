@@ -34,18 +34,14 @@ class ClustersClient(util.VmwareClientBase):
         name=resource.RelativeName())
     return self.service.Get(request)
 
-  def Create(self,
-             resource,
-             node_type=None,
-             node_count=None,
-             node_custom_core_count=None):
+  def Create(self, resource, nodes_configs=None):
     parent = resource.Parent().RelativeName()
     cluster_id = resource.Name()
 
-    cluster = self.messages.Cluster(
-        nodeCount=node_count, nodeTypeId=node_type)
-    if node_custom_core_count is not None:
-      cluster.nodeCustomCoreCount = node_custom_core_count
+    node_type_configs = util.ConstructNodeParameterConfigMessage(
+        self.messages.Cluster.NodeTypeConfigsValue,
+        self.messages.NodeTypeConfig, nodes_configs)
+    cluster = self.messages.Cluster(nodeTypeConfigs=node_type_configs)
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsClustersCreateRequest(
         parent=parent,
         cluster=cluster,
@@ -77,12 +73,13 @@ class ClustersClient(util.VmwareClientBase):
         batch_size=page_size,
         field='clusters')
 
-  def Update(self,
-             resource,
-             node_count=None):
-    cluster = self.messages.Cluster(
-        nodeCount=node_count)
+  def Update(self, resource, nodes_configs=None):
+    node_type_configs = util.ConstructNodeParameterConfigMessage(
+        self.messages.Cluster.NodeTypeConfigsValue,
+        self.messages.NodeTypeConfig, nodes_configs)
+    cluster = self.messages.Cluster(nodeTypeConfigs=node_type_configs)
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsClustersPatchRequest(
         name=resource.RelativeName(),
-        cluster=cluster)
+        cluster=cluster,
+        updateMask='node_type_configs')
     return self.service.Patch(request)

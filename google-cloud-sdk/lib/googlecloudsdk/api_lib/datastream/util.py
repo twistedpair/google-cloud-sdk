@@ -55,11 +55,11 @@ RDBMS_FIELD_NAME_BY_RELEASE_TRACK = {
         base.ReleaseTrack.BETA: 'column_name',
         base.ReleaseTrack.GA: 'column'
     },
-    'allowlist': {
+    'include_objects': {
         base.ReleaseTrack.BETA: 'allowlist',
         base.ReleaseTrack.GA: 'include_objects'
     },
-    'rejectlist': {
+    'exclude_objects': {
         base.ReleaseTrack.BETA: 'rejectlist',
         base.ReleaseTrack.GA: 'exclude_objects'
     }
@@ -106,15 +106,28 @@ def GenerateRequestId():
 
 def ParseMysqlColumn(messages, mysql_column_object, release_track):
   """Parses a raw mysql column json/yaml into the MysqlColumn message."""
-  return messages.MysqlColumn(
+  message = messages.MysqlColumn(
       column=mysql_column_object.get(
-          _GetRDBMSFieldName('column_name', release_track), {}),
-      dataType=mysql_column_object.get('data_type', {}),
-      collation=mysql_column_object.get('collation', {}),
-      length=mysql_column_object.get('length', {}),
-      nullable=mysql_column_object.get('nullable', {}),
-      ordinalPosition=mysql_column_object.get('ordinal_position', {}),
-      primaryKey=mysql_column_object.get('primary_key', {}))
+          _GetRDBMSFieldName('column', release_track), ''))
+  data_type = mysql_column_object.get('data_type')
+  if data_type is not None:
+    message.dataType = data_type
+  collation = mysql_column_object.get('collation')
+  if collation is not None:
+    message.collation = collation
+  length = mysql_column_object.get('length')
+  if length is not None:
+    message.length = length
+  nullable = mysql_column_object.get('nullable')
+  if nullable is not None:
+    message.nullable = nullable
+  ordinal_position = mysql_column_object.get('ordinal_position')
+  if ordinal_position is not None:
+    message.ordinalPosition = ordinal_position
+  primary_key = mysql_column_object.get('primary_key')
+  if primary_key is not None:
+    message.primaryKey = primary_key
+  return message
 
 
 def ParseMysqlTable(messages, mysql_table_object, release_track):
@@ -181,17 +194,34 @@ def ParseMysqlSchemasListToMysqlRdbmsMessage(messages,
 
 def ParseOracleColumn(messages, oracle_column_object, release_track):
   """Parses a raw oracle column json/yaml into the OracleColumn message."""
-  return messages.OracleColumn(
+  message = messages.OracleColumn(
       column=oracle_column_object.get(
-          _GetRDBMSFieldName('column', release_track), {}),
-      dataType=oracle_column_object.get('data_type', {}),
-      encoding=oracle_column_object.get('encoding', {}),
-      length=oracle_column_object.get('length', {}),
-      nullable=oracle_column_object.get('nullable', {}),
-      ordinalPosition=oracle_column_object.get('ordinal_position', {}),
-      precision=oracle_column_object.get('precision', {}),
-      primaryKey=oracle_column_object.get('primary_key', {}),
-      scale=oracle_column_object.get('scale', {}))
+          _GetRDBMSFieldName('column', release_track), ''))
+  data_type = oracle_column_object.get('data_type')
+  if data_type is not None:
+    message.dataType = data_type
+  encoding = oracle_column_object.get('encoding')
+  if encoding is not None:
+    message.encoding = encoding
+  length = oracle_column_object.get('length')
+  if length is not None:
+    message.length = length
+  nullable = oracle_column_object.get('nullable')
+  if nullable is not None:
+    message.nullable = nullable
+  ordinal_position = oracle_column_object.get('ordinal_position')
+  if ordinal_position is not None:
+    message.ordinalPosition = ordinal_position
+  precision = oracle_column_object.get('precision')
+  if precision is not None:
+    message.precision = precision
+  primary_key = oracle_column_object.get('primary_key')
+  if primary_key is not None:
+    message.primaryKey = primary_key
+  scale = oracle_column_object.get('scale')
+  if scale is not None:
+    message.scale = scale
+  return message
 
 
 def ParseOracleTable(messages, oracle_table_object, release_track):
@@ -258,15 +288,30 @@ def ParseOracleSchemasListToOracleRdbmsMessage(messages,
 
 def ParsePostgresqlColumn(messages, postgresql_column_object):
   """Parses a raw postgresql column json/yaml into the PostgresqlColumn message."""
-  return messages.PostgresqlColumn(
-      column=postgresql_column_object.get('column', ''),
-      dataType=postgresql_column_object.get('data_type', ''),
-      length=postgresql_column_object.get('length', None),
-      precision=postgresql_column_object.get('precision', None),
-      scale=postgresql_column_object.get('scale', None),
-      primaryKey=postgresql_column_object.get('primary_key', False),
-      nullable=postgresql_column_object.get('nullable', False),
-      ordinalPosition=postgresql_column_object.get('ordinal_position', None))
+  message = messages.PostgresqlColumn(
+      column=postgresql_column_object.get('column', ''))
+  data_type = postgresql_column_object.get('data_type')
+  if data_type is not None:
+    message.dataType = data_type
+  length = postgresql_column_object.get('length')
+  if length is not None:
+    message.length = length
+  precision = postgresql_column_object.get('precision')
+  if precision is not None:
+    message.precision = precision
+  scale = postgresql_column_object.get('scale')
+  if scale is not None:
+    message.scale = scale
+  primary_key = postgresql_column_object.get('primary_key')
+  if primary_key is not None:
+    message.primaryKey = primary_key
+  nullable = postgresql_column_object.get('nullable')
+  if nullable is not None:
+    message.nullable = nullable
+  ordinal_position = postgresql_column_object.get('ordinal_position')
+  if ordinal_position is not None:
+    message.ordinalPosition = ordinal_position
+  return message
 
 
 def ParsePostgresqlTable(messages, postgresql_table_object):

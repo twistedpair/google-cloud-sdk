@@ -1259,6 +1259,30 @@ def ResetResource(resource, kind=None, is_async=False, details=None,
                        operation_past_tense='reset')
 
 
+def ImportResource(resource,
+                   kind=None,
+                   is_async=False,
+                   details=None,
+                   failed=None):
+  """Prints a status message indicating that a resource was imported.
+
+  Args:
+    resource: str, The resource name.
+    kind: str, The resource kind (instance, cluster, project, etc.).
+    is_async: bool, True if the operation is in progress.
+    details: str, Extra details appended to the message. Keep it succinct.
+    failed: str, Failure message.
+  """
+  _PrintResourceChange(
+      'import',
+      resource,
+      kind,
+      is_async,
+      details,
+      failed,
+      operation_past_tense='imported')
+
+
 def ExportResource(resource,
                    kind=None,
                    is_async=False,

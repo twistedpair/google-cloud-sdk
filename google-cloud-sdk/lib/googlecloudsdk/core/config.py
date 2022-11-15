@@ -180,6 +180,14 @@ CLOUDSDK_SCOPES = (
     'https://www.googleapis.com/auth/compute',  # needed by autoscaler
 )
 
+# Do not add more scopes here.
+CLOUDSDK_EXTERNAL_ACCOUNT_SCOPES = (
+    'https://www.googleapis.com/auth/cloud-platform',
+    'https://www.googleapis.com/auth/appengine.admin',
+    'https://www.googleapis.com/auth/sqlservice.login',  # needed by Cloud SQL
+    'https://www.googleapis.com/auth/compute',  # needed by autoscaler
+)
+
 REAUTH_SCOPE = 'https://www.googleapis.com/auth/accounts.reauth'
 
 

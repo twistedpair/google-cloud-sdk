@@ -22,15 +22,89 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
+from googlecloudsdk.calliope import arg_parsers
+import six
 
 
 class _BareMetalNodePoolsClient(client.ClientBase):
   """Base class for GKE OnPrem Bare Metal API clients."""
 
+  def _node_taints(self, args):
+    """Constructs proto message NodeTaint."""
+    taint_messages = []
+    node_taints = getattr(args, 'node_taints', {})
+    if not node_taints:
+      return []
+
+    for node_taint in node_taints.items():
+      taint_object = self._parse_node_taint(node_taint)
+      taint_messages.append(
+          self._messages.NodeTaint(**taint_object))
+
+    return taint_messages
+
+  def _node_labels(self, args):
+    """Constructs proto message LabelsValue."""
+    node_labels = getattr(args, 'node_labels', {})
+    additional_property_messages = []
+    if not node_labels:
+      return None
+
+    for key, value in node_labels.items():
+      additional_property_messages.append(
+          self._messages.BareMetalNodePoolConfig.LabelsValue.AdditionalProperty(
+              key=key, value=value))
+
+    labels_value_message = self._messages.BareMetalNodePoolConfig.LabelsValue(
+        additionalProperties=additional_property_messages)
+
+    return labels_value_message
+
+  def _parse_node_labels(self, node_labels):
+    """Validates and parses a node label object.
+
+    Args:
+      node_labels: str of kay-val pairs separated by ':' delimiter.
+
+    Returns:
+      If label is valid, returns a dict mapping message LabelsValue to its
+      value, otherwise, raise ArgumentTypeError.
+      For example,
+      {
+          'key': LABEL_KEY
+          'value': LABEL_VALUE
+      }
+    """
+    if not node_labels.get('labels'):
+      return None
+
+    input_node_labels = node_labels.get('labels', '').split(':')
+    valid_node_labels = ', '.join(
+        six.text_type(key) for key in input_node_labels)
+    additional_property_messages = []
+
+    for label in input_node_labels:
+      key_val_pair = label.split('=')
+      if len(key_val_pair) != 2:
+        raise arg_parsers.ArgumentTypeError(
+            'Node Label [{}] not in correct format, expect KEY=VALUE.'.format(
+                valid_node_labels))
+      key, value = key_val_pair[0], key_val_pair[1]
+      additional_property_messages.append(
+          self._messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
+              key=key, value=value))
+
+    labels_value_message = self._messages.BareMetalNodeConfig.LabelsValue(
+        additionalProperties=additional_property_messages)
+
+    return labels_value_message
+
   def _node_pool_config(self, args):
     """Constructs proto message BareMetalNodePoolConfig."""
     kwargs = {
-        'nodeConfigs': self._node_configs(args)
+        'nodeConfigs': self._node_configs(args),
+        'labels': self._node_labels(args),
+        'taints': self._node_taints(args),
     }
 
     if any(kwargs.values()):
@@ -53,6 +127,7 @@ class _BareMetalNodePoolsClient(client.ClientBase):
     """Constructs proto message BareMetalNodeConfig."""
     kwargs = {
         'nodeIp': node_config_args.get('node-ip', ''),
+        'labels': self._parse_node_labels(node_config_args),
     }
 
     if any(kwargs.values()):
@@ -60,11 +135,29 @@ class _BareMetalNodePoolsClient(client.ClientBase):
 
     return None
 
+  def _annotations(self, args):
+    """Constructs proto message AnnotationsValue."""
+    annotations = getattr(args, 'annotations', {})
+    additional_property_messages = []
+    if not annotations:
+      return None
+
+    for key, value in annotations.items():
+      additional_property_messages.append(
+          self._messages.BareMetalNodePool.AnnotationsValue.AdditionalProperty(
+              key=key, value=value))
+
+    annotation_value_message = self._messages.BareMetalNodePool.AnnotationsValue(
+        additionalProperties=additional_property_messages)
+    return annotation_value_message
+
   def _bare_metal_node_pool(self, args):
     """Constructs proto message BareMetalNodePool."""
     kwargs = {
         'name': self._node_pool_name(args),
         'nodePoolConfig': self._node_pool_config(args),
+        'displayName': getattr(args, 'display_name', None),
+        'annotations': self._annotations(args),
     }
 
     return self._messages.BareMetalNodePool(**kwargs)

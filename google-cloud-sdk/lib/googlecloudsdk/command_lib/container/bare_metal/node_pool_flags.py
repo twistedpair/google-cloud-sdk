@@ -88,7 +88,27 @@ def AddAllowMissingUpdateNodePool(parser):
   )
 
 
-def AddNodePoolConfig(parser, is_update):
+def AddNodePoolDisplayName(parser):
+  """Adds a flag to specify the display name of the node pool.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--display-name', type=str, help='Display name for the resource.')
+
+
+def AddNodePoolAnnotations(parser):
+  """Adds a flag to specify node pool annotations."""
+  parser.add_argument(
+      '--annotations',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help='Annotations on the node pool.',
+  )
+
+
+def AddNodePoolConfig(parser, is_update=False):
   """Adds a command group to set the node pool config.
 
   Args:
@@ -101,9 +121,11 @@ def AddNodePoolConfig(parser, is_update):
       help='Anthos on bare metal node pool configuration.',
   )
   _AddNodeConfigs(bare_metal_node_pool_config_group, is_update)
+  _AddNodeLabels(bare_metal_node_pool_config_group)
+  _AddNodeTaints(bare_metal_node_pool_config_group)
 
 
-def _AddNodeConfigs(bare_metal_node_pool_config_group, is_update):
+def _AddNodeConfigs(bare_metal_node_pool_config_group, is_update=False):
   """Adds flags to set the node configs.
 
   Args:
@@ -112,18 +134,46 @@ def _AddNodeConfigs(bare_metal_node_pool_config_group, is_update):
     is_update: bool, whether the flag is for update command or not.
   """
   required = not is_update
-  bare_metal_node_pool_config_group.add_group(
-      'Node Configuration').add_argument(
-          '--node-configs',
-          action='append',
-          required=required,
-          type=arg_parsers.ArgDict(
-              spec={
-                  'node-ip': str,
-              },
-              required_keys=[
-                  'node-ip',
-              ],
-          ),
-          help='Node configuration.',
-      )
+  bare_metal_node_pool_config_group.add_argument(
+      '--node-configs',
+      action='append',
+      required=required,
+      type=arg_parsers.ArgDict(
+          spec={
+              'node-ip': str,
+              'labels': str,
+          },
+          required_keys=[
+              'node-ip',
+          ],
+      ),
+      help='Node configuration.',
+  )
+
+
+def _AddNodeLabels(bare_metal_node_pool_config_group):
+  """Adds a flag to assign labels to nodes in a node pool.
+
+  Args:
+    bare_metal_node_pool_config_group: The parent group to add the flags to.
+  """
+  bare_metal_node_pool_config_group.add_argument(
+      '--node-labels',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help='Labels assigned to nodes of a node pool.',
+  )
+
+
+def _AddNodeTaints(bare_metal_node_pool_config_group):
+  """Adds a flag to specify the node taint in the node pool.
+
+  Args:
+    bare_metal_node_pool_config_group: The parent group to add the flags to.
+  """
+  bare_metal_node_pool_config_group.add_argument(
+      '--node-taints',
+      metavar='KEY=VALUE:EFFECT',
+      help='Node taint applied to every Kubernetes node in a node pool.',
+      type=arg_parsers.ArgDict(),
+  )

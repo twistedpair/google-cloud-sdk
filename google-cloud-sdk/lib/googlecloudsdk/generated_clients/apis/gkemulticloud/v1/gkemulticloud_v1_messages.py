@@ -147,7 +147,8 @@ class GkemulticloudProjectsLocationsAttachedClustersPatchRequest(_messages.Messa
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AttachedCluster: * `description`. *
-      `annotations`. * `platform_version`. * `authorization.admin_users`.
+      `annotations`. * `platform_version`. * `authorization.admin_users`. *
+      `logging_config.component_config.enable_components`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -275,7 +276,10 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest(_message
       `config.proxy_config.secret_arn`. *
       `config.proxy_config.secret_version`. * `config.ssh_config`. *
       `config.ssh_config.ec2_key_pair`. * `config.instance_placement.tenancy`.
-      * `config.iam_instance_profile`. * `config.labels`.
+      * `config.iam_instance_profile`. * `config.labels`. * `config.tags`. *
+      `config.autoscaling_metrics_collection`. *
+      `config.autoscaling_metrics_collection.granularity`. *
+      `config.autoscaling_metrics_collection.metrics`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
   """
@@ -429,7 +433,8 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       `control_plane.instance_placement.tenancy`. *
       `control_plane.iam_instance_profile`. *
       `logging_config.component_config.enable_components`. *
-      `control_plane.tags`.
+      `control_plane.tags`. *
+      `monitoring_config.managed_prometheus_config.enabled`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -793,7 +798,8 @@ class GkemulticloudProjectsLocationsAzureClustersPatchRequest(_messages.Message)
       `control_plane.proxy_config.resource_group_id`. *
       `control_plane.proxy_config.secret_id`. *
       `control_plane.ssh_config.authorized_key`. *
-      `logging_config.component_config.enable_components`
+      `logging_config.component_config.enable_components` *
+      `monitoring_config.managed_prometheus_config.enabled`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -977,6 +983,7 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
     fleet: Required. Fleet configuration.
     kubernetesVersion: Output only. The Kubernetes version of the cluster.
     loggingConfig: Optional. Logging configuration for this cluster.
+    monitoringConfig: Optional. Monitoring configuration for this cluster.
     name: The name of this resource. Cluster names are formatted as
       `projects//locations//attachedClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
@@ -1061,14 +1068,15 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
   fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 9)
   kubernetesVersion = _messages.StringField(10)
   loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 11)
-  name = _messages.StringField(12)
-  oidcConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedOidcConfig', 13)
-  platformVersion = _messages.StringField(14)
-  reconciling = _messages.BooleanField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 19)
+  monitoringConfig = _messages.MessageField('GoogleCloudGkemulticloudV1MonitoringConfig', 12)
+  name = _messages.StringField(13)
+  oidcConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AttachedOidcConfig', 14)
+  platformVersion = _messages.StringField(15)
+  reconciling = _messages.BooleanField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 20)
 
 
 class GoogleCloudGkemulticloudV1AttachedClusterError(_messages.Message):

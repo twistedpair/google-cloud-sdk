@@ -142,13 +142,16 @@ def GetExternalAccountId(creds):
       oauth2_utils.ClientAuthType.basic, config.CLOUDSDK_CLIENT_ID,
       config.CLOUDSDK_CLIENT_NOTSOSECRET)
 
-  # Check if the introspection endpoint has been overriden,
-  # otherwise use default endpoint.
+  # Check if the introspection endpoint has been overridden,
+  # otherwise use default endpoint. Prioritize property override first then
+  # credential config.
   token_introspection_endpoint = _EXTERNAL_ACCT_TOKEN_INTROSPECT_ENDPOINT
 
   endpoint_override = properties.VALUES.auth.token_introspection_endpoint.Get()
-  if endpoint_override:
-    token_introspection_endpoint = endpoint_override
+  property_override = creds.token_info_url
+
+  if endpoint_override or property_override:
+    token_introspection_endpoint = endpoint_override or property_override
 
   oauth_introspection = IntrospectionClient(
       token_introspect_endpoint=token_introspection_endpoint,

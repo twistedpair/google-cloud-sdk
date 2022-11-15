@@ -504,6 +504,16 @@ MAP = {
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v1alpha':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.batch.v1alpha',
+                    client_classpath='batch_v1alpha_client.BatchV1alpha',
+                    base_url='',
+                    messages_modulepath='batch_v1alpha_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 ApitoolsClientDef(

@@ -494,6 +494,10 @@
           "description": "Information specifying a Cloud Run deployment target.",
           "$ref": "CloudRunLocation"
         },
+        "multiTarget": {
+          "description": "Information specifying a multiTarget.",
+          "$ref": "MultiTarget"
+        },
         "etag": {
           "description": "Optional. This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
@@ -541,6 +545,20 @@
         "location": {
           "description": "Required. The location for the Cloud Run Service. Format must be `projects\/{project}\/locations\/{location}`.",
           "type": "string"
+        }
+      }
+    },
+    "MultiTarget": {
+      "id": "MultiTarget",
+      "description": "Information specifying a multiTarget.",
+      "type": "object",
+      "properties": {
+        "targetIds": {
+          "description": "Required. The target_ids of this multiTarget.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1082,6 +1100,11 @@
           "description": "Output only. Metadata contains information about the rollout.",
           "readOnly": true,
           "$ref": "Metadata"
+        },
+        "controllerRollout": {
+          "description": "Output only. Name of the `ControllerRollout`. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/{release}\/rollouts\/a-z{0,62}.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -1120,6 +1143,11 @@
           "description": "Output only. Deployment job composition.",
           "readOnly": true,
           "$ref": "DeploymentJobs"
+        },
+        "childRolloutJobs": {
+          "description": "Output only. ChildRollout job composition.",
+          "readOnly": true,
+          "$ref": "ChildRolloutJobs"
         }
       }
     },
@@ -1187,6 +1215,16 @@
           "description": "Output only. A verify Job.",
           "readOnly": true,
           "$ref": "VerifyJob"
+        },
+        "createChildRolloutJob": {
+          "description": "Output only. A createChildRollout Job.",
+          "readOnly": true,
+          "$ref": "CreateChildRolloutJob"
+        },
+        "advanceChildRolloutJob": {
+          "description": "Output only. An advanceChildRollout Job.",
+          "readOnly": true,
+          "$ref": "AdvanceChildRolloutJob"
         }
       }
     },
@@ -1202,6 +1240,43 @@
       "description": "A verify Job.",
       "type": "object",
       "properties": {
+      }
+    },
+    "CreateChildRolloutJob": {
+      "id": "CreateChildRolloutJob",
+      "description": "A createChildRollout Job.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "AdvanceChildRolloutJob": {
+      "id": "AdvanceChildRolloutJob",
+      "description": "An advanceChildRollout Job.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ChildRolloutJobs": {
+      "id": "ChildRolloutJobs",
+      "description": "ChildRollouts job composition",
+      "type": "object",
+      "properties": {
+        "createRolloutJobs": {
+          "description": "Output only. List of CreateChildRolloutJobs",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "Job"
+          }
+        },
+        "advanceRolloutJobs": {
+          "description": "Output only. List of AdvanceChildRolloutJobs",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "Job"
+          }
+        }
       }
     },
     "Metadata": {
@@ -1357,6 +1432,16 @@
           "readOnly": true,
           "$ref": "VerifyJobRun"
         },
+        "createChildRolloutJobRun": {
+          "description": "Output only. Information specific to a createChildRollout `JobRun`.",
+          "readOnly": true,
+          "$ref": "CreateChildRolloutJobRun"
+        },
+        "advanceChildRolloutJobRun": {
+          "description": "Output only. Information specific to an advanceChildRollout `JobRun`",
+          "readOnly": true,
+          "$ref": "AdvanceChildRolloutJobRun"
+        },
         "etag": {
           "description": "Output only. This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "readOnly": true,
@@ -1456,6 +1541,40 @@
         },
         "failureMessage": {
           "description": "Output only. Additional information about the verify failure, if available.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "CreateChildRolloutJobRun": {
+      "id": "CreateChildRolloutJobRun",
+      "description": "CreateChildRolloutJobRun contains information specific to a createChildRollout `JobRun`.",
+      "type": "object",
+      "properties": {
+        "rollout": {
+          "description": "Output only. Name of the `ChildRollout`. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/{release}\/rollouts\/a-z{0,62}.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "rolloutPhaseId": {
+          "description": "Output only. The ID of the childRollout Phase initiated by this JobRun.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "AdvanceChildRolloutJobRun": {
+      "id": "AdvanceChildRolloutJobRun",
+      "description": "AdvanceChildRolloutJobRun contains information specific to a advanceChildRollout `JobRun`.",
+      "type": "object",
+      "properties": {
+        "rollout": {
+          "description": "Output only. Name of the `ChildRollout`. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/{release}\/rollouts\/a-z{0,62}.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "rolloutPhaseId": {
+          "description": "Output only. the ID of the ChildRollout's Phase.",
           "readOnly": true,
           "type": "string"
         }

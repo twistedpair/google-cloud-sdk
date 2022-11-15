@@ -100,6 +100,10 @@ def ConstructPatchRequestFromArgs(alloydb_messages, cluster_ref, args):
         alloydb_messages, args)
     update_masks.append('automated_backup_policy')
 
+  if args.disable_pitr or args.pitr_log_retention_window:
+    cluster.pitrConfig = _ConstructPitrConfig(alloydb_messages, args)
+    update_masks.append('pitr_config')
+
   return alloydb_messages.AlloydbProjectsLocationsClustersPatchRequest(
       name=cluster_ref.RelativeName(),
       cluster=cluster,

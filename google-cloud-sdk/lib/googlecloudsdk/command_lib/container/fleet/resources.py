@@ -175,7 +175,9 @@ def MembershipLocationSpecified(args, flag_override=''):
   return False
 
 
-def SearchMembershipResource(args, flag_override=''):
+def SearchMembershipResource(args,
+                             flag_override='',
+                             filter_cluster_missing=False):
   """Searches the fleet for an ambiguous membership provided in args.
 
   Only necessary if location is ambiguous, i.e.
@@ -187,6 +189,8 @@ def SearchMembershipResource(args, flag_override=''):
   Args:
     args: arguments provided to a command, including a membership resource arg
     flag_override: a custom membership flag
+    filter_cluster_missing: whether to filter out memberships that are missing
+    a cluster.
 
   Returns:
     A membership resource name string
@@ -208,7 +212,8 @@ def SearchMembershipResource(args, flag_override=''):
   else:
     return None
 
-  all_memberships, unavailable = api_util.ListMembershipsFull()
+  all_memberships, unavailable = api_util.ListMembershipsFull(
+      filter_cluster_missing=filter_cluster_missing)
   if unavailable:
     raise exceptions.Error(
         ('Locations {} are currently unreachable. Please specify '
@@ -230,7 +235,7 @@ def SearchMembershipResource(args, flag_override=''):
   return found[0]
 
 
-def SearchMembershipResourcesPlural(args):
+def SearchMembershipResourcesPlural(args, filter_cluster_missing=False):
   """Searches the fleet for the membership resources provided in args.
 
   Only necessary if location is ambiguous, i.e.
@@ -241,6 +246,8 @@ def SearchMembershipResourcesPlural(args):
 
   Args:
     args: arguments provided to a command, including a membership resource arg
+    filter_cluster_missing: whether to filter out memberships that are missing
+    a cluster.
 
   Returns:
     A list of membership resource names
@@ -255,7 +262,8 @@ def SearchMembershipResourcesPlural(args):
   else:
     return None
 
-  all_memberships, unavailable = api_util.ListMembershipsFull()
+  all_memberships, unavailable = api_util.ListMembershipsFull(
+      filter_cluster_missing=filter_cluster_missing)
   if unavailable:
     raise exceptions.Error(
         ('Locations [{}] are currently unreachable. Please specify '

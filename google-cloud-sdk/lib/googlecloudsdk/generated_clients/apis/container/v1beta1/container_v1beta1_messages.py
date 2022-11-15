@@ -6285,12 +6285,6 @@ class WorkloadIdentityConfig(_messages.Message):
       form "//privateca.googleapis.com/projects/{project}/locations/{location}
       /certificateAuthorities/{name}". If non-empty, Workload Identity
       (standard or Hub) must be active (workload_pool must be non-empty).
-    tuneGkeMetadataServerCpu: If non-zero, set the cpu requests and limits of
-      gke-metadata-server to this value in millicores. If zero, gke-metadata-
-      server will use default values.
-    tuneGkeMetadataServerMemory: If non-zero, set the memory requests and
-      limits of gke-metadata-server to this value in bytes. If zero, gke-
-      metadata-server will use default values.
     workloadPool: The workload pool to attach all Kubernetes service accounts
       to.
   """
@@ -6298,9 +6292,7 @@ class WorkloadIdentityConfig(_messages.Message):
   identityNamespace = _messages.StringField(1)
   identityProvider = _messages.StringField(2)
   issuingCertificateAuthority = _messages.StringField(3)
-  tuneGkeMetadataServerCpu = _messages.IntegerField(4)
-  tuneGkeMetadataServerMemory = _messages.IntegerField(5)
-  workloadPool = _messages.StringField(6)
+  workloadPool = _messages.StringField(4)
 
 
 class WorkloadMetadataConfig(_messages.Message):

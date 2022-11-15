@@ -2524,16 +2524,6 @@
         "workloadPool": {
           "description": "The workload pool to attach all Kubernetes service accounts to.",
           "type": "string"
-        },
-        "tuneGkeMetadataServerMemory": {
-          "description": "If non-zero, set the memory requests and limits of gke-metadata-server to this value in bytes. If zero, gke-metadata-server will use default values.",
-          "type": "string",
-          "format": "int64"
-        },
-        "tuneGkeMetadataServerCpu": {
-          "description": "If non-zero, set the cpu requests and limits of gke-metadata-server to this value in millicores. If zero, gke-metadata-server will use default values.",
-          "type": "string",
-          "format": "int64"
         }
       }
     },

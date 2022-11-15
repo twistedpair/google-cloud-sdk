@@ -104,6 +104,48 @@ def AddClusterResourceArg(parser,
   ).AddToParser(parser)
 
 
+def AdminClusterAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='admin_cluster',
+      help_text='cluster of the {resource}.',
+  )
+
+
+def GetAdminClusterResourceSpec():
+  return concepts.ResourceSpec(
+      'gkeonprem.projects.locations.bareMetalAdminClusters',
+      resource_name='admin_cluster',
+      bareMetalAdminClustersId=AdminClusterAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
+
+
+def AddAdminClusterResourceArg(parser,
+                               verb,
+                               positional=True,
+                               required=True,
+                               flag_name_overrides=None):
+  """Adds a resource argument for an Anthos on bare metal admin cluster.
+
+  Args:
+    parser: The argparse parser to add the resource arg to.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    positional: bool, whether the argument is positional or not.
+    required: bool, whether the argument is required or not.
+    flag_name_overrides: {str: str}, dict of attribute names to the desired flag
+      name.
+  """
+  name = 'admin_cluster' if positional else '--admin-cluster'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetAdminClusterResourceSpec(),
+      'admin cluster {}'.format(verb),
+      required=required,
+      flag_name_overrides=flag_name_overrides,
+  ).AddToParser(parser)
+
+
 def AddForceCluster(parser):
   """Adds a flag for force cluster operation when there are existing node pools.
 
@@ -182,16 +224,18 @@ def AddConfigType(parser):
       flag_name_overrides={'location': ''})
 
 
-def AddVersion(parser):
+def AddVersion(parser, is_update=False):
   """Adds a flag to specify the Anthos cluster on bare metal version.
 
   Args:
     parser: The argparse parser to add the flag to.
+    is_update: bool, whether the flag is for update command or not.
   """
+  required = not is_update
   parser.add_argument(
       '--version',
-      required=True,
-      help='Anthos cluster on bare metal version for the user cluster resource',
+      required=required,
+      help='Anthos cluster on bare metal version for the user cluster resource.',
   )
 
 
@@ -258,18 +302,84 @@ def AddNetworkConfig(parser):
   _AddIslandModeCIDRConfig(network_config_mutex_group)
 
 
-def _AddMetalLBConfig(lb_config_mutex_group, is_update):
-  """Adds flags for metalLB load balancer.
+def _AddMetalLBNodeConfigs(bare_metal_metal_lb_node_config):
+  """Adds flags to set the Metal LB node config.
 
   Args:
-    lb_config_mutex_group: The parent mutex group to add the flags to.
+    bare_metal_metal_lb_node_config: The parent group to add the flag
+      to.
+  """
+  bare_metal_metal_lb_node_config.add_argument(
+      '--metal-lb-load-balancer-node-configs',
+      action='append',
+      type=arg_parsers.ArgDict(
+          spec={
+              'node-ip': str,
+              'labels': str,
+          },
+          required_keys=[
+              'node-ip',
+          ],
+      ),
+      help='MetalLB Node configuration.',
+  )
+
+
+def _AddMetalLBNodeLabels(bare_metal_metal_lb_node_config):
+  """Adds a flag to assign labels to nodes in a MetalLB node pool.
+
+  Args:
+    bare_metal_metal_lb_node_config: The parent group to add the
+      flags to.
+  """
+  bare_metal_metal_lb_node_config.add_argument(
+      '--metal-lb-load-balancer-node-labels',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help='Labels assigned to nodes of a MetalLB node pool.',
+  )
+
+
+def _AddMetalLBNodeTaints(bare_metal_metal_lb_node_config):
+  """Adds a flag to specify the node taint in the MetalLBnode pool.
+
+  Args:
+   bare_metal_metal_lb_node_config: The parent group to add the
+      flags to.
+  """
+  bare_metal_metal_lb_node_config.add_argument(
+      '--metal-lb-load-balancer-node-taints',
+      metavar='KEY=VALUE:EFFECT',
+      help='Node taint applied to every node in a MetalLB node pool.',
+      type=arg_parsers.ArgDict(),
+  )
+
+
+def _AddMetalLBNodePoolConfig(metal_lb_config_group):
+  """Adds a command group to set the node pool config for MetalLB load balancer.
+
+  Args:
+   metal_lb_config_group: The argparse parser to add the flag to.
+  """
+  bare_metal_metal_lb_node_pool_config_group = metal_lb_config_group.add_group(
+      help='Anthos on bare metal node pool configuration for MetalLB load balancer nodes.',
+  )
+  bare_metal_metal_lb_node_config = bare_metal_metal_lb_node_pool_config_group.add_group(
+      help='MetalLB Node Pool configuration.')
+
+  _AddMetalLBNodeConfigs(bare_metal_metal_lb_node_config)
+  _AddMetalLBNodeLabels(bare_metal_metal_lb_node_config)
+  _AddMetalLBNodeTaints(bare_metal_metal_lb_node_config)
+
+
+def _AddMetalLBAddressPools(metal_lb_config_group, is_update=False):
+  """Adds flags for address pools used by Metal LB load balancer.
+
+  Args:
+    metal_lb_config_group: The parent group to add the flags to.
     is_update: bool, whether the flag is for update command or not.
   """
   required = not is_update
-  metal_lb_config_group = lb_config_mutex_group.add_group(
-      'MetalLB Configuration',
-      required=required,
-      )
   metal_lb_config_group.add_argument(
       '--metal-lb-config-address-pools',
       action='append',
@@ -278,14 +388,31 @@ def _AddMetalLBConfig(lb_config_mutex_group, is_update):
           spec={
               'pool': str,
               'addresses': arg_parsers.ArgList(),
+              'avoid-buggy-ips': bool,
+              'manual-assign': bool,
           },
           required_keys=[
               'pool',
               'addresses',
           ],
       ),
-      help='MetalLB typed load balancers configuration.',
+      help='MetalLB typed load balancers address pool configuration.',
   )
+
+
+def _AddMetalLBConfig(lb_config_mutex_group, is_update=False):
+  """Adds flags for metalLB load balancer.
+
+  Args:
+    lb_config_mutex_group: The parent mutex group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+  metal_lb_config_group = lb_config_mutex_group.add_group(
+      'MetalLB Configuration',
+      )
+
+  _AddMetalLBAddressPools(metal_lb_config_group, is_update)
+  _AddMetalLBNodePoolConfig(metal_lb_config_group)
 
 
 def _AddManualLBConfig(lb_config_mutex_group):
@@ -312,6 +439,7 @@ def _AddVIPConfig(bare_metal_load_balancer_config_group):
   """
   bare_metal_vip_config_group = bare_metal_load_balancer_config_group.add_group(
       help=' VIPs used by the load balancer.',
+      required=True,
   )
   bare_metal_vip_config_group.add_argument(
       '--control-plane-vip',
@@ -326,13 +454,14 @@ def _AddVIPConfig(bare_metal_load_balancer_config_group):
 
 
 def _AddLoadBalancerPortConfig(bare_metal_load_balancer_config_group):
-  """Adds flags for set port for load balancer.
+  """Adds flags to set port for load balancer.
 
   Args:
     bare_metal_load_balancer_config_group: The parent group to add the flags to.
   """
   control_plane_load_balancer_port_config_group = bare_metal_load_balancer_config_group.add_group(
       help='Control plane load balancer port configuration.',
+      required=True,
   )
   control_plane_load_balancer_port_config_group.add_argument(
       '--control-plane-load-balancer-port',
@@ -342,7 +471,7 @@ def _AddLoadBalancerPortConfig(bare_metal_load_balancer_config_group):
   )
 
 
-def AddLoadBalancerConfig(parser, is_update):
+def AddLoadBalancerConfig(parser, is_update=False):
   """Adds a command group to set the load balancer config.
 
   Args:
@@ -352,6 +481,7 @@ def AddLoadBalancerConfig(parser, is_update):
   required = not is_update
   bare_metal_load_balancer_config_group = parser.add_group(
       help='Anthos on bare metal cluster load balancer configuration.',
+      required=required,
   )
 
   lb_config_mutex_group = bare_metal_load_balancer_config_group.add_group(
@@ -369,6 +499,28 @@ def AddLoadBalancerConfig(parser, is_update):
     _AddMetalLBConfig(lb_config_mutex_group, is_update)
 
 
+def _AddStorageLVPShareConfig(bare_metal_lvp_share_config_group):
+  """Adds flags to set LVP Share class and path used by the storage.
+
+  Args:
+    bare_metal_lvp_share_config_group: The parent group to add the flags to.
+  """
+  bare_metal_storage_lvp_share_config_group = bare_metal_lvp_share_config_group.add_group(
+      help=' LVP share class and path used by the storage.',
+      required=True,
+  )
+  bare_metal_storage_lvp_share_config_group.add_argument(
+      '--lvp-share-path',
+      required=True,
+      help='Path for the LVP share class.',
+  )
+  bare_metal_storage_lvp_share_config_group.add_argument(
+      '--lvp-share-storage-class',
+      required=True,
+      help='Storage class for LVP share.',
+  )
+
+
 def _AddLVPShareConfig(bare_metal_storage_config_group):
   """Adds flags to set LVP Share class and path used by the storage.
 
@@ -376,18 +528,16 @@ def _AddLVPShareConfig(bare_metal_storage_config_group):
     bare_metal_storage_config_group: The parent group to add the flags to.
   """
   bare_metal_lvp_share_config_group = bare_metal_storage_config_group.add_group(
-      help=' LVP share class and path used by the storage.',
-  )
-  bare_metal_lvp_share_config_group.add_argument(
-      '--lvp-share-path',
+      help=' LVP share configuration.',
       required=True,
-      help='Path for the LVP share class.',
   )
+
   bare_metal_lvp_share_config_group.add_argument(
-      '--lvp-share-storage-class',
-      required=True,
-      help='Storage class for LVP share.',
+      '--shared-path-pv-count',
+      help='Number of subdirectories to create under path.',
   )
+
+  _AddStorageLVPShareConfig(bare_metal_lvp_share_config_group)
 
 
 def _AddLVPNodeMountsConfig(bare_metal_storage_config_group):
@@ -398,6 +548,7 @@ def _AddLVPNodeMountsConfig(bare_metal_storage_config_group):
   """
   bare_metal_lvp_node_config_group = bare_metal_storage_config_group.add_group(
       help=' LVP node mounts class and path used by the storage.',
+      required=True,
   )
   bare_metal_lvp_node_config_group.add_argument(
       '--lvp-node-mounts-config-path',
@@ -419,68 +570,308 @@ def AddStorageConfig(parser):
   """
   bare_metal_storage_config_group = parser.add_group(
       help='Anthos on bare metal cluster storage configuration.',
+      required=True,
   )
   _AddLVPShareConfig(bare_metal_storage_config_group)
   _AddLVPNodeMountsConfig(bare_metal_storage_config_group)
 
 
-def _AddNodeConfigs(bare_metal_node_pool_config_group):
+def _AddControlPlaneNodeConfigs(bare_metal_node_config_group, is_update=False):
   """Adds flags to set the control plane node config.
 
   Args:
-    bare_metal_node_pool_config_group: The parent mutex group to add the
+    bare_metal_node_config_group: The parent mutex group to add the
       flags to.
+    is_update: bool, whether the flag is for update command or not.
   """
-  bare_metal_node_pool_config_group.add_group(
-      'Control Plane Node Configuration').add_argument(
-          '--control-plane-node-configs',
-          action='append',
-          required=True,
-          type=arg_parsers.ArgDict(
-              spec={
-                  'node-ip': str,
-              },
-              required_keys=[
-                  'node-ip',
-              ],
-          ),
-          help='Control Plane Node configuration.',
-      )
+  required = not is_update
+  bare_metal_node_config_group.add_argument(
+      '--control-plane-node-configs',
+      action='append',
+      required=required,
+      type=arg_parsers.ArgDict(
+          spec={
+              'node-ip': str,
+              'labels': str,
+          },
+          required_keys=[
+              'node-ip',
+          ],
+      ),
+      help='Control Plane Node configuration.',
+  )
 
 
-def _AddNodePoolConfig(bare_metal_control_plane_node_pool_config_group):
+def _AddControlPlaneNodeLabels(bare_metal_node_config_group):
+  """Adds a flag to assign labels to nodes in a node pool.
+
+  Args:
+    bare_metal_node_config_group: The parent group to add the flags to.
+  """
+  bare_metal_node_config_group.add_argument(
+      '--control-plane-node-labels',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help='Labels assigned to nodes of a node pool.',
+  )
+
+
+def _AddControlPlaneNodeTaints(bare_metal_node_config_group):
+  """Adds a flag to specify the node taint in the node pool.
+
+  Args:
+    bare_metal_node_config_group: The parent group to add the flags to.
+  """
+  bare_metal_node_config_group.add_argument(
+      '--control-plane-node-taints',
+      metavar='KEY=VALUE:EFFECT',
+      help='Node taint applied to every Kubernetes node in a node pool.',
+      type=arg_parsers.ArgDict(),
+  )
+
+
+def _AddNodePoolConfig(bare_metal_control_plane_node_pool_config_group,
+                       is_update=False):
   """Adds a command group to set the node pool config.
 
   Args:
     bare_metal_control_plane_node_pool_config_group: The argparse parser to add
       the flag to.
+    is_update: bool, whether the flag is for update command or not.
   """
+  required = not is_update
   bare_metal_node_pool_config_group = bare_metal_control_plane_node_pool_config_group.add_group(
       help='Anthos on bare metal node pool configuration for control plane nodes.',
+      required=required,
   )
-  _AddNodeConfigs(bare_metal_node_pool_config_group)
+  bare_metal_node_config_group = bare_metal_node_pool_config_group.add_group(
+      help='Anthos on bare metal node configuration for control plane nodes.',
+      required=required,
+  )
+
+  _AddControlPlaneNodeConfigs(bare_metal_node_config_group, is_update)
+  _AddControlPlaneNodeLabels(bare_metal_node_config_group)
+  _AddControlPlaneNodeTaints(bare_metal_node_config_group)
 
 
-def _AddControlPlaneNodePoolConfig(bare_metal_control_plane_config_group):
+def _AddControlPlaneNodePoolConfig(bare_metal_control_plane_config_group,
+                                   is_update=False):
   """Adds a command group to set the control plane node pool config.
 
   Args:
     bare_metal_control_plane_config_group: The argparse parser to add the flag
       to.
+    is_update: bool, whether the flag is for update command or not.
   """
+  required = not is_update
   bare_metal_control_plane_node_pool_config_group = bare_metal_control_plane_config_group.add_group(
       help='Anthos on bare metal cluster control plane node pool configuration.',
+      required=required,
   )
-  _AddNodePoolConfig(bare_metal_control_plane_node_pool_config_group)
+  _AddNodePoolConfig(bare_metal_control_plane_node_pool_config_group, is_update)
 
 
-def AddControlPlaneConfig(parser):
+def _AddControlPlaneAPIServerArgs(bare_metal_control_plane_config_group):
+  """Adds a flag to specify the API server args.
+
+  Args:
+    bare_metal_control_plane_config_group: The parent group to add the flags to.
+  """
+  bare_metal_control_plane_config_group.add_argument(
+      '--api-server-args',
+      metavar='KEY=VALUE',
+      help='API Server argument configuration.',
+      type=arg_parsers.ArgDict(),
+  )
+
+
+def AddControlPlaneConfig(parser, is_update=False):
   """Adds a command group to set the control plane config.
 
   Args:
     parser: The argparse parser to add the flag to.
+    is_update: bool, whether the flag is for update command or not.
   """
+  required = not is_update
   bare_metal_control_plane_config_group = parser.add_group(
       help='Anthos on bare metal cluster control plane configuration.',
+      required=required,
   )
-  _AddControlPlaneNodePoolConfig(bare_metal_control_plane_config_group)
+  _AddControlPlaneNodePoolConfig(bare_metal_control_plane_config_group,
+                                 is_update)
+  _AddControlPlaneAPIServerArgs(bare_metal_control_plane_config_group)
+
+
+def AddDescription(parser):
+  """Adds a flag to specify the description of the resource.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--description', type=str, help='Description for the resource.')
+
+
+def AddAnnotations(parser):
+  """Adds a flag to specify cluster annotations.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--annotations',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help='Annotations on the Anthos on bare metal resource.',
+  )
+
+
+def _AddURIConfig(bare_metal_proxy_config_group):
+  """Adds a flag to specify the address of the proxy server.
+
+  Args:
+    bare_metal_proxy_config_group: The parent group to add the flag to.
+  """
+  bare_metal_proxy_config_group.add_argument(
+      '--uri',
+      required=True,
+      type=str,
+      help='Address of the proxy server.',
+  )
+
+
+def _AddNoProxyConfig(bare_metal_proxy_config_group):
+  """Adds a flag to specify the address of the proxy server.
+
+  Args:
+    bare_metal_proxy_config_group: The parent group to add the flag to.
+  """
+  bare_metal_proxy_config_group.add_argument(
+      '--no-proxy',
+      metavar='NO_PROXY',
+      type=arg_parsers.ArgList(),
+      help='List of IPs, hostnames, and domains that should skip the proxy.',
+  )
+
+
+def AddProxyConfig(parser):
+  """Adds a command group to set the proxy config.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  bare_metal_proxy_config_group = parser.add_group(
+      help='Anthos on bare metal cluster proxy configuration.',
+  )
+  _AddURIConfig(bare_metal_proxy_config_group)
+  _AddNoProxyConfig(bare_metal_proxy_config_group)
+
+
+def AddClusterOperationsConfig(parser):
+  """Adds a command group to set the cluster operations config.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  bare_metal_cluster_operations_config_group = parser.add_group(
+      help='Anthos on bare metal cluster operations configuration.',
+  )
+
+  bare_metal_cluster_operations_config_group.add_argument(
+      '--enable-application-logs',
+      action='store_true',
+      help='Whether collection of application logs/metrics should be enabled (in addition to system logs/metrics).',
+  )
+
+
+def AddMaintenanceConfig(parser, is_update=False):
+  """Adds a command group to set the maintenance config.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+  required = not is_update
+  bare_metal_maintenance_config_group = parser.add_group(
+      help='Anthos on bare metal cluster maintenance configuration.',
+  )
+
+  bare_metal_maintenance_config_group.add_argument(
+      '--maintenance-address-cidr-blocks',
+      type=arg_parsers.ArgList(),
+      metavar='MAINTENANCE_ADDRESS_CIDR_BLOCKS',
+      help='IPv4 addresses to be placed into maintenance mode.',
+      required=required,
+  )
+
+
+def _AddMaxPodsPerNode(bare_metal_workload_node_config_group):
+  """Adds flags to set maximum pods per node.
+
+  Args:
+    bare_metal_workload_node_config_group: The parent group to add the flags to.
+  """
+  bare_metal_workload_node_config_group.add_argument(
+      '--max-pods-per-node',
+      help='Maximum number of pods a node can run.',
+      type=int,
+  )
+
+
+def _AddContainerRuntime(bare_metal_workload_node_config_group):
+  """Adds flags to set runtime for containers.
+
+  Args:
+    bare_metal_workload_node_config_group: The parent group to add the flags to.
+  """
+  bare_metal_workload_node_config_group.add_argument(
+      '--container-runtime',
+      help='Container runtime which will be used in the bare metal user cluster.',
+  )
+
+
+def AddWorkloadNodeConfig(parser):
+  """Adds a command group to set the workload node config.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  bare_metal_workload_node_config_group = parser.add_group(
+      help='Anthos on bare metal cluster workload node configuration.',
+  )
+
+  _AddMaxPodsPerNode(bare_metal_workload_node_config_group)
+  _AddContainerRuntime(bare_metal_workload_node_config_group)
+
+
+def _AddAuthorization(bare_metal_security_config_group, is_update=False):
+  """Adds flags to specify applied and managed RBAC policy.
+
+  Args:
+    bare_metal_security_config_group: The parent group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+  required = not is_update
+  authorization_group = bare_metal_security_config_group.add_group(
+      help='User cluster authorization configurations to bootstrap onto the admin cluster'
+  )
+  authorization_group.add_argument(
+      '--admin-users',
+      help='Users that will be granted the cluster-admin role on the cluster, providing full access to the cluster.',
+      action='append',
+      required=required,
+  )
+
+
+def AddSecurityConfig(parser, is_update=False):
+  """Adds a command group to set the security config.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+  bare_metal_security_config_group = parser.add_group(
+      help='Anthos on bare metal cluster security configuration.',
+  )
+
+  _AddAuthorization(bare_metal_security_config_group, is_update)

@@ -3335,7 +3335,8 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
     as well as access level lists must be empty.
 
     Values:
-      PERIMETER_TYPE_REGULAR: Regular Perimeter.
+      PERIMETER_TYPE_REGULAR: Regular Perimeter. When no value is specified,
+        the perimeter uses this type.
       PERIMETER_TYPE_BRIDGE: Perimeter Bridge.
     """
     PERIMETER_TYPE_REGULAR = 0

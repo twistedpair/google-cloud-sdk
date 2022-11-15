@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
 from googlecloudsdk.command_lib.container.vmware import flags
@@ -50,6 +51,31 @@ class AdminClustersClient(client.ClientBase):
         .EnrollVmwareAdminClusterRequest(**kwargs),
     )
     return self._service.Enroll(req)
+
+  def Unenroll(self, args):
+    """Unenrolls an Anthos on VMware admin cluster."""
+    kwargs = {
+        'name': self._admin_cluster_name(args),
+    }
+    req = (
+        self._messages
+        .GkeonpremProjectsLocationsVmwareAdminClustersUnenrollRequest(**kwargs))
+    return self._service.Unenroll(req)
+
+  def List(self, args):
+    """Lists Admin Clusters in the GKE On-Prem VMware API."""
+    list_req = (
+        self._messages.GkeonpremProjectsLocationsVmwareAdminClustersListRequest(
+            parent=self._location_name(args)))
+
+    return list_pager.YieldFromList(
+        self._service,
+        list_req,
+        field='vmwareAdminClusters',
+        batch_size=flags.Get(args, 'page_size'),
+        limit=flags.Get(args, 'limit'),
+        batch_size_attribute='pageSize',
+    )
 
   def Update(self, args, cluster_ref=None):
     """Updates an admin cluster to Anthos on VMware."""

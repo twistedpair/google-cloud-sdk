@@ -1950,7 +1950,8 @@ class AttachedDiskInitializeParams(_messages.Message):
       disk. This sets the number of throughput mb per second that the disk can
       handle. Values must be between 1 and 7,124.
     replicaZones: URLs of the zones where the disk should be replicated to.
-      Only applicable for regional resources.
+      Only applicable for regional resources. Replica zones must have 1 zone
+      same as the instance zone.
     resourceManagerTags: Resource manager tags to be bound to the disk. Tag
       keys and values have the same definition as resource manager tags. Keys
       must be in the format `tagKeys/{tag_key_id}`, and values are in the
@@ -5403,8 +5404,13 @@ class BackendServiceLogConfig(_messages.Message):
   this backend service.
 
   Enums:
-    OptionalValueValuesEnum: This field can only be specified if logging is
-      enabled for this backend service. Configures whether all, none or a
+    OptionalValueValuesEnum: Deprecated in favor of optionalMode. This field
+      can only be specified if logging is enabled for this backend service.
+      Configures whether all, none or a subset of optional fields should be
+      added to the reported logs. One of [INCLUDE_ALL_OPTIONAL,
+      EXCLUDE_ALL_OPTIONAL, CUSTOM]. Default is EXCLUDE_ALL_OPTIONAL.
+    OptionalModeValueValuesEnum: This field can only be specified if logging
+      is enabled for this backend service. Configures whether all, none or a
       subset of optional fields should be added to the reported logs. One of
       [INCLUDE_ALL_OPTIONAL, EXCLUDE_ALL_OPTIONAL, CUSTOM]. Default is
       EXCLUDE_ALL_OPTIONAL.
@@ -5412,16 +5418,21 @@ class BackendServiceLogConfig(_messages.Message):
   Fields:
     enable: Denotes whether to enable logging for the load balancer traffic
       served by this backend service. The default value is false.
-    optional: This field can only be specified if logging is enabled for this
-      backend service. Configures whether all, none or a subset of optional
-      fields should be added to the reported logs. One of
-      [INCLUDE_ALL_OPTIONAL, EXCLUDE_ALL_OPTIONAL, CUSTOM]. Default is
-      EXCLUDE_ALL_OPTIONAL.
+    optional: Deprecated in favor of optionalMode. This field can only be
+      specified if logging is enabled for this backend service. Configures
+      whether all, none or a subset of optional fields should be added to the
+      reported logs. One of [INCLUDE_ALL_OPTIONAL, EXCLUDE_ALL_OPTIONAL,
+      CUSTOM]. Default is EXCLUDE_ALL_OPTIONAL.
     optionalFields: This field can only be specified if logging is enabled for
-      this backend service and "logConfig.optional" was set to CUSTOM.
+      this backend service and "logConfig.optionalMode" was set to CUSTOM.
       Contains a list of optional fields you want to include in the logs. For
       example: serverInstance, serverGkeDetails.cluster,
       serverGkeDetails.pod.podNamespace
+    optionalMode: This field can only be specified if logging is enabled for
+      this backend service. Configures whether all, none or a subset of
+      optional fields should be added to the reported logs. One of
+      [INCLUDE_ALL_OPTIONAL, EXCLUDE_ALL_OPTIONAL, CUSTOM]. Default is
+      EXCLUDE_ALL_OPTIONAL.
     sampleRate: This field can only be specified if logging is enabled for
       this backend service. The value of the field must be in [0, 1]. This
       configures the sampling rate of requests to the load balancer where 1.0
@@ -5429,7 +5440,7 @@ class BackendServiceLogConfig(_messages.Message):
       are reported. The default value is 1.0.
   """
 
-  class OptionalValueValuesEnum(_messages.Enum):
+  class OptionalModeValueValuesEnum(_messages.Enum):
     r"""This field can only be specified if logging is enabled for this
     backend service. Configures whether all, none or a subset of optional
     fields should be added to the reported logs. One of [INCLUDE_ALL_OPTIONAL,
@@ -5446,10 +5457,29 @@ class BackendServiceLogConfig(_messages.Message):
     INCLUDE_ALL_OPTIONAL = 2
     UNSPECIFIED_OPTIONAL_MODE = 3
 
+  class OptionalValueValuesEnum(_messages.Enum):
+    r"""Deprecated in favor of optionalMode. This field can only be specified
+    if logging is enabled for this backend service. Configures whether all,
+    none or a subset of optional fields should be added to the reported logs.
+    One of [INCLUDE_ALL_OPTIONAL, EXCLUDE_ALL_OPTIONAL, CUSTOM]. Default is
+    EXCLUDE_ALL_OPTIONAL.
+
+    Values:
+      CUSTOM: A subset of optional fields.
+      EXCLUDE_ALL_OPTIONAL: None optional fields.
+      INCLUDE_ALL_OPTIONAL: All optional fields.
+      UNSPECIFIED_OPTIONAL_MODE: <no description>
+    """
+    CUSTOM = 0
+    EXCLUDE_ALL_OPTIONAL = 1
+    INCLUDE_ALL_OPTIONAL = 2
+    UNSPECIFIED_OPTIONAL_MODE = 3
+
   enable = _messages.BooleanField(1)
   optional = _messages.EnumField('OptionalValueValuesEnum', 2)
   optionalFields = _messages.StringField(3, repeated=True)
-  sampleRate = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  optionalMode = _messages.EnumField('OptionalModeValueValuesEnum', 4)
+  sampleRate = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
 
 
 class BackendServiceReference(_messages.Message):
@@ -37101,12 +37131,14 @@ class ForwardingRule(_messages.Message):
       balancing products as described in [Load balancing
       features](https://cloud.google.com/load-balancing/docs/features#protocol
       s_from_the_load_balancer_to_the_backends).
-    allPorts: This field is used along with the backend_service field for
-      Internal TCP/UDP Load Balancing or Network Load Balancing, or with the
-      target field for internal and external TargetInstance. You can only use
-      one of ports and port_range, or allPorts. The three are mutually
-      exclusive. For TCP, UDP and SCTP traffic, packets addressed to any ports
-      will be forwarded to the target or backendService.
+    allPorts: This field can only be used: - If IPProtocol is one of TCP, UDP,
+      or SCTP. - By internal TCP/UDP load balancers, backend service-based
+      network load balancers, and internal and external protocol forwarding.
+      Set this field to true to allow packets addressed to any port or packets
+      lacking destination port information (for example, UDP fragments after
+      the first fragment) to be forwarded to the backends configured with this
+      forwarding rule. The ports, port_range, and allPorts fields are mutually
+      exclusive.
     allowGlobalAccess: This field is used along with the backend_service field
       for internal load balancing or with the target field for internal
       TargetInstance. If the field is set to TRUE, clients can access ILB from
@@ -37195,25 +37227,33 @@ class ForwardingRule(_messages.Message):
     noAutomateDnsZone: This is used in PSC consumer ForwardingRule to control
       whether it should try to auto-generate a DNS zone or not. Non-PSC
       forwarding rules do not use this field.
-    portRange: This field can be used only if: - Load balancing scheme is one
-      of EXTERNAL, INTERNAL_SELF_MANAGED or INTERNAL_MANAGED - IPProtocol is
-      one of TCP, UDP, or SCTP. Packets addressed to ports in the specified
-      range will be forwarded to target or backend_service. You can only use
-      one of ports, port_range, or allPorts. The three are mutually exclusive.
-      Forwarding rules with the same [IPAddress, IPProtocol] pair must have
-      disjoint ports. Some types of forwarding target have constraints on the
-      acceptable ports. For more information, see [Port
-      specifications](https://cloud.google.com/load-balancing/docs/forwarding-
-      rule-concepts#port_specifications). @pattern: \\d+(?:-\\d+)?
-    ports: The ports field is only supported when the forwarding rule
-      references a backend_service directly. Only packets addressed to the
-      [specified list of ports]((https://cloud.google.com/load-
-      balancing/docs/forwarding-rule-concepts#port_specifications)) are
-      forwarded to backends. You can only use one of ports and port_range, or
-      allPorts. The three are mutually exclusive. You can specify a list of up
-      to five ports, which can be non-contiguous. Forwarding rules with the
-      same [IPAddress, IPProtocol] pair must have disjoint ports. @pattern:
-      \\d+(?:-\\d+)?
+    portRange: This field can only be used: - If IPProtocol is one of TCP,
+      UDP, or SCTP. - By backend service-based network load balancers, target
+      pool-based network load balancers, internal proxy load balancers,
+      external proxy load balancers, Traffic Director, external protocol
+      forwarding, and Classic VPN. Some products have restrictions on what
+      ports can be used. See port specifications for details. Only packets
+      addressed to ports in the specified range will be forwarded to the
+      backends configured with this forwarding rule. The ports, port_range,
+      and allPorts fields are mutually exclusive. For external forwarding
+      rules, two or more forwarding rules cannot use the same [IPAddress,
+      IPProtocol] pair, and cannot have overlapping portRanges. For internal
+      forwarding rules within the same VPC network, two or more forwarding
+      rules cannot use the same [IPAddress, IPProtocol] pair, and cannot have
+      overlapping portRanges. @pattern: \\d+(?:-\\d+)?
+    ports: This field can only be used: - If IPProtocol is one of TCP, UDP, or
+      SCTP. - By internal TCP/UDP load balancers, backend service-based
+      network load balancers, and internal protocol forwarding. You can
+      specify a list of up to five ports by number, separated by commas. The
+      ports can be contiguous or discontiguous. Only packets addressed to
+      these ports will be forwarded to the backends configured with this
+      forwarding rule. For external forwarding rules, two or more forwarding
+      rules cannot use the same [IPAddress, IPProtocol] pair, and cannot share
+      any values defined in ports. For internal forwarding rules within the
+      same VPC network, two or more forwarding rules cannot use the same
+      [IPAddress, IPProtocol] pair, and cannot share any values defined in
+      ports. The ports, port_range, and allPorts fields are mutually
+      exclusive. @pattern: \\d+(?:-\\d+)?
     pscConnectionId: [Output Only] The PSC connection id of the PSC Forwarding
       Rule.
     pscConnectionStatus: A PscConnectionStatusValueValuesEnum attribute.
@@ -43869,6 +43909,8 @@ class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
   r"""A InstanceGroupManagerInstanceLifecyclePolicy object.
 
   Enums:
+    DefaultActionOnFailureValueValuesEnum: Defines behaviour for all instance
+      or failures
     ForceUpdateOnRepairValueValuesEnum: A bit indicating whether to forcefully
       apply the group's latest configuration when repairing a VM. Valid
       options are: - NO (default): If configuration updates are available,
@@ -43877,6 +43919,7 @@ class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
       configuration updates are available, they are applied during repair.
 
   Fields:
+    defaultActionOnFailure: Defines behaviour for all instance or failures
     forceUpdateOnRepair: A bit indicating whether to forcefully apply the
       group's latest configuration when repairing a VM. Valid options are: -
       NO (default): If configuration updates are available, they are not
@@ -43896,6 +43939,21 @@ class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
       initialization on them.
   """
 
+  class DefaultActionOnFailureValueValuesEnum(_messages.Enum):
+    r"""Defines behaviour for all instance or failures
+
+    Values:
+      DO_NOTHING: If any of the MIG's VMs is not running, or is failing, no
+        repair action will be taken.
+      REPAIR: *[Default]* If any of the MIG's VMs is not running - for
+        example, a VM cannot be created during a scale out or a VM fails
+        \u2013 then the group will retry until it creates that VM
+        successfully. For more information about how a MIG manages its VMs,
+        see What is a managed instance."
+    """
+    DO_NOTHING = 0
+    REPAIR = 1
+
   class ForceUpdateOnRepairValueValuesEnum(_messages.Enum):
     r"""A bit indicating whether to forcefully apply the group's latest
     configuration when repairing a VM. Valid options are: - NO (default): If
@@ -43911,8 +43969,9 @@ class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
     NO = 0
     YES = 1
 
-  forceUpdateOnRepair = _messages.EnumField('ForceUpdateOnRepairValueValuesEnum', 1)
-  metadataBasedReadinessSignal = _messages.MessageField('InstanceGroupManagerInstanceLifecyclePolicyMetadataBasedReadinessSignal', 2)
+  defaultActionOnFailure = _messages.EnumField('DefaultActionOnFailureValueValuesEnum', 1)
+  forceUpdateOnRepair = _messages.EnumField('ForceUpdateOnRepairValueValuesEnum', 2)
+  metadataBasedReadinessSignal = _messages.MessageField('InstanceGroupManagerInstanceLifecyclePolicyMetadataBasedReadinessSignal', 3)
 
 
 class InstanceGroupManagerInstanceLifecyclePolicyMetadataBasedReadinessSignal(_messages.Message):
@@ -70374,6 +70433,11 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       HTTPS request. The key value is truncated to the first 128 bytes. The
       key type defaults to ALL on a HTTP session. - REGION_CODE: The
       country/region from which the request originates.
+    enforceOnKeyConfigs: If specified, any combination of values of
+      enforce_on_key_type/enforce_on_key_name is treated as the key on which
+      ratelimit threshold/action is enforced. You can specify up to 3
+      enforce_on_key_configs. If enforce_on_key_configs is specified,
+      enforce_on_key must not be specified.
     enforceOnKeyName: Rate limit key name applicable only for the following
       key types: HTTP_HEADER -- Name of the HTTP header whose value is taken
       as the key value. HTTP_COOKIE -- Name of the HTTP cookie whose value is
@@ -70439,11 +70503,114 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
   banThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 2)
   conformAction = _messages.StringField(3)
   enforceOnKey = _messages.EnumField('EnforceOnKeyValueValuesEnum', 4)
-  enforceOnKeyName = _messages.StringField(5)
-  exceedAction = _messages.StringField(6)
-  exceedActionRpcStatus = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsRpcStatus', 7)
-  exceedRedirectOptions = _messages.MessageField('SecurityPolicyRuleRedirectOptions', 8)
-  rateLimitThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 9)
+  enforceOnKeyConfigs = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig', 5, repeated=True)
+  enforceOnKeyName = _messages.StringField(6)
+  exceedAction = _messages.StringField(7)
+  exceedActionRpcStatus = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsRpcStatus', 8)
+  exceedRedirectOptions = _messages.MessageField('SecurityPolicyRuleRedirectOptions', 9)
+  rateLimitThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 10)
+
+
+class SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig(_messages.Message):
+  r"""A SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig object.
+
+  Enums:
+    EnforceOnKeyTypeValueValuesEnum: Determines the key to enforce the
+      rate_limit_threshold on. Possible values are: - ALL: A single rate limit
+      threshold is applied to all the requests matching this rule. This is the
+      default value if "enforceOnKeyConfigs" is not configured. - IP: The
+      source IP address of the request is the key. Each IP has this limit
+      enforced separately. - HTTP_HEADER: The value of the HTTP header whose
+      name is configured under "enforceOnKeyName". The key value is truncated
+      to the first 128 bytes of the header value. If no such header is present
+      in the request, the key type defaults to ALL. - XFF_IP: The first IP
+      address (i.e. the originating client IP address) specified in the list
+      of IPs under X-Forwarded-For HTTP header. If no such header is present
+      or the value is not a valid IP, the key defaults to the source IP
+      address of the request i.e. key type IP. - HTTP_COOKIE: The value of the
+      HTTP cookie whose name is configured under "enforceOnKeyName". The key
+      value is truncated to the first 128 bytes of the cookie value. If no
+      such cookie is present in the request, the key type defaults to ALL. -
+      HTTP_PATH: The URL path of the HTTP request. The key value is truncated
+      to the first 128 bytes. - SNI: Server name indication in the TLS session
+      of the HTTPS request. The key value is truncated to the first 128 bytes.
+      The key type defaults to ALL on a HTTP session. - REGION_CODE: The
+      country/region from which the request originates.
+
+  Fields:
+    enforceOnKeyName: Rate limit key name applicable only for the following
+      key types: HTTP_HEADER -- Name of the HTTP header whose value is taken
+      as the key value. HTTP_COOKIE -- Name of the HTTP cookie whose value is
+      taken as the key value.
+    enforceOnKeyType: Determines the key to enforce the rate_limit_threshold
+      on. Possible values are: - ALL: A single rate limit threshold is applied
+      to all the requests matching this rule. This is the default value if
+      "enforceOnKeyConfigs" is not configured. - IP: The source IP address of
+      the request is the key. Each IP has this limit enforced separately. -
+      HTTP_HEADER: The value of the HTTP header whose name is configured under
+      "enforceOnKeyName". The key value is truncated to the first 128 bytes of
+      the header value. If no such header is present in the request, the key
+      type defaults to ALL. - XFF_IP: The first IP address (i.e. the
+      originating client IP address) specified in the list of IPs under
+      X-Forwarded-For HTTP header. If no such header is present or the value
+      is not a valid IP, the key defaults to the source IP address of the
+      request i.e. key type IP. - HTTP_COOKIE: The value of the HTTP cookie
+      whose name is configured under "enforceOnKeyName". The key value is
+      truncated to the first 128 bytes of the cookie value. If no such cookie
+      is present in the request, the key type defaults to ALL. - HTTP_PATH:
+      The URL path of the HTTP request. The key value is truncated to the
+      first 128 bytes. - SNI: Server name indication in the TLS session of the
+      HTTPS request. The key value is truncated to the first 128 bytes. The
+      key type defaults to ALL on a HTTP session. - REGION_CODE: The
+      country/region from which the request originates.
+  """
+
+  class EnforceOnKeyTypeValueValuesEnum(_messages.Enum):
+    r"""Determines the key to enforce the rate_limit_threshold on. Possible
+    values are: - ALL: A single rate limit threshold is applied to all the
+    requests matching this rule. This is the default value if
+    "enforceOnKeyConfigs" is not configured. - IP: The source IP address of
+    the request is the key. Each IP has this limit enforced separately. -
+    HTTP_HEADER: The value of the HTTP header whose name is configured under
+    "enforceOnKeyName". The key value is truncated to the first 128 bytes of
+    the header value. If no such header is present in the request, the key
+    type defaults to ALL. - XFF_IP: The first IP address (i.e. the originating
+    client IP address) specified in the list of IPs under X-Forwarded-For HTTP
+    header. If no such header is present or the value is not a valid IP, the
+    key defaults to the source IP address of the request i.e. key type IP. -
+    HTTP_COOKIE: The value of the HTTP cookie whose name is configured under
+    "enforceOnKeyName". The key value is truncated to the first 128 bytes of
+    the cookie value. If no such cookie is present in the request, the key
+    type defaults to ALL. - HTTP_PATH: The URL path of the HTTP request. The
+    key value is truncated to the first 128 bytes. - SNI: Server name
+    indication in the TLS session of the HTTPS request. The key value is
+    truncated to the first 128 bytes. The key type defaults to ALL on a HTTP
+    session. - REGION_CODE: The country/region from which the request
+    originates.
+
+    Values:
+      ALL: <no description>
+      ALL_IPS: <no description>
+      HTTP_COOKIE: <no description>
+      HTTP_HEADER: <no description>
+      HTTP_PATH: <no description>
+      IP: <no description>
+      REGION_CODE: <no description>
+      SNI: <no description>
+      XFF_IP: <no description>
+    """
+    ALL = 0
+    ALL_IPS = 1
+    HTTP_COOKIE = 2
+    HTTP_HEADER = 3
+    HTTP_PATH = 4
+    IP = 5
+    REGION_CODE = 6
+    SNI = 7
+    XFF_IP = 8
+
+  enforceOnKeyName = _messages.StringField(1)
+  enforceOnKeyType = _messages.EnumField('EnforceOnKeyTypeValueValuesEnum', 2)
 
 
 class SecurityPolicyRuleRateLimitOptionsRpcStatus(_messages.Message):

@@ -71,13 +71,16 @@ class StreamsClient:
     oracle_sorce_config_data_object = oracle_source_config_head_data.get(
         'oracle_source_config')
     oracle_source_config = oracle_sorce_config_data_object if oracle_sorce_config_data_object else oracle_source_config_head_data
+
     include_objects_raw = oracle_source_config.get(
-        util.GetRDBMSV1alpha1ToV1FieldName('allowlist', release_track), {})
+        util.GetRDBMSV1alpha1ToV1FieldName('include_objects', release_track),
+        {})
     include_objects_data = util.ParseOracleSchemasListToOracleRdbmsMessage(
         self._messages, include_objects_raw, release_track)
 
     exclude_objects_raw = oracle_source_config.get(
-        util.GetRDBMSV1alpha1ToV1FieldName('rejectlist', release_track), {})
+        util.GetRDBMSV1alpha1ToV1FieldName('exclude_objects', release_track),
+        {})
     exclude_objects_data = util.ParseOracleSchemasListToOracleRdbmsMessage(
         self._messages, exclude_objects_raw, release_track)
 
@@ -106,12 +109,14 @@ class StreamsClient:
     mysql_source_config = mysql_sorce_config_data_object if mysql_sorce_config_data_object else mysql_sorce_config_head_data
 
     include_objects_raw = mysql_source_config.get(
-        util.GetRDBMSV1alpha1ToV1FieldName('allowlist', release_track), {})
+        util.GetRDBMSV1alpha1ToV1FieldName('include_objects', release_track),
+        {})
     include_objects_data = util.ParseMysqlSchemasListToMysqlRdbmsMessage(
         self._messages, include_objects_raw, release_track)
 
     exclude_objects_raw = mysql_source_config.get(
-        util.GetRDBMSV1alpha1ToV1FieldName('rejectlist', release_track), {})
+        util.GetRDBMSV1alpha1ToV1FieldName('exclude_objects', release_track),
+        {})
     exclude_objects_data = util.ParseMysqlSchemasListToMysqlRdbmsMessage(
         self._messages, exclude_objects_raw, release_track)
 

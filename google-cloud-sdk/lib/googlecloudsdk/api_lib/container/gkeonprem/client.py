@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import arg_parsers
+import six
 
 
 # pylint: disable=invalid-name
@@ -133,3 +135,60 @@ class ClientBase(object):
     node_pool_ref = self._node_pool_ref(args)
     if node_pool_ref:
       return node_pool_ref.Name()
+
+  def _parse_node_taint(self, node_taint):
+    """Validates and parses a node taint object.
+
+    Args:
+      node_taint: tuple, of format (TAINT_KEY, value), where value is a string
+        of format TAINT_VALUE=EFFECT.
+
+    Returns:
+      If taint is valid, returns a dict mapping message NodeTaint to its value;
+      otherwise, raise ArgumentTypeError.
+      For example,
+      {
+          'key': TAINT_KEY
+          'value': TAINT_VALUE
+          'effect': EFFECT
+      }
+    """
+    taint_effect_enum = self._messages.NodeTaint.EffectValueValuesEnum
+    taint_effect_mapping = {
+        'NoSchedule': taint_effect_enum.NO_SCHEDULE,
+        'PreferNoSchedule': taint_effect_enum.PREFER_NO_SCHEDULE,
+        'NoExecute': taint_effect_enum.NO_EXECUTE,
+    }
+
+    input_node_taint = '='.join(node_taint)
+    valid_node_taint_effects = ', '.join(
+        six.text_type(key) for key in sorted(taint_effect_mapping.keys()))
+
+    if len(node_taint) != 2:
+      raise arg_parsers.ArgumentTypeError(
+          'Node taint [{}] not in correct format, expect KEY=VALUE:EFFECT.'
+          .format(input_node_taint))
+    taint_key = node_taint[0]
+
+    effect_delimiter_count = node_taint[1].count(':')
+    if effect_delimiter_count > 1:
+      raise arg_parsers.ArgumentTypeError(
+          'Node taint [{}] not in correct format, expect KEY=VALUE:EFFECT.'
+          .format(input_node_taint))
+
+    if effect_delimiter_count == 0:
+      taint_value = node_taint[1]
+      raise arg_parsers.ArgumentTypeError(
+          'Taint effect unspecified: [{}], expect one of [{}].'.format(
+              input_node_taint, valid_node_taint_effects))
+
+    if effect_delimiter_count == 1:
+      taint_value, taint_effect = node_taint[1].split(':', 1)
+      if taint_effect not in taint_effect_mapping:
+        raise arg_parsers.ArgumentTypeError(
+            'Invalid taint effect in [{}] , expect one of [{}]'.format(
+                input_node_taint, valid_node_taint_effects))
+
+      taint_effect = taint_effect_mapping[taint_effect]
+
+    return {'key': taint_key, 'value': taint_value, 'effect': taint_effect}

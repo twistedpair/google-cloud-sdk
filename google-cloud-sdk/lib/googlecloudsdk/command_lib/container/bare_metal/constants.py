@@ -18,6 +18,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+BARE_METAL_ADMIN_CLUSTERS_FORMAT = """
+table(
+    name.segment(5):label=NAME,
+    name.segment(3):label=LOCATION,
+    bareMetalVersion:label=VERSION,
+    state:label=STATE
+)
+"""
+
 BARE_METAL_CLUSTERS_FORMAT = """
 table(
     name.segment(5):label=NAME,

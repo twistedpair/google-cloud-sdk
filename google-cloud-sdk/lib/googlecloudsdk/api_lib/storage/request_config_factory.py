@@ -40,6 +40,7 @@ S3_REQUEST_ERROR_FIELDS = {
 }
 S3_RESOURCE_ERROR_FIELDS = {
     'enable_autoclass': 'Enabling Autoclass',
+    'predefined_default_object_acl': 'Setting Predefined Default ACL',
     'public_access_prevention': 'Public Access Prevention',
     'retention_period': 'Setting Retention Period',
 }
@@ -402,7 +403,8 @@ class _RequestConfig(object):
 
   Attributes:
     predefined_acl_string (str|None): ACL to set on resource.
-    predefined_default_acl_string (str|None): Default ACL to set on resources.
+    predefined_default_object_acl_string (str|None): Default ACL to set on
+      resources.
     resource_args (_BucketConfig|_ObjectConfig|None): Holds settings for a cloud
       resource.
     system_posix_data (posix_util.SystemPosixData|None): System-wide POSIX info.
@@ -410,11 +412,11 @@ class _RequestConfig(object):
 
   def __init__(self,
                predefined_acl_string=None,
-               predefined_default_acl_string=None,
+               predefined_default_object_acl_string=None,
                resource_args=None,
                system_posix_data=None):
     self.predefined_acl_string = predefined_acl_string
-    self.predefined_default_acl_string = predefined_default_acl_string
+    self.predefined_default_object_acl_string = predefined_default_object_acl_string
     self.resource_args = resource_args
     self.system_posix_data = system_posix_data
 
@@ -422,8 +424,8 @@ class _RequestConfig(object):
     if not isinstance(other, type(self)):
       return NotImplemented
     return (self.predefined_acl_string == other.predefined_acl_string and
-            self.predefined_default_acl_string
-            == other.predefined_default_acl_string and
+            self.predefined_default_object_acl_string
+            == other.predefined_default_object_acl_string and
             self.resource_args == other.resource_args and
             self.system_posix_data == other.system_posix_data)
 
@@ -454,11 +456,11 @@ class _GcsRequestConfig(_RequestConfig):
                precondition_generation_match=None,
                precondition_metageneration_match=None,
                predefined_acl_string=None,
-               predefined_default_acl_string=None,
+               predefined_default_object_acl_string=None,
                resource_args=None):
     super(_GcsRequestConfig, self).__init__(
         predefined_acl_string=predefined_acl_string,
-        predefined_default_acl_string=predefined_default_acl_string,
+        predefined_default_object_acl_string=predefined_default_object_acl_string,
         resource_args=resource_args)
     self.gzip_settings = gzip_settings
     self.no_clobber = no_clobber
@@ -673,8 +675,8 @@ def get_request_config(url,
 
   request_config.predefined_acl_string = getattr(user_request_args,
                                                  'predefined_acl_string', None)
-  request_config.predefined_default_acl_string = getattr(
-      user_request_args, 'predefined_default_acl_string', None)
+  request_config.predefined_default_object_acl_string = getattr(
+      user_request_args, 'predefined_default_object_acl_string', None)
   request_config.system_posix_data = getattr(user_request_args,
                                              'system_posix_data', None)
 

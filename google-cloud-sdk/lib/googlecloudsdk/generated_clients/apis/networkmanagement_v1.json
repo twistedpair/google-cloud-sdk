@@ -374,6 +374,14 @@
           "description": "A [Cloud Function](https:\/\/cloud.google.com\/functions).",
           "$ref": "CloudFunctionEndpoint"
         },
+        "appEngineVersion": {
+          "description": "An [App Engine](https:\/\/cloud.google.com\/appengine) [service version](https:\/\/cloud.google.com\/appengine\/docs\/admin-api\/reference\/rest\/v1\/apps.services.versions).",
+          "$ref": "AppEngineVersionEndpoint"
+        },
+        "cloudRunRevision": {
+          "description": "A [Cloud Run](https:\/\/cloud.google.com\/run) [revision](https:\/\/cloud.google.com\/run\/docs\/reference\/rest\/v1\/namespaces.revisions\/get)",
+          "$ref": "CloudRunRevisionEndpoint"
+        },
         "network": {
           "description": "A Compute Engine network URI.",
           "type": "string"
@@ -405,6 +413,28 @@
       "properties": {
         "uri": {
           "description": "A [Cloud Function](https:\/\/cloud.google.com\/functions) name.",
+          "type": "string"
+        }
+      }
+    },
+    "AppEngineVersionEndpoint": {
+      "id": "AppEngineVersionEndpoint",
+      "description": "Wrapper for app engine service version attributes.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "An [App Engine](https:\/\/cloud.google.com\/appengine) [service version](https:\/\/cloud.google.com\/appengine\/docs\/admin-api\/reference\/rest\/v1\/apps.services.versions) name.",
+          "type": "string"
+        }
+      }
+    },
+    "CloudRunRevisionEndpoint": {
+      "id": "CloudRunRevisionEndpoint",
+      "description": "Wrapper for Cloud Run revision attributes.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "A [Cloud Run](https:\/\/cloud.google.com\/run) [revision](https:\/\/cloud.google.com\/run\/docs\/reference\/rest\/v1\/namespaces.revisions\/get) URI. The format is: projects\/{project}\/locations\/{location}\/revisions\/{revision}",
           "type": "string"
         }
       }
@@ -525,6 +555,8 @@
             "Initial state: packet originating from a Google Kubernetes Engine cluster master. A GKEMasterInfo is populated with starting instance information.",
             "Initial state: packet originating from a Cloud SQL instance. A CloudSQLInstanceInfo is populated with starting instance information.",
             "Initial state: packet originating from a Cloud Function. A CloudFunctionInfo is populated with starting function information.",
+            "Initial state: packet originating from an App Engine service version. An AppEngineVersionInfo is populated with starting version information.",
+            "Initial state: packet originating from a Cloud Run revision. A CloudRunRevisionInfo is populated with starting revision information.",
             "Config checking state: verify ingress firewall rule.",
             "Config checking state: verify egress firewall rule.",
             "Config checking state: verify route.",
@@ -552,6 +584,8 @@
             "START_FROM_GKE_MASTER",
             "START_FROM_CLOUD_SQL_INSTANCE",
             "START_FROM_CLOUD_FUNCTION",
+            "START_FROM_APP_ENGINE_VERSION",
+            "START_FROM_CLOUD_RUN_REVISION",
             "APPLY_INGRESS_FIREWALL_RULE",
             "APPLY_EGRESS_FIREWALL_RULE",
             "APPLY_ROUTE",
@@ -647,6 +681,14 @@
         "cloudFunction": {
           "description": "Display information of a Cloud Function.",
           "$ref": "CloudFunctionInfo"
+        },
+        "appEngineVersion": {
+          "description": "Display information of an App Engine service version.",
+          "$ref": "AppEngineVersionInfo"
+        },
+        "cloudRunRevision": {
+          "description": "Display information of a Cloud Run revision.",
+          "$ref": "CloudRunRevisionInfo"
         }
       }
     },
@@ -1199,7 +1241,8 @@
             "Packet could be dropped because the Cloud Function is not in an active status.",
             "Packet could be dropped because no VPC connector is set.",
             "Packet could be dropped because the VPC connector is not in a running state.",
-            "The Private Service Connect endpoint is in a project that is not approved to connect to the service."
+            "The Private Service Connect endpoint is in a project that is not approved to connect to the service.",
+            "Packet sent from a Cloud Run revision that is not ready."
           ],
           "enum": [
             "CAUSE_UNSPECIFIED",
@@ -1236,7 +1279,8 @@
             "CLOUD_FUNCTION_NOT_ACTIVE",
             "VPC_CONNECTOR_NOT_SET",
             "VPC_CONNECTOR_NOT_RUNNING",
-            "PSC_CONNECTION_NOT_ACCEPTED"
+            "PSC_CONNECTION_NOT_ACCEPTED",
+            "CLOUD_RUN_REVISION_NOT_READY"
           ]
         },
         "resourceUri": {
@@ -1440,6 +1484,52 @@
           "description": "Latest successfully deployed version id of the Cloud Function.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "AppEngineVersionInfo": {
+      "id": "AppEngineVersionInfo",
+      "description": "For display only. Metadata associated with an App Engine version.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Name of an App Engine version.",
+          "type": "string"
+        },
+        "uri": {
+          "description": "URI of an App Engine version.",
+          "type": "string"
+        },
+        "runtime": {
+          "description": "Runtime of the App Engine version.",
+          "type": "string"
+        },
+        "environment": {
+          "description": "App Engine execution environment for a version.",
+          "type": "string"
+        }
+      }
+    },
+    "CloudRunRevisionInfo": {
+      "id": "CloudRunRevisionInfo",
+      "description": "For display only. Metadata associated with a Cloud Run revision.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Name of a Cloud Run revision.",
+          "type": "string"
+        },
+        "uri": {
+          "description": "URI of a Cloud Run revision.",
+          "type": "string"
+        },
+        "location": {
+          "description": "Location in which this revision is deployed.",
+          "type": "string"
+        },
+        "serviceUri": {
+          "description": "URI of Cloud Run service this revision belongs to.",
+          "type": "string"
         }
       }
     },

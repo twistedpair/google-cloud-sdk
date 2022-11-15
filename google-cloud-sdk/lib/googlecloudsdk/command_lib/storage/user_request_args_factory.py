@@ -240,7 +240,7 @@ class _UserRequestArgs:
                precondition_generation_match=None,
                precondition_metageneration_match=None,
                predefined_acl_string=None,
-               predefined_default_acl_string=None,
+               predefined_default_object_acl_string=None,
                resource_args=None,
                system_posix_data=None):
     """Sets properties."""
@@ -251,7 +251,7 @@ class _UserRequestArgs:
     self.precondition_generation_match = precondition_generation_match
     self.precondition_metageneration_match = precondition_metageneration_match
     self.predefined_acl_string = predefined_acl_string
-    self.predefined_default_acl_string = predefined_default_acl_string
+    self.predefined_default_object_acl_string = predefined_default_object_acl_string
     self.resource_args = resource_args
     self.system_posix_data = system_posix_data
 
@@ -266,8 +266,8 @@ class _UserRequestArgs:
             self.precondition_metageneration_match
             == other.precondition_metageneration_match and
             self.predefined_acl_string == other.predefined_acl_string and
-            self.predefined_default_acl_string
-            == other.predefined_default_acl_string and
+            self.predefined_default_object_acl_string
+            == other.predefined_default_object_acl_string and
             self.resource_args == other.resource_args and
             self.system_posix_data == other.system_posix_data)
 

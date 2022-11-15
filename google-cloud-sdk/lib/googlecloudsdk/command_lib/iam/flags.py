@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.iam.byoid_utilities import cred_config
 from googlecloudsdk.command_lib.util.args import common_args
 
 
@@ -82,7 +83,7 @@ def GetResourceNameFlag(verb):
   return base.Argument('resource', help=_RESOURCE_NAME_HELP.format(verb=verb))
 
 
-def AddCommonByoidCreateConfigFlags(parser):
+def AddCommonByoidCreateConfigFlags(parser, config_type):
   """Adds parser arguments that are common to both workload identity federation and workforce pools."""
   parser.add_argument(
       '--output-file',
@@ -127,7 +128,18 @@ def AddCommonByoidCreateConfigFlags(parser):
           upper_bound='120s',
           parsed_unit='ms'),
       help='The timeout duration in milliseconds for waiting for the executable to finish.'
-    )
+  )
   executable_args.add_argument(
       '--executable-output-file',
       help='The absolute path to the file storing the executable response.')
+
+  if config_type == cred_config.ConfigType.WORKFORCE_POOLS:
+    executable_args.add_argument(
+        '--executable-interactive-timeout-millis',
+        type=arg_parsers.Duration(
+            default_unit='ms',
+            lower_bound='30s',
+            upper_bound='1800s',
+            parsed_unit='ms'),
+        help='The timeout duration, in milliseconds, to wait for the ' +
+        'executable to finish when the command is running in interactive mode.')

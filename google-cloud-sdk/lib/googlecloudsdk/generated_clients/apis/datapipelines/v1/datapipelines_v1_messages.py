@@ -15,6 +15,27 @@ from apitools.base.py import extra_types
 package = 'datapipelines'
 
 
+class DatapipelinesProjectsLocationsComputeSchemaRequest(_messages.Message):
+  r"""A DatapipelinesProjectsLocationsComputeSchemaRequest object.
+
+  Fields:
+    googleCloudDatapipelinesV1ComputeSchemaRequest: A
+      GoogleCloudDatapipelinesV1ComputeSchemaRequest resource to be passed as
+      the request body.
+    location: Required. The full location formatted as "projects/{your-
+      project}/locations/{google-cloud-region}". If attempting to infer the
+      schema from an existing Google Cloud resource, the default Data
+      Pipelines service account for this project will be used in making
+      requests for the resource. If the region given for "{google-cloud-
+      region}" is different than the region where the resource is stored, then
+      the data will be transferred to and processed in the region specified
+      here, but it will not be persistently stored in this region.
+  """
+
+  googleCloudDatapipelinesV1ComputeSchemaRequest = _messages.MessageField('GoogleCloudDatapipelinesV1ComputeSchemaRequest', 1)
+  location = _messages.StringField(2, required=True)
+
+
 class DatapipelinesProjectsLocationsListPipelinesRequest(_messages.Message):
   r"""A DatapipelinesProjectsLocationsListPipelinesRequest object.
 
@@ -160,6 +181,123 @@ class DatapipelinesProjectsLocationsPipelinesStopRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class DatapipelinesProjectsLocationsTransformDescriptionsBatchGetRequest(_messages.Message):
+  r"""A DatapipelinesProjectsLocationsTransformDescriptionsBatchGetRequest
+  object.
+
+  Fields:
+    names: Optional. The names of the transform descriptions being retrieved,
+      formatted as "projects/{project}/locations/{location}/transformdescripti
+      ons/{transform_description}". If no name is provided, all of the
+      transform descriptions will be returned.
+    parent: Required. The project and location shared by all transform
+      descriptions being retrieved, formatted as
+      "projects/{project}/locations/{location}".
+  """
+
+  names = _messages.StringField(1, repeated=True)
+  parent = _messages.StringField(2, required=True)
+
+
+class DatapipelinesProjectsLocationsTransformDescriptionsGetRequest(_messages.Message):
+  r"""A DatapipelinesProjectsLocationsTransformDescriptionsGetRequest object.
+
+  Fields:
+    name: Required. The full name formatted as "projects/{your-
+      project}/locations/{google-cloud-region}/transformdescriptions/{uniform-
+      resource-name}".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GoogleCloudDatapipelinesV1ArrayValue(_messages.Message):
+  r"""Represents an array of values. The elements can be of any type.
+
+  Fields:
+    elements: The elements of the array.
+  """
+
+  elements = _messages.MessageField('GoogleCloudDatapipelinesV1FieldValue', 1, repeated=True)
+
+
+class GoogleCloudDatapipelinesV1AtomicValue(_messages.Message):
+  r"""Represents a non-dividable value.
+
+  Fields:
+    booleanValue: A boolean value.
+    byteValue: An 8-bit signed value.
+    bytesValue: An array of raw bytes.
+    datetimeValue: A datetime value.
+    decimalValue: A large decimal value, equivalent to Java BigDecimal.
+    doubleValue: A 64-bit floating point value.
+    floatValue: A 32-bit floating point value.
+    int16Value: A 16-bit signed value.
+    int32Value: A 32-bit signed value.
+    int64Value: A 64-bit signed value.
+    stringValue: A string value.
+  """
+
+  booleanValue = _messages.BooleanField(1)
+  byteValue = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  bytesValue = _messages.BytesField(3)
+  datetimeValue = _messages.MessageField('GoogleTypeDateTime', 4)
+  decimalValue = _messages.MessageField('GoogleTypeDecimal', 5)
+  doubleValue = _messages.FloatField(6)
+  floatValue = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  int16Value = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  int32Value = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  int64Value = _messages.IntegerField(10)
+  stringValue = _messages.StringField(11)
+
+
+class GoogleCloudDatapipelinesV1BatchGetTransformDescriptionsResponse(_messages.Message):
+  r"""Response message for BatchGetTransformDescriptions
+
+  Fields:
+    transformDescriptions: List of requested transform descriptions.
+  """
+
+  transformDescriptions = _messages.MessageField('GoogleCloudDatapipelinesV1TransformDescription', 1, repeated=True)
+
+
+class GoogleCloudDatapipelinesV1ComputeSchemaRequest(_messages.Message):
+  r"""Request message for ComputeSchema
+
+  Fields:
+    config: Required. The configuration for the transform. If this is not a
+      source, then each input with its schema must be set. It is not required
+      to have any outputs set.
+    inputSchemas: Optional. In relation to the full pipeline graph, the
+      schemas of the transforms that are used as inputs to the one for
+      `config`. If `config` represents a transform for reading from some
+      resource, then this should be empty. For all other transforms, at least
+      one value must be provided.
+    rawSchema: Optional. If set, this will use the provided raw schema to
+      compute the schema rather than connecting to any resources. Validation
+      will still occur to make sure it is compatible with all input schemas.
+      If the transform is an IO, the IO must support that schema type.
+  """
+
+  config = _messages.MessageField('GoogleCloudDatapipelinesV1ConfiguredTransform', 1)
+  inputSchemas = _messages.MessageField('GoogleCloudDatapipelinesV1Schema', 2, repeated=True)
+  rawSchema = _messages.MessageField('GoogleCloudDatapipelinesV1RawSchemaInfo', 3)
+
+
+class GoogleCloudDatapipelinesV1ConfiguredTransform(_messages.Message):
+  r"""A fully configured transform that can be validated.
+
+  Fields:
+    config: Configuration values provided. These must match the schema
+      provided in the row's schema.
+    uniformResourceName: Unique resource name of the transform. This should be
+      the same as the equivalent `TransformDescription` value.
+  """
+
+  config = _messages.MessageField('GoogleCloudDatapipelinesV1Row', 1)
+  uniformResourceName = _messages.StringField(2)
+
+
 class GoogleCloudDatapipelinesV1DataflowJobDetails(_messages.Message):
   r"""Pipeline job details specific to the Dataflow API. This is encapsulated
   here to allow for more executors to store their specific details separately.
@@ -208,6 +346,139 @@ class GoogleCloudDatapipelinesV1DataflowJobDetails(_messages.Message):
   currentWorkers = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resourceInfo = _messages.MessageField('ResourceInfoValue', 2)
   sdkVersion = _messages.MessageField('GoogleCloudDatapipelinesV1SdkVersion', 3)
+
+
+class GoogleCloudDatapipelinesV1EnumerationValue(_messages.Message):
+  r"""Represents a selected value from an EnumerationType.
+
+  Fields:
+    name: Name of the enum option.
+  """
+
+  name = _messages.StringField(1)
+
+
+class GoogleCloudDatapipelinesV1Field(_messages.Message):
+  r"""Info for a single field in the schema.
+
+  Fields:
+    name: Name of the field.
+    type: Type info for the field.
+  """
+
+  name = _messages.StringField(1)
+  type = _messages.MessageField('GoogleCloudDatapipelinesV1FieldType', 2)
+
+
+class GoogleCloudDatapipelinesV1FieldType(_messages.Message):
+  r"""Type info about a field.
+
+  Enums:
+    TypeValueValuesEnum: Specific type of the field. For non-atomic types, the
+      corresponding type info for that non-atomic must be set.
+
+  Fields:
+    collectionElementType: If `type` is an array or iterable, this is the type
+      contained in that array or iterable.
+    logicalType: If `type` is a logical type, this is the info for the
+      specific logical type.
+    mapType: If `type` is a map, this is the key and value types for that map.
+    nullable: Whether or not this field is nullable.
+    rowSchema: If `type` is a row, this is the schema of that row.
+    type: Specific type of the field. For non-atomic types, the corresponding
+      type info for that non-atomic must be set.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Specific type of the field. For non-atomic types, the corresponding
+    type info for that non-atomic must be set.
+
+    Values:
+      TYPE_NAME_UNSPECIFIED: Type name is not set (generally an error)
+      TYPE_NAME_BYTE: 8-bit signed integer
+      TYPE_NAME_INT16: 16-bit signed integer
+      TYPE_NAME_INT32: 32-bit signed integer
+      TYPE_NAME_INT64: 64-bit signed integer
+      TYPE_NAME_DECIMAL: Large decimal type (equivalent to Java BigDecimal)
+      TYPE_NAME_FLOAT: 32-bit floating point integer
+      TYPE_NAME_DOUBLE: 64-bit floating point integer
+      TYPE_NAME_STRING: String
+      TYPE_NAME_DATETIME: Datetime
+      TYPE_NAME_BOOLEAN: Bool
+      TYPE_NAME_BYTES: Convenience for an ARRAY of BYTE values
+      TYPE_NAME_ARRAY: Array of some other values.
+      TYPE_NAME_ITERABLE: Iterable of some other values.
+      TYPE_NAME_MAP: Key/Value mapping between values.
+      TYPE_NAME_ROW: Struct that follows a particular schema
+      TYPE_NAME_LOGICAL_TYPE: Beam logical type
+    """
+    TYPE_NAME_UNSPECIFIED = 0
+    TYPE_NAME_BYTE = 1
+    TYPE_NAME_INT16 = 2
+    TYPE_NAME_INT32 = 3
+    TYPE_NAME_INT64 = 4
+    TYPE_NAME_DECIMAL = 5
+    TYPE_NAME_FLOAT = 6
+    TYPE_NAME_DOUBLE = 7
+    TYPE_NAME_STRING = 8
+    TYPE_NAME_DATETIME = 9
+    TYPE_NAME_BOOLEAN = 10
+    TYPE_NAME_BYTES = 11
+    TYPE_NAME_ARRAY = 12
+    TYPE_NAME_ITERABLE = 13
+    TYPE_NAME_MAP = 14
+    TYPE_NAME_ROW = 15
+    TYPE_NAME_LOGICAL_TYPE = 16
+
+  collectionElementType = _messages.MessageField('GoogleCloudDatapipelinesV1FieldType', 1)
+  logicalType = _messages.MessageField('GoogleCloudDatapipelinesV1LogicalType', 2)
+  mapType = _messages.MessageField('GoogleCloudDatapipelinesV1MapType', 3)
+  nullable = _messages.BooleanField(4)
+  rowSchema = _messages.MessageField('GoogleCloudDatapipelinesV1Schema', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+
+
+class GoogleCloudDatapipelinesV1FieldValue(_messages.Message):
+  r"""A single value in a row. The value set must correspond to the correct
+  type from the row's schema.
+
+  Fields:
+    arrayValue: The array value of this field. Corresponds to TYPE_NAME_ARRAY
+      in the schema.
+    atomicValue: The atomic value of this field. Must correspond to the
+      correct atomic type in the schema.
+    enumValue: The enum value of this field. Corresponds to
+      TYPE_NAME_LOGICAL_TYPE in the schema if that logical type represents an
+      `EnumerationType` type.
+    fixedBytesValue: The fixed-length byte collection of this field.
+      Corresponds to TYPE_NAME_LOGICAL_TYPE in the schema if that logical type
+      represents a `FixedBytes` type.
+    iterableValue: The iterable value of this field. Corresponds to
+      TYPE_NAME_ITERABLE in the schema.
+    mapValue: The map value of this field. Corresponds to TYPE_NAME_MAP in the
+      schema.
+    rowValue: The row value of this field. Corresponds to TYPE_NAME_ROW in the
+      schema. This row also holds to its own schema.
+  """
+
+  arrayValue = _messages.MessageField('GoogleCloudDatapipelinesV1ArrayValue', 1)
+  atomicValue = _messages.MessageField('GoogleCloudDatapipelinesV1AtomicValue', 2)
+  enumValue = _messages.MessageField('GoogleCloudDatapipelinesV1EnumerationValue', 3)
+  fixedBytesValue = _messages.MessageField('GoogleCloudDatapipelinesV1FixedBytesValue', 4)
+  iterableValue = _messages.MessageField('GoogleCloudDatapipelinesV1IterableValue', 5)
+  mapValue = _messages.MessageField('GoogleCloudDatapipelinesV1MapValue', 6)
+  rowValue = _messages.MessageField('GoogleCloudDatapipelinesV1Row', 7)
+
+
+class GoogleCloudDatapipelinesV1FixedBytesValue(_messages.Message):
+  r"""Represents a collection of bytes whose size is the same as the
+  associated FixedBytes size value.
+
+  Fields:
+    value: The raw bytes. It must be exactly the size specified in the schema.
+  """
+
+  value = _messages.BytesField(1)
 
 
 class GoogleCloudDatapipelinesV1FlexTemplateRuntimeEnvironment(_messages.Message):
@@ -344,6 +615,16 @@ class GoogleCloudDatapipelinesV1FlexTemplateRuntimeEnvironment(_messages.Message
   workerRegion = _messages.StringField(14)
   workerZone = _messages.StringField(15)
   zone = _messages.StringField(16)
+
+
+class GoogleCloudDatapipelinesV1IterableValue(_messages.Message):
+  r"""Represents an iterable of values. The elements can be of any type.
+
+  Fields:
+    elements: The elements of the iterable.
+  """
+
+  elements = _messages.MessageField('GoogleCloudDatapipelinesV1FieldValue', 1, repeated=True)
 
 
 class GoogleCloudDatapipelinesV1Job(_messages.Message):
@@ -664,6 +945,73 @@ class GoogleCloudDatapipelinesV1ListPipelinesResponse(_messages.Message):
   pipelines = _messages.MessageField('GoogleCloudDatapipelinesV1Pipeline', 2, repeated=True)
 
 
+class GoogleCloudDatapipelinesV1LogicalType(_messages.Message):
+  r"""Represents the input for creating a specified logical type.
+
+  Fields:
+    enumerationType: The enum represented by this logical type.
+    fixedBytes: The fixed-size byte collection represented by this logical
+      type.
+  """
+
+  enumerationType = _messages.MessageField('GoogleCloudDatapipelinesV1LogicalTypeEnumerationType', 1)
+  fixedBytes = _messages.MessageField('GoogleCloudDatapipelinesV1LogicalTypeFixedBytes', 2)
+
+
+class GoogleCloudDatapipelinesV1LogicalTypeEnumerationType(_messages.Message):
+  r"""Represents the Beam EnumerationType logical type.
+
+  Fields:
+    values: Names of the values. The numeric value is the same as the index.
+  """
+
+  values = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudDatapipelinesV1LogicalTypeFixedBytes(_messages.Message):
+  r"""Represents the Beam FixedBytes logical type.
+
+  Fields:
+    sizeBytes: Number of bytes to allocate.
+  """
+
+  sizeBytes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDatapipelinesV1MapType(_messages.Message):
+  r"""Represents a map in a schema.
+
+  Fields:
+    mapKeyType: Key type of the map. Only atomic types are supported.
+    mapValueType: Value type of the map.
+  """
+
+  mapKeyType = _messages.MessageField('GoogleCloudDatapipelinesV1FieldType', 1)
+  mapValueType = _messages.MessageField('GoogleCloudDatapipelinesV1FieldType', 2)
+
+
+class GoogleCloudDatapipelinesV1MapValue(_messages.Message):
+  r"""Represents a key/value pairing.
+
+  Fields:
+    entries: The entries in the map.
+  """
+
+  entries = _messages.MessageField('GoogleCloudDatapipelinesV1MapValueEntry', 1, repeated=True)
+
+
+class GoogleCloudDatapipelinesV1MapValueEntry(_messages.Message):
+  r"""A single entry in the map. Each entry must have a unique key.
+
+  Fields:
+    key: The key value. Only atomic values are supported.
+    value: The value associated with the key. It may be of any type.
+  """
+
+  key = _messages.MessageField('GoogleCloudDatapipelinesV1FieldValue', 1)
+  value = _messages.MessageField('GoogleCloudDatapipelinesV1FieldValue', 2)
+
+
 class GoogleCloudDatapipelinesV1Pipeline(_messages.Message):
   r"""The main pipeline entity and all the necessary metadata for launching
   and managing linked jobs.
@@ -809,6 +1157,45 @@ class GoogleCloudDatapipelinesV1Pipeline(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 9)
   type = _messages.EnumField('TypeValueValuesEnum', 10)
   workload = _messages.MessageField('GoogleCloudDatapipelinesV1Workload', 11)
+
+
+class GoogleCloudDatapipelinesV1RawSchemaInfo(_messages.Message):
+  r"""The raw schema and its type.
+
+  Enums:
+    TypeValueValuesEnum: The type of the schema.
+
+  Fields:
+    rawSchema: The schema.
+    type: The type of the schema.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of the schema.
+
+    Values:
+      RAW_SCHEMA_TYPE_UNSPECIFIED: The schema type is unknown.
+      RAW_SCHEMA_TYPE_AVRO: The schema is an Avro schema.
+    """
+    RAW_SCHEMA_TYPE_UNSPECIFIED = 0
+    RAW_SCHEMA_TYPE_AVRO = 1
+
+  rawSchema = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class GoogleCloudDatapipelinesV1Row(_messages.Message):
+  r"""Represents an Apache Beam row, though the `Any` nature of values is
+  replaced with more concrete representations of valid values.
+
+  Fields:
+    schema: Required. The schema of the row's data.
+    values: Required. The values of this Row. A fully built row is required to
+      hold to the schema specified by `schema`.
+  """
+
+  schema = _messages.MessageField('GoogleCloudDatapipelinesV1SchemaSource', 1)
+  values = _messages.MessageField('GoogleCloudDatapipelinesV1FieldValue', 2, repeated=True)
 
 
 class GoogleCloudDatapipelinesV1RunPipelineRequest(_messages.Message):
@@ -962,6 +1349,33 @@ class GoogleCloudDatapipelinesV1ScheduleSpec(_messages.Message):
   timeZone = _messages.StringField(3)
 
 
+class GoogleCloudDatapipelinesV1Schema(_messages.Message):
+  r"""Represents a simplified Apache Beam schema.
+
+  Fields:
+    fields: Fields in the schema. Every field within a schema must have a
+      unique name.
+    referenceId: An identifier of the schema for looking it up in a
+      repository. This only needs to be set if the schema is stored in a
+      repository.
+  """
+
+  fields = _messages.MessageField('GoogleCloudDatapipelinesV1Field', 1, repeated=True)
+  referenceId = _messages.StringField(2)
+
+
+class GoogleCloudDatapipelinesV1SchemaSource(_messages.Message):
+  r"""Holds a schema or a reference to a schema in some repository.
+
+  Fields:
+    localSchema: Schema located locally with the message.
+    referenceId: The `reference_id` value of a schema in a repository.
+  """
+
+  localSchema = _messages.MessageField('GoogleCloudDatapipelinesV1Schema', 1)
+  referenceId = _messages.StringField(2)
+
+
 class GoogleCloudDatapipelinesV1SdkVersion(_messages.Message):
   r"""The version of the SDK used to run the job.
 
@@ -999,6 +1413,24 @@ class GoogleCloudDatapipelinesV1SdkVersion(_messages.Message):
 
 class GoogleCloudDatapipelinesV1StopPipelineRequest(_messages.Message):
   r"""Request message for StopPipeline."""
+
+
+class GoogleCloudDatapipelinesV1TransformDescription(_messages.Message):
+  r"""Description of a schema-aware transform, which provides info on how it
+  can be configured.
+
+  Fields:
+    name: Output only. The full name of this resource formatted as: projects/{
+      project}/locations/{location}/transformDescriptions/{transform_descripti
+      on} `transform_description` is the same as the `uniform_resource_name`
+      field.
+    options: Available options for configuring the transform.
+    uniformResourceName: Unique resource name of the transform.
+  """
+
+  name = _messages.StringField(1)
+  options = _messages.MessageField('GoogleCloudDatapipelinesV1Schema', 2)
+  uniformResourceName = _messages.StringField(3)
 
 
 class GoogleCloudDatapipelinesV1Workload(_messages.Message):
@@ -1074,6 +1506,120 @@ class GoogleRpcStatus(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class GoogleTypeDateTime(_messages.Message):
+  r"""Represents civil time (or occasionally physical time). This type can
+  represent a civil time in one of a few possible ways: * When utc_offset is
+  set and time_zone is unset: a civil time on a calendar day with a particular
+  offset from UTC. * When time_zone is set and utc_offset is unset: a civil
+  time on a calendar day in a particular time zone. * When neither time_zone
+  nor utc_offset is set: a civil time on a calendar day in local time. The
+  date is relative to the Proleptic Gregorian Calendar. If year, month, or day
+  are 0, the DateTime is considered not to have a specific year, month, or day
+  respectively. This type may also be used to represent a physical time if all
+  the date and time fields are set and either case of the `time_offset` oneof
+  is set. Consider using `Timestamp` message for physical time instead. If
+  your use case also would like to store the user's timezone, that can be done
+  in another field. This type is more flexible than some applications may
+  want. Make sure to document and validate your application's limitations.
+
+  Fields:
+    day: Optional. Day of month. Must be from 1 to 31 and valid for the year
+      and month, or 0 if specifying a datetime without a day.
+    hours: Optional. Hours of day in 24 hour format. Should be from 0 to 23,
+      defaults to 0 (midnight). An API may choose to allow the value
+      "24:00:00" for scenarios like business closing time.
+    minutes: Optional. Minutes of hour of day. Must be from 0 to 59, defaults
+      to 0.
+    month: Optional. Month of year. Must be from 1 to 12, or 0 if specifying a
+      datetime without a month.
+    nanos: Optional. Fractions of seconds in nanoseconds. Must be from 0 to
+      999,999,999, defaults to 0.
+    seconds: Optional. Seconds of minutes of the time. Must normally be from 0
+      to 59, defaults to 0. An API may allow the value 60 if it allows leap-
+      seconds.
+    timeZone: Time zone.
+    utcOffset: UTC offset. Must be whole seconds, between -18 hours and +18
+      hours. For example, a UTC offset of -4:00 would be represented as {
+      seconds: -14400 }.
+    year: Optional. Year of date. Must be from 1 to 9999, or 0 if specifying a
+      datetime without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  hours = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minutes = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  nanos = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  timeZone = _messages.MessageField('GoogleTypeTimeZone', 7)
+  utcOffset = _messages.StringField(8)
+  year = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+
+
+class GoogleTypeDecimal(_messages.Message):
+  r"""A representation of a decimal value, such as 2.5. Clients may convert
+  values into language-native decimal formats, such as Java's BigDecimal or
+  Python's decimal.Decimal. [BigDecimal]: https://docs.oracle.com/en/java/java
+  se/11/docs/api/java.base/java/math/BigDecimal.html [decimal.Decimal]:
+  https://docs.python.org/3/library/decimal.html
+
+  Fields:
+    value: The decimal value, as a string. The string representation consists
+      of an optional sign, `+` (`U+002B`) or `-` (`U+002D`), followed by a
+      sequence of zero or more decimal digits ("the integer"), optionally
+      followed by a fraction, optionally followed by an exponent. An empty
+      string **should** be interpreted as `0`. The fraction consists of a
+      decimal point followed by zero or more decimal digits. The string must
+      contain at least one digit in either the integer or the fraction. The
+      number formed by the sign, the integer and the fraction is referred to
+      as the significand. The exponent consists of the character `e`
+      (`U+0065`) or `E` (`U+0045`) followed by one or more decimal digits.
+      Services **should** normalize decimal values before storing them by: -
+      Removing an explicitly-provided `+` sign (`+2.5` -> `2.5`). - Replacing
+      a zero-length integer value with `0` (`.5` -> `0.5`). - Coercing the
+      exponent character to upper-case, with explicit sign (`2.5e8` ->
+      `2.5E+8`). - Removing an explicitly-provided zero exponent (`2.5E0` ->
+      `2.5`). Services **may** perform additional normalization based on its
+      own needs and the internal decimal implementation selected, such as
+      shifting the decimal point and exponent value together (example:
+      `2.5E-1` <-> `0.25`). Additionally, services **may** preserve trailing
+      zeroes in the fraction to indicate increased precision, but are not
+      required to do so. Note that only the `.` character is supported to
+      divide the integer and the fraction; `,` **should not** be supported
+      regardless of locale. Additionally, thousand separators **should not**
+      be supported. If a service does support them, values **must** be
+      normalized. The ENBF grammar is: DecimalString = '' | [Sign] Significand
+      [Exponent]; Sign = '+' | '-'; Significand = Digits '.' | [Digits] '.'
+      Digits; Exponent = ('e' | 'E') [Sign] Digits; Digits = { '0' | '1' | '2'
+      | '3' | '4' | '5' | '6' | '7' | '8' | '9' }; Services **should** clearly
+      document the range of supported values, the maximum supported precision
+      (total number of digits), and, if applicable, the scale (number of
+      digits after the decimal point), as well as how it behaves when
+      receiving out-of-bounds values. Services **may** choose to accept values
+      passed as input even when the value has a higher precision or scale than
+      the service supports, and **should** round the value to fit the
+      supported scale. Alternatively, the service **may** error with `400 Bad
+      Request` (`INVALID_ARGUMENT` in gRPC) if precision would be lost.
+      Services **should** error with `400 Bad Request` (`INVALID_ARGUMENT` in
+      gRPC) if the service receives a value outside of the supported range.
+  """
+
+  value = _messages.StringField(1)
+
+
+class GoogleTypeTimeZone(_messages.Message):
+  r"""Represents a time zone from the [IANA Time Zone
+  Database](https://www.iana.org/time-zones).
+
+  Fields:
+    id: IANA Time Zone Database time zone, e.g. "America/New_York".
+    version: Optional. IANA Time Zone Database version number, e.g. "2019a".
+  """
+
+  id = _messages.StringField(1)
+  version = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

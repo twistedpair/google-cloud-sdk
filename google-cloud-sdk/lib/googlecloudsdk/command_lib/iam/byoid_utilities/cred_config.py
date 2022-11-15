@@ -76,6 +76,13 @@ def get_generator(args, config_type):
     return UrlCredConfigGenerator(config_type, args.credential_source_url,
                                   args.credential_source_headers)
   if args.executable_command:
+    if hasattr(args, 'executable_interactive_timeout_millis'
+              ) and args.executable_interactive_timeout_millis:
+      return InteractiveExecutableCredConfigGenerator(
+          config_type, args.executable_command, args.executable_timeout_millis,
+          args.executable_output_file,
+          args.executable_interactive_timeout_millis)
+
     return ExecutableCredConfigGenerator(config_type, args.executable_command,
                                          args.executable_timeout_millis,
                                          args.executable_output_file)
@@ -200,6 +207,30 @@ class ExecutableCredConfigGenerator(CredConfigGenerator):
     if self.output_file:
       executable_config['output_file'] = self.output_file
 
+    return {'executable': executable_config}
+
+
+class InteractiveExecutableCredConfigGenerator(ExecutableCredConfigGenerator):
+  """The generator for executable-command-based credentials configs with interactive mode."""
+
+  def __init__(self, config_type, command, timeout_millis, output_file,
+               interactive_timeout_millis):
+    super(InteractiveExecutableCredConfigGenerator,
+          self).__init__(config_type, command, timeout_millis, output_file)
+    self.interactive_timeout_millis = int(interactive_timeout_millis)
+
+  def get_source(self, args):
+
+    if not self.output_file:
+      raise GeneratorError('--executable-output-file must be specified if ' +
+                           '--interactive-timeout-millis is provided.')
+
+    executable_config = {
+        'command': self.command,
+        'timeout_millis': self.timeout_millis,
+        'output_file': self.output_file,
+        'interactive_timeout_millis': self.interactive_timeout_millis
+    }
     return {'executable': executable_config}
 
 

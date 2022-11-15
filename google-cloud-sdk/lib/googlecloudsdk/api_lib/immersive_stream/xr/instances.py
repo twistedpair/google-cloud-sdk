@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.immersive_stream.xr import api_util
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
@@ -27,30 +28,89 @@ def ProjectLocation(project, location):
   return 'projects/{}/locations/{}'.format(project, location)
 
 
-def ParseLocationConfigsFromArg(region_configs_arg):
-  """Converts region configs args into a LocationConfigsValue proto message.
+def GenerateTargetLocationConfigs(add_region_configs, update_region_configs,
+                                  remove_regions, current_instance):
+  """Generates the target location configs.
 
   Args:
-    region_configs_arg: List of region config dicts of the form: [{'region':
-      region1, 'capacity': capacity1}, ...]. Both region and capacity fields are
-      in string format.
+    add_region_configs: List of region config dicts of the form: [{'region':
+      region1, 'capacity': capacity1}] that specifies the regions to add to the
+      service instance
+    update_region_configs: List of region config dicts of the form: [{'region':
+      region1, 'capacity': capacity1}] that specifies the regions to update to
+      the service instance
+    remove_regions: List of regions to remove
+    current_instance: instance object - current state of the service instance
+      before update
 
   Returns:
-    A LocationConfigsValue proto message.
+    A LocationConfigsValue, with entries sorted by location
   """
-  messages = api_util.GetMessages()
 
-  location_configs_value = messages.StreamInstance.LocationConfigsValue()
-  for region_config in region_configs_arg:
+  if current_instance is not None:
+    additonal_properties = current_instance.locationConfigs.additionalProperties
+    location_configs = {
+        location_config.key: location_config.value
+        for location_config in additonal_properties
+    }
+  else:
+    location_configs = {}
+
+  if add_region_configs:
+    if any(region_config['region'] in location_configs
+           for region_config in add_region_configs):
+      log.status.Print('Only new regions can be added.')
+      return
+    region_configs_diff = add_region_configs
+
+  elif remove_regions:
+    if any(region not in location_configs for region in remove_regions):
+      log.status.Print('Only existing regions can be removed.')
+      return None
+    # Convert the list of regions to remove to a list of region configs with
+    # 0 capacities.
+    region_configs_diff = ({'region': region, 'capacity': 0}
+                           for region in remove_regions)
+
+  elif update_region_configs:
+    if any(region_config['region'] not in location_configs
+           for region_config in update_region_configs):
+      log.status.Print('Only existing regions can be updated.')
+      return None
+    # Update API is idempotent so we do not need to check if the capacity is
+    # unchanged.
+    region_configs_diff = update_region_configs
+
+  messages = api_util.GetMessages()
+  location_configs_diff = messages.StreamInstance.LocationConfigsValue()
+  for region_config in region_configs_diff:
     region = region_config['region']
     capacity = int(region_config['capacity'])
     location_config = messages.LocationConfig(
         location=region, capacity=capacity)
-    location_configs_value.additionalProperties.append(
+    location_configs_diff.additionalProperties.append(
         messages.StreamInstance.LocationConfigsValue.AdditionalProperty(
             key=region, value=location_config))
 
-  return location_configs_value
+  # Merge current location configs with the diff.
+  for location_config in location_configs_diff.additionalProperties:
+    if location_config.value.capacity == 0:
+      # Remove a location.
+      location_configs.pop(location_config.key, None)
+    else:
+      # Add or update a location.
+      location_configs[location_config.key] = location_config.value
+
+  # Convert the location configs from a dict to LocationConfigsValue.
+  target_location_configs = messages.StreamInstance.LocationConfigsValue()
+  # Sort the location config so that we have a deterministic order of items in
+  # LocationConfigsValue.
+  for key, location_config in sorted(location_configs.items()):
+    target_location_configs.additionalProperties.append(
+        messages.StreamInstance.LocationConfigsValue.AdditionalProperty(
+            key=key, value=location_config))
+
+  return target_location_configs
 
 
 def Get(instance_relative_name):
@@ -71,7 +131,7 @@ def Get(instance_relative_name):
           name=instance_relative_name))
 
 
-def Create(instance_name, content, location, version, region_configs):
+def Create(instance_name, content, location, version, target_location_configs):
   """Create a new Immersive Stream for XR service instance.
 
   Args:
@@ -80,9 +140,8 @@ def Create(instance_name, content, location, version, region_configs):
       the instance
     location: string - location where the resource will be created
     version: string - content build version tag
-    region_configs: List of region config dicts of the form: [{'region':
-      region1, 'capacity': capacity1}, ...] These specify the deployment
-      configuration of the instance in regions.
+    target_location_configs: A LocationConfigsValue proto message represents the
+      target location configs to achieve
 
   Returns:
     An Operation object which can be used to check on the progress of the
@@ -96,8 +155,9 @@ def Create(instance_name, content, location, version, region_configs):
       content=content,
       contentBuildVersion=build_version,
       name=instance_name,
-      locationConfigs=ParseLocationConfigsFromArg(region_configs))
+      locationConfigs=target_location_configs)
   service = client.ProjectsLocationsStreamInstancesService(client)
+
   return service.Create(
       messages.StreamProjectsLocationsStreamInstancesCreateRequest(
           parent=ProjectLocation(properties.VALUES.core.project.Get(),
@@ -106,56 +166,27 @@ def Create(instance_name, content, location, version, region_configs):
           streamInstanceId=instance_name))
 
 
-def UpdateCapacity(instance_ref, current_instance, region_configs):
-  """Update capacity of a region for an Immersive Stream for XR service instance.
+def UpdateLocationConfigs(instance_ref, target_location_configs):
+  """Updates the location configs for a service instance.
 
   Args:
     instance_ref: resource object - service instance to be updated
-    current_instance: instance object - current state of the service instance
-      before update
-    region_configs: List of a single region config dict of the form: [{'region':
-      region1, 'capacity': capacity1}]. This specifies the deployment
-      configuration of the instance in the region.
+    target_location_configs: A LocationConfigsValue proto message represents the
+      target location configs to achieve
 
   Returns:
     An Operation object which can be used to check on the progress of the
     service instance update.
   """
+  if (not target_location_configs or
+      not target_location_configs.additionalProperties):
+    raise exceptions.Error('Target location configs must be provided')
+
   client = api_util.GetClient()
   messages = api_util.GetMessages()
-  service = client.ProjectsLocationsStreamInstancesService(client)
-  # TODO(b/230366148)
-  if not region_configs:
-    raise exceptions.Error('Region configs must not be empty')
-  new_location_configs = ParseLocationConfigsFromArg(region_configs)
-
-  # Stores current location_configs into a dict
-  location_configs_dict = {}
-  for location_config in current_instance.locationConfigs.additionalProperties:
-    location_configs_dict[location_config.key] = location_config.value
-
-  # Merges current location_configs with new location_configs
-  for location_config in new_location_configs.additionalProperties:
-    if location_config.key not in location_configs_dict:
-      error_message = (
-          '{} is not an existing region for instance {}. Capacity'
-          ' updates can only be applied to existing regions, '
-          'adding a new region is not currently supported.').format(
-              location_config.key, instance_ref.RelativeName())
-      # TODO(b/240487545): create ISXR own subclass of exceptions.
-      raise exceptions.Error(error_message)
-    location_configs_dict[location_config.key] = location_config.value
-
   # Puts merged location_configs into a StreamInstance
-  instance = messages.StreamInstance()
-  instance.locationConfigs = messages.StreamInstance.LocationConfigsValue()
-  # NOTE: we need this sort to make sure the order is fixed. Otherwise, tests
-  # may pass in one platform but fail in another one.
-  for key in sorted(location_configs_dict):
-    location_config = location_configs_dict[key]
-    item = messages.StreamInstance.LocationConfigsValue.AdditionalProperty(
-        key=location_config.location, value=location_config)
-    instance.locationConfigs.additionalProperties.append(item)
+  instance = messages.StreamInstance(locationConfigs=target_location_configs)
+  service = client.ProjectsLocationsStreamInstancesService(client)
 
   return service.Patch(
       messages.StreamProjectsLocationsStreamInstancesPatchRequest(
@@ -169,7 +200,7 @@ def UpdateContentBuildVersion(instance_ref, version):
 
   Args:
     instance_ref: resource object - service instance to be updated
-    version: string - content build version tag
+    version: content build version tag
 
   Returns:
     An Operation object which can be used to check on the progress of the
@@ -177,11 +208,10 @@ def UpdateContentBuildVersion(instance_ref, version):
   """
   client = api_util.GetClient()
   messages = api_util.GetMessages()
+  build_version = messages.BuildVersion(contentVersionTag=version)
+  instance = messages.StreamInstance(contentBuildVersion=build_version)
   service = client.ProjectsLocationsStreamInstancesService(client)
 
-  build_version = messages.BuildVersion(contentVersionTag=version)
-  instance = messages.StreamInstance()
-  instance.contentBuildVersion = build_version
   return service.Patch(
       messages.StreamProjectsLocationsStreamInstancesPatchRequest(
           name=instance_ref.RelativeName(),

@@ -345,14 +345,14 @@ class GcsApi(cloud_api.CloudApi):
     else:
       predefined_acl = None
 
-    if request_config.predefined_default_acl_string:
+    if request_config.predefined_default_object_acl_string:
       cleared_fields.append('defaultObjectAcl')
-      predefined_default_acl = getattr(
+      predefined_default_object_acl = getattr(
           self.messages.StorageBucketsPatchRequest
           .PredefinedDefaultObjectAclValueValuesEnum,
-          request_config.predefined_default_acl_string)
+          request_config.predefined_default_object_acl_string)
     else:
-      predefined_default_acl = None
+      predefined_default_object_acl = None
 
     apitools_request = self.messages.StorageBucketsPatchRequest(
         bucket=bucket_resource.storage_url.bucket_name,
@@ -360,7 +360,7 @@ class GcsApi(cloud_api.CloudApi):
         projection=projection,
         ifMetagenerationMatch=request_config.precondition_metageneration_match,
         predefinedAcl=predefined_acl,
-        predefinedDefaultObjectAcl=predefined_default_acl)
+        predefinedDefaultObjectAcl=predefined_default_object_acl)
 
     with self.client.IncludeFields(cleared_fields):
       return gcs_metadata_util.get_bucket_resource_from_metadata(

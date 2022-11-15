@@ -23,6 +23,11 @@ ATTACHED_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'annotations': 'annotations',
     'platform_version': 'platform_version',
     'admin_users': 'authorization.admin_users',
+    'logging': 'logging_config.component_config.enable_components',
+    'enable_managed_prometheus':
+        'monitoring_config.managed_prometheus_config.enabled',
+    'disable_managed_prometheus':
+        'monitoring_config.managed_prometheus_config.enabled',
 }
 
 AWS_CLUSTER_ARGS_TO_UPDATE_MASKS = {
@@ -64,6 +69,10 @@ AWS_CLUSTER_ARGS_TO_UPDATE_MASKS = {
         'control_plane.iam_instance_profile',
     'logging':
         'logging_config.component_config.enable_components',
+    'enable_managed_prometheus':
+        'monitoring_config.managed_prometheus_config.enabled',
+    'disable_managed_prometheus':
+        'monitoring_config.managed_prometheus_config.enabled',
     'description':
         'description',
     'clear_description':
@@ -106,6 +115,10 @@ AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'admin_users': 'authorization.admin_users',
     'ssh_public_key': 'control_plane.ssh_config.authorized_key',
     'logging': 'logging_config.component_config.enable_components',
+    'enable_managed_prometheus':
+        'monitoring_config.managed_prometheus_config.enabled',
+    'disable_managed_prometheus':
+        'monitoring_config.managed_prometheus_config.enabled',
     'description': 'description',
     'clear_description': 'description',
     'annotations': 'annotations',

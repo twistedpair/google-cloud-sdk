@@ -21,6 +21,26 @@ class AbandonReleaseResponse(_messages.Message):
   r"""The response object for `AbandonRelease`."""
 
 
+class AdvanceChildRolloutJob(_messages.Message):
+  r"""An advanceChildRollout Job."""
+
+
+class AdvanceChildRolloutJobRun(_messages.Message):
+  r"""AdvanceChildRolloutJobRun contains information specific to a
+  advanceChildRollout `JobRun`.
+
+  Fields:
+    rollout: Output only. Name of the `ChildRollout`. Format is
+      projects/{project}/
+      locations/{location}/deliveryPipelines/{deliveryPipeline}/
+      releases/{release}/rollouts/a-z{0,62}.
+    rolloutPhaseId: Output only. the ID of the ChildRollout's Phase.
+  """
+
+  rollout = _messages.StringField(1)
+  rolloutPhaseId = _messages.StringField(2)
+
+
 class AnthosCluster(_messages.Message):
   r"""Information specifying an Anthos Cluster.
 
@@ -186,6 +206,18 @@ class BuildArtifact(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class ChildRolloutJobs(_messages.Message):
+  r"""ChildRollouts job composition
+
+  Fields:
+    advanceRolloutJobs: Output only. List of AdvanceChildRolloutJobs
+    createRolloutJobs: Output only. List of CreateChildRolloutJobs
+  """
+
+  advanceRolloutJobs = _messages.MessageField('Job', 1, repeated=True)
+  createRolloutJobs = _messages.MessageField('Job', 2, repeated=True)
 
 
 class CloudRunLocation(_messages.Message):
@@ -960,6 +992,27 @@ class Config(_messages.Message):
   supportedVersions = _messages.MessageField('SkaffoldVersion', 3, repeated=True)
 
 
+class CreateChildRolloutJob(_messages.Message):
+  r"""A createChildRollout Job."""
+
+
+class CreateChildRolloutJobRun(_messages.Message):
+  r"""CreateChildRolloutJobRun contains information specific to a
+  createChildRollout `JobRun`.
+
+  Fields:
+    rollout: Output only. Name of the `ChildRollout`. Format is
+      projects/{project}/
+      locations/{location}/deliveryPipelines/{deliveryPipeline}/
+      releases/{release}/rollouts/a-z{0,62}.
+    rolloutPhaseId: Output only. The ID of the childRollout Phase initiated by
+      this JobRun.
+  """
+
+  rollout = _messages.StringField(1)
+  rolloutPhaseId = _messages.StringField(2)
+
+
 class Date(_messages.Message):
   r"""Represents a whole or partial calendar date, such as a birthday. The
   time of day and time zone are either specified elsewhere or are
@@ -1353,6 +1406,8 @@ class Job(_messages.Message):
     StateValueValuesEnum: Output only. The current state of the Job.
 
   Fields:
+    advanceChildRolloutJob: Output only. An advanceChildRollout Job.
+    createChildRolloutJob: Output only. A createChildRollout Job.
     deployJob: Output only. A deploy Job.
     id: Output only. The ID of the Job.
     jobRun: Output only. The name of the `JobRun` responsible for the most
@@ -1382,11 +1437,13 @@ class Job(_messages.Message):
     FAILED = 5
     ABORTED = 6
 
-  deployJob = _messages.MessageField('DeployJob', 1)
-  id = _messages.StringField(2)
-  jobRun = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  verifyJob = _messages.MessageField('VerifyJob', 5)
+  advanceChildRolloutJob = _messages.MessageField('AdvanceChildRolloutJob', 1)
+  createChildRolloutJob = _messages.MessageField('CreateChildRolloutJob', 2)
+  deployJob = _messages.MessageField('DeployJob', 3)
+  id = _messages.StringField(4)
+  jobRun = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  verifyJob = _messages.MessageField('VerifyJob', 7)
 
 
 class JobRun(_messages.Message):
@@ -1397,6 +1454,10 @@ class JobRun(_messages.Message):
     StateValueValuesEnum: Output only. The current state of the `JobRun`.
 
   Fields:
+    advanceChildRolloutJobRun: Output only. Information specific to an
+      advanceChildRollout `JobRun`
+    createChildRolloutJobRun: Output only. Information specific to a
+      createChildRollout `JobRun`.
     createTime: Output only. Time at which the `JobRun` was created.
     deployJobRun: Output only. Information specific to a deploy `JobRun`.
     endTime: Output only. Time at which the `JobRun` ended.
@@ -1429,17 +1490,19 @@ class JobRun(_messages.Message):
     SUCCEEDED = 2
     FAILED = 3
 
-  createTime = _messages.StringField(1)
-  deployJobRun = _messages.MessageField('DeployJobRun', 2)
-  endTime = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  jobId = _messages.StringField(5)
-  name = _messages.StringField(6)
-  phaseId = _messages.StringField(7)
-  startTime = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  uid = _messages.StringField(10)
-  verifyJobRun = _messages.MessageField('VerifyJobRun', 11)
+  advanceChildRolloutJobRun = _messages.MessageField('AdvanceChildRolloutJobRun', 1)
+  createChildRolloutJobRun = _messages.MessageField('CreateChildRolloutJobRun', 2)
+  createTime = _messages.StringField(3)
+  deployJobRun = _messages.MessageField('DeployJobRun', 4)
+  endTime = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  jobId = _messages.StringField(7)
+  name = _messages.StringField(8)
+  phaseId = _messages.StringField(9)
+  startTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  uid = _messages.StringField(12)
+  verifyJobRun = _messages.MessageField('VerifyJobRun', 13)
 
 
 class JobRunNotificationEvent(_messages.Message):
@@ -1676,6 +1739,16 @@ class Metadata(_messages.Message):
   cloudRun = _messages.MessageField('CloudRunMetadata', 1)
 
 
+class MultiTarget(_messages.Message):
+  r"""Information specifying a multiTarget.
+
+  Fields:
+    targetIds: Required. The target_ids of this multiTarget.
+  """
+
+  targetIds = _messages.StringField(1, repeated=True)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -1819,6 +1892,7 @@ class Phase(_messages.Message):
     StateValueValuesEnum: Output only. Current state of the Phase.
 
   Fields:
+    childRolloutJobs: Output only. ChildRollout job composition.
     deploymentJobs: Output only. Deployment job composition.
     id: Output only. The ID of the Phase.
     state: Output only. Current state of the Phase.
@@ -1842,9 +1916,10 @@ class Phase(_messages.Message):
     FAILED = 4
     ABORTED = 5
 
-  deploymentJobs = _messages.MessageField('DeploymentJobs', 1)
-  id = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  childRolloutJobs = _messages.MessageField('ChildRolloutJobs', 1)
+  deploymentJobs = _messages.MessageField('DeploymentJobs', 2)
+  id = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class PipelineCondition(_messages.Message):
@@ -2291,6 +2366,10 @@ class Rollout(_messages.Message):
       and size limitations.
     approvalState: Output only. Approval state of the `Rollout`.
     approveTime: Output only. Time at which the `Rollout` was approved.
+    controllerRollout: Output only. Name of the `ControllerRollout`. Format is
+      projects/{project}/
+      locations/{location}/deliveryPipelines/{deliveryPipeline}/
+      releases/{release}/rollouts/a-z{0,62}.
     createTime: Output only. Time at which the `Rollout` was created.
     deployEndTime: Output only. Time at which the `Rollout` finished
       deploying.
@@ -2457,22 +2536,23 @@ class Rollout(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   approvalState = _messages.EnumField('ApprovalStateValueValuesEnum', 2)
   approveTime = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  deployEndTime = _messages.StringField(5)
-  deployFailureCause = _messages.EnumField('DeployFailureCauseValueValuesEnum', 6)
-  deployStartTime = _messages.StringField(7)
-  deployingBuild = _messages.StringField(8)
-  description = _messages.StringField(9)
-  enqueueTime = _messages.StringField(10)
-  etag = _messages.StringField(11)
-  failureReason = _messages.StringField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  metadata = _messages.MessageField('Metadata', 14)
-  name = _messages.StringField(15)
-  phases = _messages.MessageField('Phase', 16, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  targetId = _messages.StringField(18)
-  uid = _messages.StringField(19)
+  controllerRollout = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  deployEndTime = _messages.StringField(6)
+  deployFailureCause = _messages.EnumField('DeployFailureCauseValueValuesEnum', 7)
+  deployStartTime = _messages.StringField(8)
+  deployingBuild = _messages.StringField(9)
+  description = _messages.StringField(10)
+  enqueueTime = _messages.StringField(11)
+  etag = _messages.StringField(12)
+  failureReason = _messages.StringField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  metadata = _messages.MessageField('Metadata', 15)
+  name = _messages.StringField(16)
+  phases = _messages.MessageField('Phase', 17, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  targetId = _messages.StringField(19)
+  uid = _messages.StringField(20)
 
 
 class RolloutNotificationEvent(_messages.Message):
@@ -2758,6 +2838,7 @@ class Target(_messages.Message):
       start with a lowercase letter or international character. * Each
       resource is limited to a maximum of 64 labels. Both keys and values are
       additionally constrained to be <= 128 bytes.
+    multiTarget: Information specifying a multiTarget.
     name: Optional. Name of the `Target`. Format is
       projects/{project}/locations/{location}/targets/a-z{0,62}.
     requireApproval: Optional. Whether or not the `Target` requires approval.
@@ -2835,12 +2916,13 @@ class Target(_messages.Message):
   executionConfigs = _messages.MessageField('ExecutionConfig', 6, repeated=True)
   gke = _messages.MessageField('GkeCluster', 7)
   labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  requireApproval = _messages.BooleanField(10)
-  run = _messages.MessageField('CloudRunLocation', 11)
-  targetId = _messages.StringField(12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  multiTarget = _messages.MessageField('MultiTarget', 9)
+  name = _messages.StringField(10)
+  requireApproval = _messages.BooleanField(11)
+  run = _messages.MessageField('CloudRunLocation', 12)
+  targetId = _messages.StringField(13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class TargetArtifact(_messages.Message):

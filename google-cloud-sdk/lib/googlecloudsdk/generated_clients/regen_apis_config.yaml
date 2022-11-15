@@ -163,6 +163,8 @@ apis:
       discovery_doc: assuredworkloads_v1.json
       default: true
   batch:
+    v1alpha:
+      discovery_doc: batch_v1alpha.json
     v1alpha1:
       discovery_doc: batch_v1alpha1.json
     v1:

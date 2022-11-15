@@ -40,6 +40,12 @@ properties:
       (RBAC) config. Authorization config defines the Role Based Access Control
       (RBAC) config.
     $ref: AuthorizationConfig.yaml
+  awsV4Authentication:
+    description: |-
+      The configuration needed to generate a signature for access to private
+      storage buckets that support AWS's Signature Version 4 for authentication.
+      Allowed only for INTERNET_IP_PORT and INTERNET_FQDN_PORT NEG backends.
+    $ref: AWSV4Signature.yaml
   clientTlsPolicy:
     description: |-
       A URL referring to a networksecurity.ClientTlsPolicy resource that

@@ -28,8 +28,8 @@ properties:
   allowCredentials:
     description: |-
       In response to a preflight request, setting this to true indicates that
-      the actual request can include user credentials. This translates to the
-      Access-Control-Allow-Credentials header. Default is false.
+      the actual request can include user credentials. This field translates to
+      the Access-Control-Allow-Credentials header. Default is false.
     type: boolean
   allowHeaders:
     description: |-
@@ -45,17 +45,17 @@ properties:
       type: string
   allowOriginRegexes:
     description: |-
-      Specifies the regualar expression patterns that match allowed
-      origins. For regular expression grammar please see
-      github.com/google/re2/wiki/Syntax  An origin is allowed if it
-      matches either an item in allowOrigins or an item in
-      allowOriginRegexes.
+      Specifies a regular expression that matches allowed origins. For
+      more information about the regular expression syntax, see Syntax.
+      An origin is allowed if it matches either an item in allowOrigins
+      or an item in allowOriginRegexes. Regular expressions can only be
+      used when the loadBalancingScheme is set to INTERNAL_SELF_MANAGED.
     type: array
     items:
       type: string
   allowOrigins:
     description: |-
-      Specifies the list of origins that will be allowed to do CORS
+      Specifies the list of origins that is allowed to do CORS
       requests. An origin is allowed if it matches either an item in
       allowOrigins or an item in allowOriginRegexes.
     type: array
@@ -63,9 +63,9 @@ properties:
       type: string
   disabled:
     description: |-
-      If true, specifies the CORS policy is disabled. The
-      default value of false, which indicates that the CORS
-      policy is in effect.
+      If true, the setting specifies the CORS policy is
+      disabled. The default value of false, which indicates that
+      the CORS policy is in effect.
     type: boolean
   exposeHeaders:
     description: |-
@@ -77,6 +77,6 @@ properties:
   maxAge:
     description: |-
       Specifies how long results of a preflight request can
-      be cached in seconds. This translates to the Access-
-      Control-Max-Age header.
+      be cached in seconds. This field translates to the
+      Access-Control-Max-Age header.
     type: integer

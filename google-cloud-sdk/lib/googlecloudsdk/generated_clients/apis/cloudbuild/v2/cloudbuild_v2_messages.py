@@ -947,6 +947,8 @@ class Connection(_messages.Message):
     githubConfig: Configuration for connections to github.com.
     githubEnterpriseConfig: Configuration for connections to an instance of
       GitHub Enterprise.
+    gitlabEnterpriseConfig: Configuration for connections to an instance of
+      GitLab Enterprise.
     installationState: Output only. Installation state of the Connection.
     name: Immutable. The resource name of the connection, in the format
       `projects/{project}/locations/{location}/connections/{connection_id}`.
@@ -987,10 +989,11 @@ class Connection(_messages.Message):
   etag = _messages.StringField(4)
   githubConfig = _messages.MessageField('GitHubConfig', 5)
   githubEnterpriseConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV2GitHubEnterpriseConfig', 6)
-  installationState = _messages.MessageField('InstallationState', 7)
-  name = _messages.StringField(8)
-  reconciling = _messages.BooleanField(9)
-  updateTime = _messages.StringField(10)
+  gitlabEnterpriseConfig = _messages.MessageField('GitLabEnterpriseConfig', 7)
+  installationState = _messages.MessageField('InstallationState', 8)
+  name = _messages.StringField(9)
+  reconciling = _messages.BooleanField(10)
+  updateTime = _messages.StringField(11)
 
 
 class ContainerStateRunning(_messages.Message):
@@ -1290,6 +1293,41 @@ class GitHubConfig(_messages.Message):
 
   appInstallationId = _messages.IntegerField(1)
   authorizerCredential = _messages.MessageField('OAuthCredential', 2)
+
+
+class GitLabEnterpriseConfig(_messages.Message):
+  r"""Configuration for connections to an instance of GitLab Enterprise.
+
+  Fields:
+    authorizerCredential: Required. A GitLab personal access token with the
+      `api` scope access.
+    hostUri: Required. The URI of the GitLab Enterprise host this connection
+      is for.
+    readAuthorizerCredential: A GitLab personal access token with
+      `read_repository` scope access. Required if the GitLab Enterprise server
+      verion is older than 13.10. See at
+      https://docs.gitlab.com/ee/api/project_access_tokens.html#create-a-
+      project-access-token.
+    serverVersion: Output only. Version of the GitLab Enterprise server
+      running on the `host_uri`.
+    serviceDirectoryConfig: Configuration for using Service Directory to
+      privately connect to a GitLab Enterprise server. This should only be set
+      if the GitLab Enterprise server is hosted on-premises and not reachable
+      by public internet. If this field is left empty, calls to the GitLab
+      Enterprise server will be made over the public internet.
+    sslCa: SSL certificate to use for requests to GitLab Enterprise.
+    webhookSecretSecretVersion: Required. Immutable. SecretManager resource
+      containing the webhook secret of a GitLab Enterprise project, formatted
+      as `projects/*/secrets/*/versions/*`.
+  """
+
+  authorizerCredential = _messages.MessageField('UserCredential', 1)
+  hostUri = _messages.StringField(2)
+  readAuthorizerCredential = _messages.MessageField('UserCredential', 3)
+  serverVersion = _messages.StringField(4)
+  serviceDirectoryConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV2ServiceDirectoryConfig', 5)
+  sslCa = _messages.StringField(6)
+  webhookSecretSecretVersion = _messages.StringField(7)
 
 
 class GitRef(_messages.Message):
@@ -2154,6 +2192,8 @@ class PipelineTask(_messages.Message):
   Fields:
     name: Name of the task.
     params: Params is a list of parameter names and values.
+    retries: Retries represents how many times this task should be retried in
+      case of task failure.
     runAfter: RunAfter is the list of PipelineTask names that should be
       executed before this Task executes. (Used to force a specific ordering
       in graph execution.)
@@ -2166,11 +2206,12 @@ class PipelineTask(_messages.Message):
 
   name = _messages.StringField(1)
   params = _messages.MessageField('Param', 2, repeated=True)
-  runAfter = _messages.StringField(3, repeated=True)
-  taskRef = _messages.MessageField('TaskRef', 4)
-  taskSpec = _messages.MessageField('EmbeddedTask', 5)
-  whenExpressions = _messages.MessageField('WhenExpression', 6, repeated=True)
-  workspaces = _messages.MessageField('WorkspacePipelineTaskBinding', 7, repeated=True)
+  retries = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  runAfter = _messages.StringField(4, repeated=True)
+  taskRef = _messages.MessageField('TaskRef', 5)
+  taskSpec = _messages.MessageField('EmbeddedTask', 6)
+  whenExpressions = _messages.MessageField('WhenExpression', 7, repeated=True)
+  workspaces = _messages.MessageField('WorkspacePipelineTaskBinding', 8, repeated=True)
 
 
 class PipelineWorkspaceDeclaration(_messages.Message):
@@ -2386,6 +2427,8 @@ class Repository(_messages.Message):
     remoteUri: Required. Git Clone HTTPS URI.
     updateTime: Output only. Server assigned timestamp for when the connection
       was updated.
+    webhookId: Output only. External ID of the webhook created for the
+      repository.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2419,6 +2462,7 @@ class Repository(_messages.Message):
   name = _messages.StringField(4)
   remoteUri = _messages.StringField(5)
   updateTime = _messages.StringField(6)
+  webhookId = _messages.StringField(7)
 
 
 class Resource(_messages.Message):
@@ -2789,6 +2833,7 @@ class Step(_messages.Message):
     image: Docker image name.
     name: Name of the container specified as a DNS_LABEL.
     script: The contents of an executable file to execute.
+    timeout: Time after which the Step times out. Defaults to never.
     volumeMounts: Pod volumes to mount into the container's filesystem.
     workingDir: Container's working directory.
   """
@@ -2799,8 +2844,9 @@ class Step(_messages.Message):
   image = _messages.StringField(4)
   name = _messages.StringField(5)
   script = _messages.StringField(6)
-  volumeMounts = _messages.MessageField('VolumeMount', 7, repeated=True)
-  workingDir = _messages.StringField(8)
+  timeout = _messages.StringField(7)
+  volumeMounts = _messages.MessageField('VolumeMount', 8, repeated=True)
+  workingDir = _messages.StringField(9)
 
 
 class StepState(_messages.Message):
@@ -3092,6 +3138,21 @@ class TimeoutFields(_messages.Message):
   tasks = _messages.StringField(3)
 
 
+class UserCredential(_messages.Message):
+  r"""Represents a personal access token that authorized the Connection, and
+  associated metadata.
+
+  Fields:
+    userTokenSecretVersion: Required. A SecretManager resource containing the
+      user token that authorizes the Cloud Build connection. Format:
+      `projects/*/secrets/*/versions/*`.
+    username: Output only. The username associated to this token.
+  """
+
+  userTokenSecretVersion = _messages.StringField(1)
+  username = _messages.StringField(2)
+
+
 class VolumeMount(_messages.Message):
   r"""Pod volumes to mount into the container's filesystem.
 
@@ -3321,11 +3382,15 @@ class WorkflowOptions(_messages.Message):
     executionEnvironment: Contains the workerpool.
     statusUpdateOptions: How/where status on the workflow is posted.
     timeout: Time after which the Workflow times out.
+    timeouts: Time after which the Pipeline times out. Currently three keys
+      are accepted in the map pipeline, tasks and finally with
+      Timeouts.pipeline >= Timeouts.tasks + Timeouts.finally
   """
 
   executionEnvironment = _messages.MessageField('ExecutionEnvironment', 1)
   statusUpdateOptions = _messages.MessageField('WorkflowStatusUpdateOptions', 2)
   timeout = _messages.StringField(3)
+  timeouts = _messages.MessageField('TimeoutFields', 4)
 
 
 class WorkflowStatusUpdateOptions(_messages.Message):

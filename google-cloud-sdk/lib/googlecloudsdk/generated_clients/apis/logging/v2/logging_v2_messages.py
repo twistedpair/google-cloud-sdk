@@ -538,7 +538,7 @@ class Link(_messages.Message):
       FAILED: The resource is in an INTERNAL error state.
       ARCHIVED: The resource has been archived such that it can still be
         queried but can no longer be modified or used as a sink destination.
-        The leftover bucket after a move bucket operation enters this state.
+        The source bucket after a move bucket operation enters this state.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -972,7 +972,7 @@ class LogBucket(_messages.Message):
       FAILED: The resource is in an INTERNAL error state.
       ARCHIVED: The resource has been archived such that it can still be
         queried but can no longer be modified or used as a sink destination.
-        The leftover bucket after a move bucket operation enters this state.
+        The source bucket after a move bucket operation enters this state.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -990,7 +990,8 @@ class LogBucket(_messages.Message):
       ACTIVE_LIFECYCLE_STATE: The requirement that a bucket must be in the
         ACTIVE lifecycle state.
       GLOBAL_BUCKET_REGION: The requirement that a bucket must be in the
-        "global" region.
+        "global" region. This requirement is deprecated and replaced with
+        SUPPORTED_BUCKET_REGION.
       DEFAULT_RETENTION_DURATION: The requirement that buckets other than the
         "_Required" bucket must have the default retention duration of 30 days
         set.
@@ -1007,6 +1008,8 @@ class LogBucket(_messages.Message):
         within a folder.
       BILLING_ACCOUNT_BUCKET: The requirement that the bucket must not be
         contained within a billing account.
+      SUPPORTED_BUCKET_REGION: The requirement that the bucket must be in a
+        region supported by Log Analytics.
     """
     REQUIREMENT_UNSPECIFIED = 0
     ACTIVE_LIFECYCLE_STATE = 1
@@ -1019,6 +1022,7 @@ class LogBucket(_messages.Message):
     ORGANIZATION_BUCKET = 8
     FOLDER_BUCKET = 9
     BILLING_ACCOUNT_BUCKET = 10
+    SUPPORTED_BUCKET_REGION = 11
 
   analyticsEnabled = _messages.BooleanField(1)
   analyticsUpgradeTime = _messages.StringField(2)

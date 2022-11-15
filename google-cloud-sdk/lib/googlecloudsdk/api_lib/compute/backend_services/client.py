@@ -51,6 +51,23 @@ class BackendService(object):
               self._messages.ComputeBackendServicesGetRequest(
                   project=self.ref.project, backendService=self.ref.Name()))
 
+  def _MakeSetRequestTuple(self, replacement):
+    """Makes a location aware backend service patch call."""
+    region = getattr(self.ref, 'region', None)
+    if region is not None:
+      return (self._client.regionBackendServices, 'Patch',
+              self._messages.ComputeRegionBackendServicesPatchRequest(
+                  project=self.ref.project,
+                  region=region,
+                  backendService=self.ref.Name(),
+                  backendServiceResource=replacement))
+    else:
+      return (self._client.backendServices, 'Patch',
+              self._messages.ComputeBackendServicesPatchRequest(
+                  project=self.ref.project,
+                  backendService=self.ref.Name(),
+                  backendServiceResource=replacement))
+
   def _MakeDeleteRequestTuple(self):
     region = getattr(self.ref, 'region', None)
     if region is not None:
@@ -128,6 +145,11 @@ class BackendService(object):
       responses = self._compute_client.MakeRequests(requests)
       return responses[0]
     return requests
+
+  def Set(self, replacement):
+    """Patches the backend service resource."""
+    requests = [self._MakeSetRequestTuple(replacement)]
+    self._compute_client.MakeRequests(requests)
 
   def GetHealth(self):
     """Issues series of gethealth requests for each backend group.

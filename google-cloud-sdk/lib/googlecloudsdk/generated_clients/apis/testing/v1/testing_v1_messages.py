@@ -415,11 +415,13 @@ class ApkManifest(_messages.Message):
     intentFilters: A IntentFilter attribute.
     maxSdkVersion: Maximum API level on which the application is designed to
       run.
+    metadata: Meta-data tags defined in the manifest.
     minSdkVersion: Minimum API level required for the application to run.
     packageName: Full Java-style package name for this application, e.g.
       "com.example.foo".
     targetSdkVersion: Specifies the API Level on which the application is
       designed to run.
+    usesFeature: Feature usage tags defined in the manifest.
     usesPermission: Permissions declared to be used by the application
     versionCode: Version number used internally by the app.
     versionName: Version number shown to users.
@@ -428,12 +430,14 @@ class ApkManifest(_messages.Message):
   applicationLabel = _messages.StringField(1)
   intentFilters = _messages.MessageField('IntentFilter', 2, repeated=True)
   maxSdkVersion = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  minSdkVersion = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  packageName = _messages.StringField(5)
-  targetSdkVersion = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  usesPermission = _messages.StringField(7, repeated=True)
-  versionCode = _messages.IntegerField(8)
-  versionName = _messages.StringField(9)
+  metadata = _messages.MessageField('Metadata', 4, repeated=True)
+  minSdkVersion = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  packageName = _messages.StringField(6)
+  targetSdkVersion = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  usesFeature = _messages.MessageField('UsesFeature', 8, repeated=True)
+  usesPermission = _messages.StringField(9, repeated=True)
+  versionCode = _messages.IntegerField(10)
+  versionName = _messages.StringField(11)
 
 
 class AppBundle(_messages.Message):
@@ -991,6 +995,19 @@ class ManualSharding(_messages.Message):
   """
 
   testTargetsForShard = _messages.MessageField('TestTargetsForShard', 1, repeated=True)
+
+
+class Metadata(_messages.Message):
+  r"""A tag within a manifest.
+  https://developer.android.com/guide/topics/manifest/meta-data-element.html
+
+  Fields:
+    name: The android:name value
+    value: The android:value value
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class NetworkConfiguration(_messages.Message):
@@ -1987,6 +2004,20 @@ class UniformSharding(_messages.Message):
   """
 
   numShards = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class UsesFeature(_messages.Message):
+  r"""A tag within a manifest.
+  https://developer.android.com/guide/topics/manifest/uses-feature-
+  element.html
+
+  Fields:
+    isRequired: The android:required value
+    name: The android:name value
+  """
+
+  isRequired = _messages.BooleanField(1)
+  name = _messages.StringField(2)
 
 
 class XcodeVersion(_messages.Message):

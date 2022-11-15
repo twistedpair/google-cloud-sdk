@@ -4,7 +4,7 @@
   "id": "compute:beta",
   "name": "compute",
   "version": "beta",
-  "revision": "20221103",
+  "revision": "20221104",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -4032,6 +4032,13 @@
           "description": "Rate limit key name applicable only for the following key types: HTTP_HEADER -- Name of the HTTP header whose value is taken as the key value. HTTP_COOKIE -- Name of the HTTP cookie whose value is taken as the key value.",
           "type": "string"
         },
+        "enforceOnKeyConfigs": {
+          "description": "If specified, any combination of values of enforce_on_key_type\/enforce_on_key_name is treated as the key on which ratelimit threshold\/action is enforced. You can specify up to 3 enforce_on_key_configs. If enforce_on_key_configs is specified, enforce_on_key must not be specified.",
+          "type": "array",
+          "items": {
+            "$ref": "SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig"
+          }
+        },
         "banThreshold": {
           "description": "Can only be specified if the action for the rule is \"rate_based_ban\". If specified, the key will be banned for the configured 'ban_duration_sec' when the number of requests that exceed the 'rate_limit_threshold' also exceed this 'ban_threshold'.",
           "$ref": "SecurityPolicyRuleRateLimitOptionsThreshold"
@@ -4077,6 +4084,42 @@
         },
         "target": {
           "description": "Target for the redirect action. This is required if the type is EXTERNAL_302 and cannot be specified for GOOGLE_RECAPTCHA.",
+          "type": "string"
+        }
+      }
+    },
+    "SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig": {
+      "id": "SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig",
+      "type": "object",
+      "properties": {
+        "enforceOnKeyType": {
+          "description": "Determines the key to enforce the rate_limit_threshold on. Possible values are: - ALL: A single rate limit threshold is applied to all the requests matching this rule. This is the default value if \"enforceOnKeyConfigs\" is not configured. - IP: The source IP address of the request is the key. Each IP has this limit enforced separately. - HTTP_HEADER: The value of the HTTP header whose name is configured under \"enforceOnKeyName\". The key value is truncated to the first 128 bytes of the header value. If no such header is present in the request, the key type defaults to ALL. - XFF_IP: The first IP address (i.e. the originating client IP address) specified in the list of IPs under X-Forwarded-For HTTP header. If no such header is present or the value is not a valid IP, the key defaults to the source IP address of the request i.e. key type IP. - HTTP_COOKIE: The value of the HTTP cookie whose name is configured under \"enforceOnKeyName\". The key value is truncated to the first 128 bytes of the cookie value. If no such cookie is present in the request, the key type defaults to ALL. - HTTP_PATH: The URL path of the HTTP request. The key value is truncated to the first 128 bytes. - SNI: Server name indication in the TLS session of the HTTPS request. The key value is truncated to the first 128 bytes. The key type defaults to ALL on a HTTP session. - REGION_CODE: The country\/region from which the request originates. ",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "enum": [
+            "ALL",
+            "ALL_IPS",
+            "HTTP_COOKIE",
+            "HTTP_HEADER",
+            "HTTP_PATH",
+            "IP",
+            "REGION_CODE",
+            "SNI",
+            "XFF_IP"
+          ]
+        },
+        "enforceOnKeyName": {
+          "description": "Rate limit key name applicable only for the following key types: HTTP_HEADER -- Name of the HTTP header whose value is taken as the key value. HTTP_COOKIE -- Name of the HTTP cookie whose value is taken as the key value.",
           "type": "string"
         }
       }
@@ -15839,11 +15882,11 @@
           ]
         },
         "portRange": {
-          "description": "This field can be used only if: - Load balancing scheme is one of EXTERNAL, INTERNAL_SELF_MANAGED or INTERNAL_MANAGED - IPProtocol is one of TCP, UDP, or SCTP. Packets addressed to ports in the specified range will be forwarded to target or backend_service. You can only use one of ports, port_range, or allPorts. The three are mutually exclusive. Forwarding rules with the same [IPAddress, IPProtocol] pair must have disjoint ports. Some types of forwarding target have constraints on the acceptable ports. For more information, see [Port specifications](https:\/\/cloud.google.com\/load-balancing\/docs\/forwarding-rule-concepts#port_specifications). @pattern: \\\\d+(?:-\\\\d+)?",
+          "description": "This field can only be used: - If IPProtocol is one of TCP, UDP, or SCTP. - By backend service-based network load balancers, target pool-based network load balancers, internal proxy load balancers, external proxy load balancers, Traffic Director, external protocol forwarding, and Classic VPN. Some products have restrictions on what ports can be used. See port specifications for details. Only packets addressed to ports in the specified range will be forwarded to the backends configured with this forwarding rule. The ports, port_range, and allPorts fields are mutually exclusive. For external forwarding rules, two or more forwarding rules cannot use the same [IPAddress, IPProtocol] pair, and cannot have overlapping portRanges. For internal forwarding rules within the same VPC network, two or more forwarding rules cannot use the same [IPAddress, IPProtocol] pair, and cannot have overlapping portRanges. @pattern: \\\\d+(?:-\\\\d+)?",
           "type": "string"
         },
         "ports": {
-          "description": "The ports field is only supported when the forwarding rule references a backend_service directly. Only packets addressed to the [specified list of ports]((https:\/\/cloud.google.com\/load-balancing\/docs\/forwarding-rule-concepts#port_specifications)) are forwarded to backends. You can only use one of ports and port_range, or allPorts. The three are mutually exclusive. You can specify a list of up to five ports, which can be non-contiguous. Forwarding rules with the same [IPAddress, IPProtocol] pair must have disjoint ports. @pattern: \\\\d+(?:-\\\\d+)?",
+          "description": "This field can only be used: - If IPProtocol is one of TCP, UDP, or SCTP. - By internal TCP\/UDP load balancers, backend service-based network load balancers, and internal protocol forwarding. You can specify a list of up to five ports by number, separated by commas. The ports can be contiguous or discontiguous. Only packets addressed to these ports will be forwarded to the backends configured with this forwarding rule. For external forwarding rules, two or more forwarding rules cannot use the same [IPAddress, IPProtocol] pair, and cannot share any values defined in ports. For internal forwarding rules within the same VPC network, two or more forwarding rules cannot use the same [IPAddress, IPProtocol] pair, and cannot share any values defined in ports. The ports, port_range, and allPorts fields are mutually exclusive. @pattern: \\\\d+(?:-\\\\d+)?",
           "type": "array",
           "items": {
             "type": "string"
@@ -15953,7 +15996,7 @@
           "format": "byte"
         },
         "allPorts": {
-          "description": "This field is used along with the backend_service field for Internal TCP\/UDP Load Balancing or Network Load Balancing, or with the target field for internal and external TargetInstance. You can only use one of ports and port_range, or allPorts. The three are mutually exclusive. For TCP, UDP and SCTP traffic, packets addressed to any ports will be forwarded to the target or backendService.",
+          "description": "This field can only be used: - If IPProtocol is one of TCP, UDP, or SCTP. - By internal TCP\/UDP load balancers, backend service-based network load balancers, and internal and external protocol forwarding. Set this field to true to allow packets addressed to any port or packets lacking destination port information (for example, UDP fragments after the first fragment) to be forwarded to the backends configured with this forwarding rule. The ports, port_range, and allPorts fields are mutually exclusive.",
           "type": "boolean"
         },
         "allowGlobalAccess": {
@@ -57294,7 +57337,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Creates a Interconnect in the specified project using the data included in the request."
+          "description": "Creates an Interconnect in the specified project using the data included in the request."
         },
         "list": {
           "id": "compute.interconnects.list",
@@ -57349,7 +57392,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Retrieves the list of interconnect available to the specified project."
+          "description": "Retrieves the list of Interconnects available to the specified project."
         },
         "getDiagnostics": {
           "id": "compute.interconnects.getDiagnostics",
@@ -57384,7 +57427,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the interconnectDiagnostics for the specified interconnect."
+          "description": "Returns the interconnectDiagnostics for the specified Interconnect."
         },
         "get": {
           "id": "compute.interconnects.get",
@@ -57419,7 +57462,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified interconnect. Get a list of available interconnects by making a list() request."
+          "description": "Returns the specified Interconnect. Get a list of available Interconnects by making a list() request."
         },
         "delete": {
           "id": "compute.interconnects.delete",
@@ -57458,7 +57501,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Deletes the specified interconnect."
+          "description": "Deletes the specified Interconnect."
         },
         "patch": {
           "id": "compute.interconnects.patch",
@@ -57500,7 +57543,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Updates the specified interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules."
+          "description": "Updates the specified Interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules."
         },
         "testIamPermissions": {
           "id": "compute.interconnects.testIamPermissions",

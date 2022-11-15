@@ -14,6 +14,10 @@ from apitools.base.py import extra_types
 package = 'composer'
 
 
+class ActivateDagRequest(_messages.Message):
+  r"""Request to unpause a DAG."""
+
+
 class AllowedIpRange(_messages.Message):
   r"""Allowed IP range with user-provided description.
 
@@ -187,6 +191,19 @@ class ComposerProjectsLocationsEnvironmentsCreateRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class ComposerProjectsLocationsEnvironmentsDagsActivateRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsDagsActivateRequest object.
+
+  Fields:
+    activateDagRequest: A ActivateDagRequest resource to be passed as the
+      request body.
+    name: Required. The name of dag to pause.
+  """
+
+  activateDagRequest = _messages.MessageField('ActivateDagRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ComposerProjectsLocationsEnvironmentsDagsDagRunsGetRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsDagsDagRunsGetRequest object.
 
@@ -300,6 +317,19 @@ class ComposerProjectsLocationsEnvironmentsDagsListStatsRequest(_messages.Messag
   interval_startTime = _messages.StringField(3)
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
+
+
+class ComposerProjectsLocationsEnvironmentsDagsPauseRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsDagsPauseRequest object.
+
+  Fields:
+    name: Required. The name of dag to pause.
+    pauseDagRequest: A PauseDagRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pauseDagRequest = _messages.MessageField('PauseDagRequest', 2)
 
 
 class ComposerProjectsLocationsEnvironmentsDagsTasksListRequest(_messages.Message):
@@ -1696,6 +1726,10 @@ class OperationMetadata(_messages.Message):
   resource = _messages.StringField(4)
   resourceUuid = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class PauseDagRequest(_messages.Message):
+  r"""Request to pause a DAG."""
 
 
 class PollAirflowCommandRequest(_messages.Message):

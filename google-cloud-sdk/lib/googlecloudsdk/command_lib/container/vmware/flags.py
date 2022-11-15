@@ -52,6 +52,10 @@ def Get(args, flag_name, default=None):
 def IsSet(kwargs):
   """Returns True if any of the kwargs is set to not None value.
 
+  The added condition handles the case when user specified boolean False
+  for the given args, and it should return True, which does not work with
+  normal Python identity comparison.
+
   Args:
     kwargs: dict, a mapping from proto field to its respective constructor
       function.
@@ -59,7 +63,12 @@ def IsSet(kwargs):
   Returns:
     True if there exists a field that contains a user specified argument.
   """
-  return any(value is not None for value in kwargs.values())
+  for value in kwargs.values():
+    if isinstance(value, bool):
+      return True
+    elif value:
+      return True
+  return False
 
 
 def GetOperationResourceSpec():
@@ -559,6 +568,9 @@ def _AddF5Config(lb_config_mutex_group, for_update=False):
       for create command.
   """
   required = False if for_update else True
+  if for_update:
+    return
+
   f5_config_group = lb_config_mutex_group.add_group(
       help='F5 Big IP Configuration',)
   f5_config_group.add_argument(
@@ -611,12 +623,16 @@ def _AddMetalLbConfig(lb_config_mutex_group, for_update=False):
   )
 
 
-def _AddManualLbConfig(lb_config_mutex_group):
+def _AddManualLbConfig(lb_config_mutex_group, for_update=False):
   """Adds flags for Manual load balancer.
 
   Args:
     lb_config_mutex_group: The parent mutex group to add the flags to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
+  if for_update:
+    return
   manual_lb_config_group = lb_config_mutex_group.add_group(
       help='Manual load balancer configuration',)
   manual_lb_config_group.add_argument(
@@ -650,6 +666,9 @@ def _AddVmwareVipConfig(vmware_load_balancer_config_group, for_update=False):
       for create command.
   """
   required = False if for_update else True
+  if for_update:
+    return
+
   vmware_vip_config_group = vmware_load_balancer_config_group.add_group(
       help=' VIPs used by the load balancer',
       required=required,
@@ -679,16 +698,16 @@ def AddVmwareLoadBalancerConfig(parser, for_update=False):
       help='Anthos on VMware cluster load balancer configurations',
       required=required,
   )
-  _AddVmwareVipConfig(vmware_load_balancer_config_group)
+  _AddVmwareVipConfig(vmware_load_balancer_config_group, for_update=for_update)
 
   lb_config_mutex_group = vmware_load_balancer_config_group.add_group(
       mutex=True,
       help='Populate one of the load balancers.',
       required=required,
   )
-  _AddMetalLbConfig(lb_config_mutex_group, for_update)
-  _AddF5Config(lb_config_mutex_group, for_update)
-  _AddManualLbConfig(lb_config_mutex_group)
+  _AddMetalLbConfig(lb_config_mutex_group, for_update=for_update)
+  _AddF5Config(lb_config_mutex_group, for_update=for_update)
+  _AddManualLbConfig(lb_config_mutex_group, for_update=for_update)
 
 
 def AddDescription(parser):
@@ -730,6 +749,8 @@ def _AddServiceAddressCidrBlocks(vmware_network_config_group, for_update=False):
       for create command.
   """
   required = False if for_update else True
+  if for_update:
+    return
   vmware_network_config_group.add_argument(
       '--service-address-cidr-blocks',
       metavar='SERVICE_ADDRESS',
@@ -751,6 +772,8 @@ def _AddPodAddressCidrBlocks(vmware_network_config_group, for_update=False):
       for create command.
   """
   required = False if for_update else True
+  if for_update:
+    return
   vmware_network_config_group.add_argument(
       '--pod-address-cidr-blocks',
       metavar='POD_ADDRESS',
@@ -776,10 +799,11 @@ def AddVmwareNetworkConfig(parser, for_update=False):
       help='VMware User Cluster network configurations',
       required=required,
   )
-  _AddServiceAddressCidrBlocks(vmware_network_config_group, for_update)
-  _AddPodAddressCidrBlocks(vmware_network_config_group, for_update)
-  _AddIpConfiguration(vmware_network_config_group)
-  _AddVmwareHostConfig(vmware_network_config_group)
+  _AddServiceAddressCidrBlocks(
+      vmware_network_config_group, for_update=for_update)
+  _AddPodAddressCidrBlocks(vmware_network_config_group, for_update=for_update)
+  _AddIpConfiguration(vmware_network_config_group, for_update=for_update)
+  _AddVmwareHostConfig(vmware_network_config_group, for_update=for_update)
 
 
 def AddConfigType(parser):
@@ -803,50 +827,109 @@ def AddConfigType(parser):
       flag_name_overrides={'location': ''})
 
 
-def _AddIpConfiguration(vmware_network_config_group):
-  """Adds flags to specify IP configuration used by the VMware User Cluster.
+def _AddVmwareDhcpIpConfig(ip_configuration_mutex_group, for_update=False):
+  """Adds flags to specify DHCP configuration.
 
   Args:
-    vmware_network_config_group: The parent group to add the flag to.
+    ip_configuration_mutex_group: The parent group to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
-  ip_configuration_mutex_group = vmware_network_config_group.add_group(
-      mutex=True,
-      help='IP configuration used by the VMware User Cluster',
-  )
+  if for_update:
+    return
   dhcp_config_group = ip_configuration_mutex_group.add_group(
       help='DHCP configuration group.')
   dhcp_config_group.add_argument(
       '--enable-dhcp',
       help='Enable DHCP IP allocation for VMware user clusters.',
+      action='store_true',
   )
 
+
+def _AddVmwareStaticIpConfig(ip_configuration_mutex_group):
+  """Adds flags to specify Static IP configuration.
+
+  Args:
+    ip_configuration_mutex_group: The parent group to add the flag to.
+  """
+  static_ip_config_from_file_help_text = """
+Path of the YAML/JSON file that contains the Static IP configurations, used by Anthos on VMware user cluster node pools.
+
+Examples:
+
+    staticIpConfig:
+      ipBlocks:
+      - gateway: 10.251.31.254
+        netmask: 255.255.252.0
+        ips:
+        - hostname: hostname-1
+          ip: 1.1.1.1
+        - hostname: hostname-2
+          ip: 2.2.2.2
+        - hostname: hostname-3
+          ip: 3.3.3.3
+        - hostname: hostname-4
+          ip: 4.4.4.4
+
+List of supported fields in `staticIpConfig`
+
+KEY       | VALUE                 | NOTE
+--------- | --------------------  | -----------------
+ipBlocks  | one or more ipBlocks  | required, mutable
+
+List of supported fields in `ipBlocks`
+
+KEY     | VALUE           | Note
+------- | --------------- | -------------------
+gateway | IP address      | required, immutable
+netmask | IP address      | required, immutable
+ips     | one or more ips | required, mutable
+
+List of supported fields in `ips`
+
+KEY       | VALUE       | NOTE
+--------- | ----------- | -------------------
+hostname  | string      | optional, immutable
+ip        | IP address  | required, immutable
+
+New `ips` fields can be added, existing `ips` fields cannot be removed or updated.
+"""
   static_ip_config_group = ip_configuration_mutex_group.add_group(
       help='Static IP configuration group')
   static_ip_config_group.add_argument(
-      '--netmask',
-      help='Netmask used by the VMware user cluster.',
-  )
-  static_ip_config_group.add_argument(
-      '--gateway',
-      help='Gateway used by the VMware user cluster.',
-  )
-  static_ip_config_group.add_argument(
-      '--host-ips',
-      help='Network configurations used by the VMware user cluster node pools.',
-      action='append',
-      type=arg_parsers.ArgDict(spec={
-          'ip': str,
-          'hostname': str,
-      },),
+      '--static-ip-config-from-file',
+      help=static_ip_config_from_file_help_text,
+      type=arg_parsers.YAMLFileContents(),
   )
 
 
-def _AddVmwareHostConfig(vmware_network_config_group):
+def _AddIpConfiguration(vmware_network_config_group, for_update=False):
+  """Adds flags to specify IP configuration used by the VMware User Cluster.
+
+  Args:
+    vmware_network_config_group: The parent group to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
+  """
+  ip_configuration_mutex_group = vmware_network_config_group.add_group(
+      mutex=True,
+      help='IP configuration used by the VMware User Cluster',
+  )
+  _AddVmwareDhcpIpConfig(ip_configuration_mutex_group, for_update=for_update)
+  _AddVmwareStaticIpConfig(ip_configuration_mutex_group)
+
+
+def _AddVmwareHostConfig(vmware_network_config_group, for_update=False):
   """Adds flags to specify common parameters for all hosts irrespective of their IP address.
 
   Args:
     vmware_network_config_group: The parent group to add the flags to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
+  if for_update:
+    return
+
   vmware_host_config_group = vmware_network_config_group.add_group(
       help='Common parameters for all hosts irrespective of their IP address')
 
@@ -880,25 +963,41 @@ def AddRequiredPlatformVersion(parser):
             'download the required version bundle.'))
 
 
-def AddClusterAnnotations(parser):
+def AddClusterAnnotations(parser, for_update=False):
   """Adds a flag to specify cluster annotations.
 
   Args:
     parser: The argparse parser to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
-  parser.add_argument(
+  if for_update:
+    annotation_mutex_group = parser.add_group(mutex=True)
+    surface = annotation_mutex_group
+  else:
+    surface = parser
+
+  surface.add_argument(
       '--annotations',
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
       help='Annotations on the VMware user cluster.',
   )
+  if for_update:
+    surface.add_argument(
+        '--clear-annotations',
+        action='store_true',
+        help='Clear annotations on the VMware user cluster.',
+    )
 
 
-def AddVmwareControlPlaneNodeConfig(parser):
+def AddVmwareControlPlaneNodeConfig(parser, for_update=False):
   """Adds flags to specify VMware user cluster control plane node configurations.
 
   Args:
     parser: The argparse parser to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
   vmware_control_plane_node_config_group = parser.add_group(
       help='Control plane node configurations',)
@@ -912,71 +1011,136 @@ def AddVmwareControlPlaneNodeConfig(parser):
       type=arg_parsers.BinarySize(default_unit='MB', type_abbr='MB'),
       help='Megabytes of memory for each admin cluster node that serves as a control plane for this VMware User Cluster (default: 8192 MB memory).',
   )
-  vmware_control_plane_node_config_group.add_argument(
-      '--replicas',
-      type=int,
-      help='Number of control plane nodes for this VMware user cluster. (default: 1 replica).',
-  )
-  AddVmwareAutoResizeConfig(vmware_control_plane_node_config_group)
+  if not for_update:
+    vmware_control_plane_node_config_group.add_argument(
+        '--replicas',
+        type=int,
+        help='Number of control plane nodes for this VMware user cluster. (default: 1 replica).',
+    )
+  _AddVmwareAutoResizeConfig(
+      vmware_control_plane_node_config_group, for_update=for_update)
 
 
-def AddVmwareAutoResizeConfig(vmware_control_plane_node_config_group):
+def _AddVmwareAutoResizeConfig(vmware_control_plane_node_config_group,
+                               for_update=False):
   """Adds flags to specify control plane auto resizing configurations.
 
   Args:
     vmware_control_plane_node_config_group: The parent group to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
   vmware_auto_resize_config_group = vmware_control_plane_node_config_group.add_group(
       help='Auto resize configurations')
-  vmware_auto_resize_config_group.add_argument(
+  if for_update:
+    enable_auto_resize_mutex_group = vmware_auto_resize_config_group.add_group(
+        mutex=True)
+    surface = enable_auto_resize_mutex_group
+  else:
+    surface = vmware_auto_resize_config_group
+
+  surface.add_argument(
       '--enable-auto-resize',
       action='store_true',
       help='Enable controle plane node auto resize.',
   )
 
+  if for_update:
+    surface.add_argument(
+        '--disable-auto-resize',
+        action='store_true',
+        help='Disable controle plane node auto resize.',
+    )
 
-def AddVmwareAAGConfig(parser):
+
+def AddVmwareAAGConfig(parser, for_update=False):
   """Adds flags to specify VMware user cluster node pool anti-affinity group configurations.
 
   Args:
     parser: The argparse parser to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
   vmware_aag_config_group = parser.add_group(
       help='Anti-affinity group configurations',)
-  vmware_aag_config_group.add_argument(
+
+  if for_update:
+    enable_aag_config_mutex_group = vmware_aag_config_group.add_group(
+        mutex=True)
+    surface = enable_aag_config_mutex_group
+  else:
+    surface = vmware_aag_config_group
+
+  surface.add_argument(
       '--disable-aag-config',
       action='store_true',
       help='If set, spread nodes across at least three physical hosts (requires at least three hosts). Enabled by default.',
   )
+  if for_update:
+    surface.add_argument(
+        '--enable-aag-config',
+        action='store_true',
+        help='If set, enable anti-affinity group config.')
 
 
-def AddVmwareStorageConfig(parser):
+def AddVmwareStorageConfig(parser, for_update=False):
   """Adds flags to specify VMware storage configurations.
 
   Args:
     parser: The argparse parser to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
   vmware_storage_group = parser.add_group(help='Storage configurations')
-  vmware_storage_group.add_argument(
+
+  if for_update:
+    disable_vsphere_csi_mutex_group = vmware_storage_group.add_group(mutex=True)
+    surface = disable_vsphere_csi_mutex_group
+  else:
+    surface = vmware_storage_group
+
+  surface.add_argument(
       '--disable-vsphere-csi',
       action='store_true',
       help='If set, vSphere CSI components are not deployed in the VMware User Cluster. Enabled by default.',
   )
+  if for_update:
+    surface.add_argument(
+        '--enable-vsphere-csi',
+        action='store_true',
+        help='If set, vSphere CSI components are deployed in the VMware User Cluster.',
+    )
 
 
-def AddVmwareDataplaneV2Config(parser):
-  """Adds flags to specify configurations for Dataplane V2, which is optimized dataplane for Kubernetes networking.
+def _AddEnableDataplaneV2(vmware_dataplane_v2_config_group, for_update=False):
+  """Adds flags to specify enable_dataplane_v2.
 
   Args:
-    parser: The argparse parser to add the flag to.
+    vmware_dataplane_v2_config_group: The parent group to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
-  vmware_dataplane_v2_config_group = parser.add_group(
-      help='Dataplane V2 configurations')
+  if for_update:
+    return
+
   vmware_dataplane_v2_config_group.add_argument(
       '--enable-dataplane-v2',
       action='store_true',
       help='If set, enables Dataplane V2.',
   )
+
+
+def _AddAdvancedNetworking(vmware_dataplane_v2_config_group, for_update=False):
+  """Adds flags to specify advanced networking.
+
+  Args:
+    vmware_dataplane_v2_config_group: The parent group to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
+  """
+  if for_update:
+    return
+
   vmware_dataplane_v2_config_group.add_argument(
       '--enable-advanced-networking',
       action='store_true',
@@ -984,12 +1148,34 @@ def AddVmwareDataplaneV2Config(parser):
   )
 
 
-def AddEnableVmwareTracking(parser):
+def AddVmwareDataplaneV2Config(parser, for_update=False):
+  """Adds flags to specify configurations for Dataplane V2, which is optimized dataplane for Kubernetes networking.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
+  """
+  if for_update:
+    return
+  vmware_dataplane_v2_config_group = parser.add_group(
+      help='Dataplane V2 configurations')
+  _AddEnableDataplaneV2(vmware_dataplane_v2_config_group, for_update=for_update)
+  _AddAdvancedNetworking(
+      vmware_dataplane_v2_config_group, for_update=for_update)
+
+
+def AddEnableVmwareTracking(parser, for_update=False):
   """Adds flags to specify vmware tracking configurations.
 
   Args:
     parser: The argparse parser to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
+  if for_update:
+    return
+
   parser.add_argument(
       '--enable-vm-tracking',
       action='store_true',
@@ -997,19 +1183,35 @@ def AddEnableVmwareTracking(parser):
   )
 
 
-def AddVmwareAutoRepairConfig(parser):
+def AddVmwareAutoRepairConfig(parser, for_update=False):
   """Adds flags to specify auto-repair configurations.
 
   Args:
     parser: The argparse parser to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
   """
   vmware_auto_repair_config_group = parser.add_group(
       help='Auto-repair configurations')
-  vmware_auto_repair_config_group.add_argument(
+
+  if for_update:
+    enable_auto_repair_mutex_group = vmware_auto_repair_config_group.add_group(
+        mutex=True)
+    surface = enable_auto_repair_mutex_group
+  else:
+    surface = vmware_auto_repair_config_group
+
+  surface.add_argument(
       '--enable-auto-repair',
       action='store_true',
       help='If set, deploy the cluster-health-controller.',
   )
+  if for_update:
+    surface.add_argument(
+        '--disable-auto-repair',
+        action='store_true',
+        help='If set, disables auto repair.',
+    )
 
 
 def AddAuthorization(parser):

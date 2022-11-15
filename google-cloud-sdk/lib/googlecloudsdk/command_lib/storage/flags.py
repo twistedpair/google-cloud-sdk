@@ -56,6 +56,15 @@ def add_object_acl_setter_flags(parser):
   add_predefined_acl_flag(acl_flags_group)
 
 
+def add_predefined_default_object_acl_flag(parser):
+  """Adds predefined default ACL flag shared for buckets."""
+  parser.add_argument(
+      '--predefined-default-object-acl',
+      help='Apply a predefined set of default object access controls to'
+      'buckets',
+      hidden=True)
+
+
 def add_precondition_flags(parser):
   """Add flags indicating a precondition for an operation to happen."""
   preconditions_group = parser.add_group(

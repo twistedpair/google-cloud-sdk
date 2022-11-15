@@ -5502,19 +5502,11 @@ class WorkloadIdentityConfig(_messages.Message):
   policies.
 
   Fields:
-    tuneGkeMetadataServerCpu: If non-zero, set the cpu requests and limits of
-      gke-metadata-server to this value in millicores. If zero, gke-metadata-
-      server will use default values.
-    tuneGkeMetadataServerMemory: If non-zero, set the memory requests and
-      limits of gke-metadata-server to this value in bytes. If zero, gke-
-      metadata-server will use default values.
     workloadPool: The workload pool to attach all Kubernetes service accounts
       to.
   """
 
-  tuneGkeMetadataServerCpu = _messages.IntegerField(1)
-  tuneGkeMetadataServerMemory = _messages.IntegerField(2)
-  workloadPool = _messages.StringField(3)
+  workloadPool = _messages.StringField(1)
 
 
 class WorkloadMetadataConfig(_messages.Message):

@@ -111,7 +111,7 @@ NO_SERVICE_ACCOUNT_TEMPLATE = """\
       <extension>
         <groupId>com.google.cloud.artifactregistry</groupId>
         <artifactId>artifactregistry-maven-wagon</artifactId>
-        <version>2.1.0</version>
+        <version>{extension_version}</version>
       </extension>
     </extensions>
   </build>
@@ -147,7 +147,7 @@ NO_SERVICE_ACCOUNT_SNAPSHOT_TEMPLATE = """\
       <extension>
         <groupId>com.google.cloud.artifactregistry</groupId>
         <artifactId>artifactregistry-maven-wagon</artifactId>
-        <version>2.1.0</version>
+        <version>{extension_version}</version>
       </extension>
     </extensions>
   </build>
@@ -183,7 +183,7 @@ NO_SERVICE_ACCOUNT_RELEASE_TEMPLATE = """\
       <extension>
         <groupId>com.google.cloud.artifactregistry</groupId>
         <artifactId>artifactregistry-maven-wagon</artifactId>
-        <version>2.1.0</version>
+        <version>{extension_version}</version>
       </extension>
     </extensions>
   </build>

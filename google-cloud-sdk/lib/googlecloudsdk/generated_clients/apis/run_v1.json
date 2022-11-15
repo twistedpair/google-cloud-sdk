@@ -604,7 +604,7 @@
           "$ref": "LocalObjectReference"
         },
         "key": {
-          "description": "Required. A Cloud Secret Manager secret version. Must be 'latest' for the latest version or an integer for a specific version. The key of the secret to select from. Must be a valid secret key.",
+          "description": "Required. A Cloud Secret Manager secret version. Must be 'latest' for the latest version, an integer for a specific version, or a version alias. The key of the secret to select from. Must be a valid secret key.",
           "type": "string"
         },
         "optional": {
@@ -941,7 +941,7 @@
       "type": "object",
       "properties": {
         "key": {
-          "description": "The Cloud Secret Manager secret version. Can be 'latest' for the latest value or an integer for a specific version. The key to project.",
+          "description": "The Cloud Secret Manager secret version. Can be 'latest' for the latest value, or an integer or a secret alias for a specific version. The key to project.",
           "type": "string"
         },
         "path": {

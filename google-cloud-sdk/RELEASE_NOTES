@@ -5,6 +5,121 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 410.0.0 (2022-11-15)
+
+### Google Cloud CLI
+
+* Added `gcloud topic endpoint-override` for details on overriding the default api URL.
+
+### AI
+
+* Added asia-southeast2, europe-central2, and us-south1 options to `--region` flag of `gcloud ai custom-jobs` and `gcloud ai hp-tuning-jobs`.
+
+### AlloyDB
+
+* Introduced the following commands: `gcloud beta alloydb clusters create-secondary`,
+`gcloud beta alloydb instances create-secondary`,
+`gcloud beta alloydb clusters promote`.
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.10 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.10>.
+
+### Artifact Registry
+
+* Update maven and gradle plugin versions to 2.2.0.
+
+### Assured Workloads
+
+*   Added `SOVEREIGN_CONTROLS_BY_T_SYSTEMS` as an option for `--partner` flag of
+    `gcloud assured workloads create` command (available for both beta and GA).
+
+### Cloud Asset Inventory
+
+* Promoted `gcloud asset query` command to GA.
+
+### Cloud Bigtable
+
+* Added `stats` option to `--view` flag for `bigtable instances tables describe`.
+
+### Cloud Composer
+
+* Added  `--enable-triggerer` to `gcloud beta composer environments create/update` to allow usage of deferrable operators in dags.
+* Added  `--triggerer-cpu` to `gcloud beta composer environments create/update` to specify CPU allocated to Airflow triggerer.
+* Added  `--triggerer-memory` to `gcloud beta composer environments create/update` to specify memory allocated to Airflow triggerer.
+* Added  `--disable-triggerer` to `gcloud beta composer environments update` to disable Airflow triggerer.
+
+### Cloud Dataproc
+
+*   Added `--async` flag to `gcloud dataproc jobs kill`.
+
+### Cloud Datastream
+
+* Added the `max_concurrent_cdc_tasks` support to `--mysql-source-config` and `--oracle-source-config` flags in `gcloud datastream streams`.
+* Fixed issue where `stream create` using a `mysql-source-config` or `oracle-source-config` with column level filtering fails to create.
+
+### Cloud Functions
+
+*   Fixed issue where `gcloud functions list` would crash when a 2nd Gen-only
+    region was specified using `--regions`.
+*   Updated `gcloud function describe` to look up both 1st Gen and 2nd Gen environments for the function. When `--gen2` flag is specified, only 2nd Gen functions will be looked up.
+
+### Cloud Run
+
+* Promoted `gcloud run services logs read` and `gcloud run revisions logs read`
+to beta, which reads logs from a selected resource.
+* Promoted `gcloud run services logs tail` and `gcloud run revisions logs tail`
+to beta, which tail logs from a selected resource.
+* Added `--execute-now` and `--wait` flags to `gcloud beta run job update` to
+immediately execute the job after update and wait for completion.
+* Promoted `gcloud beta run integrations` command group and all sub-commands to beta.
+
+### Compute Engine
+
+* Promoted `--list-managed-instances-results` flag for `gcloud compute instance-groups managed create` and `gcloud compute instance-groups managed update` to GA.
+* Fixed `--network-interface` to mark the public IP as `None` when `--no-address` is specified.
+
+### GKE Hub
+
+*   Fixed issue where `gcloud container fleet memberships` commands did not
+output memberships with missing cluster.
+* Fixed bug in `gcloud container fleet config-management version` where
+memberships were stuck with version "NA".
+
+### Identity and Access Management
+
+* Added support for retrieving the token introspection endpoint through external account credentials.
+
+### Kubernetes Engine
+
+* Added `--labels` flag to `gcloud container node-pools create/update` to allow creating and updating node pools with GCP labels.
+
+### VPC Access
+
+* Promoted `gcloud compute networks vpc-access connectors update` to beta.
+  * Enables updating of `min-instances`, `max-instances` and `machine-type` of
+  already existing vpc-access connectors.
+
+### Vmware Engine
+
+* Added commands for managing resources:
+  * Locations
+  * Operations
+  * VMwareEngine networks
+  * Network policies
+  * Node types
+  * Private clouds
+  * Clusters
+  * HCX activation keys
+  * NSX credentials
+  * VCenter credentials
+  * Subnets
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 409.0.0 (2022-11-08)
 
 ### Breaking Changes

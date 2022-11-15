@@ -548,7 +548,7 @@ class GkehubV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the details of a MembershipBindin.
+      r"""Returns the details of a MembershipBinding.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsBindingsGetRequest) input message

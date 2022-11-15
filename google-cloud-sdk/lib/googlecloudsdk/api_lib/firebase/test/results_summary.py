@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """A library to build a test results summary."""
 
 from __future__ import absolute_import
@@ -27,20 +26,20 @@ from googlecloudsdk.api_lib.firebase.test import util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 
-
 _NATIVE_CRASH = 'Native crash'
-_NATIVE_CRASH_DETAILED_FORMAT = '''\
+_NATIVE_CRASH_DETAILED_FORMAT = """\
 For test execution [{0}], a native process crashed on the device. This could \
-be caused by your app, by an app dependency, or by an unrelated cause.'''
+be caused by your app, by an app dependency, or by an unrelated cause."""
 _INFRASTRUCTURE_FAILURE = 'Infrastructure failure'
-_INFRASTRUCTURE_FAILURE_DETAILED_FORMAT = '''\
+_INFRASTRUCTURE_FAILURE_DETAILED_FORMAT = """\
 Need help for test execution [{0}]? Please join the #test-lab Slack channel \
 at https://firebase.community/ and include test matrix ID [{1}] with your \
-question.'''
+question."""
 
 
-class TestOutcome(collections.namedtuple(
-    'TestOutcome', ['outcome', 'axis_value', 'test_details'])):
+class TestOutcome(
+    collections.namedtuple('TestOutcome',
+                           ['outcome', 'axis_value', 'test_details'])):
   """A tuple to hold the outcome for a single test axis value.
 
   Fields:
@@ -155,9 +154,10 @@ class ToolResultsSummaryFetcher(object):
         outcome_summary = step.outcome.summary
         outcome_str = self._GetOutcomeSummaryDisplayName(outcome_summary)
         outcomes.append(
-            TestOutcome(outcome=outcome_str,
-                        axis_value=axis_value,
-                        test_details=details))
+            TestOutcome(
+                outcome=outcome_str,
+                axis_value=axis_value,
+                test_details=details))
 
     return sorted(outcomes, key=_TestOutcomeSortKey)
 
@@ -202,9 +202,7 @@ class ToolResultsSummaryFetcher(object):
       outcome_str = self._GetOutcomeSummaryDisplayName(outcome_summary)
       outcomes.append(
           TestOutcome(
-              outcome=outcome_str,
-              axis_value=axis_value,
-              test_details=details))
+              outcome=outcome_str, axis_value=axis_value, test_details=details))
 
     return sorted(outcomes, key=_TestOutcomeSortKey)
 
@@ -258,8 +256,11 @@ class ToolResultsSummaryFetcher(object):
     """
     request = (
         self._messages.ToolresultsProjectsHistoriesExecutionsStepsListRequest(
-            projectId=self._project, historyId=self._history_id,
-            executionId=self._execution_id, pageSize=100, pageToken=page_token))
+            projectId=self._project,
+            historyId=self._history_id,
+            executionId=self._execution_id,
+            pageSize=100,
+            pageToken=page_token))
     try:
       return self._client.projects_histories_executions_steps.List(request)
     except apitools_exceptions.HttpError as error:
@@ -410,7 +411,9 @@ def _GetSkippedDetail(outcome):
     if outcome.skippedDetail.incompatibleDevice:
       return 'Incompatible device/OS combination'
     if outcome.skippedDetail.incompatibleArchitecture:
-      return 'App does not support the device architecture'
+      return (
+          'App architecture or requested options are incompatible with this '
+          'device')
     if outcome.skippedDetail.incompatibleAppVersion:
       return 'App does not support the OS version'
   return 'Unknown reason'

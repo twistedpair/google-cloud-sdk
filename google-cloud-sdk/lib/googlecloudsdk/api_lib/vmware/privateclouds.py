@@ -42,11 +42,9 @@ class PrivateCloudsClient(util.VmwareClientBase):
              resource,
              description=None,
              cluster_id=None,
-             node_type=None,
-             node_count=None,
+             nodes_configs=None,
              network_cidr=None,
-             vmware_engine_network_id=None,
-             node_custom_core_count=None):
+             vmware_engine_network_id=None):
     parent = resource.Parent().RelativeName()
     project = resource.Parent().Parent().Name()
     private_cloud_id = resource.Name()
@@ -56,9 +54,10 @@ class PrivateCloudsClient(util.VmwareClientBase):
     network_config = self.messages.NetworkConfig(
         managementCidr=network_cidr, vmwareEngineNetwork=ven.name)
 
-    management_cluster = self.messages.ManagementCluster(
-        clusterId=cluster_id, nodeCount=node_count,
-        nodeTypeId=node_type, nodeCustomCoreCount=node_custom_core_count)
+    management_cluster = self.messages.ManagementCluster(clusterId=cluster_id)
+    management_cluster.nodeTypeConfigs = util.ConstructNodeParameterConfigMessage(
+        self.messages.ManagementCluster.NodeTypeConfigsValue,
+        self.messages.NodeTypeConfig, nodes_configs)
 
     private_cloud.managementCluster = management_cluster
     private_cloud.networkConfig = network_config

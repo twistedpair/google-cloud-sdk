@@ -488,7 +488,10 @@ class Hcx(_messages.Message):
 
 
 class HcxActivationKey(_messages.Message):
-  r"""HCX activation key.
+  r"""HCX activation key. A default key is created during private cloud
+  provisioning, but this behavior is subject to change and you should always
+  verify active keys. Use VmwareEngine.ListHcxActivationKeys to retrieve
+  existing keys and VmwareEngine.CreateHcxActivationKey to create new ones.
 
   Enums:
     StateValueValuesEnum: Output only. State of HCX activation key.

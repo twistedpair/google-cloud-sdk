@@ -44,7 +44,8 @@ class VmwareClientBase(object):
     return self._messages
 
   def GetOperationRef(self, operation):
-    """Converts an Operation to a Resource that can be used with `waiter.WaitFor`."""
+    """Converts an Operation to a Resource that can be used with `waiter.WaitFor`.
+    """
     return resources.REGISTRY.ParseRelativeName(
         operation.name, collection='vmwareengine.projects.locations.operations')
 
@@ -62,9 +63,9 @@ class VmwareClientBase(object):
       operation_ref: a Resource created by GetOperationRef describing the
         operation.
       message: the message to display to the user while they wait.
-      has_result: if True, the function will return the target of the
-        operation when it completes. If False, nothing will be returned
-        (useful for Delete operations)
+      has_result: if True, the function will return the target of the operation
+        when it completes. If False, nothing will be returned (useful for Delete
+        operations)
       max_wait: The time to wait for the operation to succeed before returning.
 
     Returns:
@@ -83,3 +84,15 @@ class VmwareClientBase(object):
 
 def GetResourceId(resource_name):
   return resource_name.split('/')[-1]
+
+
+def ConstructNodeParameterConfigMessage(map_class, config_class, nodes_configs):
+  properties = []
+  for nodes_config in nodes_configs:
+    node_type_config = config_class(
+        nodeCount=nodes_config['count'],
+        customCoreCount=nodes_config.get('custom-core-count', 0))
+    prop = map_class.AdditionalProperty(
+        key=nodes_config['type'], value=node_type_config)
+    properties.append(prop)
+  return map_class(additionalProperties=properties)

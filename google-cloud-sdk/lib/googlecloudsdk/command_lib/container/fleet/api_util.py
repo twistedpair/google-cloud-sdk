@@ -488,9 +488,12 @@ def GenerateConnectAgentManifest(membership_ref,
 # This will get full membership resource name format which should be used most
 # of the time, this is a supported format in resource args, API function
 # request/response objects, etc.
-def ListMembershipsFull():
+def ListMembershipsFull(filter_cluster_missing=False):
   """Lists full Membership names in the fleet for the current project.
 
+  Args:
+    filter_cluster_missing: whether to filter out memberships that are missing
+    a cluster.
   Returns:
     A list of full membership resource names in the fleet in the form
     'projects/*/locations/*/memberships/*'.
@@ -501,9 +504,11 @@ def ListMembershipsFull():
       client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsListRequest(
           parent=hub_base.HubCommand.LocationResourceName(location='-')))
 
-  return [
-      m.name for m in response.resources if not _ClusterMissing(m.endpoint)
-  ], response.unreachable
+  if filter_cluster_missing:
+    return [
+        m.name for m in response.resources if not _ClusterMissing(m.endpoint)
+    ], response.unreachable
+  return [m.name for m in response.resources], response.unreachable
 
 
 def _ClusterMissing(m):

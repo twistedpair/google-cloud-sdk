@@ -35,12 +35,15 @@ from googlecloudsdk.core import properties
 
 import six
 
+MIN_TRIGGERER_AIRFLOW_VERSION = '2.2.5'
+MIN_TRIGGERER_COMPOSER_VERSION = '2.0.31'
+
 PREREQUISITE_OPTION_ERROR_MSG = """\
 Cannot specify --{opt} without --{prerequisite}.
 """
 
-INVALID_OPTION_FOR_MIN_AIRFLOW_VERSION_ERROR_MSG = """\
-Cannot specify {opt}. Airflow version {airflow_version} is required.
+INVALID_OPTION_FOR_MIN_IMAGE_VERSION_ERROR_MSG = """\
+Cannot specify {opt}. Composer version {composer_version} and Airflow version {airflow_version} are required.
 """
 
 _INVALID_OPTION_FOR_V2_ERROR_MSG = """\
@@ -57,7 +60,8 @@ def ValidateComposerVersionExclusiveOptionFactory(composer_v1_option,
   """Creates Composer version specific ActionClass decorators."""
 
   def ValidateComposerVersionExclusiveOptionDecorator(action_class):
-    """Decorates ActionClass to cross-validate argument with Composer version."""
+    """Decorates ActionClass to cross-validate argument with Composer version.
+    """
     original_call = action_class.__call__
 
     def DecoratedCall(self, parser, namespace, value, option_string=None):
@@ -297,12 +301,12 @@ SCHEDULED_SNAPSHOTS_UPDATE_GROUP_DESCRIPTION = (
     'Composer 2')
 
 TRIGGERER_PARAMETERS_FLAG_GROUP_DESCRIPTION = (
-    'Group of arguments for setting triggerer settings in Composer 2.2.X '
-    'or greater')
+    'Group of arguments for setting triggerer settings in Composer {} '
+    'or greater.'.format(MIN_TRIGGERER_COMPOSER_VERSION))
 
 TRIGGERER_ENABLED_GROUP_DESCRIPTION = (
     'Group of arguments for setting triggerer settings during update '
-    'in Composer 2.2.X or greater')
+    'in Composer {} or greater.'.format(MIN_TRIGGERER_COMPOSER_VERSION))
 
 MASTER_AUTHORIZED_NETWORKS_GROUP_DESCRIPTION = (
     'Group of arguments for setting master authorized networks configuration.')
@@ -519,8 +523,8 @@ TRIGGERER_CPU = base.Argument(
     default=None,
     action=V2ExclusiveStoreAction,
     help="""\
-    CPU allocated to Airflow triggerer. Supported in the Environments with Airflow 2.2.x and greater.
-    """)
+    CPU allocated to Airflow triggerer. Supported in the Environments with Composer {} and Airflow {} and greater.
+    """.format(MIN_TRIGGERER_COMPOSER_VERSION, MIN_TRIGGERER_AIRFLOW_VERSION))
 
 WORKER_CPU = base.Argument(
     '--worker-cpu',
@@ -564,9 +568,9 @@ TRIGGERER_MEMORY = base.Argument(
     default=None,
     action=V2ExclusiveStoreAction,
     help="""\
-    Memory allocated to Airflow triggerer, ex. 600MB, 3GB, 2. If units are not provided,
-    defaults to GB. Supported in the Environments with Airflow 2.2.x and greater.
-    """)
+    Memory allocated to Airflow triggerer, ex. 512MB, 3GB, 2. If units are not provided,
+    defaults to GB. Supported in the Environments with Composer {} and Airflow {} and greater.
+    """.format(MIN_TRIGGERER_COMPOSER_VERSION, MIN_TRIGGERER_AIRFLOW_VERSION))
 
 WORKER_MEMORY = base.Argument(
     '--worker-memory',
@@ -670,8 +674,8 @@ ENABLE_TRIGGERER = base.Argument(
     const=True,
     action='store_const',
     help="""\
-    Enable use of a triggerer, supported in the Environments with Airflow 2.2.x and greater.
-    """)
+    Enable use of a triggerer, supported in the Environments with Composer {} and Airflow {} and greater.
+    """.format(MIN_TRIGGERER_COMPOSER_VERSION, MIN_TRIGGERER_AIRFLOW_VERSION))
 
 DISABLE_TRIGGERER = base.Argument(
     '--disable-triggerer',
@@ -679,8 +683,8 @@ DISABLE_TRIGGERER = base.Argument(
     const=True,
     action='store_const',
     help="""\
-    Disable a triggerer, supported in the Environments with Airflow 2.2.x and greater.
-    """)
+    Disable a triggerer, supported in the Environments with Composer {} and Airflow {} and greater.
+    """.format(MIN_TRIGGERER_COMPOSER_VERSION, MIN_TRIGGERER_AIRFLOW_VERSION))
 
 ENVIRONMENT_SIZE_GA = arg_utils.ChoiceEnumMapper(
     arg_name='--environment-size',
@@ -1485,7 +1489,7 @@ def AddAutoscalingUpdateFlagsToGroup(update_type_group, release_track):
   MAX_WORKERS.AddToParser(update_group)
   if release_track != base.ReleaseTrack.GA:
     triggerer_params_group = update_group.add_argument_group(
-        TRIGGERER_PARAMETERS_FLAG_GROUP_DESCRIPTION, hidden=True, mutex=True)
+        TRIGGERER_PARAMETERS_FLAG_GROUP_DESCRIPTION, mutex=True)
     triggerer_enabled_group = triggerer_params_group.add_argument_group(
         TRIGGERER_ENABLED_GROUP_DESCRIPTION)
     TRIGGERER_CPU.AddToParser(triggerer_enabled_group)

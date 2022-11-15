@@ -40,7 +40,7 @@ from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
-_EXT_VERSION = "2.1.5"
+_EXT_VERSION = "2.2.0"
 
 _PROJECT_NOT_FOUND_ERROR = """\
 Failed to find attribute [project]. \
@@ -315,6 +315,8 @@ def GetMavenSnippet(args):
     data["scheme"] = "https"
     data["username"] = "_json_key_base64"
     data["password"] = sa_creds
+  else:
+    data["extension_version"] = _EXT_VERSION
 
   return mvn_template.format(**data)
 

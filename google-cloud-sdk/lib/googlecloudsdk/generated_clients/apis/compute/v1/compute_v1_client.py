@@ -6816,7 +6816,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified interconnect.
+      r"""Deletes the specified Interconnect.
 
       Args:
         request: (ComputeInterconnectsDeleteRequest) input message
@@ -6842,7 +6842,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified interconnect. Get a list of available interconnects by making a list() request.
+      r"""Returns the specified Interconnect. Get a list of available Interconnects by making a list() request.
 
       Args:
         request: (ComputeInterconnectsGetRequest) input message
@@ -6868,7 +6868,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def GetDiagnostics(self, request, global_params=None):
-      r"""Returns the interconnectDiagnostics for the specified interconnect.
+      r"""Returns the interconnectDiagnostics for the specified Interconnect.
 
       Args:
         request: (ComputeInterconnectsGetDiagnosticsRequest) input message
@@ -6894,7 +6894,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a Interconnect in the specified project using the data included in the request.
+      r"""Creates an Interconnect in the specified project using the data included in the request.
 
       Args:
         request: (ComputeInterconnectsInsertRequest) input message
@@ -6920,7 +6920,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of interconnect available to the specified project.
+      r"""Retrieves the list of Interconnects available to the specified project.
 
       Args:
         request: (ComputeInterconnectsListRequest) input message
@@ -6946,7 +6946,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates the specified Interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeInterconnectsPatchRequest) input message

@@ -192,7 +192,7 @@ def _GetPlatformPolicyResourceSpec():
       platformsId=concepts.ResourceParameterAttributeConfig(
           name='platform',
           help_text='The platform that the {resource} belongs to. '
-          'PLATFORM must be one of the following: cloudRun.'),
+          'PLATFORM must be one of the following: cloudRun, gke.'),
       policyId=concepts.ResourceParameterAttributeConfig(
           name='policy', help_text='The ID of the {resource}.'))
 

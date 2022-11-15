@@ -1572,6 +1572,82 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class GkehubProjectsLocationsMembershipsBindingsCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsBindingsCreateRequest object.
+
+  Fields:
+    membershipBinding: A MembershipBinding resource to be passed as the
+      request body.
+    membershipBindingId: Required. The ID to use for the MembershipBinding.
+    parent: Required. The parent (project and location) where the
+      MembershipBinding will be created. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+  """
+
+  membershipBinding = _messages.MessageField('MembershipBinding', 1)
+  membershipBindingId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsMembershipsBindingsDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsBindingsDeleteRequest object.
+
+  Fields:
+    name: Required. The MembershipBinding resource name in the format
+      `projects/*/locations/*/memberships/*/bindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsMembershipsBindingsGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsBindingsGetRequest object.
+
+  Fields:
+    name: Required. The MembershipBinding resource name in the format
+      `projects/*/locations/*/memberships/*/bindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsMembershipsBindingsListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsBindingsListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to
+      `ListMembershipBindings` which specifies the position in the list from
+      where to continue listing the resources.
+    parent: Required. The parent Membership for which the MembershipBindings
+      will be listed. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsMembershipsBindingsPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsBindingsPatchRequest object.
+
+  Fields:
+    membershipBinding: A MembershipBinding resource to be passed as the
+      request body.
+    name: The resource name for the membershipbinding itself `projects/{projec
+      t}/locations/{location}/memberships/{membership}/bindings/{membershipbin
+      ding}`
+    updateMask: Required. The fields to be updated.
+  """
+
+  membershipBinding = _messages.MessageField('MembershipBinding', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class GkehubProjectsLocationsMembershipsCreateRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsCreateRequest object.
 
@@ -1836,6 +1912,63 @@ class GkehubProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class GkehubProjectsLocationsScopesCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent (project and location) where the Scope will
+      be created. Specified in the format `projects/*/locations/*`.
+    scope: A Scope resource to be passed as the request body.
+    scopeId: Required. Client chosen ID for the Scope. `scope_id` must be a
+      ????
+  """
+
+  parent = _messages.StringField(1, required=True)
+  scope = _messages.MessageField('Scope', 2)
+  scopeId = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsScopesDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesDeleteRequest object.
+
+  Fields:
+    name: Required. The Scope resource name in the format
+      `projects/*/locations/*/scopes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsScopesGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesGetRequest object.
+
+  Fields:
+    name: Required. The Scope resource name in the format
+      `projects/*/locations/*/scopes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsScopesListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListScopes` which
+      specifies the position in the list from where to continue listing the
+      resources.
+    parent: Required. The parent (project and location) where the Scope will
+      be listed. Specified in the format `projects/*/locations/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class GoogleRpcStatus(_messages.Message):
@@ -2265,6 +2398,20 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListMembershipBindingsResponse(_messages.Message):
+  r"""List of MembershipBindings.
+
+  Fields:
+    membershipBindings: The list of membership_bindings
+    nextPageToken: A token to request the next page of resources from the
+      `ListMembershipBindings` method. The value of an empty string means that
+      there are no more resources to return.
+  """
+
+  membershipBindings = _messages.MessageField('MembershipBinding', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListMembershipsResponse(_messages.Message):
   r"""Response message for the `GkeHub.ListMemberships` method.
 
@@ -2293,6 +2440,20 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListScopesResponse(_messages.Message):
+  r"""List of Scopes.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListScopes` method. The value of an empty string means that there are
+      no more resources to return.
+    scopes: The list of Scopes
+  """
+
+  nextPageToken = _messages.StringField(1)
+  scopes = _messages.MessageField('Scope', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -2478,6 +2639,69 @@ class Membership(_messages.Message):
   updateTime = _messages.StringField(13)
 
 
+class MembershipBinding(_messages.Message):
+  r"""MembershipBinding is a subresource of a Membership, representing what
+  Fleet Scopes (or other, future Fleet resources) a Membership is bound to.
+
+  Fields:
+    createTime: Output only. When the membership binding was created.
+    deleteTime: Output only. When the membership binding was deleted.
+    fleet: Whether the membershipbinding is Fleet-wide; true means that this
+      Membership should be bound to all Namespaces in this entire Fleet.
+    name: The resource name for the membershipbinding itself `projects/{projec
+      t}/locations/{location}/memberships/{membership}/bindings/{membershipbin
+      ding}`
+    scope: A Workspace resource name in the format
+      `projects/*/locations/*/scopes/*`.
+    state: Output only. State of the membership binding resource.
+    uid: Output only. Google-generated UUID for this resource. This is unique
+      across all membershipbinding resources. If a membershipbinding resource
+      is deleted and another resource with the same name is created, it gets a
+      different uid.
+    updateTime: Output only. When the membership binding was last updated.
+  """
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  fleet = _messages.BooleanField(3)
+  name = _messages.StringField(4)
+  scope = _messages.StringField(5)
+  state = _messages.MessageField('MembershipBindingLifecycleState', 6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class MembershipBindingLifecycleState(_messages.Message):
+  r"""MembershipBindingLifecycleState describes the state of a Binding
+  resource.
+
+  Enums:
+    CodeValueValuesEnum: Output only. The current state of the
+      MembershipBinding resource.
+
+  Fields:
+    code: Output only. The current state of the MembershipBinding resource.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the MembershipBinding resource.
+
+    Values:
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The membershipbinding is being created.
+      READY: The membershipbinding active.
+      DELETING: The membershipbinding is being deleted.
+      UPDATING: The membershipbinding is being updated.
+    """
+    CODE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    UPDATING = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+
+
 class MembershipEndpoint(_messages.Message):
   r"""MembershipEndpoint contains information needed to contact a Kubernetes
   API, endpoint and any additional Kubernetes metadata.
@@ -2534,6 +2758,8 @@ class MembershipFeatureSpec(_messages.Message):
 
   Fields:
     configmanagement: Config Management-specific spec.
+    fleetInherited: True if value of `feature_spec` was inherited from a
+      fleet-level default.
     fleetobservability: Fleet observability membership spec
     helloworld: Hello World-specific spec.
     identityservice: Identity Service-specific spec.
@@ -2541,10 +2767,11 @@ class MembershipFeatureSpec(_messages.Message):
   """
 
   configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 1)
-  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 2)
-  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 3)
-  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 4)
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 5)
+  fleetInherited = _messages.BooleanField(2)
+  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 3)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 4)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 5)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 6)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -2927,6 +3154,29 @@ class ResourceOptions(_messages.Message):
   v1beta1Crd = _messages.BooleanField(3)
 
 
+class Scope(_messages.Message):
+  r"""Scope represents a Scope in a Fleet.
+
+  Fields:
+    createTime: Output only. When the scope was created.
+    deleteTime: Output only. When the scope was deleted.
+    name: The resource name for the scope
+      `projects/{project}/locations/{location}/scopes/{scope}`
+    state: Output only. State of the scope resource.
+    uid: Output only. Google-generated UUID for this resource. This is unique
+      across all scope resources. If a scope resource is deleted and another
+      resource with the same name is created, it gets a different uid.
+    updateTime: Output only. When the scope was last updated.
+  """
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  state = _messages.MessageField('ScopeLifecycleState', 4)
+  uid = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
 class ScopeFeatureSpec(_messages.Message):
   r"""ScopeFeatureSpec contains feature specs for a fleet scope."""
 
@@ -2939,6 +3189,35 @@ class ScopeFeatureState(_messages.Message):
   """
 
   state = _messages.MessageField('FeatureState', 1)
+
+
+class ScopeLifecycleState(_messages.Message):
+  r"""ScopeLifecycleState describes the state of a Scope resource.
+
+  Enums:
+    CodeValueValuesEnum: Output only. The current state of the scope resource.
+
+  Fields:
+    code: Output only. The current state of the scope resource.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the scope resource.
+
+    Values:
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The scope is being created.
+      READY: The scope active.
+      DELETING: The scope is being deleted.
+      UPDATING: The scope is being updated.
+    """
+    CODE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    UPDATING = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
 
 
 class ServiceMeshControlPlaneManagement(_messages.Message):

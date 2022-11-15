@@ -29,8 +29,7 @@ class BlockchainNode(_messages.Message):
       first created.
     ethereumDetails: A EthereumDetails attribute.
     labels: User-provided key-value pairs.
-    name: Output only. The resource name. Resource names are scheme-less URIs
-      that follow conventions in http://cloud/apis/design/resource_names. e.g.
+    name: Output only. The fully qualified name of the blockchain node. e.g.
       projects/my-project/locations/us-central1/blockchainNodes/my-node.
     updateTime: Output only. The timestamp at which the Blockchain Node was
       last updated.
@@ -114,7 +113,8 @@ class BlockchainnodeengineProjectsLocationsBlockchainNodesDeleteRequest(_message
   object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The fully qualified name of the blockchain node to delete.
+      e.g. projects/my-project/locations/us-central1/blockchainNodes/my-node.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -136,7 +136,8 @@ class BlockchainnodeengineProjectsLocationsBlockchainNodesGetRequest(_messages.M
   r"""A BlockchainnodeengineProjectsLocationsBlockchainNodesGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The fully qualified name of the blockchain node to fetch.
+      e.g. projects/my-project/locations/us-central1/blockchainNodes/my-node.
   """
 
   name = _messages.StringField(1, required=True)
@@ -169,8 +170,7 @@ class BlockchainnodeengineProjectsLocationsBlockchainNodesPatchRequest(_messages
   Fields:
     blockchainNode: A BlockchainNode resource to be passed as the request
       body.
-    name: Output only. The resource name. Resource names are scheme-less URIs
-      that follow conventions in http://cloud/apis/design/resource_names. e.g.
+    name: Output only. The fully qualified name of the blockchain node. e.g.
       projects/my-project/locations/us-central1/blockchainNodes/my-node.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server

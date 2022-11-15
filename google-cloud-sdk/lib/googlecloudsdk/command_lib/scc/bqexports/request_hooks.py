@@ -94,7 +94,7 @@ def _ValidateAndGetBigQueryExportId(args):
   pattern = re.compile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$")
   if not pattern.match(bq_export_id):
     raise InvalidSCCInputError(
-        "BigQiery export id does not match the pattern '^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$'."
+        "BigQuery export id does not match the pattern '^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$'."
     )
   else:
     return bq_export_id

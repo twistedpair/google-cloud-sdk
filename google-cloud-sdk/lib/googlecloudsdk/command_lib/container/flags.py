@@ -1200,7 +1200,7 @@ def AddLoggingFlag(parser, autopilot=False):
 
   help_text = """\
 Set the components that have logging enabled. Valid component values are:
-`SYSTEM`, `WORKLOAD`, `NONE`
+`SYSTEM`, `WORKLOAD`, `API_SERVER`, `CONTROLLER_MANAGER`, `SCHEDULER`, `NONE`
 
 For more information, look at
 https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-logs
@@ -1208,7 +1208,7 @@ https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-log
 Examples:
 
   $ {command} --logging=SYSTEM
-  $ {command} --logging=SYSTEM,WORKLOAD
+  $ {command} --logging=SYSTEM,API_SERVER,WORKLOAD
   $ {command} --logging=NONE
 """
   parser.add_argument(
@@ -2331,7 +2331,7 @@ def AddLabelsFlag(parser, hidden=False, for_node_pool=False):
 
   if for_node_pool:
     help_text = """\
-Labels to apply to the Google Cloud resources labels of node pools in the
+Labels to apply to the Google Cloud resources of node pools in the
 Kubernetes Engine cluster. These are unrelated to Kubernetes labels.
 
 Examples:
@@ -2884,12 +2884,15 @@ def AddNodePoolNodeIdentityFlags(parser):
 
 def AddAddonsFlagsWithOptions(parser, addon_options):
   """Adds the --addons flag to the parser with the given addon options."""
+  visible_addon_options = [
+      addon for addon in addon_options
+      if addon != api_adapter.APPLICATIONMANAGER]
+  visible_addon_options += api_adapter.VISIBLE_CLOUDRUN_ADDONS
   parser.add_argument(
       '--addons',
       type=arg_parsers.ArgList(
           choices=(addon_options + api_adapter.CLOUDRUN_ADDONS),
-          visible_choices=(addon_options +
-                           api_adapter.VISIBLE_CLOUDRUN_ADDONS)),
+          visible_choices=visible_addon_options),
       metavar='ADDON',
       help="""\
 Addons
@@ -4493,9 +4496,7 @@ def AddPrivateEndpointSubnetworkFlag(parser):
   private endpoint.
   """
   parser.add_argument(
-      '--private-endpoint-subnetwork',
-      help=help_text,
-      metavar='NAME')
+      '--private-endpoint-subnetwork', help=help_text, metavar='NAME')
 
 
 def AddCrossConnectSubnetworksFlag(parser, hidden=True):

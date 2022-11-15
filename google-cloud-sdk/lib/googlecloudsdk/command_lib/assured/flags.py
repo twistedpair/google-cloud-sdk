@@ -36,7 +36,7 @@ compliance_regimes = {
     ReleaseTrack.ALPHA: _BETA_COMPLIANCE_REGIMES
 }
 
-PARTNERS = ['LOCAL_CONTROLS_BY_S3NS']
+PARTNERS = ['LOCAL_CONTROLS_BY_S3NS', 'SOVEREIGN_CONTROLS_BY_T_SYSTEMS']
 
 
 def AddListWorkloadsFlags(parser):

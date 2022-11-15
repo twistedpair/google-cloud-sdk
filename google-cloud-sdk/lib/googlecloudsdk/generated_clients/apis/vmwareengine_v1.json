@@ -1344,7 +1344,7 @@
     },
     "HcxActivationKey": {
       "id": "HcxActivationKey",
-      "description": "HCX activation key.",
+      "description": "HCX activation key. A default key is created during private cloud provisioning, but this behavior is subject to change and you should always verify active keys. Use VmwareEngine.ListHcxActivationKeys to retrieve existing keys and VmwareEngine.CreateHcxActivationKey to create new ones.",
       "type": "object",
       "properties": {
         "name": {

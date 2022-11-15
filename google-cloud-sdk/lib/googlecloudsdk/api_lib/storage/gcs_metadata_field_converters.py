@@ -36,12 +36,7 @@ def _create_iam_metadata_if_needed(current_iam_metadata):
 
 def process_acl_file(file_path):
   """Converts ACL file to Apitools objects."""
-  if file_path == user_request_args_factory.CLEAR:
-    return []
   acl_dict_list = metadata_util.cached_read_json_file(file_path)
-  if not acl_dict_list:
-    return []
-
   acl_messages = []
   messages = apis.GetMessagesModule('storage', 'v1')
   for acl_dict in acl_dict_list:

@@ -22,6 +22,7 @@
   "baseUrl": "https://blockchainnodeengine.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -234,7 +235,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name. Resource names are scheme-less URIs that follow conventions in http:\/\/cloud\/apis\/design\/resource_names. e.g. projects\/my-project\/locations\/us-central1\/blockchainNodes\/my-node.",
+          "description": "Output only. The fully qualified name of the blockchain node. e.g. projects\/my-project\/locations\/us-central1\/blockchainNodes\/my-node.",
           "readOnly": true,
           "type": "string"
         },
@@ -717,7 +718,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the resource",
+                      "description": "Required. The fully qualified name of the blockchain node to fetch. e.g. projects\/my-project\/locations\/us-central1\/blockchainNodes\/my-node.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/blockchainNodes\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -780,7 +781,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. The resource name. Resource names are scheme-less URIs that follow conventions in http:\/\/cloud\/apis\/design\/resource_names. e.g. projects\/my-project\/locations\/us-central1\/blockchainNodes\/my-node.",
+                      "description": "Output only. The fully qualified name of the blockchain node. e.g. projects\/my-project\/locations\/us-central1\/blockchainNodes\/my-node.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/blockchainNodes\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -819,7 +820,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the resource",
+                      "description": "Required. The fully qualified name of the blockchain node to delete. e.g. projects\/my-project\/locations\/us-central1\/blockchainNodes\/my-node.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/blockchainNodes\/[^\/]+$",
                       "location": "path",
                       "required": true,

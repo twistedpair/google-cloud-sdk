@@ -949,7 +949,8 @@ class KeyToPath(_messages.Message):
 
   Fields:
     key: The Cloud Secret Manager secret version. Can be 'latest' for the
-      latest value or an integer for a specific version. The key to project.
+      latest value, or an integer or a secret alias for a specific version.
+      The key to project.
     mode: (Optional) Mode bits to use on this file, must be a value between 01
       and 0777 (octal). If 0 or not set, the Volume's default mode will be
       used. Notes * Internally, a umask of 0222 will be applied to any non-
@@ -3322,8 +3323,8 @@ class SecretKeySelector(_messages.Message):
 
   Fields:
     key: Required. A Cloud Secret Manager secret version. Must be 'latest' for
-      the latest version or an integer for a specific version. The key of the
-      secret to select from. Must be a valid secret key.
+      the latest version, an integer for a specific version, or a version
+      alias. The key of the secret to select from. Must be a valid secret key.
     localObjectReference: This field should not be used directly as it is
       meant to be inlined directly into the message. Use the "name" field
       instead.

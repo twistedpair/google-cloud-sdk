@@ -41,6 +41,7 @@ class DatapipelinesV1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_pipelines_jobs = self.ProjectsLocationsPipelinesJobsService(self)
     self.projects_locations_pipelines = self.ProjectsLocationsPipelinesService(self)
+    self.projects_locations_transformDescriptions = self.ProjectsLocationsTransformDescriptionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -253,6 +254,70 @@ class DatapipelinesV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsTransformDescriptionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_transformDescriptions resource."""
+
+    _NAME = 'projects_locations_transformDescriptions'
+
+    def __init__(self, client):
+      super(DatapipelinesV1.ProjectsLocationsTransformDescriptionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def BatchGet(self, request, global_params=None):
+      r"""Gets transform descriptions in a batch, associated with a list of provided uniform resource names.
+
+      Args:
+        request: (DatapipelinesProjectsLocationsTransformDescriptionsBatchGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatapipelinesV1BatchGetTransformDescriptionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchGet')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchGet.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/transformDescriptions:batchGet',
+        http_method='GET',
+        method_id='datapipelines.projects.locations.transformDescriptions.batchGet',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['names'],
+        relative_path='v1/{+parent}/transformDescriptions:batchGet',
+        request_field='',
+        request_type_name='DatapipelinesProjectsLocationsTransformDescriptionsBatchGetRequest',
+        response_type_name='GoogleCloudDatapipelinesV1BatchGetTransformDescriptionsResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the transform description associated with the provided uniform resource name.
+
+      Args:
+        request: (DatapipelinesProjectsLocationsTransformDescriptionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatapipelinesV1TransformDescription) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/transformDescriptions/{transformDescriptionsId}',
+        http_method='GET',
+        method_id='datapipelines.projects.locations.transformDescriptions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DatapipelinesProjectsLocationsTransformDescriptionsGetRequest',
+        response_type_name='GoogleCloudDatapipelinesV1TransformDescription',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
@@ -262,6 +327,33 @@ class DatapipelinesV1(base_api.BaseApiClient):
       super(DatapipelinesV1.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def ComputeSchema(self, request, global_params=None):
+      r"""Computes the schema for the transform. Computation from `raw_schema` will always occur if it is set. This requires that the transform supports that encoding. If no raw schema is provided and if the transform is for an IO, then this will attempt to connect to the resource using the details provided in `config` and infer the schema from that. If the transform is not an IO, is a sink that doesn't exist yet, or is a sink with no schema requirement, then this will fall back to basing the schema off the one provided in `input_schemas`. The computed schema will be validated.
+
+      Args:
+        request: (DatapipelinesProjectsLocationsComputeSchemaRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatapipelinesV1Schema) The response message.
+      """
+      config = self.GetMethodConfig('ComputeSchema')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ComputeSchema.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}:computeSchema',
+        http_method='POST',
+        method_id='datapipelines.projects.locations.computeSchema',
+        ordered_params=['location'],
+        path_params=['location'],
+        query_params=[],
+        relative_path='v1/{+location}:computeSchema',
+        request_field='googleCloudDatapipelinesV1ComputeSchemaRequest',
+        request_type_name='DatapipelinesProjectsLocationsComputeSchemaRequest',
+        response_type_name='GoogleCloudDatapipelinesV1Schema',
+        supports_download=False,
+    )
 
     def ListPipelines(self, request, global_params=None):
       r"""Lists pipelines. Returns a "FORBIDDEN" error if the caller doesn't have permission to access it.

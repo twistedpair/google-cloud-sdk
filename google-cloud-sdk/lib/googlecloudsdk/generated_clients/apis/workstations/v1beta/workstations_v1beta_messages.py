@@ -13,6 +13,20 @@ from apitools.base.py import extra_types
 package = 'workstations'
 
 
+class Accelerator(_messages.Message):
+  r"""An accelerator card attached to the instance.
+
+  Fields:
+    count: The number of accelerator cards exposed to the instance.
+    type: Full or partial URL of the accelerator type resource to attach to
+      the instance. For example: projects/my-project/zones/us-
+      central1-c/acceleratorTypes/nvidia-tesla-p100.
+  """
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  type = _messages.StringField(2)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -249,6 +263,8 @@ class GceInstance(_messages.Message):
   r"""A runtime using a Google Compute Engine Instance.
 
   Fields:
+    accelerators: A list of the type and count of accelerator cards attached
+      to the instance.
     bootDiskSizeGb: Size of the boot disk in GB.
     confidentialInstanceConfig: A set of Confidential Google Compute Engine
       Instance option.
@@ -266,14 +282,15 @@ class GceInstance(_messages.Message):
       the Workstations.
   """
 
-  bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  confidentialInstanceConfig = _messages.MessageField('GceConfidentialInstanceConfig', 2)
-  disablePublicIpAddresses = _messages.BooleanField(3)
-  machineType = _messages.StringField(4)
-  poolSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  serviceAccount = _messages.StringField(6)
-  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 7)
-  tags = _messages.StringField(8, repeated=True)
+  accelerators = _messages.MessageField('Accelerator', 1, repeated=True)
+  bootDiskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  confidentialInstanceConfig = _messages.MessageField('GceConfidentialInstanceConfig', 3)
+  disablePublicIpAddresses = _messages.BooleanField(4)
+  machineType = _messages.StringField(5)
+  poolSize = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  serviceAccount = _messages.StringField(7)
+  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 8)
+  tags = _messages.StringField(9, repeated=True)
 
 
 class GceRegionalPersistentDisk(_messages.Message):

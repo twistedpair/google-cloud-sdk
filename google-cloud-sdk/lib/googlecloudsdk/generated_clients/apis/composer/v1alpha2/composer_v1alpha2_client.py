@@ -197,6 +197,33 @@ class ComposerV1alpha2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Activate(self, request, global_params=None):
+      r"""Activates a dag.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsDagsActivateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Dag) The response message.
+      """
+      config = self.GetMethodConfig('Activate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Activate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/dags/{dagsId}:activate',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.dags.activate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}:activate',
+        request_field='activateDagRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsDagsActivateRequest',
+        response_type_name='Dag',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Retrieves a DAG.
 
@@ -302,6 +329,33 @@ class ComposerV1alpha2(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComposerProjectsLocationsEnvironmentsDagsListStatsRequest',
         response_type_name='ListDagStatsResponse',
+        supports_download=False,
+    )
+
+    def Pause(self, request, global_params=None):
+      r"""Pauses a dag.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsDagsPauseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Dag) The response message.
+      """
+      config = self.GetMethodConfig('Pause')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Pause.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/dags/{dagsId}:pause',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.dags.pause',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}:pause',
+        request_field='pauseDagRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsDagsPauseRequest',
+        response_type_name='Dag',
         supports_download=False,
     )
 

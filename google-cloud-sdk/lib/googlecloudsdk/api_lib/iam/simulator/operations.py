@@ -22,6 +22,7 @@ from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 _MAX_WAIT_TIME_MS = 60 * 60 * 1000  # 60 minutes.
@@ -40,6 +41,13 @@ class Client(object):
   def FromApiVersion(cls, version):
     return cls(version, apis.GetClientInstance('policysimulator', version))
 
+  # TODO(b/258531243): Remove the legacy operation name logic
+  def _IsLegacyOperationName(self, operation_name):
+    return operation_name.startswith('operations/')
+
+  def GetReplayId(self, operation_name):
+    return operation_name.split('/')[-1]
+
   def Get(self, operation_ref):
     request = self._messages.PolicysimulatorOperationsGetRequest(
         name=operation_ref.RelativeName())
@@ -57,10 +65,22 @@ class Client(object):
         batch_size_attribute='pageSize')
 
   def WaitForOperation(self, operation, message):
+    """Wait for the operation to complete."""
     registry = resources.REGISTRY.Clone()
     registry.RegisterApiByName('policysimulator', self._api_version)
-    operation_ref = registry.Parse(
-        operation.name, collection='policysimulator.operations')
+    # TODO(b/258531243): Remove the legacy operation name logic
+    if self._IsLegacyOperationName(operation.name):
+      operation_ref = registry.Parse(operation.name,
+                                     collection='policysimulator.operations')
+    else:
+      operation_ref = registry.Parse(
+          operation.name,
+          params={
+              'projectsId': properties.VALUES.core.project.GetOrFail,
+              'locationsId': 'global',
+              'replaysId': self.GetReplayId(operation.name),
+          },
+          collection='policysimulator.projects.locations.replays.operations')
     poller = waiter.CloudOperationPollerNoResources(self._service)
     return waiter.WaitFor(
         poller, operation_ref, message, wait_ceiling_ms=_MAX_WAIT_TIME_MS)

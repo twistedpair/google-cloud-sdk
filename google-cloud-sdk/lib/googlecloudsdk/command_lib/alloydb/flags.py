@@ -462,13 +462,15 @@ def AddPitrConfigFlags(parser):
   Args:
     parser: argparse.ArgumentParser: Parser object for command line inputs.
   """
-  group = parser.add_group(mutex=True, help='PITR configuration. ')
+  group = parser.add_group(mutex=True, hidden=True, help='PITR configuration.')
   group.add_argument(
       '--disable-pitr',
+      hidden=True,
       action='store_true',
       help='Disables PITR on the cluster.')
   group.add_argument(
       '--pitr-log-retention-window',
+      hidden=True,
       metavar='RETENTION_PERIOD',
       type=arg_parsers.Duration(parsed_unit='s'),
       help=('Retention window of the log files saved to support PITR. See '

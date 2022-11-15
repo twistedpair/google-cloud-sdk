@@ -1393,6 +1393,20 @@
         "versionName": {
           "description": "Version number shown to users.",
           "type": "string"
+        },
+        "metadata": {
+          "description": "Meta-data tags defined in the manifest.",
+          "type": "array",
+          "items": {
+            "$ref": "Metadata"
+          }
+        },
+        "usesFeature": {
+          "description": "Feature usage tags defined in the manifest.",
+          "type": "array",
+          "items": {
+            "$ref": "UsesFeature"
+          }
         }
       }
     },
@@ -1418,6 +1432,36 @@
         "mimeType": {
           "description": "The android:mimeType value of the tag.",
           "type": "string"
+        }
+      }
+    },
+    "Metadata": {
+      "id": "Metadata",
+      "description": "A tag within a manifest. https:\/\/developer.android.com\/guide\/topics\/manifest\/meta-data-element.html",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The android:name value",
+          "type": "string"
+        },
+        "value": {
+          "description": "The android:value value",
+          "type": "string"
+        }
+      }
+    },
+    "UsesFeature": {
+      "id": "UsesFeature",
+      "description": "A tag within a manifest. https:\/\/developer.android.com\/guide\/topics\/manifest\/uses-feature-element.html",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The android:name value",
+          "type": "string"
+        },
+        "isRequired": {
+          "description": "The android:required value",
+          "type": "boolean"
         }
       }
     },

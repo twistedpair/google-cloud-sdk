@@ -473,6 +473,13 @@
           "description": "Size of the boot disk in GB.",
           "type": "integer",
           "format": "int32"
+        },
+        "accelerators": {
+          "description": "A list of the type and count of accelerator cards attached to the instance.",
+          "type": "array",
+          "items": {
+            "$ref": "Accelerator"
+          }
         }
       }
     },
@@ -503,6 +510,22 @@
         "enableConfidentialCompute": {
           "description": "Whether the instance has confidential compute enabled.",
           "type": "boolean"
+        }
+      }
+    },
+    "Accelerator": {
+      "id": "Accelerator",
+      "description": "An accelerator card attached to the instance.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Full or partial URL of the accelerator type resource to attach to the instance. For example: projects\/my-project\/zones\/us-central1-c\/acceleratorTypes\/nvidia-tesla-p100.",
+          "type": "string"
+        },
+        "count": {
+          "description": "The number of accelerator cards exposed to the instance.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

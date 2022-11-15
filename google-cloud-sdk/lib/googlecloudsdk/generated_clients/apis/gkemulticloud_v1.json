@@ -319,6 +319,10 @@
         "authorization": {
           "description": "Optional. Configuration related to the cluster RBAC settings.",
           "$ref": "GoogleCloudGkemulticloudV1AttachedClustersAuthorization"
+        },
+        "monitoringConfig": {
+          "description": "Optional. Monitoring configuration for this cluster.",
+          "$ref": "GoogleCloudGkemulticloudV1MonitoringConfig"
         }
       }
     },
@@ -441,6 +445,28 @@
         "username": {
           "description": "Required. The name of the user, e.g. `my-gcp-id@gmail.com`.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1MonitoringConfig": {
+      "id": "GoogleCloudGkemulticloudV1MonitoringConfig",
+      "description": "Parameters that describe the Monitoring configuration in a cluster.",
+      "type": "object",
+      "properties": {
+        "managedPrometheusConfig": {
+          "description": "Enable Google Cloud Managed Service for Prometheus in the cluster.",
+          "$ref": "GoogleCloudGkemulticloudV1ManagedPrometheusConfig"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1ManagedPrometheusConfig": {
+      "id": "GoogleCloudGkemulticloudV1ManagedPrometheusConfig",
+      "description": "ManagedPrometheusConfig defines the configuration for Google Cloud Managed Service for Prometheus.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enable Managed Collection.",
+          "type": "boolean"
         }
       }
     },
@@ -898,28 +924,6 @@
         "message": {
           "description": "Human-friendly description of the error.",
           "type": "string"
-        }
-      }
-    },
-    "GoogleCloudGkemulticloudV1MonitoringConfig": {
-      "id": "GoogleCloudGkemulticloudV1MonitoringConfig",
-      "description": "Parameters that describe the Monitoring configuration in a cluster.",
-      "type": "object",
-      "properties": {
-        "managedPrometheusConfig": {
-          "description": "Enable Google Cloud Managed Service for Prometheus in the cluster.",
-          "$ref": "GoogleCloudGkemulticloudV1ManagedPrometheusConfig"
-        }
-      }
-    },
-    "GoogleCloudGkemulticloudV1ManagedPrometheusConfig": {
-      "id": "GoogleCloudGkemulticloudV1ManagedPrometheusConfig",
-      "description": "ManagedPrometheusConfig defines the configuration for Google Cloud Managed Service for Prometheus.",
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "description": "Enable Managed Collection.",
-          "type": "boolean"
         }
       }
     },
@@ -2460,7 +2464,7 @@
                       "type": "boolean"
                     },
                     "updateMask": {
-                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AttachedCluster: * `description`. * `annotations`. * `platform_version`. * `authorization.admin_users`.",
+                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AttachedCluster: * `description`. * `annotations`. * `platform_version`. * `authorization.admin_users`. * `logging_config.component_config.enable_components`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2675,7 +2679,7 @@
                       "type": "boolean"
                     },
                     "updateMask": {
-                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AwsCluster: * `description`. * `annotations`. * `control_plane.version`. * `authorization.admin_users`. * `control_plane.aws_services_authentication.role_arn`. * `control_plane.aws_services_authentication.role_session_name`. * `control_plane.config_encryption.kms_key_arn`. * `control_plane.instance_type`. * `control_plane.security_group_ids`. * `control_plane.proxy_config`. * `control_plane.proxy_config.secret_arn`. * `control_plane.proxy_config.secret_version`. * `control_plane.root_volume.size_gib`. * `control_plane.root_volume.volume_type`. * `control_plane.root_volume.iops`. * `control_plane.root_volume.kms_key_arn`. * `control_plane.ssh_config`. * `control_plane.ssh_config.ec2_key_pair`. * `control_plane.instance_placement.tenancy`. * `control_plane.iam_instance_profile`. * `logging_config.component_config.enable_components`. * `control_plane.tags`.",
+                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AwsCluster: * `description`. * `annotations`. * `control_plane.version`. * `authorization.admin_users`. * `control_plane.aws_services_authentication.role_arn`. * `control_plane.aws_services_authentication.role_session_name`. * `control_plane.config_encryption.kms_key_arn`. * `control_plane.instance_type`. * `control_plane.security_group_ids`. * `control_plane.proxy_config`. * `control_plane.proxy_config.secret_arn`. * `control_plane.proxy_config.secret_version`. * `control_plane.root_volume.size_gib`. * `control_plane.root_volume.volume_type`. * `control_plane.root_volume.iops`. * `control_plane.root_volume.kms_key_arn`. * `control_plane.ssh_config`. * `control_plane.ssh_config.ec2_key_pair`. * `control_plane.instance_placement.tenancy`. * `control_plane.iam_instance_profile`. * `logging_config.component_config.enable_components`. * `control_plane.tags`. * `monitoring_config.managed_prometheus_config.enabled`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2908,7 +2912,7 @@
                           "type": "boolean"
                         },
                         "updateMask": {
-                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AwsNodePool: * `annotations`. * `version`. * `autoscaling.min_node_count`. * `autoscaling.max_node_count`. * `config.config_encryption.kms_key_arn`. * `config.security_group_ids`. * `config.root_volume.iops`. * `config.root_volume.kms_key_arn`. * `config.root_volume.volume_type`. * `config.root_volume.size_gib`. * `config.proxy_config`. * `config.proxy_config.secret_arn`. * `config.proxy_config.secret_version`. * `config.ssh_config`. * `config.ssh_config.ec2_key_pair`. * `config.instance_placement.tenancy`. * `config.iam_instance_profile`. * `config.labels`.",
+                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AwsNodePool: * `annotations`. * `version`. * `autoscaling.min_node_count`. * `autoscaling.max_node_count`. * `config.config_encryption.kms_key_arn`. * `config.security_group_ids`. * `config.root_volume.iops`. * `config.root_volume.kms_key_arn`. * `config.root_volume.volume_type`. * `config.root_volume.size_gib`. * `config.proxy_config`. * `config.proxy_config.secret_arn`. * `config.proxy_config.secret_version`. * `config.ssh_config`. * `config.ssh_config.ec2_key_pair`. * `config.instance_placement.tenancy`. * `config.iam_instance_profile`. * `config.labels`. * `config.tags`. * `config.autoscaling_metrics_collection`. * `config.autoscaling_metrics_collection.granularity`. * `config.autoscaling_metrics_collection.metrics`.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -3259,7 +3263,7 @@
                       "type": "boolean"
                     },
                     "updateMask": {
-                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AzureCluster: * `description`. * `azureClient`. * `control_plane.version`. * `control_plane.vm_size`. * `annotations`. * `authorization.admin_users`. * `control_plane.root_volume.size_gib`. * `control_plane.proxy_config`. * `control_plane.proxy_config.resource_group_id`. * `control_plane.proxy_config.secret_id`. * `control_plane.ssh_config.authorized_key`. * `logging_config.component_config.enable_components`",
+                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AzureCluster: * `description`. * `azureClient`. * `control_plane.version`. * `control_plane.vm_size`. * `annotations`. * `authorization.admin_users`. * `control_plane.root_volume.size_gib`. * `control_plane.proxy_config`. * `control_plane.proxy_config.resource_group_id`. * `control_plane.proxy_config.secret_id`. * `control_plane.ssh_config.authorized_key`. * `logging_config.component_config.enable_components` * `monitoring_config.managed_prometheus_config.enabled`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

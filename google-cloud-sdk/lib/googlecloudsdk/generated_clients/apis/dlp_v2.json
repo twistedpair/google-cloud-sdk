@@ -1450,7 +1450,7 @@
           "$ref": "GooglePrivacyDlpV2InspectConfig"
         },
         "item": {
-          "description": "The item to de-identify. Will be treated as text.",
+          "description": "The item to de-identify. Will be treated as text. This value must be of type Table if your deidentify_config is a RecordTransformations object.",
           "$ref": "GooglePrivacyDlpV2ContentItem"
         },
         "inspectTemplateName": {

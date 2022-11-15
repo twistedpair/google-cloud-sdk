@@ -369,13 +369,21 @@ def RunKubectlCommand(args, out_func=None, err_func=None, namespace=None):
         exec_args,
         no_exit=True,
         out_func=out_func,
-        err_func=err_func,
+        err_func=lambda err: HandleKubectlErrorStream(err_func, err),
         universal_newlines=True)
   except (execution_utils.PermissionError,
           execution_utils.InvalidCommandError) as e:
     raise KubectlError(six.text_type(e))
   if retval:
     raise KubectlError('kubectl returned non-zero status code.')
+
+
+def HandleKubectlErrorStream(err_func, err):
+  if 'Unable to connect to the server' in err:
+    err_func(err)
+    err_func('\nPlease, check if you have connectivity to GKE control plane.\n')
+  else:
+    err_func(err)
 
 
 def ConvertImageVersionToNamespacePrefix(image_version):

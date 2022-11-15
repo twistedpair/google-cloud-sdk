@@ -23,6 +23,7 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
 from googlecloudsdk.command_lib.container.vmware import flags
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 
 
@@ -155,7 +156,7 @@ class ClustersClient(client.ClientBase):
         'networkConfig': self._vmware_network_config(args),
         'loadBalancer': self._vmware_load_balancer_config(args),
         'dataplaneV2': self._vmware_dataplane_v2_config(args),
-        'vmTrackingEnabled': flags.Get(args, 'enable_vm_tracking'),
+        'vmTrackingEnabled': self._vm_tracking_enabled(args),
         'autoRepairConfig': self._vmware_auto_repair_config(args),
         'authorization': self._authorization(args),
     }
@@ -163,10 +164,22 @@ class ClustersClient(client.ClientBase):
       return self._messages.VmwareCluster(**kwargs)
     return None
 
+  def _vm_tracking_enabled(self, args):
+    if flags.Get(args, 'enable_vm_tracking'):
+      return True
+    return None
+
+  def auto_repair_enabled(self, args):
+    if flags.Get(args, 'enable_auto_repair'):
+      return True
+    if flags.Get(args, 'disable_auto_repair'):
+      return False
+    return None
+
   def _vmware_auto_repair_config(self, args):
     """Constructs proto message VmwareAutoRepairConfig."""
     kwargs = {
-        'enabled': flags.Get(args, 'enable_auto_repair'),
+        'enabled': self.auto_repair_enabled(args),
     }
     if flags.IsSet(kwargs):
       return self._messages.VmwareAutoRepairConfig(**kwargs)
@@ -205,40 +218,78 @@ class ClustersClient(client.ClientBase):
       return self._messages.Authorization(**kwargs)
     return None
 
+  def _dataplane_v2_enabled(self, args):
+    """Constructs proto field dataplane_v2_enabled."""
+    if flags.Get(args, 'enable_dataplane_v2'):
+      return True
+    if flags.Get(args, 'disable_dataplane_v2'):
+      return False
+    return None
+
+  def _advanced_networking(self, args):
+    """Constructs proto field advanced_networking."""
+    if flags.Get(args, 'enable_advanced_networking'):
+      return True
+    if flags.Get(args, 'disable_advanced_networking'):
+      return False
+    return None
+
   def _vmware_dataplane_v2_config(self, args):
     """Constructs proto message VmwareDataplaneV2Config."""
     kwargs = {
-        'dataplaneV2Enabled':
-            flags.Get(args, 'enable_dataplane_v2'),
-        'advancedNetworking':
-            flags.Get(args, 'enable_advanced_networking'),
+        'dataplaneV2Enabled': flags.Get(args, 'enable_dataplane_v2'),
+        'advancedNetworking': flags.Get(args, 'enable_advanced_networking'),
     }
     if flags.IsSet(kwargs):
       return self._messages.VmwareDataplaneV2Config(**kwargs)
     return None
 
+  def _vsphere_csi_disabled(self, args):
+    """Constructs proto field vsphere_csi_disabled."""
+    if flags.Get(args, 'disable_vsphere_csi'):
+      return True
+    if flags.Get(args, 'enable_vsphere_csi'):
+      return False
+    return None
+
   def _vmware_storage_config(self, args):
     """Constructs proto message VmwareStorageConfig."""
     kwargs = {
-        'vsphereCsiDisabled': flags.Get(args, 'disable_vsphere_csi'),
+        'vsphereCsiDisabled': self._vsphere_csi_disabled(args),
     }
     if flags.IsSet(kwargs):
       return self._messages.VmwareStorageConfig(**kwargs)
     return None
 
+  def _aag_config_disabled(self, args):
+    """Constructs proto field aag_config_disabled."""
+    if flags.Get(args, 'disable_aag_config'):
+      return True
+    if flags.Get(args, 'enable_aag_config'):
+      return False
+    return None
+
   def _vmware_aag_config(self, args):
     """Constructs proto message VmwareAAGConfig."""
     kwargs = {
-        'aagConfigDisabled': flags.Get(args, 'disable_aag_config'),
+        'aagConfigDisabled': self._aag_config_disabled(args),
     }
     if flags.IsSet(kwargs):
       return self._messages.VmwareAAGConfig(**kwargs)
     return None
 
+  def _auto_resize_enabled(self, args):
+    """Constructs proto field auto_resize_config.enabled."""
+    if flags.Get(args, 'enable_auto_resize'):
+      return True
+    if flags.Get(args, 'disable_auto_resize'):
+      return False
+    return None
+
   def _vmware_auto_resize_config(self, args):
     """Constructs proto message VmwareAutoResizeConfig."""
     kwargs = {
-        'enabled': flags.Get(args, 'enable_auto_resize'),
+        'enabled': self._auto_resize_enabled(args),
     }
     if flags.IsSet(kwargs):
       return self._messages.VmwareAutoResizeConfig(**kwargs)
@@ -258,7 +309,7 @@ class ClustersClient(client.ClientBase):
 
   def _annotations(self, args):
     """Constructs proto message AnnotationsValue."""
-    annotations = flags.Get(args, 'annotations', {})
+    annotations = flags.Get(args, 'annotations')
     additional_property_messages = []
     if not annotations:
       return None
@@ -272,36 +323,65 @@ class ClustersClient(client.ClientBase):
         additionalProperties=additional_property_messages)
     return annotation_value_message
 
-  def _vmware_host_ip(self, args):
+  def _vmware_host_ip(self, host_ip):
     """Constructs proto message VmwareHostIp."""
-    host_ips = flags.Get(args, 'host_ips')
-    if not host_ips:
-      return None
+    hostname = host_ip.get('hostname', None)
+    if not hostname:
+      raise InvalidConfigFile(
+          'Missing field [hostname] in Static IP configuration file.')
 
-    ret = []
-    for host_ip_group in host_ips:
-      ret.append(
-          self._messages.VmwareHostIp(
-              hostname=host_ip_group.get('hostname', ''),
-              ip=host_ip_group.get('ip', ''),
-          ))
-    return ret
+    ip = host_ip.get('ip', None)
+    if not ip:
+      raise InvalidConfigFile(
+          'Missing field [ip] in Static IP configuration file.')
 
-  def _vmware_ip_block(self, args):
+    kwargs = {'hostname': hostname, 'ip': ip}
+    return self._messages.VmwareHostIp(**kwargs)
+
+  def _vmware_ip_block(self, ip_block):
     """Constructs proto message VmwareIpBlock."""
+    gateway = ip_block.get('gateway', None)
+    if not gateway:
+      raise InvalidConfigFile(
+          'Missing field [gateway] in Static IP configuration file.')
+
+    netmask = ip_block.get('netmask', None)
+    if not netmask:
+      raise InvalidConfigFile(
+          'Missing field [netmask] in Static IP configuration file.')
+
+    host_ips = ip_block.get('ips', [])
+    if not host_ips:
+      raise InvalidConfigFile(
+          'Missing field [ips] in Static IP configuration file.')
+
     kwargs = {
-        'gateway': flags.Get(args, 'gateway'),
-        'netmask': flags.Get(args, 'netmask'),
-        'ips': self._vmware_host_ip(args),
+        'gateway': gateway,
+        'netmask': netmask,
+        'ips': [self._vmware_host_ip(host_ip) for host_ip in host_ips],
     }
     if flags.IsSet(kwargs):
-      return [self._messages.VmwareIpBlock(**kwargs)]
+      return self._messages.VmwareIpBlock(**kwargs)
     return None
 
   def _vmware_static_ip_config(self, args):
     """Constructs proto message VmwareStaticIpConfig."""
+    if 'static_ip_config_from_file' not in args.GetSpecifiedArgsDict():
+      return None
+
+    file_content = args.static_ip_config_from_file
+    static_ip_config = file_content.get('staticIpConfig', None)
+    if not static_ip_config:
+      raise InvalidConfigFile(
+          'Missing field [staticIpConfig] in Static IP configuration file.')
+
+    ip_blocks = static_ip_config.get('ipBlocks', [])
+    if not ip_blocks:
+      raise InvalidConfigFile(
+          'Missing field [ipBlocks] in Static IP configuration file.')
+
     kwargs = {
-        'ipBlocks': self._vmware_ip_block(args),
+        'ipBlocks': [self._vmware_ip_block(ip_block) for ip_block in ip_blocks],
     }
     if flags.IsSet(kwargs):
       return self._messages.VmwareStaticIpConfig(**kwargs)
@@ -319,8 +399,8 @@ class ClustersClient(client.ClientBase):
   def _vmware_host_config(self, args):
     """Constructs proto message VmwareHostConfig."""
     kwargs = {
-        'dnsServers': flags.Get(args, 'dns_servers'),
-        'ntpServers': flags.Get(args, 'ntp_servers'),
+        'dnsServers': flags.Get(args, 'dns_servers', []),
+        'ntpServers': flags.Get(args, 'ntp_servers', []),
     }
     if flags.IsSet(kwargs):
       return self._messages.VmwareHostConfig(**kwargs)
@@ -330,9 +410,9 @@ class ClustersClient(client.ClientBase):
     """Constructs proto message VmwareNetworkConfig."""
     kwargs = {
         'serviceAddressCidrBlocks':
-            flags.Get(args, 'service_address_cidr_blocks'),
+            flags.Get(args, 'service_address_cidr_blocks', []),
         'podAddressCidrBlocks':
-            flags.Get(args, 'pod_address_cidr_blocks'),
+            flags.Get(args, 'pod_address_cidr_blocks', []),
         'staticIpConfig':
             self._vmware_static_ip_config(args),
         'dhcpIpConfig':
@@ -415,10 +495,15 @@ class ClustersClient(client.ClientBase):
     """Constructs proto message VmwareAddressPool."""
     kwargs = {
         'addresses': address_pool_args.get('addresses', []),
-        'avoidBuggyIps': address_pool_args.get('avoid_buggy_ips', False),
-        'manualAssign': address_pool_args.get('manual_assign', False),
+        'avoidBuggyIps': address_pool_args.get('avoid-buggy-ips', False),
+        'manualAssign': address_pool_args.get('manual-assign', False),
         'pool': address_pool_args.get('pool', ''),
     }
     if any(kwargs.values()):
       return self._messages.VmwareAddressPool(**kwargs)
     return None
+
+
+class InvalidConfigFile(exceptions.Error):
+  """Invalid Argument."""
+  pass

@@ -37,6 +37,8 @@ import subprocess
 import sys
 import textwrap
 
+import certifi
+
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -173,6 +175,7 @@ class BasicInfo(object):
     self.python_location = anonymizer.ProcessPath(
         sys.executable and encoding.Decode(sys.executable))
     self.python_version = sys.version
+    self.default_ca_certs_file = anonymizer.ProcessPath(certifi.where())
     self.site_packages = 'site' in sys.modules
     self.locale = self._GetDefaultLocale()
 
@@ -187,6 +190,7 @@ class BasicInfo(object):
         OpenSSL: [{openssl_version}]
         Requests Version: [{requests_version}]
         urllib3 Version: [{urllib3_version}]
+        Default CA certs file: [{default_ca_certs_file}]
         Site Packages: [{site_packages}]
         """.format(
             version=self.version,
@@ -200,6 +204,7 @@ class BasicInfo(object):
             openssl_version=ssl.OPENSSL_VERSION,
             requests_version=requests.__version__,
             urllib3_version=urllib3.__version__,
+            default_ca_certs_file=self.default_ca_certs_file,
             site_packages='Enabled' if self.site_packages else 'Disabled'))
 
   def _GetDefaultLocale(self):

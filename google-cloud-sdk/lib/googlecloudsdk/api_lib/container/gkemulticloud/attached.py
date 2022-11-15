@@ -38,6 +38,8 @@ class _AttachedClientBase(client.ClientBase):
         'oidcConfig': self._OidcConfig(args),
         'distribution': attached_flags.GetDistribution(args),
         'authorization': self._Authorization(args),
+        'loggingConfig': flags.GetLogging(args, True),
+        'monitoringConfig': flags.GetMonitoringConfig(args),
     }
     return self._messages.GoogleCloudGkemulticloudV1AttachedCluster(
         **kwargs) if any(kwargs.values()) else None
@@ -103,6 +105,7 @@ class ClustersClient(_AttachedClientBase):
         self._messages.GoogleCloudGkemulticloudV1ImportAttachedClusterRequest(
             fleetMembership=fleet_membership_ref.RelativeName(),
             platformVersion=attached_flags.GetPlatformVersion(args),
-            distribution=attached_flags.GetDistribution(args))
+            distribution=attached_flags.GetDistribution(args),
+            validateOnly=flags.GetValidateOnly(args))
         )
     return self._service.Import(req)

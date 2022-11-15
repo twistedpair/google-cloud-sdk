@@ -49,6 +49,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  FOLDERS_LOCATIONS_REPLAYS_OPERATIONS = (
+      'folders.locations.replays.operations',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/replays/'
+              '{replaysId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   OPERATIONS = (
       'operations',
       '{+name}',
@@ -84,6 +95,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_REPLAYS_OPERATIONS = (
+      'organizations.locations.replays.operations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'replays/{replaysId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
@@ -105,6 +127,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/replays/'
               '{replaysId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REPLAYS_OPERATIONS = (
+      'projects.locations.replays.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/replays/'
+              '{replaysId}/operations/{operationsId}',
       },
       ['name'],
       True

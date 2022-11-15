@@ -25,24 +25,29 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  backendServiceWeight:
+    description: |-
+      The weight to use for the supplied host and path when using advanced
+      routing rules that involve traffic splitting.
+    type: integer
   description:
     description: Description of this test case.
     type: string
   expectedOutputUrl:
     description: |-
-      The expected output URL evaluated by load balancer containing the scheme,
-      host, path and query parameters. For rules that forward requests to
-      backends, the test passes only when expectedOutputUrl matches the request
-      forwarded by load balancer to backends. For rules with urlRewrite, the
-      test verifies that the forwarded request matches hostRewrite and
-      pathPrefixRewrite in the urlRewrite action. When service is specified,
-      expectedOutputUrl`s scheme is ignored. For rules with urlRedirect, the
-      test passes only if expectedOutputUrl matches the URL in the load
-      balancer's redirect response. If urlRedirect specifies https_redirect, the
-      test passes only if the scheme in expectedOutputUrl is also set to https.
-      If urlRedirect specifies strip_query, the test passes only if
-      expectedOutputUrl does not contain any query parameters. expectedOutputUrl
-      is optional when service is specified.
+      The expected output URL evaluated by the load balancer containing the
+      scheme, host, path and query parameters. For rules that forward requests
+      to backends, the test passes only when expectedOutputUrl matches the
+      request forwarded by the load balancer to backends. For rules with
+      urlRewrite, the test verifies that the forwarded request matches
+      hostRewrite and pathPrefixRewrite in the urlRewrite action. When service
+      is specified, expectedOutputUrl`s scheme is ignored. For rules with
+      urlRedirect, the test passes only if expectedOutputUrl matches the URL in
+      the load balancer's redirect response. If urlRedirect specifies
+      https_redirect, the test passes only if the scheme in expectedOutputUrl is
+      also set to HTTPS. If urlRedirect specifies strip_query, the test passes
+      only if expectedOutputUrl does not contain any query parameters.
+      expectedOutputUrl is optional when service is specified.
     type: string
   expectedRedirectResponseCode:
     description: |-
@@ -51,6 +56,12 @@ properties:
       balancer's redirect response. expectedRedirectResponseCode cannot be set
       when service is set.
     type: integer
+  expectedUrlRedirect:
+    description: |-
+      The expected URL that should be redirected to for the host and path being
+      tested. [Deprecated] This field is deprecated. Use expected_output_url
+      instead.
+    type: string
   headers:
     description: |-
       HTTP headers for this request. If headers contains a host header, then
@@ -69,6 +80,6 @@ properties:
   service:
     description: |-
       Expected BackendService or BackendBucket resource the given URL should
-      be mapped to. service cannot be set if expectedRedirectResponseCode is
-      set.
+      be mapped to. The service field cannot be set if
+      expectedRedirectResponseCode is set.
     type: string

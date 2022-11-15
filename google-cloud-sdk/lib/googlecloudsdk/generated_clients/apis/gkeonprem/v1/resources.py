@@ -43,10 +43,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_BAREMETALADMINCLUSTERS = (
       'projects.locations.bareMetalAdminClusters',
-      'projects/{projectsId}/locations/{locationsId}/bareMetalAdminClusters/'
-      '{bareMetalAdminClustersId}',
-      {},
-      ['projectsId', 'locationsId', 'bareMetalAdminClustersId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'bareMetalAdminClusters/{bareMetalAdminClustersId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_BAREMETALADMINCLUSTERS_OPERATIONS = (

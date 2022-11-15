@@ -116,7 +116,7 @@
       "type": "object",
       "properties": {
         "events": {
-          "description": "The CloudEvents v1.0 events to publish. No other types are allowed.",
+          "description": "The CloudEvents v1.0 events to publish. No other types are allowed. If this field is set, then the `text_events` fields must not be set.",
           "type": "array",
           "items": {
             "type": "object",
@@ -127,7 +127,7 @@
           }
         },
         "textEvents": {
-          "description": "The text representation of events to publish. CloudEvent v1.0 in JSON format is the only allowed type. Refer to https:\/\/github.com\/cloudevents\/spec\/blob\/v1.0.2\/cloudevents\/formats\/json-format.md for specification.",
+          "description": "The text representation of events to publish. CloudEvent v1.0 in JSON format is the only allowed type. Refer to https:\/\/github.com\/cloudevents\/spec\/blob\/v1.0.2\/cloudevents\/formats\/json-format.md for specification. If this field is set, then the `events` fields must not be set.",
           "type": "array",
           "items": {
             "type": "string"
@@ -148,7 +148,7 @@
       "type": "object",
       "properties": {
         "events": {
-          "description": "The CloudEvents v1.0 events to publish. No other types are allowed.",
+          "description": "The CloudEvents v1.0 events to publish. No other types are allowed. If this field is set, then the `text_events` fields must not be set.",
           "type": "array",
           "items": {
             "type": "object",
@@ -159,7 +159,7 @@
           }
         },
         "textEvents": {
-          "description": "The text representation of events to publish. CloudEvent v1.0 in JSON format is the only allowed type. Refer to https:\/\/github.com\/cloudevents\/spec\/blob\/v1.0.2\/cloudevents\/formats\/json-format.md for specification.",
+          "description": "The text representation of events to publish. CloudEvent v1.0 in JSON format is the only allowed type. Refer to https:\/\/github.com\/cloudevents\/spec\/blob\/v1.0.2\/cloudevents\/formats\/json-format.md for specification. If this field is set, then the `events` fields must not be set.",
           "type": "array",
           "items": {
             "type": "string"

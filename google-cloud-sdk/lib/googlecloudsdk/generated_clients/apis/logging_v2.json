@@ -403,7 +403,7 @@
             "The resource has been marked for an update by the user. It will remain in this state until the update is complete.",
             "The resource has been marked for creation by the user. It will remain in this state until the creation is complete.",
             "The resource is in an INTERNAL error state.",
-            "The resource has been archived such that it can still be queried but can no longer be modified or used as a sink destination. The leftover bucket after a move bucket operation enters this state."
+            "The resource has been archived such that it can still be queried but can no longer be modified or used as a sink destination. The source bucket after a move bucket operation enters this state."
           ],
           "enum": [
             "LIFECYCLE_STATE_UNSPECIFIED",
@@ -455,7 +455,7 @@
             "enumDescriptions": [
               "Unexpected default.",
               "The requirement that a bucket must be in the ACTIVE lifecycle state.",
-              "The requirement that a bucket must be in the \"global\" region.",
+              "The requirement that a bucket must be in the \"global\" region. This requirement is deprecated and replaced with SUPPORTED_BUCKET_REGION.",
               "The requirement that buckets other than the \"_Required\" bucket must have the default retention duration of 30 days set.",
               "The requirement that the \"_Required\" bucket must have its default retention of 400 days set.",
               "The requirement that no field level access controls are configured for the bucket.",
@@ -463,7 +463,8 @@
               "The requirement that the bucket is not locked.",
               "The requirement that the bucket must not be contained within an org.",
               "The requirement that the bucket must not be contained within a folder.",
-              "The requirement that the bucket must not be contained within a billing account."
+              "The requirement that the bucket must not be contained within a billing account.",
+              "The requirement that the bucket must be in a region supported by Log Analytics."
             ],
             "enum": [
               "REQUIREMENT_UNSPECIFIED",
@@ -476,7 +477,8 @@
               "NOT_LOCKED",
               "ORGANIZATION_BUCKET",
               "FOLDER_BUCKET",
-              "BILLING_ACCOUNT_BUCKET"
+              "BILLING_ACCOUNT_BUCKET",
+              "SUPPORTED_BUCKET_REGION"
             ]
           }
         },
@@ -793,7 +795,7 @@
             "The resource has been marked for an update by the user. It will remain in this state until the update is complete.",
             "The resource has been marked for creation by the user. It will remain in this state until the creation is complete.",
             "The resource is in an INTERNAL error state.",
-            "The resource has been archived such that it can still be queried but can no longer be modified or used as a sink destination. The leftover bucket after a move bucket operation enters this state."
+            "The resource has been archived such that it can still be queried but can no longer be modified or used as a sink destination. The source bucket after a move bucket operation enters this state."
           ],
           "enum": [
             "LIFECYCLE_STATE_UNSPECIFIED",
@@ -3775,7 +3777,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with a MOVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of \"global\" Have a non-project parent when it is a _Default bucket"
+                  "description": "Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of \"global\" Have a non-project parent when it is a _Default bucket"
                 }
               }
               ,
@@ -5288,7 +5290,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with a MOVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of \"global\" Have a non-project parent when it is a _Default bucket"
+                  "description": "Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of \"global\" Have a non-project parent when it is a _Default bucket"
                 }
               }
               ,
@@ -6608,7 +6610,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with a MOVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of \"global\" Have a non-project parent when it is a _Default bucket"
+                  "description": "Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of \"global\" Have a non-project parent when it is a _Default bucket"
                 }
               }
               ,
@@ -7893,7 +7895,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with a MOVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of \"global\" Have a non-project parent when it is a _Default bucket"
+                  "description": "Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of \"global\" Have a non-project parent when it is a _Default bucket"
                 }
               }
               ,
@@ -8730,7 +8732,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with a MOVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of \"global\" Have a non-project parent when it is a _Default bucket"
+              "description": "Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of \"global\" Have a non-project parent when it is a _Default bucket"
             }
           }
           ,

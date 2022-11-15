@@ -3778,7 +3778,9 @@ class GooglePrivacyDlpV2DeidentifyContentRequest(_messages.Message):
       fields that are set in this request will replace their corresponding
       fields in the template. Repeated fields are appended. Singular sub-
       messages and groups are recursively merged.
-    item: The item to de-identify. Will be treated as text.
+    item: The item to de-identify. Will be treated as text. This value must be
+      of type Table if your deidentify_config is a RecordTransformations
+      object.
     locationId: Deprecated. This field has no effect.
   """
 

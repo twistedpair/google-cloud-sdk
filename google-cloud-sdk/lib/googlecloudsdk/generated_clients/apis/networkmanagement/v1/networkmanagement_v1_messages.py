@@ -99,6 +99,34 @@ class AbortInfo(_messages.Message):
   resourceUri = _messages.StringField(3)
 
 
+class AppEngineVersionEndpoint(_messages.Message):
+  r"""Wrapper for app engine service version attributes.
+
+  Fields:
+    uri: An [App Engine](https://cloud.google.com/appengine) [service
+      version](https://cloud.google.com/appengine/docs/admin-
+      api/reference/rest/v1/apps.services.versions) name.
+  """
+
+  uri = _messages.StringField(1)
+
+
+class AppEngineVersionInfo(_messages.Message):
+  r"""For display only. Metadata associated with an App Engine version.
+
+  Fields:
+    displayName: Name of an App Engine version.
+    environment: App Engine execution environment for a version.
+    runtime: Runtime of the App Engine version.
+    uri: URI of an App Engine version.
+  """
+
+  displayName = _messages.StringField(1)
+  environment = _messages.StringField(2)
+  runtime = _messages.StringField(3)
+  uri = _messages.StringField(4)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -250,6 +278,34 @@ class CloudFunctionInfo(_messages.Message):
   location = _messages.StringField(2)
   uri = _messages.StringField(3)
   versionId = _messages.IntegerField(4)
+
+
+class CloudRunRevisionEndpoint(_messages.Message):
+  r"""Wrapper for Cloud Run revision attributes.
+
+  Fields:
+    uri: A [Cloud Run](https://cloud.google.com/run) [revision](https://cloud.
+      google.com/run/docs/reference/rest/v1/namespaces.revisions/get) URI. The
+      format is: projects/{project}/locations/{location}/revisions/{revision}
+  """
+
+  uri = _messages.StringField(1)
+
+
+class CloudRunRevisionInfo(_messages.Message):
+  r"""For display only. Metadata associated with a Cloud Run revision.
+
+  Fields:
+    displayName: Name of a Cloud Run revision.
+    location: Location in which this revision is deployed.
+    serviceUri: URI of Cloud Run service this revision belongs to.
+    uri: URI of a Cloud Run revision.
+  """
+
+  displayName = _messages.StringField(1)
+  location = _messages.StringField(2)
+  serviceUri = _messages.StringField(3)
+  uri = _messages.StringField(4)
 
 
 class CloudSQLInstanceInfo(_messages.Message):
@@ -511,6 +567,8 @@ class DropInfo(_messages.Message):
         connector is not in a running state.
       PSC_CONNECTION_NOT_ACCEPTED: The Private Service Connect endpoint is in
         a project that is not approved to connect to the service.
+      CLOUD_RUN_REVISION_NOT_READY: Packet sent from a Cloud Run revision that
+        is not ready.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -547,6 +605,7 @@ class DropInfo(_messages.Message):
     VPC_CONNECTOR_NOT_SET = 32
     VPC_CONNECTOR_NOT_RUNNING = 33
     PSC_CONNECTION_NOT_ACCEPTED = 34
+    CLOUD_RUN_REVISION_NOT_READY = 35
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)
@@ -570,7 +629,13 @@ class Endpoint(_messages.Message):
       can be inferred from the source.
 
   Fields:
+    appEngineVersion: An [App Engine](https://cloud.google.com/appengine)
+      [service version](https://cloud.google.com/appengine/docs/admin-
+      api/reference/rest/v1/apps.services.versions).
     cloudFunction: A [Cloud Function](https://cloud.google.com/functions).
+    cloudRunRevision: A [Cloud Run](https://cloud.google.com/run) [revision](h
+      ttps://cloud.google.com/run/docs/reference/rest/v1/namespaces.revisions/
+      get)
     cloudSqlInstance: A [Cloud SQL](https://cloud.google.com/sql) instance
       URI.
     gkeMasterCluster: A cluster URI for [Google Kubernetes Engine
@@ -614,15 +679,17 @@ class Endpoint(_messages.Message):
     GCP_NETWORK = 1
     NON_GCP_NETWORK = 2
 
-  cloudFunction = _messages.MessageField('CloudFunctionEndpoint', 1)
-  cloudSqlInstance = _messages.StringField(2)
-  gkeMasterCluster = _messages.StringField(3)
-  instance = _messages.StringField(4)
-  ipAddress = _messages.StringField(5)
-  network = _messages.StringField(6)
-  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 7)
-  port = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  projectId = _messages.StringField(9)
+  appEngineVersion = _messages.MessageField('AppEngineVersionEndpoint', 1)
+  cloudFunction = _messages.MessageField('CloudFunctionEndpoint', 2)
+  cloudRunRevision = _messages.MessageField('CloudRunRevisionEndpoint', 3)
+  cloudSqlInstance = _messages.StringField(4)
+  gkeMasterCluster = _messages.StringField(5)
+  instance = _messages.StringField(6)
+  ipAddress = _messages.StringField(7)
+  network = _messages.StringField(8)
+  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 9)
+  port = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(11)
 
 
 class EndpointInfo(_messages.Message):
@@ -1855,8 +1922,10 @@ class Step(_messages.Message):
 
   Fields:
     abort: Display information of the final state "abort" and reason.
+    appEngineVersion: Display information of an App Engine service version.
     causesDrop: This is a step that leads to the final state Drop.
     cloudFunction: Display information of a Cloud Function.
+    cloudRunRevision: Display information of a Cloud Run revision.
     cloudSqlInstance: Display information of a Cloud SQL instance.
     deliver: Display information of the final state "deliver" and reason.
     description: A description of the step. Usually this is a summary of the
@@ -1906,6 +1975,12 @@ class Step(_messages.Message):
       START_FROM_CLOUD_FUNCTION: Initial state: packet originating from a
         Cloud Function. A CloudFunctionInfo is populated with starting
         function information.
+      START_FROM_APP_ENGINE_VERSION: Initial state: packet originating from an
+        App Engine service version. An AppEngineVersionInfo is populated with
+        starting version information.
+      START_FROM_CLOUD_RUN_REVISION: Initial state: packet originating from a
+        Cloud Run revision. A CloudRunRevisionInfo is populated with starting
+        revision information.
       APPLY_INGRESS_FIREWALL_RULE: Config checking state: verify ingress
         firewall rule.
       APPLY_EGRESS_FIREWALL_RULE: Config checking state: verify egress
@@ -1942,46 +2017,50 @@ class Step(_messages.Message):
     START_FROM_GKE_MASTER = 4
     START_FROM_CLOUD_SQL_INSTANCE = 5
     START_FROM_CLOUD_FUNCTION = 6
-    APPLY_INGRESS_FIREWALL_RULE = 7
-    APPLY_EGRESS_FIREWALL_RULE = 8
-    APPLY_ROUTE = 9
-    APPLY_FORWARDING_RULE = 10
-    SPOOFING_APPROVED = 11
-    ARRIVE_AT_INSTANCE = 12
-    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 13
-    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 14
-    ARRIVE_AT_VPN_GATEWAY = 15
-    ARRIVE_AT_VPN_TUNNEL = 16
-    ARRIVE_AT_VPC_CONNECTOR = 17
-    NAT = 18
-    PROXY_CONNECTION = 19
-    DELIVER = 20
-    DROP = 21
-    FORWARD = 22
-    ABORT = 23
-    VIEWER_PERMISSION_MISSING = 24
+    START_FROM_APP_ENGINE_VERSION = 7
+    START_FROM_CLOUD_RUN_REVISION = 8
+    APPLY_INGRESS_FIREWALL_RULE = 9
+    APPLY_EGRESS_FIREWALL_RULE = 10
+    APPLY_ROUTE = 11
+    APPLY_FORWARDING_RULE = 12
+    SPOOFING_APPROVED = 13
+    ARRIVE_AT_INSTANCE = 14
+    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 15
+    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 16
+    ARRIVE_AT_VPN_GATEWAY = 17
+    ARRIVE_AT_VPN_TUNNEL = 18
+    ARRIVE_AT_VPC_CONNECTOR = 19
+    NAT = 20
+    PROXY_CONNECTION = 21
+    DELIVER = 22
+    DROP = 23
+    FORWARD = 24
+    ABORT = 25
+    VIEWER_PERMISSION_MISSING = 26
 
   abort = _messages.MessageField('AbortInfo', 1)
-  causesDrop = _messages.BooleanField(2)
-  cloudFunction = _messages.MessageField('CloudFunctionInfo', 3)
-  cloudSqlInstance = _messages.MessageField('CloudSQLInstanceInfo', 4)
-  deliver = _messages.MessageField('DeliverInfo', 5)
-  description = _messages.StringField(6)
-  drop = _messages.MessageField('DropInfo', 7)
-  endpoint = _messages.MessageField('EndpointInfo', 8)
-  firewall = _messages.MessageField('FirewallInfo', 9)
-  forward = _messages.MessageField('ForwardInfo', 10)
-  forwardingRule = _messages.MessageField('ForwardingRuleInfo', 11)
-  gkeMaster = _messages.MessageField('GKEMasterInfo', 12)
-  instance = _messages.MessageField('InstanceInfo', 13)
-  loadBalancer = _messages.MessageField('LoadBalancerInfo', 14)
-  network = _messages.MessageField('NetworkInfo', 15)
-  projectId = _messages.StringField(16)
-  route = _messages.MessageField('RouteInfo', 17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  vpcConnector = _messages.MessageField('VpcConnectorInfo', 19)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 20)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 21)
+  appEngineVersion = _messages.MessageField('AppEngineVersionInfo', 2)
+  causesDrop = _messages.BooleanField(3)
+  cloudFunction = _messages.MessageField('CloudFunctionInfo', 4)
+  cloudRunRevision = _messages.MessageField('CloudRunRevisionInfo', 5)
+  cloudSqlInstance = _messages.MessageField('CloudSQLInstanceInfo', 6)
+  deliver = _messages.MessageField('DeliverInfo', 7)
+  description = _messages.StringField(8)
+  drop = _messages.MessageField('DropInfo', 9)
+  endpoint = _messages.MessageField('EndpointInfo', 10)
+  firewall = _messages.MessageField('FirewallInfo', 11)
+  forward = _messages.MessageField('ForwardInfo', 12)
+  forwardingRule = _messages.MessageField('ForwardingRuleInfo', 13)
+  gkeMaster = _messages.MessageField('GKEMasterInfo', 14)
+  instance = _messages.MessageField('InstanceInfo', 15)
+  loadBalancer = _messages.MessageField('LoadBalancerInfo', 16)
+  network = _messages.MessageField('NetworkInfo', 17)
+  projectId = _messages.StringField(18)
+  route = _messages.MessageField('RouteInfo', 19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 21)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 22)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 23)
 
 
 class TestIamPermissionsRequest(_messages.Message):

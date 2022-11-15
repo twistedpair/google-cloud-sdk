@@ -907,6 +907,10 @@
         "fleetobservability": {
           "description": "Fleet observability membership spec",
           "$ref": "FleetObservabilityMembershipSpec"
+        },
+        "fleetInherited": {
+          "description": "True if value of `feature_spec` was inherited from a fleet-level default.",
+          "type": "boolean"
         }
       }
     },
@@ -2204,6 +2208,180 @@
         }
       }
     },
+    "Scope": {
+      "id": "Scope",
+      "description": "Scope represents a Scope in a Fleet.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name for the scope `projects\/{project}\/locations\/{location}\/scopes\/{scope}`",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. Google-generated UUID for this resource. This is unique across all scope resources. If a scope resource is deleted and another resource with the same name is created, it gets a different uid.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. When the scope was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. When the scope was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deleteTime": {
+          "description": "Output only. When the scope was deleted.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. State of the scope resource.",
+          "readOnly": true,
+          "$ref": "ScopeLifecycleState"
+        }
+      }
+    },
+    "ScopeLifecycleState": {
+      "id": "ScopeLifecycleState",
+      "description": "ScopeLifecycleState describes the state of a Scope resource.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Output only. The current state of the scope resource.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The code is not set.",
+            "The scope is being created.",
+            "The scope active.",
+            "The scope is being deleted.",
+            "The scope is being updated."
+          ],
+          "enum": [
+            "CODE_UNSPECIFIED",
+            "CREATING",
+            "READY",
+            "DELETING",
+            "UPDATING"
+          ]
+        }
+      }
+    },
+    "ListScopesResponse": {
+      "id": "ListScopesResponse",
+      "description": "List of Scopes.",
+      "type": "object",
+      "properties": {
+        "scopes": {
+          "description": "The list of Scopes",
+          "type": "array",
+          "items": {
+            "$ref": "Scope"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the `ListScopes` method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        }
+      }
+    },
+    "MembershipBinding": {
+      "id": "MembershipBinding",
+      "description": "MembershipBinding is a subresource of a Membership, representing what Fleet Scopes (or other, future Fleet resources) a Membership is bound to.",
+      "type": "object",
+      "properties": {
+        "scope": {
+          "description": "A Workspace resource name in the format `projects\/*\/locations\/*\/scopes\/*`.",
+          "type": "string"
+        },
+        "fleet": {
+          "description": "Whether the membershipbinding is Fleet-wide; true means that this Membership should be bound to all Namespaces in this entire Fleet.",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "The resource name for the membershipbinding itself `projects\/{project}\/locations\/{location}\/memberships\/{membership}\/bindings\/{membershipbinding}`",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. Google-generated UUID for this resource. This is unique across all membershipbinding resources. If a membershipbinding resource is deleted and another resource with the same name is created, it gets a different uid.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. When the membership binding was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. When the membership binding was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deleteTime": {
+          "description": "Output only. When the membership binding was deleted.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. State of the membership binding resource.",
+          "readOnly": true,
+          "$ref": "MembershipBindingLifecycleState"
+        }
+      }
+    },
+    "MembershipBindingLifecycleState": {
+      "id": "MembershipBindingLifecycleState",
+      "description": "MembershipBindingLifecycleState describes the state of a Binding resource.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Output only. The current state of the MembershipBinding resource.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The code is not set.",
+            "The membershipbinding is being created.",
+            "The membershipbinding active.",
+            "The membershipbinding is being deleted.",
+            "The membershipbinding is being updated."
+          ],
+          "enum": [
+            "CODE_UNSPECIFIED",
+            "CREATING",
+            "READY",
+            "DELETING",
+            "UPDATING"
+          ]
+        }
+      }
+    },
+    "ListMembershipBindingsResponse": {
+      "id": "ListMembershipBindingsResponse",
+      "description": "List of MembershipBindings.",
+      "type": "object",
+      "properties": {
+        "membershipBindings": {
+          "description": "The list of membership_bindings",
+          "type": "array",
+          "items": {
+            "$ref": "MembershipBinding"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the `ListMembershipBindings` method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -2991,6 +3169,166 @@
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                 }
               }
+              ,
+              "resources": {
+                "bindings": {
+                  "methods": {
+                    "get": {
+                      "id": "gkehub.projects.locations.memberships.bindings.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}/bindings/{bindingsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The MembershipBinding resource name in the format `projects\/*\/locations\/*\/memberships\/*\/bindings\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+\/bindings\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "MembershipBinding"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns the details of a MembershipBinding."
+                    },
+                    "create": {
+                      "id": "gkehub.projects.locations.memberships.bindings.create",
+                      "path": "v1/{+parent}/bindings",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}/bindings",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent (project and location) where the MembershipBinding will be created. Specified in the format `projects\/*\/locations\/*\/memberships\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "membershipBindingId": {
+                          "description": "Required. The ID to use for the MembershipBinding.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "MembershipBinding"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a MembershipBinding."
+                    },
+                    "patch": {
+                      "id": "gkehub.projects.locations.memberships.bindings.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}/bindings/{bindingsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name for the membershipbinding itself `projects\/{project}\/locations\/{location}\/memberships\/{membership}\/bindings\/{membershipbinding}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+\/bindings\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. The fields to be updated.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "MembershipBinding"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates a MembershipBinding."
+                    },
+                    "delete": {
+                      "id": "gkehub.projects.locations.memberships.bindings.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}/bindings/{bindingsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The MembershipBinding resource name in the format `projects\/*\/locations\/*\/memberships\/*\/bindings\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+\/bindings\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a MembershipBinding."
+                    },
+                    "list": {
+                      "id": "gkehub.projects.locations.memberships.bindings.list",
+                      "path": "v1/{+parent}/bindings",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}/bindings",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent Membership for which the MembershipBindings will be listed. Specified in the format `projects\/*\/locations\/*\/memberships\/*`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. Token returned by previous call to `ListMembershipBindings` which specifies the position in the list from where to continue listing the resources.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListMembershipBindingsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists MembershipBindings."
+                    }
+                  }
+                }
+              }
             },
             "features": {
               "methods": {
@@ -3263,6 +3601,129 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
+            "scopes": {
+              "methods": {
+                "get": {
+                  "id": "gkehub.projects.locations.scopes.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The Scope resource name in the format `projects\/*\/locations\/*\/scopes\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/scopes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Scope"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns the details of a Scope."
+                },
+                "create": {
+                  "id": "gkehub.projects.locations.scopes.create",
+                  "path": "v1/{+parent}/scopes",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/scopes",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent (project and location) where the Scope will be created. Specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "scopeId": {
+                      "description": "Required. Client chosen ID for the Scope. `scope_id` must be a ????",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Scope"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a Scope."
+                },
+                "delete": {
+                  "id": "gkehub.projects.locations.scopes.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The Scope resource name in the format `projects\/*\/locations\/*\/scopes\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/scopes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a Scope."
+                },
+                "list": {
+                  "id": "gkehub.projects.locations.scopes.list",
+                  "path": "v1/{+parent}/scopes",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/scopes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent (project and location) where the Scope will be listed. Specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Token returned by previous call to `ListScopes` which specifies the position in the list from where to continue listing the resources.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListScopesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Scopes."
                 }
               }
             }

@@ -1116,6 +1116,10 @@
         "fleetobservability": {
           "description": "Fleet observability membership spec",
           "$ref": "FleetObservabilityMembershipSpec"
+        },
+        "fleetInherited": {
+          "description": "True if value of `feature_spec` was inherited from a fleet-level default.",
+          "type": "boolean"
         }
       }
     },
@@ -5369,7 +5373,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Returns the details of a MembershipBindin."
+                      "description": "Returns the details of a MembershipBinding."
                     },
                     "create": {
                       "id": "gkehub.projects.locations.memberships.bindings.create",

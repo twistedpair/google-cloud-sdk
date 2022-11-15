@@ -667,6 +667,20 @@
         }
       }
     },
+    "PauseDagRequest": {
+      "id": "PauseDagRequest",
+      "description": "Request to pause a DAG.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ActivateDagRequest": {
+      "id": "ActivateDagRequest",
+      "description": "Request to unpause a DAG.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "SourceCode": {
       "id": "SourceCode",
       "description": "A source code of a DAG.",
@@ -2408,6 +2422,62 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Trigger a DAG run."
+                    },
+                    "pause": {
+                      "id": "composer.projects.locations.environments.dags.pause",
+                      "path": "v1alpha2/{+name}:pause",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/dags/{dagsId}:pause",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of dag to pause.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+\/dags\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "PauseDagRequest"
+                      },
+                      "response": {
+                        "$ref": "Dag"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Pauses a dag."
+                    },
+                    "activate": {
+                      "id": "composer.projects.locations.environments.dags.activate",
+                      "path": "v1alpha2/{+name}:activate",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/dags/{dagsId}:activate",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of dag to pause.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+\/dags\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ActivateDagRequest"
+                      },
+                      "response": {
+                        "$ref": "Dag"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Activates a dag."
                     },
                     "getSourceCode": {
                       "id": "composer.projects.locations.environments.dags.getSourceCode",

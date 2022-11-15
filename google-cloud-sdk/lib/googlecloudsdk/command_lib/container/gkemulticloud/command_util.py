@@ -202,4 +202,4 @@ def Import(location_ref=None,
   async_ = getattr(args, 'async_', False)
   _LogAndWaitForOperation(op, async_, message)
   op_target = _GetOperationTarget(op)
-  log.CreatedResource(op_target, kind=kind, is_async=async_)
+  log.ImportResource(op_target, kind=kind, is_async=async_)

@@ -267,6 +267,10 @@
           "description": "Configuration for connections to an instance of GitHub Enterprise.",
           "$ref": "GoogleDevtoolsCloudbuildV2GitHubEnterpriseConfig"
         },
+        "gitlabEnterpriseConfig": {
+          "description": "Configuration for connections to an instance of GitLab Enterprise.",
+          "$ref": "GitLabEnterpriseConfig"
+        },
         "installationState": {
           "description": "Output only. Installation state of the Connection.",
           "readOnly": true,
@@ -399,6 +403,58 @@
         }
       }
     },
+    "GitLabEnterpriseConfig": {
+      "id": "GitLabEnterpriseConfig",
+      "description": "Configuration for connections to an instance of GitLab Enterprise.",
+      "type": "object",
+      "properties": {
+        "hostUri": {
+          "description": "Required. The URI of the GitLab Enterprise host this connection is for.",
+          "type": "string"
+        },
+        "webhookSecretSecretVersion": {
+          "description": "Required. Immutable. SecretManager resource containing the webhook secret of a GitLab Enterprise project, formatted as `projects\/*\/secrets\/*\/versions\/*`.",
+          "type": "string"
+        },
+        "readAuthorizerCredential": {
+          "description": "A GitLab personal access token with `read_repository` scope access. Required if the GitLab Enterprise server verion is older than 13.10. See at https:\/\/docs.gitlab.com\/ee\/api\/project_access_tokens.html#create-a-project-access-token.",
+          "$ref": "UserCredential"
+        },
+        "authorizerCredential": {
+          "description": "Required. A GitLab personal access token with the `api` scope access.",
+          "$ref": "UserCredential"
+        },
+        "serviceDirectoryConfig": {
+          "description": "Configuration for using Service Directory to privately connect to a GitLab Enterprise server. This should only be set if the GitLab Enterprise server is hosted on-premises and not reachable by public internet. If this field is left empty, calls to the GitLab Enterprise server will be made over the public internet.",
+          "$ref": "GoogleDevtoolsCloudbuildV2ServiceDirectoryConfig"
+        },
+        "sslCa": {
+          "description": "SSL certificate to use for requests to GitLab Enterprise.",
+          "type": "string"
+        },
+        "serverVersion": {
+          "description": "Output only. Version of the GitLab Enterprise server running on the `host_uri`.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "UserCredential": {
+      "id": "UserCredential",
+      "description": "Represents a personal access token that authorized the Connection, and associated metadata.",
+      "type": "object",
+      "properties": {
+        "userTokenSecretVersion": {
+          "description": "Required. A SecretManager resource containing the user token that authorizes the Cloud Build connection. Format: `projects\/*\/secrets\/*\/versions\/*`.",
+          "type": "string"
+        },
+        "username": {
+          "description": "Output only. The username associated to this token.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
     "InstallationState": {
       "id": "InstallationState",
       "description": "Describes stage and necessary actions to be taken by the user to complete the installation. Used for GitHub and GitHub Enterprise based connections.",
@@ -487,6 +543,11 @@
         },
         "etag": {
           "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+          "type": "string"
+        },
+        "webhookId": {
+          "description": "Output only. External ID of the webhook created for the repository.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -904,6 +965,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "retries": {
+          "description": "Retries represents how many times this task should be retried in case of task failure.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1113,6 +1179,11 @@
           "items": {
             "$ref": "VolumeMount"
           }
+        },
+        "timeout": {
+          "description": "Time after which the Step times out. Defaults to never.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -1454,6 +1525,10 @@
           "description": "Time after which the Workflow times out.",
           "type": "string",
           "format": "google-duration"
+        },
+        "timeouts": {
+          "description": "Time after which the Pipeline times out. Currently three keys are accepted in the map pipeline, tasks and finally with Timeouts.pipeline >= Timeouts.tasks + Timeouts.finally",
+          "$ref": "TimeoutFields"
         }
       }
     },
@@ -1490,6 +1565,28 @@
             "REPOSITORY_STATUS_NAME",
             "REPOSITORY_STATUS_NAME_LOG"
           ]
+        }
+      }
+    },
+    "TimeoutFields": {
+      "id": "TimeoutFields",
+      "description": "TimeoutFields allows granular specification of pipeline, task, and finally timeouts",
+      "type": "object",
+      "properties": {
+        "pipeline": {
+          "description": "Pipeline sets the maximum allowed duration for execution of the entire pipeline. The sum of individual timeouts for tasks and finally must not exceed this value.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "tasks": {
+          "description": "Tasks sets the maximum allowed duration of this pipeline's tasks",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "finally": {
+          "description": "Finally sets the maximum allowed duration of this pipeline's finally",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -2228,28 +2325,6 @@
         "value": {
           "description": "Value of the result",
           "type": "string"
-        }
-      }
-    },
-    "TimeoutFields": {
-      "id": "TimeoutFields",
-      "description": "TimeoutFields allows granular specification of pipeline, task, and finally timeouts",
-      "type": "object",
-      "properties": {
-        "pipeline": {
-          "description": "Pipeline sets the maximum allowed duration for execution of the entire pipeline. The sum of individual timeouts for tasks and finally must not exceed this value.",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "tasks": {
-          "description": "Tasks sets the maximum allowed duration of this pipeline's tasks",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "finally": {
-          "description": "Finally sets the maximum allowed duration of this pipeline's finally",
-          "type": "string",
-          "format": "google-duration"
         }
       }
     },

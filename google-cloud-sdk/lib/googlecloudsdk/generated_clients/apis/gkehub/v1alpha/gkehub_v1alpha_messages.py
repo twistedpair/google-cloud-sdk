@@ -4351,6 +4351,8 @@ class MembershipFeatureSpec(_messages.Message):
     anthosobservability: Anthos Observability-specific spec
     cloudbuild: Cloud Build-specific spec
     configmanagement: Config Management-specific spec.
+    fleetInherited: True if value of `feature_spec` was inherited from a
+      fleet-level default.
     fleetobservability: Fleet observability membership spec
     helloworld: Hello World-specific spec.
     identityservice: Identity Service-specific spec.
@@ -4363,13 +4365,14 @@ class MembershipFeatureSpec(_messages.Message):
   anthosobservability = _messages.MessageField('AnthosObservabilityMembershipSpec', 1)
   cloudbuild = _messages.MessageField('CloudBuildMembershipSpec', 2)
   configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 3)
-  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 4)
-  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 5)
-  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 6)
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 7)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 8)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipSpec', 9)
-  workloadcertificate = _messages.MessageField('MembershipSpec', 10)
+  fleetInherited = _messages.BooleanField(4)
+  fleetobservability = _messages.MessageField('FleetObservabilityMembershipSpec', 5)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 6)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 7)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 8)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 9)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipSpec', 10)
+  workloadcertificate = _messages.MessageField('MembershipSpec', 11)
 
 
 class MembershipFeatureState(_messages.Message):

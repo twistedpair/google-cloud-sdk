@@ -32,6 +32,7 @@ import time
 import dateutil
 from google.auth import exceptions as google_auth_exceptions
 from google.auth import external_account as google_auth_external_account
+from google.auth import external_account_authorized_user as google_auth_external_account_authorized_user
 import google.auth.compute_engine as google_auth_gce
 from googlecloudsdk.api_lib.auth import util as auth_util
 from googlecloudsdk.core import config
@@ -625,6 +626,15 @@ def _LoadFromFileOverride(cred_file_override, scopes, use_google_auth):
       json_info['client_secret'] = config.CLOUDSDK_CLIENT_NOTSOSECRET
       cred = type(cred).from_info(json_info, scopes=config.CLOUDSDK_SCOPES)
 
+    if (isinstance(cred,
+                   google_auth_external_account_authorized_user.Credentials)):
+      # Reinitialize with client auth.
+      json_info = cred.info
+      json_info['client_id'] = config.CLOUDSDK_CLIENT_ID
+      json_info['client_secret'] = config.CLOUDSDK_CLIENT_NOTSOSECRET
+      json_info['scopes'] = config.CLOUDSDK_EXTERNAL_ACCOUNT_SCOPES
+      cred = type(cred).from_info(json_info)
+
     # Set token_uri after scopes since token_uri needs to be explicitly
     # preserved when scopes are applied.
     cred_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(cred)
@@ -1028,8 +1038,9 @@ def Store(credentials, account=None, scopes=None):
   """Store credentials according for an account address.
 
   gcloud only stores user account credentials, external account credentials,
-  service account credentials and p12 service account credentials. GCE, IAM
-  impersonation, and Devshell credentials are generated in runtime.
+  external account authorized user credential, service account credentials and
+  p12 service account credentials. GCE, IAM impersonation, and Devshell
+  credentials are generated in runtime.
   External account credentials do not contain any sensitive credentials. They
   only provide hints on how to retrieve local external and exchange them for
   Google access tokens.
@@ -1055,6 +1066,7 @@ def Store(credentials, account=None, scopes=None):
   if cred_type.key not in [
       c_creds.USER_ACCOUNT_CREDS_NAME, c_creds.EXTERNAL_ACCOUNT_CREDS_NAME,
       c_creds.EXTERNAL_ACCOUNT_USER_CREDS_NAME,
+      c_creds.EXTERNAL_ACCOUNT_AUTHORIZED_USER_CREDS_NAME,
       c_creds.SERVICE_ACCOUNT_CREDS_NAME, c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME
   ]:
     return
@@ -1138,7 +1150,10 @@ def Revoke(account=None):
   try:
     # External account credentials are not revocable.
     if (not account.endswith('.gserviceaccount.com') and
-        not isinstance(credentials, google_auth_external_account.Credentials)):
+        not isinstance(credentials, google_auth_external_account.Credentials)
+        and not isinstance(
+            credentials,
+            google_auth_external_account_authorized_user.Credentials)):
       RevokeCredentials(credentials)
       rv = True
   except (client.TokenRevokeError, c_google_auth.TokenRevokeError) as e:
@@ -1257,11 +1272,12 @@ class _LegacyGenerator(object):
 
   def __init__(self, account, credentials, scopes=None):
     self.credentials = credentials
-    if self._cred_type not in (c_creds.USER_ACCOUNT_CREDS_NAME,
-                               c_creds.SERVICE_ACCOUNT_CREDS_NAME,
-                               c_creds.EXTERNAL_ACCOUNT_CREDS_NAME,
-                               c_creds.EXTERNAL_ACCOUNT_USER_CREDS_NAME,
-                               c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME):
+    if self._cred_type not in (
+        c_creds.USER_ACCOUNT_CREDS_NAME, c_creds.SERVICE_ACCOUNT_CREDS_NAME,
+        c_creds.EXTERNAL_ACCOUNT_CREDS_NAME,
+        c_creds.EXTERNAL_ACCOUNT_USER_CREDS_NAME,
+        c_creds.EXTERNAL_ACCOUNT_AUTHORIZED_USER_CREDS_NAME,
+        c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME):
       raise c_creds.CredentialFileSaveError(
           'Unsupported credentials type {0}'.format(type(self.credentials)))
     if scopes is None:
@@ -1316,6 +1332,11 @@ class _LegacyGenerator(object):
     # try to use it anyways. The rest of the credential files should be
     # recreated here.
     self.Clean()
+
+    # TODO(b/251565106): Support for gsutil will be added in a later CL.
+    # TODO(b/251565107): Support for bq will be added in a later CL.
+    if self._cred_type == c_creds.EXTERNAL_ACCOUNT_AUTHORIZED_USER_CREDS_NAME:
+      return
 
     # Generates credentials used by bq and gsutil.
     if self._cred_type == c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME:

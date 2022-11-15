@@ -52,13 +52,18 @@ def ParseCleanupPolicy(path):
       if key not in policy:
         raise ar_exceptions.InvalidInputValueError(
             'Key "{}" not found in policy.'.format(key))
+    if 'type' not in policy['action']:
+      raise ar_exceptions.InvalidInputValueError(
+          'Key "type" not found in policy action.')
     condition = dict()
     if 'versionAge' in policy['condition']:
       seconds = times.ParseDuration(policy['condition']['versionAge'])
       condition['versionAge'] = six.text_type(seconds.total_seconds) + 's'
     policies[policy['name']] = {
         'id': policy['name'],
-        'condition': condition}
+        'condition': condition,
+        'action': policy['action']['type'],
+    }
   return policies
 
 
