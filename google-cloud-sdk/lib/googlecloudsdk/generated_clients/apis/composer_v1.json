@@ -330,6 +330,10 @@
         "masterAuthorizedNetworksConfig": {
           "description": "Optional. The configuration options for GKE cluster master authorized networks. By default master authorized networks feature is: - in case of private environment: enabled with no external networks allowlisted. - in case of public environment: disabled.",
           "$ref": "MasterAuthorizedNetworksConfig"
+        },
+        "recoveryConfig": {
+          "description": "Optional. The Recovery settings configuration of an environment. This field is supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and newer.",
+          "$ref": "RecoveryConfig"
         }
       }
     },
@@ -761,6 +765,40 @@
         }
       }
     },
+    "RecoveryConfig": {
+      "id": "RecoveryConfig",
+      "description": "The Recovery settings of an environment.",
+      "type": "object",
+      "properties": {
+        "scheduledSnapshotsConfig": {
+          "description": "Optional. The configuration for scheduled snapshot creation mechanism.",
+          "$ref": "ScheduledSnapshotsConfig"
+        }
+      }
+    },
+    "ScheduledSnapshotsConfig": {
+      "id": "ScheduledSnapshotsConfig",
+      "description": "The configuration for scheduled snapshot creation mechanism.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Optional. Whether scheduled snapshots creation is enabled.",
+          "type": "boolean"
+        },
+        "snapshotLocation": {
+          "description": "Optional. The Cloud Storage location for storing automatically created snapshots.",
+          "type": "string"
+        },
+        "snapshotCreationSchedule": {
+          "description": "Optional. The cron expression representing the time when snapshots creation mechanism runs. This field is subject to additional validation around frequency of execution.",
+          "type": "string"
+        },
+        "timeZone": {
+          "description": "Optional. Time zone that sets the context to interpret snapshot_creation_schedule.",
+          "type": "string"
+        }
+      }
+    },
     "ListEnvironmentsResponse": {
       "id": "ListEnvironmentsResponse",
       "description": "The environments in a project and location.",
@@ -776,6 +814,44 @@
         "nextPageToken": {
           "description": "The page token used to query for the next page if one exists.",
           "type": "string"
+        }
+      }
+    },
+    "SaveSnapshotRequest": {
+      "id": "SaveSnapshotRequest",
+      "description": "Request to create a snapshot of a Cloud Composer environment.",
+      "type": "object",
+      "properties": {
+        "snapshotLocation": {
+          "description": "Location in a Cloud Storage where the snapshot is going to be stored, e.g.: \"gs:\/\/my-bucket\/snapshots\".",
+          "type": "string"
+        }
+      }
+    },
+    "LoadSnapshotRequest": {
+      "id": "LoadSnapshotRequest",
+      "description": "Request to load a snapshot into a Cloud Composer environment.",
+      "type": "object",
+      "properties": {
+        "snapshotPath": {
+          "description": "A Cloud Storage path to a snapshot to load, e.g.: \"gs:\/\/my-bucket\/snapshots\/project_location_environment_timestamp\".",
+          "type": "string"
+        },
+        "skipPypiPackagesInstallation": {
+          "description": "Whether or not to skip installing Pypi packages when loading the environment's state.",
+          "type": "boolean"
+        },
+        "skipEnvironmentVariablesSetting": {
+          "description": "Whether or not to skip setting environment variables when loading the environment's state.",
+          "type": "boolean"
+        },
+        "skipAirflowOverridesSetting": {
+          "description": "Whether or not to skip setting Airflow overrides when loading the environment's state.",
+          "type": "boolean"
+        },
+        "skipGcsDataCopying": {
+          "description": "Whether or not to skip copying Cloud Storage data when loading the environment's state.",
+          "type": "boolean"
         }
       }
     },
@@ -1231,6 +1307,62 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Delete an environment."
+                },
+                "saveSnapshot": {
+                  "id": "composer.projects.locations.environments.saveSnapshot",
+                  "path": "v1/{+environment}:saveSnapshot",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:saveSnapshot",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "environment": {
+                      "description": "The resource name of the source environment in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "environment"
+                  ],
+                  "request": {
+                    "$ref": "SaveSnapshotRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a snapshots of a Cloud Composer environment. As a result of this operation, snapshot of environment's state is stored in a location specified in the SaveSnapshotRequest."
+                },
+                "loadSnapshot": {
+                  "id": "composer.projects.locations.environments.loadSnapshot",
+                  "path": "v1/{+environment}:loadSnapshot",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:loadSnapshot",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "environment": {
+                      "description": "The resource name of the target environment in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "environment"
+                  ],
+                  "request": {
+                    "$ref": "LoadSnapshotRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Loads a snapshot of a Cloud Composer environment. As a result of this operation, a snapshot of environment's specified in LoadSnapshotRequest is loaded into the environment."
                 }
               }
             },

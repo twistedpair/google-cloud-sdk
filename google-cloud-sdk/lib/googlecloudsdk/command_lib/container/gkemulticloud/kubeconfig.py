@@ -369,3 +369,8 @@ def CheckClusterHasNodePools(cluster_client, cluster_ref):
   # add new failures.
   except:
     pass
+
+
+def ConnectGatewayInNodePools(cluster, cluster_id):
+  version = _GetSemver(cluster, cluster_id)
+  return version < semver.SemVer('1.25.0')

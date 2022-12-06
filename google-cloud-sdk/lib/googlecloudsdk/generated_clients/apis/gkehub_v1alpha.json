@@ -3128,7 +3128,7 @@
           }
         },
         "postConditions": {
-          "description": "Post conditions to evaluate to mark an upgrade COMPLETE.",
+          "description": "Required. Post conditions to evaluate to mark an upgrade COMPLETE. Required.",
           "$ref": "ClusterUpgradePostConditions"
         },
         "gkeUpgradeOverrides": {
@@ -3146,7 +3146,7 @@
       "type": "object",
       "properties": {
         "soaking": {
-          "description": "Amount of time to \"soak\" after a rollout has been finished before marking it COMPLETE. Cannot exceed 30 days.",
+          "description": "Required. Amount of time to \"soak\" after a rollout has been finished before marking it COMPLETE. Cannot exceed 30 days. Required.",
           "type": "string",
           "format": "google-duration"
         }
@@ -3158,11 +3158,11 @@
       "type": "object",
       "properties": {
         "upgrade": {
-          "description": "Which upgrade to override.",
+          "description": "Required. Which upgrade to override. Required.",
           "$ref": "ClusterUpgradeGKEUpgrade"
         },
         "postConditions": {
-          "description": "Post conditions to override for the specified upgrade (name + version).",
+          "description": "Required. Post conditions to override for the specified upgrade (name + version). Required.",
           "$ref": "ClusterUpgradePostConditions"
         }
       }
@@ -3457,6 +3457,11 @@
           "description": "Output only. State of the namespace resource.",
           "readOnly": true,
           "$ref": "NamespaceLifecycleState"
+        },
+        "tenancyProject": {
+          "description": "Tenancy Project associated with the namespace",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

@@ -1238,7 +1238,7 @@
             "Unspecified. Do not use.",
             "This is the default option for CopyBackup when encryption_config is not specified. For example, if the source backup is using `Customer_Managed_Encryption`, the backup will be using the same Cloud KMS key as the source backup.",
             "Use Google default encryption.",
-            "Use customer managed encryption. If specified, `kms_key_name` must contain a valid Cloud KMS key."
+            "Use customer managed encryption. If specified, either `kms_key_name` or `kms_key_names` must contain valid Cloud KMS key(s)."
           ],
           "enum": [
             "ENCRYPTION_TYPE_UNSPECIFIED",
@@ -1960,6 +1960,10 @@
         "requestOptions": {
           "description": "Common options for this request.",
           "$ref": "RequestOptions"
+        },
+        "directedReadOptions": {
+          "description": "Directed read options for this request.",
+          "$ref": "DirectedReadOptions"
         }
       }
     },
@@ -2208,6 +2212,78 @@
         "transactionTag": {
           "description": "A tag used for statistics collection about this transaction. Both request_tag and transaction_tag can be specified for a read or query that belongs to a transaction. The value of transaction_tag should be the same for all requests belonging to the same transaction. If this request doesn't belong to any transaction, transaction_tag will be ignored. Legal characters for `transaction_tag` values are all printable characters (ASCII 32 - 126) and the length of a transaction_tag is limited to 50 characters. Values that exceed this limit are truncated. Any leading underscore (_) characters will be removed from the string.",
           "type": "string"
+        }
+      }
+    },
+    "DirectedReadOptions": {
+      "id": "DirectedReadOptions",
+      "description": "The DirectedReadOptions can be used to indicate which replicas or regions should be used for non-transactional reads or queries. DirectedReadOptions may only be specified for a read-only transaction, otherwise the API will return an `INVALID_ARGUMENT` error.",
+      "type": "object",
+      "properties": {
+        "includeReplicas": {
+          "description": "Include_replicas indicates the order of replicas (as they appear in this list) to process the request. If all replicas are exhausted without finding a healthy replica, Spanner will wait for a replica in the list to become available, requests may fail due to `DEADLINE_EXCEEDED` errors. In particular, the request will never be sent to a region or replica which does not appear in the list.",
+          "$ref": "IncludeReplicas"
+        },
+        "excludeReplicas": {
+          "description": "Exclude_replicas indicates that should be excluded from serving requests. Spanner will not route requests to the replicas in this list.",
+          "$ref": "ExcludeReplicas"
+        }
+      }
+    },
+    "IncludeReplicas": {
+      "id": "IncludeReplicas",
+      "description": "An IncludeReplicas contains a repeated set of ReplicaSelection which indicates the order in which replicas should be considered.",
+      "type": "object",
+      "properties": {
+        "replicaSelections": {
+          "description": "The directed read replica selector.",
+          "type": "array",
+          "items": {
+            "$ref": "ReplicaSelection"
+          }
+        },
+        "autoFailover": {
+          "description": "If true, Spanner will route requests to healthy replica outside the list when all the replicas in the include_replicas list are unavailable or unhealthy. Default value is `false`.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ReplicaSelection": {
+      "id": "ReplicaSelection",
+      "description": "The directed read replica selector. Callers must provide one or more of the following fields for replica selection: * `location` - The location must be one of the regions within the multi-region configuration of your database. * `type` - The type of the replica. Some examples of using replica_selectors are: * `location:us-east1` --> The \"us-east1\" replica(s) of any available type will be used to process the request. * `type:READ_ONLY` --> The \"READ_ONLY\" type replica(s) in nearest . available location will be used to process the request. * `location:us-east1 type:READ_ONLY` --> The \"READ_ONLY\" type replica(s) in location \"us-east1\" will be used to process the request.",
+      "type": "object",
+      "properties": {
+        "location": {
+          "description": "The location or region of the serving requests, e.g. \"us-east1\".",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of replica.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified.",
+            "Read-write replicas support both reads and writes.",
+            "Read-only replicas only support reads (not writes)."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "READ_WRITE",
+            "READ_ONLY"
+          ]
+        }
+      }
+    },
+    "ExcludeReplicas": {
+      "id": "ExcludeReplicas",
+      "description": "An ExcludeReplicas contains a repeated set of ReplicaSelection that should be excluded from serving requests.",
+      "type": "object",
+      "properties": {
+        "replicaSelections": {
+          "description": "The directed read replica selector.",
+          "type": "array",
+          "items": {
+            "$ref": "ReplicaSelection"
+          }
         }
       }
     },
@@ -2559,6 +2635,10 @@
         "requestOptions": {
           "description": "Common options for this request.",
           "$ref": "RequestOptions"
+        },
+        "directedReadOptions": {
+          "description": "Directed read options for this request.",
+          "$ref": "DirectedReadOptions"
         }
       }
     },

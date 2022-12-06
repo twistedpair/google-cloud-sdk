@@ -298,6 +298,33 @@ class CloudfunctionsV2alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetupFunctionUpgradeConfig(self, request, global_params=None):
+      r"""Creates a 2nd Gen copy of the function configuration based on the 1st Gen function with the given name. This is the first step of the multi step process to upgrade 1st Gen functions to 2nd Gen. Only 2nd Gen configuration is setup as part of this request and traffic continues to be served by 1st Gen.
+
+      Args:
+        request: (CloudfunctionsProjectsLocationsFunctionsSetupFunctionUpgradeConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetupFunctionUpgradeConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetupFunctionUpgradeConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:setupFunctionUpgradeConfig',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.setupFunctionUpgradeConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha/{+name}:setupFunctionUpgradeConfig',
+        request_field='setupFunctionUpgradeConfigRequest',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsSetupFunctionUpgradeConfigRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 

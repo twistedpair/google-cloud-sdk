@@ -33,6 +33,12 @@ _METHOD_ID_RE_RAW = r'(?P<collection>{collection})\.get'.format(
     collection=_COLLECTION_SUB_RE)
 _METHOD_ID_RE = re.compile(_METHOD_ID_RE_RAW)
 DEFAULT_PATH_NAME = ''
+# List of APIs that should be allowed to use different API versions for
+# gRPC vs JSON API.
+# TODO(b/254265765) Remove once resources can be generated using gRPC.
+MISMATCHED_VERSION_ALLOWLIST = frozenset([
+    'storage',  # The JSON API uses v1, whereas gRPC uses v2.
+])
 
 
 class Error(Exception):
@@ -131,7 +137,8 @@ class DiscoveryDoc(object):
     url = self.base_url + path
     url_api_name, url_api_vesion, path = (
         resource_util.SplitDefaultEndpointUrl(url))
-    if url_api_vesion != api_version:
+    if (self.api_name.lower() not in MISMATCHED_VERSION_ALLOWLIST and
+        url_api_vesion != api_version):
       raise UnsupportedDiscoveryDoc(
           'Collection {0} for version {1}/{2} is using url {3} '
           'with version {4}'.format(

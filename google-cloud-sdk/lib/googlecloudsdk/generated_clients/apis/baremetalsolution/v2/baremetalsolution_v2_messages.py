@@ -89,10 +89,14 @@ class AttachVolumeRequest(_messages.Message):
   be attached.
 
   Fields:
-    volume: Required. Name of the Volume to attach.
+    volume: Name of the Volume to attach.
+    volumes: Names of the multiple Volumes to attach. The volumes attaching
+      will be an additive operation and will have no effect on existing
+      attached volumes.
   """
 
   volume = _messages.StringField(1)
+  volumes = _messages.StringField(2, repeated=True)
 
 
 class BaremetalsolutionProjectsLocationsGetRequest(_messages.Message):
@@ -928,11 +932,14 @@ class DetachVolumeRequest(_messages.Message):
 
   Fields:
     skipReboot: If true, performs Volume unmapping without instance reboot.
-    volume: Required. Name of the Volume to detach.
+    volume: Name of the Volume to detach.
+    volumes: Names of the multiple Volumes to detach. The detaching of volumes
+      will have no effect on other existing attached volumes.
   """
 
   skipReboot = _messages.BooleanField(1)
   volume = _messages.StringField(2)
+  volumes = _messages.StringField(3, repeated=True)
 
 
 class DisableInteractiveSerialConsoleRequest(_messages.Message):
@@ -1019,6 +1026,7 @@ class Instance(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. The state of the server.
+    WorkloadProfileValueValuesEnum: The workload profile for the instance.
 
   Messages:
     LabelsValue: Labels as key value pairs.
@@ -1062,6 +1070,7 @@ class Instance(_messages.Message):
     updateTime: Output only. Update a time stamp.
     volumes: Input only. List of Volumes to attach to this Instance on
       creation. This field won't be populated in Get/List responses.
+    workloadProfile: The workload profile for the instance.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1085,6 +1094,19 @@ class Instance(_messages.Message):
     STARTING = 5
     STOPPING = 6
     SHUTDOWN = 7
+
+  class WorkloadProfileValueValuesEnum(_messages.Enum):
+    r"""The workload profile for the instance.
+
+    Values:
+      WORKLOAD_PROFILE_UNSPECIFIED: The workload profile is in an unknown
+        state.
+      WORKLOAD_PROFILE_GENERIC: The workload profile is generic.
+      WORKLOAD_PROFILE_HANA: The workload profile is hana.
+    """
+    WORKLOAD_PROFILE_UNSPECIFIED = 0
+    WORKLOAD_PROFILE_GENERIC = 1
+    WORKLOAD_PROFILE_HANA = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1127,6 +1149,7 @@ class Instance(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 15)
   updateTime = _messages.StringField(16)
   volumes = _messages.MessageField('Volume', 17, repeated=True)
+  workloadProfile = _messages.EnumField('WorkloadProfileValueValuesEnum', 18)
 
 
 class InstanceConfig(_messages.Message):
@@ -2668,6 +2691,7 @@ class Volume(_messages.Message):
       snapshot reserved space is full.
     StateValueValuesEnum: The state of this storage volume.
     StorageTypeValueValuesEnum: The storage type for this volume.
+    WorkloadProfileValueValuesEnum: The workload profile for the volume.
 
   Messages:
     LabelsValue: Labels as key value pairs.
@@ -2711,6 +2735,7 @@ class Volume(_messages.Message):
       for this volume, if any.
     state: The state of this storage volume.
     storageType: The storage type for this volume.
+    workloadProfile: The workload profile for the volume.
   """
 
   class PerformanceTierValueValuesEnum(_messages.Enum):
@@ -2783,6 +2808,19 @@ class Volume(_messages.Message):
     SSD = 1
     HDD = 2
 
+  class WorkloadProfileValueValuesEnum(_messages.Enum):
+    r"""The workload profile for the volume.
+
+    Values:
+      WORKLOAD_PROFILE_UNSPECIFIED: The workload profile is in an unknown
+        state.
+      GENERIC: The workload profile is generic.
+      HANA: The workload profile is hana.
+    """
+    WORKLOAD_PROFILE_UNSPECIFIED = 0
+    GENERIC = 1
+    HANA = 2
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels as key value pairs.
@@ -2828,6 +2866,7 @@ class Volume(_messages.Message):
   snapshotSchedulePolicy = _messages.StringField(19)
   state = _messages.EnumField('StateValueValuesEnum', 20)
   storageType = _messages.EnumField('StorageTypeValueValuesEnum', 21)
+  workloadProfile = _messages.EnumField('WorkloadProfileValueValuesEnum', 22)
 
 
 class VolumeConfig(_messages.Message):

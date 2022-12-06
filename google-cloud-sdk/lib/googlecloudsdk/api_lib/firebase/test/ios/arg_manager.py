@@ -53,6 +53,13 @@ def TypedArgRules():
           'defaults': {
               'scenario_numbers': [1]
           }
+      },
+      'robo': {
+          'required': ['app'],
+          'optional': ['test_special_entitlements'],
+          'defaults': {
+              'test_special_entitlements': False
+          },
       }
   }
 
@@ -82,7 +89,6 @@ def SharedArgRules():
           'results_bucket',
           'results_dir',
           'results_history_name',
-          'scenario_numbers',
           'timeout',
       ],
       'defaults': {

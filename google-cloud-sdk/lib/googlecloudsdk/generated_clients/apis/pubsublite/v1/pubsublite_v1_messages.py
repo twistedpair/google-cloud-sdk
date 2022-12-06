@@ -197,9 +197,15 @@ class ExportConfig(_messages.Message):
   destination. User subscriber clients must not connect to this subscription.
 
   Enums:
-    DesiredStateValueValuesEnum: The desired state of this export.
+    CurrentStateValueValuesEnum: Output only. The current state of the export,
+      which may be different to the desired state due to errors. This field is
+      output only.
+    DesiredStateValueValuesEnum: The desired state of this export. Setting
+      this to values other than `ACTIVE` and `PAUSED` will result in an error.
 
   Fields:
+    currentState: Output only. The current state of the export, which may be
+      different to the desired state due to errors. This field is output only.
     deadLetterTopic: Optional. The name of an optional Pub/Sub Lite topic to
       publish messages that can not be exported to the destination. For
       example, the message can not be published to the Pub/Sub service because
@@ -208,29 +214,54 @@ class ExportConfig(_messages.Message):
       projects/{project_number}/locations/{location}/topics/{topic_id}. Must
       be within the same project and location as the subscription. The topic
       may be changed or removed.
-    desiredState: The desired state of this export.
+    desiredState: The desired state of this export. Setting this to values
+      other than `ACTIVE` and `PAUSED` will result in an error.
     pubsubConfig: Messages are automatically written from the Pub/Sub Lite
       topic associated with this subscription to a Pub/Sub topic.
-    statuses: Output only. The export statuses of each partition. This field
-      is output only.
   """
 
-  class DesiredStateValueValuesEnum(_messages.Enum):
-    r"""The desired state of this export.
+  class CurrentStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the export, which may be different
+    to the desired state due to errors. This field is output only.
 
     Values:
       STATE_UNSPECIFIED: Default value. This value is unused.
       ACTIVE: Messages are being exported.
       PAUSED: Exporting messages is suspended.
+      PERMISSION_DENIED: Messages cannot be exported due to permission denied
+        errors. Output only.
+      NOT_FOUND: Messages cannot be exported due to missing resources. Output
+        only.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     PAUSED = 2
+    PERMISSION_DENIED = 3
+    NOT_FOUND = 4
 
-  deadLetterTopic = _messages.StringField(1)
-  desiredState = _messages.EnumField('DesiredStateValueValuesEnum', 2)
-  pubsubConfig = _messages.MessageField('PubSubConfig', 3)
-  statuses = _messages.MessageField('PartitionStatus', 4, repeated=True)
+  class DesiredStateValueValuesEnum(_messages.Enum):
+    r"""The desired state of this export. Setting this to values other than
+    `ACTIVE` and `PAUSED` will result in an error.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: Messages are being exported.
+      PAUSED: Exporting messages is suspended.
+      PERMISSION_DENIED: Messages cannot be exported due to permission denied
+        errors. Output only.
+      NOT_FOUND: Messages cannot be exported due to missing resources. Output
+        only.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    PAUSED = 2
+    PERMISSION_DENIED = 3
+    NOT_FOUND = 4
+
+  currentState = _messages.EnumField('CurrentStateValueValuesEnum', 1)
+  deadLetterTopic = _messages.StringField(2)
+  desiredState = _messages.EnumField('DesiredStateValueValuesEnum', 3)
+  pubsubConfig = _messages.MessageField('PubSubConfig', 4)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -494,24 +525,6 @@ class PartitionCursor(_messages.Message):
 
   cursor = _messages.MessageField('Cursor', 1)
   partition = _messages.IntegerField(2)
-
-
-class PartitionStatus(_messages.Message):
-  r"""The export status of a partition.
-
-  Fields:
-    partition: The partition number.
-    status: If the export for a partition is healthy and the desired state is
-      `ACTIVE`, the status code will be `OK` (zero). If the desired state of
-      the export is `PAUSED`, the status code will be `CANCELLED`. If the
-      export has been suspended due to an error, the status will be populated
-      with an error code and details. The service will automatically retry
-      after a period of time, and will update the status code to `OK` if
-      export subsequently succeeds.
-  """
-
-  partition = _messages.IntegerField(1)
-  status = _messages.MessageField('Status', 2)
 
 
 class PubSubConfig(_messages.Message):

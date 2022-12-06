@@ -837,10 +837,6 @@
           "description": "Required. The canonical name of underlying Interconnect object that this attachment's traffic will traverse through. The name is in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/interconnects\/{interconnect}.",
           "type": "string"
         },
-        "router": {
-          "description": "Optional. The canonical Router name in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/routers\/{router}. During creates, if network is specified, this field will be ignored.",
-          "type": "string"
-        },
         "network": {
           "description": "Optional. The canonical Network name in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/networks\/{network}.",
           "type": "string"

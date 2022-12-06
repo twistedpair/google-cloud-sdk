@@ -75,7 +75,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective ContainerThreatDetectionSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective ContainerThreatDetectionSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterFoldersContainerThreatDetectionSettingsCalculateRequest) input message
@@ -112,7 +112,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective EventThreatDetectionSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective EventThreatDetectionSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterFoldersEventThreatDetectionSettingsCalculateRequest) input message
@@ -149,7 +149,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective RapidVulnerabilityDetectionSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective RapidVulnerabilityDetectionSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterFoldersRapidVulnerabilityDetectionSettingsCalculateRequest) input message
@@ -186,7 +186,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective SecurityHealthAnalyticsSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective SecurityHealthAnalyticsSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterFoldersSecurityHealthAnalyticsSettingsCalculateRequest) input message
@@ -223,7 +223,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterFoldersVirtualMachineThreatDetectionSettingsCalculateRequest) input message
@@ -260,7 +260,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective WebSecurityScannerSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective WebSecurityScannerSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterFoldersWebSecurityScannerSettingsCalculateRequest) input message
@@ -297,7 +297,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def GetContainerThreatDetectionSettings(self, request, global_params=None):
-      r"""Get the ContainerThreatDetectionSettings resource.
+      r"""Get the ContainerThreatDetectionSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetContainerThreatDetectionSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateContainerThreatDetectionSettings for this purpose.
 
       Args:
         request: (SecuritycenterFoldersGetContainerThreatDetectionSettingsRequest) input message
@@ -324,7 +324,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     )
 
     def GetEventThreatDetectionSettings(self, request, global_params=None):
-      r"""Get the EventThreatDetectionSettings resource.
+      r"""Get the EventThreatDetectionSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetEventThreatDetectionSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateEventThreatDetectionSettings for this purpose.
 
       Args:
         request: (SecuritycenterFoldersGetEventThreatDetectionSettingsRequest) input message
@@ -378,7 +378,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     )
 
     def GetRapidVulnerabilityDetectionSettings(self, request, global_params=None):
-      r"""Get the RapidVulnerabilityDetectionSettings resource.
+      r"""Get the RapidVulnerabilityDetectionSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetRapidVulnerabilityDetectionSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateRapidVulnerabilityDetectionSettings for this purpose.
 
       Args:
         request: (SecuritycenterFoldersGetRapidVulnerabilityDetectionSettingsRequest) input message
@@ -432,7 +432,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     )
 
     def GetSecurityHealthAnalyticsSettings(self, request, global_params=None):
-      r"""Get the SecurityHealthAnalyticsSettings resource.
+      r"""Get the SecurityHealthAnalyticsSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetSecurityHealthAnalyticsSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateSecurityHealthAnalyticsSettings for this purpose.
 
       Args:
         request: (SecuritycenterFoldersGetSecurityHealthAnalyticsSettingsRequest) input message
@@ -459,7 +459,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     )
 
     def GetVirtualMachineThreatDetectionSettings(self, request, global_params=None):
-      r"""Get the VirtualMachineThreatDetectionSettings resource.
+      r"""Get the VirtualMachineThreatDetectionSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetVirtualMachineThreatDetectionSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateVirtualMachineThreatDetectionSettings for this purpose.
 
       Args:
         request: (SecuritycenterFoldersGetVirtualMachineThreatDetectionSettingsRequest) input message
@@ -486,7 +486,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     )
 
     def GetWebSecurityScannerSettings(self, request, global_params=None):
-      r"""Get the WebSecurityScannerSettings resource.
+      r"""Get the WebSecurityScannerSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetWebSecurityScannerSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateWebSecurityScannerSettings for this purpose.
 
       Args:
         request: (SecuritycenterFoldersGetWebSecurityScannerSettingsRequest) input message
@@ -685,7 +685,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective ContainerThreatDetectionSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective ContainerThreatDetectionSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterOrganizationsContainerThreatDetectionSettingsCalculateRequest) input message
@@ -722,7 +722,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective EventThreatDetectionSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective EventThreatDetectionSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterOrganizationsEventThreatDetectionSettingsCalculateRequest) input message
@@ -759,7 +759,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective RapidVulnerabilityDetectionSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective RapidVulnerabilityDetectionSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterOrganizationsRapidVulnerabilityDetectionSettingsCalculateRequest) input message
@@ -796,7 +796,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective SecurityHealthAnalyticsSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective SecurityHealthAnalyticsSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCalculateRequest) input message
@@ -833,7 +833,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterOrganizationsVirtualMachineThreatDetectionSettingsCalculateRequest) input message
@@ -870,7 +870,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective WebSecurityScannerSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective WebSecurityScannerSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterOrganizationsWebSecurityScannerSettingsCalculateRequest) input message
@@ -907,7 +907,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def GetContainerThreatDetectionSettings(self, request, global_params=None):
-      r"""Get the ContainerThreatDetectionSettings resource.
+      r"""Get the ContainerThreatDetectionSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetContainerThreatDetectionSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateContainerThreatDetectionSettings for this purpose.
 
       Args:
         request: (SecuritycenterOrganizationsGetContainerThreatDetectionSettingsRequest) input message
@@ -934,7 +934,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     )
 
     def GetEventThreatDetectionSettings(self, request, global_params=None):
-      r"""Get the EventThreatDetectionSettings resource.
+      r"""Get the EventThreatDetectionSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetEventThreatDetectionSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateEventThreatDetectionSettings for this purpose.
 
       Args:
         request: (SecuritycenterOrganizationsGetEventThreatDetectionSettingsRequest) input message
@@ -988,7 +988,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     )
 
     def GetRapidVulnerabilityDetectionSettings(self, request, global_params=None):
-      r"""Get the RapidVulnerabilityDetectionSettings resource.
+      r"""Get the RapidVulnerabilityDetectionSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetRapidVulnerabilityDetectionSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateRapidVulnerabilityDetectionSettings for this purpose.
 
       Args:
         request: (SecuritycenterOrganizationsGetRapidVulnerabilityDetectionSettingsRequest) input message
@@ -1042,7 +1042,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     )
 
     def GetSecurityHealthAnalyticsSettings(self, request, global_params=None):
-      r"""Get the SecurityHealthAnalyticsSettings resource.
+      r"""Get the SecurityHealthAnalyticsSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetSecurityHealthAnalyticsSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateSecurityHealthAnalyticsSettings for this purpose.
 
       Args:
         request: (SecuritycenterOrganizationsGetSecurityHealthAnalyticsSettingsRequest) input message
@@ -1096,7 +1096,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     )
 
     def GetVirtualMachineThreatDetectionSettings(self, request, global_params=None):
-      r"""Get the VirtualMachineThreatDetectionSettings resource.
+      r"""Get the VirtualMachineThreatDetectionSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetVirtualMachineThreatDetectionSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateVirtualMachineThreatDetectionSettings for this purpose.
 
       Args:
         request: (SecuritycenterOrganizationsGetVirtualMachineThreatDetectionSettingsRequest) input message
@@ -1123,7 +1123,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     )
 
     def GetWebSecurityScannerSettings(self, request, global_params=None):
-      r"""Get the WebSecurityScannerSettings resource.
+      r"""Get the WebSecurityScannerSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetWebSecurityScannerSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateWebSecurityScannerSettings for this purpose.
 
       Args:
         request: (SecuritycenterOrganizationsGetWebSecurityScannerSettingsRequest) input message
@@ -1322,7 +1322,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective ContainerThreatDetectionSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective ContainerThreatDetectionSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterProjectsContainerThreatDetectionSettingsCalculateRequest) input message
@@ -1359,7 +1359,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective EventThreatDetectionSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective EventThreatDetectionSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterProjectsEventThreatDetectionSettingsCalculateRequest) input message
@@ -1396,7 +1396,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective ContainerThreatDetectionSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective ContainerThreatDetectionSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterProjectsLocationsClustersContainerThreatDetectionSettingsCalculateRequest) input message
@@ -1433,7 +1433,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def GetContainerThreatDetectionSettings(self, request, global_params=None):
-      r"""Get the ContainerThreatDetectionSettings resource.
+      r"""Get the ContainerThreatDetectionSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetContainerThreatDetectionSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateContainerThreatDetectionSettings for this purpose.
 
       Args:
         request: (SecuritycenterProjectsLocationsClustersGetContainerThreatDetectionSettingsRequest) input message
@@ -1507,7 +1507,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective RapidVulnerabilityDetectionSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective RapidVulnerabilityDetectionSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterProjectsRapidVulnerabilityDetectionSettingsCalculateRequest) input message
@@ -1544,7 +1544,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective SecurityHealthAnalyticsSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective SecurityHealthAnalyticsSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterProjectsSecurityHealthAnalyticsSettingsCalculateRequest) input message
@@ -1581,7 +1581,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterProjectsVirtualMachineThreatDetectionSettingsCalculateRequest) input message
@@ -1618,7 +1618,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def Calculate(self, request, global_params=None):
-      r"""Calculates the effective WebSecurityScannerSettings based on its level in the resource hierarchy and its settings.
+      r"""Calculates the effective WebSecurityScannerSettings based on its level in the resource hierarchy and its settings. Settings provided closer to the target resource take precedence over those further away (e.g. folder will override organization level settings). The default SCC setting for the detector service defaults can be overridden at organization, folder and project levels. No assumptions should be made about the SCC defaults as it is considered an internal implementation detail.
 
       Args:
         request: (SecuritycenterProjectsWebSecurityScannerSettingsCalculateRequest) input message
@@ -1655,7 +1655,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
           }
 
     def GetContainerThreatDetectionSettings(self, request, global_params=None):
-      r"""Get the ContainerThreatDetectionSettings resource.
+      r"""Get the ContainerThreatDetectionSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetContainerThreatDetectionSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateContainerThreatDetectionSettings for this purpose.
 
       Args:
         request: (SecuritycenterProjectsGetContainerThreatDetectionSettingsRequest) input message
@@ -1682,7 +1682,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     )
 
     def GetEventThreatDetectionSettings(self, request, global_params=None):
-      r"""Get the EventThreatDetectionSettings resource.
+      r"""Get the EventThreatDetectionSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetEventThreatDetectionSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateEventThreatDetectionSettings for this purpose.
 
       Args:
         request: (SecuritycenterProjectsGetEventThreatDetectionSettingsRequest) input message
@@ -1736,7 +1736,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     )
 
     def GetRapidVulnerabilityDetectionSettings(self, request, global_params=None):
-      r"""Get the RapidVulnerabilityDetectionSettings resource.
+      r"""Get the RapidVulnerabilityDetectionSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetRapidVulnerabilityDetectionSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateRapidVulnerabilityDetectionSettings for this purpose.
 
       Args:
         request: (SecuritycenterProjectsGetRapidVulnerabilityDetectionSettingsRequest) input message
@@ -1790,7 +1790,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     )
 
     def GetSecurityHealthAnalyticsSettings(self, request, global_params=None):
-      r"""Get the SecurityHealthAnalyticsSettings resource.
+      r"""Get the SecurityHealthAnalyticsSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetSecurityHealthAnalyticsSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateSecurityHealthAnalyticsSettings for this purpose.
 
       Args:
         request: (SecuritycenterProjectsGetSecurityHealthAnalyticsSettingsRequest) input message
@@ -1817,7 +1817,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     )
 
     def GetVirtualMachineThreatDetectionSettings(self, request, global_params=None):
-      r"""Get the VirtualMachineThreatDetectionSettings resource.
+      r"""Get the VirtualMachineThreatDetectionSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetVirtualMachineThreatDetectionSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateVirtualMachineThreatDetectionSettings for this purpose.
 
       Args:
         request: (SecuritycenterProjectsGetVirtualMachineThreatDetectionSettingsRequest) input message
@@ -1844,7 +1844,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     )
 
     def GetWebSecurityScannerSettings(self, request, global_params=None):
-      r"""Get the WebSecurityScannerSettings resource.
+      r"""Get the WebSecurityScannerSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetWebSecurityScannerSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateWebSecurityScannerSettings for this purpose.
 
       Args:
         request: (SecuritycenterProjectsGetWebSecurityScannerSettingsRequest) input message

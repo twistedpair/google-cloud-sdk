@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com",
+  "documentationLink": "https://cloud.google.com/stackdriver/docs/solutions/grpc",
   "protocol": "rest",
   "rootUrl": "https://microservices.googleapis.com/",
   "mtlsRootUrl": "https://microservices.mtls.googleapis.com/",

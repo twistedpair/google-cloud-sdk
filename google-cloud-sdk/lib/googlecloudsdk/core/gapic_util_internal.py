@@ -470,6 +470,27 @@ def AsyncTimeoutInterceptor():
   return AsyncClientCallDetailsInterceptor(_AddTimeout())
 
 
+def _GetOrgRestrictionHeader():
+  """Returns the org restriction headers to be used."""
+  headers = []
+  request_org_restriction_headers = properties.VALUES.resource_policy.org_restriction_header.Get(
+  )
+  if request_org_restriction_headers:
+    headers.append(
+        ('x-goog-allowed-resources', request_org_restriction_headers))
+  return headers
+
+
+def RequestOrgRestrictionInterceptor():
+  """Returns an interceptor that adds a request org restriction header."""
+  return HeaderAdderInterceptor(_GetOrgRestrictionHeader)
+
+
+def AsyncRequestOrgRestrictionInterceptor():
+  """Returns an interceptor that adds a request org restriction header."""
+  return AsyncHeaderAdderInterceptor(_GetOrgRestrictionHeader)
+
+
 class WrappedStreamingResponse(grpc.Call, grpc.Future):
   """Wrapped streaming response.
 
@@ -859,6 +880,7 @@ def MakeTransport(client_class, credentials, address_override_func,
   interceptors.append(RPCDurationReporterInterceptor())
   interceptors.append(QuotaProjectInterceptor(credentials))
   interceptors.append(APIEnablementInterceptor())
+  interceptors.append(RequestOrgRestrictionInterceptor())
   if properties.VALUES.core.log_http.GetBool():
     interceptors.append(LoggingInterceptor(credentials))
 
@@ -879,6 +901,7 @@ def MakeAsyncTransport(client_class, credentials, address_override_func,
   interceptors.append(AsyncUserAgentInterceptor())
   interceptors.append(AsyncTimeoutInterceptor())
   interceptors.append(AsyncIAMAuthHeadersInterceptor())
+  interceptors.append(AsyncRequestOrgRestrictionInterceptor())
 
   channel = transport_class.create_channel(
       host=address,

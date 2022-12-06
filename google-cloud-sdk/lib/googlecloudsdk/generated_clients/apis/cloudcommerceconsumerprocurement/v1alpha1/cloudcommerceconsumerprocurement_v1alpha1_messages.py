@@ -1824,10 +1824,11 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAttributionAllotment(_m
 
   Fields:
     intAllotmentAmount: An integer allotment of resources.
-    targets: Targets for this allotment. Currently, only projects are
+    targets: Targets for this allotment. Both projects and folder names are
       supported. Targets should be associated with this billing account.
       Targets not associated with this billing account are ignored. Format:
-      project/{project_id} or project/{project_number}
+      project/{project_id} or project/{project_number} or
+      folders/{folder_name}.
   """
 
   intAllotmentAmount = _messages.IntegerField(1)

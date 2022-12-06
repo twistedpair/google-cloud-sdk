@@ -658,6 +658,55 @@
           "type": "string"
         }
       }
+    },
+    "GoogleCloudDatacatalogV1ImportEntriesMetadata": {
+      "id": "GoogleCloudDatacatalogV1ImportEntriesMetadata",
+      "description": "Metadata message for long-running operation returned by the ImportEntries.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "State of the import operation.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "The dump with entries has been queued for import.",
+            "The import of entries is in progress.",
+            "The import of entries has been finished.",
+            "The import of entries has been abandoned in favor of a newer request."
+          ],
+          "enum": [
+            "IMPORT_STATE_UNSPECIFIED",
+            "IMPORT_QUEUED",
+            "IMPORT_IN_PROGRESS",
+            "IMPORT_DONE",
+            "IMPORT_OBSOLETE"
+          ]
+        },
+        "errors": {
+          "description": "Partial errors that are encountered during the ImportEntries operation. There is no guarantee that all the encountered errors are reported. However, if no errors are reported, it means that no errors were encountered.",
+          "type": "array",
+          "items": {
+            "$ref": "Status"
+          }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1ImportEntriesResponse": {
+      "id": "GoogleCloudDatacatalogV1ImportEntriesResponse",
+      "description": "Response message for long-running operation returned by the ImportEntries.",
+      "type": "object",
+      "properties": {
+        "upsertedEntriesCount": {
+          "description": "Cumulative number of entries created and entries updated as a result of import operation.",
+          "type": "string",
+          "format": "int64"
+        },
+        "deletedEntriesCount": {
+          "description": "Number of entries deleted as a result of import operation.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
     }
   },
   "resources": {

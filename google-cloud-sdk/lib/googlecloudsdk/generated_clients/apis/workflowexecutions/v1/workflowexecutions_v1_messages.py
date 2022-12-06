@@ -48,6 +48,7 @@ class Execution(_messages.Message):
       `argument`. Example:
       `'{"argument":"{\"firstName\":\"FIRST\",\"lastName\":\"LAST\"}"}'`
     callLogLevel: The call logging level associated to this execution.
+    duration: Output only. Measures the duration of the execution.
     endTime: Output only. Marks the end of execution, successful or not.
     error: Output only. The error which caused the execution to finish
       prematurely. The value is only present if the execution's state is
@@ -96,14 +97,15 @@ class Execution(_messages.Message):
 
   argument = _messages.StringField(1)
   callLogLevel = _messages.EnumField('CallLogLevelValueValuesEnum', 2)
-  endTime = _messages.StringField(3)
-  error = _messages.MessageField('Error', 4)
-  name = _messages.StringField(5)
-  result = _messages.StringField(6)
-  startTime = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  status = _messages.MessageField('Status', 9)
-  workflowRevisionId = _messages.StringField(10)
+  duration = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  error = _messages.MessageField('Error', 5)
+  name = _messages.StringField(6)
+  result = _messages.StringField(7)
+  startTime = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  status = _messages.MessageField('Status', 10)
+  workflowRevisionId = _messages.StringField(11)
 
 
 class ListExecutionsResponse(_messages.Message):
@@ -395,7 +397,7 @@ class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsGetRequest(_messages
     Values:
       EXECUTION_VIEW_UNSPECIFIED: The default / unset value.
       BASIC: Includes only basic metadata about the execution. Following
-        fields are returned: name, start_time, end_time, state and
+        fields are returned: name, start_time, end_time, duration, state and
         workflow_revision_id.
       FULL: Includes all data.
     """
@@ -440,7 +442,7 @@ class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsListRequest(_message
     Values:
       EXECUTION_VIEW_UNSPECIFIED: The default / unset value.
       BASIC: Includes only basic metadata about the execution. Following
-        fields are returned: name, start_time, end_time, state and
+        fields are returned: name, start_time, end_time, duration, state and
         workflow_revision_id.
       FULL: Includes all data.
     """

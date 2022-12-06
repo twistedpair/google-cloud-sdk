@@ -18,6 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
+
+from apitools.base.protorpclite import protojson
 from apitools.base.py import encoding
 
 from googlecloudsdk.api_lib.storage import metadata_util
@@ -27,21 +30,23 @@ from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.core.util import iso_duration
 
 
-def _create_iam_metadata_if_needed(current_iam_metadata):
-  """Creates Apitools IAM metadata object if ones does not already exist."""
-  if current_iam_metadata:
-    return current_iam_metadata
-  return apis.GetMessagesModule('storage', 'v1').Bucket.IamConfigurationValue()
+def get_bucket_or_object_acl_class(is_bucket=False):
+  messages = apis.GetMessagesModule('storage', 'v1')
+  if is_bucket:
+    acl_class = messages.BucketAccessControl
+  else:
+    acl_class = messages.ObjectAccessControl
+  return acl_class
 
 
-def process_acl_file(file_path):
+def process_acl_file(file_path, is_bucket=False):
   """Converts ACL file to Apitools objects."""
   acl_dict_list = metadata_util.cached_read_json_file(file_path)
   acl_messages = []
-  messages = apis.GetMessagesModule('storage', 'v1')
   for acl_dict in acl_dict_list:
     acl_messages.append(
-        encoding.DictToMessage(acl_dict, messages.BucketAccessControl))
+        encoding.DictToMessage(acl_dict,
+                               get_bucket_or_object_acl_class(is_bucket)))
   return acl_messages
 
 
@@ -82,6 +87,44 @@ def process_default_storage_class(default_storage_class):
     return None
 
   return default_storage_class
+
+
+def process_iam_file(file_path, custom_etag=None):
+  """Converts IAM file to Apitools objects."""
+  policy_dict = metadata_util.cached_read_json_file(file_path)
+  if custom_etag is not None:
+    policy_dict['etag'] = custom_etag
+  # Would normally encode the dict directly into a messages object, but the
+  # encoding tool has issues with "bytes" field types (etag).
+  policy_string = json.dumps(policy_dict)
+  messages = apis.GetMessagesModule('storage', 'v1')
+  policy_object = protojson.decode_message(messages.Policy, policy_string)
+  return policy_object
+
+
+def process_bucket_iam_configuration(existing_iam_metadata,
+                                     public_access_prevention_boolean,
+                                     uniform_bucket_level_access_boolean):
+  """Converts user flags to Apitools IamConfigurationValue."""
+  messages = apis.GetMessagesModule('storage', 'v1')
+  if existing_iam_metadata:
+    iam_metadata = existing_iam_metadata
+  else:
+    iam_metadata = messages.Bucket.IamConfigurationValue()
+
+  if public_access_prevention_boolean is not None:
+    if public_access_prevention_boolean:
+      public_access_prevention_string = 'enforced'
+    else:
+      public_access_prevention_string = 'inherited'
+    iam_metadata.publicAccessPrevention = public_access_prevention_string
+
+  if uniform_bucket_level_access_boolean is not None:
+    iam_metadata.uniformBucketLevelAccess = (
+        messages.Bucket.IamConfigurationValue.UniformBucketLevelAccessValue(
+            enabled=uniform_bucket_level_access_boolean))
+
+  return iam_metadata
 
 
 def process_labels(file_path):
@@ -154,19 +197,6 @@ def process_log_config(target_bucket, log_bucket, log_object_prefix):
   return logging_value
 
 
-def process_public_access_prevention(existing_iam_metadata,
-                                     public_access_prevention_boolean):
-  """Converts public_access_prevention boolean to Apitools object."""
-  iam_metadata = _create_iam_metadata_if_needed(existing_iam_metadata)
-
-  if public_access_prevention_boolean:
-    public_access_prevention_string = 'enforced'
-  else:
-    public_access_prevention_string = 'inherited'
-  iam_metadata.publicAccessPrevention = public_access_prevention_string
-  return iam_metadata
-
-
 def process_requester_pays(existing_billing, requester_pays):
   """Converts requester_pays boolean to Apitools object."""
   messages = apis.GetMessagesModule('storage', 'v1')
@@ -188,18 +218,6 @@ def process_retention_period(retention_period_string):
   return messages.Bucket.RetentionPolicyValue(
       retentionPeriod=int(iso_duration.Duration().Parse(
           retention_period_string).total_seconds))
-
-
-def process_uniform_bucket_level_access(existing_iam_metadata,
-                                        uniform_bucket_level_access):
-  """Converts uniform_bucket_level_access boolean to Apitools object."""
-  iam_metadata = _create_iam_metadata_if_needed(existing_iam_metadata)
-
-  messages = apis.GetMessagesModule('storage', 'v1')
-  iam_metadata.uniformBucketLevelAccess = (
-      messages.Bucket.IamConfigurationValue.UniformBucketLevelAccessValue(
-          enabled=uniform_bucket_level_access))
-  return iam_metadata
 
 
 def process_versioning(versioning):

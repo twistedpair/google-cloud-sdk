@@ -1516,7 +1516,7 @@ def _GetConfigurationChanges(args):
             k8s_object.CUSTOM_AUDIENCES_ANNOTATION, args.custom_audiences))
   if FlagIsExplicitlySet(args, 'clear_custom_audiences'):
     changes.append(
-        config_changes.SetAnnotationChange(
+        config_changes.DeleteAnnotationChange(
             k8s_object.CUSTOM_AUDIENCES_ANNOTATION))
   if FlagIsExplicitlySet(args, 'description'):
     changes.append(

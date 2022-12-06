@@ -841,7 +841,7 @@
           "type": "string"
         },
         "idleTtl": {
-          "description": "Optional. The duration to keep the session alive while it's idling. Passing this threshold will cause the session to be terminated. Minimum value is 30 minutes; maximum value is 14 days (see JSON representation of Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)).",
+          "description": "Optional. The duration to keep the session alive while it's idling. Passing this threshold will cause the session to be terminated. Minimum value is 10 minutes; maximum value is 14 days (see JSON representation of Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)). Defaults to 4 hours if not set.",
           "type": "string",
           "format": "google-duration"
         }
@@ -1189,7 +1189,7 @@
     },
     "NodeGroupAffinity": {
       "id": "NodeGroupAffinity",
-      "description": "Node Group Affinity for clusters using sole-tenant node groups.",
+      "description": "Node Group Affinity for clusters using sole-tenant node groups. The Dataproc NodeGroupAffinity resource is not related to the Dataproc NodeGroup resource.",
       "type": "object",
       "properties": {
         "nodeGroupUri": {
@@ -1420,6 +1420,7 @@
               "Flink",
               "HBase. (beta)",
               "The Hive Web HCatalog (the REST service for accessing HCatalog).",
+              "Hudi.",
               "The Jupyter Notebook.",
               "The Kerberos security feature.",
               "The Presto query engine.",
@@ -1439,6 +1440,7 @@
               "FLINK",
               "HBASE",
               "HIVE_WEBHCAT",
+              "HUDI",
               "JUPYTER",
               "KERBEROS",
               "PRESTO",
@@ -1946,7 +1948,7 @@
     },
     "AuxiliaryNodeGroup": {
       "id": "AuxiliaryNodeGroup",
-      "description": "Node group identification and configuration. information.",
+      "description": "Node group identification and configuration information.",
       "type": "object",
       "properties": {
         "nodeGroup": {
@@ -1961,7 +1963,7 @@
     },
     "NodeGroup": {
       "id": "NodeGroup",
-      "description": "Dataproc Node Group.",
+      "description": "Dataproc Node Group. The Dataproc NodeGroup resource is not related to the Dataproc NodeGroupAffinity resource.",
       "type": "object",
       "properties": {
         "name": {
@@ -2477,7 +2479,7 @@
           "$ref": "DriverRunner"
         },
         "driverSchedulingConfig": {
-          "description": "Optional. Configurations for the driver scheduling",
+          "description": "Optional. Driver scheduling configuration.",
           "$ref": "DriverSchedulingConfig"
         }
       }
@@ -3100,12 +3102,12 @@
       "type": "object",
       "properties": {
         "maxFailuresPerHour": {
-          "description": "Optional. Maximum number of times per hour a driver may be restarted as a result of driver exiting with non-zero code before job is reported failed.A job may be reported as thrashing if driver exits with non-zero code 4 times within 10 minute window.Maximum value is 10.Note: Currently, this restartable job option is not supported in Dataproc workflow template (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/workflows\/using-workflows#adding_jobs_to_a_template) jobs.",
+          "description": "Optional. Maximum number of times per hour a driver may be restarted as a result of driver exiting with non-zero code before job is reported failed.A job may be reported as thrashing if the driver exits with a non-zero code four times within a 10-minute window.Maximum value is 10.Note: This restartable job option is not supported in Dataproc workflow templates (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/workflows\/using-workflows#adding_jobs_to_a_template).",
           "type": "integer",
           "format": "int32"
         },
         "maxFailuresTotal": {
-          "description": "Optional. Maximum number of times in total a driver may be restarted as a result of driver exiting with non-zero code before job is reported failed. Maximum value is 240.Note: Currently, this restartable job option is not supported in Dataproc workflow template (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/workflows\/using-workflows#adding_jobs_to_a_template) jobs.",
+          "description": "Optional. Maximum total number of times a driver may be restarted as a result of the driver exiting with a non-zero code. After the maximum number is reached, the job will be reported as failed.Maximum value is 240.Note: Currently, this restartable job option is not supported in Dataproc workflow templates (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/workflows\/using-workflows#adding_jobs_to_a_template).",
           "type": "integer",
           "format": "int32"
         }
@@ -3113,38 +3115,38 @@
     },
     "DriverRunner": {
       "id": "DriverRunner",
-      "description": "Configurations for the driver runner",
+      "description": "Driver runner configuration.",
       "type": "object",
       "properties": {
         "masterDriverRunner": {
-          "description": "Optional. (default) Run driver on master node",
+          "description": "Optional. (default) Run the driver on the master node.",
           "$ref": "MasterDriverRunner"
         },
         "yarnDriverRunner": {
-          "description": "Optional. Configuration for running the driver on workers using YARN",
+          "description": "Optional. Run the driver on worker nodes using YARN.",
           "$ref": "YarnDriverRunner"
         }
       }
     },
     "MasterDriverRunner": {
       "id": "MasterDriverRunner",
-      "description": "The default mode of executing drivers: on master nodes Currently no internal fields.",
+      "description": "The default mode of executing drivers: on master nodes",
       "type": "object",
       "properties": {
       }
     },
     "YarnDriverRunner": {
       "id": "YarnDriverRunner",
-      "description": "Schedule the driver on workers using YARN",
+      "description": "Schedule the driver on worker nodes using YARN.",
       "type": "object",
       "properties": {
         "memoryMb": {
-          "description": "Optional. The amount of memory in MB this driver is requesting from YARN",
+          "description": "Optional. The amount of memory in MB the driver is requesting from YARN.",
           "type": "integer",
           "format": "int32"
         },
         "vcores": {
-          "description": "Optional. The number of vCPUs this driver is requesting from YARN",
+          "description": "Optional. The number of vCPUs this driver is requesting from YARN.",
           "type": "integer",
           "format": "int32"
         }
@@ -3152,16 +3154,16 @@
     },
     "DriverSchedulingConfig": {
       "id": "DriverSchedulingConfig",
-      "description": "Configurations for the driver scheduling",
+      "description": "Driver scheduling configuration.",
       "type": "object",
       "properties": {
         "memoryMb": {
-          "description": "Required. The amount of memory in MB this driver is requesting",
+          "description": "Required. The amount of memory in MB the driver is requesting.",
           "type": "integer",
           "format": "int32"
         },
         "vcores": {
-          "description": "Required. The number of vCPUs this driver is requesting",
+          "description": "Required. The number of vCPUs the driver is requesting.",
           "type": "integer",
           "format": "int32"
         }
@@ -3754,11 +3756,11 @@
           "format": "int32"
         },
         "requestId": {
-          "description": "Optional. A unique ID used to identify the request. If the server receives two ResizeNodeGroupRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.ResizeNodeGroupRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+          "description": "Optional. A unique ID used to identify the request. If the server receives two ResizeNodeGroupRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.ResizeNodeGroupRequests) with the same ID, the second request is ignored and the first google.longrunning.Operation created and stored in the backend is returned.Recommendation: Set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
           "type": "string"
         },
         "gracefulDecommissionTimeout": {
-          "description": "Optional. Timeout for graceful YARN decomissioning. Graceful decommissioning allows removing nodes from the Compute Engine timeout without interrupting jobs in progress. Timeout specifies how long to wait for jobs in progress to finish before forcefully removing nodes (and potentially interrupting jobs). Default timeout is 0 (for forceful decommission), and the maximum allowed timeout is 1 day. (see JSON representation of Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)).Only supported on Dataproc image versions 1.2 and higher.",
+          "description": "Optional. Timeout for graceful YARN decomissioning. Graceful decommissioning (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/configuring-clusters\/scaling-clusters#graceful_decommissioning) allows the removal of nodes from the Compute Engine node group without interrupting jobs in progress. This timeout specifies how long to wait for jobs in progress to finish before forcefully removing nodes (and potentially interrupting jobs). Default timeout is 0 (for forceful decommission), and the maximum allowed timeout is 1 day. (see JSON representation of Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)).Only supported on Dataproc image versions 1.2 and higher.",
           "type": "string",
           "format": "google-duration"
         }
@@ -6611,7 +6613,7 @@
                           "type": "string"
                         },
                         "requestId": {
-                          "description": "Optional. A unique ID used to identify the request. If the server receives two CreateNodeGroupRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.CreateNodeGroupRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                          "description": "Optional. A unique ID used to identify the request. If the server receives two CreateNodeGroupRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.CreateNodeGroupRequests) with the same ID, the second request is ignored and the first google.longrunning.Operation created and stored in the backend is returned.Recommendation: Set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                           "location": "query",
                           "type": "string"
                         }
@@ -6672,7 +6674,7 @@
                           "type": "string"
                         },
                         "requestId": {
-                          "description": "Optional. A unique ID used to identify the request. If the server receives two DeleteNodeGroupRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.DeleteNodeGroupRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                          "description": "Optional. A unique ID used to identify the request. If the server receives two DeleteNodeGroupRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.DeleteNodeGroupRequests) with the same ID, the second request is ignored and the first google.longrunning.Operation created and stored in the backend is returned.Recommendation: Set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                           "location": "query",
                           "type": "string"
                         }
@@ -6727,13 +6729,13 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "The maximum number of node groups to return. The service may return fewer than this value. If unspecified, at most 50 node groups are returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "description": "The maximum number of node groups to return. The service may return fewer than this value. If unspecified, at most 50 node groups are returned. The maximum value is 1000. Values greater than 1000 are forced to 1000.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "A page token, received from a previous ListNodeGroups call. Provide this to retrieve the subsequent page.When paginating, all other parameters provided to ListNodeGroups must match the call that provided the page token.",
+                          "description": "A page token, received from a previous ListNodeGroups call. Provide this token to retrieve the subsequent page.When paginating, the other parameters provided to ListNodeGroups must match the call that provided the page token.",
                           "location": "query",
                           "type": "string"
                         }

@@ -111,18 +111,18 @@ def AddParentArgs(parser, help_string):
   entity_group.add_argument(
       '--organization', required=False, metavar='ORGANIZATION_ID',
       completer=completers.OrganizationCompleter,
-      help='{0} associated with this organization.'.format(help_string))
+      help='Organization of the {0}.'.format(help_string))
 
   entity_group.add_argument(
       '--folder', required=False, metavar='FOLDER_ID',
-      help='{0} associated with this folder.'.format(help_string))
+      help='Folder of the {0}.'.format(help_string))
 
   entity_group.add_argument(
       '--billing-account', required=False, metavar='BILLING_ACCOUNT_ID',
-      help='{0} associated with this billing account.'.format(help_string))
+      help='Billing account of the {0}.'.format(help_string))
 
   common_args.ProjectArgument(
-      help_text_to_prepend='{0} associated with this project.'.format(
+      help_text_to_prepend='Project of the {0}.'.format(
           help_string)).AddToParser(entity_group)
 
 

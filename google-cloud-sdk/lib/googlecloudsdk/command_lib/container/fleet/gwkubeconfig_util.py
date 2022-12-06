@@ -257,14 +257,17 @@ def _AuthProvider(name='gcp'):
   return provider
 
 
-def Context(name, cluster, user):
+def Context(name, cluster, user, namespace=None):
   """Generate and return a context kubeconfig object."""
+  ctx = {
+      'cluster': cluster,
+      'user': user,
+  }
+  if namespace:
+    ctx['namespace'] = namespace
   return {
       'name': name,
-      'context': {
-          'cluster': cluster,
-          'user': user,
-      },
+      'context': ctx,
   }
 
 

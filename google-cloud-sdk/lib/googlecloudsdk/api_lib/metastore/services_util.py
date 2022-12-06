@@ -43,3 +43,15 @@ def Delete(relative_resource_name, release_track=base.ReleaseTrack.GA):
       api_util.GetMessagesModule(release_track=release_track)
       .MetastoreProjectsLocationsServicesDeleteRequest(
           name=relative_resource_name))
+
+
+def QueryMetadata(relative_resource_name,
+                  query,
+                  release_track=base.ReleaseTrack.ALPHA):
+  """Calls the Metastore Services.QueryMetadata method."""
+  msg = api_util.GetMessagesModule(release_track=release_track)
+  query_metadata_request = msg.QueryMetadataRequest(query=query)
+  req = msg.MetastoreProjectsLocationsServicesQueryMetadataRequest(
+      queryMetadataRequest=query_metadata_request,
+      service=relative_resource_name)
+  return GetService(release_track=release_track).QueryMetadata(req)

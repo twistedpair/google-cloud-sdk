@@ -378,6 +378,11 @@ class H264CodecSettings(_messages.Message):
     heightPixels: The height of the video in pixels. Must be an even integer.
       When not specified, the height is adjusted to match the specified width
       and input aspect ratio. If both are omitted, the input height is used.
+      For portrait videos that contain horizontal ASR and rotation metadata,
+      provide the height, in pixels, per the horizontal ASR. The API
+      calculates the width per the horizontal ASR. The API detects any
+      rotation metadata and swaps the requested height and width for the
+      output.
     pixelFormat: Pixel format to use. The default is `yuv420p`. Supported
       pixel formats: - `yuv420p` pixel format - `yuv422p` pixel format -
       `yuv444p` pixel format - `yuv420p10` 10-bit HDR pixel format -
@@ -411,6 +416,10 @@ class H264CodecSettings(_messages.Message):
     widthPixels: The width of the video in pixels. Must be an even integer.
       When not specified, the width is adjusted to match the specified height
       and input aspect ratio. If both are omitted, the input width is used.
+      For portrait videos that contain horizontal ASR and rotation metadata,
+      provide the width, in pixels, per the horizontal ASR. The API calculates
+      the height per the horizontal ASR. The API detects any rotation metadata
+      and swaps the requested height and width for the output.
   """
 
   allowOpenGop = _messages.BooleanField(1)
@@ -475,6 +484,11 @@ class H265CodecSettings(_messages.Message):
     heightPixels: The height of the video in pixels. Must be an even integer.
       When not specified, the height is adjusted to match the specified width
       and input aspect ratio. If both are omitted, the input height is used.
+      For portrait videos that contain horizontal ASR and rotation metadata,
+      provide the height, in pixels, per the horizontal ASR. The API
+      calculates the width per the horizontal ASR. The API detects any
+      rotation metadata and swaps the requested height and width for the
+      output.
     pixelFormat: Pixel format to use. The default is `yuv420p`. Supported
       pixel formats: - `yuv420p` pixel format - `yuv422p` pixel format -
       `yuv444p` pixel format - `yuv420p10` 10-bit HDR pixel format -
@@ -512,6 +526,10 @@ class H265CodecSettings(_messages.Message):
     widthPixels: The width of the video in pixels. Must be an even integer.
       When not specified, the width is adjusted to match the specified height
       and input aspect ratio. If both are omitted, the input width is used.
+      For portrait videos that contain horizontal ASR and rotation metadata,
+      provide the width, in pixels, per the horizontal ASR. The API calculates
+      the height per the horizontal ASR. The API detects any rotation metadata
+      and swaps the requested height and width for the output.
   """
 
   allowOpenGop = _messages.BooleanField(1)
@@ -974,12 +992,20 @@ class SpriteSheet(_messages.Message):
       even integer. To preserve the source aspect ratio, set the
       SpriteSheet.sprite_height_pixels field or the
       SpriteSheet.sprite_width_pixels field, but not both (the API will
-      automatically calculate the missing field).
+      automatically calculate the missing field). For portrait videos that
+      contain horizontal ASR and rotation metadata, provide the height, in
+      pixels, per the horizontal ASR. The API calculates the width per the
+      horizontal ASR. The API detects any rotation metadata and swaps the
+      requested height and width for the output.
     spriteWidthPixels: Required. The width of sprite in pixels. Must be an
       even integer. To preserve the source aspect ratio, set the
       SpriteSheet.sprite_width_pixels field or the
       SpriteSheet.sprite_height_pixels field, but not both (the API will
-      automatically calculate the missing field).
+      automatically calculate the missing field). For portrait videos that
+      contain horizontal ASR and rotation metadata, provide the width, in
+      pixels, per the horizontal ASR. The API calculates the height per the
+      horizontal ASR. The API detects any rotation metadata and swaps the
+      requested height and width for the output.
     startTimeOffset: Start time in seconds, relative to the output file
       timeline. Determines the first sprite to pick. The default is `0s`.
     totalCount: Total number of sprites. Create the specified number of
@@ -1308,6 +1334,11 @@ class Vp9CodecSettings(_messages.Message):
     heightPixels: The height of the video in pixels. Must be an even integer.
       When not specified, the height is adjusted to match the specified width
       and input aspect ratio. If both are omitted, the input height is used.
+      For portrait videos that contain horizontal ASR and rotation metadata,
+      provide the height, in pixels, per the horizontal ASR. The API
+      calculates the width per the horizontal ASR. The API detects any
+      rotation metadata and swaps the requested height and width for the
+      output.
     pixelFormat: Pixel format to use. The default is `yuv420p`. Supported
       pixel formats: - `yuv420p` pixel format - `yuv422p` pixel format -
       `yuv444p` pixel format - `yuv420p10` 10-bit HDR pixel format -
@@ -1325,6 +1356,10 @@ class Vp9CodecSettings(_messages.Message):
     widthPixels: The width of the video in pixels. Must be an even integer.
       When not specified, the width is adjusted to match the specified height
       and input aspect ratio. If both are omitted, the input width is used.
+      For portrait videos that contain horizontal ASR and rotation metadata,
+      provide the width, in pixels, per the horizontal ASR. The API calculates
+      the height per the horizontal ASR. The API detects any rotation metadata
+      and swaps the requested height and width for the output.
   """
 
   bitrateBps = _messages.IntegerField(1, variant=_messages.Variant.INT32)

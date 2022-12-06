@@ -54,3 +54,13 @@ class LocationsClient(client.ClientBase):
         platformVersion=attached_flags.GetPlatformVersion(args)
         )
     return self._service.GenerateAttachedClusterInstallManifest(req)
+
+  def GenerateInstallManifestForImport(self, location_ref, memberships_id,
+                                       args):
+    """Generates an Attached cluster install manifest for import."""
+    req = self._messages.GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest(
+        parent=location_ref.RelativeName(),
+        attachedClusterId=memberships_id,
+        platformVersion=attached_flags.GetPlatformVersion(args)
+        )
+    return self._service.GenerateAttachedClusterInstallManifest(req)

@@ -47,19 +47,17 @@ class InstancesClient(object):
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName('securesourcemanager', 'v1')
 
-  def Create(self, instance_ref, admin_account):
+  def Create(self, instance_ref):
     """Create a new Secure Source Manager instance.
 
     Args:
       instance_ref: a resource reference to
         securesourcemanager.projects.locations.instances.
-      admin_account: the first user when the instance is created,
-        default to current account.
 
     Returns:
       Created instance.
     """
-    instance = self.messages.Instance(adminAccount=admin_account)
+    instance = self.messages.Instance()
     create_req = self.messages.SecuresourcemanagerProjectsLocationsInstancesCreateRequest(
         instance=instance,
         instanceId=instance_ref.instancesId,

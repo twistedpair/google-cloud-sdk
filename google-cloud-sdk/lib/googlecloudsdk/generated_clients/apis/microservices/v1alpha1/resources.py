@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://microservices.googleapis.com/v1alpha1/'
-DOCS_URL = 'https://cloud.google.com'
+DOCS_URL = 'https://cloud.google.com/stackdriver/docs/solutions/grpc'
 
 
 class Collections(enum.Enum):

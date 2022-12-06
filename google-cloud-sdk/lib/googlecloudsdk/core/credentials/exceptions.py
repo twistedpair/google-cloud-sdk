@@ -34,6 +34,10 @@ AUTH_LOGIN_COMMAND = 'gcloud auth login'
 ADC_LOGIN_COMMAND = 'gcloud auth application-default login'
 
 
+class InvalidCredentialsException(Error):
+  """Exceptions to indicate that invalid credentials were found."""
+
+
 class AuthenticationException(Error):
   """Exceptions that tell the users to re-login."""
 

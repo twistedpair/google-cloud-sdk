@@ -4382,14 +4382,8 @@ class APIAdapter(object):
       binary_authorization = self.messages.BinaryAuthorization()
 
     if enable_binauthz is not None:
-      if enable_binauthz and binary_authorization.evaluationMode not in set([
-          self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
-              'EVALUATION_MODE_UNSPECIFIED'),
-          self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
-              'DISABLED'),
-          self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
-              'PROJECT_SINGLETON_POLICY_ENFORCE'),
-      ]):
+      if enable_binauthz and IsEvaluationModeMonitoring(
+          self.messages, binary_authorization.evaluationMode):
         console_io.PromptContinue(
             message='This will cause the current version of Binary Authorization to be downgraded (not recommended).',
             cancel_on_no=True)
@@ -4399,6 +4393,11 @@ class APIAdapter(object):
       if binauthz_evaluation_mode is not None:
         binary_authorization.evaluationMode = self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
             binauthz_evaluation_mode)
+        # Clear the binauthz.policy field if the updated evaluation mode flag is
+        # non-monitoring (and therefore does not require a policy).
+        if not IsEvaluationModeMonitoring(self.messages,
+                                          binary_authorization.evaluationMode):
+          binary_authorization.policy = None
       if binauthz_policy is not None:
         binary_authorization.policy = binauthz_policy
     update = self.messages.ClusterUpdate(
@@ -5936,11 +5935,20 @@ def GetBinauthzEvaluationModeOptions(messages, release_track):
   options = list(
       messages.BinaryAuthorization.EvaluationModeValueValuesEnum.to_dict())
   options.remove('EVALUATION_MODE_UNSPECIFIED')
-  # Only expose MONITORING* evaluation modes in the alpha track.
-  if release_track != base.ReleaseTrack.ALPHA:
+  # Only expose MONITORING* evaluation modes in the alpha and beta tracks.
+  if release_track == base.ReleaseTrack.GA:
     options.remove('MONITORING')
     options.remove('MONITORING_AND_PROJECT_SINGLETON_POLICY_ENFORCE')
   return sorted(options)
+
+
+def IsEvaluationModeMonitoring(messages, evaluation_mode):
+  evaluation_mode_enum = messages.BinaryAuthorization.EvaluationModeValueValuesEnum
+  if evaluation_mode in (evaluation_mode_enum.EVALUATION_MODE_UNSPECIFIED,
+                         evaluation_mode_enum.DISABLED,
+                         evaluation_mode_enum.PROJECT_SINGLETON_POLICY_ENFORCE):
+    return False
+  return True
 
 
 def VariantConfigEnumFromString(messages, variant):

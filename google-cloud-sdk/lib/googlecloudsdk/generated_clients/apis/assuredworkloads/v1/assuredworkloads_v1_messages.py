@@ -107,6 +107,22 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsListRequest(_messages.Messa
   parent = _messages.StringField(4, required=True)
 
 
+class AssuredworkloadsOrganizationsLocationsWorkloadsMutatePartnerPermissionsRequest(_messages.Message):
+  r"""A AssuredworkloadsOrganizationsLocationsWorkloadsMutatePartnerPermission
+  sRequest object.
+
+  Fields:
+    googleCloudAssuredworkloadsV1MutatePartnerPermissionsRequest: A
+      GoogleCloudAssuredworkloadsV1MutatePartnerPermissionsRequest resource to
+      be passed as the request body.
+    name: Required. The `name` field is used to identify the workload. Format:
+      organizations/{org_id}/locations/{location_id}/workloads/{workload_id}
+  """
+
+  googleCloudAssuredworkloadsV1MutatePartnerPermissionsRequest = _messages.MessageField('GoogleCloudAssuredworkloadsV1MutatePartnerPermissionsRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AssuredworkloadsOrganizationsLocationsWorkloadsPatchRequest(_messages.Message):
   r"""A AssuredworkloadsOrganizationsLocationsWorkloadsPatchRequest object.
 
@@ -303,6 +319,22 @@ class GoogleCloudAssuredworkloadsV1ListWorkloadsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   workloads = _messages.MessageField('GoogleCloudAssuredworkloadsV1Workload', 2, repeated=True)
+
+
+class GoogleCloudAssuredworkloadsV1MutatePartnerPermissionsRequest(_messages.Message):
+  r"""Request of updating permission settings for a partner workload.
+
+  Fields:
+    etag: Optional. The etag of the workload. If this is provided, it must
+      match the server's etag.
+    partnerPermissions: Required. The partner permissions to be updated.
+    updateMask: Required. The list of fields to be updated. E.g. update_mask {
+      paths: "partner_permissions.data_logs_viewer"}
+  """
+
+  etag = _messages.StringField(1)
+  partnerPermissions = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadPartnerPermissions', 2)
+  updateMask = _messages.StringField(3)
 
 
 class GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesRequest(_messages.Message):
@@ -512,7 +544,7 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       associated with this workload.
     KajEnrollmentStateValueValuesEnum: Output only. Represents the KAJ
       enrollment state of the given workload.
-    PartnerValueValuesEnum: Optional. Compliance Regime associated with this
+    PartnerValueValuesEnum: Optional. Partner regime associated with this
       workload.
 
   Messages:
@@ -554,7 +586,7 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
     name: Optional. The resource name of the workload. Format:
       organizations/{organization}/locations/{location}/workloads/{workload}
       Read-only.
-    partner: Optional. Compliance Regime associated with this workload.
+    partner: Optional. Partner regime associated with this workload.
     provisionedResourcesParent: Input only. The parent resource for the
       resources managed by this Assured Workload. May be either empty or a
       folder resource which is a child of the Workload parent. If not
@@ -627,12 +659,12 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
     KAJ_ENROLLMENT_STATE_COMPLETE = 2
 
   class PartnerValueValuesEnum(_messages.Enum):
-    r"""Optional. Compliance Regime associated with this workload.
+    r"""Optional. Partner regime associated with this workload.
 
     Values:
-      PARTNER_UNSPECIFIED: Unknown partner regime/controls.
-      LOCAL_CONTROLS_BY_S3NS: S3NS regime/controls.
-      SOVEREIGN_CONTROLS_BY_T_SYSTEMS: TSystem regime/controls.
+      PARTNER_UNSPECIFIED: <no description>
+      LOCAL_CONTROLS_BY_S3NS: Enum representing S3NS partner.
+      SOVEREIGN_CONTROLS_BY_T_SYSTEMS: Enum representing T_SYSTEM partner.
     """
     PARTNER_UNSPECIFIED = 0
     LOCAL_CONTROLS_BY_S3NS = 1
@@ -711,6 +743,23 @@ class GoogleCloudAssuredworkloadsV1WorkloadKMSSettings(_messages.Message):
 
   nextRotationTime = _messages.StringField(1)
   rotationPeriod = _messages.StringField(2)
+
+
+class GoogleCloudAssuredworkloadsV1WorkloadPartnerPermissions(_messages.Message):
+  r"""Permissions granted to the AW Partner SA account for the customer
+  workload
+
+  Fields:
+    dataLogsViewer: Allow partner to view data and logs
+    remediateFolderViolations: Allow partner to monitor folder and remediate
+      violations
+    serviceAccessApprover: Allow partner to approve or reject Service Access
+      requests
+  """
+
+  dataLogsViewer = _messages.BooleanField(1)
+  remediateFolderViolations = _messages.BooleanField(2)
+  serviceAccessApprover = _messages.BooleanField(3)
 
 
 class GoogleCloudAssuredworkloadsV1WorkloadResourceInfo(_messages.Message):

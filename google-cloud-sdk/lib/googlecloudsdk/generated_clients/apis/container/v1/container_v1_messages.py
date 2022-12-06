@@ -129,13 +129,16 @@ class AdvancedMachineFeatures(_messages.Message):
   r"""Specifies options for controlling advanced machine features.
 
   Fields:
+    enableNestedVirtualization: Whether or not to enable nested virtualization
+      (defaults to false).
     threadsPerCore: The number of threads per physical core. To disable
       simultaneous multithreading (SMT) set this to 1. If unset, the maximum
       number of threads supported per core by the underlying processor is
       assumed.
   """
 
-  threadsPerCore = _messages.IntegerField(1)
+  enableNestedVirtualization = _messages.BooleanField(1)
+  threadsPerCore = _messages.IntegerField(2)
 
 
 class AuthenticatorGroupsConfig(_messages.Message):
@@ -1749,10 +1752,12 @@ class DNSConfig(_messages.Message):
 
     Values:
       DNS_SCOPE_UNSPECIFIED: Default value, will be inferred as cluster scope.
+      CLUSTER_SCOPE: DNS records are accessible from within the cluster.
       VPC_SCOPE: DNS records are accessible from within the VPC.
     """
     DNS_SCOPE_UNSPECIFIED = 0
-    VPC_SCOPE = 1
+    CLUSTER_SCOPE = 1
+    VPC_SCOPE = 2
 
   class ClusterDnsValueValuesEnum(_messages.Enum):
     r"""cluster_dns indicates which in-cluster DNS provider should be used.
@@ -2135,6 +2140,10 @@ class IPAllocationPolicy(_messages.Message):
     StackTypeValueValuesEnum: The IP stack type of the cluster
 
   Fields:
+    additionalPodRangesConfig: Output only. [Output only] The additional pod
+      ranges that are added to the cluster. These pod ranges can be used by
+      new node pools to allocate pod IPs automatically. Once the range is
+      removed it will not show up in IPAllocationPolicy.
     clusterIpv4Cidr: This field is deprecated, use cluster_ipv4_cidr_block.
     clusterIpv4CidrBlock: The IP address range for the cluster pod IPs. If
       this field is set, then `cluster.cluster_ipv4_cidr` must be left blank.
@@ -2236,22 +2245,23 @@ class IPAllocationPolicy(_messages.Message):
     IPV4 = 1
     IPV4_IPV6 = 2
 
-  clusterIpv4Cidr = _messages.StringField(1)
-  clusterIpv4CidrBlock = _messages.StringField(2)
-  clusterSecondaryRangeName = _messages.StringField(3)
-  createSubnetwork = _messages.BooleanField(4)
-  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 5)
-  nodeIpv4Cidr = _messages.StringField(6)
-  nodeIpv4CidrBlock = _messages.StringField(7)
-  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 8)
-  servicesIpv4Cidr = _messages.StringField(9)
-  servicesIpv4CidrBlock = _messages.StringField(10)
-  servicesSecondaryRangeName = _messages.StringField(11)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 12)
-  subnetworkName = _messages.StringField(13)
-  tpuIpv4CidrBlock = _messages.StringField(14)
-  useIpAliases = _messages.BooleanField(15)
-  useRoutes = _messages.BooleanField(16)
+  additionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 1)
+  clusterIpv4Cidr = _messages.StringField(2)
+  clusterIpv4CidrBlock = _messages.StringField(3)
+  clusterSecondaryRangeName = _messages.StringField(4)
+  createSubnetwork = _messages.BooleanField(5)
+  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 6)
+  nodeIpv4Cidr = _messages.StringField(7)
+  nodeIpv4CidrBlock = _messages.StringField(8)
+  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 9)
+  servicesIpv4Cidr = _messages.StringField(10)
+  servicesIpv4CidrBlock = _messages.StringField(11)
+  servicesSecondaryRangeName = _messages.StringField(12)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 13)
+  subnetworkName = _messages.StringField(14)
+  tpuIpv4CidrBlock = _messages.StringField(15)
+  useIpAliases = _messages.BooleanField(16)
+  useRoutes = _messages.BooleanField(17)
 
 
 class IdentityServiceConfig(_messages.Message):

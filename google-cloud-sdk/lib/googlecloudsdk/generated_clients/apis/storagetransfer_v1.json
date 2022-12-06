@@ -251,6 +251,10 @@
           "description": "Specifies schedule for the transfer job. This is an optional field. When the field is not set, the job never executes a transfer, unless you invoke RunTransferJob or update the job to have a non-empty schedule.",
           "$ref": "Schedule"
         },
+        "eventStream": {
+          "description": "Specifies the event stream for the transfer job for event-driven transfers. When EventStream is specified, the Schedule fields are ignored.",
+          "$ref": "EventStream"
+        },
         "status": {
           "description": "Status of the job. This value MUST be specified for `CreateTransferJobRequests`. **Note:** The effect of the new job status takes place during a subsequent job run. For example, if you change the job status from ENABLED to DISABLED, and an operation spawned by the transfer is running, the status change would not affect the current operation.",
           "type": "string",
@@ -953,6 +957,27 @@
         }
       }
     },
+    "EventStream": {
+      "id": "EventStream",
+      "description": "Specifies the Event-driven transfer options. Event-driven transfers listen to an event stream to transfer updated files.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Specifies a unique name of the resource such as AWS SQS ARN in the form 'arn:aws:sqs:region:account_id:queue_name', or Pub\/Sub subscription resource name in the form 'projects\/{project}\/subscriptions\/{sub}'.",
+          "type": "string"
+        },
+        "eventStreamStartTime": {
+          "description": "Specifies the date and time that Storage Transfer Service starts listening for events from this stream. If no start time is specified or start time is in the past, Storage Transfer Service starts listening immediately.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "eventStreamExpirationTime": {
+          "description": "Specifies the data and time at which Storage Transfer Service stops listening for events from this stream. After this time, any transfers in progress will complete, but no new transfers are initiated.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "UpdateTransferJobRequest": {
       "id": "UpdateTransferJobRequest",
       "description": "Request passed to UpdateTransferJob.",
@@ -1123,7 +1148,8 @@
             "Completed successfully.",
             "Terminated due to an unrecoverable failure.",
             "Aborted by the user.",
-            "Temporarily delayed by the system. No user action is required."
+            "Temporarily delayed by the system. No user action is required.",
+            "The operation is suspending and draining the ongoing work to completion."
           ],
           "enum": [
             "STATUS_UNSPECIFIED",
@@ -1132,7 +1158,8 @@
             "SUCCESS",
             "FAILED",
             "ABORTED",
-            "QUEUED"
+            "QUEUED",
+            "SUSPENDING"
           ]
         },
         "counters": {

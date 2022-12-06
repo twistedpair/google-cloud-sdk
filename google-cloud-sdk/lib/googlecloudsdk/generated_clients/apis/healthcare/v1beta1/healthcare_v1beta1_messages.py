@@ -1479,7 +1479,7 @@ class EntityMention(_messages.Message):
       number between 0 and 1.
     linkedEntities: linked_entities are candidate ontological concepts that
       this entity mention may refer to. They are sorted by decreasing
-      confidence.it
+      confidence.
     mentionId: mention_id uniquely identifies each entity mention in a single
       response.
     subject: The subject this entity mention relates to. Its value is one of:

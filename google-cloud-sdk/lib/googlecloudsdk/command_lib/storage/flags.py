@@ -27,6 +27,9 @@ OPTIONAL_INVENTORY_REPORTS_METADATA_FIELDS = (
     'updated', 'storageClass', 'etag', 'retentionExpirationTime', 'crc32c',
     'md5Hash', 'generation', 'metageneration', 'contentType',
     'contentEncoding', 'timeStorageClassUpdated')
+ALL_INVENTORY_REPORTS_METADATA_FIELDS = (
+    REQUIRED_INVENTORY_REPORTS_METADATA_FIELDS +
+    OPTIONAL_INVENTORY_REPORTS_METADATA_FIELDS)
 
 
 def add_predefined_acl_flag(parser):
@@ -262,19 +265,33 @@ def _get_optional_help_text(require_create_flags, flag_name):
   return optional_text_map[flag_name] if require_create_flags else ''
 
 
+class ArgListWithRequiredFieldsCheck(arg_parsers.ArgList):
+  """ArgList that raises errror if required fields are not present."""
+
+  def __call__(self, arg_value):
+    arglist = super(ArgListWithRequiredFieldsCheck, self).__call__(arg_value)
+    missing_required_fields = (
+        set(REQUIRED_INVENTORY_REPORTS_METADATA_FIELDS) - set(arglist))
+    if missing_required_fields:
+      raise arg_parsers.ArgumentTypeError(
+          'Fields {} are REQUIRED.'.format(
+              ','.join(sorted(missing_required_fields))))
+    return arglist
+
+
 def add_inventory_reports_metadata_fields_flag(parser,
                                                require_create_flags=False):
   """Adds the metadata-fields flag."""
   parser.add_argument(
       '--metadata-fields',
       metavar='METADATA_FIELDS',
-      default=(list(OPTIONAL_INVENTORY_REPORTS_METADATA_FIELDS)
+      default=(list(ALL_INVENTORY_REPORTS_METADATA_FIELDS)
                if require_create_flags else None),
-      type=arg_parsers.ArgList(
-          choices=OPTIONAL_INVENTORY_REPORTS_METADATA_FIELDS),
+      type=ArgListWithRequiredFieldsCheck(
+          choices=ALL_INVENTORY_REPORTS_METADATA_FIELDS),
       help=(
           'The metadata fields to be included in the inventory '
-          'report. The required fields: "{}" get added automatically. '.format(
+          'report. The fields: "{}" are REQUIRED. '.format(
               ', '.join(REQUIRED_INVENTORY_REPORTS_METADATA_FIELDS)) +
           _get_optional_help_text(require_create_flags, 'metadata_fields')))
 

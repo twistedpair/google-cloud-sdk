@@ -103,7 +103,8 @@ class SpeechV2Client(object):
       recognizer.defaultRecognitionConfig.features.diarizationConfig.maxSpeakerCount = max_speaker_count
 
     request = self._messages.SpeechProjectsLocationsRecognizersCreateRequest(
-        parent=resource.Parent().RelativeName(),
+        parent=resource.Parent(
+            parent_collection='speech.projects.locations').RelativeName(),
         recognizerId=resource.Name(),
         recognizer=recognizer)
     return self._RecognizerServiceForLocation(

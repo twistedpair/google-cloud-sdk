@@ -608,6 +608,13 @@ apis:
       resources:
         projects:
           path: projects/{project}
+  documentai:
+    v1:
+      discovery_doc: documentai_v1.json
+      default: true
+      resources:
+        projects.locations.processors.humanReviewConfig:
+          path: projects/{projectsId}/locations/{locationsId}/processors/{processorsId}/humanReviewConfig
   domains:
     v1:
       discovery_doc: domains_v1.json
@@ -1198,15 +1205,22 @@ apis:
       unelidable_request_methods:
       - sql.instances.insert
   stream:
+    v1:
+      discovery_doc: stream_v1.json
+      default: false
     v1alpha1:
       discovery_doc: stream_v1alpha1.json
       default: true
   storage:
     v1:
       discovery_doc: storage_v1.json
+      default: true
       resources:
         projects:
           path: projects/{project}
+    v2:
+      discovery_doc: storage_v1.json
+      gcloud_gapic_library: google/storage/v2:storage_v2_py
   storageinsights:
     v1:
       discovery_doc: storageinsights_v1.json
@@ -1386,4 +1400,8 @@ apis:
   securesourcemanager:
     v1:
       discovery_doc: securesourcemanager_v1.json
+      default: true
+  telcoautomation:
+    v1alpha1:
+      discovery_doc: telcoautomation_v1alpha1.json
       default: true

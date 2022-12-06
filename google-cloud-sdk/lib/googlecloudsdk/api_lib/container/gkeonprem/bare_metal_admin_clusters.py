@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
@@ -70,6 +71,32 @@ class AdminClustersClient(client.ClientBase):
         limit=getattr(args, 'limit', None),
         batch_size_attribute='pageSize',
     )
+
+  def QueryVersionConfig(self, args):
+    """Query Anthos on bare metal admin version configuration."""
+    kwargs = {
+        'createConfig_bootstrapClusterMembership':
+            None if self._admin_cluster_name(args) else '',
+        'upgradeConfig_clusterName':
+            self._admin_cluster_name(args),
+        'parent':
+            self._location_ref(args).RelativeName(),
+    }
+
+    # This is a workaround for the limitation in apitools with nested messages.
+    encoding.AddCustomJsonFieldMapping(
+        self._messages.
+        GkeonpremProjectsLocationsBareMetalAdminClustersQueryVersionConfigRequest,
+        'createConfig_bootstrapClusterMembership',
+        'createConfig.bootstrapClusterMembership')
+    encoding.AddCustomJsonFieldMapping(
+        self._messages.
+        GkeonpremProjectsLocationsBareMetalAdminClustersQueryVersionConfigRequest,
+        'upgradeConfig_clusterName', 'upgradeConfig.clusterName')
+
+    req = self._messages.GkeonpremProjectsLocationsBareMetalAdminClustersQueryVersionConfigRequest(
+        **kwargs)
+    return self._service.QueryVersionConfig(req)
 
   def Update(self, args):
     """Updates an admin cluster in Anthos on bare metal."""

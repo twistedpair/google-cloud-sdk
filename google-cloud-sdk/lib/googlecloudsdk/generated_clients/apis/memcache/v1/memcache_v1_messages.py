@@ -1082,7 +1082,7 @@ class LocationMetadata(_messages.Message):
 
 
 class MaintenancePolicy(_messages.Message):
-  r"""Defines policies to service maintenance events.
+  r"""LINT.IfChange Defines policies to service maintenance events.
 
   Enums:
     StateValueValuesEnum: Optional. The state of the policy.

@@ -367,7 +367,8 @@ def AddIosTestArgs(parser):
   parser.add_argument(
       '--type',
       category=base.COMMONLY_USED_FLAGS,
-      choices=['xctest', 'game-loop'],
+      choices=['xctest', 'game-loop', 'robo'],
+      # TODO(b/260103145): Include links to test documentation
       help='The type of iOS test to run.')
   parser.add_argument(
       '--test',
@@ -431,7 +432,7 @@ def AddIosTestArgs(parser):
       help='The path to the application archive (.ipa file) for game-loop '
            'testing. The path may be in the local filesystem or in Google '
            'Cloud Storage using gs:// notation. This flag is only valid when '
-           '*--type=game-loop* is also set.'
+           '*--type* is *game-loop* or *robo*.'
   )
 
   # The following args are specific to iOS xctest tests.

@@ -18,13 +18,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.command_lib.container.fleet.features import base as feature_base
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.util import times
 import six
+
 
 CLUSTER_UPGRADE_FEATURE = 'clusterupgrade'
 
@@ -77,6 +81,29 @@ class DescribeCommand(feature_base.FeatureCommand, ClusterUpgradeCommand):
     """Extracts the project name from the full Scope resource name."""
     return name.split('/')[1]
 
+  @staticmethod
+  def FormatDurations(cluster_upgrade_spec):
+    """Formats display strings for all cluster upgrade duration fields."""
+    if cluster_upgrade_spec.postConditions is not None:
+      default_soaking = cluster_upgrade_spec.postConditions.soaking
+      if default_soaking is not None:
+        cluster_upgrade_spec.postConditions.soaking = DescribeCommand.DisplayDuration(
+            default_soaking)
+    for override in cluster_upgrade_spec.gkeUpgradeOverrides:
+      if override.postConditions is not None:
+        override_soaking = override.postConditions.soaking
+        if override_soaking is not None:
+          override.postConditions.soaking = DescribeCommand.DisplayDuration(
+              override_soaking)
+    return cluster_upgrade_spec
+
+  @staticmethod
+  def DisplayDuration(proto_duration_string):
+    """Returns the display string for a duration value."""
+    duration = times.ParseDuration(proto_duration_string)
+    iso_duration = times.FormatDuration(duration)
+    return re.sub('[-PT]', '', iso_duration).lower()
+
   def GetScopeWithClusterUpgradeInfo(self, scope, feature):
     """Adds Cluster Upgrade Feature information to describe Scope response."""
     scope_name = ClusterUpgradeCommand.GetScopeNameWithProjectNumber(scope.name)
@@ -99,6 +126,13 @@ class DescribeCommand(feature_base.FeatureCommand, ClusterUpgradeCommand):
 
   def GetClusterUpgradeInfoForScope(self, scope_name, feature):
     """Gets Cluster Upgrade Feature information for the provided Scope."""
+    scope_specs = self.hubclient.ToPyDict(feature.scopeSpecs)
+    if (scope_name not in scope_specs or
+        not scope_specs[scope_name].clusterupgrade):
+      msg = ('Cluster Upgrade feature is not configured for Scope: {}.'
+            ).format(scope_name)
+      raise exceptions.Error(msg)
+
     return ({
         'scope': scope_name,
         'state':
@@ -107,10 +141,8 @@ class DescribeCommand(feature_base.FeatureCommand, ClusterUpgradeCommand):
                 feature.scopeStates)[scope_name].clusterupgrade
             or self.messages.ClusterUpgradeScopeState(),
         'spec':
-            self.hubclient.ToPyDefaultDict(
-                self.messages.ScopeFeatureSpec,
-                feature.scopeSpecs)[scope_name].clusterupgrade
-            or self.messages.ClusterUpgradeScopeSpec(),
+            DescribeCommand.FormatDurations(
+                scope_specs[scope_name].clusterupgrade),
     })
 
   def GetLinkedClusterUpgradeScopes(self, scope_name, feature):
@@ -140,8 +172,12 @@ class DescribeCommand(feature_base.FeatureCommand, ClusterUpgradeCommand):
       upstream_feature = (
           feature if upstream_scope_project == current_project else
           self.GetFeature(project=upstream_scope_project))
-      upstream_cluster_upgrade = self.GetClusterUpgradeInfoForScope(
-          upstream_scope_name, upstream_feature)
+      try:
+        upstream_cluster_upgrade = self.GetClusterUpgradeInfoForScope(
+            upstream_scope_name, upstream_feature)
+      except exceptions.Error as e:
+        log.warning(e)
+        return [cluster_upgrade]
       return UpTheStream(upstream_cluster_upgrade) + [cluster_upgrade]
 
     def DownTheStream(cluster_upgrade):

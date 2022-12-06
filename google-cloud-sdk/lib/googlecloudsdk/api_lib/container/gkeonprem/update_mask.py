@@ -41,8 +41,8 @@ VMWARE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
         'storage.vsphere_csi_disabled',
     'static_ip_config_from_file':
         'network_config.static_ip_config',
-    'metal_lb_config_address_pools':
-        'load_balancer.metal_lb_config.address_pools',
+    'metal_lb_config_from_file':
+        'load_balancer.metal_lb_config',
     'enable_auto_repair':
         'auto_repair_config.enabled',
     'disable_auto_repair':
@@ -72,15 +72,15 @@ VMWARE_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS = {
 }
 
 BARE_METAL_CLUSTER_ARGS_TO_UPDATE_MASKS = {
-    'metal_lb_config_address_pools':
+    'metal_lb_address_pools_from_file':
         'load_balancer.metal_lb_config.address_pools',
-    'metal_lb_load_balancer_node_configs':
+    'metal_lb_load_balancer_node_configs_from_file':
         'load_balancer.metal_lb_config.node_pool_config.node_pool_config.node_configs',
     'metal_lb_load_balancer_node_labels':
         'load_balancer.metal_lb_config.node_pool_config.node_pool_config.labels',
     'metal_lb_load_balancer_node_taints':
         'load_balancer.metal_lb_config.node_pool_config.node_pool_config.taints',
-    'control_plane_node_configs':
+    'control_plane_node_configs_from_file':
         'control_plane.node_pool_config.node_pool_config.node_configs',
     'control_plane_node_labels':
         'control_plane.node_pool_config.node_pool_config.labels',
@@ -97,11 +97,12 @@ BARE_METAL_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'maintenance_address_cidr_blocks':
         'maintenance_config.maintenance_address_cidr_blocks',
     'admin_users':
-        'security_config.authorization.admin_users'
+        'security_config.authorization.admin_users',
+    'login_user': 'node_access_config.login_user'
 }
 
 BARE_METAL_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
-    'node_configs': 'node_pool_config.node_configs',
+    'node_configs_from_file': 'node_pool_config.node_configs',
     'node_labels': 'node_pool_config.labels',
     'node_taints': 'node_pool_config.taints',
     'display_name': 'display_name',

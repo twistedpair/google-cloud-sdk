@@ -130,7 +130,7 @@ class GkeonpremV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Bare Metal Admin Cluster in a given project and location.
+      r"""Creates a new bare metal admin cluster in a given project and location.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalAdminClustersCreateRequest) input message
@@ -157,7 +157,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Enroll(self, request, global_params=None):
-      r"""Enrolls an existing Bare Metal Admin Cluster to the GKE on-prem API within a given project and location. Through enrollment, an existing admin cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API.
+      r"""Enrolls an existing bare metal admin cluster to the GKE on-prem API within a given project and location. Through enrollment, an existing admin cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalAdminClustersEnrollRequest) input message
@@ -184,7 +184,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Bare Metal Admin Cluster.
+      r"""Gets details of a single bare metal admin cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalAdminClustersGetRequest) input message
@@ -238,7 +238,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Bare Metal Admin Clusters in a given project and location.
+      r"""Lists bare metal admin clusters in a given project and location.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalAdminClustersListRequest) input message
@@ -265,7 +265,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Bare Metal Admin Cluster.
+      r"""Updates the parameters of a single bare metal admin cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalAdminClustersPatchRequest) input message
@@ -292,7 +292,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def QueryVersionConfig(self, request, global_params=None):
-      r"""Queries the Bare Metal admin cluster version config.
+      r"""Queries the bare metal admin cluster version config.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalAdminClustersQueryVersionConfigRequest) input message
@@ -373,7 +373,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Unenroll(self, request, global_params=None):
-      r"""Unenrolls an existing Bare Metal Admin Cluster from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients.
+      r"""Unenrolls an existing bare metal admin cluster from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalAdminClustersUnenrollRequest) input message
@@ -474,7 +474,7 @@ class GkeonpremV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Bare Metal Node Pool in a given project, location and Bare Metal Cluster.
+      r"""Creates a new bare metal Node Pool in a given project, location and Bare Metal Cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsCreateRequest) input message
@@ -501,7 +501,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Bare Metal Node Pool.
+      r"""Deletes a single bare metal Node Pool.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsDeleteRequest) input message
@@ -528,7 +528,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Bare Metal Node Pool.
+      r"""Gets details of a single bare metal Node Pool.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsGetRequest) input message
@@ -582,7 +582,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Bare Metal Node Pools in a given project, location and Bare Metal Cluster.
+      r"""Lists bare metal Node Pools in a given project, location and bare metal Cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsListRequest) input message
@@ -609,7 +609,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Bare Metal Node Pool.
+      r"""Updates the parameters of a single bare metal Node Pool.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsPatchRequest) input message
@@ -764,7 +764,7 @@ class GkeonpremV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Bare Metal Cluster in a given project and location.
+      r"""Creates a new bare metal Cluster in a given project and location.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersCreateRequest) input message
@@ -791,7 +791,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Bare Metal Cluster.
+      r"""Deletes a single bare metal Cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersDeleteRequest) input message
@@ -818,7 +818,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Enroll(self, request, global_params=None):
-      r"""Enrolls an existing Bare Metal User Cluster and its Node Pools to the GKE on-prem API within a given project and location. Through enrollment, an existing cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster and/or its node pools will be expected to be performed through the API.
+      r"""Enrolls an existing bare metal user cluster and its Node Pools to the GKE on-prem API within a given project and location. Through enrollment, an existing cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster and/or its node pools will be expected to be performed through the API.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersEnrollRequest) input message
@@ -845,7 +845,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Bare Metal Cluster.
+      r"""Gets details of a single bare metal Cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersGetRequest) input message
@@ -899,7 +899,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Bare Metal Clusters in a given project and location.
+      r"""Lists bare metal Clusters in a given project and location.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersListRequest) input message
@@ -926,7 +926,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Bare Metal Cluster.
+      r"""Updates the parameters of a single bare metal Cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersPatchRequest) input message
@@ -953,7 +953,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def QueryVersionConfig(self, request, global_params=None):
-      r"""Queries the Bare Metal user cluster version config.
+      r"""Queries the bare metal user cluster version config.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersQueryVersionConfigRequest) input message
@@ -1034,7 +1034,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Unenroll(self, request, global_params=None):
-      r"""Unenrolls an existing Bare Metal User Cluster and its Node Pools from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters and Node Pools will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients.
+      r"""Unenrolls an existing bare metal user cluster and its Node Pools from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters and Node Pools will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersUnenrollRequest) input message
@@ -1253,7 +1253,7 @@ class GkeonpremV1(base_api.BaseApiClient):
           }
 
     def Enroll(self, request, global_params=None):
-      r"""Enrolls an existing VMware Admin Cluster to the GKE on-prem API within a given project and location. Through enrollment, an existing admin cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API.
+      r"""Enrolls an existing VMware admin cluster to the GKE on-prem API within a given project and location. Through enrollment, an existing admin cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest) input message
@@ -1280,7 +1280,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single VMware Admin Cluster.
+      r"""Gets details of a single VMware admin cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareAdminClustersGetRequest) input message
@@ -1334,7 +1334,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists VMware Admin Clusters in a given project and location.
+      r"""Lists VMware admin clusters in a given project and location.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareAdminClustersListRequest) input message
@@ -1361,7 +1361,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single VMware Admin Cluster.
+      r"""Updates the parameters of a single VMware admin cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareAdminClustersPatchRequest) input message
@@ -1442,7 +1442,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Unenroll(self, request, global_params=None):
-      r"""Unenrolls an existing Vmware Admin Cluster from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients.
+      r"""Unenrolls an existing Vmware admin cluster from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareAdminClustersUnenrollRequest) input message
@@ -1887,7 +1887,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Enroll(self, request, global_params=None):
-      r"""Enrolls an existing VMware User Cluster and its Node Pools to the GKE on-prem API within a given project and location. Through enrollment, an existing cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster and/or its node pools will be expected to be performed through the API.
+      r"""Enrolls an existing VMware user cluster and its Node Pools to the GKE on-prem API within a given project and location. Through enrollment, an existing cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster and/or its node pools will be expected to be performed through the API.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareClustersEnrollRequest) input message
@@ -2103,7 +2103,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Unenroll(self, request, global_params=None):
-      r"""Unenrolls an existing VMware User Cluster and its Node Pools from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters and Node Pools will continue to run; however, they will no longer be accessible through the GKE on-prem API or UI.
+      r"""Unenrolls an existing VMware user cluster and its Node Pools from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters and Node Pools will continue to run; however, they will no longer be accessible through the GKE on-prem API or UI.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareClustersUnenrollRequest) input message

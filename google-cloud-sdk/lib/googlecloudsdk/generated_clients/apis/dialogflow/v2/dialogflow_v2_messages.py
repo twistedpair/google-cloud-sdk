@@ -9720,6 +9720,19 @@ class GoogleCloudDialogflowV2ConversationModelEvaluation(_messages.Message):
     evaluationConfig: Optional. The configuration of the evaluation task.
     name: The resource name of the evaluation. Format:
       `projects//conversationModels//evaluations/`
+    rawHumanEvalTemplateCsv: Output only. Human eval template in csv format.
+      It tooks real-world conversations provided through input dataset,
+      generates example suggestions for customer to verify quality of the
+      model. For Smart Reply, the generated csv file contains columns of
+      Context, (Suggestions,Q1,Q2)*3, Actual reply. Context contains at most
+      10 latest messages in the conversation prior to the current suggestion.
+      Q1: "Would you send it as the next message of agent?" Evaluated based on
+      whether the suggest is appropriate to be sent by agent in current
+      context. Q2: "Does the suggestion move the conversation closer to
+      resolution?" Evaluated based on whether the suggestion provide
+      solutions, or answers customer's question or collect information from
+      customer to resolve the customer's issue. Actual reply column contains
+      the actual agent reply sent in the context.
     smartReplyMetrics: Output only. Only available when model is for smart
       reply.
   """
@@ -9728,7 +9741,8 @@ class GoogleCloudDialogflowV2ConversationModelEvaluation(_messages.Message):
   displayName = _messages.StringField(2)
   evaluationConfig = _messages.MessageField('GoogleCloudDialogflowV2EvaluationConfig', 3)
   name = _messages.StringField(4)
-  smartReplyMetrics = _messages.MessageField('GoogleCloudDialogflowV2SmartReplyMetrics', 5)
+  rawHumanEvalTemplateCsv = _messages.StringField(5)
+  smartReplyMetrics = _messages.MessageField('GoogleCloudDialogflowV2SmartReplyMetrics', 6)
 
 
 class GoogleCloudDialogflowV2ConversationPhoneNumber(_messages.Message):
@@ -13191,7 +13205,10 @@ class GoogleCloudDialogflowV2SearchAgentsResponse(_messages.Message):
 
 class GoogleCloudDialogflowV2Sentiment(_messages.Message):
   r"""The sentiment, such as positive/negative feeling or association, for a
-  unit of analysis, such as the query text.
+  unit of analysis, such as the query text. See:
+  https://cloud.google.com/natural-
+  language/docs/basics#interpreting_sentiment_analysis_values for how to
+  interpret the result.
 
   Fields:
     magnitude: A non-negative number in the [0, +inf) range, which represents
@@ -16319,7 +16336,10 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
 
 class GoogleCloudDialogflowV2beta1Sentiment(_messages.Message):
   r"""The sentiment, such as positive/negative feeling or association, for a
-  unit of analysis, such as the query text.
+  unit of analysis, such as the query text. See:
+  https://cloud.google.com/natural-
+  language/docs/basics#interpreting_sentiment_analysis_values for how to
+  interpret the result.
 
   Fields:
     magnitude: A non-negative number in the [0, +inf) range, which represents

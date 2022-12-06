@@ -206,32 +206,32 @@
     },
     "BareMetalCluster": {
       "id": "BareMetalCluster",
-      "description": "Resource that represents a Bare Metal User Cluster.",
+      "description": "Resource that represents a bare metal user cluster.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. The Bare Metal User Cluster resource name.",
+          "description": "Immutable. The bare metal user cluster resource name.",
           "type": "string"
         },
         "adminClusterMembership": {
-          "description": "Required. The Admin Cluster this Bare Metal User Cluster belongs to. This is the full resource name of the Admin Cluster's hub membership. In the future, references to other resource types might be allowed if Admin Clusters are modeled as their own resources.",
+          "description": "Required. The admin cluster this bare metal user cluster belongs to. This is the full resource name of the admin cluster's fleet membership.",
           "type": "string"
         },
         "description": {
-          "description": "A human readable description of this Bare Metal User Cluster.",
+          "description": "A human readable description of this bare metal user cluster.",
           "type": "string"
         },
         "bareMetalVersion": {
-          "description": "Required. The Anthos clusters on Bare Metal version for your Bare Metal User Cluster.",
+          "description": "Required. The Anthos clusters on bare metal version for your user cluster.",
           "type": "string"
         },
         "uid": {
-          "description": "Output only. The unique identifier of the Bare Metal User Cluster.",
+          "description": "Output only. The unique identifier of the bare metal user cluster.",
           "readOnly": true,
           "type": "string"
         },
         "state": {
-          "description": "Output only. The current state of the Bare Metal User Cluster.",
+          "description": "Output only. The current state of the bare metal user cluster.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -254,35 +254,35 @@
           ]
         },
         "endpoint": {
-          "description": "Output only. The IP address name of Bare Metal User Cluster's API server.",
+          "description": "Output only. The IP address of the bare metal user cluster's API server.",
           "readOnly": true,
           "type": "string"
         },
         "reconciling": {
-          "description": "Output only. If set, there are currently changes in flight to the Bare Metal User Cluster.",
+          "description": "Output only. If set, there are currently changes in flight to the bare metal user cluster.",
           "readOnly": true,
           "type": "boolean"
         },
         "createTime": {
-          "description": "Output only. The time at which this Bare Metal User Cluster was created.",
+          "description": "Output only. The time when the bare metal user cluster was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. The time at which this Bare Metal User Cluster was last updated.",
+          "description": "Output only. The time when the bare metal user cluster was last updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "deleteTime": {
-          "description": "Output only. The time at which this Bare Metal User Cluster was deleted. If the resource is not deleted, this must be empty",
+          "description": "Output only. The time when the bare metal user cluster was deleted. If the resource is not deleted, this must be empty",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "localName": {
-          "description": "Output only. The object name of the Bare Metal Cluster custom resource on the associated admin cluster. This field is used to support conflicting names when enrolling existing clusters to the API. When used as a part of cluster enrollment, this field will differ from the ID in the resource name. For new clusters, this field will match the user provided cluster ID and be visible in the last component of the resource name. It is not modifiable. All users should use this name to access their cluster using gkectl or kubectl and should expect to see the local name when viewing admin cluster controller logs.",
+          "description": "Output only. The object name of the bare metal user cluster custom resource on the associated admin cluster. This field is used to support conflicting names when enrolling existing clusters to the API. When used as a part of cluster enrollment, this field will differ from the name in the resource name. For new clusters, this field will match the user provided cluster name and be visible in the last component of the resource name. It is not modifiable. When the local name and cluster name differ, the local name is used in the admin cluster controller logs. You use the cluster name when accessing the cluster using bmctl and kubectl.",
           "readOnly": true,
           "type": "string"
         },
@@ -292,7 +292,7 @@
           "type": "string"
         },
         "annotations": {
-          "description": "Annotations on the Bare Metal User Cluster. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
+          "description": "Annotations on the bare metal user cluster. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -336,12 +336,12 @@
           "$ref": "Fleet"
         },
         "status": {
-          "description": "Output only. ResourceStatus representing detailed cluster status.",
+          "description": "Output only. Detailed cluster status.",
           "readOnly": true,
           "$ref": "ResourceStatus"
         },
         "validationCheck": {
-          "description": "Output only. ValidationCheck representing the result of the preflight check.",
+          "description": "Output only. The result of the preflight check.",
           "readOnly": true,
           "$ref": "ValidationCheck"
         },
@@ -355,26 +355,30 @@
           "$ref": "BareMetalMaintenanceStatus"
         },
         "adminClusterName": {
-          "description": "Output only. The resource name of the Bare Metal Admin Cluster hosting this User Cluster. NOTE: In the future this field will be used interchangeably with admin_cluster_membership. For now this is in an informational field.",
+          "description": "Output only. The resource name of the bare metal admin cluster managing this user cluster.",
           "readOnly": true,
           "type": "string"
+        },
+        "nodeAccessConfig": {
+          "description": "Node access related configurations.",
+          "$ref": "BareMetalNodeAccessConfig"
         }
       }
     },
     "BareMetalNetworkConfig": {
       "id": "BareMetalNetworkConfig",
-      "description": "BareMetalNetworkConfig specifies the cluster network configuration.",
+      "description": "Specifies the cluster network configuration.",
       "type": "object",
       "properties": {
         "islandModeCidr": {
-          "description": "Configuration for Island mode CIDR.",
+          "description": "Configuration for island mode CIDR. In an island-mode network, nodes have unique IP addresses, but pods don't have unique addresses across clusters. This doesn't cause problems because pods in one cluster never directly communicate with pods in another cluster. Instead, there are gateways that mediate between a pod in one cluster and a pod in another cluster.",
           "$ref": "BareMetalIslandModeCidrConfig"
         }
       }
     },
     "BareMetalIslandModeCidrConfig": {
       "id": "BareMetalIslandModeCidrConfig",
-      "description": "BareMetalIslandModeCidrConfig specifies the cluster cidr configuration while running in island mode.",
+      "description": "Specifies the cluster CIDR configuration while running in island mode.",
       "type": "object",
       "properties": {
         "serviceAddressCidrBlocks": {
@@ -395,15 +399,15 @@
     },
     "BareMetalControlPlaneConfig": {
       "id": "BareMetalControlPlaneConfig",
-      "description": "BareMetalControlPlaneConfig specifies the control plane configuration.",
+      "description": "Specifies the control plane configuration.",
       "type": "object",
       "properties": {
         "nodePoolConfig": {
-          "description": "Required. Configures the node pool running the control plane. If specified the corresponding NodePool will be created for the cluster's control plane. The NodePool will have the same name and namespace as the cluster.",
+          "description": "Required. Configures the node pool running the control plane.",
           "$ref": "BareMetalControlPlaneNodePoolConfig"
         },
         "apiServerArgs": {
-          "description": "Customizes the default API server args. Only a subset of customized flags are supported. Please refer to the API server documentation below to know the exact format: https:\/\/kubernetes.io\/docs\/reference\/command-line-tools-reference\/kube-apiserver\/",
+          "description": "Customizes the default API server args. Only a subset of customized flags are supported. For the exact format, refer to the [API server documentation](https:\/\/kubernetes.io\/docs\/reference\/command-line-tools-reference\/kube-apiserver\/).",
           "type": "array",
           "items": {
             "$ref": "BareMetalApiServerArgument"
@@ -413,7 +417,7 @@
     },
     "BareMetalControlPlaneNodePoolConfig": {
       "id": "BareMetalControlPlaneNodePoolConfig",
-      "description": "BareMetalControlPlaneNodePoolConfig specifies the control plane node pool configuration. We have a Control Plane specific Node Pool config so that we can flexible about supporting Control Plane specific fields in the future.",
+      "description": "Specifies the control plane node pool configuration.",
       "type": "object",
       "properties": {
         "nodePoolConfig": {
@@ -424,11 +428,11 @@
     },
     "BareMetalNodePoolConfig": {
       "id": "BareMetalNodePoolConfig",
-      "description": "BareMetalNodePoolConfig describes the configuration of all nodes within a given Bare Metal Node Pool.",
+      "description": "BareMetalNodePoolConfig describes the configuration of all nodes within a given bare metal Node Pool.",
       "type": "object",
       "properties": {
         "nodeConfigs": {
-          "description": "Required. The list of machine addresses in the Bare Metal Node Pool.",
+          "description": "Required. The list of machine addresses in the bare metal Node Pool.",
           "type": "array",
           "items": {
             "$ref": "BareMetalNodeConfig"
@@ -513,11 +517,11 @@
     },
     "BareMetalApiServerArgument": {
       "id": "BareMetalApiServerArgument",
-      "description": "BareMetalApiServerArgument represents an arg name->value pair. Only a subset of customized flags are supported. Please refer to the API server documentation below to know the exact format: https:\/\/kubernetes.io\/docs\/reference\/command-line-tools-reference\/kube-apiserver\/",
+      "description": "Represents an arg name->value pair. Only a subset of customized flags are supported. For the exact format, refer to the [API server documentation](https:\/\/kubernetes.io\/docs\/reference\/command-line-tools-reference\/kube-apiserver\/).",
       "type": "object",
       "properties": {
         "argument": {
-          "description": "Required. The argument name as it appears on the API Server command line please make sure to remove the leading dashes.",
+          "description": "Required. The argument name as it appears on the API Server command line, make sure to remove the leading dashes.",
           "type": "string"
         },
         "value": {
@@ -528,7 +532,7 @@
     },
     "BareMetalLoadBalancerConfig": {
       "id": "BareMetalLoadBalancerConfig",
-      "description": "BareMetalLoadBalancerConfig specifies the load balancer configuration.",
+      "description": "Specifies the load balancer configuration.",
       "type": "object",
       "properties": {
         "vipConfig": {
@@ -540,7 +544,7 @@
           "$ref": "BareMetalPortConfig"
         },
         "metalLbConfig": {
-          "description": "Configuration for MetalLB typed load balancers.",
+          "description": "Configuration for MetalLB load balancers.",
           "$ref": "BareMetalMetalLbConfig"
         },
         "manualLbConfig": {
@@ -551,22 +555,22 @@
     },
     "BareMetalVipConfig": {
       "id": "BareMetalVipConfig",
-      "description": "BareMetalVipConfig for Bare Metal Load Balancer Config.",
+      "description": "Specifies the VIP config for the bare metal load balancer.",
       "type": "object",
       "properties": {
         "controlPlaneVip": {
-          "description": "The VIP which you previously set aside for the Kubernetes API of this Bare Metal User Cluster.",
+          "description": "The VIP which you previously set aside for the Kubernetes API of this bare metal user cluster.",
           "type": "string"
         },
         "ingressVip": {
-          "description": "The VIP which you previously set aside for ingress traffic into this Bare Metal User Cluster.",
+          "description": "The VIP which you previously set aside for ingress traffic into this bare metal user cluster.",
           "type": "string"
         }
       }
     },
     "BareMetalPortConfig": {
       "id": "BareMetalPortConfig",
-      "description": "BareMetalPortConfig is the specification of load balancer ports.",
+      "description": "Specifies load balancer ports for the bare metal user cluster.",
       "type": "object",
       "properties": {
         "controlPlaneLoadBalancerPort": {
@@ -578,7 +582,7 @@
     },
     "BareMetalMetalLbConfig": {
       "id": "BareMetalMetalLbConfig",
-      "description": "BareMetalMetalLbConfig represents configuration parameters for a MetalLB load balancer.",
+      "description": "Represents configuration parameters for a MetalLB load balancer.",
       "type": "object",
       "properties": {
         "addressPools": {
@@ -589,14 +593,14 @@
           }
         },
         "nodePoolConfig": {
-          "description": "Specifies the node pool running the load balancer. L2 connectivity is required among nodes in this pool. If missing, the control plane node pool is used as load balancer pool.",
+          "description": "Specifies the node pool running the load balancer. L2 connectivity is required among nodes in this pool. If missing, the control plane node pool is used as the load balancer pool.",
           "$ref": "BareMetalLoadBalancerNodePoolConfig"
         }
       }
     },
     "BareMetalLoadBalancerAddressPool": {
       "id": "BareMetalLoadBalancerAddressPool",
-      "description": "BareMetalLoadBalancerAddressPool represents an IP pool used by a load balancer.",
+      "description": "Represents an IP pool used by the load balancer.",
       "type": "object",
       "properties": {
         "pool": {
@@ -622,7 +626,7 @@
     },
     "BareMetalLoadBalancerNodePoolConfig": {
       "id": "BareMetalLoadBalancerNodePoolConfig",
-      "description": "BareMetalLoadBalancerNodePoolConfig specifies the load balancer's node pool configuration. We have a Load Balancer specific Node Pool config so that we can flexible about supporting Load Balancer specific fields in the future.",
+      "description": "Specifies the load balancer's node pool configuration.",
       "type": "object",
       "properties": {
         "nodePoolConfig": {
@@ -633,7 +637,7 @@
     },
     "BareMetalManualLbConfig": {
       "id": "BareMetalManualLbConfig",
-      "description": "BareMetalManualLbConfig represents configuration parameters for a manual load balancer.",
+      "description": "Represents configuration parameters for a manual load balancer.",
       "type": "object",
       "properties": {
         "enabled": {
@@ -644,7 +648,7 @@
     },
     "BareMetalStorageConfig": {
       "id": "BareMetalStorageConfig",
-      "description": "BareMetalStorageConfig specifies the cluster storage configuration.",
+      "description": "Specifies the cluster storage configuration.",
       "type": "object",
       "properties": {
         "lvpShareConfig": {
@@ -659,7 +663,7 @@
     },
     "BareMetalLvpShareConfig": {
       "id": "BareMetalLvpShareConfig",
-      "description": "BareMetalLvpShareConfig specifies the configs for local persistent volumes under a shared filesystem.",
+      "description": "Specifies the configs for local persistent volumes under a shared file system.",
       "type": "object",
       "properties": {
         "lvpConfig": {
@@ -675,7 +679,7 @@
     },
     "BareMetalLvpConfig": {
       "id": "BareMetalLvpConfig",
-      "description": "BareMetalLvpConfig specifies the configs for local persistent volumes.",
+      "description": "Specifies the configs for local persistent volumes (PVs).",
       "type": "object",
       "properties": {
         "path": {
@@ -690,11 +694,11 @@
     },
     "BareMetalProxyConfig": {
       "id": "BareMetalProxyConfig",
-      "description": "BareMetalProxyConfig specifies the cluster proxy configuration.",
+      "description": "Specifies the cluster proxy configuration.",
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Required. Specifies the address of your proxy server. Examples: http:\/\/domain WARNING: Do not provide credentials in the format http:\/\/(username:password@)domain these will be rejected by the server.",
+          "description": "Required. Specifies the address of your proxy server. Examples: `http:\/\/domain` Do not provide credentials in the format `http:\/\/(username:password@)domain` these will be rejected by the server.",
           "type": "string"
         },
         "noProxy": {
@@ -708,7 +712,7 @@
     },
     "BareMetalClusterOperationsConfig": {
       "id": "BareMetalClusterOperationsConfig",
-      "description": "BareMetalClusterOperationsConfig specifies the User Cluster's observability infrastructure.",
+      "description": "Specifies the bare metal user cluster's observability infrastructure.",
       "type": "object",
       "properties": {
         "enableApplicationLogs": {
@@ -719,7 +723,7 @@
     },
     "BareMetalMaintenanceConfig": {
       "id": "BareMetalMaintenanceConfig",
-      "description": "BareMetalMaintenanceConfig specifies configurations to put Bare Metal CRs in and out of maintenance.",
+      "description": "Specifies configurations to put bare metal nodes in and out of maintenance.",
       "type": "object",
       "properties": {
         "maintenanceAddressCidrBlocks": {
@@ -733,7 +737,7 @@
     },
     "BareMetalWorkloadNodeConfig": {
       "id": "BareMetalWorkloadNodeConfig",
-      "description": "BareMetalWorkloadNodeConfig specifies the workload node configurations.",
+      "description": "Specifies the workload node configurations.",
       "type": "object",
       "properties": {
         "maxPodsPerNode": {
@@ -746,7 +750,7 @@
           "type": "string",
           "enumDescriptions": [
             "No container runtime selected.",
-            "Docker runtime.",
+            "Docker runtime. Anthos version 1.13 and higher clusters can no longer use Docker Engine. https:\/\/cloud.google.com\/anthos\/clusters\/docs\/bare-metal\/latest\/installing\/runtime#kubernetes_124_ends_support_of_docker_engine",
             "Containerd runtime."
           ],
           "enum": [
@@ -759,11 +763,11 @@
     },
     "Fleet": {
       "id": "Fleet",
-      "description": "Fleet related configuration. Fleets are a Google Cloud concept for logically organizing clusters, letting you use and manage multi-cluster capabilities and apply consistent policies across your systems. See [Anthos Fleets](https:\/\/cloud.google.com\/anthos\/multicluster-management\/fleets) for more details on Anthos multi-cluster capabilities using Fleets. ##",
+      "description": "Fleet related configuration. Fleets are a Google Cloud concept for logically organizing clusters, letting you use and manage multi-cluster capabilities and apply consistent policies across your systems. See [Anthos Fleets](`https:\/\/cloud.google.com\/anthos\/multicluster-management\/fleets`) for more details on Anthos multi-cluster capabilities using Fleets. ##",
       "type": "object",
       "properties": {
         "membership": {
-          "description": "Output only. The name of the managed Hub Membership resource associated to this cluster. Membership names are formatted as `projects\/\/locations\/\/memberships\/`.",
+          "description": "Output only. The name of the managed fleet Membership resource associated to this cluster. Membership names are formatted as `projects\/\/locations\/\/memberships\/`.",
           "readOnly": true,
           "type": "string"
         }
@@ -775,11 +779,11 @@
       "type": "object",
       "properties": {
         "errorMessage": {
-          "description": "Human-friendly representation of the error message from the user cluster controller. The error message can be temporary as the user cluster controller creates a cluster or node pool. If the error message persists for a longer period of time, it can be used to surface error message to indicate real problems requiring user intervention.",
+          "description": "Human-friendly representation of the error message from controller. The error message can be temporary as the controller controller creates a cluster or node pool. If the error message persists for a longer period of time, it can be used to surface error message to indicate real problems requiring user intervention.",
           "type": "string"
         },
         "conditions": {
-          "description": "ResourceCondition provide a standard mechanism for higher-level status reporting from user cluster controller.",
+          "description": "ResourceCondition provide a standard mechanism for higher-level status reporting from controller.",
           "type": "array",
           "items": {
             "$ref": "ResourceCondition"
@@ -789,7 +793,7 @@
     },
     "ResourceCondition": {
       "id": "ResourceCondition",
-      "description": "ResourceCondition provides a standard mechanism for higher-level status reporting from user cluster controller.",
+      "description": "ResourceCondition provides a standard mechanism for higher-level status reporting from controller.",
       "type": "object",
       "properties": {
         "type": {
@@ -857,7 +861,7 @@
           "type": "string",
           "enumDescriptions": [
             "Default value. This value is unused.",
-            "The validation check occurred during an create flow.",
+            "The validation check occurred during a create flow.",
             "The validation check occurred during an update flow."
           ],
           "enum": [
@@ -925,18 +929,18 @@
     },
     "BareMetalSecurityConfig": {
       "id": "BareMetalSecurityConfig",
-      "description": "BareMetalSecurityConfig specifies the security related settings for the Bare Metal User Cluster.",
+      "description": "Specifies the security related settings for the bare metal user cluster.",
       "type": "object",
       "properties": {
         "authorization": {
-          "description": "Configures user access to the Bare Metal User cluster.",
+          "description": "Configures user access to the user cluster.",
           "$ref": "Authorization"
         }
       }
     },
     "Authorization": {
       "id": "Authorization",
-      "description": "Authorization defines the On-Prem User Cluster authorization configuration to bootstrap onto the admin cluster.",
+      "description": "Authorization defines the On-Prem cluster authorization configuration to bootstrap onto the admin cluster.",
       "type": "object",
       "properties": {
         "adminUsers": {
@@ -961,7 +965,7 @@
     },
     "BareMetalMaintenanceStatus": {
       "id": "BareMetalMaintenanceStatus",
-      "description": "BareMetalMaintenanceStatus represents the maintenance status for Bare Metal user clusters.",
+      "description": "Represents the maintenance status of the bare metal user cluster.",
       "type": "object",
       "properties": {
         "machineDrainStatus": {
@@ -972,7 +976,7 @@
     },
     "BareMetalMachineDrainStatus": {
       "id": "BareMetalMachineDrainStatus",
-      "description": "BareMetalAdminMachineDrainStatus represents the status of Bare Metal node machines that are undergoing drain operations.",
+      "description": "Represents the status of node machines that are undergoing drain operations.",
       "type": "object",
       "properties": {
         "drainingMachines": {
@@ -993,7 +997,7 @@
     },
     "BareMetalDrainingMachine": {
       "id": "BareMetalDrainingMachine",
-      "description": "BareMetalDrainingMachine represents a machine that is currently draining.",
+      "description": "Represents a machine that is currently draining.",
       "type": "object",
       "properties": {
         "nodeIp": {
@@ -1009,7 +1013,7 @@
     },
     "BareMetalDrainedMachine": {
       "id": "BareMetalDrainedMachine",
-      "description": "BareMetalDrainedMachine represents a machine that is currently drained.",
+      "description": "Represents a machine that is currently drained.",
       "type": "object",
       "properties": {
         "nodeIp": {
@@ -1018,32 +1022,43 @@
         }
       }
     },
+    "BareMetalNodeAccessConfig": {
+      "id": "BareMetalNodeAccessConfig",
+      "description": "Specifies the node access related settings for the bare metal user cluster.",
+      "type": "object",
+      "properties": {
+        "loginUser": {
+          "description": "LoginUser is the user name used to access node machines. It defaults to \"root\" if not set.",
+          "type": "string"
+        }
+      }
+    },
     "EnrollBareMetalClusterRequest": {
       "id": "EnrollBareMetalClusterRequest",
-      "description": "Message for enrolling an existing Bare Metal Cluster to the GKE on-prem API.",
+      "description": "Message for enrolling an existing bare metal Cluster to the GKE on-prem API.",
       "type": "object",
       "properties": {
         "bareMetalClusterId": {
-          "description": "User provided OnePlatform identifier that is used as part of the resource name. This must be unique among all Bare Metal clusters within a project and location and will return a 409 if the cluster already exists. This value must be up to 40 characters and follow RFC-1123 (https:\/\/tools.ietf.org\/html\/rfc1123) format.",
+          "description": "User provided OnePlatform identifier that is used as part of the resource name. This must be unique among all bare metal clusters within a project and location and will return a 409 if the cluster already exists. This value must be up to 40 characters and follow RFC-1123 (https:\/\/tools.ietf.org\/html\/rfc1123) format.",
           "type": "string"
         },
         "localName": {
-          "description": "The object name of the Bare Metal Cluster custom resource on the associated admin cluster. This field is used to support conflicting resource names when enrolling existing clusters to the API. When not provided, this field will resolve to the bare_metal_cluster_id. Otherwise, it must match the object name of the Bare Metal Cluster custom resource. It is not modifiable outside \/ beyond the enrollment operation.",
+          "description": "The object name of the bare metal Cluster custom resource on the associated admin cluster. This field is used to support conflicting resource names when enrolling existing clusters to the API. When not provided, this field will resolve to the bare_metal_cluster_id. Otherwise, it must match the object name of the bare metal Cluster custom resource. It is not modifiable outside \/ beyond the enrollment operation.",
           "type": "string"
         },
         "adminClusterMembership": {
-          "description": "Required. The admin cluster this Bare Metal User Cluster belongs to. This is the full resource name of the admin cluster's hub membership. In the future, references to other resource types might be allowed if admin clusters are modeled as their own resources.",
+          "description": "Required. The admin cluster this bare metal user cluster belongs to. This is the full resource name of the admin cluster's fleet membership. In the future, references to other resource types might be allowed if admin clusters are modeled as their own resources.",
           "type": "string"
         }
       }
     },
     "ListBareMetalClustersResponse": {
       "id": "ListBareMetalClustersResponse",
-      "description": "Response message for listing Bare Metal Clusters.",
+      "description": "Response message for listing bare metal Clusters.",
       "type": "object",
       "properties": {
         "bareMetalClusters": {
-          "description": "The list of Bare Metal Clusters.",
+          "description": "The list of bare metal Clusters.",
           "type": "array",
           "items": {
             "$ref": "BareMetalCluster"
@@ -1064,7 +1079,7 @@
     },
     "QueryBareMetalVersionConfigResponse": {
       "id": "QueryBareMetalVersionConfigResponse",
-      "description": "Response message for querying Bare Metal admin cluster version config.",
+      "description": "Response message for querying bare metal admin cluster version config.",
       "type": "object",
       "properties": {
         "versions": {
@@ -1078,7 +1093,7 @@
     },
     "BareMetalVersionInfo": {
       "id": "BareMetalVersionInfo",
-      "description": "BareMetalVersionInfo contains information about a specific Anthos on Bare Metal version.",
+      "description": "Contains information about a specific Anthos on bare metal version.",
       "type": "object",
       "properties": {
         "version": {
@@ -1105,26 +1120,26 @@
           "type": "string"
         },
         "adminClusterMembership": {
-          "description": "Required. The admin cluster this VMware User Cluster belongs to. This is the full resource name of the admin cluster's hub membership. In the future, references to other resource types might be allowed if admin clusters are modeled as their own resources.",
+          "description": "Required. The admin cluster this VMware user cluster belongs to. This is the full resource name of the admin cluster's fleet membership. In the future, references to other resource types might be allowed if admin clusters are modeled as their own resources.",
           "type": "string"
         }
       }
     },
     "VmwareCluster": {
       "id": "VmwareCluster",
-      "description": "Resource that represents a VMware User Cluster. ##",
+      "description": "Resource that represents a VMware user cluster. ##",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. The VMware User Cluster resource name.",
+          "description": "Immutable. The VMware user cluster resource name.",
           "type": "string"
         },
         "adminClusterMembership": {
-          "description": "Required. The admin cluster this VMware User Cluster belongs to. This is the full resource name of the admin cluster's hub membership. In the future, references to other resource types might be allowed if admin clusters are modeled as their own resources.",
+          "description": "Required. The admin cluster this VMware user cluster belongs to. This is the full resource name of the admin cluster's fleet membership. In the future, references to other resource types might be allowed if admin clusters are modeled as their own resources.",
           "type": "string"
         },
         "description": {
-          "description": "A human readable description of this VMware User Cluster.",
+          "description": "A human readable description of this VMware user cluster.",
           "type": "string"
         },
         "onPremVersion": {
@@ -1132,12 +1147,12 @@
           "type": "string"
         },
         "uid": {
-          "description": "Output only. The unique identifier of the VMware User Cluster.",
+          "description": "Output only. The unique identifier of the VMware user cluster.",
           "readOnly": true,
           "type": "string"
         },
         "state": {
-          "description": "Output only. The current state of VMware User Cluster.",
+          "description": "Output only. The current state of VMware user cluster.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1160,29 +1175,29 @@
           ]
         },
         "endpoint": {
-          "description": "Output only. The DNS name of VMware User Cluster's API server.",
+          "description": "Output only. The DNS name of VMware user cluster's API server.",
           "readOnly": true,
           "type": "string"
         },
         "reconciling": {
-          "description": "Output only. If set, there are currently changes in flight to the VMware User Cluster.",
+          "description": "Output only. If set, there are currently changes in flight to the VMware user cluster.",
           "readOnly": true,
           "type": "boolean"
         },
         "createTime": {
-          "description": "Output only. The time at which VMware User Cluster was created.",
+          "description": "Output only. The time at which VMware user cluster was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. The time at which VMware User Cluster was last updated.",
+          "description": "Output only. The time at which VMware user cluster was last updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "localName": {
-          "description": "Output only. The object name of the VMware OnPremUserCluster custom resource on the associated admin cluster. This field is used to support conflicting names when enrolling existing clusters to the API. When used as a part of cluster enrollment, this field will differ from the ID in the resource name. For new clusters, this field will match the user provided cluster ID and be visible in the last component of the resource name. It is not modifiable. All users should use this name to access their cluster using gkectl or kubectl and should expect to see the local name when viewing admin cluster controller logs.",
+          "description": "Output only. The object name of the VMware OnPremUserCluster custom resource on the associated admin cluster. This field is used to support conflicting names when enrolling existing clusters to the API. When used as a part of cluster enrollment, this field will differ from the ID in the resource name. For new clusters, this field will match the user provided cluster name and be visible in the last component of the resource name. It is not modifiable. All users should use this name to access their cluster using gkectl or kubectl and should expect to see the local name when viewing admin cluster controller logs.",
           "readOnly": true,
           "type": "string"
         },
@@ -1191,14 +1206,14 @@
           "type": "string"
         },
         "annotations": {
-          "description": "Annotations on the VMware User Cluster. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
+          "description": "Annotations on the VMware user cluster. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "controlPlaneNode": {
-          "description": "VMware User Cluster control plane nodes must have either 1 or 3 replicas.",
+          "description": "VMware user cluster control plane nodes must have either 1 or 3 replicas.",
           "$ref": "VmwareControlPlaneNodeConfig"
         },
         "workloadIdentity": {
@@ -1206,7 +1221,7 @@
           "$ref": "VmwareWorkloadIdentityConfig"
         },
         "antiAffinityGroups": {
-          "description": "AAGConfig specifies whether to spread VMware User Cluster nodes across at least three physical hosts in the datacenter.",
+          "description": "AAGConfig specifies whether to spread VMware user cluster nodes across at least three physical hosts in the datacenter.",
           "$ref": "VmwareAAGConfig"
         },
         "storage": {
@@ -1214,7 +1229,7 @@
           "$ref": "VmwareStorageConfig"
         },
         "networkConfig": {
-          "description": "The VMware User Cluster network configuration.",
+          "description": "The VMware user cluster network configuration.",
           "$ref": "VmwareNetworkConfig"
         },
         "loadBalancer": {
@@ -1253,7 +1268,7 @@
           "$ref": "Authorization"
         },
         "deleteTime": {
-          "description": "Output only. The time at which VMware User Cluster was deleted.",
+          "description": "Output only. The time at which VMware user cluster was deleted.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -1264,7 +1279,7 @@
           "$ref": "ValidationCheck"
         },
         "adminClusterName": {
-          "description": "Output only. The resource name of the Vmware Admin Cluster hosting this User Cluster.",
+          "description": "Output only. The resource name of the Vmware admin cluster hosting this User Cluster.",
           "readOnly": true,
           "type": "string"
         }
@@ -1272,21 +1287,21 @@
     },
     "VmwareControlPlaneNodeConfig": {
       "id": "VmwareControlPlaneNodeConfig",
-      "description": "VmwareControlPlaneNodeConfig specifies control plane node config for VMware User Cluster.",
+      "description": "Specifies control plane node config for the VMware user cluster.",
       "type": "object",
       "properties": {
         "cpus": {
-          "description": "The number of CPUs for each admin cluster node that serve as control planes for this VMware User Cluster. (default: 4 CPUs)",
+          "description": "The number of CPUs for each admin cluster node that serve as control planes for this VMware user cluster. (default: 4 CPUs)",
           "type": "string",
           "format": "int64"
         },
         "memory": {
-          "description": "The megabytes of memory for each admin cluster node that serves as a control plane for this VMware User Cluster (default: 8192 MB memory).",
+          "description": "The megabytes of memory for each admin cluster node that serves as a control plane for this VMware user cluster (default: 8192 MB memory).",
           "type": "string",
           "format": "int64"
         },
         "replicas": {
-          "description": "The number of control plane nodes for this VMware User Cluster. (default: 1 replica).",
+          "description": "The number of control plane nodes for this VMware user cluster. (default: 1 replica).",
           "type": "string",
           "format": "int64"
         },
@@ -1303,7 +1318,7 @@
     },
     "VmwareAutoResizeConfig": {
       "id": "VmwareAutoResizeConfig",
-      "description": "VmwareAutoResizeConfig provides auto resizing configurations.",
+      "description": "Represents auto resizing configurations for the VMware user cluster.",
       "type": "object",
       "properties": {
         "enabled": {
@@ -1314,7 +1329,7 @@
     },
     "VmwareControlPlaneVsphereConfig": {
       "id": "VmwareControlPlaneVsphereConfig",
-      "description": "VmwareControlPlaneVsphereConfig Control Plane Node config.",
+      "description": "Specifies control plane node config.",
       "type": "object",
       "properties": {
         "datastore": {
@@ -1325,7 +1340,7 @@
     },
     "VmwareWorkloadIdentityConfig": {
       "id": "VmwareWorkloadIdentityConfig",
-      "description": "VmwareWorkloadIdentityConfig for VMware User Cluster.",
+      "description": "Specifies workload identity config for VMware user cluster.",
       "type": "object",
       "properties": {
         "workloadIdentityDisabled": {
@@ -1336,7 +1351,7 @@
     },
     "VmwareAAGConfig": {
       "id": "VmwareAAGConfig",
-      "description": "VmwareAAGConfig specifies anti affinity group config for VMware User Cluster. ",
+      "description": "Specifies anti affinity group config for the VMware user cluster. ",
       "type": "object",
       "properties": {
         "aagConfigDisabled": {
@@ -1347,18 +1362,18 @@
     },
     "VmwareStorageConfig": {
       "id": "VmwareStorageConfig",
-      "description": "VmwareStorageConfig specifies whether to deploy vSphere CSI components in the VMware User Cluster.",
+      "description": "Specifies vSphere CSI components deployment config in the VMware user cluster.",
       "type": "object",
       "properties": {
         "vsphereCsiDisabled": {
-          "description": "Whether or not to deploy vSphere CSI components in the VMware User Cluster. Enabled by default.",
+          "description": "Whether or not to deploy vSphere CSI components in the VMware user cluster. Enabled by default.",
           "type": "boolean"
         }
       }
     },
     "VmwareNetworkConfig": {
       "id": "VmwareNetworkConfig",
-      "description": "VmwareNetworkConfig for VMware User Cluster.",
+      "description": "Specifies network config for the VMware user cluster.",
       "type": "object",
       "properties": {
         "serviceAddressCidrBlocks": {
@@ -1396,7 +1411,7 @@
     },
     "VmwareStaticIpConfig": {
       "id": "VmwareStaticIpConfig",
-      "description": "VmwareStaticIpConfig represents the network configuration required for VMware User Clusters with Static IP configurations.",
+      "description": "Represents the network configuration required for the VMware user clusters with Static IP configurations.",
       "type": "object",
       "properties": {
         "ipBlocks": {
@@ -1410,19 +1425,19 @@
     },
     "VmwareIpBlock": {
       "id": "VmwareIpBlock",
-      "description": "VmwareIpBlock represents a collection of IP addresses to assign to nodes from.",
+      "description": "Represents a collection of IP addresses to assign to nodes.",
       "type": "object",
       "properties": {
         "netmask": {
-          "description": "The netmask used by the VMware User Cluster.",
+          "description": "The netmask used by the VMware user cluster.",
           "type": "string"
         },
         "gateway": {
-          "description": "The network gateway used by the VMware User Cluster.",
+          "description": "The network gateway used by the VMware user cluster.",
           "type": "string"
         },
         "ips": {
-          "description": "The node's network configurations used by the VMware User Cluster.",
+          "description": "The node's network configurations used by the VMware user cluster.",
           "type": "array",
           "items": {
             "$ref": "VmwareHostIp"
@@ -1432,7 +1447,7 @@
     },
     "VmwareHostIp": {
       "id": "VmwareHostIp",
-      "description": "VmwareHostIp represents a node's network configuration.",
+      "description": "Represents VMware user cluster node's network configuration.",
       "type": "object",
       "properties": {
         "ip": {
@@ -1447,7 +1462,7 @@
     },
     "VmwareDhcpIpConfig": {
       "id": "VmwareDhcpIpConfig",
-      "description": "VmwareDhcpIpConfig represents the network configuration required for VMware user clusters with DHCP IP configurations.",
+      "description": "Represents the network configuration required for the VMware user clusters with DHCP IP configurations.",
       "type": "object",
       "properties": {
         "enabled": {
@@ -1458,7 +1473,7 @@
     },
     "VmwareHostConfig": {
       "id": "VmwareHostConfig",
-      "description": "VmwareHostConfig represents the common parameters for all hosts irrespective of their IP address.",
+      "description": "Represents the common parameters for all the hosts irrespective of their IP address.",
       "type": "object",
       "properties": {
         "dnsServers": {
@@ -1486,7 +1501,7 @@
     },
     "VmwareLoadBalancerConfig": {
       "id": "VmwareLoadBalancerConfig",
-      "description": "VmwareLoadBalancerConfig for VMware User Cluster.",
+      "description": "Specifies the locad balancer config for the VMware user cluster.",
       "type": "object",
       "properties": {
         "vipConfig": {
@@ -1513,7 +1528,7 @@
     },
     "VmwareVipConfig": {
       "id": "VmwareVipConfig",
-      "description": "VmwareVipConfig for Vmware Load Balancer Config.",
+      "description": "Specifies the VIP config for the Vmware user cluster load balancer.",
       "type": "object",
       "properties": {
         "controlPlaneVip": {
@@ -1528,7 +1543,7 @@
     },
     "VmwareF5BigIpConfig": {
       "id": "VmwareF5BigIpConfig",
-      "description": "VmwareF5BigIpConfig represents configuration parameters for an F5 BIG-IP load balancer.",
+      "description": "Represents configuration parameters for an F5 BIG-IP load balancer.",
       "type": "object",
       "properties": {
         "address": {
@@ -1605,7 +1620,7 @@
     },
     "VmwareMetalLbConfig": {
       "id": "VmwareMetalLbConfig",
-      "description": "VmwareMetalLbConfig represents configuration parameters for a MetalLB load balancer.",
+      "description": "Represents configuration parameters for the MetalLB load balancer.",
       "type": "object",
       "properties": {
         "addressPools": {
@@ -1619,7 +1634,7 @@
     },
     "VmwareAddressPool": {
       "id": "VmwareAddressPool",
-      "description": "VmwareAddressPool represents an IP pool used by a load balancer.",
+      "description": "Represents an IP pool used by the load balancer.",
       "type": "object",
       "properties": {
         "pool": {
@@ -1645,7 +1660,7 @@
     },
     "VmwareVCenterConfig": {
       "id": "VmwareVCenterConfig",
-      "description": "VmwareVCenterConfig represents configuration for the VMware VCenter for the user cluster.",
+      "description": "Represents configuration for the VMware VCenter for the user cluster.",
       "type": "object",
       "properties": {
         "resourcePool": {
@@ -1680,7 +1695,7 @@
     },
     "VmwareDataplaneV2Config": {
       "id": "VmwareDataplaneV2Config",
-      "description": "VmwareDataplaneV2Config contains configurations for Dataplane V2, which is optimized dataplane for Kubernetes networking. For more information, see: https:\/\/cloud.google.com\/kubernetes-engine\/docs\/concepts\/dataplane-v2",
+      "description": "Contains configurations for Dataplane V2, which is optimized dataplane for Kubernetes networking. For more information, see: https:\/\/cloud.google.com\/kubernetes-engine\/docs\/concepts\/dataplane-v2",
       "type": "object",
       "properties": {
         "dataplaneV2Enabled": {
@@ -1699,7 +1714,7 @@
     },
     "VmwareAutoRepairConfig": {
       "id": "VmwareAutoRepairConfig",
-      "description": "VmwareAutoRepairConfig is used to enable\/disable auto repair. The cluster-health-controller is deployed only if Enabled is true.",
+      "description": "Specifies config to enable\/disable auto repair. The cluster-health-controller is deployed only if Enabled is true.",
       "type": "object",
       "properties": {
         "enabled": {
@@ -1735,34 +1750,34 @@
     },
     "BareMetalNodePool": {
       "id": "BareMetalNodePool",
-      "description": "Resource that represents a Bare Metal Node Pool.",
+      "description": "Resource that represents a bare metal Node Pool.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. The Bare Metal Node Pool resource name.",
+          "description": "Immutable. The bare metal Node Pool resource name.",
           "type": "string"
         },
         "displayName": {
-          "description": "The display name for the Bare Metal Node Pool.",
+          "description": "The display name for the bare metal Node Pool.",
           "type": "string"
         },
         "uid": {
-          "description": "Output only. The unique identifier of the Bare Metal Node Pool.",
+          "description": "Output only. The unique identifier of the bare metal Node Pool.",
           "readOnly": true,
           "type": "string"
         },
         "state": {
-          "description": "Output only. The current state of the Bare Metal Node Pool.",
+          "description": "Output only. The current state of the bare metal Node Pool.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Not set.",
-            "The PROVISIONING state indicates the Bare Metal Node Pool is being created.",
-            "The RUNNING state indicates the Bare Metal Node Pool has been created and is fully usable.",
-            "The RECONCILING state indicates that the Bare Metal Node Pool is being updated. It remains available, but potentially with degraded performance.",
-            "The STOPPING state indicates the Bare Metal Node Pool is being deleted.",
-            "The ERROR state indicates the Bare Metal Node Pool is in a broken unrecoverable state.",
-            "The DEGRADED state indicates the Bare Metal Node Pool requires user action to restore full functionality."
+            "The PROVISIONING state indicates the bare metal Node Pool is being created.",
+            "The RUNNING state indicates the bare metal Node Pool has been created and is fully usable.",
+            "The RECONCILING state indicates that the bare metal Node Pool is being updated. It remains available, but potentially with degraded performance.",
+            "The STOPPING state indicates the bare metal Node Pool is being deleted.",
+            "The ERROR state indicates the bare metal Node Pool is in a broken unrecoverable state.",
+            "The DEGRADED state indicates the bare metal Node Pool requires user action to restore full functionality."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -1775,24 +1790,24 @@
           ]
         },
         "reconciling": {
-          "description": "Output only. If set, there are currently changes in flight to the Bare Metal Node Pool.",
+          "description": "Output only. If set, there are currently changes in flight to the bare metal Node Pool.",
           "readOnly": true,
           "type": "boolean"
         },
         "createTime": {
-          "description": "Output only. The time at which this Bare Metal Node Pool was created.",
+          "description": "Output only. The time at which this bare metal Node Pool was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. The time at which this Bare Metal Node Pool was last updated.",
+          "description": "Output only. The time at which this bare metal Node Pool was last updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "deleteTime": {
-          "description": "Output only. The time at which this Bare Metal Node Pool was deleted. If the resource is not deleted, this must be empty",
+          "description": "Output only. The time at which this bare metal Node Pool was deleted. If the resource is not deleted, this must be empty",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -1802,7 +1817,7 @@
           "type": "string"
         },
         "annotations": {
-          "description": "Annotations on the Bare Metal Node Pool. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
+          "description": "Annotations on the bare metal Node Pool. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1821,7 +1836,7 @@
     },
     "ListBareMetalNodePoolsResponse": {
       "id": "ListBareMetalNodePoolsResponse",
-      "description": "Response message for listing Bare Metal Node Pools.",
+      "description": "Response message for listing bare metal Node Pools.",
       "type": "object",
       "properties": {
         "bareMetalNodePools": {
@@ -1928,7 +1943,7 @@
           "$ref": "VmwareNodeConfig"
         },
         "status": {
-          "description": "Output only. ResourceStatus representing the detailed VMware Node Pool state.",
+          "description": "Output only. ResourceStatus representing the detailed VMware node pool state.",
           "readOnly": true,
           "$ref": "ResourceStatus"
         }
@@ -2069,11 +2084,11 @@
     },
     "ListVmwareAdminClustersResponse": {
       "id": "ListVmwareAdminClustersResponse",
-      "description": "Response message for listing VMware Admin Clusters.",
+      "description": "Response message for listing VMware admin clusters.",
       "type": "object",
       "properties": {
         "vmwareAdminClusters": {
-          "description": "The list of VMware Admin Cluster.",
+          "description": "The list of VMware admin cluster.",
           "type": "array",
           "items": {
             "$ref": "VmwareAdminCluster"
@@ -2094,19 +2109,19 @@
     },
     "VmwareAdminCluster": {
       "id": "VmwareAdminCluster",
-      "description": "Resource that represents a VMware Admin Cluster.",
+      "description": "Resource that represents a VMware admin cluster.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. The VMware Admin Cluster resource name.",
+          "description": "Immutable. The VMware admin cluster resource name.",
           "type": "string"
         },
         "description": {
-          "description": "A human readable description of this VMware Admin Cluster.",
+          "description": "A human readable description of this VMware admin cluster.",
           "type": "string"
         },
         "uid": {
-          "description": "Output only. The unique identifier of the VMware Admin Cluster.",
+          "description": "Output only. The unique identifier of the VMware admin cluster.",
           "readOnly": true,
           "type": "string"
         },
@@ -2115,26 +2130,26 @@
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. The time at which VMware Admin Cluster was created.",
+          "description": "Output only. The time at which VMware admin cluster was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. The time at which VMware Admin Cluster was last updated.",
+          "description": "Output only. The time at which VMware admin cluster was last updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "annotations": {
-          "description": "Annotations on the VMware Admin Cluster. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
+          "description": "Annotations on the VMware admin cluster. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "state": {
-          "description": "Output only. The current state of VMware Admin Cluster.",
+          "description": "Output only. The current state of VMware admin cluster.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -2157,22 +2172,22 @@
           ]
         },
         "endpoint": {
-          "description": "Output only. The DNS name of VMware Admin Cluster's API server.",
+          "description": "Output only. The DNS name of VMware admin cluster's API server.",
           "readOnly": true,
           "type": "string"
         },
         "reconciling": {
-          "description": "Output only. If set, there are currently changes in flight to the VMware Admin Cluster.",
+          "description": "Output only. If set, there are currently changes in flight to the VMware admin cluster.",
           "readOnly": true,
           "type": "boolean"
         },
         "localName": {
-          "description": "Output only. The object name of the VMware OnPremAdminCluster custom resource. This field is used to support conflicting names when enrolling existing clusters to the API. When used as a part of cluster enrollment, this field will differ from the ID in the resource name. For new clusters, this field will match the user provided cluster ID and be visible in the last component of the resource name. It is not modifiable. All users should use this name to access their cluster using gkectl or kubectl and should expect to see the local name when viewing admin cluster controller logs.",
+          "description": "Output only. The object name of the VMware OnPremAdminCluster custom resource. This field is used to support conflicting names when enrolling existing clusters to the API. When used as a part of cluster enrollment, this field will differ from the ID in the resource name. For new clusters, this field will match the user provided cluster name and be visible in the last component of the resource name. It is not modifiable. All users should use this name to access their cluster using gkectl or kubectl and should expect to see the local name when viewing admin cluster controller logs.",
           "readOnly": true,
           "type": "string"
         },
         "bootstrapClusterMembership": {
-          "description": "The bootstrap cluster this VMware Admin Cluster belongs to.",
+          "description": "The bootstrap cluster this VMware admin cluster belongs to.",
           "type": "string"
         },
         "onPremVersion": {
@@ -2185,35 +2200,35 @@
           "$ref": "Fleet"
         },
         "imageType": {
-          "description": "The OS image type for the VMware Admin Cluster.",
+          "description": "The OS image type for the VMware admin cluster.",
           "type": "string"
         },
         "vcenter": {
-          "description": "The VMware Admin Cluster VCenter configuration.",
+          "description": "The VMware admin cluster VCenter configuration.",
           "$ref": "VmwareAdminVCenterConfig"
         },
         "networkConfig": {
-          "description": "The VMware Admin Cluster network configuration.",
+          "description": "The VMware admin cluster network configuration.",
           "$ref": "VmwareAdminNetworkConfig"
         },
         "loadBalancer": {
-          "description": "The VMware Admin Cluster load balancer configuration.",
+          "description": "The VMware admin cluster load balancer configuration.",
           "$ref": "VmwareAdminLoadBalancerConfig"
         },
         "controlPlaneNode": {
-          "description": "The VMware Admin Cluster control plane node configuration.",
+          "description": "The VMware admin cluster control plane node configuration.",
           "$ref": "VmwareAdminControlPlaneNodeConfig"
         },
         "addonNode": {
-          "description": "The VMware Admin Cluster addon node configuration.",
+          "description": "The VMware admin cluster addon node configuration.",
           "$ref": "VmwareAdminAddonNodeConfig"
         },
         "antiAffinityGroups": {
-          "description": "The VMware Admin Cluster anti affinity group configuration.",
+          "description": "The VMware admin cluster anti affinity group configuration.",
           "$ref": "VmwareAAGConfig"
         },
         "autoRepairConfig": {
-          "description": "The VMware Admin Cluster auto repair configuration.",
+          "description": "The VMware admin cluster auto repair configuration.",
           "$ref": "VmwareAutoRepairConfig"
         },
         "status": {
@@ -2305,7 +2320,7 @@
     },
     "VmwareAdminLoadBalancerConfig": {
       "id": "VmwareAdminLoadBalancerConfig",
-      "description": "VmwareAdminLoadBalancerConfig contains load balancer configuration for VMware Admin Cluster.",
+      "description": "VmwareAdminLoadBalancerConfig contains load balancer configuration for VMware admin cluster.",
       "type": "object",
       "properties": {
         "vipConfig": {
@@ -2400,7 +2415,7 @@
     },
     "VmwareAdminControlPlaneNodeConfig": {
       "id": "VmwareAdminControlPlaneNodeConfig",
-      "description": "VmwareAdminControlPlaneNodeConfig contains control plane node configuration for VMware Admin Cluster.",
+      "description": "VmwareAdminControlPlaneNodeConfig contains control plane node configuration for VMware admin cluster.",
       "type": "object",
       "properties": {
         "cpus": {
@@ -2417,7 +2432,7 @@
     },
     "VmwareAdminAddonNodeConfig": {
       "id": "VmwareAdminAddonNodeConfig",
-      "description": "VmwareAdminAddonNodeConfig contains add-on node configurations for VMware Admin Cluster.",
+      "description": "VmwareAdminAddonNodeConfig contains add-on node configurations for VMware admin cluster.",
       "type": "object",
       "properties": {
         "autoResizeConfig": {
@@ -2473,7 +2488,7 @@
     },
     "EnrollVmwareAdminClusterRequest": {
       "id": "EnrollVmwareAdminClusterRequest",
-      "description": "Message for enrolling an existing VMware Admin Cluster to the GKE on-prem API.",
+      "description": "Message for enrolling an existing VMware admin cluster to the GKE on-prem API.",
       "type": "object",
       "properties": {
         "vmwareAdminClusterId": {
@@ -2485,7 +2500,7 @@
           "type": "string"
         },
         "membership": {
-          "description": "Required. This is the full resource name of this admin cluster's hub membership.",
+          "description": "Required. This is the full resource name of this admin cluster's fleet membership.",
           "type": "string"
         }
       }
@@ -2506,7 +2521,7 @@
     },
     "VmwareVersionInfo": {
       "id": "VmwareVersionInfo",
-      "description": "VmwareVersionInfo contains information about a specific Anthos on VMware version.",
+      "description": "Contains information about a specific Anthos on VMware version.",
       "type": "object",
       "properties": {
         "version": {
@@ -2521,19 +2536,19 @@
     },
     "BareMetalAdminCluster": {
       "id": "BareMetalAdminCluster",
-      "description": "Resource that represents a Bare Metal Admin Cluster.",
+      "description": "Resource that represents a bare metal admin cluster.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. The Bare Metal Admin Cluster resource name.",
+          "description": "Immutable. The bare metal admin cluster resource name.",
           "type": "string"
         },
         "description": {
-          "description": "A human readable description of this Bare Metal Admin Cluster.",
+          "description": "A human readable description of this bare metal admin cluster.",
           "type": "string"
         },
         "uid": {
-          "description": "Output only. The unique identifier of the Bare Metal Admin Cluster.",
+          "description": "Output only. The unique identifier of the bare metal admin cluster.",
           "readOnly": true,
           "type": "string"
         },
@@ -2541,7 +2556,7 @@
           "type": "string"
         },
         "state": {
-          "description": "Output only. The current state of the Bare Metal Admin Cluster.",
+          "description": "Output only. The current state of the bare metal admin cluster.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -2564,35 +2579,35 @@
           ]
         },
         "endpoint": {
-          "description": "Output only. The IP address name of Bare Metal Admin Cluster's API server.",
+          "description": "Output only. The IP address name of bare metal admin cluster's API server.",
           "readOnly": true,
           "type": "string"
         },
         "reconciling": {
-          "description": "Output only. If set, there are currently changes in flight to the Bare Metal Admin Cluster.",
+          "description": "Output only. If set, there are currently changes in flight to the bare metal Admin Cluster.",
           "readOnly": true,
           "type": "boolean"
         },
         "createTime": {
-          "description": "Output only. The time at which this Bare Metal Admin Cluster was created.",
+          "description": "Output only. The time at which this bare metal admin cluster was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. The time at which this Bare Metal Admin Cluster was last updated.",
+          "description": "Output only. The time at which this bare metal admin cluster was last updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "deleteTime": {
-          "description": "Output only. The time at which this Bare Metal Admin Cluster was deleted. If the resource is not deleted, this must be empty",
+          "description": "Output only. The time at which this bare metal admin cluster was deleted. If the resource is not deleted, this must be empty",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "localName": {
-          "description": "Output only. The object name of the Bare Metal Cluster custom resource. This field is used to support conflicting names when enrolling existing clusters to the API. When used as a part of cluster enrollment, this field will differ from the ID in the resource name. For new clusters, this field will match the user provided cluster ID and be visible in the last component of the resource name. It is not modifiable. All users should use this name to access their cluster using gkectl or kubectl and should expect to see the local name when viewing admin cluster controller logs.",
+          "description": "Output only. The object name of the bare metal Cluster custom resource. This field is used to support conflicting names when enrolling existing clusters to the API. When used as a part of cluster enrollment, this field will differ from the ID in the resource name. For new clusters, this field will match the user provided cluster name and be visible in the last component of the resource name. It is not modifiable. All users should use this name to access their cluster using gkectl or kubectl and should expect to see the local name when viewing admin cluster controller logs.",
           "readOnly": true,
           "type": "string"
         },
@@ -2601,7 +2616,7 @@
           "type": "string"
         },
         "annotations": {
-          "description": "Annotations on the Bare Metal Admin Cluster. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
+          "description": "Annotations on the bare metal admin cluster. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -2650,6 +2665,14 @@
           "description": "Output only. ValidationCheck representing the result of the preflight check.",
           "readOnly": true,
           "$ref": "ValidationCheck"
+        },
+        "nodeConfig": {
+          "description": "Workload node configuration.",
+          "$ref": "BareMetalAdminWorkloadNodeConfig"
+        },
+        "proxy": {
+          "description": "Proxy configuration.",
+          "$ref": "BareMetalAdminProxyConfig"
         }
       }
     },
@@ -2754,11 +2777,11 @@
     },
     "BareMetalAdminVipConfig": {
       "id": "BareMetalAdminVipConfig",
-      "description": "BareMetalAdminVipConfig for Bare Metal Load Balancer Config.",
+      "description": "BareMetalAdminVipConfig for bare metal Load Balancer Config.",
       "type": "object",
       "properties": {
         "controlPlaneVip": {
-          "description": "The VIP which you previously set aside for the Kubernetes API of this Bare Metal Admin Cluster.",
+          "description": "The VIP which you previously set aside for the Kubernetes API of this bare metal admin cluster.",
           "type": "string"
         }
       }
@@ -2824,7 +2847,7 @@
     },
     "BareMetalAdminClusterOperationsConfig": {
       "id": "BareMetalAdminClusterOperationsConfig",
-      "description": "BareMetalAdminClusterOperationsConfig specifies the Admin Cluster's observability infrastructure.",
+      "description": "BareMetalAdminClusterOperationsConfig specifies the admin cluster's observability infrastructure.",
       "type": "object",
       "properties": {
         "enableApplicationLogs": {
@@ -2835,7 +2858,7 @@
     },
     "BareMetalAdminMaintenanceConfig": {
       "id": "BareMetalAdminMaintenanceConfig",
-      "description": "BareMetalAdminMaintenanceConfig specifies configurations to put Bare Metal Admin cluster CRs nodes in and out of maintenance.",
+      "description": "BareMetalAdminMaintenanceConfig specifies configurations to put bare metal Admin cluster CRs nodes in and out of maintenance.",
       "type": "object",
       "properties": {
         "maintenanceAddressCidrBlocks": {
@@ -2849,7 +2872,7 @@
     },
     "BareMetalAdminMaintenanceStatus": {
       "id": "BareMetalAdminMaintenanceStatus",
-      "description": "BareMetalAdminMaintenanceStatus represents the maintenance status for Bare Metal Admin cluster CR's nodes.",
+      "description": "BareMetalAdminMaintenanceStatus represents the maintenance status for bare metal Admin cluster CR's nodes.",
       "type": "object",
       "properties": {
         "machineDrainStatus": {
@@ -2860,7 +2883,7 @@
     },
     "BareMetalAdminMachineDrainStatus": {
       "id": "BareMetalAdminMachineDrainStatus",
-      "description": "BareMetalAdminMachineDrainStatus represents the status of Bare Metal node machines that are undergoing drain operations.",
+      "description": "BareMetalAdminMachineDrainStatus represents the status of bare metal node machines that are undergoing drain operations.",
       "type": "object",
       "properties": {
         "drainingMachines": {
@@ -2906,13 +2929,43 @@
         }
       }
     },
+    "BareMetalAdminWorkloadNodeConfig": {
+      "id": "BareMetalAdminWorkloadNodeConfig",
+      "description": "BareMetalAdminWorkloadNodeConfig specifies the workload node configurations.",
+      "type": "object",
+      "properties": {
+        "maxPodsPerNode": {
+          "description": "The maximum number of pods a node can run. The size of the CIDR range assigned to the node will be derived from this parameter. By default 110 Pods are created per Node. Upper bound is 250 for both HA and non-HA admin cluster. Lower bound is 64 for non-HA admin cluster and 32 for HA admin cluster.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "BareMetalAdminProxyConfig": {
+      "id": "BareMetalAdminProxyConfig",
+      "description": "BareMetalAdminProxyConfig specifies the cluster proxy configuration.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Required. Specifies the address of your proxy server. Examples: `http:\/\/domain` WARNING: Do not provide credentials in the format `http:\/\/(username:password@)domain` these will be rejected by the server.",
+          "type": "string"
+        },
+        "noProxy": {
+          "description": "A list of IPs, hostnames, and domains that should skip the proxy. Examples: [\"127.0.0.1\", \"example.com\", \".corp\", \"localhost\"].",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ListBareMetalAdminClustersResponse": {
       "id": "ListBareMetalAdminClustersResponse",
-      "description": "Response message for listing Bare Metal Admin Clusters.",
+      "description": "Response message for listing bare metal admin clusters.",
       "type": "object",
       "properties": {
         "bareMetalAdminClusters": {
-          "description": "The list of Bare Metal Admin Cluster.",
+          "description": "The list of bare metal admin cluster.",
           "type": "array",
           "items": {
             "$ref": "BareMetalAdminCluster"
@@ -2933,7 +2986,7 @@
     },
     "EnrollBareMetalAdminClusterRequest": {
       "id": "EnrollBareMetalAdminClusterRequest",
-      "description": "Message for enrolling an existing Bare Metal Admin Cluster to the GKE on-prem API.",
+      "description": "Message for enrolling an existing bare metal admin cluster to the GKE on-prem API.",
       "type": "object",
       "properties": {
         "bareMetalAdminClusterId": {
@@ -2941,18 +2994,18 @@
           "type": "string"
         },
         "localName": {
-          "description": "The object name of the Bare Metal OnPremAdminCluster custom resource on the associated admin cluster. This field is used to support conflicting resource names when enrolling existing clusters to the API. When not provided, this field will resolve to the bare_metal_admin_cluster_id. Otherwise, it must match the object name of the Bare Metal OnPremAdminCluster custom resource. It is not modifiable outside \/ beyond the enrollment operation.",
+          "description": "The object name of the bare metal OnPremAdminCluster custom resource on the associated admin cluster. This field is used to support conflicting resource names when enrolling existing clusters to the API. When not provided, this field will resolve to the bare_metal_admin_cluster_id. Otherwise, it must match the object name of the bare metal OnPremAdminCluster custom resource. It is not modifiable outside \/ beyond the enrollment operation.",
           "type": "string"
         },
         "membership": {
-          "description": "Required. This is the full resource name of this admin cluster's hub membership.",
+          "description": "Required. This is the full resource name of this admin cluster's fleet membership.",
           "type": "string"
         }
       }
     },
     "QueryBareMetalAdminVersionConfigResponse": {
       "id": "QueryBareMetalAdminVersionConfigResponse",
-      "description": "Response message for querying Bare Metal admin cluster version config.",
+      "description": "Response message for querying bare metal admin cluster version config.",
       "type": "object",
       "properties": {
         "versions": {
@@ -3375,7 +3428,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent of the project and location that we are creating this cluster in. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "description": "Required. The parent of the project and location where the cluster is created in. Format: \"projects\/{project}\/locations\/{location}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3404,7 +3457,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new Bare Metal Cluster in a given project and location."
+                  "description": "Creates a new bare metal Cluster in a given project and location."
                 },
                 "delete": {
                   "id": "gkeonprem.projects.locations.bareMetalClusters.delete",
@@ -3413,19 +3466,19 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the Bare Metal User Cluster to be deleted. Format: \"projects\/{project}\/locations\/{location}\/bareMetalClusters\/{bare_metal_cluster}\"",
+                      "description": "Required. Name of the bare metal user cluster to be deleted. Format: \"projects\/{project}\/locations\/{location}\/bareMetalClusters\/{bare_metal_cluster}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "etag": {
-                      "description": "The current etag of the Bare Metal Cluster. If an etag is provided and does not match the current etag of the cluster, deletion will be blocked and an ABORTED error will be returned.",
+                      "description": "The current etag of the bare metal Cluster. If an etag is provided and does not match the current etag of the cluster, deletion will be blocked and an ABORTED error will be returned.",
                       "location": "query",
                       "type": "string"
                     },
                     "allowMissing": {
-                      "description": "If set to true, and the Bare Metal Cluster is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
+                      "description": "If set to true, and the bare metal Cluster is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -3449,7 +3502,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a single Bare Metal Cluster."
+                  "description": "Deletes a single bare metal Cluster."
                 },
                 "enroll": {
                   "id": "gkeonprem.projects.locations.bareMetalClusters.enroll",
@@ -3458,7 +3511,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent of the project and location that we are Enrolling this cluster in. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "description": "Required. The parent of the project and location where the cluster is enrolled in. Format: \"projects\/{project}\/locations\/{location}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3477,7 +3530,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Enrolls an existing Bare Metal User Cluster and its Node Pools to the GKE on-prem API within a given project and location. Through enrollment, an existing cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster and\/or its node pools will be expected to be performed through the API."
+                  "description": "Enrolls an existing bare metal user cluster and its Node Pools to the GKE on-prem API within a given project and location. Through enrollment, an existing cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster and\/or its node pools will be expected to be performed through the API."
                 },
                 "get": {
                   "id": "gkeonprem.projects.locations.bareMetalClusters.get",
@@ -3486,7 +3539,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the Bare Metal User Cluster to get. Format: \"projects\/{project}\/locations\/{location}\/bareMetalClusters\/{bare_metal_cluster}\"",
+                      "description": "Required. Name of the bare metal user cluster to get. Format: \"projects\/{project}\/locations\/{location}\/bareMetalClusters\/{bare_metal_cluster}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3502,7 +3555,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single Bare Metal Cluster."
+                  "description": "Gets details of a single bare metal Cluster."
                 },
                 "list": {
                   "id": "gkeonprem.projects.locations.bareMetalClusters.list",
@@ -3511,7 +3564,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent of the project and location that we are listing existing Bare Metal clusters in. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "description": "Required. The parent of the project and location where the clusters are listed in. Format: \"projects\/{project}\/locations\/{location}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3529,7 +3582,7 @@
                       "type": "string"
                     },
                     "showDeleted": {
-                      "description": "If true, shows deleted Bare Metal Clusters.",
+                      "description": "If true, shows deleted bare metal Clusters.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -3548,7 +3601,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists Bare Metal Clusters in a given project and location."
+                  "description": "Lists bare metal Clusters in a given project and location."
                 },
                 "unenroll": {
                   "id": "gkeonprem.projects.locations.bareMetalClusters.unenroll",
@@ -3557,19 +3610,19 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the Bare Metal User Cluster to be unenrolled. Format: \"projects\/{project}\/locations\/{location}\/bareMetalClusters\/{cluster}\"",
+                      "description": "Required. Name of the bare metal user cluster to be unenrolled. Format: \"projects\/{project}\/locations\/{location}\/bareMetalClusters\/{cluster}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "etag": {
-                      "description": "The current etag of the Bare Metal Cluster. If an etag is provided and does not match the current etag of the cluster, deletion will be blocked and an ABORTED error will be returned.",
+                      "description": "The current etag of the bare metal Cluster. If an etag is provided and does not match the current etag of the cluster, deletion will be blocked and an ABORTED error will be returned.",
                       "location": "query",
                       "type": "string"
                     },
                     "allowMissing": {
-                      "description": "If set to true, and the Bare Metal Cluster is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
+                      "description": "If set to true, and the bare metal Cluster is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -3593,7 +3646,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Unenrolls an existing Bare Metal User Cluster and its Node Pools from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters and Node Pools will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients."
+                  "description": "Unenrolls an existing bare metal user cluster and its Node Pools from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters and Node Pools will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients."
                 },
                 "patch": {
                   "id": "gkeonprem.projects.locations.bareMetalClusters.patch",
@@ -3602,7 +3655,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Immutable. The Bare Metal User Cluster resource name.",
+                      "description": "Immutable. The bare metal user cluster resource name.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3615,7 +3668,7 @@
                       "format": "google-fieldmask"
                     },
                     "allowMissing": {
-                      "description": "If set to true, and the Bare Metal Cluster is not found, the request will create a new Bare Metal Cluster with the provided configuration. The user must have both create and update permission to call Update with allow_missing set to true.",
+                      "description": "If set to true, and the bare metal Cluster is not found, the request will create a new bare metal Cluster with the provided configuration. The user must have both create and update permission to call Update with allow_missing set to true.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -3637,7 +3690,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the parameters of a single Bare Metal Cluster."
+                  "description": "Updates the parameters of a single bare metal Cluster."
                 },
                 "queryVersionConfig": {
                   "id": "gkeonprem.projects.locations.bareMetalClusters.queryVersionConfig",
@@ -3646,14 +3699,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent of the project and location that we are getting version config. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "description": "Required. The parent of the project and location to query for version config. Format: \"projects\/{project}\/locations\/{location}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "createConfig.adminClusterMembership": {
-                      "description": "The admin cluster membership. This is the full resource name of the admin cluster's hub membership. Format: \"projects\/{project}\/locations\/{location}\/memberships\/{membership}\"",
+                      "description": "The admin cluster membership. This is the full resource name of the admin cluster's fleet membership. Format: \"projects\/{project}\/locations\/{location}\/memberships\/{membership}\"",
                       "location": "query",
                       "type": "string"
                     },
@@ -3677,7 +3730,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Queries the Bare Metal user cluster version config."
+                  "description": "Queries the bare metal user cluster version config."
                 },
                 "setIamPolicy": {
                   "id": "gkeonprem.projects.locations.bareMetalClusters.setIamPolicy",
@@ -3877,7 +3930,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new Bare Metal Node Pool in a given project, location and Bare Metal Cluster."
+                      "description": "Creates a new bare metal Node Pool in a given project, location and Bare Metal Cluster."
                     },
                     "delete": {
                       "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.delete",
@@ -3898,7 +3951,7 @@
                           "type": "string"
                         },
                         "allowMissing": {
-                          "description": "If set to true, and the Bare Metal Node Pool is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
+                          "description": "If set to true, and the bare metal Node Pool is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
                           "location": "query",
                           "type": "boolean"
                         },
@@ -3917,7 +3970,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a single Bare Metal Node Pool."
+                      "description": "Deletes a single bare metal Node Pool."
                     },
                     "get": {
                       "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.get",
@@ -3942,7 +3995,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets details of a single Bare Metal Node Pool."
+                      "description": "Gets details of a single bare metal Node Pool."
                     },
                     "list": {
                       "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.list",
@@ -3969,7 +4022,7 @@
                           "type": "string"
                         },
                         "showDeleted": {
-                          "description": "If true, shows deleted Bare Metal Clusters.",
+                          "description": "If true, shows deleted bare metal Clusters.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -3983,7 +4036,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists Bare Metal Node Pools in a given project, location and Bare Metal Cluster."
+                      "description": "Lists bare metal Node Pools in a given project, location and bare metal Cluster."
                     },
                     "patch": {
                       "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.patch",
@@ -3992,7 +4045,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Immutable. The Bare Metal Node Pool resource name.",
+                          "description": "Immutable. The bare metal Node Pool resource name.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+\/bareMetalNodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -4005,7 +4058,7 @@
                           "format": "google-fieldmask"
                         },
                         "allowMissing": {
-                          "description": "If set to true, and the Bare Metal Node Pool is not found, the request will create a new Bare Metal Node Pool with the provided configuration. The user must have both create and update permission to call Update with allow_missing set to true.",
+                          "description": "If set to true, and the bare metal Node Pool is not found, the request will create a new bare metal Node Pool with the provided configuration. The user must have both create and update permission to call Update with allow_missing set to true.",
                           "location": "query",
                           "type": "boolean"
                         },
@@ -4027,7 +4080,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates the parameters of a single Bare Metal Node Pool."
+                      "description": "Updates the parameters of a single bare metal Node Pool."
                     },
                     "setIamPolicy": {
                       "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.setIamPolicy",
@@ -4202,7 +4255,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent of the project and location that we are Enrolling this cluster in. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "description": "Required. The parent of the project and location where the cluster is Enrolled in. Format: \"projects\/{project}\/locations\/{location}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4221,7 +4274,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Enrolls an existing VMware User Cluster and its Node Pools to the GKE on-prem API within a given project and location. Through enrollment, an existing cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster and\/or its node pools will be expected to be performed through the API."
+                  "description": "Enrolls an existing VMware user cluster and its Node Pools to the GKE on-prem API within a given project and location. Through enrollment, an existing cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster and\/or its node pools will be expected to be performed through the API."
                 },
                 "unenroll": {
                   "id": "gkeonprem.projects.locations.vmwareClusters.unenroll",
@@ -4230,7 +4283,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the VMware User Cluster to be unenrolled. Format: \"projects\/{project}\/locations\/{location}\/vmwareClusters\/{vmware_cluster}\"",
+                      "description": "Required. Name of the VMware user cluster to be unenrolled. Format: \"projects\/{project}\/locations\/{location}\/vmwareClusters\/{vmware_cluster}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4266,7 +4319,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Unenrolls an existing VMware User Cluster and its Node Pools from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters and Node Pools will continue to run; however, they will no longer be accessible through the GKE on-prem API or UI."
+                  "description": "Unenrolls an existing VMware user cluster and its Node Pools from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters and Node Pools will continue to run; however, they will no longer be accessible through the GKE on-prem API or UI."
                 },
                 "create": {
                   "id": "gkeonprem.projects.locations.vmwareClusters.create",
@@ -4275,7 +4328,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent of the project and location that we are creating this cluster in. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "description": "Required. The parent of the project and location where this cluster is created in. Format: \"projects\/{project}\/locations\/{location}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4313,7 +4366,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the VMware User Cluster to be deleted. Format: \"projects\/{project}\/locations\/{location}\/vmwareClusters\/{vmware_cluster}\"",
+                      "description": "Required. Name of the VMware user cluster to be deleted. Format: \"projects\/{project}\/locations\/{location}\/vmwareClusters\/{vmware_cluster}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4358,7 +4411,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the VMware User Cluster to be returned. Format: \"projects\/{project}\/locations\/{location}\/vmwareClusters\/{vmware_cluster}\"",
+                      "description": "Required. Name of the VMware user cluster to be returned. Format: \"projects\/{project}\/locations\/{location}\/vmwareClusters\/{vmware_cluster}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4383,7 +4436,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent of the project and location that we are listing existing VMware clusters in. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "description": "Required. The parent of the project and location where the clusters are listed in. Format: \"projects\/{project}\/locations\/{location}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4429,7 +4482,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Immutable. The VMware User Cluster resource name.",
+                      "description": "Immutable. The VMware user cluster resource name.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4473,14 +4526,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent of the project and location that we are getting version config. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "description": "Required. The parent of the project and location to query for version config. Format: \"projects\/{project}\/locations\/{location}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "createConfig.adminClusterMembership": {
-                      "description": "The admin cluster membership. This is the full resource name of the admin cluster's hub membership. Format: \"projects\/{project}\/locations\/{location}\/memberships\/{membership}\"",
+                      "description": "The admin cluster membership. This is the full resource name of the admin cluster's fleet membership. Format: \"projects\/{project}\/locations\/{location}\/memberships\/{membership}\"",
                       "location": "query",
                       "type": "string"
                     },
@@ -5029,7 +5082,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent of the project and location that we are listing existing VMware Admin clusters in. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "description": "Required. The parent of the project and location where the clusters are listed in. Format: \"projects\/{project}\/locations\/{location}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5047,7 +5100,7 @@
                       "type": "string"
                     },
                     "showDeleted": {
-                      "description": "If true, shows deleted VMware Admin Clusters.",
+                      "description": "If true, shows deleted VMware admin clusters.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -5061,7 +5114,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists VMware Admin Clusters in a given project and location."
+                  "description": "Lists VMware admin clusters in a given project and location."
                 },
                 "get": {
                   "id": "gkeonprem.projects.locations.vmwareAdminClusters.get",
@@ -5070,7 +5123,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the VMware Admin Cluster to be returned. Format: \"projects\/{project}\/locations\/{location}\/vmwareAdminClusters\/{vmware_admin_cluster}\"",
+                      "description": "Required. Name of the VMware admin cluster to be returned. Format: \"projects\/{project}\/locations\/{location}\/vmwareAdminClusters\/{vmware_admin_cluster}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareAdminClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5086,7 +5139,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single VMware Admin Cluster."
+                  "description": "Gets details of a single VMware admin cluster."
                 },
                 "enroll": {
                   "id": "gkeonprem.projects.locations.vmwareAdminClusters.enroll",
@@ -5095,7 +5148,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent of the project and location that we are Enrolling this cluster in. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "description": "Required. The parent of the project and location where the cluster is enrolled in. Format: \"projects\/{project}\/locations\/{location}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5114,7 +5167,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Enrolls an existing VMware Admin Cluster to the GKE on-prem API within a given project and location. Through enrollment, an existing admin cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API."
+                  "description": "Enrolls an existing VMware admin cluster to the GKE on-prem API within a given project and location. Through enrollment, an existing admin cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API."
                 },
                 "unenroll": {
                   "id": "gkeonprem.projects.locations.vmwareAdminClusters.unenroll",
@@ -5123,19 +5176,19 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the Vmware Admin Cluster to be unenrolled. Format: \"projects\/{project}\/locations\/{location}\/vmwareAdminClusters\/{cluster}\"",
+                      "description": "Required. Name of the Vmware admin cluster to be unenrolled. Format: \"projects\/{project}\/locations\/{location}\/vmwareAdminClusters\/{cluster}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareAdminClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "etag": {
-                      "description": "The current etag of the Vmware Admin Cluster. If an etag is provided and does not match the current etag of the cluster, deletion will be blocked and an ABORTED error will be returned.",
+                      "description": "The current etag of the Vmware admin cluster. If an etag is provided and does not match the current etag of the cluster, deletion will be blocked and an ABORTED error will be returned.",
                       "location": "query",
                       "type": "string"
                     },
                     "allowMissing": {
-                      "description": "If set to true, and the Vmware Admin Cluster is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
+                      "description": "If set to true, and the Vmware admin cluster is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -5154,7 +5207,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Unenrolls an existing Vmware Admin Cluster from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients."
+                  "description": "Unenrolls an existing Vmware admin cluster from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients."
                 },
                 "patch": {
                   "id": "gkeonprem.projects.locations.vmwareAdminClusters.patch",
@@ -5163,7 +5216,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Immutable. The VMware Admin Cluster resource name.",
+                      "description": "Immutable. The VMware admin cluster resource name.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareAdminClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5176,7 +5229,7 @@
                       "format": "google-fieldmask"
                     },
                     "allowMissing": {
-                      "description": "If set to true, and the VMware Admin Cluster is not found, the request will create a new VMware Admin Cluster with the provided configuration. The user must have both create and update permission to call Update with allow_missing set to true.",
+                      "description": "If set to true, and the VMware admin cluster is not found, the request will create a new VMware admin cluster with the provided configuration. The user must have both create and update permission to call Update with allow_missing set to true.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -5198,7 +5251,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the parameters of a single VMware Admin Cluster."
+                  "description": "Updates the parameters of a single VMware admin cluster."
                 },
                 "setIamPolicy": {
                   "id": "gkeonprem.projects.locations.vmwareAdminClusters.setIamPolicy",
@@ -5371,7 +5424,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent of the project and location that we are creating this admin cluster in. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "description": "Required. The parent of the project and location where the cluster is created in. Format: \"projects\/{project}\/locations\/{location}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5400,7 +5453,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new Bare Metal Admin Cluster in a given project and location."
+                  "description": "Creates a new bare metal admin cluster in a given project and location."
                 },
                 "list": {
                   "id": "gkeonprem.projects.locations.bareMetalAdminClusters.list",
@@ -5409,7 +5462,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent of the project and location that we are listing existing Bare Metal Admin clusters in. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "description": "Required. The parent of the project and location where the clusters are listed in. Format: \"projects\/{project}\/locations\/{location}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5427,7 +5480,7 @@
                       "type": "string"
                     },
                     "showDeleted": {
-                      "description": "If true, shows deleted Bare Metal Admin Clusters.",
+                      "description": "If true, shows deleted bare metal admin clusters.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -5441,7 +5494,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists Bare Metal Admin Clusters in a given project and location."
+                  "description": "Lists bare metal admin clusters in a given project and location."
                 },
                 "get": {
                   "id": "gkeonprem.projects.locations.bareMetalAdminClusters.get",
@@ -5450,7 +5503,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the Bare Metal Admin Cluster to get. Format: \"projects\/{project}\/locations\/{location}\/bareMetalAdminClusters\/{bare_metal_admin_cluster}\"",
+                      "description": "Required. Name of the bare metal admin cluster to get. Format: \"projects\/{project}\/locations\/{location}\/bareMetalAdminClusters\/{bare_metal_admin_cluster}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalAdminClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5466,7 +5519,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single Bare Metal Admin Cluster."
+                  "description": "Gets details of a single bare metal admin cluster."
                 },
                 "enroll": {
                   "id": "gkeonprem.projects.locations.bareMetalAdminClusters.enroll",
@@ -5475,7 +5528,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent of the project and location that we are Enrolling this cluster in. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "description": "Required. The parent of the project and location where the cluster is enrolled in. Format: \"projects\/{project}\/locations\/{location}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5494,7 +5547,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Enrolls an existing Bare Metal Admin Cluster to the GKE on-prem API within a given project and location. Through enrollment, an existing admin cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API."
+                  "description": "Enrolls an existing bare metal admin cluster to the GKE on-prem API within a given project and location. Through enrollment, an existing admin cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API."
                 },
                 "unenroll": {
                   "id": "gkeonprem.projects.locations.bareMetalAdminClusters.unenroll",
@@ -5503,19 +5556,19 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the Bare Metal Admin Cluster to be unenrolled. Format: \"projects\/{project}\/locations\/{location}\/bareMetalAdminClusters\/{cluster}\"",
+                      "description": "Required. Name of the bare metal admin cluster to be unenrolled. Format: \"projects\/{project}\/locations\/{location}\/bareMetalAdminClusters\/{cluster}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalAdminClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "etag": {
-                      "description": "The current etag of the Bare Metal Admin Cluster. If an etag is provided and does not match the current etag of the cluster, deletion will be blocked and an ABORTED error will be returned.",
+                      "description": "The current etag of the bare metal admin cluster. If an etag is provided and does not match the current etag of the cluster, deletion will be blocked and an ABORTED error will be returned.",
                       "location": "query",
                       "type": "string"
                     },
                     "allowMissing": {
-                      "description": "If set to true, and the Bare Metal Admin Cluster is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
+                      "description": "If set to true, and the bare metal admin cluster is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -5534,7 +5587,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Unenrolls an existing Bare Metal Admin Cluster from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients."
+                  "description": "Unenrolls an existing bare metal admin cluster from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients."
                 },
                 "patch": {
                   "id": "gkeonprem.projects.locations.bareMetalAdminClusters.patch",
@@ -5543,7 +5596,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Immutable. The Bare Metal Admin Cluster resource name.",
+                      "description": "Immutable. The bare metal admin cluster resource name.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalAdminClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5556,7 +5609,7 @@
                       "format": "google-fieldmask"
                     },
                     "allowMissing": {
-                      "description": "If set to true, and the Bare Metal Admin Cluster is not found, the request will create a new Bare Metal Admin Cluster with the provided configuration. The user must have both create and update permission to call Update with allow_missing set to true.",
+                      "description": "If set to true, and the bare metal admin cluster is not found, the request will create a new bare metal admin cluster with the provided configuration. The user must have both create and update permission to call Update with allow_missing set to true.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -5578,7 +5631,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the parameters of a single Bare Metal Admin Cluster."
+                  "description": "Updates the parameters of a single bare metal admin cluster."
                 },
                 "queryVersionConfig": {
                   "id": "gkeonprem.projects.locations.bareMetalAdminClusters.queryVersionConfig",
@@ -5587,14 +5640,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent of the project and location that we are getting version config. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "description": "Required. The parent of the project and location to query for version config. Format: \"projects\/{project}\/locations\/{location}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "createConfig.bootstrapClusterMembership": {
-                      "description": "The bootstrap cluster membership. This is the full resource name of the bootstrap cluster's hub membership. Format: \"projects\/{project}\/locations\/{location}\/memberships\/{membership}\"",
+                      "description": "The bootstrap cluster membership. This is the full resource name of the bootstrap cluster's fleet membership. Format: \"projects\/{project}\/locations\/{location}\/memberships\/{membership}\"",
                       "location": "query",
                       "type": "string"
                     },
@@ -5613,7 +5666,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Queries the Bare Metal admin cluster version config."
+                  "description": "Queries the bare metal admin cluster version config."
                 },
                 "setIamPolicy": {
                   "id": "gkeonprem.projects.locations.bareMetalAdminClusters.setIamPolicy",

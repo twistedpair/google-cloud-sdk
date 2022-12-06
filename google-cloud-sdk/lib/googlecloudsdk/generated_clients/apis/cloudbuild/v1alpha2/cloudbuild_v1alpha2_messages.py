@@ -523,7 +523,7 @@ class BuildOptions(_messages.Message):
       operating system and build utilities. Also note that this is the minimum
       disk size that will be allocated for the build -- the build may run with
       a larger disk than requested. At present, the maximum disk size is
-      1000GB; builds that request more than the maximum are rejected with an
+      2000GB; builds that request more than the maximum are rejected with an
       error.
     dynamicSubstitutions: Option to specify whether or not to apply bash style
       string operations to the substitutions. NOTE: this is always enabled for

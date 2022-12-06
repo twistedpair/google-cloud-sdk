@@ -40,6 +40,7 @@ class DataplexV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_dataAttributeBindings = self.ProjectsLocationsDataAttributeBindingsService(self)
+    self.projects_locations_dataScans_jobs = self.ProjectsLocationsDataScansJobsService(self)
     self.projects_locations_dataScans = self.ProjectsLocationsDataScansService(self)
     self.projects_locations_dataTaxonomies_attributes = self.ProjectsLocationsDataTaxonomiesAttributesService(self)
     self.projects_locations_dataTaxonomies = self.ProjectsLocationsDataTaxonomiesService(self)
@@ -287,6 +288,70 @@ class DataplexV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsDataScansJobsService(base_api.BaseApiService):
+    """Service class for the projects_locations_dataScans_jobs resource."""
+
+    _NAME = 'projects_locations_dataScans_jobs'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsDataScansJobsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get DataScanJob resource.
+
+      Args:
+        request: (DataplexProjectsLocationsDataScansJobsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1DataScanJob) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataScans/{dataScansId}/jobs/{jobsId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.dataScans.jobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsDataScansJobsGetRequest',
+        response_type_name='GoogleCloudDataplexV1DataScanJob',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists DataScanJobs under the given dataScan.
+
+      Args:
+        request: (DataplexProjectsLocationsDataScansJobsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListDataScanJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataScans/{dataScansId}/jobs',
+        http_method='GET',
+        method_id='dataplex.projects.locations.dataScans.jobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/jobs',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsDataScansJobsListRequest',
+        response_type_name='GoogleCloudDataplexV1ListDataScanJobsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsDataScansService(base_api.BaseApiService):
     """Service class for the projects_locations_dataScans resource."""
 
@@ -296,6 +361,87 @@ class DataplexV1(base_api.BaseApiClient):
       super(DataplexV1.ProjectsLocationsDataScansService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a dataScan resource.
+
+      Args:
+        request: (DataplexProjectsLocationsDataScansCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataScans',
+        http_method='POST',
+        method_id='dataplex.projects.locations.dataScans.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['dataScanId'],
+        relative_path='v1/{+parent}/dataScans',
+        request_field='googleCloudDataplexV1DataScan',
+        request_type_name='DataplexProjectsLocationsDataScansCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete the dataScan resource.
+
+      Args:
+        request: (DataplexProjectsLocationsDataScansDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataScans/{dataScansId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.dataScans.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsDataScansDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get dataScan resource.
+
+      Args:
+        request: (DataplexProjectsLocationsDataScansGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1DataScan) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataScans/{dataScansId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.dataScans.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsDataScansGetRequest',
+        response_type_name='GoogleCloudDataplexV1DataScan',
+        supports_download=False,
+    )
 
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
@@ -321,6 +467,87 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataplexProjectsLocationsDataScansGetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists dataScans.
+
+      Args:
+        request: (DataplexProjectsLocationsDataScansListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListDataScansResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataScans',
+        http_method='GET',
+        method_id='dataplex.projects.locations.dataScans.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/dataScans',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsDataScansListRequest',
+        response_type_name='GoogleCloudDataplexV1ListDataScansResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update the dataScan resource.
+
+      Args:
+        request: (DataplexProjectsLocationsDataScansPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataScans/{dataScansId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.dataScans.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1DataScan',
+        request_type_name='DataplexProjectsLocationsDataScansPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Run(self, request, global_params=None):
+      r"""Run an on demand execution of a DataScan.
+
+      Args:
+        request: (DataplexProjectsLocationsDataScansRunRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1RunDataScanResponse) The response message.
+      """
+      config = self.GetMethodConfig('Run')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Run.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataScans/{dataScansId}:run',
+        http_method='POST',
+        method_id='dataplex.projects.locations.dataScans.run',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:run',
+        request_field='googleCloudDataplexV1RunDataScanRequest',
+        request_type_name='DataplexProjectsLocationsDataScansRunRequest',
+        response_type_name='GoogleCloudDataplexV1RunDataScanResponse',
         supports_download=False,
     )
 

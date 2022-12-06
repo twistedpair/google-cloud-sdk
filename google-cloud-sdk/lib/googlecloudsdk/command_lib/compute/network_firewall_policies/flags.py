@@ -206,8 +206,7 @@ def AddDestIpRanges(parser, required=False):
       type=arg_parsers.ArgList(),
       required=required,
       metavar='DEST_IP_RANGE',
-      help=('Destination IP ranges to match for this rule. '
-            'Can only be specified if DIRECTION is egress.'))
+      help='Destination IP ranges to match for this rule. ')
 
 
 def AddLayer4Configs(parser, required=False):

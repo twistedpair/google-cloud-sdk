@@ -23,32 +23,38 @@ import re
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
 
-_DEFAULT_API_VERSION = 'v1alpha1'
+VERSION_MAP = {
+    base.ReleaseTrack.ALPHA: 'v1alpha1',
+    base.ReleaseTrack.GA: 'v1',
+}
 
 
-def GetClientInstance(api_version=_DEFAULT_API_VERSION, no_http=False):
+def GetClientInstance(release_track=base.ReleaseTrack.GA, no_http=False):
+  api_version = VERSION_MAP.get(release_track)
   return apis.GetClientInstance('edgenetwork', api_version, no_http=no_http)
 
 
-def GetMessagesModule(api_version=_DEFAULT_API_VERSION):
+def GetMessagesModule(release_track=base.ReleaseTrack.GA):
+  api_version = VERSION_MAP.get(release_track)
   return apis.GetMessagesModule('edgenetwork', api_version)
 
 
-def GetResourceParser(api_version=_DEFAULT_API_VERSION):
+def GetResourceParser(release_track=base.ReleaseTrack.GA):
   resource_parser = resources.Registry()
+  api_version = VERSION_MAP.get(release_track)
   resource_parser.RegisterApiByName('edgenetwork', api_version)
   return resource_parser
 
 
-def WaitForOperation(operation, resource):
+def WaitForOperation(client, operation, resource):
   """Waits for the given google.longrunning.Operation to complete."""
   operation_ref = resources.REGISTRY.Parse(
       operation.name, collection='edgenetwork.projects.locations.operations')
-  poller = waiter.CloudOperationPoller(
-      resource,
-      GetClientInstance().projects_locations_operations)
+  poller = waiter.CloudOperationPoller(resource,
+                                       client.projects_locations_operations)
   waiter.WaitFor(
       poller, operation_ref,
       'Waiting for [{0}] to finish'.format(operation_ref.RelativeName()))

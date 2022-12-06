@@ -700,6 +700,10 @@ def GetNetworkInterfaces(args, client, holder, project, location, scope,
       'public_ptr_domain',
       'stack_type',
       'subnet',
+      'ipv6_address',
+      'ipv6_prefix_length',
+      'internal_ipv6_address',
+      'internal_ipv6_prefix_length',
   ])
   if (skip_defaults and
       not instance_utils.IsAnySpecified(args, *network_interface_args)):

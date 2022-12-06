@@ -23,6 +23,7 @@ from apitools.base.protorpclite import messages
 from apitools.base.py import  exceptions as apitools_exc
 from apitools.base.py import list_pager
 
+from googlecloudsdk.api_lib.regen import generate
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import resource
@@ -470,6 +471,9 @@ def GetAllAPIs():
   all_apis = []
   for api_name, versions in six.iteritems(apis_map.MAP):
     for api_version, _ in six.iteritems(versions):
+      # TODO(b/254265765) Remove once gRPC can generate resources.py module.
+      if api_version in generate.SKIP_APITOOLS_GENERATION.get(api_name, []):
+        continue
       all_apis.append(GetAPI(api_name, api_version))
   return all_apis
 

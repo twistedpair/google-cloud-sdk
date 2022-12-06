@@ -32,18 +32,42 @@ class ConfigType(enum.Enum):
   WORKFORCE_POOLS = 2
 
 
+class STSTokenEndpoints():
+  """Simple class to build STS token endpoints.
+
+  In the future this should be extended to support other TPC use cases
+  or replaced by a common TPC endpoint builder.
+  """
+
+  def __init__(self, enable_mtls=False):
+    self._sts_template = 'https://sts.{mtls}googleapis.com/{api}'
+    self._mtls = 'mtls.' if enable_mtls else ''
+
+  @property
+  def token_url(self):
+    api = 'v1/token'
+    return self._sts_template.format(mtls=self._mtls, api=api)
+
+  @property
+  def token_info_url(self):
+    api = 'v1/introspect'
+    return self._sts_template.format(mtls=self._mtls, api=api)
+
 RESOURCE_TYPE = 'credential configuration file'
 
 
 def create_credential_config(args, config_type):
   """Creates the byoid credential config based on CLI arguments."""
+  enable_mtls = getattr(args, 'enable_mtls', False)
+  token_endpoint_builder = STSTokenEndpoints(enable_mtls=enable_mtls)
+
   try:
     generator = get_generator(args, config_type)
     output = {
         'type': 'external_account',
         'audience': '//iam.googleapis.com/' + args.audience,
         'subject_token_type': generator.get_token_type(args.subject_token_type),
-        'token_url': 'https://sts.googleapis.com/v1/token',
+        'token_url': token_endpoint_builder.token_url,
         'credential_source': generator.get_source(args),
     }
 
@@ -61,6 +85,8 @@ def create_credential_config(args, config_type):
         service_account_impersonation[
             'token_lifetime_seconds'] = args.service_account_token_lifetime_seconds
         output['service_account_impersonation'] = service_account_impersonation
+    else:
+      output['token_info_url'] = token_endpoint_builder.token_info_url
 
     files.WriteFileContents(args.output_file, json.dumps(output, indent=2))
     log.CreatedResource(args.output_file, RESOURCE_TYPE)

@@ -37,6 +37,7 @@ import six
 
 MIN_TRIGGERER_AIRFLOW_VERSION = '2.2.5'
 MIN_TRIGGERER_COMPOSER_VERSION = '2.0.31'
+MIN_SCHEDULED_SNAPSHOTS_COMPOSER_VERSION = '2.0.32'
 
 PREREQUISITE_OPTION_ERROR_MSG = """\
 Cannot specify --{opt} without --{prerequisite}.
@@ -294,11 +295,12 @@ AUTOSCALING_FLAG_GROUP_DESCRIPTION = (
     'Composer 1.X as well).')
 
 SCHEDULED_SNAPSHOTS_GROUP_DESCRIPTION = (
-    'Group of arguments for setting scheduled snapshots settings in Composer 2')
+    'Group of arguments for setting scheduled snapshots settings in Composer '
+    '{} or greater.').format(MIN_SCHEDULED_SNAPSHOTS_COMPOSER_VERSION)
 
 SCHEDULED_SNAPSHOTS_UPDATE_GROUP_DESCRIPTION = (
     'Group of arguments used during update of scheduled snapshots settings in '
-    'Composer 2')
+    'Composer {} or greater.').format(MIN_SCHEDULED_SNAPSHOTS_COMPOSER_VERSION)
 
 TRIGGERER_PARAMETERS_FLAG_GROUP_DESCRIPTION = (
     'Group of arguments for setting triggerer settings in Composer {} '
@@ -413,7 +415,8 @@ CLUSTER_SECONDARY_RANGE_NAME_FLAG = base.Argument(
     allocated from this secondary range. NAME must be the name of an existing
     secondary range in the cluster subnetwork.
 
-    Cannot be specified unless `--enable-ip-alias` is also specified.
+    When used with Composer 1.x, cannot be specified unless `--enable-ip-alias`
+    is also specified.
     """)
 
 SERVICES_SECONDARY_RANGE_NAME_FLAG = base.Argument(
@@ -423,7 +426,8 @@ SERVICES_SECONDARY_RANGE_NAME_FLAG = base.Argument(
     Secondary range to be used for services (e.g. ClusterIPs). NAME must be the
     name of an existing secondary range in the cluster subnetwork.
 
-    Cannot be specified unless `--enable-ip-alias` is also specified.
+    When used with Composer 1.x, cannot be specified unless `--enable-ip-alias`
+    is also specified.
     """)
 
 MAX_PODS_PER_NODE = base.Argument(
@@ -496,7 +500,8 @@ CLOUD_SQL_MACHINE_TYPE = base.Argument(
     type=str,
     action=V1ExclusiveStoreAction,
     help="""\
-    Cloud SQL machine type used by the Airflow database.
+    Cloud SQL machine type used by the Airflow database. The list of available
+    machine types is available here: https://cloud.google.com/composer/pricing#db-machine-types.
     """)
 
 WEB_SERVER_MACHINE_TYPE = base.Argument(
@@ -760,7 +765,8 @@ CLUSTER_IPV4_CIDR_FLAG = base.Argument(
     IP address range for the pods in this cluster in CIDR notation
     (e.g. 10.0.0.0/14).
 
-    Cannot be specified unless `--enable-ip-alias` is also specified.
+    When used with Composer 1.x, cannot be specified unless `--enable-ip-alias`
+    is also specified.
     """)
 
 SERVICES_IPV4_CIDR_FLAG = base.Argument(
@@ -777,7 +783,8 @@ SERVICES_IPV4_CIDR_FLAG = base.Argument(
     If unspecified, the services CIDR range will be chosen with a default
     mask size.
 
-    Cannot be specified unless `--enable-ip-alias` is also specified.
+    When used with Composer 1.x, cannot be specified unless `--enable-ip-alias`
+    is also specified.
     """)
 
 ENABLE_IP_MASQ_AGENT_FLAG = base.Argument(
@@ -792,7 +799,8 @@ ENABLE_IP_MASQ_AGENT_FLAG = base.Argument(
     behind the cluster node's IP address. This is done when sending traffic to
     destinations outside the cluster's pod CIDR range.
 
-    Cannot be specified unless `--enable-ip-alias` is also specified.
+    When used with Composer 1.x, cannot be specified unless `--enable-ip-alias`
+    is also specified.
     """)
 
 ENABLE_PRIVATE_ENVIRONMENT_FLAG = base.Argument(
@@ -805,7 +813,8 @@ ENABLE_PRIVATE_ENVIRONMENT_FLAG = base.Argument(
 
     If not specified, cluster nodes will be assigned public IP addresses.
 
-    Cannot be specified unless `--enable-ip-alias` is also specified.
+    When used with Composer 1.x, cannot be specified unless `--enable-ip-alias`
+    is also specified.
     """)
 
 ENABLE_PRIVATE_ENDPOINT_FLAG = base.Argument(
@@ -1005,8 +1014,8 @@ ENABLE_SCHEDULED_SNAPSHOT_CREATION = base.Argument(
     required=True,
     help="""\
       When specified, snapshots of the environment will be created according to a schedule.
-      Can be specified for Composer 2.X or greater.
-    """)
+      Can be specified for Composer {} or greater.
+    """.format(MIN_SCHEDULED_SNAPSHOTS_COMPOSER_VERSION))
 
 # TODO(b/245909413): Specify the minor Composer version here:
 DISABLE_SCHEDULED_SNAPSHOT_CREATION = base.Argument(
@@ -1016,8 +1025,8 @@ DISABLE_SCHEDULED_SNAPSHOT_CREATION = base.Argument(
     action='store_const',
     help="""\
       Disables automated snapshots creation.
-      Can be specified for Composer 2.X or greater.
-    """)
+      Can be specified for Composer {} or greater.
+    """.format(MIN_SCHEDULED_SNAPSHOTS_COMPOSER_VERSION))
 
 SNAPSHOT_CREATION_SCHEDULE = base.Argument(
     '--snapshot-creation-schedule',
@@ -1026,8 +1035,8 @@ SNAPSHOT_CREATION_SCHEDULE = base.Argument(
     action=V2ExclusiveStoreAction,
     help="""\
       Cron expression specifying when snapshots of the environment should be created.
-      Can be specified for Composer 2.X or greater.
-    """)
+      Can be specified for Composer {} or greater.
+    """.format(MIN_SCHEDULED_SNAPSHOTS_COMPOSER_VERSION))
 
 SNAPSHOT_LOCATION = base.Argument(
     '--snapshot-location',
@@ -1036,8 +1045,8 @@ SNAPSHOT_LOCATION = base.Argument(
     required=True,
     help="""\
       The Cloud Storage location for storing automatically created snapshots.
-      Can be specified for Composer 2.X or greater.
-    """)
+      Can be specified for Composer {} or greater.
+    """.format(MIN_SCHEDULED_SNAPSHOTS_COMPOSER_VERSION))
 
 SNAPSHOT_SCHEDULE_TIMEZONE = base.Argument(
     '--snapshot-schedule-timezone',
@@ -1045,9 +1054,9 @@ SNAPSHOT_SCHEDULE_TIMEZONE = base.Argument(
     action=V2ExclusiveStoreAction,
     required=True,
     help="""\
-      Timezone that sets the context to interpret snapshot_creation_schedule
-      Can be specified for Composer 2.X or greater.
-    """)
+      Timezone that sets the context to interpret snapshot_creation_schedule.
+      Can be specified for Composer {} or greater.
+    """.format(MIN_SCHEDULED_SNAPSHOTS_COMPOSER_VERSION))
 
 MAINTENANCE_WINDOW_START_FLAG = base.Argument(
     '--maintenance-window-start',
@@ -1449,7 +1458,7 @@ def AddScheduledSnapshotFlagsToGroup(update_type_group):
   """
 
   update_group = update_type_group.add_argument_group(
-      SCHEDULED_SNAPSHOTS_UPDATE_GROUP_DESCRIPTION, hidden=True, mutex=True)
+      SCHEDULED_SNAPSHOTS_UPDATE_GROUP_DESCRIPTION, mutex=True)
   DISABLE_SCHEDULED_SNAPSHOT_CREATION.AddToParser(update_group)
 
   scheduled_snapshots_params_group = update_group.add_argument_group(

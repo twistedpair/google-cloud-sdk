@@ -258,7 +258,7 @@ def ParseMembership(args,
   if args.IsKnownAndSpecified('membership') or args.IsKnownAndSpecified(
       'MEMBERSHIP_NAME') or args.IsKnownAndSpecified(flag_override):
     if resources.MembershipLocationSpecified(args,
-                                             flag_override) and not search:
+                                             flag_override) or not search:
       return resources.MembershipResourceName(args, flag_override)
     else:
       return resources.SearchMembershipResource(

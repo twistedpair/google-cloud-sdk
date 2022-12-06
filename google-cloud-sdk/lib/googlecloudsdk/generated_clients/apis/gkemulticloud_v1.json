@@ -2464,7 +2464,7 @@
                       "type": "boolean"
                     },
                     "updateMask": {
-                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AttachedCluster: * `description`. * `annotations`. * `platform_version`. * `authorization.admin_users`. * `logging_config.component_config.enable_components`.",
+                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AttachedCluster: * `description`. * `annotations`. * `platform_version`. * `authorization.admin_users`. * `logging_config.component_config.enable_components`. * `monitoring_config.managed_prometheus_config.enabled`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

@@ -414,6 +414,22 @@ class CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest(_messages.Mess
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
+class CloudfunctionsProjectsLocationsFunctionsSetupFunctionUpgradeConfigRequest(_messages.Message):
+  r"""A
+  CloudfunctionsProjectsLocationsFunctionsSetupFunctionUpgradeConfigRequest
+  object.
+
+  Fields:
+    name: Required. The name of the function which should have configuration
+      copied for upgrade.
+    setupFunctionUpgradeConfigRequest: A SetupFunctionUpgradeConfigRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  setupFunctionUpgradeConfigRequest = _messages.MessageField('SetupFunctionUpgradeConfigRequest', 2)
+
+
 class CloudfunctionsProjectsLocationsFunctionsTestIamPermissionsRequest(_messages.Message):
   r"""A CloudfunctionsProjectsLocationsFunctionsTestIamPermissionsRequest
   object.
@@ -1755,9 +1771,9 @@ class ServiceConfig(_messages.Message):
   Enums:
     IngressSettingsValueValuesEnum: The ingress settings for the function,
       controlling what traffic can reach it.
-    SecurityLevelValueValuesEnum: Optional. Security level configure whether
-      the function only accepts https. This configuration is only applicable
-      to 1st Gen functions with Http trigger. By default https is optional for
+    SecurityLevelValueValuesEnum: Security level configure whether the
+      function only accepts https. This configuration is only applicable to
+      1st Gen functions with Http trigger. By default https is optional for
       1st Gen functions; 2nd Gen functions are https ONLY.
     VpcConnectorEgressSettingsValueValuesEnum: The egress settings for the
       connector, controlling what traffic is diverted through it.
@@ -1807,10 +1823,10 @@ class ServiceConfig(_messages.Message):
     revision: Output only. The name of service revision.
     secretEnvironmentVariables: Secret environment variables configuration.
     secretVolumes: Secret volumes configuration.
-    securityLevel: Optional. Security level configure whether the function
-      only accepts https. This configuration is only applicable to 1st Gen
-      functions with Http trigger. By default https is optional for 1st Gen
-      functions; 2nd Gen functions are https ONLY.
+    securityLevel: Security level configure whether the function only accepts
+      https. This configuration is only applicable to 1st Gen functions with
+      Http trigger. By default https is optional for 1st Gen functions; 2nd
+      Gen functions are https ONLY.
     service: Output only. Name of the service associated with a Function. The
       format of this field is
       `projects/{project}/locations/{region}/services/{service}`
@@ -1844,10 +1860,10 @@ class ServiceConfig(_messages.Message):
     ALLOW_INTERNAL_AND_GCLB = 3
 
   class SecurityLevelValueValuesEnum(_messages.Enum):
-    r"""Optional. Security level configure whether the function only accepts
-    https. This configuration is only applicable to 1st Gen functions with
-    Http trigger. By default https is optional for 1st Gen functions; 2nd Gen
-    functions are https ONLY.
+    r"""Security level configure whether the function only accepts https. This
+    configuration is only applicable to 1st Gen functions with Http trigger.
+    By default https is optional for 1st Gen functions; 2nd Gen functions are
+    https ONLY.
 
     Values:
       SECURITY_LEVEL_UNSPECIFIED: Unspecified.
@@ -1939,6 +1955,10 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
+
+
+class SetupFunctionUpgradeConfigRequest(_messages.Message):
+  r"""Request for the `SetupFunctionUpgradeConfig` method."""
 
 
 class Source(_messages.Message):

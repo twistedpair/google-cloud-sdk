@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2021 Google LLC. All Rights Reserved.
+# Copyright 2022 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -98,6 +98,47 @@ def GetEnvironmentResourceSpec():
       environmentsId=EnvironmentAttributeConfig())
 
 
+def GetDatascanResourceSpec():
+  """Gets Datascan resource spec."""
+  return concepts.ResourceSpec(
+      'dataplex.projects.locations.dataScans',
+      resource_name='datascan',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      dataScansId=DatascanAttributeConfig())
+
+
+def GetDataTaxonomyResourceSpec():
+  """Gets DataTaxonomy resource spec."""
+  return concepts.ResourceSpec(
+      'dataplex.projects.locations.dataTaxonomies',
+      resource_name='data taxonomy',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      dataTaxonomiesId=DataTaxonomyAttributeConfig())
+
+
+def GetDataAttributeBindingResourceSpec():
+  """Gets DataAttributeBinding resource spec."""
+  return concepts.ResourceSpec(
+      'dataplex.projects.locations.dataAttributeBindings',
+      resource_name='data attribute binding',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      dataAttributeBindingsId=DataAttributeBindingAttributeConfig())
+
+
+def GetDataAttributeResourceSpec():
+  """Gets Data Attribute resource spec."""
+  return concepts.ResourceSpec(
+      'dataplex.projects.locations.dataTaxonomies.attributes',
+      resource_name='data attribute',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      dataTaxonomiesId=DataTaxonomyAttributeConfig(),
+      attributesId=DataAttributeConfig())
+
+
 def LocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='location',
@@ -130,6 +171,37 @@ def ContentAttributeConfig():
 def EnvironmentAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='environment', help_text='The name of {resource} to use.')
+
+
+def DataTaxonomyAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='data_taxonomy', help_text='The name of {resource} to use.')
+
+
+def DataAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='data_attribute', help_text='The name of {resource} to use.')
+
+
+def DataAttributeBindingAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='data_attribute_binding', help_text='The name of {resource} to use.')
+
+
+def DatascanAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='dataScans', help_text='The name of {resource} to use.')
+
+
+def AddDatascanResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for a Dataplex Datascan."""
+  name = 'datascan' if positional else '--datascan'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetDatascanResourceSpec(),
+      'Arguments and flags that define the Dataplex datascan you want {}'
+      .format(verb),
+      required=True).AddToParser(parser)
 
 
 def AddProjectArg(parser, verb, positional=True):
@@ -208,4 +280,34 @@ def AddEnvironmentResourceArg(parser, verb, positional=True):
       name,
       GetEnvironmentResourceSpec(),
       'The Environment {}'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddDataTaxonomyResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for a Dataplex Data Taxonomy."""
+  name = 'data_taxonomy' if positional else '--data_taxonomy'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetDataTaxonomyResourceSpec(),
+      'The DataTaxonomy {}'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddAttributeResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for a Dataplex Attribute."""
+  name = 'data_attribute' if positional else '--data_attribute'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetDataAttributeResourceSpec(),
+      'The DataAttribute {}'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddDataAttributeBindingResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for a Dataplex DataAttributeBinding."""
+  name = 'data_attribute_binding' if positional else '--data_attribute_binding'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetDataAttributeBindingResourceSpec(),
+      'The DataAttributeBinding {}'.format(verb),
       required=True).AddToParser(parser)

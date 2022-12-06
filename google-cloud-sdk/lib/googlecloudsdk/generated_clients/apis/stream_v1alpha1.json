@@ -387,7 +387,7 @@
     },
     "StreamInstance": {
       "id": "StreamInstance",
-      "description": "Message describing StreamInstance object Next ID: 12",
+      "description": "Message describing StreamInstance object Next ID: 13",
       "type": "object",
       "properties": {
         "name": {
@@ -449,6 +449,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "streamConfig": {
+          "description": "Optional. An optional config data to configure the client UI.",
+          "$ref": "StreamConfig"
         }
       }
     },
@@ -503,6 +507,17 @@
           "description": "The maximum number of concurrent streaming sessions that the instance can support in this location.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "StreamConfig": {
+      "id": "StreamConfig",
+      "description": "Describes the optional configuration payload that the customer wants to set up with for the instance.",
+      "type": "object",
+      "properties": {
+        "fallbackUri": {
+          "description": "User-specified fallback uri that should be launched from the client when there is a streaming server stock-out.",
+          "type": "string"
         }
       }
     },

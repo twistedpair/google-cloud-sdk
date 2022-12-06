@@ -2192,13 +2192,10 @@ class QuotaProperties(_messages.Message):
         not fail and available quota goes down to zero but it returns error.
       CHECK: Does not change any available quota. Only checks if there is
         enough quota. No lock is placed on the checked tokens neither.
-      RELEASE: DEPRECATED: Increases available quota by the operation cost
-        specified for the operation.
     """
     ACQUIRE = 0
     ACQUIRE_BEST_EFFORT = 1
     CHECK = 2
-    RELEASE = 3
 
   quotaMode = _messages.EnumField('QuotaModeValueValuesEnum', 1)
 

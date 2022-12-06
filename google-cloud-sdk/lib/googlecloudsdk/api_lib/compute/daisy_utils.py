@@ -143,9 +143,6 @@ AR_TO_CLOUD_BUILD_REGIONS = {
     'asia': 'asia-east1',
 }
 
-# Used for unit testing as api_tools mocks can only assert on exact matches
-bucket_random_suffix_override = None
-
 
 class FilteredLogTailer(cb_logs.GCSLogTailer):
   """Subclass of GCSLogTailer that allows for filtering."""
@@ -492,11 +489,12 @@ def _CreateRegionalCloudBuild(build_config, client, messages, build_region):
   return build, build_ref
 
 
-def GetDaisyBucketName(bucket_location=None):
+def GetDaisyBucketName(bucket_location=None, add_random_suffix=False):
   """Determine bucket name for daisy.
 
   Args:
     bucket_location: str, specified bucket location.
+    add_random_suffix: bool, specifies if a random suffix must be generated.
 
   Returns:
     str, bucket name for daisy.
@@ -507,22 +505,53 @@ def GetDaisyBucketName(bucket_location=None):
   bucket_name = '{0}-daisy-bkt'.format(safe_project)
   if bucket_location:
     bucket_name = '{0}-{1}'.format(bucket_name, bucket_location).lower()
-  safe_bucket_name = _GetSafeBucketName(bucket_name)
-  # TODO (b/117668144): Make Daisy scratch bucket ACLs same as
-  # source/destination bucket
+
+  safe_bucket_name = _GetSafeBucketName(bucket_name, add_random_suffix)
   return safe_bucket_name
 
 
-def _GetSafeBucketName(bucket_name):
-  # Rules are from https://cloud.google.com/storage/docs/naming.
+def _GenerateRandomBucketSuffix(suffix_len=9):
+  """Generates a random bucket suffix of a predefined length.
+
+  Args:
+    suffix_len: int, the length of the generated suffix.
+
+  Returns:
+    str, generated suffix in the format '-xxxxxx...'
+  """
+
+  letters = string.ascii_lowercase
+  return '-' + ''.join(random.choice(letters) for i in range(suffix_len - 1))
+
+
+def _GetSafeBucketName(bucket_name, add_random_suffix=False):
+  """Updates bucket name to meet https://cloud.google.com/storage/docs/naming.
+
+  Args:
+    bucket_name: str, input bucket name.
+    add_random_suffix: bool, if specified a random suffix is added to its name.
+
+  Returns:
+    str, safe bucket name.
+  """
 
   # Bucket name can't contain "google".
   bucket_name = bucket_name.replace('google', 'go-ogle')
+  if add_random_suffix:
+    suffix = _GenerateRandomBucketSuffix()
+    suffix = suffix.replace('google', 'go-ogle')
+  else:
+    suffix = ''
 
   # Bucket name can't start with "goog". Workaround for b/128691621
   bucket_name = bucket_name[:4].replace('goog', 'go-og') + bucket_name[4:]
 
-  return bucket_name
+  # Bucket names must contain 3-63 characters.
+  max_len = 63 - len(suffix)
+  if len(bucket_name) > max_len:
+    bucket_name = bucket_name[:max_len]
+
+  return bucket_name + suffix
 
 
 def CreateDaisyBucketInProject(bucket_location, storage_client):
@@ -547,12 +576,10 @@ def CreateDaisyBucketInProject(bucket_location, storage_client):
     # A bucket already exists under the same name but in a different project.
     # Concatenate a random 8 character suffix to the bucket name and try a
     # couple more times.
-    letters = string.ascii_lowercase
     bucket_in_project_created_or_found = False
     for _ in range(10):
-      random_suffix = bucket_random_suffix_override or ''.join(
-          random.choice(letters) for i in range(8))
-      randomized_bucket_name = '{0}-{1}'.format(bucket_name, random_suffix)
+      randomized_bucket_name = GetDaisyBucketName(bucket_location,
+                                                  add_random_suffix=True)
       try:
         storage_client.CreateBucketIfNotExists(
             randomized_bucket_name, location=bucket_location)

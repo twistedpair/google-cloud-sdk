@@ -708,7 +708,7 @@
           "format": "int32"
         },
         "securityLevel": {
-          "description": "Optional. Security level configure whether the function only accepts https. This configuration is only applicable to 1st Gen functions with Http trigger. By default https is optional for 1st Gen functions; 2nd Gen functions are https ONLY.",
+          "description": "Security level configure whether the function only accepts https. This configuration is only applicable to 1st Gen functions with Http trigger. By default https is optional for 1st Gen functions; 2nd Gen functions are https ONLY.",
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -913,6 +913,13 @@
             "type": "string"
           }
         }
+      }
+    },
+    "SetupFunctionUpgradeConfigRequest": {
+      "id": "SetupFunctionUpgradeConfigRequest",
+      "description": "Request for the `SetupFunctionUpgradeConfig` method.",
+      "type": "object",
+      "properties": {
       }
     },
     "GenerateUploadUrlRequest": {
@@ -1892,6 +1899,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Updates existing function."
+                },
+                "setupFunctionUpgradeConfig": {
+                  "id": "cloudfunctions.projects.locations.functions.setupFunctionUpgradeConfig",
+                  "path": "v2beta/{+name}:setupFunctionUpgradeConfig",
+                  "flatPath": "v2beta/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:setupFunctionUpgradeConfig",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the function which should have configuration copied for upgrade.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "SetupFunctionUpgradeConfigRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a 2nd Gen copy of the function configuration based on the 1st Gen function with the given name. This is the first step of the multi step process to upgrade 1st Gen functions to 2nd Gen. Only 2nd Gen configuration is setup as part of this request and traffic continues to be served by 1st Gen."
                 },
                 "delete": {
                   "id": "cloudfunctions.projects.locations.functions.delete",

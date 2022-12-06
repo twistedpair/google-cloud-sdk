@@ -861,6 +861,10 @@
           "description": "The number of threads per physical core. To disable simultaneous multithreading (SMT) set this to 1. If unset, the maximum number of threads supported per core by the underlying processor is assumed.",
           "type": "string",
           "format": "int64"
+        },
+        "enableNestedVirtualization": {
+          "description": "Whether or not to enable nested virtualization (defaults to false).",
+          "type": "boolean"
         }
       }
     },
@@ -1884,6 +1888,25 @@
         "podCidrOverprovisionConfig": {
           "description": "Pod CIDR size overprovisioning config for the nodepool. Pod CIDR size per node depends on max_pods_per_node. By default, the value of max_pods_per_node is doubled and then rounded off to next power of 2 to get the size of pod CIDR block per node. Example: max_pods_per_node of 30 would result in 64 IPs (\/26). This config can disable the doubling of IPs (we still round off to next power of 2) Example: max_pods_per_node of 30 will result in 32 IPs (\/27) when overprovisioning is disabled.",
           "$ref": "PodCIDROverprovisionConfig"
+        },
+        "additionalPodRangesConfig": {
+          "description": "Output only. [Output only] The additional pod ranges that are added to the cluster. These pod ranges can be used by new node pools to allocate pod IPs automatically. Once the range is removed it will not show up in IPAllocationPolicy.",
+          "readOnly": true,
+          "$ref": "AdditionalPodRangesConfig"
+        }
+      }
+    },
+    "AdditionalPodRangesConfig": {
+      "id": "AdditionalPodRangesConfig",
+      "description": "AdditionalPodRangesConfig is the configuration for additional pod secondary ranges supporting the ClusterUpdate message.",
+      "type": "object",
+      "properties": {
+        "podRangeNames": {
+          "description": "Name for pod secondary ipv4 range which has the actual range defined ahead.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -2293,10 +2316,12 @@
           "type": "string",
           "enumDescriptions": [
             "Default value, will be inferred as cluster scope.",
+            "DNS records are accessible from within the cluster.",
             "DNS records are accessible from within the VPC."
           ],
           "enum": [
             "DNS_SCOPE_UNSPECIFIED",
+            "CLUSTER_SCOPE",
             "VPC_SCOPE"
           ]
         },
@@ -3342,20 +3367,6 @@
         "enabled": {
           "description": "Enables l4 ILB subsetting for this cluster.",
           "type": "boolean"
-        }
-      }
-    },
-    "AdditionalPodRangesConfig": {
-      "id": "AdditionalPodRangesConfig",
-      "description": "AdditionalPodRangesConfig is the configuration for additional pod secondary ranges supporting the ClusterUpdate message.",
-      "type": "object",
-      "properties": {
-        "podRangeNames": {
-          "description": "Name for pod secondary ipv4 range which has the actual range defined ahead.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },

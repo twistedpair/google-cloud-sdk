@@ -205,8 +205,10 @@ class CloudresourcemanagerFoldersListRequest(_messages.Message):
       unspecified, server picks an appropriate default.
     pageToken: Optional. A pagination token returned from a previous call to
       `ListFolders` that indicates where this listing should continue from.
-    parent: Required. The resource name of the organization or folder whose
-      folders are being listed. Must be of the form `folders/{folder_id}` or
+    parent: Required. The name of the parent resource whose folders are being
+      listed. Only children of this parent resource are listed; descendants
+      are not listed. If the parent is a folder, use the value
+      `folders/{folder_id}`. If the parent is an organization, use the value
       `organizations/{org_id}`. Access to this method is controlled by
       checking the `resourcemanager.folders.list` permission on the `parent`.
     showDeleted: Optional. Controls whether folders in the DELETE_REQUESTED
@@ -582,9 +584,11 @@ class CloudresourcemanagerProjectsListRequest(_messages.Message):
       unspecified, server picks an appropriate default.
     pageToken: Optional. A pagination token returned from a previous call to
       ListProjects that indicates from where listing should continue.
-    parent: Required. The name of the parent resource to list projects under.
-      For example, setting this field to 'folders/1234' would list all
-      projects directly under that folder.
+    parent: Required. The name of the parent resource whose projects are being
+      listed. Only children of this parent resource are listed; descendants
+      are not listed. If the parent is a folder, use the value
+      `folders/{folder_id}`. If the parent is an organization, use the value
+      `organizations/{org_id}`.
     showDeleted: Optional. Indicate that projects in the `DELETE_REQUESTED`
       state should also be returned. Normally only `ACTIVE` projects are
       returned.

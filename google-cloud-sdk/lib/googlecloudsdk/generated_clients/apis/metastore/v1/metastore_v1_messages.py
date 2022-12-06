@@ -88,9 +88,9 @@ class BackendMetastore(_messages.Message):
     metastoreType: The type of the backend metastore.
     name: The relative resource name of the metastore that is being federated.
       The formats of the relative resource names for the currently supported
-      metastores are listed below: Dataplex:
-      projects/{project_id}/locations/{location}/lakes/{lake_id} BigQuery:
-      projects/{project_id} Dataproc Metastore:
+      metastores are listed below: Dataplex
+      projects/{project_id}/locations/{location}/lakes/{lake_id} BigQuery
+      projects/{project_id} Dataproc Metastore
       projects/{project_id}/locations/{location}/services/{service_id}
   """
 
@@ -2276,14 +2276,15 @@ class TelemetryConfig(_messages.Message):
   r"""Telemetry Configuration for the Dataproc Metastore service.
 
   Enums:
-    LogFormatValueValuesEnum:
+    LogFormatValueValuesEnum: The output format of the Dataproc Metastore
+      service's logs.
 
   Fields:
-    logFormat: A LogFormatValueValuesEnum attribute.
+    logFormat: The output format of the Dataproc Metastore service's logs.
   """
 
   class LogFormatValueValuesEnum(_messages.Enum):
-    r"""LogFormatValueValuesEnum enum type.
+    r"""The output format of the Dataproc Metastore service's logs.
 
     Values:
       LOG_FORMAT_UNSPECIFIED: The LOG_FORMAT is not set.

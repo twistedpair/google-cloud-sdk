@@ -450,6 +450,7 @@ class DatastreamProjectsLocationsPrivateConnectionsCreateRequest(_messages.Messa
   r"""A DatastreamProjectsLocationsPrivateConnectionsCreateRequest object.
 
   Fields:
+    force: Optional. If set to true, will skip validations.
     parent: Required. The parent that owns the collection of
       PrivateConnections.
     privateConnection: A PrivateConnection resource to be passed as the
@@ -468,10 +469,11 @@ class DatastreamProjectsLocationsPrivateConnectionsCreateRequest(_messages.Messa
       (00000000-0000-0000-0000-000000000000).
   """
 
-  parent = _messages.StringField(1, required=True)
-  privateConnection = _messages.MessageField('PrivateConnection', 2)
-  privateConnectionId = _messages.StringField(3)
-  requestId = _messages.StringField(4)
+  force = _messages.BooleanField(1)
+  parent = _messages.StringField(2, required=True)
+  privateConnection = _messages.MessageField('PrivateConnection', 3)
+  privateConnectionId = _messages.StringField(4)
+  requestId = _messages.StringField(5)
 
 
 class DatastreamProjectsLocationsPrivateConnectionsDeleteRequest(_messages.Message):
@@ -1883,7 +1885,7 @@ class SingleTargetDataset(_messages.Message):
   r"""A single target dataset to which all data will be streamed.
 
   Fields:
-    datasetId: A string attribute.
+    datasetId: The dataset ID of the target dataset.
   """
 
   datasetId = _messages.StringField(1)

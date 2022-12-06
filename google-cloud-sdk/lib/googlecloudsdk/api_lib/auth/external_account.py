@@ -117,7 +117,8 @@ def GetExternalAccountId(creds):
   """
 
   if (c_creds.IsExternalAccountCredentials(creds) or
-      c_creds.IsExternalAccountUserCredentials(creds)):
-    return (creds.service_account_email or
+      c_creds.IsExternalAccountUserCredentials(creds) or
+      c_creds.IsExternalAccountAuthorizedUserCredentials(creds)):
+    return (getattr(creds, 'service_account_email', None) or
             c_introspect.GetExternalAccountId(creds))
   return None

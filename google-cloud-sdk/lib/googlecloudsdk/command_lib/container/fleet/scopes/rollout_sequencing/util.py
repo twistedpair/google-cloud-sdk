@@ -78,10 +78,10 @@ def UpdateClusterUpgrade(response, args):
     feature = enable_cmd.GetWithForceEnable()
     scope_name = base.ClusterUpgradeCommand.GetScopeNameWithProjectNumber(
         response.name)
-    update_cmd.Update(feature, scope_name)
+    updated_feature = update_cmd.Update(feature, scope_name)
     describe_cmd = base.DescribeCommand(args)
     return describe_cmd.AddClusterUpgradeInfoToScope(response, scope_name,
-                                                     feature)
+                                                     updated_feature)
   return response
 
 

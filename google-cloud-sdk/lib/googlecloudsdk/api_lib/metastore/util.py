@@ -48,6 +48,18 @@ class FederationDeleteError(Error):
   """Class for errors raised when deleting a federation."""
 
 
+class AlterLocationError(Error):
+  """Class for errors raised when altering metadata resource location."""
+
+
+class MoveTableToDatabaseError(Error):
+  """Class for errors raised when moving table to database."""
+
+
+class QueryMetadataError(Error):
+  """Class for errors raised when querying metadata."""
+
+
 def GetApiVersion(release_track=base.ReleaseTrack.GA):
   if release_track == base.ReleaseTrack.ALPHA:
     return METASTORE_ALPHA_API_VERSION

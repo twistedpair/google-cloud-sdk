@@ -25,7 +25,7 @@ from googlecloudsdk.calliope import base
 HTTP_ERROR_FORMAT = (
     'ResponseError: code={status_code}, message={status_message}')
 
-VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v1',
+VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v1alpha',
                base.ReleaseTrack.BETA: 'v1',
                base.ReleaseTrack.GA: 'v1'}
 

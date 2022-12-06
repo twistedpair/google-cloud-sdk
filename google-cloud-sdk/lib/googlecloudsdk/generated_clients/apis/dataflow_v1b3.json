@@ -1911,7 +1911,8 @@
             "The parameter specifies a Cloud Storage folder path to read from.",
             "The parameter specifies a Cloud Storage folder to write to.",
             "The parameter specifies a Pub\/Sub Topic.",
-            "The parameter specifies a Pub\/Sub Subscription."
+            "The parameter specifies a Pub\/Sub Subscription.",
+            "The parameter specifies a BigQuery table."
           ],
           "enum": [
             "DEFAULT",
@@ -1923,7 +1924,8 @@
             "GCS_READ_FOLDER",
             "GCS_WRITE_FOLDER",
             "PUBSUB_TOPIC",
-            "PUBSUB_SUBSCRIPTION"
+            "PUBSUB_SUBSCRIPTION",
+            "BIGQUERY_TABLE"
           ]
         },
         "customMetadata": {
@@ -5397,6 +5399,10 @@
         "workerLifecycleEvent": {
           "description": "Record of worker lifecycle events.",
           "$ref": "WorkerLifecycleEvent"
+        },
+        "workerThreadScalingReport": {
+          "description": "Thread scaling information reported by workers.",
+          "$ref": "WorkerThreadScalingReport"
         }
       }
     },
@@ -5599,6 +5605,18 @@
         }
       }
     },
+    "WorkerThreadScalingReport": {
+      "id": "WorkerThreadScalingReport",
+      "description": "Contains information about the thread scaling information of a worker.",
+      "type": "object",
+      "properties": {
+        "currentThreadCount": {
+          "description": "Current number of active threads in a worker.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "SendWorkerMessagesResponse": {
       "id": "SendWorkerMessagesResponse",
       "description": "The response to the worker messages.",
@@ -5629,6 +5647,10 @@
         "workerShutdownNoticeResponse": {
           "description": "Service's response to shutdown notice (currently empty).",
           "$ref": "WorkerShutdownNoticeResponse"
+        },
+        "workerThreadScalingReportResponse": {
+          "description": "Service's thread scaling recommendation for workers.",
+          "$ref": "WorkerThreadScalingReportResponse"
         }
       }
     },
@@ -5656,6 +5678,18 @@
       "description": "Service-side response to WorkerMessage issuing shutdown notice.",
       "type": "object",
       "properties": {
+      }
+    },
+    "WorkerThreadScalingReportResponse": {
+      "id": "WorkerThreadScalingReportResponse",
+      "description": "Contains the thread scaling recommendation for a worker from the backend.",
+      "type": "object",
+      "properties": {
+        "recommendedThreadCount": {
+          "description": "Recommended number of threads for a worker.",
+          "type": "integer",
+          "format": "int32"
+        }
       }
     }
   },

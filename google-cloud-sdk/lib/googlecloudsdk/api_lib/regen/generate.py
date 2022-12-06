@@ -48,6 +48,12 @@ _INIT_FILE_CONTENT = """\
 
 """
 
+# TODO(b/254265765) Remove once gRPC can generate resources.py module.
+SKIP_APITOOLS_GENERATION = {
+    'storage': set(
+        ['v2']),  # For v2 version, we do not have an equivalent JSON API.
+}
+
 
 class NoDefaultApiError(Exception):
   """Multiple apis versions are specified but no default is set."""
@@ -164,6 +170,11 @@ def _MakeApiMap(root_package, api_config):
     api_versions_map = apis_map.setdefault(api_name, {})
     has_default = False
     for api_version, api_config in six.iteritems(api_version_config):
+      if api_version in SKIP_APITOOLS_GENERATION.get(api_name, []):
+        apitools_client = None
+      else:
+        apitools_client = _MakeApitoolsClientDef(root_package, api_name,
+                                                 api_version)
       if api_config.get('gcloud_gapic_library'):
         gapic_client = _MakeGapicClientDef(root_package, api_name, api_version)
       else:
@@ -179,7 +190,7 @@ def _MakeApiMap(root_package, api_config):
       enable_mtls = api_config.get('enable_mtls', True)
       mtls_endpoint_override = api_config.get('mtls_endpoint_override', '')
       api_versions_map[api_version] = api_def.APIDef(
-          _MakeApitoolsClientDef(root_package, api_name, api_version),
+          apitools_client,
           gapic_client,
           default, enable_mtls, mtls_endpoint_override)
     if has_default:
@@ -235,10 +246,12 @@ def GenerateResourceModule(base_dir, root_dir, api_name, api_version,
 
   discovery_doc = resource_generator.DiscoveryDoc.FromJson(
       os.path.join(base_dir, root_dir, discovery_doc_path))
-  if discovery_doc.api_version != api_version:
-    logging.warning('Discovery api version %s does not match %s, '
-                    'this client will be accessible via new alias.',
-                    discovery_doc.api_version, api_version)
+  if (api_name.lower() not in resource_generator.MISMATCHED_VERSION_ALLOWLIST
+      and discovery_doc.api_version != api_version):
+    logging.warning(
+        'Discovery api version %s does not match %s, '
+        'this client will be accessible via new alias.',
+        discovery_doc.api_version, api_version)
   if discovery_doc.api_name != api_name:
     raise WrongDiscoveryDocError('api name {0}, expected {1}'.format(
         discovery_doc.api_name, api_name))

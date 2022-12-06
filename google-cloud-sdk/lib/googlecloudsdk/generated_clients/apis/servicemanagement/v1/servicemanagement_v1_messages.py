@@ -309,6 +309,7 @@ class BackendRule(_messages.Message):
     jwtAudience: The JWT audience is used when generating a JWT ID token for
       the backend. This ID token will be added in the HTTP "authorization"
       header, and sent to the backend.
+    minDeadline: Deprecated, do not use.
     operationDeadline: The number of seconds to wait for the completion of a
       long running operation. The default is no deadline.
     pathTranslation: A PathTranslationValueValuesEnum attribute.
@@ -363,10 +364,11 @@ class BackendRule(_messages.Message):
   deadline = _messages.FloatField(2)
   disableAuth = _messages.BooleanField(3)
   jwtAudience = _messages.StringField(4)
-  operationDeadline = _messages.FloatField(5)
-  pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 6)
-  protocol = _messages.StringField(7)
-  selector = _messages.StringField(8)
+  minDeadline = _messages.FloatField(5)
+  operationDeadline = _messages.FloatField(6)
+  pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 7)
+  protocol = _messages.StringField(8)
+  selector = _messages.StringField(9)
 
 
 class Billing(_messages.Message):
@@ -486,6 +488,117 @@ class ChangeReport(_messages.Message):
   """
 
   configChanges = _messages.MessageField('ConfigChange', 1, repeated=True)
+
+
+class ClientLibrarySettings(_messages.Message):
+  r"""Details about how and where to publish client libraries.
+
+  Enums:
+    LaunchStageValueValuesEnum: Launch stage of this version of the API.
+
+  Fields:
+    cppSettings: Settings for C++ client libraries.
+    dotnetSettings: Settings for .NET client libraries.
+    goSettings: Settings for Go client libraries.
+    javaSettings: Settings for legacy Java features, supported in the Service
+      YAML.
+    launchStage: Launch stage of this version of the API.
+    nodeSettings: Settings for Node client libraries.
+    phpSettings: Settings for PHP client libraries.
+    pythonSettings: Settings for Python client libraries.
+    restNumericEnums: When using transport=rest, the client request will
+      encode enums as numbers rather than strings.
+    rubySettings: Settings for Ruby client libraries.
+    version: Version of the API to apply these settings to.
+  """
+
+  class LaunchStageValueValuesEnum(_messages.Enum):
+    r"""Launch stage of this version of the API.
+
+    Values:
+      LAUNCH_STAGE_UNSPECIFIED: Do not use this default value.
+      UNIMPLEMENTED: The feature is not yet implemented. Users can not use it.
+      PRELAUNCH: Prelaunch features are hidden from users and are only visible
+        internally.
+      EARLY_ACCESS: Early Access features are limited to a closed group of
+        testers. To use these features, you must sign up in advance and sign a
+        Trusted Tester agreement (which includes confidentiality provisions).
+        These features may be unstable, changed in backward-incompatible ways,
+        and are not guaranteed to be released.
+      ALPHA: Alpha is a limited availability test for releases before they are
+        cleared for widespread use. By Alpha, all significant design issues
+        are resolved and we are in the process of verifying functionality.
+        Alpha customers need to apply for access, agree to applicable terms,
+        and have their projects allowlisted. Alpha releases don't have to be
+        feature complete, no SLAs are provided, and there are no technical
+        support obligations, but they will be far enough along that customers
+        can actually use them in test environments or for limited-use tests --
+        just like they would in normal production cases.
+      BETA: Beta is the point at which we are ready to open a release for any
+        customer to use. There are no SLA or technical support obligations in
+        a Beta release. Products will be complete from a feature perspective,
+        but may have some open outstanding issues. Beta releases are suitable
+        for limited production use cases.
+      GA: GA features are open to all developers and are considered stable and
+        fully qualified for production use.
+      DEPRECATED: Deprecated features are scheduled to be shut down and
+        removed. For more information, see the "Deprecation Policy" section of
+        our [Terms of Service](https://cloud.google.com/terms/) and the
+        [Google Cloud Platform Subject to the Deprecation
+        Policy](https://cloud.google.com/terms/deprecation) documentation.
+    """
+    LAUNCH_STAGE_UNSPECIFIED = 0
+    UNIMPLEMENTED = 1
+    PRELAUNCH = 2
+    EARLY_ACCESS = 3
+    ALPHA = 4
+    BETA = 5
+    GA = 6
+    DEPRECATED = 7
+
+  cppSettings = _messages.MessageField('CppSettings', 1)
+  dotnetSettings = _messages.MessageField('DotnetSettings', 2)
+  goSettings = _messages.MessageField('GoSettings', 3)
+  javaSettings = _messages.MessageField('JavaSettings', 4)
+  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 5)
+  nodeSettings = _messages.MessageField('NodeSettings', 6)
+  phpSettings = _messages.MessageField('PhpSettings', 7)
+  pythonSettings = _messages.MessageField('PythonSettings', 8)
+  restNumericEnums = _messages.BooleanField(9)
+  rubySettings = _messages.MessageField('RubySettings', 10)
+  version = _messages.StringField(11)
+
+
+class CommonLanguageSettings(_messages.Message):
+  r"""Required information for every language.
+
+  Enums:
+    DestinationsValueListEntryValuesEnum:
+
+  Fields:
+    destinations: The destination where API teams want this client library to
+      be published.
+    referenceDocsUri: Link to automatically generated reference documentation.
+      Example: https://cloud.google.com/nodejs/docs/reference/asset/latest
+  """
+
+  class DestinationsValueListEntryValuesEnum(_messages.Enum):
+    r"""DestinationsValueListEntryValuesEnum enum type.
+
+    Values:
+      CLIENT_LIBRARY_DESTINATION_UNSPECIFIED: Client libraries will neither be
+        generated nor published to package managers.
+      GITHUB: Generate the client library in a repo under
+        github.com/googleapis, but don't publish it to package managers.
+      PACKAGE_MANAGER: Publish the library to package managers like nuget.org
+        and npmjs.com.
+    """
+    CLIENT_LIBRARY_DESTINATION_UNSPECIFIED = 0
+    GITHUB = 1
+    PACKAGE_MANAGER = 2
+
+  destinations = _messages.EnumField('DestinationsValueListEntryValuesEnum', 1, repeated=True)
+  referenceDocsUri = _messages.StringField(2)
 
 
 class CompositeOperationMetadata(_messages.Message):
@@ -746,15 +859,8 @@ class ContextRule(_messages.Message):
 
 
 class Control(_messages.Message):
-  r"""Selects and configures the service controller used by the service. The
-  service controller handles two things: - **What is allowed:** for each API
-  request, Chemist checks the project status, activation status, abuse status,
-  billing status, service status, location restrictions, VPC Service Controls,
-  SuperQuota, and other policies. - **What has happened:** for each API
-  response, Chemist reports the telemetry data to analytics, auditing,
-  billing, eventing, logging, monitoring, sawmill, and tracing. Chemist also
-  accepts telemetry data not associated with API traffic, such as billing
-  metrics. Example: control: environment: servicecontrol.googleapis.com
+  r"""Selects and configures the service controller used by the service.
+  Example: control: environment: servicecontrol.googleapis.com
 
   Fields:
     environment: The service controller environment to use. If empty, no
@@ -763,6 +869,16 @@ class Control(_messages.Message):
   """
 
   environment = _messages.StringField(1)
+
+
+class CppSettings(_messages.Message):
+  r"""Settings for C++ client libraries.
+
+  Fields:
+    common: Some settings.
+  """
+
+  common = _messages.MessageField('CommonLanguageSettings', 1)
 
 
 class CustomError(_messages.Message):
@@ -946,6 +1062,16 @@ class DocumentationRule(_messages.Message):
   selector = _messages.StringField(3)
 
 
+class DotnetSettings(_messages.Message):
+  r"""Settings for Dotnet client libraries.
+
+  Fields:
+    common: Some settings.
+  """
+
+  common = _messages.MessageField('CommonLanguageSettings', 1)
+
+
 class EffectiveQuotaGroup(_messages.Message):
   r"""An effective quota group contains both the metadata for a quota group as
   derived from the service config, and the effective limits in that group as
@@ -1112,6 +1238,10 @@ class Endpoint(_messages.Message):
   origin request is allowed # to proceed. allow_cors: true
 
   Fields:
+    aliases: Unimplemented. Dot not use. DEPRECATED: This field is no longer
+      supported. Instead of using aliases, please specify multiple
+      google.api.Endpoint for each of the intended aliases. Additional names
+      that this endpoint will be hosted on.
     allowCors: Allowing [CORS](https://en.wikipedia.org/wiki/Cross-
       origin_resource_sharing), aka cross-domain traffic, would allow the
       backends served from this endpoint to receive and respond to HTTP
@@ -1125,9 +1255,10 @@ class Endpoint(_messages.Message):
       example, "8.8.8.8" or "myservice.appspot.com".
   """
 
-  allowCors = _messages.BooleanField(1)
-  name = _messages.StringField(2)
-  target = _messages.StringField(3)
+  aliases = _messages.StringField(1, repeated=True)
+  allowCors = _messages.BooleanField(2)
+  name = _messages.StringField(3)
+  target = _messages.StringField(4)
 
 
 class Enum(_messages.Message):
@@ -1453,6 +1584,16 @@ class GetPolicyOptions(_messages.Message):
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class GoSettings(_messages.Message):
+  r"""Settings for Go client libraries.
+
+  Fields:
+    common: Some settings.
+  """
+
+  common = _messages.MessageField('CommonLanguageSettings', 1)
+
+
 class Http(_messages.Message):
   r"""Defines the HTTP configuration for an API service. It contains a list of
   HttpRule, each specifying the mapping of an RPC method to one or more HTTP
@@ -1651,6 +1792,75 @@ class HttpRule(_messages.Message):
   selector = _messages.StringField(10)
 
 
+class JavaSettings(_messages.Message):
+  r"""Settings for Java client libraries.
+
+  Messages:
+    ServiceClassNamesValue: Configure the Java class name to use instead of
+      the service's for its corresponding generated GAPIC client. Keys are
+      fully-qualified service names as they appear in the protobuf (including
+      the full the language_settings.java.interface_names" field in
+      gapic.yaml. API teams should otherwise use the service name as it
+      appears in the protobuf. Example of a YAML configuration:: publishing:
+      java_settings: service_class_names: - google.pubsub.v1.Publisher:
+      TopicAdmin - google.pubsub.v1.Subscriber: SubscriptionAdmin
+
+  Fields:
+    common: Some settings.
+    libraryPackage: The package name to use in Java. Clobbers the java_package
+      option set in the protobuf. This should be used **only** by APIs who
+      have already set the language_settings.java.package_name" field in
+      gapic.yaml. API teams should use the protobuf java_package option where
+      possible. Example of a YAML configuration:: publishing: java_settings:
+      library_package: com.google.cloud.pubsub.v1
+    serviceClassNames: Configure the Java class name to use instead of the
+      service's for its corresponding generated GAPIC client. Keys are fully-
+      qualified service names as they appear in the protobuf (including the
+      full the language_settings.java.interface_names" field in gapic.yaml.
+      API teams should otherwise use the service name as it appears in the
+      protobuf. Example of a YAML configuration:: publishing: java_settings:
+      service_class_names: - google.pubsub.v1.Publisher: TopicAdmin -
+      google.pubsub.v1.Subscriber: SubscriptionAdmin
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ServiceClassNamesValue(_messages.Message):
+    r"""Configure the Java class name to use instead of the service's for its
+    corresponding generated GAPIC client. Keys are fully-qualified service
+    names as they appear in the protobuf (including the full the
+    language_settings.java.interface_names" field in gapic.yaml. API teams
+    should otherwise use the service name as it appears in the protobuf.
+    Example of a YAML configuration:: publishing: java_settings:
+    service_class_names: - google.pubsub.v1.Publisher: TopicAdmin -
+    google.pubsub.v1.Subscriber: SubscriptionAdmin
+
+    Messages:
+      AdditionalProperty: An additional property for a ServiceClassNamesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ServiceClassNamesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ServiceClassNamesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  common = _messages.MessageField('CommonLanguageSettings', 1)
+  libraryPackage = _messages.StringField(2)
+  serviceClassNames = _messages.MessageField('ServiceClassNamesValue', 3)
+
+
 class JwtLocation(_messages.Message):
   r"""Specifies a location to extract JWT from an API request.
 
@@ -1824,6 +2034,30 @@ class LoggingDestination(_messages.Message):
   monitoredResource = _messages.StringField(2)
 
 
+class LongRunning(_messages.Message):
+  r"""Describes settings to use when generating API methods that use the long-
+  running operation pattern. All default values below are from those used in
+  the client library generators (e.g.
+  [Java](https://github.com/googleapis/gapic-generator-java/blob/04c2faa191a9b
+  5a10b92392fe8482279c4404803/src/main/java/com/google/api/generator/gapic/com
+  poser/common/RetrySettingsComposer.java)).
+
+  Fields:
+    initialPollDelay: Initial delay after which the first poll request will be
+      made. Default value: 5 seconds.
+    maxPollDelay: Maximum time between two subsequent poll requests. Default
+      value: 45 seconds.
+    pollDelayMultiplier: Multiplier to gradually increase delay between
+      subsequent polls until it reaches max_poll_delay. Default value: 1.5.
+    totalPollTimeout: Total polling timeout. Default value: 5 minutes.
+  """
+
+  initialPollDelay = _messages.StringField(1)
+  maxPollDelay = _messages.StringField(2)
+  pollDelayMultiplier = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  totalPollTimeout = _messages.StringField(4)
+
+
 class ManagedService(_messages.Message):
   r"""The full representation of a Service that is managed by Google Service
   Management.
@@ -1883,6 +2117,25 @@ class Method(_messages.Message):
   responseStreaming = _messages.BooleanField(5)
   responseTypeUrl = _messages.StringField(6)
   syntax = _messages.EnumField('SyntaxValueValuesEnum', 7)
+
+
+class MethodSettings(_messages.Message):
+  r"""Describes the generator configuration for a method.
+
+  Fields:
+    longRunning: Describes settings to use for long-running operations when
+      generating API methods for RPCs. Complements RPCs that use the
+      annotations in google/longrunning/operations.proto. Example of a YAML
+      configuration:: publishing: method_behavior: - selector: CreateAdDomain
+      long_running: initial_poll_delay: seconds: 60 # 1 minute
+      poll_delay_multiplier: 1.5 max_poll_delay: seconds: 360 # 6 minutes
+      total_poll_timeout: seconds: 54000 # 90 minutes
+    selector: The fully qualified name of the method, for which the options
+      below apply. This is used to find the method to apply the options.
+  """
+
+  longRunning = _messages.MessageField('LongRunning', 1)
+  selector = _messages.StringField(2)
 
 
 class MetricDescriptor(_messages.Message):
@@ -2402,6 +2655,16 @@ class MonitoringDestination(_messages.Message):
   monitoredResource = _messages.StringField(2)
 
 
+class NodeSettings(_messages.Message):
+  r"""Settings for Node client libraries.
+
+  Fields:
+    common: Some settings.
+  """
+
+  common = _messages.MessageField('CommonLanguageSettings', 1)
+
+
 class OAuthRequirements(_messages.Message):
   r"""OAuth scopes are a way to define data and permissions on data. For
   example, there are scopes defined for "Read-only access to Google Calendar"
@@ -2661,6 +2924,16 @@ class Page(_messages.Message):
   subpages = _messages.MessageField('Page', 3, repeated=True)
 
 
+class PhpSettings(_messages.Message):
+  r"""Settings for Php client libraries.
+
+  Fields:
+    common: Some settings.
+  """
+
+  common = _messages.MessageField('CommonLanguageSettings', 1)
+
+
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
@@ -2799,6 +3072,76 @@ class ProjectSettings(_messages.Message):
   serviceName = _messages.StringField(5)
   usageSettings = _messages.MessageField('UsageSettings', 6)
   visibilitySettings = _messages.MessageField('VisibilitySettings', 7)
+
+
+class Publishing(_messages.Message):
+  r"""This message configures the settings for publishing [Google Cloud Client
+  libraries](https://cloud.google.com/apis/docs/cloud-client-libraries)
+  generated from the service config.
+
+  Enums:
+    OrganizationValueValuesEnum: For whom the client library is being
+      published.
+
+  Fields:
+    apiShortName: Used as a tracking tag when collecting data about the APIs
+      developer relations artifacts like docs, packages delivered to package
+      managers, etc. Example: "speech".
+    codeownerGithubTeams: GitHub teams to be added to CODEOWNERS in the
+      directory in GitHub containing source code for the client libraries for
+      this API.
+    docTagPrefix: A prefix used in sample code when demarking regions to be
+      included in documentation.
+    documentationUri: Link to product home page. Example:
+      https://cloud.google.com/asset-inventory/docs/overview
+    githubLabel: GitHub label to apply to issues and pull requests opened for
+      this API.
+    librarySettings: Client library settings. If the same version string
+      appears multiple times in this list, then the last one wins. Settings
+      from earlier settings with the same version string are discarded.
+    methodSettings: A list of API method settings, e.g. the behavior for
+      methods that use the long-running operation pattern.
+    newIssueUri: Link to a place that API users can report issues. Example: ht
+      tps://issuetracker.google.com/issues/new?component=190865&template=11611
+      03
+    organization: For whom the client library is being published.
+  """
+
+  class OrganizationValueValuesEnum(_messages.Enum):
+    r"""For whom the client library is being published.
+
+    Values:
+      CLIENT_LIBRARY_ORGANIZATION_UNSPECIFIED: Not useful.
+      CLOUD: Google Cloud Platform Org.
+      ADS: Ads (Advertising) Org.
+      PHOTOS: Photos Org.
+      STREET_VIEW: Street View Org.
+    """
+    CLIENT_LIBRARY_ORGANIZATION_UNSPECIFIED = 0
+    CLOUD = 1
+    ADS = 2
+    PHOTOS = 3
+    STREET_VIEW = 4
+
+  apiShortName = _messages.StringField(1)
+  codeownerGithubTeams = _messages.StringField(2, repeated=True)
+  docTagPrefix = _messages.StringField(3)
+  documentationUri = _messages.StringField(4)
+  githubLabel = _messages.StringField(5)
+  librarySettings = _messages.MessageField('ClientLibrarySettings', 6, repeated=True)
+  methodSettings = _messages.MessageField('MethodSettings', 7, repeated=True)
+  newIssueUri = _messages.StringField(8)
+  organization = _messages.EnumField('OrganizationValueValuesEnum', 9)
+
+
+class PythonSettings(_messages.Message):
+  r"""Settings for Python client libraries.
+
+  Fields:
+    common: Some settings.
+  """
+
+  common = _messages.MessageField('CommonLanguageSettings', 1)
 
 
 class QueryUserAccessResponse(_messages.Message):
@@ -3401,6 +3744,16 @@ class Rollout(_messages.Message):
   trafficPercentStrategy = _messages.MessageField('TrafficPercentStrategy', 7)
 
 
+class RubySettings(_messages.Message):
+  r"""Settings for Ruby client libraries.
+
+  Fields:
+    common: Some settings.
+  """
+
+  common = _messages.MessageField('CommonLanguageSettings', 1)
+
+
 class Service(_messages.Message):
   r"""`Service` is the root object of Google API service configuration
   (service config). It describes the basic information about a logical
@@ -3458,6 +3811,9 @@ class Service(_messages.Message):
       goes through DNS verification to make sure the owner of the service also
       owns the DNS name.
     producerProjectId: The Google project that owns this service.
+    publishing: Settings for [Google Cloud Client
+      libraries](https://cloud.google.com/apis/docs/cloud-client-libraries)
+      generated from APIs defined as protocol buffers.
     quota: Quota configuration.
     sourceInfo: Output only. The source information for this configuration if
       available.
@@ -3498,13 +3854,14 @@ class Service(_messages.Message):
   monitoring = _messages.MessageField('Monitoring', 18)
   name = _messages.StringField(19)
   producerProjectId = _messages.StringField(20)
-  quota = _messages.MessageField('Quota', 21)
-  sourceInfo = _messages.MessageField('SourceInfo', 22)
-  systemParameters = _messages.MessageField('SystemParameters', 23)
-  systemTypes = _messages.MessageField('Type', 24, repeated=True)
-  title = _messages.StringField(25)
-  types = _messages.MessageField('Type', 26, repeated=True)
-  usage = _messages.MessageField('Usage', 27)
+  publishing = _messages.MessageField('Publishing', 21)
+  quota = _messages.MessageField('Quota', 22)
+  sourceInfo = _messages.MessageField('SourceInfo', 23)
+  systemParameters = _messages.MessageField('SystemParameters', 24)
+  systemTypes = _messages.MessageField('Type', 25, repeated=True)
+  title = _messages.StringField(26)
+  types = _messages.MessageField('Type', 27, repeated=True)
+  usage = _messages.MessageField('Usage', 28)
 
 
 class ServicemanagementOperationsGetRequest(_messages.Message):

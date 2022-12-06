@@ -485,7 +485,7 @@ class DatastreamV1(base_api.BaseApiClient):
         method_id='datastream.projects.locations.privateConnections.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['privateConnectionId', 'requestId'],
+        query_params=['force', 'privateConnectionId', 'requestId'],
         relative_path='v1/{+parent}/privateConnections',
         request_field='privateConnection',
         request_type_name='DatastreamProjectsLocationsPrivateConnectionsCreateRequest',

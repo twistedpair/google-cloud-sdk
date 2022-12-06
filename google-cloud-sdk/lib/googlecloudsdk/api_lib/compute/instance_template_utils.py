@@ -45,7 +45,11 @@ def CreateNetworkInterfaceMessage(resources,
                                   stack_type=None,
                                   ipv6_network_tier=None,
                                   nic_type=None,
-                                  ipv6_public_ptr_domain=None):
+                                  ipv6_public_ptr_domain=None,
+                                  ipv6_address=None,
+                                  ipv6_prefix_length=None,
+                                  internal_ipv6_address=None,
+                                  internal_ipv6_prefix_length=None):
   """Creates and returns a new NetworkInterface message.
 
   Args:
@@ -77,7 +81,16 @@ def CreateNetworkInterfaceMessage(resources,
                * GVNIC
                * VIRTIO_NET
     ipv6_public_ptr_domain: a string represents the custom PTR domain assigned
-        to the interface.
+      to the interface.
+    ipv6_address: a string represents the external IPv6 address reserved to the
+      interface.
+    ipv6_prefix_length: a string represents the external IPv6 address
+      prefix length reserved to the interface.
+    internal_ipv6_address: a string represents the internal IPv6 address
+      reserved to the interface.
+    internal_ipv6_prefix_length:  the internal IPv6 address prefix
+      length of the internal IPv6 address reserved to the interface.
+
   Returns:
     network_interface: a NetworkInterface message object
   """
@@ -125,6 +138,7 @@ def CreateNetworkInterfaceMessage(resources,
 
     network_interface.accessConfigs = [access_config]
 
+  ipv6_access_config = None
   if ipv6_network_tier is not None or ipv6_public_ptr_domain is not None:
     ipv6_access_config = messages.AccessConfig(
         name=constants.DEFAULT_IPV6_ACCESS_CONFIG_NAME,
@@ -137,6 +151,30 @@ def CreateNetworkInterfaceMessage(resources,
 
   if ipv6_public_ptr_domain is not None:
     ipv6_access_config.publicPtrDomainName = ipv6_public_ptr_domain
+
+  if ipv6_address is not None:
+    if ipv6_access_config is None:
+      ipv6_access_config = messages.AccessConfig(
+          name=constants.DEFAULT_IPV6_ACCESS_CONFIG_NAME,
+          type=messages.AccessConfig.TypeValueValuesEnum.DIRECT_IPV6)
+      network_interface.ipv6AccessConfigs = [ipv6_access_config]
+
+    ipv6_access_config.externalIpv6 = ipv6_address
+
+  if ipv6_prefix_length is not None:
+    if ipv6_access_config is None:
+      ipv6_access_config = messages.AccessConfig(
+          name=constants.DEFAULT_IPV6_ACCESS_CONFIG_NAME,
+          type=messages.AccessConfig.TypeValueValuesEnum.DIRECT_IPV6)
+      network_interface.ipv6AccessConfigs = [ipv6_access_config]
+
+    ipv6_access_config.externalIpv6PrefixLength = ipv6_prefix_length
+
+  if internal_ipv6_address is not None:
+    network_interface.ipv6Address = internal_ipv6_address
+
+  if internal_ipv6_prefix_length is not None:
+    network_interface.internalIpv6PrefixLength = internal_ipv6_prefix_length
 
   if alias_ip_ranges_string:
     network_interface.aliasIpRanges = (
@@ -192,7 +230,13 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
               stack_type=interface.get('stack-type', None),
               ipv6_network_tier=interface.get('ipv6-network-tier', None),
               ipv6_public_ptr_domain=interface.get('ipv6-public-ptr-domain',
-                                                   None)))
+                                                   None),
+              ipv6_address=interface.get('ipv6-address', None),
+              ipv6_prefix_length=interface.get('ipv6-prefix-length', None),
+              internal_ipv6_address=interface.get('internal-ipv6-address',
+                                                  None),
+              internal_ipv6_prefix_length=interface.get(
+                  'internal-ipv6-prefix-length', None)))
   return result
 
 

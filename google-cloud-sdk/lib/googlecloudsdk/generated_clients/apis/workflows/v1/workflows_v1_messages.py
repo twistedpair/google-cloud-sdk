@@ -334,6 +334,16 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class StateError(_messages.Message):
+  r"""Describes an error related to the current state of the Workflow.
+
+  Fields:
+    details: Provides specifics about the error.
+  """
+
+  details = _messages.StringField(1)
+
+
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -434,6 +444,9 @@ class Workflow(_messages.Message):
       field for an existing workflow results in a new workflow revision.
     sourceContents: Workflow code to be executed. The size limit is 128KB.
     state: Output only. State of the workflow deployment.
+    stateError: Output only. Error regarding the state of the Workflow. For
+      example, this field will have error details if the Execution data is
+      unavailable due to revoked KMS key permissions.
     updateTime: Output only. The last update timestamp of the workflow.
   """
 
@@ -443,9 +456,11 @@ class Workflow(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Invalid state.
       ACTIVE: The workflow has been deployed successfully and is serving.
+      UNAVAILABLE: Workflow data is unavailable. See the `state_error` field.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
+    UNAVAILABLE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -484,7 +499,8 @@ class Workflow(_messages.Message):
   serviceAccount = _messages.StringField(8)
   sourceContents = _messages.StringField(9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  stateError = _messages.MessageField('StateError', 11)
+  updateTime = _messages.StringField(12)
 
 
 class WorkflowsProjectsLocationsGetRequest(_messages.Message):

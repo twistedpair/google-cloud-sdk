@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+import six
 
 
 class ExecutionConfigFactory(object):
@@ -72,6 +73,10 @@ class ExecutionConfigFactory(object):
     if args.kms_key:
       kwargs['kmsKey'] = args.kms_key
 
+    if hasattr(args, 'max_idle') and args.max_idle:
+      # ExecutionConfig message expects duration in seconds
+      kwargs['idleTtl'] = six.text_type(args.max_idle) + 's'
+
     if not kwargs:
       return None
 
@@ -111,5 +116,4 @@ def AddArguments(parser):
       default=[],
       help='Network tags for traffic control.')
 
-  parser.add_argument(
-      '--kms-key', help='Cloud KMS key to use for encryption.')
+  parser.add_argument('--kms-key', help='Cloud KMS key to use for encryption.')

@@ -128,17 +128,10 @@ def GetLocationsUri(resource):
   return ref.SelfLink()
 
 
-def AddFunctionMemoryFlag(parser, track=None):
+def AddFunctionMemoryFlag(parser):
   """Add flag for specifying function memory to the parser."""
-  ga_help_text = """\
-  Limit on the amount of memory the function can use.
 
-  Allowed values are: 128MB, 256MB, 512MB, 1024MB, 2048MB, 4096MB, and
-  8192MB. By default, a new function is limited to 256MB of memory. When
-  deploying an update to an existing function, the function keeps its old
-  memory limit unless you specify this flag."""
-
-  nonga_help_text = """\
+  help_text = """\
   Limit on the amount of memory the function can use.
 
   Allowed values for v1 are: 128MB, 256MB, 512MB, 1024MB, 2048MB, 4096MB,
@@ -152,9 +145,6 @@ def AddFunctionMemoryFlag(parser, track=None):
   By default, a new function is limited to 256MB of memory. When
   deploying an update to an existing function, the function keeps its old
   memory limit unless you specify this flag."""
-
-  help_text = (
-      ga_help_text if track is base.ReleaseTrack.GA else nonga_help_text)
 
   parser.add_argument('--memory', type=str, help=help_text)
 
@@ -182,24 +172,17 @@ def ValidateV1TimeoutFlag(args):
         .format(args.timeout))
 
 
-def AddFunctionTimeoutFlag(parser, track=None):
+def AddFunctionTimeoutFlag(parser):
   """Add flag for specifying function timeout to the parser.
 
   Args:
     parser: the argparse parser for the command.
-    track: base.ReleaseTrack, calliope release track.
 
   Returns:
     None
   """
 
-  ga_help_text = """\
-      The function execution timeout, e.g. 30s for 30 seconds. Defaults to
-      original value for existing function or 60 seconds for new functions.
-      Cannot be more than 540s.
-      See $ gcloud topic datetimes for information on duration formats."""
-
-  nonga_help_text = """\
+  help_text = """\
       The function execution timeout, e.g. 30s for 30 seconds. Defaults to
       original value for existing function or 60 seconds for new functions.
 
@@ -211,8 +194,7 @@ def AddFunctionTimeoutFlag(parser, track=None):
 
   parser.add_argument(
       '--timeout',
-      help=ga_help_text
-      if track is base.ReleaseTrack.GA else nonga_help_text,
+      help=help_text,
       type=arg_parsers.Duration(lower_bound='1s'))
 
 
@@ -236,7 +218,7 @@ def AddAllowUnauthenticatedFlag(parser):
             'callers, without checking authentication.'))
 
 
-def AddServeAllTrafficLatestRevisionFlag(parser, track):
+def AddServeAllTrafficLatestRevisionFlag(parser):
   help_text = (
       'If specified, latest function revision will be served all traffic. '
       'This is only relevant when `--gen2` is provided.')
@@ -244,7 +226,6 @@ def AddServeAllTrafficLatestRevisionFlag(parser, track):
       '--serve-all-traffic-latest-revision',
       action='store_true',
       default=False,
-      hidden=_ShouldHideV2Flags(track),
       help=help_text)
 
 
@@ -257,7 +238,7 @@ def AddBuildpackStackFlag(parser):
   parser.add_argument('--buildpack-stack', type=str, help=help_text)
 
 
-def AddGen2Flag(parser, track):
+def AddGen2Flag(parser):
   """Add the --gen2 flag."""
   help_text = (
       'If enabled, this command will use Cloud Functions (Second generation). '
@@ -267,7 +248,6 @@ def AddGen2Flag(parser, track):
   parser.add_argument(
       '--gen2',
       default=False,
-      hidden=_ShouldHideV2Flags(track),
       action=actions.StoreBooleanProperty(properties.VALUES.functions.gen2),
       help=help_text)
 
@@ -276,23 +256,13 @@ def ShouldUseGen2():
   return bool(properties.VALUES.functions.gen2.GetBool())
 
 
-def _ShouldHideV2Flags(track):  # pylint: disable=unused-argument
-  return False
-
-
 def ShouldEnsureAllUsersInvoke(args):
-  if args.allow_unauthenticated:
-    return True
-  else:
-    return False
+  return args.allow_unauthenticated
 
 
 def ShouldDenyAllUsersInvoke(args):
-  if (args.IsSpecified('allow_unauthenticated') and
-      not args.allow_unauthenticated):
-    return True
-  else:
-    return False
+  return (args.IsSpecified('allow_unauthenticated') and
+          not args.allow_unauthenticated)
 
 
 def AddSourceFlag(parser):
@@ -494,16 +464,14 @@ def AddMinInstancesFlag(parser):
       """)
 
 
-def AddTriggerFlagGroup(parser, track=None):
+def AddTriggerFlagGroup(parser):
   """Add arguments specifying functions trigger to the parser.
 
   Args:
     parser: the argparse parser for the command.
-    track: base.ReleaseTrack, calliope release track.
   """
   trigger_flags = ['--trigger-topic', '--trigger-bucket', '--trigger-http']
-  if not _ShouldHideV2Flags(track):
-    trigger_flags.append('--trigger-event-filters')
+  trigger_flags.append('--trigger-event-filters')
   formatted_trigger_flags = ', '.join(['`{}`'.format(f) for f in trigger_flags])
 
   trigger_group = parser.add_mutually_exclusive_group(
@@ -535,8 +503,7 @@ def AddTriggerFlagGroup(parser, track=None):
       the `describe` command. Any HTTP request (of a supported type) to the
       endpoint will trigger function execution. Supported HTTP request
       types are: POST, PUT, GET, DELETE, and OPTIONS.""")
-  eventarc_trigger_group = trigger_group.add_argument_group(
-      hidden=_ShouldHideV2Flags(track))
+  eventarc_trigger_group = trigger_group.add_argument_group()
   concept_parsers.ConceptParser(
       [
           presentation_specs.ResourcePresentationSpec(
@@ -557,7 +524,6 @@ def AddTriggerFlagGroup(parser, track=None):
       '--trigger-event-filters',
       type=arg_parsers.ArgDict(),
       action=arg_parsers.UpdateAction,
-      hidden=_ShouldHideV2Flags(track),
       metavar='ATTRIBUTE=VALUE',
       help=(
           'The Eventarc matching criteria for the trigger. The criteria can '
@@ -569,7 +535,6 @@ def AddTriggerFlagGroup(parser, track=None):
       '--trigger-event-filters-path-pattern',
       type=arg_parsers.ArgDict(),
       action=arg_parsers.UpdateAction,
-      hidden=_ShouldHideV2Flags(track),
       metavar='ATTRIBUTE=VALUE',
       help="""\
       The Eventarc matching criteria for the trigger in path pattern format.
@@ -660,11 +625,10 @@ def RegionAttributeConfig():
   )
 
 
-def AddTriggerLocationFlag(parser, track):
+def AddTriggerLocationFlag(parser):
   """Add flag for specifying trigger location to the parser."""
   parser.add_argument(
       '--trigger-location',
-      hidden=_ShouldHideV2Flags(track),
       help=('The location of the trigger, which must be a region or multi-'
             'region where the relevant events originate. This is only '
             'relevant when `--gen2` is provided.'),
@@ -720,10 +684,9 @@ def AddServiceAccountFlag(parser):
       """)
 
 
-def AddRunServiceAccountFlag(parser, track):
+def AddRunServiceAccountFlag(parser):
   parser.add_argument(
       '--run-service-account',
-      hidden=_ShouldHideV2Flags(track),
       help="""\
       The email address of the IAM service account associated with the Cloud
       Run service for the function. The service account represents the identity
@@ -737,10 +700,9 @@ def AddRunServiceAccountFlag(parser, track):
       """)
 
 
-def AddTriggerServiceAccountFlag(parser, track):
+def AddTriggerServiceAccountFlag(parser):
   parser.add_argument(
       '--trigger-service-account',
-      hidden=_ShouldHideV2Flags(track),
       help="""\
       The email address of the IAM service account associated with the Eventarc
       trigger for the function. This is used for authenticated invocation.
@@ -758,10 +720,9 @@ def AddDataFlag(parser):
       help="""JSON string with data that will be passed to the function.""")
 
 
-def AddCloudEventsFlag(parser, track):
+def AddCloudEventsFlag(parser):
   parser.add_argument(
       '--cloud-event',
-      hidden=_ShouldHideV2Flags(track),
       help="""
       JSON encoded string with a CloudEvent in structured content mode.
 

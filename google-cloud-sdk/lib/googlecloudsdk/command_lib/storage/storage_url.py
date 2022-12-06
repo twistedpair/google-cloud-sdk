@@ -288,9 +288,11 @@ class CloudUrl(StorageUrl):
 
     Attributes:
       scheme (ProviderPrefix): The cloud provider.
-      bucket_name (str): The bucket name if url represents an object or bucket.
-      object_name (str): The object name if url represents an object or prefix.
-      generation (str): The generation number if present.
+      bucket_name (str|None): The bucket name if url represents an object or
+        bucket.
+      object_name (str|None): The object name if url represents an object or
+        prefix.
+      generation (str|None): The generation number if present.
   """
   CLOUD_URL_DELIM = '/'
 

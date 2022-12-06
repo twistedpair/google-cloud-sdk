@@ -1908,7 +1908,8 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesPatchRequest(_messages.
       `monitoring_config.import_features_analysis.state` *
       `monitoring_config.import_features_analysis.anomaly_detection_baseline`
       * `monitoring_config.numerical_threshold_config.value` *
-      `monitoring_config.categorical_threshold_config.value`
+      `monitoring_config.categorical_threshold_config.value` *
+      `offline_storage_ttl_days`
   """
 
   googleCloudAiplatformV1beta1EntityType = _messages.MessageField('GoogleCloudAiplatformV1beta1EntityType', 1)
@@ -2157,7 +2158,7 @@ class AiplatformProjectsLocationsFeaturestoresPatchRequest(_messages.Message):
       mask then only the non-empty fields present in the request will be
       overwritten. Set the update_mask to `*` to override all fields.
       Updatable fields: * `labels` * `online_serving_config.fixed_node_count`
-      * `online_serving_config.scaling`
+      * `online_serving_config.scaling` * `online_storage_ttl_days`
   """
 
   googleCloudAiplatformV1beta1Featurestore = _messages.MessageField('GoogleCloudAiplatformV1beta1Featurestore', 1)
@@ -4283,6 +4284,72 @@ class AiplatformProjectsLocationsOperationsListRequest(_messages.Message):
 
 class AiplatformProjectsLocationsOperationsWaitRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsOperationsWaitRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsPersistentResourcesOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPersistentResourcesOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsPersistentResourcesOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPersistentResourcesOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsPersistentResourcesOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPersistentResourcesOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsPersistentResourcesOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPersistentResourcesOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsPersistentResourcesOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPersistentResourcesOperationsWaitRequest
+  object.
 
   Fields:
     name: The name of the operation resource to wait on.
@@ -6635,8 +6702,8 @@ class GoogleCloudAiplatformInternalDocumentMetadata(_messages.Message):
   Fields:
     processorVersion: The Atlas processor version name that creates this human
       in the loop configuration.
-    sourceProject: The requester's numeric resource name of GCP Projects, e.g.
-      'projects/1234'.
+    sourceProject: The requester's numeric resource name of Google Cloud
+      projects, e.g. 'projects/1234'.
   """
 
   processorVersion = _messages.StringField(1)
@@ -7674,7 +7741,7 @@ class GoogleCloudAiplatformInternalGenericOperationMetadata(_messages.Message):
     createTime: Output only. Time when the operation was created.
     partialFailures: Output only. Partial failures encountered. E.g. single
       files that couldn't be read. This field should never exceed 20 entries.
-      Status details field will contain standard GCP error details.
+      Status details field will contain standard Google Cloud error details.
     state: Output only. Used only when Operation.done field is false. This
       field can indicate the pending state of operation and will be set to
       DONE when operation is done.
@@ -7752,7 +7819,7 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
       The de-identification config. If set this field, it will run HITL de-id
       instead of regular HITL pipeline.
     displayName: Required. The user-defined name of the Human in the Loop. The
-      name can be up to 128 characters long and can be consist of any UTF-8
+      name can be up to 128 characters long and can consist of any UTF-8
       characters. This field should be unique on project-level.
     documentCriteria: Required. Criteria for triggering a document labeling
       job.
@@ -7782,8 +7849,8 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
       "aiplatform.googleapis.com/" and are immutable. Following system labels
       exist for each HumanInTheLoop: * "aiplatform.googleapis.com/schema": -
       output only, its value is the inputs_schema's title.
-    marketplaceEntitlement: GCP Marketplace entitlement information to be
-      attached to this HITL.
+    marketplaceEntitlement: Google Cloud Marketplace entitlement information
+      to be attached to this HITL.
     name: Output only. The resource name of the human in the loop
       configuration.
     outputPath: Cloud Storage path the labeling answer will be written to.
@@ -7900,8 +7967,9 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
 
 class GoogleCloudAiplatformInternalHumanInTheLoopEntitlement(_messages.Message):
   r"""A HumanInTheLoopEntitlement represents a purchase of Human-in-the-Loop
-  (HITL) product made by a customer on the GCP Marketplace. It allows to the
-  purchased HITL product and to ensure the appropriate billing events occur.
+  (HITL) product made by a customer on the Google Cloud Marketplace. It allows
+  to the purchased HITL product and to ensure the appropriate billing events
+  occur.
 
   Enums:
     StateValueValuesEnum: State of the human in the loop entitlement.
@@ -7955,12 +8023,12 @@ class GoogleCloudAiplatformInternalHumanInTheLoopEntitlement(_messages.Message):
 
 
 class GoogleCloudAiplatformInternalHumanInTheLoopEntitlementCloudCommerceEntitlement(_messages.Message):
-  r"""Metadata for the corresponding entitlement in GCP Cloud Commerce.
+  r"""Metadata for the corresponding entitlement in Google Cloud Commerce.
 
   Fields:
-    account: The resource name of the GCP Cloud Commerce account that this
+    account: The resource name of the Google Cloud Commerce account that this
       entitlement is based on.
-    entitlementId: The string valued identifier generated by GCP Cloud
+    entitlementId: The string valued identifier generated by Google Cloud
       Commerce. This ID is consistent across consumer and partner side.
     planId: The identifier of the plan of the product that was procured. Plans
       represent different pricing models for the product. Required if the
@@ -7968,7 +8036,7 @@ class GoogleCloudAiplatformInternalHumanInTheLoopEntitlementCloudCommerceEntitle
     product: The product associated with this entitlement
     providerId: The string valued identifier of the service provider that this
       entitlement was created against. Each service provider is assigned a
-      unique provider value when they onboard with GCP platform.
+      unique provider value when they onboard with Google Cloud.
     usageReportingId: Used for reporting usage to service control.
   """
 
@@ -7994,11 +8062,11 @@ class GoogleCloudAiplatformInternalHumanInTheLoopEntitlementCloudCommerceEntitle
 
 
 class GoogleCloudAiplatformInternalHumanInTheLoopMarketplaceEntitlement(_messages.Message):
-  r"""Metadata describing a GCP Marketplace entitlement.
+  r"""Metadata describing a Google Cloud Marketplace entitlement.
 
   Fields:
-    cloudCommerceEntitlementId: The unique id from the GCP Marketplace
-      entitlement.
+    cloudCommerceEntitlementId: The unique id from the Google Cloud
+      Marketplace entitlement.
     planName: Name of plan indicating a specific tier of service and pricing.
     productName: Name of the product.
     providerName: Name of the provider of the entitlement.
@@ -8073,6 +8141,7 @@ class GoogleCloudAiplatformInternalImportFeatureValuesOperationMetadata(_message
       due to either * Not having any featureValues. * Having a null entityId.
       * Having a null timestamp. * Not being parsable (applicable for CSV
       sources).
+    sourceUris: The source URI from where Feature values are imported.
     timestampOutsideRetentionRowsCount: The number rows that weren't ingested
       due to having timestamps outside the retention boundary.
   """
@@ -8081,7 +8150,8 @@ class GoogleCloudAiplatformInternalImportFeatureValuesOperationMetadata(_message
   importedEntityCount = _messages.IntegerField(2)
   importedFeatureValueCount = _messages.IntegerField(3)
   invalidRowCount = _messages.IntegerField(4)
-  timestampOutsideRetentionRowsCount = _messages.IntegerField(5)
+  sourceUris = _messages.StringField(5, repeated=True)
+  timestampOutsideRetentionRowsCount = _messages.IntegerField(6)
 
 
 class GoogleCloudAiplatformInternalImportFeatureValuesResponse(_messages.Message):
@@ -8488,7 +8558,7 @@ class GoogleCloudAiplatformInternalSpecialistPool(_messages.Message):
       CrowdCompute. This can be used to composite URL to CrowdCompute UI with
       the pattern of: datacompute.google.com/[w|cm|r]/[crowd_compute_pool_id]
     displayName: Required. The user-defined name of the SpecialistPool. The
-      name can be up to 128 characters long and can be consist of any UTF-8
+      name can be up to 128 characters long and can consist of any UTF-8
       characters. This field should be unique on project-level.
     name: Required. The resource name of the SpecialistPool.
     pendingDataLabelingJobs: Output only. The resource name of the pending
@@ -9013,9 +9083,11 @@ class GoogleCloudAiplatformUiCopyModelResponse(_messages.Message):
   Fields:
     model: The name of the copied Model resource. Format:
       `projects/{project}/locations/{location}/models/{model}`
+    modelVersionId: Output only. The version ID of the model that is copied.
   """
 
   model = _messages.StringField(1)
+  modelVersionId = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformUiCreateDatasetOperationMetadata(_messages.Message):
@@ -10709,8 +10781,8 @@ class GoogleCloudAiplatformUiFeaturestoreMonitoringConfigThresholdConfig(_messag
 
 
 class GoogleCloudAiplatformUiGcpResources(_messages.Message):
-  r"""The schema of the GCP resource. It will be used to parse the output
-  parameter "GCP_RESOURCES"
+  r"""The schema of the Google Cloud resource. It will be used to parse the
+  output parameter "GCP_RESOURCES"
 
   Fields:
     resources: A list of resources.
@@ -10743,6 +10815,7 @@ class GoogleCloudAiplatformUiGcpResourcesResource(_messages.Message):
       BIGQUERYJOB: <no description>
       BATCHPREDICTIONJOB: <no description>
       HYPERPARAMETERTUNINGJOB: <no description>
+      DATAPROCBATCH: <no description>
     """
     UNKNOWN = 0
     CUSTOMJOB = 1
@@ -10750,6 +10823,7 @@ class GoogleCloudAiplatformUiGcpResourcesResource(_messages.Message):
     BIGQUERYJOB = 3
     BATCHPREDICTIONJOB = 4
     HYPERPARAMETERTUNINGJOB = 5
+    DATAPROCBATCH = 6
 
   error = _messages.MessageField('GoogleRpcStatus', 1)
   resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)
@@ -10808,7 +10882,7 @@ class GoogleCloudAiplatformUiGenericOperationMetadata(_messages.Message):
     createTime: Output only. Time when the operation was created.
     partialFailures: Output only. Partial failures encountered. E.g. single
       files that couldn't be read. This field should never exceed 20 entries.
-      Status details field will contain standard GCP error details.
+      Status details field will contain standard Google Cloud error details.
     state: Output only. Used only when Operation.done field is false. This
       field can indicate the pending state of operation and will be set to
       DONE when operation is done.
@@ -14132,7 +14206,7 @@ class GoogleCloudAiplatformUiSpecialistPool(_messages.Message):
       CrowdCompute. This can be used to composite URL to CrowdCompute UI with
       the pattern of: datacompute.google.com/[w|cm|r]/[crowd_compute_pool_id]
     displayName: Required. The user-defined name of the SpecialistPool. The
-      name can be up to 128 characters long and can be consist of any UTF-8
+      name can be up to 128 characters long and can consist of any UTF-8
       characters. This field should be unique on project-level.
     name: Required. The resource name of the SpecialistPool.
     pendingDataLabelingJobObjects: Output only. The DataLabelingJobs' metadata
@@ -15251,9 +15325,11 @@ class GoogleCloudAiplatformV1CopyModelResponse(_messages.Message):
   Fields:
     model: The name of the copied Model resource. Format:
       `projects/{project}/locations/{location}/models/{model}`
+    modelVersionId: Output only. The version ID of the model that is copied.
   """
 
   model = _messages.StringField(1)
+  modelVersionId = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1CreateDatasetOperationMetadata(_messages.Message):
@@ -16532,7 +16608,7 @@ class GoogleCloudAiplatformV1GenericOperationMetadata(_messages.Message):
     createTime: Output only. Time when the operation was created.
     partialFailures: Output only. Partial failures encountered. E.g. single
       files that couldn't be read. This field should never exceed 20 entries.
-      Status details field will contain standard GCP error details.
+      Status details field will contain standard Google Cloud error details.
     updateTime: Output only. Time when the operation was updated for the last
       time. If the operation has finished (successfully or not), this is the
       finish time.
@@ -16571,6 +16647,7 @@ class GoogleCloudAiplatformV1ImportFeatureValuesOperationMetadata(_messages.Mess
       due to either * Not having any featureValues. * Having a null entityId.
       * Having a null timestamp. * Not being parsable (applicable for CSV
       sources).
+    sourceUris: The source URI from where Feature values are imported.
     timestampOutsideRetentionRowsCount: The number rows that weren't ingested
       due to having timestamps outside the retention boundary.
   """
@@ -16579,7 +16656,8 @@ class GoogleCloudAiplatformV1ImportFeatureValuesOperationMetadata(_messages.Mess
   importedEntityCount = _messages.IntegerField(2)
   importedFeatureValueCount = _messages.IntegerField(3)
   invalidRowCount = _messages.IntegerField(4)
-  timestampOutsideRetentionRowsCount = _messages.IntegerField(5)
+  sourceUris = _messages.StringField(5, repeated=True)
+  timestampOutsideRetentionRowsCount = _messages.IntegerField(6)
 
 
 class GoogleCloudAiplatformV1ImportFeatureValuesResponse(_messages.Message):
@@ -17827,6 +17905,29 @@ class GoogleCloudAiplatformV1SchemaPredictPredictionTextSentimentPredictionResul
   sentiment = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformV1SchemaPredictPredictionTftFeatureImportance(_messages.Message):
+  r"""A GoogleCloudAiplatformV1SchemaPredictPredictionTftFeatureImportance
+  object.
+
+  Fields:
+    attributeColumns: A string attribute.
+    attributeWeights: A number attribute.
+    contextColumns: A string attribute.
+    contextWeights: TFT feature importance values. Each pair for
+      {context/horizon/attribute} should have the same shape since the weight
+      corresponds to the column names.
+    horizonColumns: A string attribute.
+    horizonWeights: A number attribute.
+  """
+
+  attributeColumns = _messages.StringField(1, repeated=True)
+  attributeWeights = _messages.FloatField(2, repeated=True, variant=_messages.Variant.FLOAT)
+  contextColumns = _messages.StringField(3, repeated=True)
+  contextWeights = _messages.FloatField(4, repeated=True, variant=_messages.Variant.FLOAT)
+  horizonColumns = _messages.StringField(5, repeated=True)
+  horizonWeights = _messages.FloatField(6, repeated=True, variant=_messages.Variant.FLOAT)
+
+
 class GoogleCloudAiplatformV1SchemaPredictPredictionTimeSeriesForecastingPredictionResult(_messages.Message):
   r"""Prediction output format for Time Series Forecasting.
 
@@ -17834,12 +17935,14 @@ class GoogleCloudAiplatformV1SchemaPredictPredictionTimeSeriesForecastingPredict
     quantilePredictions: Quantile predictions, in 1-1 correspondence with
       quantile_values.
     quantileValues: Quantile values.
+    tftFeatureImportance: Only use these if TFt is enabled.
     value: The regression value.
   """
 
   quantilePredictions = _messages.FloatField(1, repeated=True, variant=_messages.Variant.FLOAT)
   quantileValues = _messages.FloatField(2, repeated=True, variant=_messages.Variant.FLOAT)
-  value = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  tftFeatureImportance = _messages.MessageField('GoogleCloudAiplatformV1SchemaPredictPredictionTftFeatureImportance', 3)
+  value = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformV1SchemaPredictPredictionVideoActionRecognitionPredictionResult(_messages.Message):
@@ -20050,7 +20153,7 @@ class GoogleCloudAiplatformV1SpecialistPool(_messages.Message):
 
   Fields:
     displayName: Required. The user-defined name of the SpecialistPool. The
-      name can be up to 128 characters long and can be consist of any UTF-8
+      name can be up to 128 characters long and can consist of any UTF-8
       characters. This field should be unique on project-level.
     name: Required. The resource name of the SpecialistPool.
     pendingDataLabelingJobs: Output only. The resource name of the pending
@@ -21484,7 +21587,7 @@ class GoogleCloudAiplatformV1alpha1GenericOperationMetadata(_messages.Message):
     createTime: Output only. Time when the operation was created.
     partialFailures: Output only. Partial failures encountered. E.g. single
       files that couldn't be read. This field should never exceed 20 entries.
-      Status details field will contain standard GCP error details.
+      Status details field will contain standard Google Cloud error details.
     updateTime: Output only. Time when the operation was updated for the last
       time. If the operation has finished (successfully or not), this is the
       finish time.
@@ -22516,7 +22619,7 @@ class GoogleCloudAiplatformV1alpha1SpecialistPool(_messages.Message):
 
   Fields:
     displayName: Required. The user-defined name of the SpecialistPool. The
-      name can be up to 128 characters long and can be consist of any UTF-8
+      name can be up to 128 characters long and can consist of any UTF-8
       characters. This field should be unique on project-level.
     name: Required. The resource name of the SpecialistPool.
     pendingDataLabelingJobs: Output only. The resource name of the pending
@@ -23007,7 +23110,7 @@ class GoogleCloudAiplatformV1beta1AnnotationSpec(_messages.Message):
   Fields:
     createTime: Output only. Timestamp when this AnnotationSpec was created.
     displayName: Required. The user-defined name of the AnnotationSpec. The
-      name can be up to 128 characters long and can be consist of any UTF-8
+      name can be up to 128 characters long and can consist of any UTF-8
       characters.
     etag: Optional. Used to perform consistent read-modify-write updates. If
       not set, a blind "overwrite" update happens.
@@ -23549,7 +23652,7 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
       job.
     partialFailures: Output only. Partial failures encountered. For example,
       single files that can't be read. This field never exceeds 20 entries.
-      Status details fields contain standard GCP error details.
+      Status details fields contain standard Google Cloud error details.
     resourcesConsumed: Output only. Information about resources that had been
       consumed by this job. Provided in real time at best effort basis, as
       well as a final value once the job completes. Note: This field currently
@@ -23557,9 +23660,9 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
     serviceAccount: The service account that the DeployedModel's container
       runs as. If not specified, a system generated one will be used, which
       has minimal permissions and the custom container, if used, may not have
-      enough permission to access other GCP resources. Users deploying the
-      Model must have the `iam.serviceAccounts.actAs` permission on this
-      service account.
+      enough permission to access other Google Cloud resources. Users
+      deploying the Model must have the `iam.serviceAccounts.actAs` permission
+      on this service account.
     startTime: Output only. Time when the BatchPredictionJob for the first
       time entered the `JOB_STATE_RUNNING` state.
     state: Output only. The detailed state of the job.
@@ -24244,9 +24347,11 @@ class GoogleCloudAiplatformV1beta1CopyModelResponse(_messages.Message):
   Fields:
     model: The name of the copied Model resource. Format:
       `projects/{project}/locations/{location}/models/{model}`
+    modelVersionId: Output only. The version ID of the model that is copied.
   """
 
   model = _messages.StringField(1)
+  modelVersionId = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1CreateDatasetOperationMetadata(_messages.Message):
@@ -24484,7 +24589,7 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
   Fields:
     createTime: Output only. Time when the CustomJob was created.
     displayName: Required. The display name of the CustomJob. The name can be
-      up to 128 characters long and can be consist of any UTF-8 characters.
+      up to 128 characters long and can consist of any UTF-8 characters.
     encryptionSpec: Customer-managed encryption key options for a CustomJob.
       If this is set, then all resources created by the CustomJob will be
       encrypted with the provided encryption key.
@@ -24817,7 +24922,7 @@ class GoogleCloudAiplatformV1beta1DataLabelingJob(_messages.Message):
       labeling from a single Dataset. Format:
       `projects/{project}/locations/{location}/datasets/{dataset}`
     displayName: Required. The user-defined name of the DataLabelingJob. The
-      name can be up to 128 characters long and can be consist of any UTF-8
+      name can be up to 128 characters long and can consist of any UTF-8
       characters. Display name of a DataLabelingJob.
     encryptionSpec: Customer-managed encryption key spec for a
       DataLabelingJob. If set, this DataLabelingJob will be secured by this
@@ -24993,9 +25098,9 @@ class GoogleCloudAiplatformV1beta1Dataset(_messages.Message):
 
   Fields:
     createTime: Output only. Timestamp when this Dataset was created.
-    description: Optional. The description of the Dataset.
+    description: The description of the Dataset.
     displayName: Required. The user-defined name of the Dataset. The name can
-      be up to 128 characters long and can be consist of any UTF-8 characters.
+      be up to 128 characters long and can consist of any UTF-8 characters.
     encryptionSpec: Customer-managed encryption key spec for a Dataset. If
       set, this Dataset and all sub-resources of this Dataset will be secured
       by this key.
@@ -25623,7 +25728,7 @@ class GoogleCloudAiplatformV1beta1Endpoint(_messages.Message):
       EndpointService.UndeployModel respectively.
     description: The description of the Endpoint.
     displayName: Required. The display name of the Endpoint. The name can be
-      up to 128 characters long and can be consist of any UTF-8 characters.
+      up to 128 characters long and can consist of any UTF-8 characters.
     enablePrivateServiceConnect: Deprecated: If true, expose the Endpoint via
       private service connect. Only one of the fields, network or
       enable_private_service_connect, can be set.
@@ -25788,6 +25893,12 @@ class GoogleCloudAiplatformV1beta1EntityType(_messages.Message):
       be up to 64 characters long and can consist only of ASCII Latin letters
       A-Z and a-z and underscore(_), and ASCII digits 0-9 starting with a
       letter. The value will be unique given a featurestore.
+    offlineStorageTtlDays: Optional. Config for data retention policy in
+      offline storage. TTL in days for feature values that will be stored in
+      offline storage. The Feature Store offline storage periodically removes
+      obsolete feature values older than `offline_storage_ttl_days` since the
+      feature generation time. If unset (or explicitly set to 0), default to
+      4000 days TTL.
     updateTime: Output only. Timestamp when this EntityType was most recently
       updated.
   """
@@ -25829,7 +25940,8 @@ class GoogleCloudAiplatformV1beta1EntityType(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   monitoringConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig', 5)
   name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  offlineStorageTtlDays = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(8)
 
 
 class GoogleCloudAiplatformV1beta1EnvVar(_messages.Message):
@@ -27402,6 +27514,13 @@ class GoogleCloudAiplatformV1beta1Featurestore(_messages.Message):
       `OnlineStoreReplicationConfig`. If both of it and
       OnlineStoreReplicationConfig are unset, the feature store will not have
       an online store and cannot be used for online serving.
+    onlineStorageTtlDays: Optional. TTL in days for feature values that will
+      be stored in online serving storage. The Feature Store online storage
+      periodically removes obsolete feature values older than
+      `online_storage_ttl_days` since the feature generation time. Note that
+      `online_storage_ttl_days` should be less than or equal to
+      `offline_storage_ttl_days` for each EntityType under a featurestore. If
+      not set, default to 4000 days
     state: Output only. State of the featurestore.
     updateTime: Output only. Timestamp when this Featurestore was last
       updated.
@@ -27467,8 +27586,9 @@ class GoogleCloudAiplatformV1beta1Featurestore(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   onlineServingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeaturestoreOnlineServingConfig', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  onlineStorageTtlDays = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig(_messages.Message):
@@ -27733,7 +27853,7 @@ class GoogleCloudAiplatformV1beta1GenericOperationMetadata(_messages.Message):
     createTime: Output only. Time when the operation was created.
     partialFailures: Output only. Partial failures encountered. E.g. single
       files that couldn't be read. This field should never exceed 20 entries.
-      Status details field will contain standard GCP error details.
+      Status details field will contain standard Google Cloud error details.
     updateTime: Output only. Time when the operation was updated for the last
       time. If the operation has finished (successfully or not), this is the
       finish time.
@@ -27764,8 +27884,8 @@ class GoogleCloudAiplatformV1beta1HyperparameterTuningJob(_messages.Message):
     createTime: Output only. Time when the HyperparameterTuningJob was
       created.
     displayName: Required. The display name of the HyperparameterTuningJob.
-      The name can be up to 128 characters long and can be consist of any
-      UTF-8 characters.
+      The name can be up to 128 characters long and can consist of any UTF-8
+      characters.
     encryptionSpec: Customer-managed encryption key options for a
       HyperparameterTuningJob. If this is set, then all resources created by
       the HyperparameterTuningJob will be encrypted with the provided
@@ -28056,6 +28176,7 @@ class GoogleCloudAiplatformV1beta1ImportFeatureValuesOperationMetadata(_messages
       due to either * Not having any featureValues. * Having a null entityId.
       * Having a null timestamp. * Not being parsable (applicable for CSV
       sources).
+    sourceUris: The source URI from where Feature values are imported.
     timestampOutsideRetentionRowsCount: The number rows that weren't ingested
       due to having timestamps outside the retention boundary.
   """
@@ -28064,7 +28185,8 @@ class GoogleCloudAiplatformV1beta1ImportFeatureValuesOperationMetadata(_messages
   importedEntityCount = _messages.IntegerField(2)
   importedFeatureValueCount = _messages.IntegerField(3)
   invalidRowCount = _messages.IntegerField(4)
-  timestampOutsideRetentionRowsCount = _messages.IntegerField(5)
+  sourceUris = _messages.StringField(5, repeated=True)
+  timestampOutsideRetentionRowsCount = _messages.IntegerField(6)
 
 
 class GoogleCloudAiplatformV1beta1ImportFeatureValuesRequest(_messages.Message):
@@ -28179,7 +28301,7 @@ class GoogleCloudAiplatformV1beta1Index(_messages.Message):
       been undeployed first.
     description: The description of the Index.
     displayName: Required. The display name of the Index. The name can be up
-      to 128 characters long and can be consist of any UTF-8 characters.
+      to 128 characters long and can consist of any UTF-8 characters.
     etag: Used to perform consistent read-modify-write updates. If not set, a
       blind "overwrite" update happens.
     indexStats: Output only. Stats of the index resource.
@@ -29517,7 +29639,7 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
       different Locations.
     description: The description of the Model.
     displayName: Required. The display name of the Model. The name can be up
-      to 128 characters long and can be consist of any UTF-8 characters.
+      to 128 characters long and can consist of any UTF-8 characters.
     encryptionSpec: Customer-managed encryption key spec for a Model. If set,
       this Model and all sub-resources of this Model will be secured by this
       key.
@@ -29952,7 +30074,7 @@ class GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob(_messages.Message
       was created.
     displayName: Required. The user-defined name of the
       ModelDeploymentMonitoringJob. The name can be up to 128 characters long
-      and can be consist of any UTF-8 characters. Display name of a
+      and can consist of any UTF-8 characters. Display name of a
       ModelDeploymentMonitoringJob.
     enableMonitoringPipelineLogs: If true, the scheduled monitoring pipeline
       logs are sent to Google Cloud Logging, including pipeline status and
@@ -30902,7 +31024,7 @@ class GoogleCloudAiplatformV1beta1PipelineJob(_messages.Message):
   Fields:
     createTime: Output only. Pipeline creation time.
     displayName: The display name of the Pipeline. The name can be up to 128
-      characters long and can be consist of any UTF-8 characters.
+      characters long and can consist of any UTF-8 characters.
     encryptionSpec: Customer-managed encryption key spec for a pipelineJob. If
       set, this PipelineJob and all of its sub-resources will be secured by
       this key.
@@ -30925,7 +31047,7 @@ class GoogleCloudAiplatformV1beta1PipelineJob(_messages.Message):
       `projects/{project}/global/networks/{network}`. Where {project} is a
       project number, as in `12345`, and {network} is a network name. Private
       services access must already be configured for the network. Pipeline job
-      will apply the network configuration to the GCP resources being
+      will apply the network configuration to the Google Cloud resources being
       launched, if applied, such as Vertex AI Training or Dataflow job. If
       left unspecified, the workload is not peered with any network.
     pipelineSpec: The spec of the pipeline.
@@ -32759,6 +32881,30 @@ class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTextSentimentPrediction
   sentiment = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTftFeatureImportance(_messages.Message):
+  r"""A
+  GoogleCloudAiplatformV1beta1SchemaPredictPredictionTftFeatureImportance
+  object.
+
+  Fields:
+    attributeColumns: A string attribute.
+    attributeWeights: A number attribute.
+    contextColumns: A string attribute.
+    contextWeights: TFT feature importance values. Each pair for
+      {context/horizon/attribute} should have the same shape since the weight
+      corresponds to the column names.
+    horizonColumns: A string attribute.
+    horizonWeights: A number attribute.
+  """
+
+  attributeColumns = _messages.StringField(1, repeated=True)
+  attributeWeights = _messages.FloatField(2, repeated=True, variant=_messages.Variant.FLOAT)
+  contextColumns = _messages.StringField(3, repeated=True)
+  contextWeights = _messages.FloatField(4, repeated=True, variant=_messages.Variant.FLOAT)
+  horizonColumns = _messages.StringField(5, repeated=True)
+  horizonWeights = _messages.FloatField(6, repeated=True, variant=_messages.Variant.FLOAT)
+
+
 class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTimeSeriesForecastingPredictionResult(_messages.Message):
   r"""Prediction output format for Time Series Forecasting.
 
@@ -32766,12 +32912,14 @@ class GoogleCloudAiplatformV1beta1SchemaPredictPredictionTimeSeriesForecastingPr
     quantilePredictions: Quantile predictions, in 1-1 correspondence with
       quantile_values.
     quantileValues: Quantile values.
+    tftFeatureImportance: Only use these if TFt is enabled.
     value: The regression value.
   """
 
   quantilePredictions = _messages.FloatField(1, repeated=True, variant=_messages.Variant.FLOAT)
   quantileValues = _messages.FloatField(2, repeated=True, variant=_messages.Variant.FLOAT)
-  value = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  tftFeatureImportance = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaPredictPredictionTftFeatureImportance', 3)
+  value = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformV1beta1SchemaPredictPredictionVideoActionRecognitionPredictionResult(_messages.Message):
@@ -35034,7 +35182,7 @@ class GoogleCloudAiplatformV1beta1SearchModelDeploymentMonitoringStatsAnomaliesR
     topFeatureCount: If set, all attribution scores between
       SearchModelDeploymentMonitoringStatsAnomaliesRequest.start_time and
       SearchModelDeploymentMonitoringStatsAnomaliesRequest.end_time are
-      fetched, and page token doesn't take affect in this case. Only used to
+      fetched, and page token doesn't take effect in this case. Only used to
       retrieve attribution score for the top Features which has the highest
       attribution score in the latest monitoring run.
     type: A TypeValueValuesEnum attribute.
@@ -35126,7 +35274,7 @@ class GoogleCloudAiplatformV1beta1SpecialistPool(_messages.Message):
 
   Fields:
     displayName: Required. The user-defined name of the SpecialistPool. The
-      name can be up to 128 characters long and can be consist of any UTF-8
+      name can be up to 128 characters long and can consist of any UTF-8
       characters. This field should be unique on project-level.
     name: Required. The resource name of the SpecialistPool.
     pendingDataLabelingJobs: Output only. The resource name of the pending
@@ -35757,8 +35905,8 @@ class GoogleCloudAiplatformV1beta1TFRecordDestination(_messages.Message):
 
 class GoogleCloudAiplatformV1beta1Tensorboard(_messages.Message):
   r"""Tensorboard is a physical database that stores users' training metrics.
-  A default Tensorboard is provided in each region of a GCP project. If needed
-  users can also create extra Tensorboards in their projects.
+  A default Tensorboard is provided in each region of a Google Cloud project.
+  If needed users can also create extra Tensorboards in their projects.
 
   Messages:
     LabelsValue: The labels with user-defined metadata to organize your

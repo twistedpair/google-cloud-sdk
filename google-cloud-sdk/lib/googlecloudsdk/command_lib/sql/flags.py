@@ -211,8 +211,7 @@ def AddAssignIp(parser):
       '--assign-ip',
       help='Assign a public IP address to the instance. This is a public, '
       'externally available IPv4 address that you can use to connect to your '
-      'instance when properly authorized. Use --assign-ip to enable a public '
-      'IP and --no-assign-ip to disable it.',
+      'instance when properly authorized.',
       action=arg_parsers.StoreTrueFalseAction)
 
 
@@ -1386,9 +1385,7 @@ def AddDeletionProtection(parser):
     parser: The current argparse parser to add this to.
   """
   help_text = (
-      'Enable deletion protection on a Cloud SQL instance. Use '
-      '--deletion-protection to enable deletion protection on an instance and '
-      '--no-deletion-protection to disable it.')
+      'Enable deletion protection on a Cloud SQL instance.')
   parser.add_argument(
       '--deletion-protection',
       action=arg_parsers.StoreTrueFalseAction,
@@ -1428,9 +1425,9 @@ def AddTimeout(
     parser,
     default_max_wait,
     help_text='Time to synchronously wait for the operation to complete, after'
-    ' which the operation continues asynchronously. Ignored if '
-    '--async flag is specified. By default, set to 3600s. Set to '
-    '*unlimited* to wait indefinitely.'):
+              ' which the operation continues asynchronously. Ignored if '
+              '--async flag is specified. By default, set to 3600s. To wait '
+              'indefinitely, set to *unlimited*.'):
   """Adds --timeout flag."""
   parser.add_argument(
       '--timeout',

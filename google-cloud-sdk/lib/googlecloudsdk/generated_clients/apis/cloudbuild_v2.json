@@ -580,7 +580,7 @@
           "$ref": "Repository"
         },
         "repositoryId": {
-          "description": "Required. The ID to use for the repository, which will become the final component of the repository's resource name.",
+          "description": "Required. The ID to use for the repository, which will become the final component of the repository's resource name. This ID should be unique in the connection. Allows alphanumeric characters and any of -._~%!$&'()*+,;=@.",
           "type": "string"
         }
       }
@@ -1522,7 +1522,7 @@
           "$ref": "WorkflowStatusUpdateOptions"
         },
         "timeout": {
-          "description": "Time after which the Workflow times out.",
+          "description": "Time after which the Workflow times out. Deprecated - use timeouts instead.",
           "type": "string",
           "format": "google-duration"
         },
@@ -2005,7 +2005,7 @@
           }
         },
         "timeout": {
-          "description": "Time after which the Pipeline times out.",
+          "description": "Time after which the Pipeline times out. Deprecated - use timeouts instead.",
           "type": "string",
           "format": "google-duration"
         },
@@ -2051,6 +2051,14 @@
           "type": "array",
           "items": {
             "$ref": "PipelineRunTaskRunStatus"
+          }
+        },
+        "childReferences": {
+          "description": "Output only. List of TaskRun and Run names and PipelineTask names for children of this PipelineRun.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "ChildStatusReference"
           }
         },
         "etag": {
@@ -2325,6 +2333,28 @@
         "value": {
           "description": "Value of the result",
           "type": "string"
+        }
+      }
+    },
+    "ChildStatusReference": {
+      "id": "ChildStatusReference",
+      "description": "ChildStatusReference is used to point to the statuses of individual TaskRuns and Runs within this PipelineRun.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name is the name of the TaskRun or Run this is referencing.",
+          "type": "string"
+        },
+        "pipelineTaskName": {
+          "description": "PipelineTaskName is the name of the PipelineTask this is referencing.",
+          "type": "string"
+        },
+        "whenExpressions": {
+          "description": "WhenExpressions is the list of checks guarding the execution of the PipelineTask",
+          "type": "array",
+          "items": {
+            "$ref": "WhenExpression"
+          }
         }
       }
     },
@@ -3130,7 +3160,7 @@
                       "type": "string"
                     },
                     "connectionId": {
-                      "description": "Required. The ID to use for the Connection, which will become the final component of the Connection's resource name. Names must be unique per-project per-location. This value should be 4-63 characters, start with a lowercase letter, contain only lowercase letters, digits and dashes, and end with a lowercase letter or a digit. Regex: `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.",
+                      "description": "Required. The ID to use for the Connection, which will become the final component of the Connection's resource name. Names must be unique per-project per-location. Allows alphanumeric characters and any of -._~%!$&'()*+,;=@.",
                       "location": "query",
                       "type": "string"
                     }
@@ -3517,7 +3547,7 @@
                           "type": "string"
                         },
                         "repositoryId": {
-                          "description": "Required. The ID to use for the repository, which will become the final component of the repository's resource name.",
+                          "description": "Required. The ID to use for the repository, which will become the final component of the repository's resource name. This ID should be unique in the connection. Allows alphanumeric characters and any of -._~%!$&'()*+,;=@.",
                           "location": "query",
                           "type": "string"
                         }

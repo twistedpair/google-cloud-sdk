@@ -82,6 +82,17 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId', 'entryGroupsId', 'entriesId', 'tagsId'],
       True
   )
+  PROJECTS_LOCATIONS_OPERATIONS = (
+      'projects.locations.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_TAGTEMPLATES = (
       'projects.locations.tagTemplates',
       '{+name}',

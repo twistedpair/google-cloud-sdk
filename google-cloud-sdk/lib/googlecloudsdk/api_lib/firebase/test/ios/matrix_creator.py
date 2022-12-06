@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Create iOS test matrices in Firebase Test Lab."""
 
 from __future__ import absolute_import
@@ -145,12 +144,24 @@ class MatrixCreator(object):
             scenarios=self._args.scenario_numbers))
     return spec
 
+  def _BuildIosRoboTestSpec(self):
+    """Build a TestSpecification for an iOS Robo test."""
+    spec = self._messages.TestSpecification(
+        disableVideoRecording=not self._args.record_video,
+        iosTestSetup=self._BuildGenericTestSetup(),
+        testTimeout=matrix_ops.ReformatDuration(self._args.timeout),
+        iosRoboTest=self._messages.IosRoboTest(
+            appIpa=self._BuildFileReference(self._args.app)))
+    return spec
+
   def _TestSpecFromType(self, test_type):
     """Map a test type into its corresponding TestSpecification message ."""
     if test_type == 'xctest':
       return self._BuildIosXcTestSpec()
     elif test_type == 'game-loop':
       return self._BuildIosTestLoopTestSpec()
+    elif test_type == 'robo':
+      return self._BuildIosRoboTestSpec()
     else:  # It's a bug in our arg validation if we ever get here.
       raise exceptions.InvalidArgumentException(
           'type', 'Unknown test type "{}".'.format(test_type))
@@ -169,10 +180,10 @@ class MatrixCreator(object):
         iosDeviceList=self._messages.IosDeviceList(iosDevices=devices))
 
     gcs = self._messages.GoogleCloudStorage(gcsPath=self._gcs_results_root)
-    hist = self._messages.ToolResultsHistory(projectId=self._project,
-                                             historyId=self._history_id)
-    results = self._messages.ResultStorage(googleCloudStorage=gcs,
-                                           toolResultsHistory=hist)
+    hist = self._messages.ToolResultsHistory(
+        projectId=self._project, historyId=self._history_id)
+    results = self._messages.ResultStorage(
+        googleCloudStorage=gcs, toolResultsHistory=hist)
 
     client_info = matrix_creator_common.BuildClientInfo(
         self._messages,
@@ -228,6 +239,6 @@ class MatrixCreator(object):
       msg = 'Http error while creating test matrix: ' + util.GetError(error)
       raise exceptions.HttpException(msg)
 
-    log.status.Print('Test [{id}] has been created in the Google Cloud.'
-                     .format(id=response.testMatrixId))
+    log.status.Print('Test [{id}] has been created in the Google Cloud.'.format(
+        id=response.testMatrixId))
     return response

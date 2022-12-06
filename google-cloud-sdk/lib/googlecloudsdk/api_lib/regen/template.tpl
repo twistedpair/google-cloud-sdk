@@ -20,13 +20,15 @@ MAP = {
       % for api_version, api_def in sorted(api_versions.items()):
         '${api_version}':
             APIDef(
-                ApitoolsClientDef(
+                % if api_def.apitools:
+                apitools=ApitoolsClientDef(
                     class_path='${api_def.apitools.class_path}',
                     client_classpath='${api_def.apitools.client_classpath}',
                     base_url='${api_def.apitools.base_url}',
                     messages_modulepath='${api_def.apitools.messages_modulepath}'),
+                % endif
                 % if api_def.gapic:
-                GapicClientDef(
+                gapic=GapicClientDef(
                     class_path='${api_def.gapic.class_path}'),
                 % endif
                 default_version=${api_def.default_version},

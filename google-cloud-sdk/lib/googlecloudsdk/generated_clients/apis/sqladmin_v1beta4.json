@@ -2018,7 +2018,7 @@
           "type": "boolean"
         },
         "passwordChangeInterval": {
-          "description": "Minimum interval after which the password can be changed. This flag is only supported for PostgresSQL.",
+          "description": "Minimum interval after which the password can be changed. This flag is only supported for PostgreSQL.",
           "type": "string",
           "format": "google-duration"
         },

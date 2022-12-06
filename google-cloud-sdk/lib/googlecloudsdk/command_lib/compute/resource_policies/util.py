@@ -28,7 +28,6 @@ from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import times
 
-
 _API_TIMEZONE = times.UTC
 
 
@@ -97,8 +96,7 @@ def MakeVmMaintenanceConcurrentPolicy(policy_ref, args, messages):
         concurrencyLimit=args.max_percent
     )
   vm_policy = messages.ResourcePolicyVmMaintenancePolicy(
-      concurrencyControlGroup=concurrency_control_group
-  )
+      concurrencyControlGroup=concurrency_control_group)
 
   return messages.ResourcePolicy(
       name=policy_ref.Name(),
@@ -140,6 +138,43 @@ def MakeDiskSnapshotSchedulePolicy(policy_ref, args, messages):
       name=policy_ref.Name(),
       description=args.description,
       region=policy_ref.region,
+      snapshotSchedulePolicy=snapshot_policy)
+
+
+def MakeDiskSnapshotSchedulePolicyForUpdate(policy_ref, args, messages):
+  """Creates a Disk Snapshot Schedule Resource Policy message from args used in ResourcePolicy.Patch.
+  """
+  hourly_cycle, daily_cycle, weekly_cycle = _ParseCycleFrequencyArgs(
+      args, messages, supports_hourly=True, supports_weekly=True)
+
+  snapshot_properties, snapshot_schedule, description = None, None, None
+  snapshot_labels = labels_util.ParseCreateArgs(
+      args,
+      messages.ResourcePolicySnapshotSchedulePolicySnapshotProperties
+      .LabelsValue,
+      labels_dest='snapshot_labels')
+  if snapshot_labels:
+    snapshot_properties = (
+        messages.ResourcePolicySnapshotSchedulePolicySnapshotProperties(
+            labels=snapshot_labels))
+
+  if args.IsSpecified('description'):
+    description = args.description
+
+  if hourly_cycle or daily_cycle or weekly_cycle:
+    snapshot_schedule = messages.ResourcePolicySnapshotSchedulePolicySchedule(
+        hourlySchedule=hourly_cycle,
+        dailySchedule=daily_cycle,
+        weeklySchedule=weekly_cycle)
+
+  snapshot_policy = None
+  if snapshot_schedule or snapshot_properties:
+    snapshot_policy = messages.ResourcePolicySnapshotSchedulePolicy(
+        schedule=snapshot_schedule, snapshotProperties=snapshot_properties)
+
+  return messages.ResourcePolicy(
+      name=policy_ref.Name(),
+      description=description,
       snapshotSchedulePolicy=snapshot_policy)
 
 
@@ -194,6 +229,11 @@ def MakeGroupPlacementPolicy(policy_ref, args, messages, track):
         availabilityDomainCount=availability_domain_count,
         collocation=collocation,
         scope=scope)
+  elif track == base.ReleaseTrack.ALPHA and args.IsSpecified('tpu_topology'):
+    placement_policy = messages.ResourcePolicyGroupPlacementPolicy(
+        vmCount=args.vm_count,
+        collocation=collocation,
+        tpuTopology=args.tpu_topology)
   else:
     placement_policy = messages.ResourcePolicyGroupPlacementPolicy(
         vmCount=args.vm_count,
@@ -227,7 +267,9 @@ def MakeDiskConsistencyGroupPolicy(policy_ref, args, messages):
       diskConsistencyGroupPolicy=consistency_group_policy)
 
 
-def _ParseCycleFrequencyArgs(args, messages, supports_hourly=False,
+def _ParseCycleFrequencyArgs(args,
+                             messages,
+                             supports_hourly=False,
                              supports_weekly=False):
   """Parses args and returns a tuple of DailyCycle and WeeklyCycle messages."""
   _ValidateCycleFrequencyArgs(args)
@@ -235,18 +277,16 @@ def _ParseCycleFrequencyArgs(args, messages, supports_hourly=False,
   hourly_cycle, daily_cycle, weekly_cycle = None, None, None
   if args.daily_cycle:
     daily_cycle = messages.ResourcePolicyDailyCycle(
-        daysInCycle=1,
-        startTime=_FormatStartTime(args.start_time))
+        daysInCycle=1, startTime=_FormatStartTime(args.start_time))
   if supports_weekly:
     if args.weekly_cycle:
       day_enum = messages.ResourcePolicyWeeklyCycleDayOfWeek.DayValueValuesEnum
       weekday = times.Weekday.Get(args.weekly_cycle.upper())
       day, start_time = _ParseWeeklyDayAndTime(args.start_time, weekday)
-      weekly_cycle = messages.ResourcePolicyWeeklyCycle(
-          dayOfWeeks=[
-              messages.ResourcePolicyWeeklyCycleDayOfWeek(
-                  day=day_enum(day),
-                  startTime=start_time)])
+      weekly_cycle = messages.ResourcePolicyWeeklyCycle(dayOfWeeks=[
+          messages.ResourcePolicyWeeklyCycleDayOfWeek(
+              day=day_enum(day), startTime=start_time)
+      ])
     if args.IsSpecified('weekly_cycle_from_file'):
       if args.weekly_cycle_from_file:
         weekly_cycle = _ParseWeeklyCycleFromFile(args, messages)
@@ -289,14 +329,16 @@ def _ParseWeeklyCycleFromFile(args, messages):
     day, start_time = _ParseWeeklyDayAndTime(start_time, weekday)
     days_of_week.append(
         messages.ResourcePolicyWeeklyCycleDayOfWeek(
-            day=day_enum(day),
-            startTime=start_time))
+            day=day_enum(day), startTime=start_time))
   return messages.ResourcePolicyWeeklyCycle(dayOfWeeks=days_of_week)
 
 
 def ParseResourcePolicy(resources, name, project=None, region=None):
   return resources.Parse(
-      name, {'project': project, 'region': region},
+      name, {
+          'project': project,
+          'region': region
+      },
       collection='compute.resourcePolicies')
 
 

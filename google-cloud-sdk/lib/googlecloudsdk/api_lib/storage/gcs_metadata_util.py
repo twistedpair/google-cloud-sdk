@@ -40,6 +40,8 @@ from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 PRIVATE_DEFAULT_OBJECT_ACL = apis.GetMessagesModule(
     'storage', 'v1').ObjectAccessControl(id='PRIVATE_DEFAULT_OBJ_ACL')
 
+_NO_TRANSFORM = 'no-transform'
+
 
 def _message_to_dict(message):
   """Converts message to dict. Returns None is message is None."""
@@ -277,11 +279,9 @@ def _get_list_with_added_and_removed_acl_grants(acl_list,
       new_acl_list.append(existing_grant)
 
   acl_grants_to_add = resource_args.acl_grants_to_add or []
-  messages = apis.GetMessagesModule('storage', 'v1')
-  if is_bucket:
-    acl_class = messages.BucketAccessControl
-  else:
-    acl_class = messages.ObjectAccessControl
+  acl_class = gcs_metadata_field_converters.get_bucket_or_object_acl_class(
+      is_bucket)
+
   for new_grant in acl_grants_to_add:
     new_acl_list.append(
         acl_class(entity=new_grant['entity'], role=new_grant['role']))
@@ -365,11 +365,15 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
     bucket_metadata.logging = gcs_metadata_field_converters.process_log_config(
         bucket_metadata.name, resource_args.log_bucket,
         resource_args.log_object_prefix)
-  if resource_args.public_access_prevention is not None:
+  if (resource_args.public_access_prevention is not None or
+      resource_args.uniform_bucket_level_access is not None):
+    # Note: The IAM policy (with role grants) is stored separately because it
+    # has its own API.
     bucket_metadata.iamConfiguration = (
-        gcs_metadata_field_converters.process_public_access_prevention(
+        gcs_metadata_field_converters.process_bucket_iam_configuration(
             bucket_metadata.iamConfiguration,
-            resource_args.public_access_prevention))
+            resource_args.public_access_prevention,
+            resource_args.uniform_bucket_level_access))
   if resource_args.requester_pays is not None:
     bucket_metadata.billing = (
         gcs_metadata_field_converters.process_requester_pays(
@@ -378,11 +382,6 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
     bucket_metadata.retentionPolicy = (
         gcs_metadata_field_converters.process_retention_period(
             resource_args.retention_period))
-  if resource_args.uniform_bucket_level_access is not None:
-    bucket_metadata.iamConfiguration = (
-        gcs_metadata_field_converters.process_uniform_bucket_level_access(
-            bucket_metadata.iamConfiguration,
-            resource_args.uniform_bucket_level_access))
   if resource_args.versioning is not None:
     bucket_metadata.versioning = (
         gcs_metadata_field_converters.process_versioning(
@@ -391,6 +390,7 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
       resource_args.web_main_page_suffix is not None):
     bucket_metadata.website = gcs_metadata_field_converters.process_website(
         resource_args.web_error_page, resource_args.web_main_page_suffix)
+
   if resource_args.acl_file_path is not None:
     bucket_metadata.acl = gcs_metadata_field_converters.process_acl_file(
         resource_args.acl_file_path)
@@ -509,10 +509,14 @@ def update_object_metadata_from_request_config(object_metadata,
     content_encoding = getattr(resource_args, 'content_encoding', None)
   _process_value_or_clear_flag(object_metadata, 'contentEncoding',
                                content_encoding)
+
+  user_cache_control = getattr(resource_args, 'cache_control', None)
   if should_gzip_locally:
-    cache_control = 'no-transform'
+    cache_control = (
+        _NO_TRANSFORM if user_cache_control is None else '{}, {}'.format(
+            user_cache_control, _NO_TRANSFORM))
   else:
-    cache_control = getattr(resource_args, 'cache_control', None)
+    cache_control = user_cache_control
   _process_value_or_clear_flag(object_metadata, 'cacheControl', cache_control)
 
   if not resource_args:

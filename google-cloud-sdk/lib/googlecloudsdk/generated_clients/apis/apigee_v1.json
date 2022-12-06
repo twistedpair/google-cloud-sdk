@@ -2162,6 +2162,38 @@
         }
       }
     },
+    "GoogleCloudApigeeV1ApiSecurityRuntimeConfig": {
+      "id": "GoogleCloudApigeeV1ApiSecurityRuntimeConfig",
+      "description": "Response for GetApiSecurityRuntimeConfig[EnvironmentService.GetApiSecurityRuntimeConfig].",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the environment API Security Runtime configuration resource. Format: `organizations\/{org}\/environments\/{env}\/apiSecurityRuntimeConfig`",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Unique ID for the API Security Runtime configuration. The ID will only change if the environment is deleted and recreated.",
+          "type": "string"
+        },
+        "revisionId": {
+          "description": "Revision ID of the API Security Runtime configuration. The higher the value, the more recently the configuration was deployed.",
+          "type": "string",
+          "format": "int64"
+        },
+        "updateTime": {
+          "description": "Time that the API Security Runtime configuration was updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "location": {
+          "description": "A list of up to 5 Cloud Storage Blobs that contain SecurityActions.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "GoogleIamV1SetIamPolicyRequest": {
       "id": "GoogleIamV1SetIamPolicyRequest",
       "description": "Request message for `SetIamPolicy` method.",
@@ -4165,6 +4197,10 @@
         "developerEmail": {
           "description": "Email of the developer.",
           "type": "string"
+        },
+        "appGroup": {
+          "description": "Name of the AppGroup",
+          "type": "string"
         }
       }
     },
@@ -5406,7 +5442,7 @@
           "type": "string"
         },
         "state": {
-          "description": "Query state could be \"enqueued\", \"running\", \"completed\", \"failed\".",
+          "description": "Query state could be \"enqueued\", \"running\", \"completed\", \"expired\" and \"failed\".",
           "type": "string"
         },
         "created": {
@@ -8592,6 +8628,31 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Gets the deployed configuration for an environment."
+            },
+            "getApiSecurityRuntimeConfig": {
+              "id": "apigee.organizations.environments.getApiSecurityRuntimeConfig",
+              "path": "v1/{+name}",
+              "flatPath": "v1/organizations/{organizationsId}/environments/{environmentsId}/apiSecurityRuntimeConfig",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. Name of the environment API Security Runtime configuration resource. Use the following structure in your request: `organizations\/{org}\/environments\/{env}\/apiSecurityRuntimeConfig`",
+                  "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/apiSecurityRuntimeConfig$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudApigeeV1ApiSecurityRuntimeConfig"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets the API Security runtime configuration for an environment. This named ApiSecurityRuntimeConfig to prevent conflicts with ApiSecurityConfig from addon config."
             },
             "setIamPolicy": {
               "id": "apigee.organizations.environments.setIamPolicy",
@@ -13285,7 +13346,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "Optional. The filter expression to be used to get the list of apps, where filtering can be done on developerEmail, apiProduct, consumerKey, status, appId createdAt and appFamily. Example: filter = \"developerEmail = foo@bar.com\"",
+                  "description": "Optional. The filter expression to be used to get the list of apps, where filtering can be done on developerEmail, apiProduct, consumerKey, status, appId createdAt, appFamily, appGroup. Example: filter = \"developerEmail = foo@bar.com\"",
                   "location": "query",
                   "type": "string"
                 }

@@ -387,6 +387,10 @@
           "description": "Optional. Point-in-time recovery configuration for this cluster. By default, PITR is enabled and logs are retained for 14 days.",
           "$ref": "PitrConfig"
         },
+        "continuousBackupConfig": {
+          "description": "Optional. Continuous backup configuration for this cluster.",
+          "$ref": "ContinuousBackupConfig"
+        },
         "secondaryConfig": {
           "description": "Cross Region replication config specific to SECONDARY cluster.",
           "$ref": "SecondaryConfig"
@@ -403,6 +407,11 @@
       "description": "Message describing a BackupSource.",
       "type": "object",
       "properties": {
+        "backupUid": {
+          "description": "Output only. The system-generated UID of the backup which was used to create this resource. The UID is generated when the backup is created, and it is retained until the backup is deleted.",
+          "readOnly": true,
+          "type": "string"
+        },
         "backupName": {
           "description": "Required. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/backups\/{backup_id}",
           "type": "string"
@@ -687,6 +696,26 @@
         }
       }
     },
+    "ContinuousBackupConfig": {
+      "id": "ContinuousBackupConfig",
+      "description": "ContinuousBackupConfig describes the continuous backups recovery configurations of a cluster.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether ContinuousBackup is enabled.",
+          "type": "boolean"
+        },
+        "retentionWindowDays": {
+          "description": "The number of days the log records and backups will be retained. This is also the recovery window as logs and backups are needed for recovery. If not set, it defaults to 14 days.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "encryptionConfig": {
+          "description": "The encryption config can be specified to encrypt the backups with a customer-managed encryption key (CMEK). When this field is not specified, the backup will then use default encryption scheme to protect the user data.",
+          "$ref": "EncryptionConfig"
+        }
+      }
+    },
     "SecondaryConfig": {
       "id": "SecondaryConfig",
       "description": "Configuration information for the secondary cluster. This should be set if and only if the cluster is of type SECONDARY.",
@@ -745,6 +774,10 @@
           "description": "Point in time recovery source. PITR needs to be enabled in the source cluster for this operation to succeed.",
           "$ref": "PitrSource"
         },
+        "continuousBackupSource": {
+          "description": "ContinuousBackup source. Continuous backup needs to be enabled in the source cluster for this operation to succeed.",
+          "$ref": "ContinuousBackupSource"
+        },
         "clusterId": {
           "description": "Required. ID of the requesting object.",
           "type": "string"
@@ -770,6 +803,22 @@
       "properties": {
         "cluster": {
           "description": "Required. The source cluster from which to restore. This cluster must have PITR enabled for this operation to succeed. For the required format, see the comment on the Cluster.name field.",
+          "type": "string"
+        },
+        "pointInTime": {
+          "description": "Required. The point in time to restore to.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ContinuousBackupSource": {
+      "id": "ContinuousBackupSource",
+      "description": "Message describing a ContinuousBackupSource.",
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "description": "Required. The source cluster from which to restore. This cluster must have continuous backup enabled for this operation to succeed. For the required format, see the comment on the Cluster.name field.",
           "type": "string"
         },
         "pointInTime": {
@@ -933,6 +982,10 @@
             "$ref": "Node"
           }
         },
+        "queryInsightsConfig": {
+          "description": "Configuration for query insights.",
+          "$ref": "QueryInsightsInstanceConfig"
+        },
         "readPoolConfig": {
           "description": "Read pool specific config.",
           "$ref": "ReadPoolConfig"
@@ -992,6 +1045,31 @@
         "state": {
           "description": "Determined by state of the compute VM and postgres-service health. Compute VM state can have values listed in https:\/\/cloud.google.com\/compute\/docs\/instances\/instance-life-cycle and postgres-service health can have values: HEALTHY and UNHEALTHY.",
           "type": "string"
+        }
+      }
+    },
+    "QueryInsightsInstanceConfig": {
+      "id": "QueryInsightsInstanceConfig",
+      "description": "QueryInsights Instance specific configuration.",
+      "type": "object",
+      "properties": {
+        "recordApplicationTags": {
+          "description": "Record application tags for an instance. This flag is turned \"on\" by default.",
+          "type": "boolean"
+        },
+        "recordClientAddress": {
+          "description": "Record client address for an instance. Client address is PII information. This flag is turned \"on\" by default.",
+          "type": "boolean"
+        },
+        "queryStringLength": {
+          "description": "Query string length. The default value is 1024. Any integer between 256 and 4500 is considered valid.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "queryPlansPerMinute": {
+          "description": "Number of query execution plans captured by Insights per minute for all queries combined. The default value is 5. Any integer between 0 and 20 is considered valid.",
+          "type": "integer",
+          "format": "uint32"
         }
       }
     },
@@ -1063,7 +1141,7 @@
     },
     "Backup": {
       "id": "Backup",
-      "description": "Message describing Backup object NEXT ID: 18",
+      "description": "Message describing Backup object NEXT ID: 19",
       "type": "object",
       "properties": {
         "name": {
@@ -1140,6 +1218,11 @@
         },
         "description": {
           "description": "User-provided description of the backup.",
+          "type": "string"
+        },
+        "clusterUid": {
+          "description": "Output only. The system-generated UID of the cluster which was used to create this resource.",
+          "readOnly": true,
           "type": "string"
         },
         "clusterName": {
@@ -1305,6 +1388,11 @@
         "pemCsr": {
           "description": "Optional. A pem-encoded X.509 certificate signing request (CSR).",
           "type": "string"
+        },
+        "certDuration": {
+          "description": "Optional. An optional hint to the endpoint to generate the client certificate with the requested duration. The duration can be from 1 hour to 24 hours. The endpoint may or may not honor the hint. If the hint is left unspecified or is not honored, then the endpoint will pick an appropriate default duration.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },

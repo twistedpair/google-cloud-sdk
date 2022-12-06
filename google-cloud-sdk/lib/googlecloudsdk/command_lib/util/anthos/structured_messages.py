@@ -161,8 +161,9 @@ class OutputMessage(object):
       output_string = output_string.format(
           error=self.error, level=self.level.capitalize())
       if self.context:
-        output_string += context_format or self._DEFAULT_CONTEXT_FORMAT
-        output_string = output_string.format(context=self.context)
+        context_string = context_format or self._DEFAULT_CONTEXT_FORMAT
+        context_string = context_string.format(context=self.context)
+        output_string += context_string
       return output_string
 
   @property

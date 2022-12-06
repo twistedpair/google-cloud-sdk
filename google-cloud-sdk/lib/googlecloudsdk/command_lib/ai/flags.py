@@ -315,8 +315,8 @@ be selected.
 
 For example:
 `--accelerator=type=nvidia-tesla-k80,count=1`""".format(', '.join([
-    "'{}'".format(c) for c in GetAcceleratorTypeMapper(version).choices
-    ]))).AddToParser(parser)
+    "'{}'".format(c) for c in GetAcceleratorTypeMapper(version).choices]))
+  ).AddToParser(parser)
 
 
 def GetAutoscalingMetricSpecsArg():
@@ -585,7 +585,8 @@ def AddUploadModelFlags(parser, prompt_func=region_util.PromptForRegion):
       '--description', required=False,
       help=('Description of the model.')).AddToParser(parser)
   base.Argument(
-      '--version-description', required=False,
+      '--version-description',
+      required=False,
       help=('Description of the model version.')).AddToParser(parser)
   base.Argument(
       '--container-image-uri',
@@ -709,6 +710,111 @@ See https://goo.gl/xmQnxf for more information and examples of labels.
 """)
 
 
+def AddUploadModelFlagsForSimilarity(parser):
+  """Adds flags for example-based explanation for UploadModel.
+
+  Args:
+    parser: the parser for the command.
+  """
+  base.Argument(
+      '--uris',
+      metavar='URIS',
+      type=arg_parsers.ArgList(),
+      help=("""\
+Cloud Storage bucket paths where training data is stored. Should be used only
+when the explanation method is `examples`.
+""")).AddToParser(parser)
+  parser.add_argument(
+      '--explanation-neighbor-count',
+      type=int,
+      help='The number of items to return when querying for examples. Should be used only when the explanation method is `examples`.'
+  )
+  parser.add_argument(
+      '--explanation-modality',
+      type=str,
+      default='MODALITY_UNSPECIFIED',
+      help='Preset option specifying the modality of the uploaded model, which automatically configures the distance measurement and feature normalization for the underlying example index and queries. Accepted values are `IMAGE`, `TEXT` and `TABULAR`. Should be used only when the explanation method is `examples`.'
+  )
+  parser.add_argument(
+      '--explanation-query',
+      type=str,
+      default='PRECISE',
+      help='Preset option controlling parameters for query speed-precision trade-off. Accepted values are `PRECISE` and `FAST`. Should be used only when the explanation method is `examples`.'
+  )
+  parser.add_argument(
+      '--explanation-nearest-neighbor-search-config-file',
+      help="""\
+Path to a local JSON file that contains the configuration for the generated index,
+the semantics are the same as metadata and should match NearestNeighborSearchConfig.
+If you specify this parameter, no need to use `explanation-modality` and `explanation-query` for preset.
+Should be used only when the explanation method is `examples`.
+
+An example of a JSON config file:
+
+    {
+    "contentsDeltaUri": "",
+    "config": {
+        "dimensions": 50,
+        "approximateNeighborsCount": 10,
+        "distanceMeasureType": "SQUARED_L2_DISTANCE",
+        "featureNormType": "NONE",
+        "algorithmConfig": {
+            "treeAhConfig": {
+                "leafNodeEmbeddingCount": 1000,
+                "leafNodesToSearchPercent": 100
+            }
+        }
+      }
+    }
+""")
+
+
+def AddCopyModelFlags(parser, prompt_func=region_util.PromptForRegion):
+  """Adds flags for AddCopyModelFlags.
+
+  Args:
+    parser: the parser for the command.
+    prompt_func: function, the function to prompt a list of available regions
+      and return a string of the region that is selected by user.
+  """
+  AddRegionResourceArg(
+      parser, 'to copy the model into', prompt_func=prompt_func)
+
+  base.Argument(
+      '--source-model',
+      required=True,
+      help=("""\
+The resource name of the Model to copy. That Model must be in the same Project.
+Format: `projects/{project}/locations/{location}/models/{model}`.
+""")).AddToParser(parser)
+
+  base.Argument(
+      '--kms-key-name',
+      help=("""\
+The Cloud KMS resource identifier of the customer managed encryption key
+used to protect the resource.
+Has the form:
+`projects/my-project/locations/my-region/keyRings/my-kr/cryptoKeys/my-key`.
+The key needs to be in the same region as where the compute resource is created.
+""")).AddToParser(parser)
+
+  group = parser.add_mutually_exclusive_group(required=False)
+  group.add_argument(
+      '--destination-model-id',
+      type=str,
+      help="""\
+Copy source_model into a new Model with this ID. The ID will become the final component of the model resource name.
+This value may be up to 63 characters, and valid characters are `[a-z0-9_-]`. The first character cannot be a number or hyphen.
+""")
+  group.add_argument(
+      '--destination-parent-model',
+      type=str,
+      help="""\
+Specify this field to copy source_model into this existing Model as a new version.
+Format: `projects/{project}/locations/{location}/models/{model}`.
+""")
+
+
 def GetMetadataFilePathArg(noun, required=False):
   return base.Argument(
       '--metadata-file',
@@ -797,8 +903,8 @@ def AddDeploymentResourcePoolArg(
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
     prompt_func: function, the function to prompt for region from list of
-    available regions. Default is
-    region_util.PromptForDeploymentResourcePoolSupportedRegion
+      available regions. Default is
+      region_util.PromptForDeploymentResourcePoolSupportedRegion
   """
   concept_parsers.ConceptParser.ForResource(
       'deployment_resource_pool',
@@ -813,7 +919,8 @@ def AddSharedResourcesArg(parser, verb):
           '--shared-resources',
           GetDeploymentResourcePoolResourceSpec(),
           'The deployment resource pool {}.'.format(verb),
-          prefixes=True)]).AddToParser(parser)
+          prefixes=True)
+  ]).AddToParser(parser)
 
 
 def GetEndpointId():
@@ -1280,7 +1387,8 @@ For example: `feature-attribution-thresholds=feat1=0.1,feat2,feat3=0.2`"""))
 
 
 def AddObjectiveConfigGroupForUpdate(parser, required=False):
-  """Add model monitoring objective config related flags to the parser for Update API."""
+  """Add model monitoring objective config related flags to the parser for Update API.
+  """
   objective_config_group = parser.add_mutually_exclusive_group(
       required=required)
   thresholds_group = objective_config_group.add_group(mutex=False)
@@ -1290,7 +1398,8 @@ def AddObjectiveConfigGroupForUpdate(parser, required=False):
 
 
 def AddObjectiveConfigGroupForCreate(parser, required=False):
-  """Add model monitoring objective config related flags to the parser for Create API.."""
+  """Add model monitoring objective config related flags to the parser for Create API..
+  """
   objective_config_group = parser.add_mutually_exclusive_group(
       required=required)
   thresholds_group = objective_config_group.add_group(mutex=False)

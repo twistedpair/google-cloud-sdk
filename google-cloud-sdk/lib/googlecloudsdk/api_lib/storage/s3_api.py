@@ -181,6 +181,26 @@ class S3Api(cloud_api.CloudApi):
     return s3_metadata_util.get_bucket_resource_from_s3_response(
         metadata, bucket_name)
 
+  def list_buckets(self, fields_scope=cloud_api.FieldsScope.NO_ACL):
+    """See super class."""
+    try:
+      response = self.client.list_buckets()
+      for bucket in response['Buckets']:
+        if fields_scope == cloud_api.FieldsScope.FULL:
+          yield self.get_bucket(bucket['Name'], fields_scope)
+        else:
+          yield s3_resource_reference.S3BucketResource(
+              storage_url.CloudUrl(storage_url.ProviderPrefix.S3,
+                                   bucket['Name']),
+              creation_time=resource_util.convert_datetime_object_to_utc(
+                  bucket['CreationDate']),
+              metadata={
+                  'Bucket': bucket,
+                  'Owner': response['Owner']
+              })
+    except botocore.exceptions.ClientError as error:
+      core_exceptions.reraise(errors.S3ApiError(error))
+
   def _make_patch_request(self, bucket_resource, patch_function, patch_kwargs):
     patch_kwargs['Bucket'] = bucket_resource.storage_url.bucket_name
     try:
@@ -276,68 +296,6 @@ class S3Api(cloud_api.CloudApi):
     return self.get_bucket(
         bucket_resource.storage_url.bucket_name, fields_scope=fields_scope)
 
-  def list_buckets(self, fields_scope=cloud_api.FieldsScope.NO_ACL):
-    """See super class."""
-    try:
-      response = self.client.list_buckets()
-      for bucket in response['Buckets']:
-        if fields_scope == cloud_api.FieldsScope.FULL:
-          yield self.get_bucket(bucket['Name'], fields_scope)
-        else:
-          yield s3_resource_reference.S3BucketResource(
-              storage_url.CloudUrl(storage_url.ProviderPrefix.S3,
-                                   bucket['Name']),
-              creation_time=resource_util.convert_datetime_object_to_utc(
-                  bucket['CreationDate']),
-              metadata={
-                  'Bucket': bucket,
-                  'Owner': response['Owner']
-              })
-    except botocore.exceptions.ClientError as error:
-      core_exceptions.reraise(errors.S3ApiError(error))
-
-  def list_objects(self,
-                   bucket_name,
-                   prefix=None,
-                   delimiter=None,
-                   all_versions=False,
-                   fields_scope=None):
-    """See super class."""
-    if all_versions:
-      api_method_name = 'list_object_versions'
-      objects_key = 'Versions'
-    else:
-      api_method_name = 'list_objects_v2'
-      objects_key = 'Contents'
-    try:
-      paginator = self.client.get_paginator(api_method_name)
-      page_iterator = paginator.paginate(
-          Bucket=bucket_name,
-          Prefix=prefix if prefix is not None else '',
-          Delimiter=delimiter if delimiter is not None else '')
-      for page in page_iterator:
-        for object_dict in page.get(objects_key, []):
-          if fields_scope is cloud_api.FieldsScope.FULL:
-            # The metadata present in the list_objects_v2 response or the
-            # list_object_versions response is not enough
-            # for a FULL scope. Hence, calling the GetObjectMetadata method
-            # to get the additonal metadata and ACLs information.
-            yield self.get_object_metadata(
-                bucket_name=bucket_name,
-                object_name=object_dict['Key'],
-                request_config=request_config_factory.get_request_config(
-                    storage_url.CloudUrl(scheme=storage_url.ProviderPrefix.S3)),
-                generation=object_dict.get('VersionId'),
-                fields_scope=fields_scope)
-          else:
-            yield s3_metadata_util.get_object_resource_from_s3_response(
-                object_dict, bucket_name)
-        for prefix_dict in page.get('CommonPrefixes', []):
-          yield s3_metadata_util.get_prefix_resource_from_s3_response(
-              prefix_dict, bucket_name)
-    except botocore.exceptions.ClientError as error:
-      core_exceptions.reraise(errors.S3ApiError(error))
-
   @_catch_client_error_raise_s3_api_error()
   def copy_object(self,
                   source_resource,
@@ -396,6 +354,19 @@ class S3Api(cloud_api.CloudApi):
         copy_kwargs['Bucket'],
         copy_kwargs['Key'],
         acl_dict=acl_dict)
+
+  @_catch_client_error_raise_s3_api_error()
+  def delete_object(self, object_url, request_config):
+    """See super class."""
+    del request_config  # Unused.
+
+    delete_object_kwargs = {
+        'Bucket': object_url.bucket_name,
+        'Key': object_url.object_name,
+    }
+    if object_url.generation:
+      delete_object_kwargs['VersionId'] = object_url.generation
+    return self.client.delete_object(**delete_object_kwargs)
 
   def _download_object(self, cloud_resource, download_stream, digesters,
                        progress_callback, start_byte):
@@ -506,19 +477,6 @@ class S3Api(cloud_api.CloudApi):
         server_reported_encoding=content_encoding)
 
   @_catch_client_error_raise_s3_api_error()
-  def delete_object(self, object_url, request_config):
-    """See super class."""
-    del request_config  # Unused.
-
-    delete_object_kwargs = {
-        'Bucket': object_url.bucket_name,
-        'Key': object_url.object_name,
-    }
-    if object_url.generation:
-      delete_object_kwargs['VersionId'] = object_url.generation
-    return self.client.delete_object(**delete_object_kwargs)
-
-  @_catch_client_error_raise_s3_api_error()
   def get_object_metadata(self,
                           bucket_name,
                           object_name,
@@ -554,6 +512,48 @@ class S3Api(cloud_api.CloudApi):
 
     return s3_metadata_util.get_object_resource_from_s3_response(
         object_dict, bucket_name, object_name)
+
+  def list_objects(self,
+                   bucket_name,
+                   prefix=None,
+                   delimiter=None,
+                   all_versions=False,
+                   fields_scope=None):
+    """See super class."""
+    if all_versions:
+      api_method_name = 'list_object_versions'
+      objects_key = 'Versions'
+    else:
+      api_method_name = 'list_objects_v2'
+      objects_key = 'Contents'
+    try:
+      paginator = self.client.get_paginator(api_method_name)
+      page_iterator = paginator.paginate(
+          Bucket=bucket_name,
+          Prefix=prefix if prefix is not None else '',
+          Delimiter=delimiter if delimiter is not None else '')
+      for page in page_iterator:
+        for object_dict in page.get(objects_key, []):
+          if fields_scope is cloud_api.FieldsScope.FULL:
+            # The metadata present in the list_objects_v2 response or the
+            # list_object_versions response is not enough
+            # for a FULL scope. Hence, calling the GetObjectMetadata method
+            # to get the additonal metadata and ACLs information.
+            yield self.get_object_metadata(
+                bucket_name=bucket_name,
+                object_name=object_dict['Key'],
+                request_config=request_config_factory.get_request_config(
+                    storage_url.CloudUrl(scheme=storage_url.ProviderPrefix.S3)),
+                generation=object_dict.get('VersionId'),
+                fields_scope=fields_scope)
+          else:
+            yield s3_metadata_util.get_object_resource_from_s3_response(
+                object_dict, bucket_name)
+        for prefix_dict in page.get('CommonPrefixes', []):
+          yield s3_metadata_util.get_prefix_resource_from_s3_response(
+              prefix_dict, bucket_name)
+    except botocore.exceptions.ClientError as error:
+      core_exceptions.reraise(errors.S3ApiError(error))
 
   @_catch_client_error_raise_s3_api_error()
   def patch_object_metadata(self,

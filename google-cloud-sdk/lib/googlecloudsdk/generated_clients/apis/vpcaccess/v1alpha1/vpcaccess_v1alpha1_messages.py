@@ -84,7 +84,9 @@ class HeartbeatConnectorRequest(_messages.Message):
     ipAddress: Required. The IP address of the VM.
     lameduck: If the VM is in lameduck mode, meaning that it is in the process
       of shutting down and should not be used for new connections.
-    projectNumber: The numeric project id of the VM.
+    projectNumber: The host project number for the VPC network that the VM is
+      programmed to talk to. In shared VPC this may differ from the project
+      number that the Connector and Serverless app attached to it belong to.
   """
 
   heartbeatTime = _messages.StringField(1)

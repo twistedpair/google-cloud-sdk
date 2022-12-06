@@ -217,10 +217,12 @@ class AssociatedFinding(_messages.Message):
       organizations/123/sources/456/findings/789
     findingCategory: The additional taxonomy group within findings from a
       given source.
+    name: Full resource name of the finding.
   """
 
   canonicalFindingName = _messages.StringField(1)
   findingCategory = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class AuditConfig(_messages.Message):
@@ -953,6 +955,7 @@ class Finding(_messages.Message):
       or in an operating system that, with high confidence, indicates a
       computer intrusion. Reference:
       https://en.wikipedia.org/wiki/Indicator_of_compromise
+    kernelRootkit: Kernel Rootkit signature.
     kubernetes: Kubernetes resources associated with the finding.
     mitreAttack: MITRE ATT&CK tactics and techniques related to this finding.
       See: https://attack.mitre.org
@@ -1206,23 +1209,24 @@ class Finding(_messages.Message):
   findingClass = _messages.EnumField('FindingClassValueValuesEnum', 16)
   iamBindings = _messages.MessageField('IamBinding', 17, repeated=True)
   indicator = _messages.MessageField('Indicator', 18)
-  kubernetes = _messages.MessageField('Kubernetes', 19)
-  mitreAttack = _messages.MessageField('MitreAttack', 20)
-  mute = _messages.EnumField('MuteValueValuesEnum', 21)
-  muteAnnotation = _messages.StringField(22)
-  muteInitiator = _messages.StringField(23)
-  muteUpdateTime = _messages.StringField(24)
-  name = _messages.StringField(25)
-  nextSteps = _messages.StringField(26)
-  parent = _messages.StringField(27)
-  parentDisplayName = _messages.StringField(28)
-  processes = _messages.MessageField('Process', 29, repeated=True)
-  resourceName = _messages.StringField(30)
-  securityMarks = _messages.MessageField('SecurityMarks', 31)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 32)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 33)
-  state = _messages.EnumField('StateValueValuesEnum', 34)
-  vulnerability = _messages.MessageField('Vulnerability', 35)
+  kernelRootkit = _messages.MessageField('KernelRootkit', 19)
+  kubernetes = _messages.MessageField('Kubernetes', 20)
+  mitreAttack = _messages.MessageField('MitreAttack', 21)
+  mute = _messages.EnumField('MuteValueValuesEnum', 22)
+  muteAnnotation = _messages.StringField(23)
+  muteInitiator = _messages.StringField(24)
+  muteUpdateTime = _messages.StringField(25)
+  name = _messages.StringField(26)
+  nextSteps = _messages.StringField(27)
+  parent = _messages.StringField(28)
+  parentDisplayName = _messages.StringField(29)
+  processes = _messages.MessageField('Process', 30, repeated=True)
+  resourceName = _messages.StringField(31)
+  securityMarks = _messages.MessageField('SecurityMarks', 32)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 33)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 34)
+  state = _messages.EnumField('StateValueValuesEnum', 35)
+  vulnerability = _messages.MessageField('Vulnerability', 36)
 
 
 class Folder(_messages.Message):
@@ -2419,6 +2423,43 @@ class Indicator(_messages.Message):
   uris = _messages.StringField(4, repeated=True)
 
 
+class KernelRootkit(_messages.Message):
+  r"""Kernel mode rootkit signatures.
+
+  Fields:
+    name: Rootkit name when available.
+    unexpectedCodeModification: Flag indicating unexpected modifications of
+      kernel code memory.
+    unexpectedFtraceHandler: Flag indicating presence of ftrace points with
+      callbacks pointing to regions that are not in the expected kernel or
+      module code range.
+    unexpectedInterruptHandler: Flag indicating presence of interrupt handlers
+      that are are not in the expected kernel, module code regions.
+    unexpectedKernelCodePages: Flag indicating presence of kernel code pages
+      that are not in the expected kernel, module code regions.
+    unexpectedKprobeHandler: Flag indicating presence of kprobe points with
+      callbacks pointing to regions that are not in the expected kernel or
+      module code range.
+    unexpectedProcessesInRunqueue: Flag indicating unexpected process(es) in
+      the scheduler run-queue, those that are in the run-queue, but not in the
+      process task-list.
+    unexpectedReadOnlyDataModification: Flag indicating unexpected
+      modifications of kernel read-only data memory.
+    unexpectedSystemCallHandler: Flag indicating presence of system call
+      handlers that are are not in the expected kernel, module code regions.
+  """
+
+  name = _messages.StringField(1)
+  unexpectedCodeModification = _messages.BooleanField(2)
+  unexpectedFtraceHandler = _messages.BooleanField(3)
+  unexpectedInterruptHandler = _messages.BooleanField(4)
+  unexpectedKernelCodePages = _messages.BooleanField(5)
+  unexpectedKprobeHandler = _messages.BooleanField(6)
+  unexpectedProcessesInRunqueue = _messages.BooleanField(7)
+  unexpectedReadOnlyDataModification = _messages.BooleanField(8)
+  unexpectedSystemCallHandler = _messages.BooleanField(9)
+
+
 class Kubernetes(_messages.Message):
   r"""Kubernetes related attributes.
 
@@ -2982,7 +3023,9 @@ class NotificationConfig(_messages.Message):
     name: The relative resource name of this notification config. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/notificationConfigs/notify_
-      public_bucket".
+      public_bucket",
+      "folders/{folder_id}/notificationConfigs/notify_public_bucket", or
+      "projects/{project_id}/notificationConfigs/notify_public_bucket".
     pubsubTopic: The Pub/Sub topic to send notifications to. Its format is
       "projects/[project_id]/topics/[topic]".
     serviceAccount: Output only. The service account that needs
@@ -3477,7 +3520,7 @@ class SecuritycenterFoldersAssetsGroupRequest(_messages.Message):
   Fields:
     groupAssetsRequest: A GroupAssetsRequest resource to be passed as the
       request body.
-    parent: Required. Name of the organization to groupBy. Its format is
+    parent: Required. Name of the parent to groupBy. Its format is
       "organizations/[organization_id], folders/[folder_id], or
       projects/[project_id]".
   """
@@ -3564,8 +3607,8 @@ class SecuritycenterFoldersAssetsListRequest(_messages.Message):
     pageToken: The value returned by the last `ListAssetsResponse`; indicates
       that this is a continuation of a prior `ListAssets` call, and that the
       system should return the next page of data.
-    parent: Required. Name of the organization assets should belong to. Its
-      format is "organizations/[organization_id], folders/[folder_id], or
+    parent: Required. Name of the parent assets should belong to. Its format
+      is "organizations/[organization_id], folders/[folder_id], or
       projects/[project_id]".
     readTime: Time used as a reference point when filtering assets. The filter
       is limited to assets existing at the supplied time and their values are
@@ -3830,7 +3873,9 @@ class SecuritycenterFoldersNotificationConfigsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the notification config to delete. Its format is
-      "organizations/[organization_id]/notificationConfigs/[config_id]".
+      "organizations/[organization_id]/notificationConfigs/[config_id]",
+      "folders/[folder_id]/notificationConfigs/[config_id]", or
+      "projects/[project_id]/notificationConfigs/[config_id]".
   """
 
   name = _messages.StringField(1, required=True)
@@ -3841,7 +3886,9 @@ class SecuritycenterFoldersNotificationConfigsGetRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the notification config to get. Its format is
-      "organizations/[organization_id]/notificationConfigs/[config_id]".
+      "organizations/[organization_id]/notificationConfigs/[config_id]",
+      "folders/[folder_id]/notificationConfigs/[config_id]", or
+      "projects/[project_id]/notificationConfigs/[config_id]".
   """
 
   name = _messages.StringField(1, required=True)
@@ -3857,9 +3904,9 @@ class SecuritycenterFoldersNotificationConfigsListRequest(_messages.Message):
       `ListNotificationConfigsResponse`; indicates that this is a continuation
       of a prior `ListNotificationConfigs` call, and that the system should
       return the next page of data.
-    parent: Required. Name of the organization to list notification configs.
-      Its format is "organizations/[organization_id]", "folders/[folder_id]",
-      or "projects/[project_id]".
+    parent: Required. Name of the parent to list notification configs. Its
+      format is "organizations/[organization_id]", "folders/[folder_id]", or
+      "projects/[project_id]".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3874,7 +3921,9 @@ class SecuritycenterFoldersNotificationConfigsPatchRequest(_messages.Message):
     name: The relative resource name of this notification config. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/notificationConfigs/notify_
-      public_bucket".
+      public_bucket",
+      "folders/{folder_id}/notificationConfigs/notify_public_bucket", or
+      "projects/{project_id}/notificationConfigs/notify_public_bucket".
     notificationConfig: A NotificationConfig resource to be passed as the
       request body.
     updateMask: The FieldMask to use when updating the notification config. If
@@ -4294,7 +4343,7 @@ class SecuritycenterOrganizationsAssetsGroupRequest(_messages.Message):
   Fields:
     groupAssetsRequest: A GroupAssetsRequest resource to be passed as the
       request body.
-    parent: Required. Name of the organization to groupBy. Its format is
+    parent: Required. Name of the parent to groupBy. Its format is
       "organizations/[organization_id], folders/[folder_id], or
       projects/[project_id]".
   """
@@ -4381,8 +4430,8 @@ class SecuritycenterOrganizationsAssetsListRequest(_messages.Message):
     pageToken: The value returned by the last `ListAssetsResponse`; indicates
       that this is a continuation of a prior `ListAssets` call, and that the
       system should return the next page of data.
-    parent: Required. Name of the organization assets should belong to. Its
-      format is "organizations/[organization_id], folders/[folder_id], or
+    parent: Required. Name of the parent assets should belong to. Its format
+      is "organizations/[organization_id], folders/[folder_id], or
       projects/[project_id]".
     readTime: Time used as a reference point when filtering assets. The filter
       is limited to assets existing at the supplied time and their values are
@@ -4672,7 +4721,9 @@ class SecuritycenterOrganizationsNotificationConfigsDeleteRequest(_messages.Mess
 
   Fields:
     name: Required. Name of the notification config to delete. Its format is
-      "organizations/[organization_id]/notificationConfigs/[config_id]".
+      "organizations/[organization_id]/notificationConfigs/[config_id]",
+      "folders/[folder_id]/notificationConfigs/[config_id]", or
+      "projects/[project_id]/notificationConfigs/[config_id]".
   """
 
   name = _messages.StringField(1, required=True)
@@ -4683,7 +4734,9 @@ class SecuritycenterOrganizationsNotificationConfigsGetRequest(_messages.Message
 
   Fields:
     name: Required. Name of the notification config to get. Its format is
-      "organizations/[organization_id]/notificationConfigs/[config_id]".
+      "organizations/[organization_id]/notificationConfigs/[config_id]",
+      "folders/[folder_id]/notificationConfigs/[config_id]", or
+      "projects/[project_id]/notificationConfigs/[config_id]".
   """
 
   name = _messages.StringField(1, required=True)
@@ -4699,9 +4752,9 @@ class SecuritycenterOrganizationsNotificationConfigsListRequest(_messages.Messag
       `ListNotificationConfigsResponse`; indicates that this is a continuation
       of a prior `ListNotificationConfigs` call, and that the system should
       return the next page of data.
-    parent: Required. Name of the organization to list notification configs.
-      Its format is "organizations/[organization_id]", "folders/[folder_id]",
-      or "projects/[project_id]".
+    parent: Required. Name of the parent to list notification configs. Its
+      format is "organizations/[organization_id]", "folders/[folder_id]", or
+      "projects/[project_id]".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4716,7 +4769,9 @@ class SecuritycenterOrganizationsNotificationConfigsPatchRequest(_messages.Messa
     name: The relative resource name of this notification config. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/notificationConfigs/notify_
-      public_bucket".
+      public_bucket",
+      "folders/{folder_id}/notificationConfigs/notify_public_bucket", or
+      "projects/{project_id}/notificationConfigs/notify_public_bucket".
     notificationConfig: A NotificationConfig resource to be passed as the
       request body.
     updateMask: The FieldMask to use when updating the notification config. If
@@ -5304,7 +5359,7 @@ class SecuritycenterProjectsAssetsGroupRequest(_messages.Message):
   Fields:
     groupAssetsRequest: A GroupAssetsRequest resource to be passed as the
       request body.
-    parent: Required. Name of the organization to groupBy. Its format is
+    parent: Required. Name of the parent to groupBy. Its format is
       "organizations/[organization_id], folders/[folder_id], or
       projects/[project_id]".
   """
@@ -5391,8 +5446,8 @@ class SecuritycenterProjectsAssetsListRequest(_messages.Message):
     pageToken: The value returned by the last `ListAssetsResponse`; indicates
       that this is a continuation of a prior `ListAssets` call, and that the
       system should return the next page of data.
-    parent: Required. Name of the organization assets should belong to. Its
-      format is "organizations/[organization_id], folders/[folder_id], or
+    parent: Required. Name of the parent assets should belong to. Its format
+      is "organizations/[organization_id], folders/[folder_id], or
       projects/[project_id]".
     readTime: Time used as a reference point when filtering assets. The filter
       is limited to assets existing at the supplied time and their values are
@@ -5657,7 +5712,9 @@ class SecuritycenterProjectsNotificationConfigsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the notification config to delete. Its format is
-      "organizations/[organization_id]/notificationConfigs/[config_id]".
+      "organizations/[organization_id]/notificationConfigs/[config_id]",
+      "folders/[folder_id]/notificationConfigs/[config_id]", or
+      "projects/[project_id]/notificationConfigs/[config_id]".
   """
 
   name = _messages.StringField(1, required=True)
@@ -5668,7 +5725,9 @@ class SecuritycenterProjectsNotificationConfigsGetRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the notification config to get. Its format is
-      "organizations/[organization_id]/notificationConfigs/[config_id]".
+      "organizations/[organization_id]/notificationConfigs/[config_id]",
+      "folders/[folder_id]/notificationConfigs/[config_id]", or
+      "projects/[project_id]/notificationConfigs/[config_id]".
   """
 
   name = _messages.StringField(1, required=True)
@@ -5684,9 +5743,9 @@ class SecuritycenterProjectsNotificationConfigsListRequest(_messages.Message):
       `ListNotificationConfigsResponse`; indicates that this is a continuation
       of a prior `ListNotificationConfigs` call, and that the system should
       return the next page of data.
-    parent: Required. Name of the organization to list notification configs.
-      Its format is "organizations/[organization_id]", "folders/[folder_id]",
-      or "projects/[project_id]".
+    parent: Required. Name of the parent to list notification configs. Its
+      format is "organizations/[organization_id]", "folders/[folder_id]", or
+      "projects/[project_id]".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5701,7 +5760,9 @@ class SecuritycenterProjectsNotificationConfigsPatchRequest(_messages.Message):
     name: The relative resource name of this notification config. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/notificationConfigs/notify_
-      public_bucket".
+      public_bucket",
+      "folders/{folder_id}/notificationConfigs/notify_public_bucket", or
+      "projects/{project_id}/notificationConfigs/notify_public_bucket".
     notificationConfig: A NotificationConfig resource to be passed as the
       request body.
     updateMask: The FieldMask to use when updating the notification config. If

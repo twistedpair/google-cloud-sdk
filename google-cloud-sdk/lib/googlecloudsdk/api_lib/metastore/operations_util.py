@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.metastore import util as api_util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import log
 
 
 def GetOperation(release_track=base.ReleaseTrack.GA):
@@ -44,6 +45,33 @@ def Delete(relative_resource_name, release_track=base.ReleaseTrack.GA):
       api_util.GetMessagesModule(release_track=release_track)
       .MetastoreProjectsLocationsOperationsDeleteRequest(
           name=relative_resource_name))
+
+
+def PollAndReturnOperation(operation,
+                           message,
+                           release_track=base.ReleaseTrack.GA):
+  """Waits for an operation to complete and return it.
+
+  Polls the operation at least every 15 seconds, showing a progress indicator.
+  Returns when the operation has completed. The timeout periods of this
+  operation is one hour.
+
+  Args:
+    operation: Operation Message, the operation to poll
+    message: str, a message to display with the progress indicator. For example,
+      'Waiting for deletion of [some resource]'.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+      which Metastore client library will be used.
+
+  Returns:
+    poller.GetResult(operation).
+  """
+  return waiter.WaitFor(
+      _OperationPollerWithError(release_track=release_track),
+      operation.name,
+      message,
+      max_wait_ms=3600 * 1000,
+      wait_ceiling_ms=15 * 1000)
 
 
 def WaitForOperation(operation, message, release_track=base.ReleaseTrack.GA):
@@ -79,4 +107,29 @@ class _OperationPoller(waiter.CloudOperationPollerNoResources):
       return False
     if operation.error:
       raise api_util.OperationError(operation.name, operation.error.message)
+    return True
+
+
+class _OperationPollerWithError(waiter.CloudOperationPollerNoResources):
+  """Class for polling Metastore longrunning Operations and print errors."""
+
+  def __init__(self, release_track=base.ReleaseTrack.GA):
+    super(_OperationPollerWithError,
+          self).__init__(GetOperation(release_track=release_track), lambda x: x)
+
+  def IsDone(self, operation):
+    if not operation.done:
+      return False
+    if operation.error:
+      if operation.error.code:
+        log.status.Print("Status Code:", operation.error.code)
+      if operation.error.message:
+        log.status.Print("Error message:", operation.error.message)
+      if operation.error.details and len(
+          operation.error.details[0].additionalProperties) > 1:
+        log.status.Print(
+            "Error details:",
+            operation.error.details[0].additionalProperties[1].value
+            .object_value.properties[0].value.string_value)
+      raise api_util.OperationError(operation.name, "")
     return True

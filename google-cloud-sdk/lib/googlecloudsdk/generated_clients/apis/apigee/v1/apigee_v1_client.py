@@ -5571,6 +5571,33 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetApiSecurityRuntimeConfig(self, request, global_params=None):
+      r"""Gets the API Security runtime configuration for an environment. This named ApiSecurityRuntimeConfig to prevent conflicts with ApiSecurityConfig from addon config.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsGetApiSecurityRuntimeConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ApiSecurityRuntimeConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetApiSecurityRuntimeConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetApiSecurityRuntimeConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/apiSecurityRuntimeConfig',
+        http_method='GET',
+        method_id='apigee.organizations.environments.getApiSecurityRuntimeConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsGetApiSecurityRuntimeConfigRequest',
+        response_type_name='GoogleCloudApigeeV1ApiSecurityRuntimeConfig',
+        supports_download=False,
+    )
+
     def GetDebugmask(self, request, global_params=None):
       r"""Gets the debug mask singleton resource for an environment.
 

@@ -938,6 +938,18 @@
         "masterAuthorizedNetworksConfig": {
           "description": "Optional. The configuration options for GKE cluster master authorized networks. By default master authorized networks feature is: - in case of private environment: enabled with no external networks allowlisted. - in case of public environment: disabled.",
           "$ref": "MasterAuthorizedNetworksConfig"
+        },
+        "resilienceMode": {
+          "description": "Optional. Resilience mode of the Cloud Composer Environment. This field is supported for Cloud Composer environments in versions composer-2.0.32-airflow-*.*.* and newer.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default mode doesn't change environment parameters.",
+            "Enabled High Resilience mode, including Cloud SQL HA."
+          ],
+          "enum": [
+            "RESILIENCE_MODE_UNSPECIFIED",
+            "HIGH_RESILIENCE"
+          ]
         }
       }
     },
@@ -1228,10 +1240,6 @@
         "zone": {
           "description": "Optional. The Compute Engine zone where the Airflow database is created. If zone is provided, it must be in the region selected for the environment. If zone is not provided, a zone is automatically selected. The zone can only be set during environment creation. Supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.*.",
           "type": "string"
-        },
-        "highAvailability": {
-          "description": "Optional. Creates the Airflow Database in High Availability mode. This option can only be set during environment creation.",
-          "type": "boolean"
         }
       }
     },
@@ -1294,6 +1302,36 @@
           "format": "int32"
         },
         "taskLogsStorageMode": {
+          "description": "Optional. The mode of storage for Airflow workers task logs. For details, see go\/composer-store-task-logs-in-cloud-logging-only-design-doc",
+          "type": "string",
+          "enumDescriptions": [
+            "This configuration is not specified by the user.",
+            "Store task logs in Cloud Logging and in the environment's Cloud Storage bucket.",
+            "Store task logs in Cloud Logging only."
+          ],
+          "enum": [
+            "TASK_LOGS_STORAGE_MODE_UNSPECIFIED",
+            "CLOUD_LOGGING_AND_CLOUD_STORAGE",
+            "CLOUD_LOGGING_ONLY"
+          ]
+        },
+        "taskLogsRetentionConfig": {
+          "description": "Optional. The configuration settings for task logs retention",
+          "$ref": "TaskLogsRetentionConfig"
+        }
+      }
+    },
+    "TaskLogsRetentionConfig": {
+      "id": "TaskLogsRetentionConfig",
+      "description": "The configuration setting for Task Logs.",
+      "type": "object",
+      "properties": {
+        "retentionDays": {
+          "description": "Optional. The number of days to retain task logs in the Cloud Logging bucket",
+          "type": "integer",
+          "format": "int32"
+        },
+        "storageMode": {
           "description": "Optional. The mode of storage for Airflow workers task logs. For details, see go\/composer-store-task-logs-in-cloud-logging-only-design-doc",
           "type": "string",
           "enumDescriptions": [

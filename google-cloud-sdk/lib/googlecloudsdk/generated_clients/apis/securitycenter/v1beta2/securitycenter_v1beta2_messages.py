@@ -106,10 +106,12 @@ class AssociatedFinding(_messages.Message):
       organizations/123/sources/456/findings/789
     findingCategory: The additional taxonomy group within findings from a
       given source.
+    name: Full resource name of the finding.
   """
 
   canonicalFindingName = _messages.StringField(1)
   findingCategory = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class Compliance(_messages.Message):
@@ -901,6 +903,7 @@ class Finding(_messages.Message):
       or in an operating system that, with high confidence, indicates a
       computer intrusion. Reference:
       https://en.wikipedia.org/wiki/Indicator_of_compromise
+    kernelRootkit: Kernel Rootkit signature.
     kubernetes: Kubernetes resources associated with the finding.
     mitreAttack: MITRE ATT&CK tactics and techniques related to this finding.
       See: https://attack.mitre.org
@@ -1150,22 +1153,23 @@ class Finding(_messages.Message):
   findingClass = _messages.EnumField('FindingClassValueValuesEnum', 16)
   iamBindings = _messages.MessageField('IamBinding', 17, repeated=True)
   indicator = _messages.MessageField('Indicator', 18)
-  kubernetes = _messages.MessageField('Kubernetes', 19)
-  mitreAttack = _messages.MessageField('MitreAttack', 20)
-  mute = _messages.EnumField('MuteValueValuesEnum', 21)
-  muteInitiator = _messages.StringField(22)
-  muteUpdateTime = _messages.StringField(23)
-  name = _messages.StringField(24)
-  nextSteps = _messages.StringField(25)
-  parent = _messages.StringField(26)
-  parentDisplayName = _messages.StringField(27)
-  processes = _messages.MessageField('Process', 28, repeated=True)
-  resourceName = _messages.StringField(29)
-  securityMarks = _messages.MessageField('SecurityMarks', 30)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 31)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 32)
-  state = _messages.EnumField('StateValueValuesEnum', 33)
-  vulnerability = _messages.MessageField('Vulnerability', 34)
+  kernelRootkit = _messages.MessageField('KernelRootkit', 19)
+  kubernetes = _messages.MessageField('Kubernetes', 20)
+  mitreAttack = _messages.MessageField('MitreAttack', 21)
+  mute = _messages.EnumField('MuteValueValuesEnum', 22)
+  muteInitiator = _messages.StringField(23)
+  muteUpdateTime = _messages.StringField(24)
+  name = _messages.StringField(25)
+  nextSteps = _messages.StringField(26)
+  parent = _messages.StringField(27)
+  parentDisplayName = _messages.StringField(28)
+  processes = _messages.MessageField('Process', 29, repeated=True)
+  resourceName = _messages.StringField(30)
+  securityMarks = _messages.MessageField('SecurityMarks', 31)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 32)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 33)
+  state = _messages.EnumField('StateValueValuesEnum', 34)
+  vulnerability = _messages.MessageField('Vulnerability', 35)
 
 
 class Folder(_messages.Message):
@@ -1888,6 +1892,43 @@ class Indicator(_messages.Message):
   ipAddresses = _messages.StringField(2, repeated=True)
   signatures = _messages.MessageField('ProcessSignature', 3, repeated=True)
   uris = _messages.StringField(4, repeated=True)
+
+
+class KernelRootkit(_messages.Message):
+  r"""Kernel mode rootkit signatures.
+
+  Fields:
+    name: Rootkit name when available.
+    unexpectedCodeModification: Flag indicating unexpected modifications of
+      kernel code memory.
+    unexpectedFtraceHandler: Flag indicating presence of ftrace points with
+      callbacks pointing to regions that are not in the expected kernel or
+      module code range.
+    unexpectedInterruptHandler: Flag indicating presence of interrupt handlers
+      that are are not in the expected kernel, module code regions.
+    unexpectedKernelCodePages: Flag indicating presence of kernel code pages
+      that are not in the expected kernel, module code regions.
+    unexpectedKprobeHandler: Flag indicating presence of kprobe points with
+      callbacks pointing to regions that are not in the expected kernel or
+      module code range.
+    unexpectedProcessesInRunqueue: Flag indicating unexpected process(es) in
+      the scheduler run-queue, those that are in the run-queue, but not in the
+      process task-list.
+    unexpectedReadOnlyDataModification: Flag indicating unexpected
+      modifications of kernel read-only data memory.
+    unexpectedSystemCallHandler: Flag indicating presence of system call
+      handlers that are are not in the expected kernel, module code regions.
+  """
+
+  name = _messages.StringField(1)
+  unexpectedCodeModification = _messages.BooleanField(2)
+  unexpectedFtraceHandler = _messages.BooleanField(3)
+  unexpectedInterruptHandler = _messages.BooleanField(4)
+  unexpectedKernelCodePages = _messages.BooleanField(5)
+  unexpectedKprobeHandler = _messages.BooleanField(6)
+  unexpectedProcessesInRunqueue = _messages.BooleanField(7)
+  unexpectedReadOnlyDataModification = _messages.BooleanField(8)
+  unexpectedSystemCallHandler = _messages.BooleanField(9)
 
 
 class Kubernetes(_messages.Message):

@@ -540,6 +540,18 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class StreamConfig(_messages.Message):
+  r"""Describes the optional configuration payload that the customer wants to
+  set up with for the instance.
+
+  Fields:
+    fallbackUri: User-specified fallback uri that should be launched from the
+      client when there is a streaming server stock-out.
+  """
+
+  fallbackUri = _messages.StringField(1)
+
+
 class StreamContent(_messages.Message):
   r"""Message describing StreamContent object
 
@@ -595,7 +607,7 @@ class StreamContent(_messages.Message):
 
 
 class StreamInstance(_messages.Message):
-  r"""Message describing StreamInstance object Next ID: 12
+  r"""Message describing StreamInstance object Next ID: 13
 
   Messages:
     LabelsValue: Labels as key value pairs
@@ -621,6 +633,8 @@ class StreamInstance(_messages.Message):
     realmConfigs: Deployment configuration of the instance in realms. Note
       that this is not defined as a map for enum types (Realm) cannot be used
       as key.
+    streamConfig: Optional. An optional config data to configure the client
+      UI.
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -684,7 +698,8 @@ class StreamInstance(_messages.Message):
   locationConfigs = _messages.MessageField('LocationConfigsValue', 8)
   name = _messages.StringField(9)
   realmConfigs = _messages.MessageField('RealmConfig', 10, repeated=True)
-  updateTime = _messages.StringField(11)
+  streamConfig = _messages.MessageField('StreamConfig', 11)
+  updateTime = _messages.StringField(12)
 
 
 class StreamProjectsLocationsGetRequest(_messages.Message):

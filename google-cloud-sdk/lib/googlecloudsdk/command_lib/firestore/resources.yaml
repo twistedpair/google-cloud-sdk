@@ -35,11 +35,8 @@ database:
       Database of the {resource}.
     fallthroughs:
     - hook: googlecloudsdk.command_lib.firestore.util:GetDatabaseFallthrough
-      # The database can only ever be '(default)' for now, so we've removed the flag in all commands
-      # that would use it and provided a fallthrough that returns that value.
       hint: |-
-        provide the argument [--database] on the command line (currently '(default)' is the only
-        supported value)
+        the default value of argument [--database] is `(default)`
 
 # This is for the '-' collection group which allows API calls to access index IDs without specifying
 # their collection group, e.g.:

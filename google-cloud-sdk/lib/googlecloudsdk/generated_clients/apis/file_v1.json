@@ -1057,7 +1057,7 @@
     },
     "MaintenancePolicy": {
       "id": "MaintenancePolicy",
-      "description": "Defines policies to service maintenance events.",
+      "description": "LINT.IfChange Defines policies to service maintenance events.",
       "type": "object",
       "properties": {
         "name": {
@@ -1522,7 +1522,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The project and location for which to retrieve instance information, in the format `projects\/{project_id}\/locations\/{location}`. In Cloud Filestore, locations map to GCP zones, for example **us-west1-b**. To retrieve instance information for all locations, use \"-\" for the `{location}` value.",
+                      "description": "Required. The project and location for which to retrieve instance information, in the format `projects\/{project_id}\/locations\/{location}`. In Cloud Filestore, locations map to Google Cloud zones, for example **us-west1-b**. To retrieve instance information for all locations, use \"-\" for the `{location}` value.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1593,7 +1593,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The instance's project and location, in the format `projects\/{project_id}\/locations\/{location}`. In Filestore, locations map to GCP zones, for example **us-west1-b**.",
+                      "description": "Required. The instance's project and location, in the format `projects\/{project_id}\/locations\/{location}`. In Filestore, locations map to Google Cloud zones, for example **us-west1-b**.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1892,7 +1892,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The project and location for which to retrieve backup information, in the format `projects\/{project_number}\/locations\/{location}`. In Filestore, backup locations map to GCP regions, for example **us-west1**. To retrieve backup information for all locations, use \"-\" for the `{location}` value.",
+                      "description": "Required. The project and location for which to retrieve backup information, in the format `projects\/{project_number}\/locations\/{location}`. In Filestore, backup locations map to Google Cloud regions, for example **us-west1**. To retrieve backup information for all locations, use \"-\" for the `{location}` value.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1963,7 +1963,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The backup's project and location, in the format `projects\/{project_number}\/locations\/{location}`. In Filestore, backup locations map to GCP regions, for example **us-west1**.",
+                      "description": "Required. The backup's project and location, in the format `projects\/{project_number}\/locations\/{location}`. In Filestore, backup locations map to Google Cloud regions, for example **us-west1**.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,

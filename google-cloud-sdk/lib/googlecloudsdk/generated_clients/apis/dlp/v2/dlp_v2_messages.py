@@ -4067,7 +4067,8 @@ class GooglePrivacyDlpV2Error(_messages.Message):
 class GooglePrivacyDlpV2ExcludeByHotword(_messages.Message):
   r"""The rule to exclude findings based on a hotword. For record inspection
   of tables, column names are considered hotwords. An example of this is to
-  exclude a finding if a BigQuery column matches a specific pattern.
+  exclude a finding if it belongs to a BigQuery column that matches a specific
+  pattern.
 
   Fields:
     hotwordRegex: Regular expression pattern defining what qualifies as a
@@ -6145,14 +6146,14 @@ class GooglePrivacyDlpV2PublishFindingsToCloudDataCatalog(_messages.Message):
 
 
 class GooglePrivacyDlpV2PublishSummaryToCscc(_messages.Message):
-  r"""Publish the result summary of a DlpJob to the Cloud Security Command
-  Center (CSCC Alpha). This action is only available for projects which are
-  parts of an organization and whitelisted for the alpha Cloud Security
-  Command Center. The action will publish the count of finding instances and
-  their info types. The summary of findings will be persisted in CSCC and are
-  governed by CSCC service-specific policy, see
-  https://cloud.google.com/terms/service-terms Only a single instance of this
-  action can be specified. Compatible with: Inspect
+  r"""Publish the result summary of a DlpJob to [Security Command
+  Center](https://cloud.google.com/security-command-center). This action is
+  available for only projects that belong to an organization. This action
+  publishes the count of finding instances and their infoTypes. The summary of
+  findings are persisted in Security Command Center and are governed by
+  [service-specific policies for Security Command
+  Center](https://cloud.google.com/terms/service-terms). Only a single
+  instance of this action can be specified. Compatible with: Inspect
   """
 
 

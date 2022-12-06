@@ -2764,11 +2764,11 @@ class GoogleIdentityAccesscontextmanagerV1AccessLevel(_messages.Message):
     custom: A `CustomLevel` written in the Common Expression Language.
     description: Description of the `AccessLevel` and its use. Does not affect
       behavior.
-    name: Required. Resource name for the Access Level. The `short_name`
-      component must begin with a letter and only include alphanumeric and
-      '_'. Format:
+    name: Resource name for the `AccessLevel`. Format:
       `accessPolicies/{access_policy}/accessLevels/{access_level}`. The
-      maximum length of the `access_level` component is 50 characters.
+      `access_level` component must begin with a letter, followed by
+      alphanumeric characters or `_`. Its maximum length is 50 characters.
+      After you create an `AccessLevel`, you cannot change its `name`.
     title: Human readable title. Must be unique within the Policy.
   """
 
@@ -3297,10 +3297,11 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
   Fields:
     description: Description of the `ServicePerimeter` and its use. Does not
       affect behavior.
-    name: Required. Resource name for the ServicePerimeter. The `short_name`
-      component must begin with a letter and only include alphanumeric and
-      '_'. Format:
-      `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`
+    name: Resource name for the `ServicePerimeter`. Format:
+      `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`.
+      The `service_perimeter` component must begin with a letter, followed by
+      alphanumeric characters or `_`. After you create a `ServicePerimeter`,
+      you cannot change its `name`.
     perimeterType: Perimeter type indicator. A single project is allowed to be
       a member of single regular perimeter, but multiple service perimeter
       bridges. A project cannot be a included in a perimeter bridge without

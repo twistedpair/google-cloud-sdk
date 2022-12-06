@@ -1333,8 +1333,8 @@ class Volume(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    activeDirectoryName: Optional. Specifies the AD to be used for creating a
-      SMB volume. StoragePool name of the volume
+    activeDirectory: Optional. Specifies the AD to be used for creating a SMB
+      volume. ActiveDirectory name of the volume
     capacityGib: Required. Capacity in GIB of the volume
     createTime: Output only. Create time of the volume
     description: Optional. Description of the volume
@@ -1365,7 +1365,7 @@ class Volume(_messages.Message):
     snapshotPolicy: Optional. SnapshotPolicy for a volume.
     state: Output only. State of the volume
     stateDetails: Output only. State details of the volume
-    storagePoolName: Required. StoragePool name of the volume
+    storagePool: Required. StoragePool name of the volume
     unixPermissions: Optional. Default unix style permission (e.g. 777) the
       mount point will be created with. Applicable for NFS protocol types
       only.
@@ -1484,7 +1484,7 @@ class Volume(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  activeDirectoryName = _messages.StringField(1)
+  activeDirectory = _messages.StringField(1)
   capacityGib = _messages.IntegerField(2)
   createTime = _messages.StringField(3)
   description = _messages.StringField(4)
@@ -1507,7 +1507,7 @@ class Volume(_messages.Message):
   snapshotPolicy = _messages.MessageField('SnapshotPolicy', 21)
   state = _messages.EnumField('StateValueValuesEnum', 22)
   stateDetails = _messages.StringField(23)
-  storagePoolName = _messages.StringField(24)
+  storagePool = _messages.StringField(24)
   unixPermissions = _messages.StringField(25)
   usedGib = _messages.IntegerField(26)
 

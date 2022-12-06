@@ -1065,6 +1065,8 @@ class OperationMetadata(_messages.Message):
     statusMessage: Human-readable status of the operation, if any.
     target: Server-defined resource path for the target of the operation.
     verb: The verb executed by the operation.
+    warnings: Warnings that do not block the operation, but still hold
+      relevant information for the end user to receive.
   """
 
   apiVersion = _messages.StringField(1)
@@ -1074,6 +1076,7 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+  warnings = _messages.StringField(8, repeated=True)
 
 
 class Quota(_messages.Message):

@@ -234,6 +234,17 @@ class CommonFeatureState(_messages.Message):
   state = _messages.MessageField('FeatureState', 4)
 
 
+class CommonFleetDefaultMemberConfigSpec(_messages.Message):
+  r"""CommonFleetDefaultMemberConfigSpec contains default configuration
+  information for memberships of a fleet
+
+  Fields:
+    mesh: Anthos Service Mesh-specific spec
+  """
+
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 1)
+
+
 class ConfigManagementConfigSync(_messages.Message):
   r"""Configuration for Config Sync
 
@@ -1014,6 +1025,8 @@ class Feature(_messages.Message):
   Fields:
     createTime: Output only. When the Feature resource was created.
     deleteTime: Output only. When the Feature resource was deleted.
+    fleetDefaultMemberConfig: Optional. Feature configuration applicable to
+      all memberships of the fleet.
     labels: GCP labels for this Feature.
     membershipSpecs: Optional. Membership-specific configuration for this
       Feature. If this Feature does not support any per-Membership
@@ -1215,16 +1228,17 @@ class Feature(_messages.Message):
 
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 4)
-  membershipStates = _messages.MessageField('MembershipStatesValue', 5)
-  name = _messages.StringField(6)
-  resourceState = _messages.MessageField('FeatureResourceState', 7)
-  scopeSpecs = _messages.MessageField('ScopeSpecsValue', 8)
-  scopeStates = _messages.MessageField('ScopeStatesValue', 9)
-  spec = _messages.MessageField('CommonFeatureSpec', 10)
-  state = _messages.MessageField('CommonFeatureState', 11)
-  updateTime = _messages.StringField(12)
+  fleetDefaultMemberConfig = _messages.MessageField('CommonFleetDefaultMemberConfigSpec', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 5)
+  membershipStates = _messages.MessageField('MembershipStatesValue', 6)
+  name = _messages.StringField(7)
+  resourceState = _messages.MessageField('FeatureResourceState', 8)
+  scopeSpecs = _messages.MessageField('ScopeSpecsValue', 9)
+  scopeStates = _messages.MessageField('ScopeStatesValue', 10)
+  spec = _messages.MessageField('CommonFeatureSpec', 11)
+  state = _messages.MessageField('CommonFeatureState', 12)
+  updateTime = _messages.StringField(13)
 
 
 class FeatureResourceState(_messages.Message):

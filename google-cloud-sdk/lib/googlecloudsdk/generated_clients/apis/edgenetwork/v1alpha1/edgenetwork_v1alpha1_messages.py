@@ -885,9 +885,6 @@ class InterconnectAttachment(_messages.Message):
       attachment.
     network: Optional. The canonical Network name in the form of
       projects/{project}/locations/{location}/zones/{zone}/networks/{network}.
-    router: Optional. The canonical Router name in the form of
-      projects/{project}/locations/{location}/zones/{zone}/routers/{router}.
-      During creates, if network is specified, this field will be ignored.
     state: Output only. Current stage of the resource to the device by config
       push.
     updateTime: Output only. The time when the interconnect attachment was
@@ -945,10 +942,9 @@ class InterconnectAttachment(_messages.Message):
   mtu = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   name = _messages.StringField(6)
   network = _messages.StringField(7)
-  router = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
-  vlanId = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+  vlanId = _messages.IntegerField(10, variant=_messages.Variant.INT32)
 
 
 class InterconnectDiagnostics(_messages.Message):

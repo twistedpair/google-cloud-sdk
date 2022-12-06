@@ -391,26 +391,41 @@
       "type": "object",
       "properties": {
         "desiredState": {
-          "description": "The desired state of this export.",
+          "description": "The desired state of this export. Setting this to values other than `ACTIVE` and `PAUSED` will result in an error.",
           "type": "string",
           "enumDescriptions": [
             "Default value. This value is unused.",
             "Messages are being exported.",
-            "Exporting messages is suspended."
+            "Exporting messages is suspended.",
+            "Messages cannot be exported due to permission denied errors. Output only.",
+            "Messages cannot be exported due to missing resources. Output only."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "ACTIVE",
-            "PAUSED"
+            "PAUSED",
+            "PERMISSION_DENIED",
+            "NOT_FOUND"
           ]
         },
-        "statuses": {
-          "description": "Output only. The export statuses of each partition. This field is output only.",
+        "currentState": {
+          "description": "Output only. The current state of the export, which may be different to the desired state due to errors. This field is output only.",
           "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "PartitionStatus"
-          }
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "Messages are being exported.",
+            "Exporting messages is suspended.",
+            "Messages cannot be exported due to permission denied errors. Output only.",
+            "Messages cannot be exported due to missing resources. Output only."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "PAUSED",
+            "PERMISSION_DENIED",
+            "NOT_FOUND"
+          ]
         },
         "deadLetterTopic": {
           "description": "Optional. The name of an optional Pub\/Sub Lite topic to publish messages that can not be exported to the destination. For example, the message can not be published to the Pub\/Sub service because it does not satisfy the constraints documented at https:\/\/cloud.google.com\/pubsub\/docs\/publisher. Structured like: projects\/{project_number}\/locations\/{location}\/topics\/{topic_id}. Must be within the same project and location as the subscription. The topic may be changed or removed.",
@@ -419,22 +434,6 @@
         "pubsubConfig": {
           "description": "Messages are automatically written from the Pub\/Sub Lite topic associated with this subscription to a Pub\/Sub topic.",
           "$ref": "PubSubConfig"
-        }
-      }
-    },
-    "PartitionStatus": {
-      "id": "PartitionStatus",
-      "description": "The export status of a partition.",
-      "type": "object",
-      "properties": {
-        "partition": {
-          "description": "The partition number.",
-          "type": "string",
-          "format": "int64"
-        },
-        "status": {
-          "description": "If the export for a partition is healthy and the desired state is `ACTIVE`, the status code will be `OK` (zero). If the desired state of the export is `PAUSED`, the status code will be `CANCELLED`. If the export has been suspended due to an error, the status will be populated with an error code and details. The service will automatically retry after a period of time, and will update the status code to `OK` if export subsequently succeeds.",
-          "$ref": "Status"
         }
       }
     },

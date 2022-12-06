@@ -881,7 +881,7 @@ def AddBinauthzFlags(parser,
         help='Enable Binary Authorization for this cluster.',
         hidden=hidden,
     )
-  if release_track == base.ReleaseTrack.ALPHA:
+  if release_track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
     platform_policy_type = arg_parsers.RegexpValidator(
         _BINAUTHZ_GKE_POLICY_REGEX,
         'GKE policy resource names have the following format: '
@@ -1573,7 +1573,7 @@ def AddPlacementTypeFlag(parser, for_node_pool=False, hidden=False):
       `UNSPECIFIED` - No requirements on the placement of nodes. This is the
       default option.
 
-      `COMPACT` - Google will attempt to place the nodes in a close proximity to each
+      `COMPACT` - GKE will attempt to place the nodes in a close proximity to each
       other. This helps to reduce the communication latency between the nodes, but
       imposes additional limitations on the node pool size.
 
@@ -1587,7 +1587,7 @@ def AddPlacementTypeFlag(parser, for_node_pool=False, hidden=False):
       `UNSPECIFIED` - No requirements on the placement of nodes. This is the
       default option.
 
-      `COMPACT` - Google will attempt to place the nodes in a close proximity to each
+      `COMPACT` - GKE will attempt to place the nodes in a close proximity to each
       other. This helps to reduce the communication latency between the nodes, but
       imposes additional limitations on the node pool size.
 
@@ -1937,7 +1937,7 @@ def AddClusterDNSFlags(parser, hidden=False):
       choices=_DNS_SCOPE,
       help="""\
             DNS scope for the Cloud DNS zone created - valid only with
-             `--cluster-dns=clouddns`""",
+             `--cluster-dns=clouddns`. Defaults to cluster.""",
       hidden=hidden,
   )
   group.add_argument(
@@ -4864,7 +4864,7 @@ def AddLoggingVariantFlag(parser, for_node_pool=False, hidden=False):
       default=None)
 
 
-def AddWindowsOsVersionFlag(parser, hidden=True):
+def AddWindowsOsVersionFlag(parser, hidden=False):
   """Adds --windows-os-version flag to the given parser.
 
   Flag:

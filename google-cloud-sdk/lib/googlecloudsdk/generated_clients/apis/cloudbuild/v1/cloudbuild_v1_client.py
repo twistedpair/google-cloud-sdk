@@ -2243,7 +2243,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.locations.triggers.patch',
         ordered_params=['resourceName'],
         path_params=['resourceName'],
-        query_params=['projectId', 'triggerId'],
+        query_params=['projectId', 'triggerId', 'updateMask'],
         relative_path='v1/{+resourceName}',
         request_field='buildTrigger',
         request_type_name='CloudbuildProjectsLocationsTriggersPatchRequest',
@@ -2252,7 +2252,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def Run(self, request, global_params=None):
-      r"""Runs a `BuildTrigger` at a particular source revision. To run a regional or global trigger, use the POST request that includes the location endpoint in the path. The POST request that does not include the location endpoint in the path can only be used when running global triggers.
+      r"""Runs a `BuildTrigger` at a particular source revision. To run a regional or global trigger, use the POST request that includes the location endpoint in the path (ex. v1/projects/{projectId}/locations/{region}/triggers/{triggerId}:run). The POST request that does not include the location endpoint in the path can only be used when running global triggers.
 
       Args:
         request: (CloudbuildProjectsLocationsTriggersRunRequest) input message
@@ -2592,7 +2592,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.triggers.patch',
         ordered_params=['projectId', 'triggerId'],
         path_params=['projectId', 'triggerId'],
-        query_params=[],
+        query_params=['updateMask'],
         relative_path='v1/projects/{projectId}/triggers/{triggerId}',
         request_field='buildTrigger',
         request_type_name='CloudbuildProjectsTriggersPatchRequest',
@@ -2601,7 +2601,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def Run(self, request, global_params=None):
-      r"""Runs a `BuildTrigger` at a particular source revision. To run a regional or global trigger, use the POST request that includes the location endpoint in the path. The POST request that does not include the location endpoint in the path can only be used when running global triggers.
+      r"""Runs a `BuildTrigger` at a particular source revision. To run a regional or global trigger, use the POST request that includes the location endpoint in the path (ex. v1/projects/{projectId}/locations/{region}/triggers/{triggerId}:run). The POST request that does not include the location endpoint in the path can only be used when running global triggers.
 
       Args:
         request: (CloudbuildProjectsTriggersRunRequest) input message

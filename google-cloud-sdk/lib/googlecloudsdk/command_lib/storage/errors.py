@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""File and Cloud URL representation classes."""
+"""Storage client-side error classes."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -44,42 +44,3 @@ class InvalidUrlError(Error):
 
 class ValueCannotBeDeterminedError(Error):
   """Error raised when attempting to access unknown information."""
-
-
-def _raise_error_for_wrong_resource_type(command_list, expected_resource_type,
-                                         example, url):
-  """Raises error for user input mismatched with command resource type.
-
-  Example message:
-
-  "gcloud storage buckets" create only accepts bucket URLs.
-  Example: "gs://bucket"
-  Received: "gs://user-bucket/user-object.txt"
-
-  Args:
-    command_list (list[str]): The command being run. Can be gotten from an
-      argparse object with `args.command_path`.
-    expected_resource_type (str): Raise an error because we did not get this.
-    example: (str): An example of a URL to a resource with the correct type.
-    url (StorageUrl): The erroneous URL received.
-
-  Raises:
-    InvalidUrlError: Explains that the user entered a URL for the wrong type
-      of resource.
-  """
-
-  raise InvalidUrlError(
-      '"{}" only accepts {} URLs.\nExample: "{}"\nReceived: "{}"'.format(
-          ' '.join(command_list), expected_resource_type, example, url))
-
-
-def raise_error_if_not_bucket(command_list, url):
-  if not url.is_bucket():
-    _raise_error_for_wrong_resource_type(command_list, 'bucket', 'gs://bucket',
-                                         url)
-
-
-def raise_error_if_not_cloud_object(command_list, url):
-  if not url.is_object():
-    _raise_error_for_wrong_resource_type(command_list, 'object',
-                                         'gs://bucket/object.txt', url)

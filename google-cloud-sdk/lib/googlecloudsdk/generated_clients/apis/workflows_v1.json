@@ -293,11 +293,13 @@
           "type": "string",
           "enumDescriptions": [
             "Invalid state.",
-            "The workflow has been deployed successfully and is serving."
+            "The workflow has been deployed successfully and is serving.",
+            "Workflow data is unavailable. See the `state_error` field."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
-            "ACTIVE"
+            "ACTIVE",
+            "UNAVAILABLE"
           ]
         },
         "revisionId": {
@@ -339,7 +341,23 @@
           "type": "string"
         },
         "cryptoKeyName": {
-          "description": "Optional. The resource name of a KMS crypto key used to encrypt\/decrypt the data associated with the workflow. Format: projects\/{project}\/locations\/{location}\/keyRings\/{keyRing}\/cryptoKeys\/{cryptoKey} Using `-` as a wildcard for the `{project}` or not providing one at all will infer the project from the account. If not provided, data associated with the workflow will not be CMEK-encrypted. ",
+          "description": "Optional. The resource name of a KMS crypto key used to encrypt\/decrypt the data associated with the workflow. Format: projects\/{project}\/locations\/{location}\/keyRings\/{keyRing}\/cryptoKeys\/{cryptoKey} Using `-` as a wildcard for the `{project}` or not providing one at all will infer the project from the account. If not provided, data associated with the workflow will not be CMEK-encrypted.",
+          "type": "string"
+        },
+        "stateError": {
+          "description": "Output only. Error regarding the state of the Workflow. For example, this field will have error details if the Execution data is unavailable due to revoked KMS key permissions.",
+          "readOnly": true,
+          "$ref": "StateError"
+        }
+      }
+    },
+    "StateError": {
+      "id": "StateError",
+      "description": "Describes an error related to the current state of the Workflow.",
+      "type": "object",
+      "properties": {
+        "details": {
+          "description": "Provides specifics about the error.",
           "type": "string"
         }
       }

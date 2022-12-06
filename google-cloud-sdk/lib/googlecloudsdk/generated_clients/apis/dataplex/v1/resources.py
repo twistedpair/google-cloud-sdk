@@ -52,6 +52,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DATASCANS = (
+      'projects.locations.dataScans',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/dataScans/'
+              '{dataScansId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DATASCANS_JOBS = (
+      'projects.locations.dataScans.jobs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/dataScans/'
+              '{dataScansId}/jobs/{jobsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_DATATAXONOMIES = (
       'projects.locations.dataTaxonomies',
       '{+name}',

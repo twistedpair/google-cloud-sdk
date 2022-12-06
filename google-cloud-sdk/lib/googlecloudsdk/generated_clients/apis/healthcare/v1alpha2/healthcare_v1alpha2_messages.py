@@ -18,13 +18,29 @@ class AnalyzeEntitiesRequest(_messages.Message):
   r"""The request to analyze healthcare entities in a document.
 
   Enums:
+    AlternativeOutputFormatValueValuesEnum: Alternative output format to be
+      generated based on the results of analysis.
     LicensedVocabulariesValueListEntryValuesEnum:
 
   Fields:
+    alternativeOutputFormat: Alternative output format to be generated based
+      on the results of analysis.
     documentContent: document_content is a document to be annotated.
     licensedVocabularies: A list of licensed vocabularies to use in the
       request, in addition to the default unlicensed vocabularies.
   """
+
+  class AlternativeOutputFormatValueValuesEnum(_messages.Enum):
+    r"""Alternative output format to be generated based on the results of
+    analysis.
+
+    Values:
+      ALTERNATIVE_OUTPUT_FORMAT_UNSPECIFIED: No alternative output format is
+        specified.
+      FHIR_BUNDLE: FHIR bundle output.
+    """
+    ALTERNATIVE_OUTPUT_FORMAT_UNSPECIFIED = 0
+    FHIR_BUNDLE = 1
 
   class LicensedVocabulariesValueListEntryValuesEnum(_messages.Enum):
     r"""LicensedVocabulariesValueListEntryValuesEnum enum type.
@@ -38,8 +54,9 @@ class AnalyzeEntitiesRequest(_messages.Message):
     ICD10CM = 1
     SNOMEDCT_US = 2
 
-  documentContent = _messages.StringField(1)
-  licensedVocabularies = _messages.EnumField('LicensedVocabulariesValueListEntryValuesEnum', 2, repeated=True)
+  alternativeOutputFormat = _messages.EnumField('AlternativeOutputFormatValueValuesEnum', 1)
+  documentContent = _messages.StringField(2)
+  licensedVocabularies = _messages.EnumField('LicensedVocabulariesValueListEntryValuesEnum', 3, repeated=True)
 
 
 class AnalyzeEntitiesResponse(_messages.Message):
@@ -51,13 +68,17 @@ class AnalyzeEntitiesResponse(_messages.Message):
       mention content.
     entityMentions: entity_mentions contains all the annotated medical
       entities that were mentioned in the provided document.
+    fhirBundle: The FHIR bundle ([`R4`](https://www.hl7.org/fhir/R4)) that
+      includes all the entities, the entity mentions, and the relationships in
+      JSON format.
     relationships: relationships contains all the binary relationships that
       were identified between entity mentions within the provided document.
   """
 
   entities = _messages.MessageField('Entity', 1, repeated=True)
   entityMentions = _messages.MessageField('EntityMention', 2, repeated=True)
-  relationships = _messages.MessageField('EntityMentionRelationship', 3, repeated=True)
+  fhirBundle = _messages.StringField(3)
+  relationships = _messages.MessageField('EntityMentionRelationship', 4, repeated=True)
 
 
 class AnnotationConfig(_messages.Message):
@@ -1035,7 +1056,7 @@ class EntityMention(_messages.Message):
       number between 0 and 1.
     linkedEntities: linked_entities are candidate ontological concepts that
       this entity mention may refer to. They are sorted by decreasing
-      confidence.it
+      confidence.
     mentionId: mention_id uniquely identifies each entity mention in a single
       response.
     subject: The subject this entity mention relates to. Its value is one of:

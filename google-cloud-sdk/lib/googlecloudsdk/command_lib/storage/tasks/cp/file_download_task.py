@@ -162,7 +162,7 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
             properties.VALUES.storage.resumable_threshold.Get())):
       self._strategy = cloud_api.DownloadStrategy.RESUMABLE
     else:
-      self._strategy = cloud_api.DownloadStrategy.ONE_SHOT
+      self._strategy = cloud_api.DownloadStrategy.RETRIABLE_IN_FLIGHT
 
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)

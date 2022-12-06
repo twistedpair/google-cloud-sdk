@@ -74,6 +74,16 @@ class ArtifactregistryProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ArtifactregistryProjectsLocationsGetVpcscConfigRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsGetVpcscConfigRequest object.
+
+  Fields:
+    name: Required. The name of the VPCSCConfig resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ArtifactregistryProjectsLocationsListRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsListRequest object.
 
@@ -731,6 +741,22 @@ class ArtifactregistryProjectsLocationsRepositoriesYumArtifactsUploadRequest(_me
   uploadYumArtifactRequest = _messages.MessageField('UploadYumArtifactRequest', 2)
 
 
+class ArtifactregistryProjectsLocationsUpdateVpcscConfigRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsUpdateVpcscConfigRequest object.
+
+  Fields:
+    name: The name of the project's VPC SC Config. Always of the form:
+      projects/{projectID}/locations/{location}/vpcscConfig In update request:
+      never set In response: always set
+    updateMask: Field mask to support partial updates.
+    vPCSCConfig: A VPCSCConfig resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  vPCSCConfig = _messages.MessageField('VPCSCConfig', 3)
+
+
 class ArtifactregistryProjectsUpdateProjectSettingsRequest(_messages.Message):
   r"""A ArtifactregistryProjectsUpdateProjectSettingsRequest object.
 
@@ -970,6 +996,25 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class GenericArtifact(_messages.Message):
+  r"""GenericArtifact represents a generic artifact
+
+  Fields:
+    createTime: Output only. The time when the Generic module is created.
+    name: Resource name of the generic artifact. project, location,
+      repository, package_id and version_id create a unique generic artifact.
+      i.e. "projects/test-project/locations/us-west4/repositories/test-repo/
+      genericArtifacts/package_id:version_id"
+    updateTime: Output only. The time when the Generic module is updated.
+    version: The version of the generic artifact.
+  """
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
+  version = _messages.StringField(4)
 
 
 class GoModule(_messages.Message):
@@ -2221,6 +2266,10 @@ class UploadGenericArtifactMediaResponse(_messages.Message):
   operation = _messages.MessageField('Operation', 1)
 
 
+class UploadGenericArtifactMetadata(_messages.Message):
+  r"""The operation metadata for uploading generic artifacts."""
+
+
 class UploadGenericArtifactRequest(_messages.Message):
   r"""The request to upload a generic artifact. The created GenericArtifact
   will have the resource name {parent}/genericArtifacts/package_id:version_id.
@@ -2356,6 +2405,42 @@ class UpstreamPolicy(_messages.Message):
   id = _messages.StringField(1)
   priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   repository = _messages.StringField(3)
+
+
+class VPCSCConfig(_messages.Message):
+  r"""The Artifact Registry VPC SC config that apply to a Project.
+
+  Enums:
+    VpcscPolicyValueValuesEnum: The project per location VPC SC policy that
+      defines the VPC SC behavior for the Remote Repository (Allow/Deny).
+
+  Fields:
+    name: The name of the project's VPC SC Config. Always of the form:
+      projects/{projectID}/locations/{location}/vpcscConfig In update request:
+      never set In response: always set
+    vpcscPolicy: The project per location VPC SC policy that defines the VPC
+      SC behavior for the Remote Repository (Allow/Deny).
+  """
+
+  class VpcscPolicyValueValuesEnum(_messages.Enum):
+    r"""The project per location VPC SC policy that defines the VPC SC
+    behavior for the Remote Repository (Allow/Deny).
+
+    Values:
+      VPCSC_POLICY_UNSPECIFIED: VPCSC_POLICY_UNSPECIFIED - the VPS SC policy
+        is not defined. When VPS SC policy is not defined - the Service will
+        use the default behavior (VPCSC_DENY).
+      DENY: VPCSC_DENY - repository will block the requests to the Upstreams
+        for the Remote Repositories if the resource is in the perimeter.
+      ALLOW: VPCSC_ALLOW - repository will allow the requests to the Upstreams
+        for the Remote Repositories if the resource is in the perimeter.
+    """
+    VPCSC_POLICY_UNSPECIFIED = 0
+    DENY = 1
+    ALLOW = 2
+
+  name = _messages.StringField(1)
+  vpcscPolicy = _messages.EnumField('VpcscPolicyValueValuesEnum', 2)
 
 
 class Version(_messages.Message):

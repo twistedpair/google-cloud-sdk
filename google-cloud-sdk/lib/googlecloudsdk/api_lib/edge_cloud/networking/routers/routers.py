@@ -19,13 +19,13 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import ipaddress
-import six
 
-from googlecloudsdk.calliope import parser_errors
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.edge_cloud.networking import utils
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import exceptions as core_exceptions
+
+import six
 
 
 class RoutersClient(object):
@@ -35,15 +35,15 @@ class RoutersClient(object):
   FIELD_PATH_BGP_PEER = 'bgp_peer'
   FIELD_PATH_ROUTE_ADVERTISEMENTS = 'route_advertisements'
 
-  def __init__(self, client=None, messages=None):
-    self._client = client or utils.GetClientInstance()
-    self._messages = messages or utils.GetMessagesModule()
+  def __init__(self, release_track, client=None, messages=None):
+    self._client = client or utils.GetClientInstance(release_track)
+    self._messages = messages or utils.GetMessagesModule(release_track)
     self._service = self._client.projects_locations_zones_routers
-    self._resource_parser = utils.GetResourceParser()
+    self._resource_parser = utils.GetResourceParser(release_track)
 
   def WaitForOperation(self, operation):
     """Waits for the given google.longrunning.Operation to complete."""
-    return utils.WaitForOperation(operation, self._service)
+    return utils.WaitForOperation(self._client, operation, self._service)
 
   def ModifyToAddInterface(self, router_ref, args, existing):
     """Mutate the router to add an interface."""
@@ -120,7 +120,7 @@ class RoutersClient(object):
     return replacement
 
   def ModifyToRemoveBgpPeer(self, args, existing):
-    """"Mutate the router to delete BGP peers."""
+    """Mutate the router to delete BGP peers."""
     input_remove_list = args.peer_names if args.peer_names else []
     actual_remove_list = []
     replacement = encoding.CopyProtoMessage(existing)
@@ -211,7 +211,8 @@ class RoutersClient(object):
     return replacement
 
   def ChangeAdvertisements(self, router_ref, args):
-    """Create a patch request that updates the Route advertisements of a router."""
+    """Create a patch request that updates the Route advertisements of a router.
+    """
     get_router_req = self._messages.EdgenetworkProjectsLocationsZonesRoutersGetRequest(
         name=router_ref.RelativeName())
     router_object = self._service.Get(get_router_req)

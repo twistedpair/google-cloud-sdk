@@ -104,64 +104,12 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         }
       }
     }
   },
   "schemas": {
-    "ListLocationsResponse": {
-      "id": "ListLocationsResponse",
-      "description": "The response message for Locations.ListLocations.",
-      "type": "object",
-      "properties": {
-        "locations": {
-          "description": "A list of locations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "Location"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
-        }
-      }
-    },
-    "Location": {
-      "id": "Location",
-      "description": "A resource that represents Google Cloud Platform location.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
-          "type": "string"
-        },
-        "locationId": {
-          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
-          "type": "string"
-        },
-        "labels": {
-          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "metadata": {
-          "description": "Service-specific metadata. For example the available capacity at the given location.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
     "ListOperationsResponse": {
       "id": "ListOperationsResponse",
       "description": "The response message for Operations.ListOperations.",
@@ -244,7 +192,7 @@
     },
     "Empty": {
       "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
       "type": "object",
       "properties": {
       }
@@ -254,6 +202,174 @@
       "description": "The request message for Operations.CancelOperation.",
       "type": "object",
       "properties": {
+      }
+    },
+    "ListAddressGroupsResponse": {
+      "id": "ListAddressGroupsResponse",
+      "description": "Response returned by the ListAddressGroups method.",
+      "type": "object",
+      "properties": {
+        "addressGroups": {
+          "description": "List of AddressGroups resources.",
+          "type": "array",
+          "items": {
+            "$ref": "AddressGroup"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+          "type": "string"
+        }
+      }
+    },
+    "AddressGroup": {
+      "id": "AddressGroup",
+      "description": "AddressGroup is a resource that specifies how a collection of IP\/DNS used in Firewall Policy.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Name of the AddressGroup resource. It matches pattern `projects\/*\/locations\/{location}\/addressGroups\/`.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. Free-text description of the resource.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The timestamp when the resource was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp when the resource was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Optional. Set of label tags associated with the AddressGroup resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "type": {
+          "description": "Required. The type of the Address Group. Possible values are \"IPv4\" or \"IPV6\".",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "IP v4 ranges.",
+            "IP v6 ranges."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "IPV4",
+            "IPV6"
+          ]
+        },
+        "items": {
+          "description": "Optional. List of items.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "capacity": {
+          "description": "Required. Capacity of the Address Group",
+          "type": "integer",
+          "format": "int32"
+        },
+        "selfLink": {
+          "description": "Output only. Server-defined fully-qualified URL for this resource.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "AddAddressGroupItemsRequest": {
+      "id": "AddAddressGroupItemsRequest",
+      "description": "Request used by the AddAddressGroupItems method.",
+      "type": "object",
+      "properties": {
+        "items": {
+          "description": "Required. List of items to add.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "requestId": {
+          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        }
+      }
+    },
+    "RemoveAddressGroupItemsRequest": {
+      "id": "RemoveAddressGroupItemsRequest",
+      "description": "Request used by the RemoveAddressGroupItems method.",
+      "type": "object",
+      "properties": {
+        "items": {
+          "description": "Required. List of items to remove.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "requestId": {
+          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        }
+      }
+    },
+    "CloneAddressGroupItemsRequest": {
+      "id": "CloneAddressGroupItemsRequest",
+      "description": "Request used by the CloneAddressGroupItems method.",
+      "type": "object",
+      "properties": {
+        "sourceAddressGroup": {
+          "description": "Required. Source address group to clone items from.",
+          "type": "string"
+        },
+        "requestId": {
+          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        }
+      }
+    },
+    "ListAddressGroupReferencesResponse": {
+      "id": "ListAddressGroupReferencesResponse",
+      "description": "Response of the ListAddressGroupReferences method.",
+      "type": "object",
+      "properties": {
+        "addressGroupReferences": {
+          "description": "A list of references that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "ListAddressGroupReferencesResponseAddressGroupReference"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+          "type": "string"
+        }
+      }
+    },
+    "ListAddressGroupReferencesResponseAddressGroupReference": {
+      "id": "ListAddressGroupReferencesResponseAddressGroupReference",
+      "description": "The Reference of AddressGroup.",
+      "type": "object",
+      "properties": {
+        "firewallPolicy": {
+          "description": "FirewallPolicy that is using the Address Group.",
+          "type": "string"
+        },
+        "rulePriority": {
+          "description": "Rule priority of the FirewallPolicy that is using the Address Group.",
+          "type": "integer",
+          "format": "int32"
+        }
       }
     },
     "ListAuthorizationPoliciesResponse": {
@@ -280,7 +396,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Name of the AuthorizationPolicy resource. It matches pattern `projects\/*\/locations\/{location}\/authorizationPolicies\/`.",
+          "description": "Required. Name of the AuthorizationPolicy resource. It matches pattern `projects\/{project}\/locations\/{location}\/authorizationPolicies\/`.",
           "type": "string"
         },
         "description": {
@@ -312,7 +428,7 @@
           "enumDescriptions": [
             "Default value.",
             "Grant access.",
-            "Deny access."
+            "Deny access. Deny rules should be avoided unless they are used to provide a default \"deny all\" fallback."
           ],
           "enum": [
             "ACTION_UNSPECIFIED",
@@ -321,7 +437,7 @@
           ]
         },
         "rules": {
-          "description": "Optional. List of rules to match. If not set, the action specified in the \u2018action\u2019 field will be applied without any additional rule checks.",
+          "description": "Optional. List of rules to match. Note that at least one of the rules must match in order for the action specified in the 'action' field to be taken. A rule is a match if there is a matching source and destination. If left blank, the action specified in the `action` field will be applied on every request.",
           "type": "array",
           "items": {
             "$ref": "Rule"
@@ -335,14 +451,14 @@
       "type": "object",
       "properties": {
         "sources": {
-          "description": "Optional. List of attributes for the traffic source. If not set, the action specified in the \u2018action\u2019 field will be applied without any rule checks for the source.",
+          "description": "Optional. List of attributes for the traffic source. All of the sources must match. A source is a match if both principals and ip_blocks match. If not set, the action specified in the 'action' field will be applied without any rule checks for the source.",
           "type": "array",
           "items": {
             "$ref": "Source"
           }
         },
         "destinations": {
-          "description": "Optional. List of attributes for the traffic destination. If not set, the action specified in the \u2018action\u2019 field will be applied without any rule checks for the destination.",
+          "description": "Optional. List of attributes for the traffic destination. All of the destinations must match. A destination is a match if a request matches all the specified hosts, ports, methods and headers. If not set, the action specified in the 'action' field will be applied without any rule checks for the destination.",
           "type": "array",
           "items": {
             "$ref": "Destination"
@@ -356,14 +472,14 @@
       "type": "object",
       "properties": {
         "principals": {
-          "description": "Optional. List of peer identities to match for authorization. Each peer can be an exact match, or a prefix match (example, \u201Cnamespace\/*\u201D) or a suffix match (example, *\/service-account\u201D) or a presence match \u201C*\u201D.",
+          "description": "Optional. List of peer identities to match for authorization. At least one principal should match. Each peer can be an exact match, or a prefix match (example, \"namespace\/*\") or a suffix match (example, \"*\/service-account\") or a presence match \"*\". Authorization based on the principal name without certificate validation (configured by ServerTlsPolicy resource) is considered insecure.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "ipBlocks": {
-          "description": "Optional. List of CIDR ranges to match based on source IP address. Single IP (e.g., \"1.2.3.4\") and CIDR (e.g., \"1.2.3.0\/24\") are supported.",
+          "description": "Optional. List of CIDR ranges to match based on source IP address. At least one IP block should match. Single IP (e.g., \"1.2.3.4\") and CIDR (e.g., \"1.2.3.0\/24\") are supported. Authorization based on source IP alone should be avoided. The IP addresses of any load balancers or proxies should be considered untrusted.",
           "type": "array",
           "items": {
             "type": "string"
@@ -377,14 +493,14 @@
       "type": "object",
       "properties": {
         "hosts": {
-          "description": "Required. List of host names to match. Matched against HOST header in http requests. Each host can be an exact match, or a prefix match (example, \u201Cmydomain.*\u201D) or a suffix match (example, *.myorg.com\u201D) or a presence(any) match \u201C*\u201D.",
+          "description": "Required. List of host names to match. Matched against the \":authority\" header in http requests. At least one host should match. Each host can be an exact match, or a prefix match (example \"mydomain.*\") or a suffix match (example \"*.myorg.com\") or a presence (any) match \"*\".",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "ports": {
-          "description": "Required. List of destination ports to match.",
+          "description": "Required. List of destination ports to match. At least one port should match.",
           "type": "array",
           "items": {
             "type": "integer",
@@ -392,28 +508,28 @@
           }
         },
         "paths": {
-          "description": "Optional. A list of HTTP paths to match. gRPC methods must be presented as fully-qualified name in the form of \"\/packageName.serviceName\/methodName\". Each path can be an exact match, or a prefix match (example, \u201C\/packageName.serviceName\/*\u201D) or a suffix match (example, *\/video\u201D) or a presence(any) match \u201C*\u201D.",
+          "description": "Optional. A list of HTTP paths to match. gRPC methods must be presented as fully-qualified name in the form of \"\/packageName.serviceName\/methodName\". At least one path should match. Each path can be an exact match, or a prefix match (example, \"\/packageName.serviceName\/*\") or a suffix match (example, \"*\/video\") or a presence (any) match \"*\".",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "methods": {
-          "description": "Optional. A list of HTTP methods to match. Should not be set for gRPC services.",
+          "description": "Optional. A list of HTTP methods to match. At least one method should match. Should not be set for gRPC services.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "httpHeaderMatch": {
-          "description": "Optional. Match against key:value pair in http header. Provides a flexible match based on HTTP headers, for potentially advanced use cases.",
+          "description": "Optional. Match against key:value pair in http header. Provides a flexible match based on HTTP headers, for potentially advanced use cases. At least one header should match. Avoid using header matches to make authorization decisions unless there is a strong guarantee that requests arrive through a trusted client or proxy.",
           "$ref": "HttpHeaderMatch"
         }
       }
     },
     "HttpHeaderMatch": {
       "id": "HttpHeaderMatch",
-      "description": "Specification of HTTP header match atrributes.",
+      "description": "Specification of HTTP header match attributes.",
       "type": "object",
       "properties": {
         "regexMatch": {
@@ -446,7 +562,7 @@
     },
     "ServerTlsPolicy": {
       "id": "ServerTlsPolicy",
-      "description": "ServerTlsPolicy is a resource that specifies how a server should authenticate incoming requests. This resource itself does not affect configuration unless it is attached to a target https proxy or endpoint config selector resource.",
+      "description": "ServerTlsPolicy is a resource that specifies how a server should authenticate incoming requests. This resource itself does not affect configuration unless it is attached to a target HTTPS proxy or endpoint config selector resource.",
       "type": "object",
       "properties": {
         "name": {
@@ -454,7 +570,7 @@
           "type": "string"
         },
         "description": {
-          "description": "Optional. Free-text description of the resource.",
+          "description": "Free-text description of the resource.",
           "type": "string"
         },
         "createTime": {
@@ -470,22 +586,22 @@
           "format": "google-datetime"
         },
         "labels": {
-          "description": "Optional. Set of label tags associated with the resource.",
+          "description": "Set of label tags associated with the resource.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "allowOpen": {
-          "description": "Optional. Determines if server allows plaintext connections. If set to true, server allows plain text connections. By default, it is set to false. This setting is not exclusive of other encryption modes. For example, if allow_open and mtls_policy are set, server allows both plain text and mTLS connections. See documentation of other encryption modes to confirm compatibility.",
+          "description": " Determines if server allows plaintext connections. If set to true, server allows plain text connections. By default, it is set to false. This setting is not exclusive of other encryption modes. For example, if `allow_open` and `mtls_policy` are set, server allows both plain text and mTLS connections. See documentation of other encryption modes to confirm compatibility. Consider using it if you wish to upgrade in place your deployment to TLS while having mixed TLS and non-TLS traffic reaching port :80.",
           "type": "boolean"
         },
         "serverCertificate": {
-          "description": "Optional. Defines a mechanism to provision server identity (public and private keys). Cannot be combined with allow_open as a permissive mode that allows both plain text and TLS is not supported.",
+          "description": " Defines a mechanism to provision server identity (public and private keys). Cannot be combined with `allow_open` as a permissive mode that allows both plain text and TLS is not supported.",
           "$ref": "GoogleCloudNetworksecurityV1beta1CertificateProvider"
         },
         "mtlsPolicy": {
-          "description": "Optional. Defines a mechanism to provision peer validation certificates for peer to peer authentication (Mutual TLS - mTLS). If not specified, client certificate will not be requested. The connection is treated as TLS and not mTLS. If allow_open and mtls_policy are set, server allows both plain text and mTLS connections.",
+          "description": " Defines a mechanism to provision peer validation certificates for peer to peer authentication (Mutual TLS - mTLS). If not specified, client certificate will not be requested. The connection is treated as TLS and not mTLS. If `allow_open` and `mtls_policy` are set, server allows both plain text and mTLS connections.",
           "$ref": "MTLSPolicy"
         }
       }
@@ -511,7 +627,7 @@
       "type": "object",
       "properties": {
         "targetUri": {
-          "description": "Required. The target URI of the gRPC endpoint. Only UDS path is supported, and should start with \u201Cunix:\u201D.",
+          "description": "Required. The target URI of the gRPC endpoint. Only UDS path is supported, and should start with \"unix:\".",
           "type": "string"
         }
       }
@@ -533,7 +649,7 @@
       "type": "object",
       "properties": {
         "clientValidationCa": {
-          "description": "Required. Defines the mechanism to obtain the Certificate Authority certificate to validate the client certificate.",
+          "description": " Defines the mechanism to obtain the Certificate Authority certificate to validate the client certificate.",
           "type": "array",
           "items": {
             "$ref": "ValidationCA"
@@ -623,13 +739,65 @@
         }
       }
     },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
     "GoogleIamV1SetIamPolicyRequest": {
       "id": "GoogleIamV1SetIamPolicyRequest",
       "description": "Request message for `SetIamPolicy` method.",
       "type": "object",
       "properties": {
         "policy": {
-          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Cloud Platform services (such as Projects) might reject them.",
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Google Cloud services (such as Projects) might reject them.",
           "$ref": "GoogleIamV1Policy"
         },
         "updateMask": {
@@ -641,7 +809,7 @@
     },
     "GoogleIamV1Policy": {
       "id": "GoogleIamV1Policy",
-      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= - version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members`, or principals, to a single `role`. Principals can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
       "type": "object",
       "properties": {
         "version": {
@@ -650,7 +818,7 @@
           "format": "int32"
         },
         "bindings": {
-          "description": "Associates a list of `members` to a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one member.",
+          "description": "Associates a list of `members`, or principals, with a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one principal. The `bindings` in a `Policy` can refer to up to 1,500 principals; up to 250 of these principals can be Google groups. Each occurrence of a principal counts towards these limits. For example, if the `bindings` grant 50 different roles to `user:alice@example.com`, and not to any other principal, then you can add another 1,450 principals to the `bindings` in the `Policy`.",
           "type": "array",
           "items": {
             "$ref": "GoogleIamV1Binding"
@@ -674,30 +842,27 @@
           "description": "`etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a policy from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform policy updates in order to avoid race conditions: An `etag` is returned in the response to `getIamPolicy`, and systems are expected to put that etag in the request to `setIamPolicy` to ensure that their change will be applied to the same version of the policy. **Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost.",
           "type": "string",
           "format": "byte"
-        },
-        "iamOwned": {
-          "type": "boolean"
         }
       }
     },
     "GoogleIamV1Binding": {
       "id": "GoogleIamV1Binding",
-      "description": "Associates `members` with a `role`.",
+      "description": "Associates `members`, or principals, with a `role`.",
       "type": "object",
       "properties": {
         "role": {
-          "description": "Role that is assigned to `members`. For example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
+          "description": "Role that is assigned to the list of `members`, or principals. For example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "condition": {
-          "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the principals in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "$ref": "Expr"
         },
         "bindingId": {
@@ -730,18 +895,12 @@
     },
     "GoogleIamV1AuditConfig": {
       "id": "GoogleIamV1AuditConfig",
-      "description": "Specifies the audit configuration for a service. The configuration determines which permission types are logged, and what identities, if any, are exempted from logging. An AuditConfig must have one or more AuditLogConfigs. If there are AuditConfigs for both `allServices` and a specific service, the union of the two AuditConfigs is used for that service: the log_types specified in each AuditConfig are enabled, and the exempted_members in each AuditLogConfig are exempted. Example Policy with multiple AuditConfigs: { \"audit_configs\": [ { \"service\": \"allServices\", \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\", \"exempted_members\": [ \"user:jose@example.com\" ] }, { \"log_type\": \"DATA_WRITE\" }, { \"log_type\": \"ADMIN_READ\" } ] }, { \"service\": \"sampleservice.googleapis.com\", \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\" }, { \"log_type\": \"DATA_WRITE\", \"exempted_members\": [ \"user:aliya@example.com\" ] } ] } ] } For sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging, and aliya@example.com from DATA_WRITE logging.",
+      "description": "Specifies the audit configuration for a service. The configuration determines which permission types are logged, and what identities, if any, are exempted from logging. An AuditConfig must have one or more AuditLogConfigs. If there are AuditConfigs for both `allServices` and a specific service, the union of the two AuditConfigs is used for that service: the log_types specified in each AuditConfig are enabled, and the exempted_members in each AuditLogConfig are exempted. Example Policy with multiple AuditConfigs: { \"audit_configs\": [ { \"service\": \"allServices\", \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\", \"exempted_members\": [ \"user:jose@example.com\" ] }, { \"log_type\": \"DATA_WRITE\" }, { \"log_type\": \"ADMIN_READ\" } ] }, { \"service\": \"sampleservice.googleapis.com\", \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\" }, { \"log_type\": \"DATA_WRITE\", \"exempted_members\": [ \"user:aliya@example.com\" ] } ] } ] } For sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ logging. It also exempts `jose@example.com` from DATA_READ logging, and `aliya@example.com` from DATA_WRITE logging.",
       "type": "object",
       "properties": {
         "service": {
           "description": "Specifies a service that will be enabled for audit logging. For example, `storage.googleapis.com`, `cloudsql.googleapis.com`. `allServices` is a special value that covers all services.",
           "type": "string"
-        },
-        "exemptedMembers": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         },
         "auditLogConfigs": {
           "description": "The configuration for logging of each type of permission.",
@@ -843,7 +1002,7 @@
           }
         },
         "logConfig": {
-          "description": "The config returned to callers of tech.iam.IAM.CheckPolicy for any entries that match the LOG action.",
+          "description": "The config returned to callers of CheckPolicy for any entries that match the LOG action.",
           "type": "array",
           "items": {
             "$ref": "GoogleIamV1LogConfig"
@@ -863,7 +1022,7 @@
             "Default non-attribute.",
             "Either principal or (if present) authority selector.",
             "The principal (even if an authority selector is present), which must only be used for attribution, not authorization.",
-            "Any of the security realms in the IAMContext (go\/security-realms). When used with IN, the condition indicates \"any of the request's realms match one of the given values; with NOT_IN, \"none of the realms match any of the given values\". Note that a value can be: - 'self' (i.e., allow connections from clients that are in the same security realm) - 'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-region' (i.e., allow connections from clients that are in the same cloud region) - 'guardians' (i.e., allow connections from its guardian realms. See go\/security-realms-glossary#guardian for more information.) - a realm (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see: go\/realm-groups) A match is determined by a realm group membership check performed by a RealmAclRep object (go\/realm-acl-howto). It is not permitted to grant access based on the *absence* of a realm, so realm conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
+            "Any of the security realms in the IAMContext (go\/security-realms). When used with IN, the condition indicates \"any of the request's realms match one of the given values; with NOT_IN, \"none of the realms match any of the given values\". Note that a value can be: - 'self:campus' (i.e., clients that are in the same campus) - 'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-region' (i.e., allow connections from clients that are in the same cloud region) - 'self:prod-region' (i.e., allow connections from clients that are in the same prod region) - 'guardians' (i.e., allow connections from its guardian realms. See go\/security-realms-glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e., allow connections from clients that are in the same security realm, which is currently but not guaranteed to be campus-sized) - a realm (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see: go\/realm-groups) A match is determined by a realm group membership check performed by a RealmAclRep object (go\/realm-acl-howto). It is not permitted to grant access based on the *absence* of a realm, so realm conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
             "An approver (distinct from the requester) that has authorized this request. When used with IN, the condition indicates that one of the approvers associated with the request matches the specified principal, or is a member of the specified group. Approvers can only grant additional access, and are thus only used in a strictly positive context (e.g. ALLOW\/IN or DENY\/NOT_IN).",
             "What types of justifications have been supplied with this request. String values should match enum names from security.credentials.JustificationType, e.g. \"MANUAL_STRING\". It is not permitted to grant access based on the *absence* of a justification, so justification conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN). Multiple justifications, e.g., a Buganizer ID and a manually-entered reason, are normal and supported.",
             "What type of credentials have been supplied with this request. String values should match enum names from security_loas_l2.CredentialsType - currently, only CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access based on the *absence* of a credentials type, so the conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
@@ -1061,7 +1220,7 @@
       "type": "object",
       "properties": {
         "permissions": {
-          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as '*' or 'storage.*') are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as `*` or `storage.*`) are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
           "type": "array",
           "items": {
             "type": "string"
@@ -1133,12 +1292,12 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Resource name of the reference. Includes target resource as a parent and reference uid `{target_resource}\/references\/{reference_id}`. For example, `projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
+          "description": "Output only. Relative resource name of the reference. Includes target resource as a parent and reference uid `{target_resource}\/references\/{reference_id}`. For example, `projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
           "readOnly": true,
           "type": "string"
         },
         "type": {
-          "description": "Required. Type of the reference. A service might impose limits on number of references of a specific type.",
+          "description": "Required. Type of the reference. A service might impose limits on number of references of a specific type. Note: It's recommended to use CAPITALS_WITH_UNDERSCORES style for a type name.",
           "type": "string"
         },
         "sourceResource": {
@@ -1161,6 +1320,11 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "targetUniqueId": {
+          "description": "Output only. The unique_id of the target resource. Example 1: (For arcus resource) A-1-0-2-387420123-13-913517247483640811 unique_id format defined in go\/m11n-unique-id-as-resource-id Example 2: (For CCFE resource) 123e4567-e89b-12d3-a456-426614174000",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -1170,11 +1334,11 @@
       "type": "object",
       "properties": {
         "parent": {
-          "description": "Required. The parent resource name (target_resource of this reference). For example: `targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}`.",
+          "description": "Required. The parent resource name (target_resource of this reference). For example: `\/\/targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}`.",
           "type": "string"
         },
         "referenceId": {
-          "description": "The unique id of this resource. Can be any arbitrary string, either GUID or any other string. Must be unique within a scope of a target resource, but does not have to be globally unique. Reference ID is part of resource name of the reference. Resource name is generated in the following way: {parent}\/references\/{reference_id}. Reference ID field is currently required but id auto generation might be added in the future.",
+          "description": "The unique id of this resource. Must be unique within a scope of a target resource, but does not have to be globally unique. Reference ID is part of resource name of the reference. Resource name is generated in the following way: {parent}\/references\/{reference_id}. Reference ID field is currently required but id auto generation might be added in the future. It can be any arbitrary string, either GUID or any other string, however CLHs can use preprocess callbacks to perform a custom validation.",
           "type": "string"
         },
         "reference": {
@@ -1193,7 +1357,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Resource name of the reference, in the following format: `{targer_service}\/{target_resource}\/references\/{reference_id}`. For example: `targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
+          "description": "Required. Full resource name of the reference, in the following format: `\/\/{targer_service}\/{target_resource}\/references\/{reference_id}`. For example: `\/\/targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
           "type": "string"
         },
         "requestId": {
@@ -1208,7 +1372,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Resource name of the reference, in the following format: `{target_service}\/{target_resource}\/references\/{reference_id}`. For example: `targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
+          "description": "Required. Full resource name of the reference, in the following format: `\/\/{target_service}\/{target_resource}\/references\/{reference_id}`. For example: `\/\/targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
           "type": "string"
         }
       }
@@ -1219,7 +1383,7 @@
       "type": "object",
       "properties": {
         "parent": {
-          "description": "Required. The parent resource name (target_resource of this reference). For example: `targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}`.",
+          "description": "Required. The parent resource name (target_resource of this reference). For example: `\/\/targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}`.",
           "type": "string"
         },
         "pageSize": {
@@ -1271,7 +1435,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },
@@ -1454,6 +1618,385 @@
                 }
               }
             },
+            "addressGroups": {
+              "methods": {
+                "list": {
+                  "id": "networksecurity.projects.locations.addressGroups.list",
+                  "path": "v1beta1/{+parent}/addressGroups",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/addressGroups",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location from which the AddressGroups should be listed, specified in the format `projects\/*\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of AddressGroups to return per call.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The value returned by the last `ListAddressGroupsResponse` Indicates that this is a continuation of a prior `ListAddressGroups` call, and that the system should return the next page of data.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListAddressGroupsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists AddressGroups in a given project and location."
+                },
+                "get": {
+                  "id": "networksecurity.projects.locations.addressGroups.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the AddressGroup to get. Must be in the format `projects\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "AddressGroup"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single AddressGroup."
+                },
+                "create": {
+                  "id": "networksecurity.projects.locations.addressGroups.create",
+                  "path": "v1beta1/{+parent}/addressGroups",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/addressGroups",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource of the AddressGroup. Must be in the format `projects\/*\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "addressGroupId": {
+                      "description": "Required. Short name of the AddressGroup resource to be created. This value should be 1-63 characters long, containing only letters, numbers, hyphens, and underscores, and should not start with a number. E.g. \"authz_policy\".",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "AddressGroup"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new AddressGroup in a given project and location."
+                },
+                "patch": {
+                  "id": "networksecurity.projects.locations.addressGroups.patch",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the AddressGroup resource. It matches pattern `projects\/*\/locations\/{location}\/addressGroups\/`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the AddressGroup resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "AddressGroup"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single AddressGroup."
+                },
+                "addItems": {
+                  "id": "networksecurity.projects.locations.addressGroups.addItems",
+                  "path": "v1beta1/{+addressGroup}:addItems",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:addItems",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "addressGroup": {
+                      "description": "Required. A name of the AddressGroup to add items to. Must be in the format `projects|organization\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "addressGroup"
+                  ],
+                  "request": {
+                    "$ref": "AddAddressGroupItemsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Add items to the AddressGroup"
+                },
+                "removeItems": {
+                  "id": "networksecurity.projects.locations.addressGroups.removeItems",
+                  "path": "v1beta1/{+addressGroup}:removeItems",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:removeItems",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "addressGroup": {
+                      "description": "Required. A name of the AddressGroup to remove items from. Must be in the format `projects|organization\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "addressGroup"
+                  ],
+                  "request": {
+                    "$ref": "RemoveAddressGroupItemsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Remove items from the AddressGroup"
+                },
+                "cloneItems": {
+                  "id": "networksecurity.projects.locations.addressGroups.cloneItems",
+                  "path": "v1beta1/{+addressGroup}:cloneItems",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:cloneItems",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "addressGroup": {
+                      "description": "Required. A name of the AddressGroup to clone items to. Must be in the format `projects|organization\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "addressGroup"
+                  ],
+                  "request": {
+                    "$ref": "CloneAddressGroupItemsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Clone items to the AddressGroup from another address group."
+                },
+                "delete": {
+                  "id": "networksecurity.projects.locations.addressGroups.delete",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the AddressGroup to delete. Must be in the format `projects\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single AddressGroup."
+                },
+                "listReferences": {
+                  "id": "networksecurity.projects.locations.addressGroups.listReferences",
+                  "path": "v1beta1/{+addressGroup}:listReferences",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:listReferences",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "addressGroup": {
+                      "description": "Required. A name of the AddressGroup to clone items to. Must be in the format `projects|organization\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of references to return. If unspecified, server will pick an appropriate default. Server may return fewer items than requested. A caller should only rely on response's next_page_token to determine if there are more AddressGroupUsers left to be queried.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value returned from a previous List request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "addressGroup"
+                  ],
+                  "response": {
+                    "$ref": "ListAddressGroupReferencesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists references of the AddressGroup."
+                },
+                "setIamPolicy": {
+                  "id": "networksecurity.projects.locations.addressGroups.setIamPolicy",
+                  "path": "v1beta1/{+resource}:setIamPolicy",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "GoogleIamV1SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleIamV1Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "networksecurity.projects.locations.addressGroups.getIamPolicy",
+                  "path": "v1beta1/{+resource}:getIamPolicy",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "GoogleIamV1Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "networksecurity.projects.locations.addressGroups.testIamPermissions",
+                  "path": "v1beta1/{+resource}:testIamPermissions",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "GoogleIamV1TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleIamV1TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
             "authorizationPolicies": {
               "methods": {
                 "list": {
@@ -1463,7 +2006,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The project and location from which the AuthorizationPolicies should be listed, specified in the format `projects\/*\/locations\/{location}`.",
+                      "description": "Required. The project and location from which the AuthorizationPolicies should be listed, specified in the format `projects\/{project}\/locations\/{location}`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1499,7 +2042,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. A name of the AuthorizationPolicy to get. Must be in the format `projects\/*\/locations\/{location}\/authorizationPolicies\/*`.",
+                      "description": "Required. A name of the AuthorizationPolicy to get. Must be in the format `projects\/{project}\/locations\/{location}\/authorizationPolicies\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1524,7 +2067,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource of the AuthorizationPolicy. Must be in the format `projects\/*\/locations\/{location}`.",
+                      "description": "Required. The parent resource of the AuthorizationPolicy. Must be in the format `projects\/{project}\/locations\/{location}`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1557,7 +2100,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the AuthorizationPolicy resource. It matches pattern `projects\/*\/locations\/{location}\/authorizationPolicies\/`.",
+                      "description": "Required. Name of the AuthorizationPolicy resource. It matches pattern `projects\/{project}\/locations\/{location}\/authorizationPolicies\/`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1591,7 +2134,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. A name of the AuthorizationPolicy to delete. Must be in the format `projects\/*\/locations\/{location}\/authorizationPolicies\/*`.",
+                      "description": "Required. A name of the AuthorizationPolicy to delete. Must be in the format `projects\/{project}\/locations\/{location}\/authorizationPolicies\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1616,7 +2159,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1644,14 +2187,14 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -1675,7 +2218,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/authorizationPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1860,7 +2403,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serverTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1888,14 +2431,14 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serverTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -1919,7 +2462,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/serverTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2104,7 +2647,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2132,14 +2675,14 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -2163,7 +2706,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientTlsPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2183,6 +2726,429 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "organizations": {
+      "resources": {
+        "locations": {
+          "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "networksecurity.organizations.locations.operations.list",
+                  "path": "v1beta1/{+name}/operations",
+                  "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "networksecurity.organizations.locations.operations.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
+                "delete": {
+                  "id": "networksecurity.organizations.locations.operations.delete",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                },
+                "cancel": {
+                  "id": "networksecurity.organizations.locations.operations.cancel",
+                  "path": "v1beta1/{+name}:cancel",
+                  "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CancelOperationRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                }
+              }
+            },
+            "addressGroups": {
+              "methods": {
+                "list": {
+                  "id": "networksecurity.organizations.locations.addressGroups.list",
+                  "path": "v1beta1/{+parent}/addressGroups",
+                  "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/addressGroups",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location from which the AddressGroups should be listed, specified in the format `projects\/*\/locations\/{location}`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of AddressGroups to return per call.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The value returned by the last `ListAddressGroupsResponse` Indicates that this is a continuation of a prior `ListAddressGroups` call, and that the system should return the next page of data.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListAddressGroupsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists AddressGroups in a given project and location."
+                },
+                "get": {
+                  "id": "networksecurity.organizations.locations.addressGroups.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/addressGroups/{addressGroupsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the AddressGroup to get. Must be in the format `projects\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "AddressGroup"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single AddressGroup."
+                },
+                "create": {
+                  "id": "networksecurity.organizations.locations.addressGroups.create",
+                  "path": "v1beta1/{+parent}/addressGroups",
+                  "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/addressGroups",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource of the AddressGroup. Must be in the format `projects\/*\/locations\/{location}`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "addressGroupId": {
+                      "description": "Required. Short name of the AddressGroup resource to be created. This value should be 1-63 characters long, containing only letters, numbers, hyphens, and underscores, and should not start with a number. E.g. \"authz_policy\".",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "AddressGroup"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new AddressGroup in a given project and location."
+                },
+                "patch": {
+                  "id": "networksecurity.organizations.locations.addressGroups.patch",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/addressGroups/{addressGroupsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the AddressGroup resource. It matches pattern `projects\/*\/locations\/{location}\/addressGroups\/`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the AddressGroup resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "AddressGroup"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single AddressGroup."
+                },
+                "addItems": {
+                  "id": "networksecurity.organizations.locations.addressGroups.addItems",
+                  "path": "v1beta1/{+addressGroup}:addItems",
+                  "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:addItems",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "addressGroup": {
+                      "description": "Required. A name of the AddressGroup to add items to. Must be in the format `projects|organization\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "addressGroup"
+                  ],
+                  "request": {
+                    "$ref": "AddAddressGroupItemsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Add items to the AddressGroup"
+                },
+                "removeItems": {
+                  "id": "networksecurity.organizations.locations.addressGroups.removeItems",
+                  "path": "v1beta1/{+addressGroup}:removeItems",
+                  "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:removeItems",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "addressGroup": {
+                      "description": "Required. A name of the AddressGroup to remove items from. Must be in the format `projects|organization\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "addressGroup"
+                  ],
+                  "request": {
+                    "$ref": "RemoveAddressGroupItemsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Remove items from the AddressGroup"
+                },
+                "cloneItems": {
+                  "id": "networksecurity.organizations.locations.addressGroups.cloneItems",
+                  "path": "v1beta1/{+addressGroup}:cloneItems",
+                  "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:cloneItems",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "addressGroup": {
+                      "description": "Required. A name of the AddressGroup to clone items to. Must be in the format `projects|organization\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "addressGroup"
+                  ],
+                  "request": {
+                    "$ref": "CloneAddressGroupItemsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Clone items to the AddressGroup from another address group."
+                },
+                "delete": {
+                  "id": "networksecurity.organizations.locations.addressGroups.delete",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/addressGroups/{addressGroupsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the AddressGroup to delete. Must be in the format `projects\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single AddressGroup."
+                },
+                "listReferences": {
+                  "id": "networksecurity.organizations.locations.addressGroups.listReferences",
+                  "path": "v1beta1/{+addressGroup}:listReferences",
+                  "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:listReferences",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "addressGroup": {
+                      "description": "Required. A name of the AddressGroup to clone items to. Must be in the format `projects|organization\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of references to return. If unspecified, server will pick an appropriate default. Server may return fewer items than requested. A caller should only rely on response's next_page_token to determine if there are more AddressGroupUsers left to be queried.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value returned from a previous List request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "addressGroup"
+                  ],
+                  "response": {
+                    "$ref": "ListAddressGroupReferencesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists references of the AddressGroup."
                 }
               }
             }

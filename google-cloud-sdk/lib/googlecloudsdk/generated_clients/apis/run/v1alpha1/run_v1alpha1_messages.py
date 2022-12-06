@@ -258,9 +258,7 @@ class ObjectMeta(_messages.Message):
     name: Required. The name of the resource. In Cloud Run, name is required
       when creating top-level resources (Service, Job), must be unique within
       a Cloud Run project/region, and cannot be changed once created. More
-      info: https://kubernetes.io/docs/user-guide/identifiers#names If
-      ObjectMeta is part of a CreateServiceRequest, name must contain fewer
-      than 50 characters.
+      info: https://kubernetes.io/docs/user-guide/identifiers#names
     namespace: Required. Defines the space within each name must be unique
       within a Cloud Run region. In Cloud Run, it must be project ID or
       number.

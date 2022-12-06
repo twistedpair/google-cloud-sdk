@@ -282,11 +282,11 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the Dataset. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "description": "Required. The user-defined name of the Dataset. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
           "type": "string"
         },
         "description": {
-          "description": "Optional. The description of the Dataset.",
+          "description": "The description of the Dataset.",
           "type": "string"
         },
         "metadataSchemaUri": {
@@ -536,7 +536,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the AnnotationSpec. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "description": "Required. The user-defined name of the AnnotationSpec. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
           "type": "string"
         },
         "createTime": {
@@ -653,7 +653,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The display name of the Endpoint. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "description": "Required. The display name of the Endpoint. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
           "type": "string"
         },
         "description": {
@@ -1366,7 +1366,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The display name of the Index. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "description": "Required. The display name of the Index. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
           "type": "string"
         },
         "description": {
@@ -1663,7 +1663,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The display name of the CustomJob. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "description": "Required. The display name of the CustomJob. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
           "type": "string"
         },
         "jobSpec": {
@@ -1962,7 +1962,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the DataLabelingJob. The name can be up to 128 characters long and can be consist of any UTF-8 characters. Display name of a DataLabelingJob.",
+          "description": "Required. The user-defined name of the DataLabelingJob. The name can be up to 128 characters long and can consist of any UTF-8 characters. Display name of a DataLabelingJob.",
           "type": "string"
         },
         "datasets": {
@@ -2202,7 +2202,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The display name of the HyperparameterTuningJob. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "description": "Required. The display name of the HyperparameterTuningJob. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
           "type": "string"
         },
         "studySpec": {
@@ -2820,6 +2820,10 @@
           "description": "The config of resources used by the Model during the batch prediction. If the Model supports DEDICATED_RESOURCES this config may be provided (and the job will use these resources), if the Model doesn't support AUTOMATIC_RESOURCES, this config must be provided.",
           "$ref": "GoogleCloudAiplatformV1alpha1BatchDedicatedResources"
         },
+        "serviceAccount": {
+          "description": "The service account that the DeployedModel's container runs as. If not specified, a system generated one will be used, which has minimal permissions and the custom container, if used, may not have enough permission to access other Google Cloud resources. Users deploying the Model must have the `iam.serviceAccounts.actAs` permission on this service account.",
+          "type": "string"
+        },
         "manualBatchTuningParameters": {
           "description": "Immutable. Parameters configuring the batch behavior. Currently only applicable when dedicated_resources are used (in other cases Vertex AI does the tuning itself).",
           "$ref": "GoogleCloudAiplatformV1alpha1ManualBatchTuningParameters"
@@ -2874,7 +2878,7 @@
           "$ref": "GoogleRpcStatus"
         },
         "partialFailures": {
-          "description": "Output only. Partial failures encountered. For example, single files that can't be read. This field never exceeds 20 entries. Status details fields contain standard GCP error details.",
+          "description": "Output only. Partial failures encountered. For example, single files that can't be read. This field never exceeds 20 entries. Status details fields contain standard Google Cloud error details.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -3576,7 +3580,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the ModelDeploymentMonitoringJob. The name can be up to 128 characters long and can be consist of any UTF-8 characters. Display name of a ModelDeploymentMonitoringJob.",
+          "description": "Required. The user-defined name of the ModelDeploymentMonitoringJob. The name can be up to 128 characters long and can consist of any UTF-8 characters. Display name of a ModelDeploymentMonitoringJob.",
           "type": "string"
         },
         "endpoint": {
@@ -3875,7 +3879,7 @@
           ]
         },
         "topFeatureCount": {
-          "description": "If set, all attribution scores between SearchModelDeploymentMonitoringStatsAnomaliesRequest.start_time and SearchModelDeploymentMonitoringStatsAnomaliesRequest.end_time are fetched, and page token doesn't take affect in this case. Only used to retrieve attribution score for the top Features which has the highest attribution score in the latest monitoring run.",
+          "description": "If set, all attribution scores between SearchModelDeploymentMonitoringStatsAnomaliesRequest.start_time and SearchModelDeploymentMonitoringStatsAnomaliesRequest.end_time are fetched, and page token doesn't take effect in this case. Only used to retrieve attribution score for the top Features which has the highest attribution score in the latest monitoring run.",
           "type": "integer",
           "format": "int32"
         }
@@ -4752,7 +4756,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The display name of the Model. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "description": "Required. The display name of the Model. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
           "type": "string"
         },
         "description": {
@@ -5445,7 +5449,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "The display name of the Pipeline. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "description": "The display name of the Pipeline. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
           "type": "string"
         },
         "createTime": {
@@ -6011,7 +6015,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can be consist of any UTF-8 characters. This field should be unique on project-level.",
+          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can consist of any UTF-8 characters. This field should be unique on project-level.",
           "type": "string"
         },
         "specialistManagersCount": {
@@ -6064,7 +6068,7 @@
     },
     "GoogleCloudAiplatformV1alpha1Tensorboard": {
       "id": "GoogleCloudAiplatformV1alpha1Tensorboard",
-      "description": "Tensorboard is a physical database that stores users' training metrics. A default Tensorboard is provided in each region of a GCP project. If needed users can also create extra Tensorboards in their projects.",
+      "description": "Tensorboard is a physical database that stores users' training metrics. A default Tensorboard is provided in each region of a Google Cloud project. If needed users can also create extra Tensorboards in their projects.",
       "type": "object",
       "properties": {
         "name": {
@@ -6910,7 +6914,7 @@
       "type": "object",
       "properties": {
         "partialFailures": {
-          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard GCP error details.",
+          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard Google Cloud error details.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -8323,7 +8327,7 @@
           ]
         },
         "displayName": {
-          "description": "Required. The user-defined name of the Human in the Loop. The name can be up to 128 characters long and can be consist of any UTF-8 characters. This field should be unique on project-level.",
+          "description": "Required. The user-defined name of the Human in the Loop. The name can be up to 128 characters long and can consist of any UTF-8 characters. This field should be unique on project-level.",
           "type": "string"
         },
         "specialistPool": {
@@ -8430,7 +8434,7 @@
           "$ref": "GoogleCloudAiplatformInternalAutoAssignConfig"
         },
         "marketplaceEntitlement": {
-          "description": "GCP Marketplace entitlement information to be attached to this HITL.",
+          "description": "Google Cloud Marketplace entitlement information to be attached to this HITL.",
           "$ref": "GoogleCloudAiplatformInternalHumanInTheLoopMarketplaceEntitlement"
         },
         "labelingTimeLimit": {
@@ -8563,7 +8567,7 @@
           "type": "string"
         },
         "sourceProject": {
-          "description": "The requester's numeric resource name of GCP Projects, e.g. 'projects\/1234'.",
+          "description": "The requester's numeric resource name of Google Cloud projects, e.g. 'projects\/1234'.",
           "type": "string"
         }
       }
@@ -8665,11 +8669,11 @@
     },
     "GoogleCloudAiplatformInternalHumanInTheLoopMarketplaceEntitlement": {
       "id": "GoogleCloudAiplatformInternalHumanInTheLoopMarketplaceEntitlement",
-      "description": "Metadata describing a GCP Marketplace entitlement.",
+      "description": "Metadata describing a Google Cloud Marketplace entitlement.",
       "type": "object",
       "properties": {
         "cloudCommerceEntitlementId": {
-          "description": "The unique id from the GCP Marketplace entitlement.",
+          "description": "The unique id from the Google Cloud Marketplace entitlement.",
           "type": "string"
         },
         "providerName": {
@@ -8707,7 +8711,7 @@
     },
     "GoogleCloudAiplatformInternalHumanInTheLoopEntitlement": {
       "id": "GoogleCloudAiplatformInternalHumanInTheLoopEntitlement",
-      "description": "A HumanInTheLoopEntitlement represents a purchase of Human-in-the-Loop (HITL) product made by a customer on the GCP Marketplace. It allows to the purchased HITL product and to ensure the appropriate billing events occur.",
+      "description": "A HumanInTheLoopEntitlement represents a purchase of Human-in-the-Loop (HITL) product made by a customer on the Google Cloud Marketplace. It allows to the purchased HITL product and to ensure the appropriate billing events occur.",
       "type": "object",
       "properties": {
         "name": {
@@ -8759,19 +8763,19 @@
     },
     "GoogleCloudAiplatformInternalHumanInTheLoopEntitlementCloudCommerceEntitlement": {
       "id": "GoogleCloudAiplatformInternalHumanInTheLoopEntitlementCloudCommerceEntitlement",
-      "description": "Metadata for the corresponding entitlement in GCP Cloud Commerce.",
+      "description": "Metadata for the corresponding entitlement in Google Cloud Commerce.",
       "type": "object",
       "properties": {
         "entitlementId": {
-          "description": "The string valued identifier generated by GCP Cloud Commerce. This ID is consistent across consumer and partner side.",
+          "description": "The string valued identifier generated by Google Cloud Commerce. This ID is consistent across consumer and partner side.",
           "type": "string"
         },
         "providerId": {
-          "description": "The string valued identifier of the service provider that this entitlement was created against. Each service provider is assigned a unique provider value when they onboard with GCP platform.",
+          "description": "The string valued identifier of the service provider that this entitlement was created against. Each service provider is assigned a unique provider value when they onboard with Google Cloud.",
           "type": "string"
         },
         "account": {
-          "description": "The resource name of the GCP Cloud Commerce account that this entitlement is based on.",
+          "description": "The resource name of the Google Cloud Commerce account that this entitlement is based on.",
           "type": "string"
         },
         "product": {
@@ -8839,6 +8843,13 @@
           "description": "Number of Feature values that have been imported by the operation.",
           "type": "string",
           "format": "int64"
+        },
+        "sourceUris": {
+          "description": "The source URI from where Feature values are imported.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "invalidRowCount": {
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
@@ -9116,7 +9127,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can be consist of any UTF-8 characters. This field should be unique on project-level.",
+          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can consist of any UTF-8 characters. This field should be unique on project-level.",
           "type": "string"
         },
         "specialistManagersCount": {
@@ -9284,7 +9295,7 @@
       "type": "object",
       "properties": {
         "partialFailures": {
-          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard GCP error details.",
+          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard Google Cloud error details.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -11900,7 +11911,7 @@
     },
     "GoogleCloudAiplatformUiGcpResources": {
       "id": "GoogleCloudAiplatformUiGcpResources",
-      "description": "The schema of the GCP resource. It will be used to parse the output parameter \"GCP_RESOURCES\"",
+      "description": "The schema of the Google Cloud resource. It will be used to parse the output parameter \"GCP_RESOURCES\"",
       "type": "object",
       "properties": {
         "resources": {
@@ -11926,6 +11937,7 @@
             "",
             "",
             "",
+            "",
             ""
           ],
           "enum": [
@@ -11934,7 +11946,8 @@
             "DATAFLOWJOB",
             "BIGQUERYJOB",
             "BATCHPREDICTIONJOB",
-            "HYPERPARAMETERTUNINGJOB"
+            "HYPERPARAMETERTUNINGJOB",
+            "DATAPROCBATCH"
           ]
         },
         "resourceUri": {
@@ -12218,7 +12231,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can be consist of any UTF-8 characters. This field should be unique on project-level.",
+          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can consist of any UTF-8 characters. This field should be unique on project-level.",
           "type": "string"
         },
         "specialistManagersCount": {
@@ -12671,6 +12684,11 @@
         "model": {
           "description": "The name of the copied Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
           "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is copied.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -12930,7 +12948,7 @@
       "type": "object",
       "properties": {
         "groupColumns": {
-          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. \u2018region\u2019 for a hierarchy of stores or \u2018department\u2019 for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. (\u2018blue\u2019, \u2018large\u2019) for \u2018color\u2019 and \u2018size\u2019, up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
+          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. 'region' for a hierarchy of stores or 'department' for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. ('blue', 'large') for 'color' and 'size', up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
           "type": "array",
           "items": {
             "type": "string"
@@ -15248,7 +15266,7 @@
       "type": "object",
       "properties": {
         "partialFailures": {
-          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard GCP error details.",
+          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard Google Cloud error details.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -16471,21 +16489,14 @@
       "properties": {
       }
     },
-    "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadata": {
-      "id": "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadata",
-      "description": "Runtime operation information for MigrationService.BatchMigrateResources.",
+    "GoogleCloudAiplatformV1beta1BatchCreateFeaturesOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1BatchCreateFeaturesOperationMetadata",
+      "description": "Details of operations that perform batch create Features.",
       "type": "object",
       "properties": {
         "genericMetadata": {
-          "description": "The common part of the operation metadata.",
+          "description": "Operation metadata for Feature.",
           "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
-        },
-        "partialResults": {
-          "description": "Partial results that reflect the latest migration operation progress.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadataPartialResult"
-          }
         }
       }
     },
@@ -16495,7 +16506,7 @@
       "type": "object",
       "properties": {
         "partialFailures": {
-          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard GCP error details.",
+          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard Google Cloud error details.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -16513,6 +16524,295 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1BatchCreateFeaturesResponse": {
+      "id": "GoogleCloudAiplatformV1beta1BatchCreateFeaturesResponse",
+      "description": "Response message for FeaturestoreService.BatchCreateFeatures.",
+      "type": "object",
+      "properties": {
+        "features": {
+          "description": "The Features created.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1Feature"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1Feature": {
+      "id": "GoogleCloudAiplatformV1beta1Feature",
+      "description": "Feature Metadata information that describes an attribute of an entity type. For example, apple is an entity type, and color is a feature that describes apple.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Immutable. Name of the Feature. Format: `projects\/{project}\/locations\/{location}\/featurestores\/{featurestore}\/entityTypes\/{entity_type}\/features\/{feature}` The last part feature is assigned by the client. The feature can be up to 64 characters long and can consist only of ASCII Latin letters A-Z and a-z, underscore(_), and ASCII digits 0-9 starting with a letter. The value will be unique given an entity type.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the Feature.",
+          "type": "string"
+        },
+        "valueType": {
+          "description": "Required. Immutable. Type of Feature value.",
+          "type": "string",
+          "enumDescriptions": [
+            "The value type is unspecified.",
+            "Used for Feature that is a boolean.",
+            "Used for Feature that is a list of boolean.",
+            "Used for Feature that is double.",
+            "Used for Feature that is a list of double.",
+            "Used for Feature that is INT64.",
+            "Used for Feature that is a list of INT64.",
+            "Used for Feature that is string.",
+            "Used for Feature that is a list of String.",
+            "Used for Feature that is bytes."
+          ],
+          "enum": [
+            "VALUE_TYPE_UNSPECIFIED",
+            "BOOL",
+            "BOOL_ARRAY",
+            "DOUBLE",
+            "DOUBLE_ARRAY",
+            "INT64",
+            "INT64_ARRAY",
+            "STRING",
+            "STRING_ARRAY",
+            "BYTES"
+          ]
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this EntityType was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when this EntityType was most recently updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Optional. The labels with user-defined metadata to organize your Features. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. See https:\/\/goo.gl\/xmQnxf for more information on and examples of labels. No more than 64 user labels can be associated with one Feature (System labels are excluded).\" System reserved label keys are prefixed with \"aiplatform.googleapis.com\/\" and are immutable.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "etag": {
+          "description": "Used to perform a consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
+          "type": "string"
+        },
+        "monitoringConfig": {
+          "description": "Optional. Deprecated: The custom monitoring configuration for this Feature, if not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If this is populated with FeaturestoreMonitoringConfig.disabled = true, snapshot analysis monitoring is disabled; if FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot analysis monitoring is enabled. Otherwise, snapshot analysis monitoring config is same as the EntityType's this Feature belongs to.",
+          "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig"
+        },
+        "disableMonitoring": {
+          "description": "Optional. If not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If set to true, all types of data monitoring are disabled despite the config on EntityType.",
+          "type": "boolean"
+        },
+        "monitoringStats": {
+          "description": "Output only. A list of historical Snapshot Analysis stats requested by user, sorted by FeatureStatsAnomaly.start_time descending.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1FeatureStatsAnomaly"
+          }
+        },
+        "monitoringStatsAnomalies": {
+          "description": "Output only. The list of historical stats and anomalies with specified objectives.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1FeatureMonitoringStatsAnomaly"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig": {
+      "id": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig",
+      "description": "Configuration of how features in Featurestore are monitored.",
+      "type": "object",
+      "properties": {
+        "snapshotAnalysis": {
+          "description": "The config for Snapshot Analysis Based Feature Monitoring.",
+          "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigSnapshotAnalysis"
+        },
+        "importFeaturesAnalysis": {
+          "description": "The config for ImportFeatures Analysis Based Feature Monitoring.",
+          "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigImportFeaturesAnalysis"
+        },
+        "numericalThresholdConfig": {
+          "description": "Threshold for numerical features of anomaly detection. This is shared by all objectives of Featurestore Monitoring for numerical features (i.e. Features with type (Feature.ValueType) DOUBLE or INT64).",
+          "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigThresholdConfig"
+        },
+        "categoricalThresholdConfig": {
+          "description": "Threshold for categorical features of anomaly detection. This is shared by all types of Featurestore Monitoring for categorical features (i.e. Features with type (Feature.ValueType) BOOL or STRING).",
+          "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigThresholdConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigSnapshotAnalysis": {
+      "id": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigSnapshotAnalysis",
+      "description": "Configuration of the Featurestore's Snapshot Analysis Based Monitoring. This type of analysis generates statistics for each Feature based on a snapshot of the latest feature value of each entities every monitoring_interval.",
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "description": "The monitoring schedule for snapshot analysis. For EntityType-level config: unset \/ disabled = true indicates disabled by default for Features under it; otherwise by default enable snapshot analysis monitoring with monitoring_interval for Features under it. Feature-level config: disabled = true indicates disabled regardless of the EntityType-level config; unset monitoring_interval indicates going with EntityType-level config; otherwise run snapshot analysis monitoring with monitoring_interval regardless of the EntityType-level config. Explicitly Disable the snapshot analysis based monitoring.",
+          "type": "boolean"
+        },
+        "monitoringInterval": {
+          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "monitoringIntervalDays": {
+          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval are set when creating\/updating EntityTypes\/Features, FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days will be used.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "stalenessDays": {
+          "description": "Customized export features time window for snapshot analysis. Unit is one day. Default value is 3 weeks. Minimum value is 1 day. Maximum value is 4000 days.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigImportFeaturesAnalysis": {
+      "id": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigImportFeaturesAnalysis",
+      "description": "Configuration of the Featurestore's ImportFeature Analysis Based Monitoring. This type of analysis generates statistics for values of each Feature imported by every ImportFeatureValues operation.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Whether to enable \/ disable \/ inherite default hebavior for import features analysis.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "The default behavior of whether to enable the monitoring. EntityType-level config: disabled. Feature-level config: inherited from the configuration of EntityType this Feature belongs to.",
+            "Explicitly enables import features analysis. EntityType-level config: by default enables import features analysis for all Features under it. Feature-level config: enables import features analysis regardless of the EntityType-level config.",
+            "Explicitly disables import features analysis. EntityType-level config: by default disables import features analysis for all Features under it. Feature-level config: disables import features analysis regardless of the EntityType-level config."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "DEFAULT",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "anomalyDetectionBaseline": {
+          "description": "The baseline used to do anomaly detection for the statistics generated by import features analysis.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "Choose the later one statistics generated by either most recent snapshot analysis or previous import features analysis. If non of them exists, skip anomaly detection and only generate a statistics.",
+            "Use the statistics generated by the most recent snapshot analysis if exists.",
+            "Use the statistics generated by the previous import features analysis if exists."
+          ],
+          "enum": [
+            "BASELINE_UNSPECIFIED",
+            "LATEST_STATS",
+            "MOST_RECENT_SNAPSHOT_STATS",
+            "PREVIOUS_IMPORT_FEATURES_STATS"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigThresholdConfig": {
+      "id": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigThresholdConfig",
+      "description": "The config for Featurestore Monitoring threshold.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "Specify a threshold value that can trigger the alert. 1. For categorical feature, the distribution distance is calculated by L-inifinity norm. 2. For numerical feature, the distribution distance is calculated by Jensen\u2013Shannon divergence. Each feature must have a non-zero threshold if they need to be monitored. Otherwise no alert will be triggered for that feature.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FeatureStatsAnomaly": {
+      "id": "GoogleCloudAiplatformV1beta1FeatureStatsAnomaly",
+      "description": "Stats and Anomaly generated at specific timestamp for specific Feature. The start_time and end_time are used to define the time range of the dataset that current stats belongs to, e.g. prediction traffic is bucketed into prediction datasets by time window. If the Dataset is not defined by time window, start_time = end_time. Timestamp of the stats and anomalies always refers to end_time. Raw stats and anomalies are stored in stats_uri or anomaly_uri in the tensorflow defined protos. Field data_stats contains almost identical information with the raw stats in Vertex AI defined proto, for UI to display.",
+      "type": "object",
+      "properties": {
+        "score": {
+          "description": "Feature importance score, only populated when cross-feature monitoring is enabled. For now only used to represent feature attribution score within range [0, 1] for ModelDeploymentMonitoringObjectiveType.FEATURE_ATTRIBUTION_SKEW and ModelDeploymentMonitoringObjectiveType.FEATURE_ATTRIBUTION_DRIFT.",
+          "type": "number",
+          "format": "double"
+        },
+        "statsUri": {
+          "description": "Path of the stats file for current feature values in Cloud Storage bucket. Format: gs:\/\/\/\/stats. Example: gs:\/\/monitoring_bucket\/feature_name\/stats. Stats are stored as binary format with Protobuf message [tensorflow.metadata.v0.FeatureNameStatistics](https:\/\/github.com\/tensorflow\/metadata\/blob\/master\/tensorflow_metadata\/proto\/v0\/statistics.proto).",
+          "type": "string"
+        },
+        "anomalyUri": {
+          "description": "Path of the anomaly file for current feature values in Cloud Storage bucket. Format: gs:\/\/\/\/anomalies. Example: gs:\/\/monitoring_bucket\/feature_name\/anomalies. Stats are stored as binary format with Protobuf message Anoamlies are stored as binary format with Protobuf message [tensorflow.metadata.v0.AnomalyInfo] (https:\/\/github.com\/tensorflow\/metadata\/blob\/master\/tensorflow_metadata\/proto\/v0\/anomalies.proto).",
+          "type": "string"
+        },
+        "distributionDeviation": {
+          "description": "Deviation from the current stats to baseline stats. 1. For categorical feature, the distribution distance is calculated by L-inifinity norm. 2. For numerical feature, the distribution distance is calculated by Jensen\u2013Shannon divergence.",
+          "type": "number",
+          "format": "double"
+        },
+        "anomalyDetectionThreshold": {
+          "description": "This is the threshold used when detecting anomalies. The threshold can be changed by user, so this one might be different from ThresholdConfig.value.",
+          "type": "number",
+          "format": "double"
+        },
+        "startTime": {
+          "description": "The start timestamp of window where stats were generated. For objectives where time window doesn't make sense (e.g. Featurestore Snapshot Monitoring), start_time is only used to indicate the monitoring intervals, so it always equals to (end_time - monitoring_interval).",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The end timestamp of window where stats were generated. For objectives where time window doesn't make sense (e.g. Featurestore Snapshot Monitoring), end_time indicates the timestamp of the data used to generate stats (e.g. timestamp we take snapshots for feature values).",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FeatureMonitoringStatsAnomaly": {
+      "id": "GoogleCloudAiplatformV1beta1FeatureMonitoringStatsAnomaly",
+      "description": "A list of historical Snapshot Analysis or Import Feature Analysis stats requested by user, sorted by FeatureStatsAnomaly.start_time descending.",
+      "type": "object",
+      "properties": {
+        "objective": {
+          "description": "Output only. The objective for each stats.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "If it's OBJECTIVE_UNSPECIFIED, monitoring_stats will be empty.",
+            "Stats are generated by Import Feature Analysis.",
+            "Stats are generated by Snapshot Analysis."
+          ],
+          "enum": [
+            "OBJECTIVE_UNSPECIFIED",
+            "IMPORT_FEATURE_ANALYSIS",
+            "SNAPSHOT_ANALYSIS"
+          ]
+        },
+        "featureStatsAnomaly": {
+          "description": "Output only. The stats and anomalies generated at specific timestamp.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1beta1FeatureStatsAnomaly"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadata",
+      "description": "Runtime operation information for MigrationService.BatchMigrateResources.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        },
+        "partialResults": {
+          "description": "Partial results that reflect the latest migration operation progress.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadataPartialResult"
+          }
         }
       }
     },
@@ -16816,6 +17116,36 @@
       "properties": {
       }
     },
+    "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateMetatdata": {
+      "id": "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateMetatdata",
+      "description": "This message will be placed in the metadata field of a google.longrunning.Operation associated with a CheckTrialEarlyStoppingState request.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for suggesting Trials.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        },
+        "study": {
+          "description": "The name of the Study that the Trial belongs to.",
+          "type": "string"
+        },
+        "trial": {
+          "description": "The Trial name.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateResponse": {
+      "id": "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateResponse",
+      "description": "Response message for VizierService.CheckTrialEarlyStoppingState.",
+      "type": "object",
+      "properties": {
+        "shouldStop": {
+          "description": "True if the Trial should stop.",
+          "type": "boolean"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1CreateDatasetOperationMetadata": {
       "id": "GoogleCloudAiplatformV1beta1CreateDatasetOperationMetadata",
       "description": "Runtime operation information for DatasetService.CreateDataset.",
@@ -16845,6 +17175,39 @@
       "properties": {
         "genericMetadata": {
           "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CreateEntityTypeOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1CreateEntityTypeOperationMetadata",
+      "description": "Details of operations that perform create EntityType.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for EntityType.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CreateFeatureOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1CreateFeatureOperationMetadata",
+      "description": "Details of operations that perform create Feature.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for Feature.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CreateFeaturestoreOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1CreateFeaturestoreOperationMetadata",
+      "description": "Details of operations that perform create Featurestore.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for Featurestore.",
           "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
         }
       }
@@ -16963,351 +17326,6 @@
       "properties": {
         "genericMetadata": {
           "description": "The operation generic information.",
-          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1CreateEntityTypeOperationMetadata": {
-      "id": "GoogleCloudAiplatformV1beta1CreateEntityTypeOperationMetadata",
-      "description": "Details of operations that perform create EntityType.",
-      "type": "object",
-      "properties": {
-        "genericMetadata": {
-          "description": "Operation metadata for EntityType.",
-          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1BatchCreateFeaturesOperationMetadata": {
-      "id": "GoogleCloudAiplatformV1beta1BatchCreateFeaturesOperationMetadata",
-      "description": "Details of operations that perform batch create Features.",
-      "type": "object",
-      "properties": {
-        "genericMetadata": {
-          "description": "Operation metadata for Feature.",
-          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1BatchCreateFeaturesResponse": {
-      "id": "GoogleCloudAiplatformV1beta1BatchCreateFeaturesResponse",
-      "description": "Response message for FeaturestoreService.BatchCreateFeatures.",
-      "type": "object",
-      "properties": {
-        "features": {
-          "description": "The Features created.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1beta1Feature"
-          }
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1Feature": {
-      "id": "GoogleCloudAiplatformV1beta1Feature",
-      "description": "Feature Metadata information that describes an attribute of an entity type. For example, apple is an entity type, and color is a feature that describes apple.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Immutable. Name of the Feature. Format: `projects\/{project}\/locations\/{location}\/featurestores\/{featurestore}\/entityTypes\/{entity_type}\/features\/{feature}` The last part feature is assigned by the client. The feature can be up to 64 characters long and can consist only of ASCII Latin letters A-Z and a-z, underscore(_), and ASCII digits 0-9 starting with a letter. The value will be unique given an entity type.",
-          "type": "string"
-        },
-        "description": {
-          "description": "Description of the Feature.",
-          "type": "string"
-        },
-        "valueType": {
-          "description": "Required. Immutable. Type of Feature value.",
-          "type": "string",
-          "enumDescriptions": [
-            "The value type is unspecified.",
-            "Used for Feature that is a boolean.",
-            "Used for Feature that is a list of boolean.",
-            "Used for Feature that is double.",
-            "Used for Feature that is a list of double.",
-            "Used for Feature that is INT64.",
-            "Used for Feature that is a list of INT64.",
-            "Used for Feature that is string.",
-            "Used for Feature that is a list of String.",
-            "Used for Feature that is bytes."
-          ],
-          "enum": [
-            "VALUE_TYPE_UNSPECIFIED",
-            "BOOL",
-            "BOOL_ARRAY",
-            "DOUBLE",
-            "DOUBLE_ARRAY",
-            "INT64",
-            "INT64_ARRAY",
-            "STRING",
-            "STRING_ARRAY",
-            "BYTES"
-          ]
-        },
-        "createTime": {
-          "description": "Output only. Timestamp when this EntityType was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Timestamp when this EntityType was most recently updated.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "labels": {
-          "description": "Optional. The labels with user-defined metadata to organize your Features. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. See https:\/\/goo.gl\/xmQnxf for more information on and examples of labels. No more than 64 user labels can be associated with one Feature (System labels are excluded).\" System reserved label keys are prefixed with \"aiplatform.googleapis.com\/\" and are immutable.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "etag": {
-          "description": "Used to perform a consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
-          "type": "string"
-        },
-        "monitoringConfig": {
-          "description": "Optional. Deprecated: The custom monitoring configuration for this Feature, if not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If this is populated with FeaturestoreMonitoringConfig.disabled = true, snapshot analysis monitoring is disabled; if FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot analysis monitoring is enabled. Otherwise, snapshot analysis monitoring config is same as the EntityType's this Feature belongs to.",
-          "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig"
-        },
-        "disableMonitoring": {
-          "description": "Optional. If not set, use the monitoring_config defined for the EntityType this Feature belongs to. Only Features with type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring. If set to true, all types of data monitoring are disabled despite the config on EntityType.",
-          "type": "boolean"
-        },
-        "monitoringStats": {
-          "description": "Output only. A list of historical Snapshot Analysis stats requested by user, sorted by FeatureStatsAnomaly.start_time descending.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1beta1FeatureStatsAnomaly"
-          }
-        },
-        "monitoringStatsAnomalies": {
-          "description": "Output only. The list of historical stats and anomalies with specified objectives.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1beta1FeatureMonitoringStatsAnomaly"
-          }
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig": {
-      "id": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig",
-      "description": "Configuration of how features in Featurestore are monitored.",
-      "type": "object",
-      "properties": {
-        "snapshotAnalysis": {
-          "description": "The config for Snapshot Analysis Based Feature Monitoring.",
-          "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigSnapshotAnalysis"
-        },
-        "importFeaturesAnalysis": {
-          "description": "The config for ImportFeatures Analysis Based Feature Monitoring.",
-          "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigImportFeaturesAnalysis"
-        },
-        "numericalThresholdConfig": {
-          "description": "Threshold for numerical features of anomaly detection. This is shared by all objectives of Featurestore Monitoring for numerical features (i.e. Features with type (Feature.ValueType) DOUBLE or INT64).",
-          "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigThresholdConfig"
-        },
-        "categoricalThresholdConfig": {
-          "description": "Threshold for categorical features of anomaly detection. This is shared by all types of Featurestore Monitoring for categorical features (i.e. Features with type (Feature.ValueType) BOOL or STRING).",
-          "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigThresholdConfig"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigSnapshotAnalysis": {
-      "id": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigSnapshotAnalysis",
-      "description": "Configuration of the Featurestore's Snapshot Analysis Based Monitoring. This type of analysis generates statistics for each Feature based on a snapshot of the latest feature value of each entities every monitoring_interval.",
-      "type": "object",
-      "properties": {
-        "disabled": {
-          "description": "The monitoring schedule for snapshot analysis. For EntityType-level config: unset \/ disabled = true indicates disabled by default for Features under it; otherwise by default enable snapshot analysis monitoring with monitoring_interval for Features under it. Feature-level config: disabled = true indicates disabled regardless of the EntityType-level config; unset monitoring_interval indicates going with EntityType-level config; otherwise run snapshot analysis monitoring with monitoring_interval regardless of the EntityType-level config. Explicitly Disable the snapshot analysis based monitoring.",
-          "type": "boolean"
-        },
-        "monitoringInterval": {
-          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "monitoringIntervalDays": {
-          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval are set when creating\/updating EntityTypes\/Features, FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days will be used.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "stalenessDays": {
-          "description": "Customized export features time window for snapshot analysis. Unit is one day. Default value is 3 weeks. Minimum value is 1 day. Maximum value is 4000 days.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigImportFeaturesAnalysis": {
-      "id": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigImportFeaturesAnalysis",
-      "description": "Configuration of the Featurestore's ImportFeature Analysis Based Monitoring. This type of analysis generates statistics for values of each Feature imported by every ImportFeatureValues operation.",
-      "type": "object",
-      "properties": {
-        "state": {
-          "description": "Whether to enable \/ disable \/ inherite default hebavior for import features analysis.",
-          "type": "string",
-          "enumDescriptions": [
-            "Should not be used.",
-            "The default behavior of whether to enable the monitoring. EntityType-level config: disabled. Feature-level config: inherited from the configuration of EntityType this Feature belongs to.",
-            "Explicitly enables import features analysis. EntityType-level config: by default enables import features analysis for all Features under it. Feature-level config: enables import features analysis regardless of the EntityType-level config.",
-            "Explicitly disables import features analysis. EntityType-level config: by default disables import features analysis for all Features under it. Feature-level config: disables import features analysis regardless of the EntityType-level config."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "DEFAULT",
-            "ENABLED",
-            "DISABLED"
-          ]
-        },
-        "anomalyDetectionBaseline": {
-          "description": "The baseline used to do anomaly detection for the statistics generated by import features analysis.",
-          "type": "string",
-          "enumDescriptions": [
-            "Should not be used.",
-            "Choose the later one statistics generated by either most recent snapshot analysis or previous import features analysis. If non of them exists, skip anomaly detection and only generate a statistics.",
-            "Use the statistics generated by the most recent snapshot analysis if exists.",
-            "Use the statistics generated by the previous import features analysis if exists."
-          ],
-          "enum": [
-            "BASELINE_UNSPECIFIED",
-            "LATEST_STATS",
-            "MOST_RECENT_SNAPSHOT_STATS",
-            "PREVIOUS_IMPORT_FEATURES_STATS"
-          ]
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigThresholdConfig": {
-      "id": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigThresholdConfig",
-      "description": "The config for Featurestore Monitoring threshold.",
-      "type": "object",
-      "properties": {
-        "value": {
-          "description": "Specify a threshold value that can trigger the alert. 1. For categorical feature, the distribution distance is calculated by L-inifinity norm. 2. For numerical feature, the distribution distance is calculated by Jensen\u2013Shannon divergence. Each feature must have a non-zero threshold if they need to be monitored. Otherwise no alert will be triggered for that feature.",
-          "type": "number",
-          "format": "double"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1FeatureStatsAnomaly": {
-      "id": "GoogleCloudAiplatformV1beta1FeatureStatsAnomaly",
-      "description": "Stats and Anomaly generated at specific timestamp for specific Feature. The start_time and end_time are used to define the time range of the dataset that current stats belongs to, e.g. prediction traffic is bucketed into prediction datasets by time window. If the Dataset is not defined by time window, start_time = end_time. Timestamp of the stats and anomalies always refers to end_time. Raw stats and anomalies are stored in stats_uri or anomaly_uri in the tensorflow defined protos. Field data_stats contains almost identical information with the raw stats in Vertex AI defined proto, for UI to display.",
-      "type": "object",
-      "properties": {
-        "score": {
-          "description": "Feature importance score, only populated when cross-feature monitoring is enabled. For now only used to represent feature attribution score within range [0, 1] for ModelDeploymentMonitoringObjectiveType.FEATURE_ATTRIBUTION_SKEW and ModelDeploymentMonitoringObjectiveType.FEATURE_ATTRIBUTION_DRIFT.",
-          "type": "number",
-          "format": "double"
-        },
-        "statsUri": {
-          "description": "Path of the stats file for current feature values in Cloud Storage bucket. Format: gs:\/\/\/\/stats. Example: gs:\/\/monitoring_bucket\/feature_name\/stats. Stats are stored as binary format with Protobuf message [tensorflow.metadata.v0.FeatureNameStatistics](https:\/\/github.com\/tensorflow\/metadata\/blob\/master\/tensorflow_metadata\/proto\/v0\/statistics.proto).",
-          "type": "string"
-        },
-        "anomalyUri": {
-          "description": "Path of the anomaly file for current feature values in Cloud Storage bucket. Format: gs:\/\/\/\/anomalies. Example: gs:\/\/monitoring_bucket\/feature_name\/anomalies. Stats are stored as binary format with Protobuf message Anoamlies are stored as binary format with Protobuf message [tensorflow.metadata.v0.AnomalyInfo] (https:\/\/github.com\/tensorflow\/metadata\/blob\/master\/tensorflow_metadata\/proto\/v0\/anomalies.proto).",
-          "type": "string"
-        },
-        "distributionDeviation": {
-          "description": "Deviation from the current stats to baseline stats. 1. For categorical feature, the distribution distance is calculated by L-inifinity norm. 2. For numerical feature, the distribution distance is calculated by Jensen\u2013Shannon divergence.",
-          "type": "number",
-          "format": "double"
-        },
-        "anomalyDetectionThreshold": {
-          "description": "This is the threshold used when detecting anomalies. The threshold can be changed by user, so this one might be different from ThresholdConfig.value.",
-          "type": "number",
-          "format": "double"
-        },
-        "startTime": {
-          "description": "The start timestamp of window where stats were generated. For objectives where time window doesn't make sense (e.g. Featurestore Snapshot Monitoring), start_time is only used to indicate the monitoring intervals, so it always equals to (end_time - monitoring_interval).",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "The end timestamp of window where stats were generated. For objectives where time window doesn't make sense (e.g. Featurestore Snapshot Monitoring), end_time indicates the timestamp of the data used to generate stats (e.g. timestamp we take snapshots for feature values).",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1FeatureMonitoringStatsAnomaly": {
-      "id": "GoogleCloudAiplatformV1beta1FeatureMonitoringStatsAnomaly",
-      "description": "A list of historical Snapshot Analysis or Import Feature Analysis stats requested by user, sorted by FeatureStatsAnomaly.start_time descending.",
-      "type": "object",
-      "properties": {
-        "objective": {
-          "description": "Output only. The objective for each stats.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "If it's OBJECTIVE_UNSPECIFIED, monitoring_stats will be empty.",
-            "Stats are generated by Import Feature Analysis.",
-            "Stats are generated by Snapshot Analysis."
-          ],
-          "enum": [
-            "OBJECTIVE_UNSPECIFIED",
-            "IMPORT_FEATURE_ANALYSIS",
-            "SNAPSHOT_ANALYSIS"
-          ]
-        },
-        "featureStatsAnomaly": {
-          "description": "Output only. The stats and anomalies generated at specific timestamp.",
-          "readOnly": true,
-          "$ref": "GoogleCloudAiplatformV1beta1FeatureStatsAnomaly"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateMetatdata": {
-      "id": "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateMetatdata",
-      "description": "This message will be placed in the metadata field of a google.longrunning.Operation associated with a CheckTrialEarlyStoppingState request.",
-      "type": "object",
-      "properties": {
-        "genericMetadata": {
-          "description": "Operation metadata for suggesting Trials.",
-          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
-        },
-        "study": {
-          "description": "The name of the Study that the Trial belongs to.",
-          "type": "string"
-        },
-        "trial": {
-          "description": "The Trial name.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateResponse": {
-      "id": "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateResponse",
-      "description": "Response message for VizierService.CheckTrialEarlyStoppingState.",
-      "type": "object",
-      "properties": {
-        "shouldStop": {
-          "description": "True if the Trial should stop.",
-          "type": "boolean"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1CreateFeatureOperationMetadata": {
-      "id": "GoogleCloudAiplatformV1beta1CreateFeatureOperationMetadata",
-      "description": "Details of operations that perform create Feature.",
-      "type": "object",
-      "properties": {
-        "genericMetadata": {
-          "description": "Operation metadata for Feature.",
-          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1CreateFeaturestoreOperationMetadata": {
-      "id": "GoogleCloudAiplatformV1beta1CreateFeaturestoreOperationMetadata",
-      "description": "Details of operations that perform create Featurestore.",
-      "type": "object",
-      "properties": {
-        "genericMetadata": {
-          "description": "Operation metadata for Featurestore.",
           "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
         }
       }
@@ -18328,6 +18346,13 @@
           "type": "string",
           "format": "int64"
         },
+        "sourceUris": {
+          "description": "The source URI from where Feature values are imported.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "invalidRowCount": {
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
           "type": "string",
@@ -18511,7 +18536,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can be consist of any UTF-8 characters. This field should be unique on project-level.",
+          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can consist of any UTF-8 characters. This field should be unique on project-level.",
           "type": "string"
         },
         "specialistManagersCount": {
@@ -18929,6 +18954,11 @@
       "properties": {
         "model": {
           "description": "The name of the copied Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is copied.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -19438,6 +19468,56 @@
             "type": "number",
             "format": "float"
           }
+        },
+        "tftFeatureImportance": {
+          "description": "Only use these if TFt is enabled.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTftFeatureImportance"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTftFeatureImportance": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTftFeatureImportance",
+      "type": "object",
+      "properties": {
+        "contextWeights": {
+          "description": "TFT feature importance values. Each pair for {context\/horizon\/attribute} should have the same shape since the weight corresponds to the column names.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "contextColumns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "horizonWeights": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "horizonColumns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "attributeWeights": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "attributeColumns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -19816,7 +19896,7 @@
       "type": "object",
       "properties": {
         "groupColumns": {
-          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. \u2018region\u2019 for a hierarchy of stores or \u2018department\u2019 for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. (\u2018blue\u2019, \u2018large\u2019) for \u2018color\u2019 and \u2018size\u2019, up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
+          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. 'region' for a hierarchy of stores or 'department' for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. ('blue', 'large') for 'color' and 'size', up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
           "type": "array",
           "items": {
             "type": "string"
@@ -22123,7 +22203,7 @@
       "type": "object",
       "properties": {
         "partialFailures": {
-          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard GCP error details.",
+          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard Google Cloud error details.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -23750,6 +23830,13 @@
           "type": "string",
           "format": "int64"
         },
+        "sourceUris": {
+          "description": "The source URI from where Feature values are imported.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "invalidRowCount": {
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
           "type": "string",
@@ -23915,7 +24002,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can be consist of any UTF-8 characters. This field should be unique on project-level.",
+          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can consist of any UTF-8 characters. This field should be unique on project-level.",
           "type": "string"
         },
         "specialistManagersCount": {
@@ -24304,6 +24391,11 @@
       "properties": {
         "model": {
           "description": "The name of the copied Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is copied.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -24813,6 +24905,56 @@
             "type": "number",
             "format": "float"
           }
+        },
+        "tftFeatureImportance": {
+          "description": "Only use these if TFt is enabled.",
+          "$ref": "GoogleCloudAiplatformV1SchemaPredictPredictionTftFeatureImportance"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictPredictionTftFeatureImportance": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionTftFeatureImportance",
+      "type": "object",
+      "properties": {
+        "contextWeights": {
+          "description": "TFT feature importance values. Each pair for {context\/horizon\/attribute} should have the same shape since the weight corresponds to the column names.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "contextColumns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "horizonWeights": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "horizonColumns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "attributeWeights": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "attributeColumns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -25191,7 +25333,7 @@
       "type": "object",
       "properties": {
         "groupColumns": {
-          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. \u2018region\u2019 for a hierarchy of stores or \u2018department\u2019 for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. (\u2018blue\u2019, \u2018large\u2019) for \u2018color\u2019 and \u2018size\u2019, up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
+          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. 'region' for a hierarchy of stores or 'department' for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. ('blue', 'large') for 'color' and 'size', up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
           "type": "array",
           "items": {
             "type": "string"

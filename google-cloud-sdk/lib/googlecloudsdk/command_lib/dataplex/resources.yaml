@@ -143,3 +143,60 @@ content:
     attribute_name: content
     help: |
       Content_id for the Content Resource of the Dataplex service.
+
+data_taxonomy:
+  name: data taxonomy
+  collection: dataplex.projects.locations.dataTaxonomies
+  request_id_field: dataTaxonomyId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - &data_taxonomy
+    parameter_name: dataTaxonomiesId
+    attribute_name: data_taxonomy
+    help: |
+      Identifier of the Dataplex DataTaxonomy resource.
+
+data_attribute:
+  name: data attribute
+  collection: dataplex.projects.locations.dataTaxonomies.attributes
+  request_id_field: dataAttributeId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - *data_taxonomy
+  - &data_attribute
+    parameter_name: attributesId
+    attribute_name: data_attribute
+    help: |
+      Identifier of the Dataplex task resource.
+
+datascan:
+  name: datascan
+  collection: dataplex.projects.locations.dataScans
+  request_id_field: dataScansId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - &dataScan
+    parameter_name: dataScansId
+    attribute_name: datascan
+    help: |
+      Datascan_id of the Dataplex datascan resource.
+
+data_attribute_binding:
+  name: data attribute binding
+  collection: dataplex.projects.locations.dataAttributeBindings
+  request_id_field: dataAttributeBindingId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - &data_attribute_binding
+    parameter_name: dataAttributeBindingsId
+    attribute_name: data_attribute_binding
+    help: |
+      Identifier of the Dataplex Data Attribute Binding

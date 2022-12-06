@@ -148,7 +148,8 @@ class GkemulticloudProjectsLocationsAttachedClustersPatchRequest(_messages.Messa
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AttachedCluster: * `description`. *
       `annotations`. * `platform_version`. * `authorization.admin_users`. *
-      `logging_config.component_config.enable_components`.
+      `logging_config.component_config.enable_components`. *
+      `monitoring_config.managed_prometheus_config.enabled`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """

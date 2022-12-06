@@ -4989,6 +4989,7 @@ class ParameterMetadata(_messages.Message):
         write to.
       PUBSUB_TOPIC: The parameter specifies a Pub/Sub Topic.
       PUBSUB_SUBSCRIPTION: The parameter specifies a Pub/Sub Subscription.
+      BIGQUERY_TABLE: The parameter specifies a BigQuery table.
     """
     DEFAULT = 0
     TEXT = 1
@@ -5000,6 +5001,7 @@ class ParameterMetadata(_messages.Message):
     GCS_WRITE_FOLDER = 7
     PUBSUB_TOPIC = 8
     PUBSUB_SUBSCRIPTION = 9
+    BIGQUERY_TABLE = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CustomMetadataValue(_messages.Message):
@@ -7717,6 +7719,7 @@ class WorkerMessage(_messages.Message):
     workerMessageCode: A worker message code.
     workerMetrics: Resource metrics reported by workers.
     workerShutdownNotice: Shutdown notice by workers.
+    workerThreadScalingReport: Thread scaling information reported by workers.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -7755,6 +7758,7 @@ class WorkerMessage(_messages.Message):
   workerMessageCode = _messages.MessageField('WorkerMessageCode', 5)
   workerMetrics = _messages.MessageField('ResourceUtilizationReport', 6)
   workerShutdownNotice = _messages.MessageField('WorkerShutdownNotice', 7)
+  workerThreadScalingReport = _messages.MessageField('WorkerThreadScalingReport', 8)
 
 
 class WorkerMessageCode(_messages.Message):
@@ -7853,11 +7857,14 @@ class WorkerMessageResponse(_messages.Message):
       (currently empty).
     workerShutdownNoticeResponse: Service's response to shutdown notice
       (currently empty).
+    workerThreadScalingReportResponse: Service's thread scaling recommendation
+      for workers.
   """
 
   workerHealthReportResponse = _messages.MessageField('WorkerHealthReportResponse', 1)
   workerMetricsResponse = _messages.MessageField('ResourceUtilizationReportResponse', 2)
   workerShutdownNoticeResponse = _messages.MessageField('WorkerShutdownNoticeResponse', 3)
+  workerThreadScalingReportResponse = _messages.MessageField('WorkerThreadScalingReportResponse', 4)
 
 
 class WorkerPool(_messages.Message):
@@ -8125,6 +8132,27 @@ class WorkerShutdownNotice(_messages.Message):
 
 class WorkerShutdownNoticeResponse(_messages.Message):
   r"""Service-side response to WorkerMessage issuing shutdown notice."""
+
+
+class WorkerThreadScalingReport(_messages.Message):
+  r"""Contains information about the thread scaling information of a worker.
+
+  Fields:
+    currentThreadCount: Current number of active threads in a worker.
+  """
+
+  currentThreadCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class WorkerThreadScalingReportResponse(_messages.Message):
+  r"""Contains the thread scaling recommendation for a worker from the
+  backend.
+
+  Fields:
+    recommendedThreadCount: Recommended number of threads for a worker.
+  """
+
+  recommendedThreadCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class WriteInstruction(_messages.Message):

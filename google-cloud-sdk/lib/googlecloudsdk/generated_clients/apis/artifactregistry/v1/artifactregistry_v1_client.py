@@ -1380,6 +1380,33 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetVpcscConfig(self, request, global_params=None):
+      r"""Retrieves the VPCSC Config for the Project.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsGetVpcscConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VPCSCConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetVpcscConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetVpcscConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vpcscConfig',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.getVpcscConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ArtifactregistryProjectsLocationsGetVpcscConfigRequest',
+        response_type_name='VPCSCConfig',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists information about the supported locations for this service.
 
@@ -1404,6 +1431,33 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ArtifactregistryProjectsLocationsListRequest',
         response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+    def UpdateVpcscConfig(self, request, global_params=None):
+      r"""Updates the VPCSC Config for the Project.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsUpdateVpcscConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VPCSCConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateVpcscConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateVpcscConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vpcscConfig',
+        http_method='PATCH',
+        method_id='artifactregistry.projects.locations.updateVpcscConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='vPCSCConfig',
+        request_type_name='ArtifactregistryProjectsLocationsUpdateVpcscConfigRequest',
+        response_type_name='VPCSCConfig',
         supports_download=False,
     )
 

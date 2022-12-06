@@ -24,6 +24,38 @@ DOCS_URL = 'https://cloud.google.com/iam/docs/simulating-access'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  FOLDERS = (
+      'folders',
+      'folders/{foldersId}',
+      {},
+      ['foldersId'],
+      True
+  )
+  FOLDERS_LOCATIONS = (
+      'folders.locations',
+      'folders/{foldersId}/locations/{locationsId}',
+      {},
+      ['foldersId', 'locationsId'],
+      True
+  )
+  FOLDERS_LOCATIONS_REPLAYS = (
+      'folders.locations.replays',
+      'folders/{foldersId}/locations/{locationsId}/replays/{replaysId}',
+      {},
+      ['foldersId', 'locationsId', 'replaysId'],
+      True
+  )
+  FOLDERS_LOCATIONS_REPLAYS_OPERATIONS = (
+      'folders.locations.replays.operations',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/replays/'
+              '{replaysId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   OPERATIONS = (
       'operations',
       '{+name}',
@@ -55,6 +87,57 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/locations/{locationsId}/'
               'orgPolicyViolationsPreviews/{orgPolicyViolationsPreviewsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_REPLAYS = (
+      'organizations.locations.replays',
+      'organizations/{organizationsId}/locations/{locationsId}/replays/'
+      '{replaysId}',
+      {},
+      ['organizationsId', 'locationsId', 'replaysId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_REPLAYS_OPERATIONS = (
+      'organizations.locations.replays.operations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'replays/{replaysId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      ['projectsId'],
+      True
+  )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      ['projectsId', 'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_REPLAYS = (
+      'projects.locations.replays',
+      'projects/{projectsId}/locations/{locationsId}/replays/{replaysId}',
+      {},
+      ['projectsId', 'locationsId', 'replaysId'],
+      True
+  )
+  PROJECTS_LOCATIONS_REPLAYS_OPERATIONS = (
+      'projects.locations.replays.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/replays/'
+              '{replaysId}/operations/{operationsId}',
       },
       ['name'],
       True

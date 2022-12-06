@@ -28,7 +28,7 @@ regionDefaultGlobal:
     parameter_name: locationsId
     attribute_name: region
     help: |
-      The location Id.
+      The location ID.
     fallthroughs:
     - hook: googlecloudsdk.command_lib.network_connectivity.util:SetGlobalLocation
       hint: |

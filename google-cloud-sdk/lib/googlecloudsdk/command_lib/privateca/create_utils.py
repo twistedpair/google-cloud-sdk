@@ -141,12 +141,12 @@ def CreateCAFromArgs(args, is_subordinate):
 
   return (new_ca, ca_ref, issuer_ref)
 
+_BETA_RESOURCE_DELETION_DISCLAIMER = """CA Service is now in GA, and access to the old CA Service Beta API will be removed January 9th, 2023.
 
-_BETA_RESOURCE_DELETION_DISCLAIMER = """CA Service is currently in preview.
-
-Please remember that all resources created during preview will be deleted
-when CA service transitions to General Availability (GA). Relying on these
-{resource_type} for production traffic is discouraged."""
+The CA Service Beta API is being turned down for all users starting January 9th, 2023.
+Usage of gcloud privateca beta commands for {resource_type}, which uses the beta API,
+is strongly discouraged. Please use the GA gcloud surface, gcloud privateca, instead.
+Note that beta resources will not be migrated to GA and will be deleted."""
 
 
 def PrintBetaResourceDeletionDisclaimer(resource_type_plural):

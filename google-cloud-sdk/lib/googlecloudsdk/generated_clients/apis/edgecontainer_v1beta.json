@@ -890,6 +890,13 @@
         "apiVersion": {
           "description": "API version used to start the operation.",
           "type": "string"
+        },
+        "warnings": {
+          "description": "Warnings that do not block the operation, but still hold relevant information for the end user to receive.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

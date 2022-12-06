@@ -36,7 +36,6 @@ def AddAppUpdateFlags(parser):
   # TODO(b/181786069):unify definition of the service account params.
   parser.add_argument(
       '--service-account',
-      hidden=True,
       help='The app-level default service account to update the app with.')
 
 

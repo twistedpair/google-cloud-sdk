@@ -1664,7 +1664,8 @@ class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
       sends queries through the VPC network for this target.
     ipv4Address: IPv4 address of a target name server.
     ipv6Address: IPv6 address of a target name server. Does not accept both
-      fields (ipv4 & ipv6) being populated.
+      fields (ipv4 & ipv6) being populated. Public preview as of November
+      2022.
     kind: A string attribute.
   """
 
@@ -2095,7 +2096,7 @@ class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
       sends queries through the VPC network for this target.
     ipv4Address: IPv4 address to forward queries to.
     ipv6Address: IPv6 address to forward to. Does not accept both fields (ipv4
-      & ipv6) being populated.
+      & ipv6) being populated. Public preview as of November 2022.
     kind: A string attribute.
   """
 

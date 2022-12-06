@@ -621,9 +621,10 @@ class NoBrowserHelperFlow(InstalledAppFlow):
         default=False)
 
   def _Run(self, **kwargs):
-    self.partial_auth_url = kwargs['partial_auth_url']
+    self.partial_auth_url = kwargs.pop('partial_auth_url')
     auth_url_manager = UrlManager(self.partial_auth_url)
-    auth_url_manager.UpdateQueryParams([('redirect_uri', self.redirect_uri)])
+    auth_url_manager.UpdateQueryParams([('redirect_uri', self.redirect_uri)] +
+                                       list(kwargs.items()))
     auth_url = auth_url_manager.GetUrl()
     if not self._ShouldContinue():
       return

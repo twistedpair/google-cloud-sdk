@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20221104",
+  "revision": "20221130",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -938,7 +938,7 @@
       "type": "object",
       "properties": {
         "reason": {
-          "description": "The reason of the error. This is a constant value that identifies the proximate cause of the error. Error reasons are unique within a particular domain of errors. This should be at most 63 characters and match \/[A-Z0-9_]+\/.",
+          "description": "The reason of the error. This is a constant value that identifies the proximate cause of the error. Error reasons are unique within a particular domain of errors. This should be at most 63 characters and match a regular expression of `A-Z+[A-Z0-9]`, which represents UPPER_SNAKE_CASE.",
           "type": "string"
         },
         "domain": {
@@ -2229,7 +2229,7 @@
           "type": "string"
         },
         "name": {
-          "description": "Name of the resource. For Organization Firewall Policies it's a [Output Only] numeric ID allocated by GCP which uniquely identifies the Organization Firewall Policy.",
+          "description": "Name of the resource. For Organization Firewall Policies it's a [Output Only] numeric ID allocated by Google Cloud which uniquely identifies the Organization Firewall Policy.",
           "type": "string"
         },
         "description": {
@@ -11502,7 +11502,7 @@
           "format": "int32"
         },
         "capacityScaler": {
-          "description": "A multiplier applied to the backend's target capacity of its balancing mode. The default value is 1, which means the group serves up to 100% of its configured capacity (depending on balancingMode). A setting of 0 means the group is completely drained, offering 0% of its available capacity. The valid ranges are 0.0 and [0.1,1.0]. You cannot configure a setting larger than 0 and smaller than 0.1. You cannot configure a setting of 0 when there is only one backend attached to the backend service.",
+          "description": "A multiplier applied to the backend's target capacity of its balancing mode. The default value is 1, which means the group serves up to 100% of its configured capacity (depending on balancingMode). A setting of 0 means the group is completely drained, offering 0% of its available capacity. The valid ranges are 0.0 and [0.1,1.0]. You cannot configure a setting larger than 0 and smaller than 0.1. You cannot configure a setting of 0 when there is only one backend attached to the backend service. Not available with backends that don't support using a balancingMode. This includes backends such as global internet NEGs, regional serverless NEGs, and PSC NEGs.",
           "type": "number",
           "format": "float"
         },
@@ -12638,7 +12638,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "Type of resource for which this commitment applies. Possible values are VCPU and MEMORY",
+          "description": "Type of resource for which this commitment applies. Possible values are VCPU, MEMORY, LOCAL_SSD, and ACCELERATOR.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -15427,7 +15427,7 @@
           "type": "string"
         },
         "healthStatusAggregationPolicy": {
-          "description": "Optional. Policy for how the results from multiple health checks for the same endpoint are aggregated. Defaults to NO_AGGREGATION if unspecified. - NO_AGGREGATION. An EndpointHealth message is returned for each pair in the health check service. - AND. If any health check of an endpoint reports UNHEALTHY, then UNHEALTHY is the HealthState of the endpoint. If all health checks report HEALTHY, the HealthState of the endpoint is HEALTHY. .",
+          "description": "Optional. Policy for how the results from multiple health checks for the same endpoint are aggregated. Defaults to NO_AGGREGATION if unspecified. - NO_AGGREGATION. An EndpointHealth message is returned for each pair in the health check service. - AND. If any health check of an endpoint reports UNHEALTHY, then UNHEALTHY is the HealthState of the endpoint. If all health checks report HEALTHY, the HealthState of the endpoint is HEALTHY. . This is only allowed with regional HealthCheckService.",
           "type": "string",
           "enumDescriptions": [
             "If any backend's health check reports UNHEALTHY, then UNHEALTHY is the HealthState of the entire health check service. If all backend's are healthy, the HealthState of the health check service is HEALTHY.",
@@ -15439,14 +15439,14 @@
           ]
         },
         "healthChecks": {
-          "description": "A list of URLs to the HealthCheck resources. Must have at least one HealthCheck, and not more than 10. HealthCheck resources must have portSpecification=USE_SERVING_PORT or portSpecification=USE_FIXED_PORT. For regional HealthCheckService, the HealthCheck must be regional and in the same region. For global HealthCheckService, HealthCheck must be global. Mix of regional and global HealthChecks is not supported. Multiple regional HealthChecks must belong to the same region. Regional HealthChecks must belong to the same region as zones of NEGs.",
+          "description": "A list of URLs to the HealthCheck resources. Must have at least one HealthCheck, and not more than 10 for regional HealthCheckService, and not more than 1 for global HealthCheckService. HealthCheck resources must have portSpecification=USE_SERVING_PORT or portSpecification=USE_FIXED_PORT. For regional HealthCheckService, the HealthCheck must be regional and in the same region. For global HealthCheckService, HealthCheck must be global. Mix of regional and global HealthChecks is not supported. Multiple regional HealthChecks must belong to the same region. Regional HealthChecks must belong to the same region as zones of NetworkEndpointGroups. For global HealthCheckService using global INTERNET_IP_PORT NetworkEndpointGroups, the global HealthChecks must specify sourceRegions, and HealthChecks that specify sourceRegions can only be used with global INTERNET_IP_PORT NetworkEndpointGroups.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "networkEndpointGroups": {
-          "description": "A list of URLs to the NetworkEndpointGroup resources. Must not have more than 100. For regional HealthCheckService, NEGs must be in zones in the region of the HealthCheckService.",
+          "description": "A list of URLs to the NetworkEndpointGroup resources. Must not have more than 100. For regional HealthCheckService, NEGs must be in zones in the region of the HealthCheckService. For global HealthCheckServices, the NetworkEndpointGroups must be global INTERNET_IP_PORT.",
           "type": "array",
           "items": {
             "type": "string"
@@ -17788,7 +17788,7 @@
           "type": "boolean"
         },
         "nocContactEmail": {
-          "description": "Email address to contact the customer NOC for operations and maintenance notifications regarding this Interconnect. If specified, this will be used for notifications in addition to all other forms described, such as Stackdriver logs alerting and Cloud Notifications.",
+          "description": "Email address to contact the customer NOC for operations and maintenance notifications regarding this Interconnect. If specified, this will be used for notifications in addition to all other forms described, such as Cloud Monitoring logs alerting and Cloud Notifications. This field is required for users who sign up for Cloud Interconnect using workforce identity federation.",
           "type": "string"
         },
         "customerName": {
@@ -18112,6 +18112,30 @@
           "items": {
             "$ref": "InterconnectDiagnosticsLinkStatus"
           }
+        },
+        "bundleOperationalStatus": {
+          "description": "The operational status of the bundle interface.",
+          "type": "string",
+          "enumDescriptions": [
+            "If bundleAggregationType is LACP: LACP is not established and\/or all links in the bundle have DOWN operational status. If bundleAggregationType is STATIC: one or more links in the bundle has DOWN operational status.",
+            "If bundleAggregationType is LACP: LACP is established and at least one link in the bundle has UP operational status. If bundleAggregationType is STATIC: all links in the bundle (typically just one) have UP operational status."
+          ],
+          "enum": [
+            "BUNDLE_OPERATIONAL_STATUS_DOWN",
+            "BUNDLE_OPERATIONAL_STATUS_UP"
+          ]
+        },
+        "bundleAggregationType": {
+          "description": "The aggregation type of the bundle interface.",
+          "type": "string",
+          "enumDescriptions": [
+            "LACP is enabled.",
+            "LACP is disabled."
+          ],
+          "enum": [
+            "BUNDLE_AGGREGATION_TYPE_LACP",
+            "BUNDLE_AGGREGATION_TYPE_STATIC"
+          ]
         }
       }
     },
@@ -18152,6 +18176,18 @@
         },
         "lacpStatus": {
           "$ref": "InterconnectDiagnosticsLinkLACPStatus"
+        },
+        "operationalStatus": {
+          "description": "The operational status of the link.",
+          "type": "string",
+          "enumDescriptions": [
+            "The interface is unable to communicate with the remote end.",
+            "The interface has low level communication with the remote end."
+          ],
+          "enum": [
+            "LINK_OPERATIONAL_STATUS_DOWN",
+            "LINK_OPERATIONAL_STATUS_UP"
+          ]
         },
         "arpCaches": {
           "description": "A list of InterconnectDiagnostics.ARPEntry objects, describing the ARP neighbor entries seen on this link. This will be empty if the link is bundled",
@@ -19336,6 +19372,489 @@
         },
         "warning": {
           "description": "[Output Only] An informational warning that appears when the machine types list is empty.",
+          "type": "object",
+          "properties": {
+            "code": {
+              "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+              "type": "string",
+              "enumDescriptions": [
+                "Warning about failed cleanup of transient changes made by a failed operation.",
+                "A link to a deprecated resource was created.",
+                "When deploying and at least one of the resources has a type marked as deprecated",
+                "The user created a boot disk that is larger than image size.",
+                "When deploying and at least one of the resources has a type marked as experimental",
+                "Warning that is present in an external api call",
+                "Warning that value of a field has been overridden. Deprecated unused field.",
+                "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP\/HTTPS\/HTTP2.",
+                "When deploying a deployment with a exceedingly large number of resources",
+                "A resource depends on a missing type",
+                "The route's nextHopIp address is not assigned to an instance on the network.",
+                "The route's next hop instance cannot ip forward.",
+                "The route's nextHopInstance URL refers to an instance that does not have an ipv6 interface on the same network as the route.",
+                "The route's nextHopInstance URL refers to an instance that does not exist.",
+                "The route's nextHopInstance URL refers to an instance that is not on the same network as the route.",
+                "The route's next hop instance does not have a status of RUNNING.",
+                "Error which is not critical. We decided to continue the process despite the mentioned error.",
+                "No results are present on a particular list page.",
+                "Success is reported, but some results may be missing due to errors",
+                "The user attempted to use a resource that requires a TOS they have not accepted.",
+                "Warning that a resource is in use.",
+                "One or more of the resources set to auto-delete could not be deleted because they were in use.",
+                "When a resource schema validation is ignored.",
+                "Instance template used in instance group manager is valid as such, but its application does not make a lot of sense, because it allows only single instance in instance group.",
+                "When undeclared properties in the schema are present",
+                "A given scope cannot be reached."
+              ],
+              "enum": [
+                "CLEANUP_FAILED",
+                "DEPRECATED_RESOURCE_USED",
+                "DEPRECATED_TYPE_USED",
+                "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+                "EXPERIMENTAL_TYPE_USED",
+                "EXTERNAL_API_WARNING",
+                "FIELD_VALUE_OVERRIDEN",
+                "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
+                "LARGE_DEPLOYMENT_WARNING",
+                "MISSING_TYPE_DEPENDENCY",
+                "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+                "NEXT_HOP_CANNOT_IP_FORWARD",
+                "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE",
+                "NEXT_HOP_INSTANCE_NOT_FOUND",
+                "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+                "NEXT_HOP_NOT_RUNNING",
+                "NOT_CRITICAL_ERROR",
+                "NO_RESULTS_ON_PAGE",
+                "PARTIAL_SUCCESS",
+                "REQUIRED_TOS_AGREEMENT",
+                "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+                "RESOURCE_NOT_DELETED",
+                "SCHEMA_VALIDATION_IGNORED",
+                "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+                "UNDECLARED_PROPERTIES",
+                "UNREACHABLE"
+              ]
+            },
+            "message": {
+              "description": "[Output Only] A human-readable description of the warning code.",
+              "type": "string"
+            },
+            "data": {
+              "description": "[Output Only] Metadata about this warning in key: value format. For example: \"data\": [ { \"key\": \"scope\", \"value\": \"zones\/us-east1-d\" } ",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding).",
+                    "type": "string"
+                  },
+                  "value": {
+                    "description": "[Output Only] A warning data value corresponding to the key.",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "NetworkAttachmentAggregatedList": {
+      "id": "NetworkAttachmentAggregatedList",
+      "description": "Contains a list of NetworkAttachmentsScopedList.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "default": "compute#networkAttachmentAggregatedList",
+          "type": "string"
+        },
+        "id": {
+          "description": "[Output Only] Unique identifier for the resource; defined by the server.",
+          "type": "string"
+        },
+        "items": {
+          "description": "A list of NetworkAttachmentsScopedList resources.",
+          "type": "object",
+          "additionalProperties": {
+            "description": "Name of the scope containing this set of NetworkAttachments.",
+            "$ref": "NetworkAttachmentsScopedList"
+          }
+        },
+        "nextPageToken": {
+          "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results.",
+          "type": "string"
+        },
+        "selfLink": {
+          "description": "[Output Only] Server-defined URL for this resource.",
+          "type": "string"
+        },
+        "warning": {
+          "description": "[Output Only] Informational warning message.",
+          "type": "object",
+          "properties": {
+            "code": {
+              "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+              "type": "string",
+              "enumDescriptions": [
+                "Warning about failed cleanup of transient changes made by a failed operation.",
+                "A link to a deprecated resource was created.",
+                "When deploying and at least one of the resources has a type marked as deprecated",
+                "The user created a boot disk that is larger than image size.",
+                "When deploying and at least one of the resources has a type marked as experimental",
+                "Warning that is present in an external api call",
+                "Warning that value of a field has been overridden. Deprecated unused field.",
+                "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP\/HTTPS\/HTTP2.",
+                "When deploying a deployment with a exceedingly large number of resources",
+                "A resource depends on a missing type",
+                "The route's nextHopIp address is not assigned to an instance on the network.",
+                "The route's next hop instance cannot ip forward.",
+                "The route's nextHopInstance URL refers to an instance that does not have an ipv6 interface on the same network as the route.",
+                "The route's nextHopInstance URL refers to an instance that does not exist.",
+                "The route's nextHopInstance URL refers to an instance that is not on the same network as the route.",
+                "The route's next hop instance does not have a status of RUNNING.",
+                "Error which is not critical. We decided to continue the process despite the mentioned error.",
+                "No results are present on a particular list page.",
+                "Success is reported, but some results may be missing due to errors",
+                "The user attempted to use a resource that requires a TOS they have not accepted.",
+                "Warning that a resource is in use.",
+                "One or more of the resources set to auto-delete could not be deleted because they were in use.",
+                "When a resource schema validation is ignored.",
+                "Instance template used in instance group manager is valid as such, but its application does not make a lot of sense, because it allows only single instance in instance group.",
+                "When undeclared properties in the schema are present",
+                "A given scope cannot be reached."
+              ],
+              "enum": [
+                "CLEANUP_FAILED",
+                "DEPRECATED_RESOURCE_USED",
+                "DEPRECATED_TYPE_USED",
+                "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+                "EXPERIMENTAL_TYPE_USED",
+                "EXTERNAL_API_WARNING",
+                "FIELD_VALUE_OVERRIDEN",
+                "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
+                "LARGE_DEPLOYMENT_WARNING",
+                "MISSING_TYPE_DEPENDENCY",
+                "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+                "NEXT_HOP_CANNOT_IP_FORWARD",
+                "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE",
+                "NEXT_HOP_INSTANCE_NOT_FOUND",
+                "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+                "NEXT_HOP_NOT_RUNNING",
+                "NOT_CRITICAL_ERROR",
+                "NO_RESULTS_ON_PAGE",
+                "PARTIAL_SUCCESS",
+                "REQUIRED_TOS_AGREEMENT",
+                "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+                "RESOURCE_NOT_DELETED",
+                "SCHEMA_VALIDATION_IGNORED",
+                "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+                "UNDECLARED_PROPERTIES",
+                "UNREACHABLE"
+              ]
+            },
+            "message": {
+              "description": "[Output Only] A human-readable description of the warning code.",
+              "type": "string"
+            },
+            "data": {
+              "description": "[Output Only] Metadata about this warning in key: value format. For example: \"data\": [ { \"key\": \"scope\", \"value\": \"zones\/us-east1-d\" } ",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding).",
+                    "type": "string"
+                  },
+                  "value": {
+                    "description": "[Output Only] A warning data value corresponding to the key.",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "NetworkAttachmentsScopedList": {
+      "id": "NetworkAttachmentsScopedList",
+      "type": "object",
+      "properties": {
+        "networkAttachments": {
+          "description": "A list of NetworkAttachments contained in this scope.",
+          "type": "array",
+          "items": {
+            "$ref": "NetworkAttachment"
+          }
+        },
+        "warning": {
+          "description": "Informational warning which replaces the list of network attachments when the list is empty.",
+          "type": "object",
+          "properties": {
+            "code": {
+              "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+              "type": "string",
+              "enumDescriptions": [
+                "Warning about failed cleanup of transient changes made by a failed operation.",
+                "A link to a deprecated resource was created.",
+                "When deploying and at least one of the resources has a type marked as deprecated",
+                "The user created a boot disk that is larger than image size.",
+                "When deploying and at least one of the resources has a type marked as experimental",
+                "Warning that is present in an external api call",
+                "Warning that value of a field has been overridden. Deprecated unused field.",
+                "The operation involved use of an injected kernel, which is deprecated.",
+                "A WEIGHTED_MAGLEV backend service is associated with a health check that is not of type HTTP\/HTTPS\/HTTP2.",
+                "When deploying a deployment with a exceedingly large number of resources",
+                "A resource depends on a missing type",
+                "The route's nextHopIp address is not assigned to an instance on the network.",
+                "The route's next hop instance cannot ip forward.",
+                "The route's nextHopInstance URL refers to an instance that does not have an ipv6 interface on the same network as the route.",
+                "The route's nextHopInstance URL refers to an instance that does not exist.",
+                "The route's nextHopInstance URL refers to an instance that is not on the same network as the route.",
+                "The route's next hop instance does not have a status of RUNNING.",
+                "Error which is not critical. We decided to continue the process despite the mentioned error.",
+                "No results are present on a particular list page.",
+                "Success is reported, but some results may be missing due to errors",
+                "The user attempted to use a resource that requires a TOS they have not accepted.",
+                "Warning that a resource is in use.",
+                "One or more of the resources set to auto-delete could not be deleted because they were in use.",
+                "When a resource schema validation is ignored.",
+                "Instance template used in instance group manager is valid as such, but its application does not make a lot of sense, because it allows only single instance in instance group.",
+                "When undeclared properties in the schema are present",
+                "A given scope cannot be reached."
+              ],
+              "enum": [
+                "CLEANUP_FAILED",
+                "DEPRECATED_RESOURCE_USED",
+                "DEPRECATED_TYPE_USED",
+                "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+                "EXPERIMENTAL_TYPE_USED",
+                "EXTERNAL_API_WARNING",
+                "FIELD_VALUE_OVERRIDEN",
+                "INJECTED_KERNELS_DEPRECATED",
+                "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
+                "LARGE_DEPLOYMENT_WARNING",
+                "MISSING_TYPE_DEPENDENCY",
+                "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+                "NEXT_HOP_CANNOT_IP_FORWARD",
+                "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE",
+                "NEXT_HOP_INSTANCE_NOT_FOUND",
+                "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+                "NEXT_HOP_NOT_RUNNING",
+                "NOT_CRITICAL_ERROR",
+                "NO_RESULTS_ON_PAGE",
+                "PARTIAL_SUCCESS",
+                "REQUIRED_TOS_AGREEMENT",
+                "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+                "RESOURCE_NOT_DELETED",
+                "SCHEMA_VALIDATION_IGNORED",
+                "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+                "UNDECLARED_PROPERTIES",
+                "UNREACHABLE"
+              ]
+            },
+            "message": {
+              "description": "[Output Only] A human-readable description of the warning code.",
+              "type": "string"
+            },
+            "data": {
+              "description": "[Output Only] Metadata about this warning in key: value format. For example: \"data\": [ { \"key\": \"scope\", \"value\": \"zones\/us-east1-d\" } ",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding).",
+                    "type": "string"
+                  },
+                  "value": {
+                    "description": "[Output Only] A warning data value corresponding to the key.",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "NetworkAttachment": {
+      "id": "NetworkAttachment",
+      "description": "NetworkAttachments A network attachment resource ...",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "[Output Only] Type of the resource.",
+          "default": "compute#networkAttachment",
+          "type": "string"
+        },
+        "id": {
+          "description": "[Output Only] The unique identifier for the resource type. The server generates this identifier.",
+          "type": "string",
+          "format": "uint64"
+        },
+        "creationTimestamp": {
+          "description": "[Output Only] Creation timestamp in RFC3339 text format.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+          "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+          "annotations": {
+            "required": [
+              "compute.networkAttachments.insert"
+            ]
+          },
+          "type": "string"
+        },
+        "description": {
+          "description": "An optional description of this resource. Provide this property when you create the resource.",
+          "type": "string"
+        },
+        "selfLink": {
+          "description": "[Output Only] Server-defined URL for the resource.",
+          "type": "string"
+        },
+        "selfLinkWithId": {
+          "description": "[Output Only] Server-defined URL for this resource's resource id.",
+          "type": "string"
+        },
+        "region": {
+          "description": "[Output Only] URL of the region where the network attachment resides. This field applies only to the region resource. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.",
+          "type": "string"
+        },
+        "connectionPreference": {
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "",
+            ""
+          ],
+          "enum": [
+            "ACCEPT_AUTOMATIC",
+            "ACCEPT_MANUAL",
+            "INVALID"
+          ]
+        },
+        "connectionEndpoints": {
+          "description": "[Output Only] An array of connections for all the producers connected to this network attachment.",
+          "type": "array",
+          "items": {
+            "$ref": "NetworkAttachmentConnectedEndpoint"
+          }
+        },
+        "subnetworks": {
+          "description": "An array of URLs where each entry is the URL of a subnet provided by the service consumer to use for endpoints in the producers that connect to this network attachment.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "producerRejectLists": {
+          "description": "Projects that are not allowed to connect to this network attachment. The project can be specified using its id or number.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "producerAcceptLists": {
+          "description": "Projects that are allowed to connect to this network attachment. The project can be specified using its id or number.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fingerprint": {
+          "description": "[Output Only] Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. An up-to-date fingerprint must be provided in order to patch.",
+          "type": "string",
+          "format": "byte"
+        },
+        "network": {
+          "description": "[Output Only] The URL of the network which the Network Attachment belongs to.",
+          "type": "string"
+        }
+      }
+    },
+    "NetworkAttachmentConnectedEndpoint": {
+      "id": "NetworkAttachmentConnectedEndpoint",
+      "description": "[Output Only] A connection connected to this network attachment.",
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "The status of a connected endpoint to this network attachment.",
+          "type": "string",
+          "enumDescriptions": [
+            "The consumer allows traffic from the producer to reach its VPC.",
+            "The consumer network attachment no longer exists.",
+            "The consumer needs to take further action before traffic can be served.",
+            "The consumer neither allows nor prohibits traffic from the producer to reach its VPC.",
+            "The consumer prohibits traffic from the producer to reach its VPC.",
+            ""
+          ],
+          "enum": [
+            "ACCEPTED",
+            "CLOSED",
+            "NEEDS_ATTENTION",
+            "PENDING",
+            "REJECTED",
+            "STATUS_UNSPECIFIED"
+          ]
+        },
+        "projectIdOrNum": {
+          "description": "The project id or number of the interface to which the IP was assigned.",
+          "type": "string"
+        },
+        "subnetwork": {
+          "description": "The subnetwork used to assign the IP to the producer instance network interface.",
+          "type": "string"
+        },
+        "ipAddress": {
+          "description": "The IP address assigned to the producer instance network interface. This value will be a range in case of Serverless.",
+          "type": "string"
+        },
+        "secondaryIpCidrRanges": {
+          "description": "Alias IP ranges from the same subnetwork",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "NetworkAttachmentList": {
+      "id": "NetworkAttachmentList",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "default": "compute#networkAttachmentList",
+          "type": "string"
+        },
+        "id": {
+          "description": "[Output Only] Unique identifier for the resource; defined by the server.",
+          "type": "string"
+        },
+        "items": {
+          "description": "A list of NetworkAttachment resources.",
+          "type": "array",
+          "items": {
+            "$ref": "NetworkAttachment"
+          }
+        },
+        "nextPageToken": {
+          "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results.",
+          "type": "string"
+        },
+        "selfLink": {
+          "description": "[Output Only] Server-defined URL for this resource.",
+          "type": "string"
+        },
+        "warning": {
+          "description": "[Output Only] Informational warning message.",
           "type": "object",
           "properties": {
             "code": {
@@ -23014,7 +23533,7 @@
           "type": "string"
         },
         "resendInterval": {
-          "description": "Optional. This field is used to configure how often to send a full update of all non-healthy backends. If unspecified, full updates are not sent. If specified, must be in the range between 600 seconds to 3600 seconds. Nanos are disallowed.",
+          "description": "Optional. This field is used to configure how often to send a full update of all non-healthy backends. If unspecified, full updates are not sent. If specified, must be in the range between 600 seconds to 3600 seconds. Nanos are disallowed. Can only be set for regional notification endpoints.",
           "$ref": "Duration"
         }
       }
@@ -23651,6 +24170,22 @@
             "STANDARD",
             "STANDARD_OVERRIDES_FIXED_STANDARD"
           ]
+        },
+        "vmDnsSetting": {
+          "description": "[Output Only] Default internal DNS setting used by VMs running in this project.",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "",
+            "",
+            ""
+          ],
+          "enum": [
+            "GLOBAL_DEFAULT",
+            "UNSPECIFIED_VM_DNS_SETTING",
+            "ZONAL_DEFAULT",
+            "ZONAL_ONLY"
+          ]
         }
       }
     },
@@ -23695,6 +24230,14 @@
             "",
             "",
             "Guest CPUs",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
             "",
             "",
             "",
@@ -23839,8 +24382,12 @@
             "EXTERNAL_VPN_GATEWAYS",
             "FIREWALLS",
             "FORWARDING_RULES",
+            "GLOBAL_EXTERNAL_MANAGED_BACKEND_SERVICES",
             "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES",
+            "GLOBAL_EXTERNAL_PROXY_LB_BACKEND_SERVICES",
             "GLOBAL_INTERNAL_ADDRESSES",
+            "GLOBAL_INTERNAL_MANAGED_BACKEND_SERVICES",
+            "GLOBAL_INTERNAL_TRAFFIC_DIRECTOR_BACKEND_SERVICES",
             "GPUS_ALL_REGIONS",
             "HEALTH_CHECKS",
             "IMAGES",
@@ -23900,7 +24447,11 @@
             "PUBLIC_ADVERTISED_PREFIXES",
             "PUBLIC_DELEGATED_PREFIXES",
             "REGIONAL_AUTOSCALERS",
+            "REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES",
+            "REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES",
             "REGIONAL_INSTANCE_GROUP_MANAGERS",
+            "REGIONAL_INTERNAL_LB_BACKEND_SERVICES",
+            "REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES",
             "RESERVATIONS",
             "RESOURCE_POLICIES",
             "ROUTERS",
@@ -28320,6 +28871,10 @@
       "properties": {
         "projectIdOrNum": {
           "description": "The project id or number for the project to set the limit for.",
+          "type": "string"
+        },
+        "networkUrl": {
+          "description": "The network URL for the network to set the limit for.",
           "type": "string"
         },
         "connectionLimit": {
@@ -42352,6 +42907,11 @@
           "flatPath": "projects/{project}/zones/{zone}/instances/{instance}/stop",
           "httpMethod": "POST",
           "parameters": {
+            "discardLocalSsd": {
+              "description": "If true, discard the contents of any attached localSSD partitions. Default value is false.",
+              "location": "query",
+              "type": "boolean"
+            },
             "instance": {
               "description": "Name of the instance resource to stop.",
               "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
@@ -42642,6 +43202,11 @@
           "flatPath": "projects/{project}/zones/{zone}/instances/{instance}/suspend",
           "httpMethod": "POST",
           "parameters": {
+            "discardLocalSsd": {
+              "description": "If true, discard the contents of any attached localSSD partitions. Default value is false.",
+              "location": "query",
+              "type": "boolean"
+            },
             "instance": {
               "description": "Name of the instance resource to suspend.",
               "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
@@ -54777,6 +55342,405 @@
             "https://www.googleapis.com/auth/compute.readonly"
           ],
           "description": "Returns the specified machine type. Gets a list of available machine types by making a list() request."
+        }
+      }
+    },
+    "networkAttachments": {
+      "methods": {
+        "aggregatedList": {
+          "id": "compute.networkAttachments.aggregatedList",
+          "path": "projects/{project}/aggregated/networkAttachments",
+          "flatPath": "projects/{project}/aggregated/networkAttachments",
+          "httpMethod": "GET",
+          "parameters": {
+            "filter": {
+              "description": "A filter expression that filters resources listed in the response. Most Compute resources support two types of filter expressions: expressions that support regular expressions and expressions that follow API improvement proposal AIP-160. If you want to use AIP-160, your expression must specify the field name, an operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=` or `:`. For example, if you are filtering Compute Engine instances, you can exclude instances named `example-instance` by specifying `name != example-instance`. The `:` operator can be used with string fields to match substrings. For non-string fields it is equivalent to the `=` operator. The `:*` comparison can be used to test whether a key has been defined. For example, to find all objects with `owner` label use: ``` labels.owner:* ``` You can also filter nested fields. For example, you could specify `scheduling.automaticRestart = false` to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true) ``` If you want to use a regular expression, use the `eq` (equal) or `ne` (not equal) operator against a single un-parenthesized expression with or without quotes or against multiple parenthesized expressions. Examples: `fieldname eq unquoted literal` `fieldname eq 'single quoted literal'` `fieldname eq \"double quoted literal\"` `(fieldname1 eq literal) (fieldname2 ne \"literal\")` The literal value is interpreted as a regular expression using Google RE2 library syntax. The literal value must match the entire field. For example, to filter for instances that do not end with name \"instance\", you would use `name ne .*instance`.",
+              "location": "query",
+              "type": "string"
+            },
+            "includeAllScopes": {
+              "description": "Indicates whether every visible scope for each scope type (zone, region, global) should be included in the response. For new resource types added after this field, the flag has no effect as new resource types will always include every visible scope for each scope type in response. For resource types which predate this field, if this flag is omitted or false, only scopes of the scope types where the resource type is expected to be found will be included.",
+              "location": "query",
+              "type": "boolean"
+            },
+            "maxResults": {
+              "description": "The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, Compute Engine returns a `nextPageToken` that can be used to get the next page of results in subsequent list requests. Acceptable values are `0` to `500`, inclusive. (Default: `500`)",
+              "default": "500",
+              "minimum": "0",
+              "location": "query",
+              "type": "integer",
+              "format": "uint32"
+            },
+            "orderBy": {
+              "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using `orderBy=\"creationTimestamp desc\"`. This sorts results based on the `creationTimestamp` field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first. Currently, only sorting by `name` or `creationTimestamp desc` is supported.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageToken": {
+              "description": "Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results.",
+              "location": "query",
+              "type": "string"
+            },
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "returnPartialSuccess": {
+              "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false.",
+              "location": "query",
+              "type": "boolean"
+            }
+          },
+          "parameterOrder": [
+            "project"
+          ],
+          "response": {
+            "$ref": "NetworkAttachmentAggregatedList"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute",
+            "https://www.googleapis.com/auth/compute.readonly"
+          ],
+          "description": "Retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project."
+        },
+        "list": {
+          "id": "compute.networkAttachments.list",
+          "path": "projects/{project}/regions/{region}/networkAttachments",
+          "flatPath": "projects/{project}/regions/{region}/networkAttachments",
+          "httpMethod": "GET",
+          "parameters": {
+            "filter": {
+              "description": "A filter expression that filters resources listed in the response. Most Compute resources support two types of filter expressions: expressions that support regular expressions and expressions that follow API improvement proposal AIP-160. If you want to use AIP-160, your expression must specify the field name, an operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=` or `:`. For example, if you are filtering Compute Engine instances, you can exclude instances named `example-instance` by specifying `name != example-instance`. The `:` operator can be used with string fields to match substrings. For non-string fields it is equivalent to the `=` operator. The `:*` comparison can be used to test whether a key has been defined. For example, to find all objects with `owner` label use: ``` labels.owner:* ``` You can also filter nested fields. For example, you could specify `scheduling.automaticRestart = false` to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true) ``` If you want to use a regular expression, use the `eq` (equal) or `ne` (not equal) operator against a single un-parenthesized expression with or without quotes or against multiple parenthesized expressions. Examples: `fieldname eq unquoted literal` `fieldname eq 'single quoted literal'` `fieldname eq \"double quoted literal\"` `(fieldname1 eq literal) (fieldname2 ne \"literal\")` The literal value is interpreted as a regular expression using Google RE2 library syntax. The literal value must match the entire field. For example, to filter for instances that do not end with name \"instance\", you would use `name ne .*instance`.",
+              "location": "query",
+              "type": "string"
+            },
+            "maxResults": {
+              "description": "The maximum number of results per page that should be returned. If the number of available results is larger than `maxResults`, Compute Engine returns a `nextPageToken` that can be used to get the next page of results in subsequent list requests. Acceptable values are `0` to `500`, inclusive. (Default: `500`)",
+              "default": "500",
+              "minimum": "0",
+              "location": "query",
+              "type": "integer",
+              "format": "uint32"
+            },
+            "orderBy": {
+              "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using `orderBy=\"creationTimestamp desc\"`. This sorts results based on the `creationTimestamp` field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first. Currently, only sorting by `name` or `creationTimestamp desc` is supported.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageToken": {
+              "description": "Specifies a page token to use. Set `pageToken` to the `nextPageToken` returned by a previous list request to get the next page of results.",
+              "location": "query",
+              "type": "string"
+            },
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "region": {
+              "description": "Name of the region of this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "returnPartialSuccess": {
+              "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false.",
+              "location": "query",
+              "type": "boolean"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "region"
+          ],
+          "response": {
+            "$ref": "NetworkAttachmentList"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute",
+            "https://www.googleapis.com/auth/compute.readonly"
+          ],
+          "description": "Lists the NetworkAttachments for a project in the given scope."
+        },
+        "get": {
+          "id": "compute.networkAttachments.get",
+          "path": "projects/{project}/regions/{region}/networkAttachments/{networkAttachment}",
+          "flatPath": "projects/{project}/regions/{region}/networkAttachments/{networkAttachment}",
+          "httpMethod": "GET",
+          "parameters": {
+            "networkAttachment": {
+              "description": "Name of the NetworkAttachment resource to return.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "region": {
+              "description": "Name of the region of this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "region",
+            "networkAttachment"
+          ],
+          "response": {
+            "$ref": "NetworkAttachment"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute",
+            "https://www.googleapis.com/auth/compute.readonly"
+          ],
+          "description": "Returns the specified NetworkAttachment resource in the given scope."
+        },
+        "insert": {
+          "id": "compute.networkAttachments.insert",
+          "path": "projects/{project}/regions/{region}/networkAttachments",
+          "flatPath": "projects/{project}/regions/{region}/networkAttachments",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "region": {
+              "description": "Name of the region of this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "requestId": {
+              "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported ( 00000000-0000-0000-0000-000000000000). end_interface: MixerMutationRequestBuilder",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "region"
+          ],
+          "request": {
+            "$ref": "NetworkAttachment"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute"
+          ],
+          "description": "Creates a NetworkAttachment in the specified project in the given scope using the parameters that are included in the request."
+        },
+        "delete": {
+          "id": "compute.networkAttachments.delete",
+          "path": "projects/{project}/regions/{region}/networkAttachments/{networkAttachment}",
+          "flatPath": "projects/{project}/regions/{region}/networkAttachments/{networkAttachment}",
+          "httpMethod": "DELETE",
+          "parameters": {
+            "networkAttachment": {
+              "description": "Name of the NetworkAttachment resource to delete.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "region": {
+              "description": "Name of the region of this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "requestId": {
+              "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported ( 00000000-0000-0000-0000-000000000000). end_interface: MixerMutationRequestBuilder",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "region",
+            "networkAttachment"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute"
+          ],
+          "description": "Deletes the specified NetworkAttachment in the given scope"
+        },
+        "getIamPolicy": {
+          "id": "compute.networkAttachments.getIamPolicy",
+          "path": "projects/{project}/regions/{region}/networkAttachments/{resource}/getIamPolicy",
+          "flatPath": "projects/{project}/regions/{region}/networkAttachments/{resource}/getIamPolicy",
+          "httpMethod": "GET",
+          "parameters": {
+            "optionsRequestedPolicyVersion": {
+              "description": "Requested IAM Policy version.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "region": {
+              "description": "The name of the region for this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "resource": {
+              "description": "Name or id of the resource for this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "region",
+            "resource"
+          ],
+          "response": {
+            "$ref": "Policy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute",
+            "https://www.googleapis.com/auth/compute.readonly"
+          ],
+          "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists."
+        },
+        "setIamPolicy": {
+          "id": "compute.networkAttachments.setIamPolicy",
+          "path": "projects/{project}/regions/{region}/networkAttachments/{resource}/setIamPolicy",
+          "flatPath": "projects/{project}/regions/{region}/networkAttachments/{resource}/setIamPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "region": {
+              "description": "The name of the region for this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "resource": {
+              "description": "Name or id of the resource for this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "region",
+            "resource"
+          ],
+          "request": {
+            "$ref": "RegionSetPolicyRequest"
+          },
+          "response": {
+            "$ref": "Policy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute"
+          ],
+          "description": "Sets the access control policy on the specified resource. Replaces any existing policy."
+        },
+        "testIamPermissions": {
+          "id": "compute.networkAttachments.testIamPermissions",
+          "path": "projects/{project}/regions/{region}/networkAttachments/{resource}/testIamPermissions",
+          "flatPath": "projects/{project}/regions/{region}/networkAttachments/{resource}/testIamPermissions",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "region": {
+              "description": "The name of the region for this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "resource": {
+              "description": "Name or id of the resource for this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "region",
+            "resource"
+          ],
+          "request": {
+            "$ref": "TestPermissionsRequest"
+          },
+          "response": {
+            "$ref": "TestPermissionsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute",
+            "https://www.googleapis.com/auth/compute.readonly"
+          ],
+          "description": "Returns permissions that a caller has on the specified resource."
         }
       }
     },

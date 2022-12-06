@@ -277,7 +277,7 @@
       "type": "object",
       "properties": {
         "contents": {
-          "description": "Required. The content of the input in string format. We recommend the total content be less than 30k codepoints. The max length of this field is 1024. Use BatchTranslateText for larger text.",
+          "description": "Required. The content of the input in string format. We recommend the total content be less than 30,000 codepoints. The max length of this field is 1024. Use BatchTranslateText for larger text.",
           "type": "array",
           "items": {
             "type": "string"
@@ -314,15 +314,15 @@
     },
     "TranslateTextGlossaryConfig": {
       "id": "TranslateTextGlossaryConfig",
-      "description": "Configures which glossary should be used for a specific target language, and defines options for applying that glossary.",
+      "description": "Configures which glossary is used for a specific target language and defines options for applying that glossary.",
       "type": "object",
       "properties": {
         "glossary": {
-          "description": "Required. The `glossary` to be applied for this translation. The format depends on glossary: - User provided custom glossary: `projects\/{project-number-or-id}\/locations\/{location-id}\/glossaries\/{glossary-id}`",
+          "description": "Required. The `glossary` to be applied for this translation. The format depends on the glossary: - User-provided custom glossary: `projects\/{project-number-or-id}\/locations\/{location-id}\/glossaries\/{glossary-id}`",
           "type": "string"
         },
         "ignoreCase": {
-          "description": "Optional. Indicates match is case-insensitive. Default value is false if missing.",
+          "description": "Optional. Indicates match is case insensitive. The default value is `false` if missing.",
           "type": "boolean"
         }
       }
@@ -416,7 +416,7 @@
       "type": "object",
       "properties": {
         "languageCode": {
-          "description": "The BCP-47 language code of source content in the request, detected automatically.",
+          "description": "The BCP-47 language code of the source content in the request, detected automatically.",
           "type": "string"
         },
         "confidence": {
@@ -446,19 +446,19 @@
       "type": "object",
       "properties": {
         "languageCode": {
-          "description": "Supported language code, generally consisting of its ISO 639-1 identifier, for example, 'en', 'ja'. In certain cases, BCP-47 codes including language and region identifiers are returned (for example, 'zh-TW' and 'zh-CN')",
+          "description": "Supported language code, generally consisting of its ISO 639-1 identifier, for example, 'en', 'ja'. In certain cases, BCP-47 codes including language and region identifiers are returned (for example, 'zh-TW' and 'zh-CN').",
           "type": "string"
         },
         "displayName": {
-          "description": "Human readable name of the language localized in the display language specified in the request.",
+          "description": "Human-readable name of the language localized in the display language specified in the request.",
           "type": "string"
         },
         "supportSource": {
-          "description": "Can be used as source language.",
+          "description": "Can be used as a source language.",
           "type": "boolean"
         },
         "supportTarget": {
-          "description": "Can be used as target language.",
+          "description": "Can be used as a target language.",
           "type": "boolean"
         }
       }
@@ -735,6 +735,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "customizedAttribution": {
+          "description": "Optional. This flag is to support user customized attribution. If not provided, the default is `Machine Translated by Google`. Customized attribution should follow rules in https:\/\/cloud.google.com\/translate\/attribution#attribution_and_logos",
+          "type": "string"
         }
       }
     },
@@ -762,7 +766,7 @@
     },
     "Glossary": {
       "id": "Glossary",
-      "description": "Represents a glossary built from user provided data.",
+      "description": "Represents a glossary built from user-provided data.",
       "type": "object",
       "properties": {
         "name": {
@@ -840,7 +844,7 @@
       "type": "object",
       "properties": {
         "gcsSource": {
-          "description": "Required. Google Cloud Storage location of glossary data. File format is determined based on the filename extension. API returns [google.rpc.Code.INVALID_ARGUMENT] for unsupported URI-s and file formats. Wildcards are not allowed. This must be a single file in one of the following formats: For unidirectional glossaries: - TSV\/CSV (`.tsv`\/`.csv`): 2 column file, tab- or comma-separated. The first column is source text. The second column is target text. The file must not contain headers. That is, the first row is data, not column names. - TMX (`.tmx`): TMX file with parallel data defining source\/target term pairs. For equivalent term sets glossaries: - CSV (`.csv`): Multi-column CSV file defining equivalent glossary terms in multiple languages. See documentation for more information - [glossaries](https:\/\/cloud.google.com\/translate\/docs\/advanced\/glossary).",
+          "description": "Required. Google Cloud Storage location of glossary data. File format is determined based on the filename extension. API returns [google.rpc.Code.INVALID_ARGUMENT] for unsupported URI-s and file formats. Wildcards are not allowed. This must be a single file in one of the following formats: For unidirectional glossaries: - TSV\/CSV (`.tsv`\/`.csv`): Two column file, tab- or comma-separated. The first column is source text. The second column is target text. No headers in this file. The first row contains data and not column names. - TMX (`.tmx`): TMX file with parallel data defining source\/target term pairs. For equivalent term sets glossaries: - CSV (`.csv`): Multi-column CSV file defining equivalent glossary terms in multiple languages. See documentation for more information - [glossaries](https:\/\/cloud.google.com\/translate\/docs\/advanced\/glossary).",
           "$ref": "GcsSource"
         }
       }
@@ -944,6 +948,302 @@
         },
         "nextPageToken": {
           "description": "Optional. A token to retrieve a page of results. Pass this value in the [ListGLossaryEntriesRequest.page_token] field in the subsequent calls.",
+          "type": "string"
+        }
+      }
+    },
+    "Dataset": {
+      "id": "Dataset",
+      "description": "A dataset that hosts the examples (sentence pairs) used for translation models.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the dataset, in form of `projects\/{project-number-or-id}\/locations\/{location_id}\/datasets\/{dataset_id}`",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The name of the dataset to show in the interface. The name can be up to 32 characters long and can consist only of ASCII Latin letters A-Z and a-z, underscores (_), and ASCII digits 0-9.",
+          "type": "string"
+        },
+        "sourceLanguageCode": {
+          "description": "The BCP-47 language code of the source language.",
+          "type": "string"
+        },
+        "targetLanguageCode": {
+          "description": "The BCP-47 language code of the target language.",
+          "type": "string"
+        },
+        "exampleCount": {
+          "description": "Output only. The number of examples in the dataset.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "trainExampleCount": {
+          "description": "Output only. Number of training examples (sentence pairs).",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "validateExampleCount": {
+          "description": "Output only. Number of validation examples (sentence pairs).",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "testExampleCount": {
+          "description": "Output only. Number of test examples (sentence pairs).",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this dataset was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when this dataset was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ListDatasetsResponse": {
+      "id": "ListDatasetsResponse",
+      "description": "Response message for ListDatasets.",
+      "type": "object",
+      "properties": {
+        "datasets": {
+          "description": "The datasets read.",
+          "type": "array",
+          "items": {
+            "$ref": "Dataset"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve next page of results. Pass this token to the page_token field in the ListDatasetsRequest to obtain the corresponding page.",
+          "type": "string"
+        }
+      }
+    },
+    "ImportDataRequest": {
+      "id": "ImportDataRequest",
+      "description": "Request message for ImportData.",
+      "type": "object",
+      "properties": {
+        "inputConfig": {
+          "description": "Required. The config for the input content.",
+          "$ref": "DatasetInputConfig"
+        }
+      }
+    },
+    "DatasetInputConfig": {
+      "id": "DatasetInputConfig",
+      "description": "Input configuration for datasets.",
+      "type": "object",
+      "properties": {
+        "inputFiles": {
+          "description": "Files containing the sentence pairs to be imported to the dataset.",
+          "type": "array",
+          "items": {
+            "$ref": "InputFile"
+          }
+        }
+      }
+    },
+    "InputFile": {
+      "id": "InputFile",
+      "description": "An input file.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "User specified name of the file. It not set, display name will be extracted from the source URI.",
+          "type": "string"
+        },
+        "usage": {
+          "description": "Usage of the file contents. Options are TRAIN|VALIDATION|TEST, or UNASSIGNED (by default) for auto split.",
+          "type": "string"
+        },
+        "gcsSource": {
+          "description": "Google Cloud Storage file source.",
+          "$ref": "GcsInputSource"
+        }
+      }
+    },
+    "GcsInputSource": {
+      "id": "GcsInputSource",
+      "description": "The Google Cloud Storage location for the input content.",
+      "type": "object",
+      "properties": {
+        "inputUri": {
+          "description": "Required. Source data URI. For example, `gs:\/\/my_bucket\/my_object`.",
+          "type": "string"
+        }
+      }
+    },
+    "ExportDataRequest": {
+      "id": "ExportDataRequest",
+      "description": "Request message for ExportData.",
+      "type": "object",
+      "properties": {
+        "outputConfig": {
+          "description": "Required. The config for the output content.",
+          "$ref": "DatasetOutputConfig"
+        }
+      }
+    },
+    "DatasetOutputConfig": {
+      "id": "DatasetOutputConfig",
+      "description": "Output configuration for datasets.",
+      "type": "object",
+      "properties": {
+        "gcsDestination": {
+          "description": "Google Cloud Storage destination to write the output.",
+          "$ref": "GcsOutputDestination"
+        }
+      }
+    },
+    "GcsOutputDestination": {
+      "id": "GcsOutputDestination",
+      "description": "The Google Cloud Storage location for the output content.",
+      "type": "object",
+      "properties": {
+        "outputUriPrefix": {
+          "description": "Required. Google Cloud Storage URI to output directory. For example, `gs:\/\/bucket\/directory`. The requesting user must have write permission to the bucket. The directory will be created if it doesn't exist.",
+          "type": "string"
+        }
+      }
+    },
+    "ListExamplesResponse": {
+      "id": "ListExamplesResponse",
+      "description": "Response message for ListExamples.",
+      "type": "object",
+      "properties": {
+        "examples": {
+          "description": "The sentence pairs.",
+          "type": "array",
+          "items": {
+            "$ref": "Example"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve next page of results. Pass this token to the page_token field in the ListExamplesRequest to obtain the corresponding page.",
+          "type": "string"
+        }
+      }
+    },
+    "Example": {
+      "id": "Example",
+      "description": "A sentence pair.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the example, in form of `projects\/{project-number-or-id}\/locations\/{location_id}\/datasets\/{dataset_id}\/examples\/{example_id}'",
+          "readOnly": true,
+          "type": "string"
+        },
+        "sourceText": {
+          "description": "Sentence in source language.",
+          "type": "string"
+        },
+        "targetText": {
+          "description": "Sentence in target language.",
+          "type": "string"
+        },
+        "usage": {
+          "description": "Output only. Usage of the sentence pair. Options are TRAIN|VALIDATION|TEST.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "file": {
+          "description": "Output only. The resource ID of the file that this example originally imported from. The file must belong to the parent dataset.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "Model": {
+      "id": "Model",
+      "description": "A trained translation model.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the model, in form of `projects\/{project-number-or-id}\/locations\/{location_id}\/models\/{model_id}`",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The name of the model to show in the interface. The name can be up to 32 characters long and can consist only of ASCII Latin letters A-Z and a-z, underscores (_), and ASCII digits 0-9.",
+          "type": "string"
+        },
+        "dataset": {
+          "description": "The dataset from which the model is trained, in form of `projects\/{project-number-or-id}\/locations\/{location_id}\/datasets\/{dataset_id}`",
+          "type": "string"
+        },
+        "sourceLanguageCode": {
+          "description": "Output only. The BCP-47 language code of the source language.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "targetLanguageCode": {
+          "description": "Output only. The BCP-47 language code of the target language.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "trainExampleCount": {
+          "description": "Output only. Number of examples (sentence pairs) used to train the model.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "validateExampleCount": {
+          "description": "Output only. Number of examples (sentence pairs) used to validate the model.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "testExampleCount": {
+          "description": "Output only. Number of examples (sentence pairs) used to test the model.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when the model resource was created, which is also when the training started.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deployTime": {
+          "description": "Output only. Timestamp when the model training finished and ready to be used for translation.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when this model was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ListModelsResponse": {
+      "id": "ListModelsResponse",
+      "description": "Response message for ListModels.",
+      "type": "object",
+      "properties": {
+        "models": {
+          "description": "The models read.",
+          "type": "array",
+          "items": {
+            "$ref": "Model"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve next page of results. Pass this token to the page_token field in the ListModelsRequest to obtain the corresponding page.",
           "type": "string"
         }
       }
@@ -1768,6 +2068,362 @@
                       "description": "Deletes a single entry from the glossary"
                     }
                   }
+                }
+              }
+            },
+            "datasets": {
+              "methods": {
+                "create": {
+                  "id": "translate.projects.locations.datasets.create",
+                  "path": "v3/{+parent}/datasets",
+                  "flatPath": "v3/projects/{projectsId}/locations/{locationsId}/datasets",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Dataset"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-translation"
+                  ],
+                  "description": "Creates a Dataset."
+                },
+                "get": {
+                  "id": "translate.projects.locations.datasets.get",
+                  "path": "v3/{+name}",
+                  "flatPath": "v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the dataset to retrieve.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Dataset"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-translation"
+                  ],
+                  "description": "Gets a Dataset."
+                },
+                "list": {
+                  "id": "translate.projects.locations.datasets.list",
+                  "path": "v3/{+parent}/datasets",
+                  "flatPath": "v3/projects/{projectsId}/locations/{locationsId}/datasets",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Name of the parent project. In form of `projects\/{project-number-or-id}\/locations\/{location-id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. Requested page size. The server can return fewer results than requested.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. A token identifying a page of results for the server to return. Typically obtained from next_page_token field in the response of a ListDatasets call.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListDatasetsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-translation"
+                  ],
+                  "description": "Lists datasets."
+                },
+                "delete": {
+                  "id": "translate.projects.locations.datasets.delete",
+                  "path": "v3/{+name}",
+                  "flatPath": "v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the dataset to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-translation"
+                  ],
+                  "description": "Deletes a dataset and all of its contents."
+                },
+                "importData": {
+                  "id": "translate.projects.locations.datasets.importData",
+                  "path": "v3/{+dataset}:importData",
+                  "flatPath": "v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:importData",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "dataset": {
+                      "description": "Required. Name of the dataset. In form of `projects\/{project-number-or-id}\/locations\/{location-id}\/datasets\/{dataset-id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "dataset"
+                  ],
+                  "request": {
+                    "$ref": "ImportDataRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-translation"
+                  ],
+                  "description": "Import sentence pairs into translation Dataset."
+                },
+                "exportData": {
+                  "id": "translate.projects.locations.datasets.exportData",
+                  "path": "v3/{+dataset}:exportData",
+                  "flatPath": "v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:exportData",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "dataset": {
+                      "description": "Required. Name of the dataset. In form of `projects\/{project-number-or-id}\/locations\/{location-id}\/datasets\/{dataset-id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "dataset"
+                  ],
+                  "request": {
+                    "$ref": "ExportDataRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-translation"
+                  ],
+                  "description": "Exports dataset's data to the provided output location."
+                }
+              }
+              ,
+              "resources": {
+                "examples": {
+                  "methods": {
+                    "list": {
+                      "id": "translate.projects.locations.datasets.examples.list",
+                      "path": "v3/{+parent}/examples",
+                      "flatPath": "v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/examples",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Name of the parent dataset. In form of `projects\/{project-number-or-id}\/locations\/{location-id}\/datasets\/{dataset-id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Optional. An expression for filtering the examples that will be returned. Example filter: * `usage=TRAIN`",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. Requested page size. The server can return fewer results than requested.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. A token identifying a page of results for the server to return. Typically obtained from next_page_token field in the response of a ListFiles call.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListExamplesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-translation"
+                      ],
+                      "description": "Lists sentence pairs in the dataset."
+                    }
+                  }
+                }
+              }
+            },
+            "models": {
+              "methods": {
+                "create": {
+                  "id": "translate.projects.locations.models.create",
+                  "path": "v3/{+parent}/models",
+                  "flatPath": "v3/projects/{projectsId}/locations/{locationsId}/models",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project name, in form of `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Model"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-translation"
+                  ],
+                  "description": "Creates a Model."
+                },
+                "list": {
+                  "id": "translate.projects.locations.models.list",
+                  "path": "v3/{+parent}/models",
+                  "flatPath": "v3/projects/{projectsId}/locations/{locationsId}/models",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Name of the parent project. In form of `projects\/{project-number-or-id}\/locations\/{location-id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Optional. An expression for filtering the models that will be returned. Supported filter: `dataset_id=${dataset_id}`",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. Requested page size. The server can return fewer results than requested.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. A token identifying a page of results for the server to return. Typically obtained from next_page_token field in the response of a ListModels call.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListModelsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-translation"
+                  ],
+                  "description": "Lists models."
+                },
+                "get": {
+                  "id": "translate.projects.locations.models.get",
+                  "path": "v3/{+name}",
+                  "flatPath": "v3/projects/{projectsId}/locations/{locationsId}/models/{modelsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the model to retrieve.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Model"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-translation"
+                  ],
+                  "description": "Gets a model."
+                },
+                "delete": {
+                  "id": "translate.projects.locations.models.delete",
+                  "path": "v3/{+name}",
+                  "flatPath": "v3/projects/{projectsId}/locations/{locationsId}/models/{modelsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the model to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-translation"
+                  ],
+                  "description": "Deletes a model."
                 }
               }
             }

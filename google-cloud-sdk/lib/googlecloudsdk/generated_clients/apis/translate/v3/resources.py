@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DATASETS = (
+      'projects.locations.datasets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/datasets/'
+              '{datasetsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_GLOSSARIES = (
       'projects.locations.glossaries',
       '{+name}',
@@ -59,6 +70,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/glossaries/'
               '{glossariesId}/glossaryEntries/{glossaryEntriesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MODELS = (
+      'projects.locations.models',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/models/'
+              '{modelsId}',
       },
       ['name'],
       True

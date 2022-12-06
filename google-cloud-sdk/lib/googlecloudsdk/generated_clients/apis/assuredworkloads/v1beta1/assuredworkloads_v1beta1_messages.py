@@ -517,7 +517,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       associated with this workload.
     KajEnrollmentStateValueValuesEnum: Output only. Represents the KAJ
       enrollment state of the given workload.
-    PartnerValueValuesEnum: Optional. Compliance Regime associated with this
+    PartnerValueValuesEnum: Optional. Partner regime associated with this
       workload.
 
   Messages:
@@ -567,7 +567,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     name: Optional. The resource name of the workload. Format:
       organizations/{organization}/locations/{location}/workloads/{workload}
       Read-only.
-    partner: Optional. Compliance Regime associated with this workload.
+    partner: Optional. Partner regime associated with this workload.
     provisionedResourcesParent: Input only. The parent resource for the
       resources managed by this Assured Workload. May be either empty or a
       folder resource which is a child of the Workload parent. If not
@@ -640,12 +640,12 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     KAJ_ENROLLMENT_STATE_COMPLETE = 2
 
   class PartnerValueValuesEnum(_messages.Enum):
-    r"""Optional. Compliance Regime associated with this workload.
+    r"""Optional. Partner regime associated with this workload.
 
     Values:
-      PARTNER_UNSPECIFIED: Unknown partner regime/controls.
-      LOCAL_CONTROLS_BY_S3NS: S3NS regime/controls.
-      SOVEREIGN_CONTROLS_BY_T_SYSTEMS: TSystems regime/controls.
+      PARTNER_UNSPECIFIED: <no description>
+      LOCAL_CONTROLS_BY_S3NS: Enum representing S3NS partner.
+      SOVEREIGN_CONTROLS_BY_T_SYSTEMS: Enum representing T_SYSTEM partner.
     """
     PARTNER_UNSPECIFIED = 0
     LOCAL_CONTROLS_BY_S3NS = 1

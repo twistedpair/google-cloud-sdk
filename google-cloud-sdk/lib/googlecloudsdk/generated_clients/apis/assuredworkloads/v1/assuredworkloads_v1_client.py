@@ -318,6 +318,33 @@ class AssuredworkloadsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def MutatePartnerPermissions(self, request, global_params=None):
+      r"""Update the permissions settings for an existing partner workload. For force updates don't set etag field in the Workload. Only one update operation per workload can be in progress.
+
+      Args:
+        request: (AssuredworkloadsOrganizationsLocationsWorkloadsMutatePartnerPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAssuredworkloadsV1Workload) The response message.
+      """
+      config = self.GetMethodConfig('MutatePartnerPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MutatePartnerPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}:mutatePartnerPermissions',
+        http_method='PATCH',
+        method_id='assuredworkloads.organizations.locations.workloads.mutatePartnerPermissions',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:mutatePartnerPermissions',
+        request_field='googleCloudAssuredworkloadsV1MutatePartnerPermissionsRequest',
+        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsMutatePartnerPermissionsRequest',
+        response_type_name='GoogleCloudAssuredworkloadsV1Workload',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates an existing workload. Currently allows updating of workload display_name and labels. For force updates don't set etag field in the Workload. Only one update operation per workload can be in progress.
 

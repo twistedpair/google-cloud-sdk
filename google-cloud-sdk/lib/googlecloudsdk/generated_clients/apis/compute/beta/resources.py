@@ -258,6 +258,14 @@ class Collections(enum.Enum):
       ['project', 'zone', 'machineType'],
       True
   )
+  NETWORKATTACHMENTS = (
+      'networkAttachments',
+      'projects/{project}/regions/{region}/networkAttachments/'
+      '{networkAttachment}',
+      {},
+      ['project', 'region', 'networkAttachment'],
+      True
+  )
   NETWORKEDGESECURITYSERVICES = (
       'networkEdgeSecurityServices',
       'projects/{project}/regions/{region}/networkEdgeSecurityServices/'

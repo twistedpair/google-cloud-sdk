@@ -129,7 +129,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
                component_number=None,
                total_components=None,
                do_not_decompress=False,
-               strategy=cloud_api.DownloadStrategy.ONE_SHOT,
+               strategy=cloud_api.DownloadStrategy.RETRIABLE_IN_FLIGHT,
                user_request_args=None):
     """Initializes task.
 
@@ -209,17 +209,18 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
 
     return api_download_result
 
-  def _perform_one_shot_download(self, request_config, progress_callback,
-                                 digesters):
+  def _perform_retriable_download(self, request_config, progress_callback,
+                                  digesters):
     """Sets up a basic download based on task attributes."""
     start_byte = self._offset
     end_byte = self._offset + self._length - 1
 
-    return self._perform_download(request_config, progress_callback,
-                                  cloud_api.DownloadStrategy.ONE_SHOT,
-                                  start_byte, end_byte,
-                                  files.BinaryFileWriterMode.TRUNCATE,
-                                  digesters)
+    return self._perform_download(
+        request_config, progress_callback,
+        cloud_api.DownloadStrategy.RETRIABLE_IN_FLIGHT,
+        start_byte, end_byte,
+        files.BinaryFileWriterMode.TRUNCATE,
+        digesters)
 
   def _catch_up_digesters(self, digesters, start_byte, end_byte):
     with files.BinaryFileReader(
@@ -372,6 +373,6 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
       api_download_result = self._perform_resumable_download(
           request_config, progress_callback, digesters)
     else:
-      api_download_result = self._perform_one_shot_download(
+      api_download_result = self._perform_retriable_download(
           request_config, progress_callback, digesters)
     return self._get_output(digesters, api_download_result)

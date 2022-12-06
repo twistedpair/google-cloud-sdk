@@ -32,10 +32,15 @@ class DomainRoutingTypeKit(base.TypeKit):
     Args:
       parameters: dict, parameters from the command
       resource_config: dict, the resource config object of the integration
+
+    Returns:
+      list of services referred in parameters.
     """
     domains = resource_config.setdefault('domains', [])
+    services = []
     if 'set-mapping' in parameters:
       url, service = self._ParseMappingNotation(parameters.get('set-mapping'))
+      services.append(service)
       service_ref = 'service/' + service
       domain, path = self._ParseDomainPath(url)
       domain_config = self._FindDomainConfig(domains, domain)
@@ -90,6 +95,8 @@ class DomainRoutingTypeKit(base.TypeKit):
           ('Can not remove the last domain. '+
            'Use "gcloud run integrations delete custom-domains" instead.'))
 
+    return services
+
   def BindServiceToIntegration(self, integration_name, resource_config,
                                service_name, service_config, parameters):
     """Binds a service to the integration.
@@ -129,28 +136,6 @@ class DomainRoutingTypeKit(base.TypeKit):
   def NewIntegrationName(self, service, parameters, app_dict):
     """Returns a name for a new integration."""
     return self.singleton_name
-
-  def GetCreateSelectors(self,
-                         integration_name,
-                         add_service_name,
-                         remove_service_name=None):
-    """Returns create selectors for given integration and service.
-
-    Args:
-      integration_name: str, name of integration.
-      add_service_name: str, name of the service being added.
-      remove_service_name: str, name of the service being removed.
-
-    Returns:
-      list of dict typed names.
-    """
-    selectors = [{'type': self.resource_type, 'name': integration_name}]
-
-    # Router should not add remove service to selector.
-    if add_service_name:
-      selectors.append({'type': 'service', 'name': add_service_name})
-
-    return selectors
 
   def GetRefServices(self, name, resource_config, all_resources):
     """Returns list of cloud run service that is binded to this resource.

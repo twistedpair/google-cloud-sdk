@@ -57,17 +57,6 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId', 'pipelinesId', 'jobsId'],
       True
   )
-  PROJECTS_LOCATIONS_TRANSFORMDESCRIPTIONS = (
-      'projects.locations.transformDescriptions',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'transformDescriptions/{transformDescriptionsId}',
-      },
-      ['name'],
-      True
-  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

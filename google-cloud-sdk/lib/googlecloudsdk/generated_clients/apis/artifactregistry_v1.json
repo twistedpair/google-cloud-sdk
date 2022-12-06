@@ -1317,6 +1317,31 @@
         }
       }
     },
+    "VPCSCConfig": {
+      "id": "VPCSCConfig",
+      "description": "The Artifact Registry VPC SC config that apply to a Project.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the project's VPC SC Config. Always of the form: projects\/{projectID}\/locations\/{location}\/vpcscConfig In update request: never set In response: always set",
+          "type": "string"
+        },
+        "vpcscPolicy": {
+          "description": "The project per location VPC SC policy that defines the VPC SC behavior for the Remote Repository (Allow\/Deny).",
+          "type": "string",
+          "enumDescriptions": [
+            "VPCSC_POLICY_UNSPECIFIED - the VPS SC policy is not defined. When VPS SC policy is not defined - the Service will use the default behavior (VPCSC_DENY).",
+            "VPCSC_DENY - repository will block the requests to the Upstreams for the Remote Repositories if the resource is in the perimeter.",
+            "VPCSC_ALLOW - repository will allow the requests to the Upstreams for the Remote Repositories if the resource is in the perimeter."
+          ],
+          "enum": [
+            "VPCSC_POLICY_UNSPECIFIED",
+            "DENY",
+            "ALLOW"
+          ]
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -1659,6 +1684,40 @@
       "type": "object",
       "properties": {
       }
+    },
+    "GenericArtifact": {
+      "id": "GenericArtifact",
+      "description": "GenericArtifact represents a generic artifact",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name of the generic artifact. project, location, repository, package_id and version_id create a unique generic artifact. i.e. \"projects\/test-project\/locations\/us-west4\/repositories\/test-repo\/ genericArtifacts\/package_id:version_id\"",
+          "type": "string"
+        },
+        "version": {
+          "description": "The version of the generic artifact.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the Generic module is created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the Generic module is updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "UploadGenericArtifactMetadata": {
+      "id": "UploadGenericArtifactMetadata",
+      "description": "The operation metadata for uploading generic artifacts.",
+      "type": "object",
+      "properties": {
+      }
     }
   },
   "resources": {
@@ -1729,6 +1788,66 @@
       "resources": {
         "locations": {
           "methods": {
+            "getVpcscConfig": {
+              "id": "artifactregistry.projects.locations.getVpcscConfig",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vpcscConfig",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the VPCSCConfig resource.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vpcscConfig$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "VPCSCConfig"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
+              ],
+              "description": "Retrieves the VPCSC Config for the Project."
+            },
+            "updateVpcscConfig": {
+              "id": "artifactregistry.projects.locations.updateVpcscConfig",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vpcscConfig",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "The name of the project's VPC SC Config. Always of the form: projects\/{projectID}\/locations\/{location}\/vpcscConfig In update request: never set In response: always set",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vpcscConfig$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Field mask to support partial updates.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "VPCSCConfig"
+              },
+              "response": {
+                "$ref": "VPCSCConfig"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Updates the VPCSC Config for the Project."
+            },
             "list": {
               "id": "artifactregistry.projects.locations.list",
               "path": "v1/{+name}/locations",

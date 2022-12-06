@@ -1088,7 +1088,7 @@
     },
     "MaintenancePolicy": {
       "id": "MaintenancePolicy",
-      "description": "Defines policies to service maintenance events.",
+      "description": "LINT.IfChange Defines policies to service maintenance events.",
       "type": "object",
       "properties": {
         "name": {

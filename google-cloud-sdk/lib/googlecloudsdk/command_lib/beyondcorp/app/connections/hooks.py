@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Hooks for beyondcorp app connections commands."""
 
 from __future__ import absolute_import
@@ -32,6 +31,7 @@ APP_ENDPOINT_PARSE_ERROR = ('Error parsing application endpoint [{}]: endpoint '
 
 CONNECTOR_RESOURCE_NAME = ('projects/{}/locations/{}/connectors/{}')
 APPCONNECTOR_RESOURCE_NAME = ('projects/{}/locations/{}/appConnectors/{}')
+APPGATEWAY_RESOURCE_NAME = ('projects/{}/locations/{}/appGateways/{}')
 
 
 def GetVersionedConnectionMsg(args, msg):
@@ -60,12 +60,9 @@ def ValidateAndParseAppEndpoint(unused_ref, args, request):
   """Validates app endpoint format and sets endpoint host and port after parsing.
 
   Args:
-    unused_ref:
-      The unused request URL.
-    args:
-      arguments set by user.
-    request:
-      create connection request raised by framework.
+    unused_ref: The unused request URL.
+    args: arguments set by user.
+    request: create connection request raised by framework.
 
   Returns:
     request with modified application endpoint host and port argument.
@@ -120,8 +117,7 @@ def ValidateAndParseLegacyAppEndpoint(unused_ref, args, request):
       if request.connection.applicationEndpoint is None:
         request.connection.applicationEndpoint = messages.ApplicationEndpoint()
       request.connection.applicationEndpoint.host = endpoint_array[0]
-      request.connection.applicationEndpoint.port = int(
-          endpoint_array[1])
+      request.connection.applicationEndpoint.port = int(endpoint_array[1])
     else:
       raise ApplicationEndpointParseError(
           APP_ENDPOINT_PARSE_ERROR.format(args.application_endpoint))
@@ -132,12 +128,9 @@ def SetConnectors(unused_ref, args, request):
   """Set the connectors to resource based string format.
 
   Args:
-    unused_ref:
-      The unused request URL.
-    args:
-      arguments set by user.
-    request:
-      create connection request raised by framework.
+    unused_ref: The unused request URL.
+    args: arguments set by user.
+    request: create connection request raised by framework.
 
   Returns:
     request with modified connectors argument.
@@ -156,6 +149,27 @@ def SetConnectors(unused_ref, args, request):
         request.googleCloudBeyondcorpAppconnectionsV1AppConnection.connectors[
             index] = APPCONNECTOR_RESOURCE_NAME.format(args.project,
                                                        args.location, connector)
+  return request
+
+
+def SetAppGateway(unused_ref, args, request):
+  """Set the app gateway to resource based string format for beta release track.
+
+  Args:
+    unused_ref: The unused request URL.
+    args: arguments set by user.
+    request: create connection request raised by framework.
+
+  Returns:
+    request with modified app gateway argument.
+  """
+  if args.calliope_command.ReleaseTrack(
+  ) == base.ReleaseTrack.BETA and args.IsSpecified('app_gateway'):
+    if not args.IsSpecified('project'):
+      args.project = properties.VALUES.core.project.Get()
+    request.googleCloudBeyondcorpAppconnectionsV1AppConnection.gateway.appGateway = APPGATEWAY_RESOURCE_NAME.format(
+        args.project, args.location,
+        GetVersionedConnectionReq(args, request).gateway.appGateway)
   return request
 
 

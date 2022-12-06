@@ -96,6 +96,10 @@ class BatchTranslateDocumentRequest(_messages.Message):
       requested for a language pair, then default google model (nmt) is used.
 
   Fields:
+    customizedAttribution: Optional. This flag is to support user customized
+      attribution. If not provided, the default is `Machine Translated by
+      Google`. Customized attribution should follow rules in
+      https://cloud.google.com/translate/attribution#attribution_and_logos
     formatConversions: Optional.
     glossaries: Optional. Glossaries to be applied. It's keyed by target
       language code.
@@ -203,13 +207,14 @@ class BatchTranslateDocumentRequest(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  formatConversions = _messages.MessageField('FormatConversionsValue', 1)
-  glossaries = _messages.MessageField('GlossariesValue', 2)
-  inputConfigs = _messages.MessageField('BatchDocumentInputConfig', 3, repeated=True)
-  models = _messages.MessageField('ModelsValue', 4)
-  outputConfig = _messages.MessageField('BatchDocumentOutputConfig', 5)
-  sourceLanguageCode = _messages.StringField(6)
-  targetLanguageCodes = _messages.StringField(7, repeated=True)
+  customizedAttribution = _messages.StringField(1)
+  formatConversions = _messages.MessageField('FormatConversionsValue', 2)
+  glossaries = _messages.MessageField('GlossariesValue', 3)
+  inputConfigs = _messages.MessageField('BatchDocumentInputConfig', 4, repeated=True)
+  models = _messages.MessageField('ModelsValue', 5)
+  outputConfig = _messages.MessageField('BatchDocumentOutputConfig', 6)
+  sourceLanguageCode = _messages.StringField(7)
+  targetLanguageCodes = _messages.StringField(8, repeated=True)
 
 
 class BatchTranslateTextRequest(_messages.Message):

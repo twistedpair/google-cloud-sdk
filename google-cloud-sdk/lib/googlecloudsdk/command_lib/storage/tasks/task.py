@@ -43,15 +43,16 @@ import six
 class Topic(enum.Enum):
   """Categorizes different task messages."""
   API_DOWNLOAD_RESULT = 'api_download_result'
+  # Set exit code to 1.
+  CHANGE_EXIT_CODE = 'change_exit_code'
   CRC32C = 'crc32c'
   CREATED_RESOURCE = 'created_resource'
   ERROR = 'error'
-  # Set exit code to 1.
-  CHANGE_EXIT_CODE = 'change_exit_code'
   # Set exit code to 1 and sends signal not to process new tasks
   # (for parallel execution).
   FATAL_ERROR = 'fatal_error'
   MD5 = 'md5'
+  SET_IAM_POLICY = 'set_iam_policy'
   UPLOADED_COMPONENT = 'uploaded_component'
 
 

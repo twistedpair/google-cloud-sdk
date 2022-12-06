@@ -38,6 +38,16 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId'],
       True
   )
+  PROJECTS_LOCATIONS_CONFIG = (
+      'projects.locations.config',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/config',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_CUSTOMCLASSES = (
       'projects.locations.customClasses',
       '{+name}',

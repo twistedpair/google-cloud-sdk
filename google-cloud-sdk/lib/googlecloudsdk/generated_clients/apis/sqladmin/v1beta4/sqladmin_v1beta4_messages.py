@@ -2070,7 +2070,7 @@ class PasswordValidationPolicy(_messages.Message):
     enablePasswordPolicy: Whether the password policy is enabled or not.
     minLength: Minimum number of characters allowed.
     passwordChangeInterval: Minimum interval after which the password can be
-      changed. This flag is only supported for PostgresSQL.
+      changed. This flag is only supported for PostgreSQL.
     reuseInterval: Number of previous passwords that cannot be reused.
   """
 

@@ -190,21 +190,21 @@ class DiagnosticConfig(_messages.Message):
   Fields:
     copyHomeFilesFlagEnabled: Optional. Enables flag to copy all
       `/home/jupyter` folder contents
-    gcsBucket: Required. User Cloud Storage bucket location (REQUIRED) ## Must
-      be formatted with path prefix (gs://$GCS_BUCKET) Permissions: User
+    gcsBucket: Required. User Cloud Storage bucket location (REQUIRED). Must
+      be formatted with path prefix (`gs://$GCS_BUCKET`). Permissions: User
       Managed Notebooks: - storage.buckets.writer: Must be given to the
       project's service account attached to VM. Google Managed Notebooks: -
       storage.buckets.writer: Must be given to the project's service account
-      or ## user credentials attached to VM depending on authentication mode.
+      or user credentials attached to VM depending on authentication mode.
       Cloud Storage bucket Log file will be written to
-      gs://$GCS_BUCKET/$RELATIVE_PATH/$VM_DATE_$TIME.tar.gz
+      `gs://$GCS_BUCKET/$RELATIVE_PATH/$VM_DATE_$TIME.tar.gz`
     packetCaptureFlagEnabled: Optional. Enables flag to capture packets from
       the instance for 30 seconds
     relativePath: Optional. Defines the relative storage path in the Cloud
       Storage bucket where the diagnostic logs will be written: Default path
       will be the root directory of the Cloud Storage bucket
-      (gs://$GCS_BUCKET/$DATE_$TIME.tar.gz) Example of full path where Log
-      file will be written: gs://$GCS_BUCKET/$RELATIVE_PATH/
+      (`gs://$GCS_BUCKET/$DATE_$TIME.tar.gz`) Example of full path where Log
+      file will be written: `gs://$GCS_BUCKET/$RELATIVE_PATH/`
     repairFlagEnabled: Optional. Enables flag to repair service for instance
   """
 
@@ -2931,6 +2931,8 @@ class RuntimeSoftwareConfig(_messages.Message):
     postStartupScriptBehavior: Behavior for the post startup script.
     upgradeable: Output only. Bool indicating whether an newer image is
       available in an image family.
+    version: Output only. version of boot image such as M100, from release
+      label of the image.
   """
 
   class PostStartupScriptBehaviorValueValuesEnum(_messages.Enum):
@@ -2959,6 +2961,7 @@ class RuntimeSoftwareConfig(_messages.Message):
   postStartupScript = _messages.StringField(9)
   postStartupScriptBehavior = _messages.EnumField('PostStartupScriptBehaviorValueValuesEnum', 10)
   upgradeable = _messages.BooleanField(11)
+  version = _messages.StringField(12)
 
 
 class Schedule(_messages.Message):

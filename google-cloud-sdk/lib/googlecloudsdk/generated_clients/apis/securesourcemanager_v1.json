@@ -1433,7 +1433,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Test IAM permissions on a repository."
+                  "description": "Test IAM permissions on a repository. IAM permission checks are not required on this method."
                 }
               }
             }

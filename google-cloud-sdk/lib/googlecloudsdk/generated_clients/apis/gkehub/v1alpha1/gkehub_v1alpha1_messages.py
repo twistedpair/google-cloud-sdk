@@ -1215,6 +1215,8 @@ class Feature(_messages.Message):
     deleteTime: Output only. When the Feature was deleted.
     description: Description of the feature, limited to 63 characters.
     featureState: Output only. State of the Feature resource itself.
+    fleetDefaultMemberConfig: FleetDefaultMemberConfig describes the default
+      member configuration at the fleet level.
     fleetobservabilityFeatureSpec: The specification for FleetObservability
       feature.
     helloworldFeatureSpec: A Hello World feature for codelab examples and
@@ -1271,20 +1273,21 @@ class Feature(_messages.Message):
   deleteTime = _messages.StringField(8)
   description = _messages.StringField(9)
   featureState = _messages.MessageField('FeatureState', 10)
-  fleetobservabilityFeatureSpec = _messages.MessageField('FleetObservabilityFeatureSpec', 11)
-  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 12)
-  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 15)
-  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 16)
-  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 17)
-  name = _messages.StringField(18)
-  policycontrollerFeatureSpec = _messages.MessageField('PolicyControllerFeatureSpec', 19)
-  rbacrolebindingactuationFeatureSpec = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 20)
-  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 21)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 22)
-  updateTime = _messages.StringField(23)
-  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 24)
+  fleetDefaultMemberConfig = _messages.MessageField('FleetDefaultMemberConfig', 11)
+  fleetobservabilityFeatureSpec = _messages.MessageField('FleetObservabilityFeatureSpec', 12)
+  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 13)
+  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 16)
+  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 17)
+  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 18)
+  name = _messages.StringField(19)
+  policycontrollerFeatureSpec = _messages.MessageField('PolicyControllerFeatureSpec', 20)
+  rbacrolebindingactuationFeatureSpec = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 21)
+  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 22)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 23)
+  updateTime = _messages.StringField(24)
+  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 25)
 
 
 class FeatureState(_messages.Message):
@@ -1534,6 +1537,71 @@ class FeatureTest(_messages.Message):
   seventh = _messages.StringField(7)
   sixth = _messages.IntegerField(8)
   third = _messages.EnumField('ThirdValueValuesEnum', 9)
+
+
+class FleetDefaultMemberConfig(_messages.Message):
+  r"""FleetDefaultMemberConfig contains default configuration information for
+  memberships of a fleet.
+
+  Messages:
+    OptedOutMembersValue: Contains Memberships which originally had the fleet
+      default member configuration applied but then the user performed an
+      override to remove the configuration for the member. By storing this
+      intent here, controllers are able to distinguish between new Memberships
+      and old ones which were previously overridden. Keys are of the following
+      structure: `projects/{p}/locations/{l}/memberships/{m}`
+
+  Fields:
+    identityService: Spec for IdentityService.
+    optedOutMembers: Contains Memberships which originally had the fleet
+      default member configuration applied but then the user performed an
+      override to remove the configuration for the member. By storing this
+      intent here, controllers are able to distinguish between new Memberships
+      and old ones which were previously overridden. Keys are of the following
+      structure: `projects/{p}/locations/{l}/memberships/{m}`
+    serviceMesh: Spec for ServiceMesh.
+    setTime: Timestamp for when the default member configuration was first
+      set. This timestamp is used in situations where a Fleet has existing
+      Memberships that were active before default member configuration was
+      set. Controllers can compare this timestamp to the Membership creation
+      timestamp in order to identify whether the Membership needs to be
+      processed.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OptedOutMembersValue(_messages.Message):
+    r"""Contains Memberships which originally had the fleet default member
+    configuration applied but then the user performed an override to remove
+    the configuration for the member. By storing this intent here, controllers
+    are able to distinguish between new Memberships and old ones which were
+    previously overridden. Keys are of the following structure:
+    `projects/{p}/locations/{l}/memberships/{m}`
+
+    Messages:
+      AdditionalProperty: An additional property for a OptedOutMembersValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type OptedOutMembersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OptedOutMembersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A boolean attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.BooleanField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  identityService = _messages.MessageField('MemberConfig', 1)
+  optedOutMembers = _messages.MessageField('OptedOutMembersValue', 2)
+  serviceMesh = _messages.MessageField('ServiceMeshMembershipSpec', 3)
+  setTime = _messages.StringField(4)
 
 
 class FleetObservabilityFeatureSpec(_messages.Message):

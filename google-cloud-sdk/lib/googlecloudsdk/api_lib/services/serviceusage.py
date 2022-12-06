@@ -23,6 +23,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.services import exceptions
 from googlecloudsdk.api_lib.util import apis_internal
+from googlecloudsdk.api_lib.util import http_retry
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
@@ -36,6 +37,7 @@ _VALID_CONSUMER_PREFIX = {'projects/', 'folders/', 'organizations/'}
 _V1_VERSION = 'v1'
 _V1BETA1_VERSION = 'v1beta1'
 _V1ALPHA_VERSION = 'v1alpha'
+_TOO_MANY_REQUESTS = 429
 
 # Map of services which should be protected from being disabled by
 # prompting the user for  confirmation
@@ -183,6 +185,16 @@ def IsServiceEnabled(service):
   return service.state == messages.GoogleApiServiceusageV1Service.StateValueValuesEnum.ENABLED
 
 
+class _Lister:
+
+  def __init__(self, service_usage):
+    self.service_usage = service_usage
+
+  @http_retry.RetryOnHttpStatus(_TOO_MANY_REQUESTS)
+  def List(self, request, global_params=None):
+    return self.service_usage.List(request, global_params=global_params)
+
+
 def ListServices(project, enabled, page_size, limit):
   """Make API call to list services.
 
@@ -211,7 +223,7 @@ def ListServices(project, enabled, page_size, limit):
       filter=service_filter, parent=_PROJECT_RESOURCE % project)
   try:
     return list_pager.YieldFromList(
-        client.services,
+        _Lister(client.services),
         request,
         limit=limit,
         batch_size_attribute='pageSize',

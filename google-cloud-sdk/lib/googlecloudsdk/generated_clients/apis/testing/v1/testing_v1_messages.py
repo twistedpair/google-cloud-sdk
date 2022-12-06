@@ -851,6 +851,24 @@ class IosModel(_messages.Message):
   tags = _messages.StringField(10, repeated=True)
 
 
+class IosRoboTest(_messages.Message):
+  r"""A test that explores an iOS application on an iOS device.
+
+  Fields:
+    appBundleId: The bundle ID for the app-under-test. This is determined by
+      examining the application's "Info.plist" file.
+    appIpa: Required. The ipa stored at this file should be used to run the
+      test.
+    roboScript: An optional Roboscript to customize the crawl. See
+      https://firebase.google.com/docs/test-lab/android/robo-scripts-reference
+      for more information about Roboscripts.
+  """
+
+  appBundleId = _messages.StringField(1)
+  appIpa = _messages.MessageField('FileReference', 2)
+  roboScript = _messages.MessageField('FileReference', 3)
+
+
 class IosRuntimeConfiguration(_messages.Message):
   r"""iOS configuration that can be selected at the time a test is run.
 
@@ -1067,15 +1085,16 @@ class PerAndroidVersionInfo(_messages.Message):
   r"""A version-specific information of an Android model.
 
   Enums:
-    DeviceCapacityValueValuesEnum: A static capacity of an Android version.
+    DeviceCapacityValueValuesEnum: The number of online devices for an Android
+      version.
 
   Fields:
-    deviceCapacity: A static capacity of an Android version.
+    deviceCapacity: The number of online devices for an Android version.
     versionId: An Android version.
   """
 
   class DeviceCapacityValueValuesEnum(_messages.Enum):
-    r"""A static capacity of an Android version.
+    r"""The number of online devices for an Android version.
 
     Values:
       DEVICE_CAPACITY_UNSPECIFIED: The value of device capacity is unknown or
@@ -1118,15 +1137,16 @@ class PerIosVersionInfo(_messages.Message):
   r"""A version-specific information of an iOS model.
 
   Enums:
-    DeviceCapacityValueValuesEnum: A static capacity of an iOS version.
+    DeviceCapacityValueValuesEnum: The number of online devices for an iOS
+      version.
 
   Fields:
-    deviceCapacity: A static capacity of an iOS version.
+    deviceCapacity: The number of online devices for an iOS version.
     versionId: An iOS version.
   """
 
   class DeviceCapacityValueValuesEnum(_messages.Enum):
-    r"""A static capacity of an iOS version.
+    r"""The number of online devices for an iOS version.
 
     Values:
       DEVICE_CAPACITY_UNSPECIFIED: The value of device capacity is unknown or
@@ -1635,6 +1655,15 @@ class TestMatrix(_messages.Message):
       INVALID_APK_PREVIEW_SDK: APK is built for a preview SDK which is
         unsupported
       MATRIX_TOO_LARGE: The matrix expanded to contain too many executions.
+      DEVICE_QUOTA_EXCEEDED: Deprecated: Not enough device quota to run the
+        executions in this matrix.
+      TEST_QUOTA_EXCEEDED: Not enough test quota to run the executions in this
+        matrix.
+      SERVICE_NOT_ACTIVATED: A required cloud service api is not activated.
+        See: https://firebase.google.com/docs/test-
+        lab/android/continuous#requirements
+      UNKNOWN_PERMISSION_ERROR: There was an unknown permission issue running
+        this test.
     """
     INVALID_MATRIX_DETAILS_UNSPECIFIED = 0
     DETAILS_UNAVAILABLE = 1
@@ -1672,6 +1701,10 @@ class TestMatrix(_messages.Message):
     INVALID_INPUT_APK = 33
     INVALID_APK_PREVIEW_SDK = 34
     MATRIX_TOO_LARGE = 35
+    DEVICE_QUOTA_EXCEEDED = 36
+    TEST_QUOTA_EXCEEDED = 37
+    SERVICE_NOT_ACTIVATED = 38
+    UNKNOWN_PERMISSION_ERROR = 39
 
   class OutcomeSummaryValueValuesEnum(_messages.Enum):
     r"""Output Only. The overall outcome of the test. Only set when the test
@@ -1809,6 +1842,7 @@ class TestSpecification(_messages.Message):
     disablePerformanceMetrics: Disables performance metrics recording. May
       reduce test latency.
     disableVideoRecording: Disables video recording. May reduce test latency.
+    iosRoboTest: An iOS Robo test.
     iosTestLoop: An iOS application with a test loop.
     iosTestSetup: Test setup requirements for iOS.
     iosXcTest: An iOS XCTest, via an .xctestrun file.
@@ -1823,11 +1857,12 @@ class TestSpecification(_messages.Message):
   androidTestLoop = _messages.MessageField('AndroidTestLoop', 3)
   disablePerformanceMetrics = _messages.BooleanField(4)
   disableVideoRecording = _messages.BooleanField(5)
-  iosTestLoop = _messages.MessageField('IosTestLoop', 6)
-  iosTestSetup = _messages.MessageField('IosTestSetup', 7)
-  iosXcTest = _messages.MessageField('IosXcTest', 8)
-  testSetup = _messages.MessageField('TestSetup', 9)
-  testTimeout = _messages.StringField(10)
+  iosRoboTest = _messages.MessageField('IosRoboTest', 6)
+  iosTestLoop = _messages.MessageField('IosTestLoop', 7)
+  iosTestSetup = _messages.MessageField('IosTestSetup', 8)
+  iosXcTest = _messages.MessageField('IosXcTest', 9)
+  testSetup = _messages.MessageField('TestSetup', 10)
+  testTimeout = _messages.StringField(11)
 
 
 class TestTargetsForShard(_messages.Message):

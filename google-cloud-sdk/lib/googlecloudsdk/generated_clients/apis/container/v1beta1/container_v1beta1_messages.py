@@ -139,13 +139,16 @@ class AdvancedMachineFeatures(_messages.Message):
   r"""Specifies options for controlling advanced machine features.
 
   Fields:
+    enableNestedVirtualization: Whether or not to enable nested virtualization
+      (defaults to false).
     threadsPerCore: The number of threads per physical core. To disable
       simultaneous multithreading (SMT) set this to 1. If unset, the maximum
       number of threads supported per core by the underlying processor is
       assumed.
   """
 
-  threadsPerCore = _messages.IntegerField(1)
+  enableNestedVirtualization = _messages.BooleanField(1)
+  threadsPerCore = _messages.IntegerField(2)
 
 
 class AuthenticatorGroupsConfig(_messages.Message):
@@ -2398,6 +2401,10 @@ class IPAllocationPolicy(_messages.Message):
     StackTypeValueValuesEnum: IP stack type
 
   Fields:
+    additionalPodRangesConfig: Output only. [Output only] The additional pod
+      ranges that are added to the cluster. These pod ranges can be used by
+      new node pools to allocate pod IPs automatically. Once the range is
+      removed it will not show up in IPAllocationPolicy.
     allowRouteOverlap: If true, allow allocation of cluster CIDR ranges that
       overlap with certain kinds of network routes. By default we do not allow
       cluster CIDR ranges to intersect with any user declared routes. With
@@ -2538,28 +2545,29 @@ class IPAllocationPolicy(_messages.Message):
     IPV4 = 1
     IPV4_IPV6 = 2
 
-  allowRouteOverlap = _messages.BooleanField(1)
-  clusterIpv4Cidr = _messages.StringField(2)
-  clusterIpv4CidrBlock = _messages.StringField(3)
-  clusterSecondaryRangeName = _messages.StringField(4)
-  createSubnetwork = _messages.BooleanField(5)
-  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 6)
-  nodeIpv4Cidr = _messages.StringField(7)
-  nodeIpv4CidrBlock = _messages.StringField(8)
-  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 9)
-  servicesIpv4Cidr = _messages.StringField(10)
-  servicesIpv4CidrBlock = _messages.StringField(11)
-  servicesIpv6CidrBlock = _messages.StringField(12)
-  servicesSecondaryRangeName = _messages.StringField(13)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 14)
-  subnetIpv6CidrBlock = _messages.StringField(15)
-  subnetworkName = _messages.StringField(16)
-  targetNodeIpv4Range = _messages.StringField(17)
-  targetPodIpv4Range = _messages.StringField(18)
-  targetServiceIpv4Range = _messages.StringField(19)
-  tpuIpv4CidrBlock = _messages.StringField(20)
-  useIpAliases = _messages.BooleanField(21)
-  useRoutes = _messages.BooleanField(22)
+  additionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 1)
+  allowRouteOverlap = _messages.BooleanField(2)
+  clusterIpv4Cidr = _messages.StringField(3)
+  clusterIpv4CidrBlock = _messages.StringField(4)
+  clusterSecondaryRangeName = _messages.StringField(5)
+  createSubnetwork = _messages.BooleanField(6)
+  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 7)
+  nodeIpv4Cidr = _messages.StringField(8)
+  nodeIpv4CidrBlock = _messages.StringField(9)
+  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 10)
+  servicesIpv4Cidr = _messages.StringField(11)
+  servicesIpv4CidrBlock = _messages.StringField(12)
+  servicesIpv6CidrBlock = _messages.StringField(13)
+  servicesSecondaryRangeName = _messages.StringField(14)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 15)
+  subnetIpv6CidrBlock = _messages.StringField(16)
+  subnetworkName = _messages.StringField(17)
+  targetNodeIpv4Range = _messages.StringField(18)
+  targetPodIpv4Range = _messages.StringField(19)
+  targetServiceIpv4Range = _messages.StringField(20)
+  tpuIpv4CidrBlock = _messages.StringField(21)
+  useIpAliases = _messages.BooleanField(22)
+  useRoutes = _messages.BooleanField(23)
 
 
 class IdentityServiceConfig(_messages.Message):

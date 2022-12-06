@@ -55,7 +55,7 @@ class BlockchainnodeengineV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Node in a given project and location.
+      r"""Creates a new Blockchain Node in a given project and location.
 
       Args:
         request: (BlockchainnodeengineProjectsLocationsBlockchainNodesCreateRequest) input message
@@ -82,7 +82,7 @@ class BlockchainnodeengineV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Node.
+      r"""Deletes a single Blockchain Node.
 
       Args:
         request: (BlockchainnodeengineProjectsLocationsBlockchainNodesDeleteRequest) input message
@@ -109,7 +109,7 @@ class BlockchainnodeengineV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Node.
+      r"""Gets details of a single Blockchain Node.
 
       Args:
         request: (BlockchainnodeengineProjectsLocationsBlockchainNodesGetRequest) input message
@@ -163,7 +163,7 @@ class BlockchainnodeengineV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Node.
+      r"""Updates the parameters of a single Blockchain Node.
 
       Args:
         request: (BlockchainnodeengineProjectsLocationsBlockchainNodesPatchRequest) input message

@@ -206,7 +206,7 @@
     },
     "ListBlockchainNodesResponse": {
       "id": "ListBlockchainNodesResponse",
-      "description": "Message for response to listing Nodes",
+      "description": "Message for response to listing Blockchain Nodes",
       "type": "object",
       "properties": {
         "blockchainNodes": {
@@ -259,6 +259,7 @@
           }
         },
         "blockchainType": {
+          "description": "Immutable. The blockchain type of the node.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -272,6 +273,27 @@
         "connectionInfo": {
           "readOnly": true,
           "$ref": "ConnectionInformation"
+        },
+        "state": {
+          "description": "Output only. A status representing the state of the node.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The state has not been specified.",
+            "The node has been requested and is in the process of being created.",
+            "The existing node is undergoing deletion, but not yet finished.",
+            "The node has been deleted.",
+            "The node is running and ready for use.",
+            "The node is in an unexpected or errored state."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "DELETING",
+            "DELETED",
+            "RUNNING",
+            "ERROR"
+          ]
         },
         "ethereumDetails": {
           "$ref": "EthereumDetails"
@@ -322,6 +344,7 @@
       "type": "object",
       "properties": {
         "network": {
+          "description": "Immutable. The Ethereum environment being accessed.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -333,6 +356,7 @@
           ]
         },
         "nodeType": {
+          "description": "Immutable. The type of Ethereum node.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -346,6 +370,7 @@
           ]
         },
         "executionClient": {
+          "description": "Immutable. The execution client",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -357,6 +382,7 @@
           ]
         },
         "consensusClient": {
+          "description": "Immutable. The consensus client",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -734,7 +760,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single Node."
+                  "description": "Gets details of a single Blockchain Node."
                 },
                 "create": {
                   "id": "blockchainnodeengine.projects.locations.blockchainNodes.create",
@@ -772,7 +798,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new Node in a given project and location."
+                  "description": "Creates a new Blockchain Node in a given project and location."
                 },
                 "patch": {
                   "id": "blockchainnodeengine.projects.locations.blockchainNodes.patch",
@@ -788,7 +814,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask is used to specify the fields to be overwritten in the Node resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the Blockchain Node resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -811,7 +837,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the parameters of a single Node."
+                  "description": "Updates the parameters of a single Blockchain Node."
                 },
                 "delete": {
                   "id": "blockchainnodeengine.projects.locations.blockchainNodes.delete",
@@ -841,7 +867,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a single Node."
+                  "description": "Deletes a single Blockchain Node."
                 }
               }
             }

@@ -399,7 +399,6 @@ class ExternalAddress(_messages.Message):
   Fields:
     createTime: Output only. Creation time of this resource.
     description: User-provided description for this resource.
-    displayName: User-provided name for this resource.
     externalIp: Output only. The external IP address of a workload VM.
     internalIp: The internal IP address of a workload VM.
     name: Output only. The resource name of this external IP address. Resource
@@ -430,13 +429,12 @@ class ExternalAddress(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  externalIp = _messages.StringField(4)
-  internalIp = _messages.StringField(5)
-  name = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  externalIp = _messages.StringField(3)
+  internalIp = _messages.StringField(4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class FetchNetworkPolicyExternalAddressesResponse(_messages.Message):
@@ -460,7 +458,6 @@ class Hcx(_messages.Message):
     StateValueValuesEnum: Output only. The state of the appliance.
 
   Fields:
-    externalIp: Deprecated: External IP address of the appliance.
     fqdn: Fully qualified domain name of the appliance.
     internalIp: Internal IP address of the appliance.
     state: Output only. The state of the appliance.
@@ -480,11 +477,10 @@ class Hcx(_messages.Message):
     ACTIVE = 1
     CREATING = 2
 
-  externalIp = _messages.StringField(1)
-  fqdn = _messages.StringField(2)
-  internalIp = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  version = _messages.StringField(5)
+  fqdn = _messages.StringField(1)
+  internalIp = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  version = _messages.StringField(4)
 
 
 class HcxActivationKey(_messages.Message):
@@ -637,6 +633,22 @@ class ListLocationsResponse(_messages.Message):
 
   locations = _messages.MessageField('Location', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListManagementDnsZoneBindingsResponse(_messages.Message):
+  r"""Response message for VmwareEngine.ListManagementDnsZoneBindings
+
+  Fields:
+    managementDnsZoneBindings: A list of management DNS zone bindings.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached when making an aggregated
+      query using wildcards.
+  """
+
+  managementDnsZoneBindings = _messages.MessageField('ManagementDnsZoneBinding', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListNetworkPeeringsResponse(_messages.Message):
@@ -899,16 +911,62 @@ class ManagementCluster(_messages.Message):
   nodeTypeId = _messages.StringField(5)
 
 
+class ManagementDnsZoneBinding(_messages.Message):
+  r"""Represents a binding between a network and the management DNS zone. A
+  management DNS zone is the Cloud DNS cross-project binding zone that VMware
+  Engine creates for each private cloud. It contains FQDNs and corresponding
+  IP addresses for the private cloud's ESXi hosts and management VM appliances
+  like vCenter and NSX Manager.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the resource.
+
+  Fields:
+    name: Output only. The resource name of this binding. Resource names are
+      schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      cloud/managementDnsZoneBindings/my-management-dns-zone-binding`
+    state: Output only. The state of the resource.
+    vmwareEngineNetwork: Network to bind is a VMware Engine network. Specify
+      the name in the following form for VMware engine network: `projects/{pro
+      ject}/locations/global/vmwareEngineNetworks/{vmware_engine_network_id}`.
+      `{project}` can either be a project number or a project ID.
+    vpcNetwork: Network to bind is a standard consumer VPC. Specify the name
+      in the following form for consumer VPC network:
+      `projects/{project}/global/networks/{network_id}`. `{project}` can
+      either be a project number or a project ID.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the resource.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value should never be used.
+      ACTIVE: The binding is ready.
+      CREATING: The binding is being created.
+      UPDATING: The binding is being updated.
+      DELETING: The binding is being deleted.
+      FAILED: The binding has failed.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    UPDATING = 3
+    DELETING = 4
+    FAILED = 5
+
+  name = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  vmwareEngineNetwork = _messages.StringField(3)
+  vpcNetwork = _messages.StringField(4)
+
+
 class NetworkConfig(_messages.Message):
   r"""Network configuration in the consumer project with which the peering has
   to be done.
 
   Fields:
-    externalIpAccess: Deprecated: True if vCenter and NSX can be accessed via
-      internet; false otherwise. Resolution of FQDNs requires local DNS
-      configuration for the private cloud domain. NAT is set up on NSX for
-      external IP ingress traffic, and users must manually configure NSX
-      firewall to allow HTTPS traffic.
     managementCidr: Required. Management CIDR used by VMware management
       appliances.
     managementIpAddressLayoutVersion: Output only. The IP address layout
@@ -937,13 +995,12 @@ class NetworkConfig(_messages.Message):
       {location}/vmwareEngineNetworks/{vmware_engine_network_id}`
   """
 
-  externalIpAccess = _messages.BooleanField(1)
-  managementCidr = _messages.StringField(2)
-  managementIpAddressLayoutVersion = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  network = _messages.StringField(4)
-  serviceNetwork = _messages.StringField(5)
-  vmwareEngineNetwork = _messages.StringField(6)
-  vmwareEngineNetworkCanonical = _messages.StringField(7)
+  managementCidr = _messages.StringField(1)
+  managementIpAddressLayoutVersion = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  network = _messages.StringField(3)
+  serviceNetwork = _messages.StringField(4)
+  vmwareEngineNetwork = _messages.StringField(5)
+  vmwareEngineNetworkCanonical = _messages.StringField(6)
 
 
 class NetworkPeering(_messages.Message):
@@ -1224,7 +1281,6 @@ class Nsx(_messages.Message):
     StateValueValuesEnum: Output only. The state of the appliance.
 
   Fields:
-    externalIp: Deprecated: External IP address of the appliance.
     fqdn: Fully qualified domain name of the appliance.
     internalIp: Internal IP address of the appliance.
     state: Output only. The state of the appliance.
@@ -1244,11 +1300,10 @@ class Nsx(_messages.Message):
     ACTIVE = 1
     CREATING = 2
 
-  externalIp = _messages.StringField(1)
-  fqdn = _messages.StringField(2)
-  internalIp = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  version = _messages.StringField(5)
+  fqdn = _messages.StringField(1)
+  internalIp = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  version = _messages.StringField(4)
 
 
 class Operation(_messages.Message):
@@ -1796,7 +1851,6 @@ class Subnet(_messages.Message):
       in the list. Both the first and the last address must be included in the
       subnet range. It cannot include the first or the last address of the
       subnet or the `gateway_ip`.
-    displayName: User-provided name for this subnet.
     etag: Checksum that may be sent on update and delete requests to ensure
       that the user-provided value is up to date before the server processes a
       request. The server computes checksums based on the value of other
@@ -1846,17 +1900,16 @@ class Subnet(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   dhcpAddressRanges = _messages.MessageField('IpAddressRange', 3, repeated=True)
-  displayName = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  gatewayId = _messages.StringField(6)
-  gatewayIp = _messages.StringField(7)
-  ipCidrRange = _messages.StringField(8)
-  name = _messages.StringField(9)
-  standardConfig = _messages.BooleanField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  type = _messages.StringField(12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  etag = _messages.StringField(4)
+  gatewayId = _messages.StringField(5)
+  gatewayIp = _messages.StringField(6)
+  ipCidrRange = _messages.StringField(7)
+  name = _messages.StringField(8)
+  standardConfig = _messages.BooleanField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  type = _messages.StringField(11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -1902,7 +1955,6 @@ class Vcenter(_messages.Message):
     StateValueValuesEnum: Output only. The state of the appliance.
 
   Fields:
-    externalIp: Deprecated: External IP address of the appliance.
     fqdn: Fully qualified domain name of the appliance.
     internalIp: Internal IP address of the appliance.
     state: Output only. The state of the appliance.
@@ -1922,11 +1974,10 @@ class Vcenter(_messages.Message):
     ACTIVE = 1
     CREATING = 2
 
-  externalIp = _messages.StringField(1)
-  fqdn = _messages.StringField(2)
-  internalIp = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  version = _messages.StringField(5)
+  fqdn = _messages.StringField(1)
+  internalIp = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  version = _messages.StringField(4)
 
 
 class VmwareEngineNetwork(_messages.Message):
@@ -3291,6 +3342,172 @@ class VmwareengineProjectsLocationsPrivateCloudsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsCreateRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsCre
+  ateRequest object.
+
+  Fields:
+    managementDnsZoneBinding: A ManagementDnsZoneBinding resource to be passed
+      as the request body.
+    managementDnsZoneBindingId: Required. The user-provided identifier of the
+      `ManagementDnsZoneBinding` resource to be created. This identifier must
+      be unique among `ManagementDnsZoneBinding` resources within the parent
+      and becomes the final token in the name URI. The identifier must meet
+      the following requirements: * Only contains 1-63 alphanumeric characters
+      and hyphens * Begins with an alphabetical character * Ends with a non-
+      hyphen character * Not formatted as a UUID * Complies with [RFC
+      1034](https://datatracker.ietf.org/doc/html/rfc1034) (section 3.5)
+    parent: Required. The resource name of the private cloud to create a new
+      management DNS zone binding for. Resource names are schemeless URIs that
+      follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if the
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  managementDnsZoneBinding = _messages.MessageField('ManagementDnsZoneBinding', 1)
+  managementDnsZoneBindingId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsDeleteRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsDel
+  eteRequest object.
+
+  Fields:
+    name: Required. The resource name of the management DNS zone binding to
+      delete. Resource names are schemeless URIs that follow the conventions
+      in https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      cloud/managementDnsZoneBindings/my-management-dns-zone-binding`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if the
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsGetRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsGet
+  Request object.
+
+  Fields:
+    name: Required. The resource name of the management DNS zone binding to
+      retrieve. Resource names are schemeless URIs that follow the conventions
+      in https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      cloud/managementDnsZoneBindings/my-management-dns-zone-binding`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsListRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsLis
+  tRequest object.
+
+  Fields:
+    filter: A filter expression that matches resources returned in the
+      response. The expression must specify the field name, a comparison
+      operator, and the value that you want to use for filtering. The value
+      must be a string, a number, or a boolean. The comparison operator must
+      be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of
+      Management DNS Zone Bindings, you can exclude the ones named `example-
+      management-dns-zone-binding` by specifying `name != "example-management-
+      dns-zone-binding"`. To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ``` (name =
+      "example-management-dns-zone-binding") (createTime >
+      "2021-04-12T08:15:10.40Z") ``` By default, each expression is an `AND`
+      expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (name = "example-management-dns-zone-
+      binding-1") AND (createTime > "2021-04-12T08:15:10.40Z") OR (name =
+      "example-management-dns-zone-binding-2") ```
+    orderBy: Sorts list results by a certain order. By default, returned
+      results are ordered by `name` in ascending order. You can also sort
+      results in descending order based on the `name` value using
+      `orderBy="name desc"`. Currently, only ordering by `name` is supported.
+    pageSize: The maximum number of management DNS zone bindings to return in
+      one page. The service may return fewer than this value. The maximum
+      value is coerced to 1000. The default value of this field is 500.
+    pageToken: A page token, received from a previous
+      `ListManagementDnsZoneBindings` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListManagementDnsZoneBindings` must match the call that provided the
+      page token.
+    parent: Required. The resource name of the private cloud to be queried for
+      management DNS zone bindings. Resource names are schemeless URIs that
+      follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsPatchRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsPat
+  chRequest object.
+
+  Fields:
+    managementDnsZoneBinding: A ManagementDnsZoneBinding resource to be passed
+      as the request body.
+    name: Output only. The resource name of this binding. Resource names are
+      schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      cloud/managementDnsZoneBindings/my-management-dns-zone-binding`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if the
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the `ManagementDnsZoneBinding` resource by the update.
+      The fields specified in the `update_mask` are relative to the resource,
+      not the full request. A field will be overwritten if it is in the mask.
+      If the user does not provide a mask then all fields will be overwritten.
+  """
+
+  managementDnsZoneBinding = _messages.MessageField('ManagementDnsZoneBinding', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsPatchRequest(_messages.Message):

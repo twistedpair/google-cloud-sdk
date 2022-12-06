@@ -6,7 +6,7 @@
   "canonicalName": "NetApp Files",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "netapp API (prod)",
+  "title": "NetApp API",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "go/netappfiles:high-level-design",
+  "documentationLink": "https://cloud.google.com/netapp/",
   "protocol": "rest",
   "rootUrl": "https://netapp.googleapis.com/",
   "mtlsRootUrl": "https://netapp.mtls.googleapis.com/",
@@ -22,6 +22,7 @@
   "baseUrl": "https://netapp.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -449,7 +450,7 @@
           "description": "Optional. Name of the Private Service Access allocated range. This is optional. If not provided, any available range will be chosen.",
           "type": "string"
         },
-        "storagePoolName": {
+        "storagePool": {
           "description": "Required. StoragePool name of the volume",
           "type": "string"
         },
@@ -595,8 +596,8 @@
           "description": "Optional. Flag indicating if the volume is NFS LDAP enabled or not.",
           "type": "boolean"
         },
-        "activeDirectoryName": {
-          "description": "Optional. Specifies the AD to be used for creating a SMB volume. StoragePool name of the volume",
+        "activeDirectory": {
+          "description": "Optional. Specifies the AD to be used for creating a SMB volume. ActiveDirectory name of the volume",
           "type": "string"
         },
         "restoreParameters": {

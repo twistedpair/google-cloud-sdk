@@ -1093,6 +1093,10 @@
             "private"
           ]
         },
+        "ipv6Address": {
+          "description": "IPv6 address of a target name server. Does not accept both fields (ipv4 & ipv6) being populated. Public preview as of November 2022.",
+          "type": "string"
+        },
         "kind": {
           "default": "dns#managedZoneForwardingConfigNameServerTarget",
           "type": "string"
@@ -1549,6 +1553,10 @@
             "default",
             "private"
           ]
+        },
+        "ipv6Address": {
+          "description": "IPv6 address to forward to. Does not accept both fields (ipv4 & ipv6) being populated. Public preview as of November 2022.",
+          "type": "string"
         },
         "kind": {
           "default": "dns#policyAlternativeNameServerConfigTargetNameServer",

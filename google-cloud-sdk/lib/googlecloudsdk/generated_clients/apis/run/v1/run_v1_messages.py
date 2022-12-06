@@ -1397,9 +1397,7 @@ class ObjectMeta(_messages.Message):
     name: Required. The name of the resource. In Cloud Run, name is required
       when creating top-level resources (Service, Job), must be unique within
       a Cloud Run project/region, and cannot be changed once created. More
-      info: https://kubernetes.io/docs/user-guide/identifiers#names If
-      ObjectMeta is part of a CreateServiceRequest, name must contain fewer
-      than 50 characters.
+      info: https://kubernetes.io/docs/user-guide/identifiers#names
     namespace: Required. Defines the space within each name must be unique
       within a Cloud Run region. In Cloud Run, it must be project ID or
       number.
@@ -2505,9 +2503,10 @@ class RunNamespacesServicesDeleteRequest(_messages.Message):
     kind: Not supported, and ignored by Cloud Run.
     name: Required. The fully qualified name of the service to delete. It can
       be any of the following forms: *
-      `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
-      {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
-      ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
+      `namespaces/{project_id_or_number}/services/{service_name}` (only when
+      the `endpoint` is regional) * `projects/{project_id_or_number}/locations
+      /{region}/services/{service_name}` * `projects/{project_id_or_number}/re
+      gions/{region}/services/{service_name}`
     propagationPolicy: Not supported, and ignored by Cloud Run.
   """
 
@@ -2524,9 +2523,10 @@ class RunNamespacesServicesGetRequest(_messages.Message):
   Fields:
     name: Required. The fully qualified name of the service to retrieve. It
       can be any of the following forms: *
-      `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
-      {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
-      ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
+      `namespaces/{project_id_or_number}/services/{service_name}` (only when
+      the `endpoint` is regional) * `projects/{project_id_or_number}/locations
+      /{region}/services/{service_name}` * `projects/{project_id_or_number}/re
+      gions/{region}/services/{service_name}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2570,9 +2570,10 @@ class RunNamespacesServicesReplaceServiceRequest(_messages.Message):
       default values without persisting the request. Supported values: `all`
     name: Required. The fully qualified name of the service to replace. It can
       be any of the following forms: *
-      `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
-      {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
-      ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
+      `namespaces/{project_id_or_number}/services/{service_name}` (only when
+      the `endpoint` is regional) * `projects/{project_id_or_number}/locations
+      /{region}/services/{service_name}` * `projects/{project_id_or_number}/re
+      gions/{region}/services/{service_name}`
     service: A Service resource to be passed as the request body.
   """
 
@@ -3071,9 +3072,10 @@ class RunProjectsLocationsServicesDeleteRequest(_messages.Message):
     kind: Not supported, and ignored by Cloud Run.
     name: Required. The fully qualified name of the service to delete. It can
       be any of the following forms: *
-      `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
-      {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
-      ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
+      `namespaces/{project_id_or_number}/services/{service_name}` (only when
+      the `endpoint` is regional) * `projects/{project_id_or_number}/locations
+      /{region}/services/{service_name}` * `projects/{project_id_or_number}/re
+      gions/{region}/services/{service_name}`
     propagationPolicy: Not supported, and ignored by Cloud Run.
   """
 
@@ -3116,9 +3118,10 @@ class RunProjectsLocationsServicesGetRequest(_messages.Message):
   Fields:
     name: Required. The fully qualified name of the service to retrieve. It
       can be any of the following forms: *
-      `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
-      {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
-      ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
+      `namespaces/{project_id_or_number}/services/{service_name}` (only when
+      the `endpoint` is regional) * `projects/{project_id_or_number}/locations
+      /{region}/services/{service_name}` * `projects/{project_id_or_number}/re
+      gions/{region}/services/{service_name}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -3162,9 +3165,10 @@ class RunProjectsLocationsServicesReplaceServiceRequest(_messages.Message):
       default values without persisting the request. Supported values: `all`
     name: Required. The fully qualified name of the service to replace. It can
       be any of the following forms: *
-      `namespaces/{project_id_or_number}/services/{service_name}` * `projects/
-      {project_id_or_number}/locations/{region}/services/{service_name}` * `pr
-      ojects/{project_id_or_number}/regions/{region}/services/{service_name}`
+      `namespaces/{project_id_or_number}/services/{service_name}` (only when
+      the `endpoint` is regional) * `projects/{project_id_or_number}/locations
+      /{region}/services/{service_name}` * `projects/{project_id_or_number}/re
+      gions/{region}/services/{service_name}`
     service: A Service resource to be passed as the request body.
   """
 

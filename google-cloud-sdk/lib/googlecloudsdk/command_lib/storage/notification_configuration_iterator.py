@@ -23,6 +23,7 @@ import re
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
 
@@ -53,6 +54,15 @@ def get_bucket_url_and_notification_id_from_url(url_string):
   return None, None
 
 
+def raise_error_if_not_gcs_bucket_matching_url(url):
+  """Raises error if URL is not supported for notifications."""
+  if not (url.scheme is storage_url.ProviderPrefix.GCS and
+          (url.is_bucket() or url.is_provider())):
+    raise errors.InvalidUrlError(
+        'Notification configurations available on only'
+        ' Google Cloud Storage buckets. Invalid URL: ' + url.url_string)
+
+
 def get_notification_configuration_iterator(
     urls, accept_notification_configuration_urls=True):
   """Yields bucket/notification tuples from command-line args.
@@ -71,7 +81,7 @@ def get_notification_configuration_iterator(
     NotificationIteratorResult
 
   Raises:
-    ValueError: Received notification configuration URL, but
+    InvalidUrlError: Received notification configuration URL, but
       accept_notification_configuration_urls was False. Or received non-GCS
       bucket URL.
   """
@@ -82,7 +92,7 @@ def get_notification_configuration_iterator(
         get_bucket_url_and_notification_id_from_url(url))
     if notification_id:
       if not accept_notification_configuration_urls:
-        raise ValueError(
+        raise errors.InvalidUrlError(
             'Received disallowed notification configuration URL: ' + url)
 
       notification_configuration = client.get_notification_configuration(
@@ -91,10 +101,7 @@ def get_notification_configuration_iterator(
 
     else:
       cloud_url = storage_url.storage_url_from_string(url)
-      if not (cloud_url.scheme is storage_url.ProviderPrefix.GCS and
-              (cloud_url.is_bucket() or cloud_url.is_provider())):
-        raise ValueError('Notification configurations available on only'
-                         ' Google Cloud Storage buckets. Invalid URL: ' + url)
+      raise_error_if_not_gcs_bucket_matching_url(cloud_url)
       if cloud_url.is_provider():
         bucket_url = storage_url.CloudUrl(storage_url.ProviderPrefix.GCS, '*')
       else:

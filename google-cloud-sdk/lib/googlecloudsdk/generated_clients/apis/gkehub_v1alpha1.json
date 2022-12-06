@@ -316,6 +316,10 @@
           "readOnly": true,
           "$ref": "FeatureState"
         },
+        "fleetDefaultMemberConfig": {
+          "description": "FleetDefaultMemberConfig describes the default member configuration at the fleet level.",
+          "$ref": "FleetDefaultMemberConfig"
+        },
         "createTime": {
           "description": "Output only. When the Feature was created.",
           "readOnly": true,
@@ -2526,6 +2530,33 @@
       "description": "An empty state for FleetObservability feature. This is required since FeatureStateDetails requires a state.",
       "type": "object",
       "properties": {
+      }
+    },
+    "FleetDefaultMemberConfig": {
+      "id": "FleetDefaultMemberConfig",
+      "description": "FleetDefaultMemberConfig contains default configuration information for memberships of a fleet.",
+      "type": "object",
+      "properties": {
+        "setTime": {
+          "description": "Timestamp for when the default member configuration was first set. This timestamp is used in situations where a Fleet has existing Memberships that were active before default member configuration was set. Controllers can compare this timestamp to the Membership creation timestamp in order to identify whether the Membership needs to be processed.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "optedOutMembers": {
+          "description": "Contains Memberships which originally had the fleet default member configuration applied but then the user performed an override to remove the configuration for the member. By storing this intent here, controllers are able to distinguish between new Memberships and old ones which were previously overridden. Keys are of the following structure: `projects\/{p}\/locations\/{l}\/memberships\/{m}`",
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "serviceMesh": {
+          "description": "Spec for ServiceMesh.",
+          "$ref": "ServiceMeshMembershipSpec"
+        },
+        "identityService": {
+          "description": "Spec for IdentityService.",
+          "$ref": "MemberConfig"
+        }
       }
     },
     "ListLocationsResponse": {

@@ -661,7 +661,7 @@ class BuildOptions(_messages.Message):
       operating system and build utilities. Also note that this is the minimum
       disk size that will be allocated for the build -- the build may run with
       a larger disk than requested. At present, the maximum disk size is
-      1000GB; builds that request more than the maximum are rejected with an
+      2000GB; builds that request more than the maximum are rejected with an
       error.
     dockerDaemon: Optional. Option to specify how (or if) a Docker daemon is
       provided for the build.
@@ -1430,8 +1430,8 @@ class CloudbuildProjectsGithubEnterpriseConfigsDeleteRequest(_messages.Message):
   Fields:
     configId: Unique identifier of the `GitHubEnterpriseConfig`
     name: This field should contain the name of the enterprise config
-      resource. For example:
-      "projects/{$project_id}/githubEnterpriseConfigs/{$config_id}"
+      resource. For example: "projects/{$project_id}/locations/{$location_id}/
+      githubEnterpriseConfigs/{$config_id}"
     projectId: ID of the project
   """
 
@@ -1445,8 +1445,8 @@ class CloudbuildProjectsGithubEnterpriseConfigsGetAppRequest(_messages.Message):
 
   Fields:
     enterpriseConfigResource: Required. The name of the enterprise config
-      resource associated with the GitHub App. For example:
-      "projects/{$project_id}/githubEnterpriseConfigs/{$config_id}"
+      resource associated with the GitHub App. For example: "projects/{$projec
+      t_id}/locations/{location_id}/githubEnterpriseConfigs/{$config_id}"
   """
 
   enterpriseConfigResource = _messages.StringField(1, required=True)
@@ -1458,8 +1458,8 @@ class CloudbuildProjectsGithubEnterpriseConfigsGetRequest(_messages.Message):
   Fields:
     configId: Unique identifier of the `GitHubEnterpriseConfig`
     name: This field should contain the name of the enterprise config
-      resource. For example:
-      "projects/{$project_id}/githubEnterpriseConfigs/{$config_id}"
+      resource. For example: "projects/{$project_id}/locations/{$location_id}/
+      githubEnterpriseConfigs/{$config_id}"
     projectId: ID of the project
   """
 
@@ -1488,7 +1488,8 @@ class CloudbuildProjectsGithubEnterpriseConfigsPatchRequest(_messages.Message):
     gitHubEnterpriseConfig: A GitHubEnterpriseConfig resource to be passed as
       the request body.
     name: Optional. The full resource name for the GitHubEnterpriseConfig For
-      example: "projects/{$project_id}/githubEnterpriseConfigs/{$config_id}"
+      example: "projects/{$project_id}/locations/{$location_id}/githubEnterpri
+      seConfigs/{$config_id}"
     updateMask: Update mask for the resource. If this is set, the server will
       only update the fields specified in the field mask. Otherwise, a full
       update of the mutable resource fields will be performed.
@@ -2008,8 +2009,8 @@ class CloudbuildProjectsLocationsGithubEnterpriseConfigsDeleteRequest(_messages.
   Fields:
     configId: Unique identifier of the `GitHubEnterpriseConfig`
     name: This field should contain the name of the enterprise config
-      resource. For example:
-      "projects/{$project_id}/githubEnterpriseConfigs/{$config_id}"
+      resource. For example: "projects/{$project_id}/locations/{$location_id}/
+      githubEnterpriseConfigs/{$config_id}"
     projectId: ID of the project
   """
 
@@ -2024,8 +2025,8 @@ class CloudbuildProjectsLocationsGithubEnterpriseConfigsGetAppRequest(_messages.
 
   Fields:
     enterpriseConfigResource: Required. The name of the enterprise config
-      resource associated with the GitHub App. For example:
-      "projects/{$project_id}/githubEnterpriseConfigs/{$config_id}"
+      resource associated with the GitHub App. For example: "projects/{$projec
+      t_id}/locations/{location_id}/githubEnterpriseConfigs/{$config_id}"
   """
 
   enterpriseConfigResource = _messages.StringField(1, required=True)
@@ -2037,8 +2038,8 @@ class CloudbuildProjectsLocationsGithubEnterpriseConfigsGetRequest(_messages.Mes
   Fields:
     configId: Unique identifier of the `GitHubEnterpriseConfig`
     name: This field should contain the name of the enterprise config
-      resource. For example:
-      "projects/{$project_id}/githubEnterpriseConfigs/{$config_id}"
+      resource. For example: "projects/{$project_id}/locations/{$location_id}/
+      githubEnterpriseConfigs/{$config_id}"
     projectId: ID of the project
   """
 
@@ -2067,7 +2068,8 @@ class CloudbuildProjectsLocationsGithubEnterpriseConfigsPatchRequest(_messages.M
     gitHubEnterpriseConfig: A GitHubEnterpriseConfig resource to be passed as
       the request body.
     name: Optional. The full resource name for the GitHubEnterpriseConfig For
-      example: "projects/{$project_id}/githubEnterpriseConfigs/{$config_id}"
+      example: "projects/{$project_id}/locations/{$location_id}/githubEnterpri
+      seConfigs/{$config_id}"
     updateMask: Update mask for the resource. If this is set, the server will
       only update the fields specified in the field mask. Otherwise, a full
       update of the mutable resource fields will be performed.
@@ -2306,12 +2308,16 @@ class CloudbuildProjectsLocationsTriggersPatchRequest(_messages.Message):
       `projects/{project}/locations/{location}/triggers/{trigger}`, where
       {trigger} is a unique identifier generated by the service.
     triggerId: Required. ID of the `BuildTrigger` to update.
+    updateMask: Update mask for the resource. If this is set, the server will
+      only update the fields specified in the field mask. Otherwise, a full
+      update of the mutable resource fields will be performed.
   """
 
   buildTrigger = _messages.MessageField('BuildTrigger', 1)
   projectId = _messages.StringField(2)
   resourceName = _messages.StringField(3, required=True)
   triggerId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
 
 
 class CloudbuildProjectsLocationsTriggersRunRequest(_messages.Message):
@@ -2509,11 +2515,15 @@ class CloudbuildProjectsTriggersPatchRequest(_messages.Message):
     buildTrigger: A BuildTrigger resource to be passed as the request body.
     projectId: Required. ID of the project that owns the trigger.
     triggerId: Required. ID of the `BuildTrigger` to update.
+    updateMask: Update mask for the resource. If this is set, the server will
+      only update the fields specified in the field mask. Otherwise, a full
+      update of the mutable resource fields will be performed.
   """
 
   buildTrigger = _messages.MessageField('BuildTrigger', 1)
   projectId = _messages.StringField(2, required=True)
   triggerId = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
 
 
 class CloudbuildProjectsTriggersRunRequest(_messages.Message):
@@ -2913,7 +2923,8 @@ class GitHubEnterpriseConfig(_messages.Message):
     displayName: Name to display for this config.
     hostUrl: The URL of the github enterprise host the configuration is for.
     name: Optional. The full resource name for the GitHubEnterpriseConfig For
-      example: "projects/{$project_id}/githubEnterpriseConfigs/{$config_id}"
+      example: "projects/{$project_id}/locations/{$location_id}/githubEnterpri
+      seConfigs/{$config_id}"
     peeredNetwork: Optional. The network to be used when reaching out to the
       GitHub Enterprise server. The VPC network must be enabled for private
       service connection. This should be set if the GitHub Enterprise server
@@ -2982,7 +2993,8 @@ class GitHubEventsConfig(_messages.Message):
       config specified in the enterprise_config_resource_name field.
     enterpriseConfigResourceName: Optional. The resource name of the github
       enterprise config that should be applied to this installation. For
-      example: "projects/{$project_id}/githubEnterpriseConfigs/{$config_id}"
+      example: "projects/{$project_id}/locations/{$location_id}/githubEnterpri
+      seConfigs/{$config_id}"
     installationId: The installationID that emits the GitHub event.
     name: Name of the repository. For example: The name for
       https://github.com/googlecloudplatform/cloud-builders is "cloud-
@@ -3460,7 +3472,8 @@ class Installation(_messages.Message):
       config specified in the enterprise_config_resource_name field.
     enterpriseConfigResourceName: Optional: The resource name of the github
       enterprise config that should be applied to this installation. For
-      example: "projects/{$project_id}/githubEnterpriseConfigs/{$config_id}"
+      example: "projects/{$project_id}/locations/{$location_id}/githubEnterpri
+      seConfigs/{$config_id}"
     id: GitHub installation ID, created by GitHub.
     name: The `Installation` name with format:
       `projects/{project}/locations/{location}/installations/{installation}`,
@@ -3652,6 +3665,15 @@ class NetworkConfig(_messages.Message):
       is the name of a VPC network in the project. See [Understanding network
       configuration options](https://cloud.google.com/build/docs/private-
       pools/set-up-private-pool-environment)
+    peeredNetworkIpRange: Immutable. Subnet IP range within the peered
+      network. This is specified in CIDR notation. The IP and prefix size are
+      both optional. If unspecified, the default value for IP is blank (will
+      use an automatic value from the peered network), and the prefix size
+      will default to 24 bits. e.g. `192.168.0.0/30` would specify a subnet
+      mask of 192.168.0.0 with a prefix size of 30 bits. `192.168.0.0` would
+      specify a subnet mask of 192.168.0.0 with a prefix size of 24 bits (the
+      default prefix size). `/16` would specify a prefix size of 16 bits, with
+      an unspecified IP.
   """
 
   class EgressOptionValueValuesEnum(_messages.Enum):
@@ -3671,6 +3693,7 @@ class NetworkConfig(_messages.Message):
 
   egressOption = _messages.EnumField('EgressOptionValueValuesEnum', 1)
   peeredNetwork = _messages.StringField(2)
+  peeredNetworkIpRange = _messages.StringField(3)
 
 
 class Notification(_messages.Message):

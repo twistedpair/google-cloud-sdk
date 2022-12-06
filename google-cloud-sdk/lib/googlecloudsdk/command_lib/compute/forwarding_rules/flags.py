@@ -540,8 +540,7 @@ def AddLoadBalancingScheme(parser,
           """Traffic Director load balancing or forwarding, used with
           {0}.""".format(td_proxies),
       'INTERNAL_MANAGED':
-          """Internal load balancing, used with {0}.""".format(
-              ilb_proxies)
+          """Internal load balancing, used with {0}.""".format(ilb_proxies)
   }
 
   # There isn't a default load-balancing-scheme for PSC forwarding rules.
@@ -590,8 +589,9 @@ def AddAllowGlobalAccess(parser):
       help="""\
       If True, then clients from all regions can access this internal
       forwarding rule. This can only be specified for forwarding rules with
-      the LOAD_BALANCING_SCHEME set to INTERNAL and the target must be either
-      a backend service or a target instance.
+      the LOAD_BALANCING_SCHEME set to INTERNAL or INTERNAL_MANAGED. For
+      forwarding rules of type INTERNAL, the target must be either a backend
+      service or a target instance.
       """)
 
 

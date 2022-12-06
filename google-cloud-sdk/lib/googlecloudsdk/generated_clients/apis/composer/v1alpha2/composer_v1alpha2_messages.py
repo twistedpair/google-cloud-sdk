@@ -788,6 +788,8 @@ class DataRetentionConfig(_messages.Message):
       how long to store event-based records in airflow database. If the
       retention mechanism is enabled this value must be a positive integer
       otherwise, value should be set to 0.
+    taskLogsRetentionConfig: Optional. The configuration settings for task
+      logs retention
     taskLogsRetentionDays: Optional. The number of days to retain task logs in
       the Cloud Logging bucket.
     taskLogsStorageMode: Optional. The mode of storage for Airflow workers
@@ -811,8 +813,9 @@ class DataRetentionConfig(_messages.Message):
     CLOUD_LOGGING_ONLY = 2
 
   airflowDatabaseRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  taskLogsRetentionDays = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  taskLogsStorageMode = _messages.EnumField('TaskLogsStorageModeValueValuesEnum', 3)
+  taskLogsRetentionConfig = _messages.MessageField('TaskLogsRetentionConfig', 2)
+  taskLogsRetentionDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  taskLogsStorageMode = _messages.EnumField('TaskLogsStorageModeValueValuesEnum', 4)
 
 
 class DatabaseConfig(_messages.Message):
@@ -820,9 +823,6 @@ class DatabaseConfig(_messages.Message):
   Airflow software.
 
   Fields:
-    highAvailability: Optional. Creates the Airflow Database in High
-      Availability mode. This option can only be set during environment
-      creation.
     machineType: Optional. Cloud SQL machine type used by Airflow database. It
       has to be one of: db-n1-standard-2, db-n1-standard-4, db-n1-standard-8
       or db-n1-standard-16. If not specified, db-n1-standard-2 will be used.
@@ -835,9 +835,8 @@ class DatabaseConfig(_messages.Message):
       Cloud Composer environments in versions composer-2.*.*-airflow-*.*.*.
   """
 
-  highAvailability = _messages.BooleanField(1)
-  machineType = _messages.StringField(2)
-  zone = _messages.StringField(3)
+  machineType = _messages.StringField(1)
+  zone = _messages.StringField(2)
 
 
 class Date(_messages.Message):
@@ -991,6 +990,9 @@ class EnvironmentConfig(_messages.Message):
     EnvironmentSizeValueValuesEnum: Optional. The size of the Cloud Composer
       environment. This field is supported for Cloud Composer environments in
       versions composer-2.*.*-airflow-*.*.* and newer.
+    ResilienceModeValueValuesEnum: Optional. Resilience mode of the Cloud
+      Composer Environment. This field is supported for Cloud Composer
+      environments in versions composer-2.0.32-airflow-*.*.* and newer.
 
   Fields:
     airflowUri: Output only. The URI of the Apache Airflow Web UI hosted
@@ -1035,6 +1037,9 @@ class EnvironmentConfig(_messages.Message):
     recoveryConfig: Optional. The Recovery settings configuration of an
       environment. This field is supported for Cloud Composer environments in
       versions composer-2.*.*-airflow-*.*.* and newer.
+    resilienceMode: Optional. Resilience mode of the Cloud Composer
+      Environment. This field is supported for Cloud Composer environments in
+      versions composer-2.0.32-airflow-*.*.* and newer.
     softwareConfig: The configuration settings for software inside the
       environment.
     webServerConfig: Optional. The configuration settings for the Airflow web
@@ -1067,6 +1072,19 @@ class EnvironmentConfig(_messages.Message):
     ENVIRONMENT_SIZE_MEDIUM = 2
     ENVIRONMENT_SIZE_LARGE = 3
 
+  class ResilienceModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Resilience mode of the Cloud Composer Environment. This
+    field is supported for Cloud Composer environments in versions
+    composer-2.0.32-airflow-*.*.* and newer.
+
+    Values:
+      RESILIENCE_MODE_UNSPECIFIED: Default mode doesn't change environment
+        parameters.
+      HIGH_RESILIENCE: Enabled High Resilience mode, including Cloud SQL HA.
+    """
+    RESILIENCE_MODE_UNSPECIFIED = 0
+    HIGH_RESILIENCE = 1
+
   airflowUri = _messages.StringField(1)
   dagGcsPrefix = _messages.StringField(2)
   dataRetentionConfig = _messages.MessageField('DataRetentionConfig', 3)
@@ -1080,10 +1098,11 @@ class EnvironmentConfig(_messages.Message):
   nodeCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
   privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 12)
   recoveryConfig = _messages.MessageField('RecoveryConfig', 13)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 14)
-  webServerConfig = _messages.MessageField('WebServerConfig', 15)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 16)
-  workloadsConfig = _messages.MessageField('WorkloadsConfig', 17)
+  resilienceMode = _messages.EnumField('ResilienceModeValueValuesEnum', 14)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 15)
+  webServerConfig = _messages.MessageField('WebServerConfig', 16)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 17)
+  workloadsConfig = _messages.MessageField('WorkloadsConfig', 18)
 
 
 class ExecuteAirflowCommandRequest(_messages.Message):
@@ -2454,6 +2473,41 @@ class TaskInstance(_messages.Message):
   taskId = _messages.StringField(17)
   taskType = _messages.StringField(18)
   tryNumber = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+
+
+class TaskLogsRetentionConfig(_messages.Message):
+  r"""The configuration setting for Task Logs.
+
+  Enums:
+    StorageModeValueValuesEnum: Optional. The mode of storage for Airflow
+      workers task logs. For details, see go/composer-store-task-logs-in-
+      cloud-logging-only-design-doc
+
+  Fields:
+    retentionDays: Optional. The number of days to retain task logs in the
+      Cloud Logging bucket
+    storageMode: Optional. The mode of storage for Airflow workers task logs.
+      For details, see go/composer-store-task-logs-in-cloud-logging-only-
+      design-doc
+  """
+
+  class StorageModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The mode of storage for Airflow workers task logs. For
+    details, see go/composer-store-task-logs-in-cloud-logging-only-design-doc
+
+    Values:
+      TASK_LOGS_STORAGE_MODE_UNSPECIFIED: This configuration is not specified
+        by the user.
+      CLOUD_LOGGING_AND_CLOUD_STORAGE: Store task logs in Cloud Logging and in
+        the environment's Cloud Storage bucket.
+      CLOUD_LOGGING_ONLY: Store task logs in Cloud Logging only.
+    """
+    TASK_LOGS_STORAGE_MODE_UNSPECIFIED = 0
+    CLOUD_LOGGING_AND_CLOUD_STORAGE = 1
+    CLOUD_LOGGING_ONLY = 2
+
+  retentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  storageMode = _messages.EnumField('StorageModeValueValuesEnum', 2)
 
 
 class TriggerDagRequest(_messages.Message):

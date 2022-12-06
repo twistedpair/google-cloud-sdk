@@ -783,7 +783,7 @@ class AutomatedBackupPolicy(_messages.Message):
 
 
 class Backup(_messages.Message):
-  r"""Message describing Backup object NEXT ID: 18
+  r"""Message describing Backup object NEXT ID: 19
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the backup.
@@ -801,6 +801,8 @@ class Backup(_messages.Message):
       arbitrary data. This is distinct from labels. https://google.aip.dev/128
     clusterName: Required. The full resource name of the backup source cluster
       (e.g., projects//locations//clusters/).
+    clusterUid: Output only. The system-generated UID of the cluster which was
+      used to create this resource.
     createTime: Output only. Create time stamp
     deleteTime: Output only. Delete time stamp
     description: User-provided description of the backup.
@@ -915,21 +917,22 @@ class Backup(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   clusterName = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  deleteTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  displayName = _messages.StringField(6)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 7)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 8)
-  etag = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  reconciling = _messages.BooleanField(12)
-  sizeBytes = _messages.IntegerField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  type = _messages.EnumField('TypeValueValuesEnum', 15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
+  clusterUid = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  deleteTime = _messages.StringField(5)
+  description = _messages.StringField(6)
+  displayName = _messages.StringField(7)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 8)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 9)
+  etag = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  reconciling = _messages.BooleanField(13)
+  sizeBytes = _messages.IntegerField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
 
 
 class BackupSource(_messages.Message):
@@ -938,9 +941,13 @@ class BackupSource(_messages.Message):
   Fields:
     backupName: Required. The name of the backup resource with the format: *
       projects/{project}/locations/{region}/backups/{backup_id}
+    backupUid: Output only. The system-generated UID of the backup which was
+      used to create this resource. The UID is generated when the backup is
+      created, and it is retained until the backup is deleted.
   """
 
   backupName = _messages.StringField(1)
+  backupUid = _messages.StringField(2)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -984,6 +991,8 @@ class Cluster(_messages.Message):
       field and it's populated at the Cluster creation time or the Cluster
       promotion time. The cluster type is determined by which RPC was used to
       create the cluster (i.e. `CreateCluster` vs. `CreateSecondaryCluster`
+    continuousBackupConfig: Optional. Continuous backup configuration for this
+      cluster.
     createTime: Output only. Create time stamp
     databaseVersion: Output only. The database engine major version. This is
       an output-only field and it's populated at the Cluster creation time.
@@ -1154,26 +1163,27 @@ class Cluster(_messages.Message):
   automatedBackupPolicy = _messages.MessageField('AutomatedBackupPolicy', 2)
   backupSource = _messages.MessageField('BackupSource', 3)
   clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 4)
-  createTime = _messages.StringField(5)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 6)
-  deleteTime = _messages.StringField(7)
-  displayName = _messages.StringField(8)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 9)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 10)
-  etag = _messages.StringField(11)
-  initialUser = _messages.MessageField('UserPassword', 12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  migrationSource = _messages.MessageField('MigrationSource', 14)
-  name = _messages.StringField(15)
-  network = _messages.StringField(16)
-  pitrConfig = _messages.MessageField('PitrConfig', 17)
-  primaryConfig = _messages.MessageField('PrimaryConfig', 18)
-  reconciling = _messages.BooleanField(19)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 20)
-  sslConfig = _messages.MessageField('SslConfig', 21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  uid = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
+  continuousBackupConfig = _messages.MessageField('ContinuousBackupConfig', 5)
+  createTime = _messages.StringField(6)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 7)
+  deleteTime = _messages.StringField(8)
+  displayName = _messages.StringField(9)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 10)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 11)
+  etag = _messages.StringField(12)
+  initialUser = _messages.MessageField('UserPassword', 13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  migrationSource = _messages.MessageField('MigrationSource', 15)
+  name = _messages.StringField(16)
+  network = _messages.StringField(17)
+  pitrConfig = _messages.MessageField('PitrConfig', 18)
+  primaryConfig = _messages.MessageField('PrimaryConfig', 19)
+  reconciling = _messages.BooleanField(20)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 21)
+  sslConfig = _messages.MessageField('SslConfig', 22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  uid = _messages.StringField(24)
+  updateTime = _messages.StringField(25)
 
 
 class ConnectionInfo(_messages.Message):
@@ -1195,6 +1205,40 @@ class ConnectionInfo(_messages.Message):
   ipAddress = _messages.StringField(2)
   name = _messages.StringField(3)
   pemCertificateChain = _messages.StringField(4, repeated=True)
+
+
+class ContinuousBackupConfig(_messages.Message):
+  r"""ContinuousBackupConfig describes the continuous backups recovery
+  configurations of a cluster.
+
+  Fields:
+    enabled: Whether ContinuousBackup is enabled.
+    encryptionConfig: The encryption config can be specified to encrypt the
+      backups with a customer-managed encryption key (CMEK). When this field
+      is not specified, the backup will then use default encryption scheme to
+      protect the user data.
+    retentionWindowDays: The number of days the log records and backups will
+      be retained. This is also the recovery window as logs and backups are
+      needed for recovery. If not set, it defaults to 14 days.
+  """
+
+  enabled = _messages.BooleanField(1)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
+  retentionWindowDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class ContinuousBackupSource(_messages.Message):
+  r"""Message describing a ContinuousBackupSource.
+
+  Fields:
+    cluster: Required. The source cluster from which to restore. This cluster
+      must have continuous backup enabled for this operation to succeed. For
+      the required format, see the comment on the Cluster.name field.
+    pointInTime: Required. The point in time to restore to.
+  """
+
+  cluster = _messages.StringField(1)
+  pointInTime = _messages.StringField(2)
 
 
 class Empty(_messages.Message):
@@ -1281,6 +1325,11 @@ class GenerateClientCertificateRequest(_messages.Message):
   Cluster CA.
 
   Fields:
+    certDuration: Optional. An optional hint to the endpoint to generate the
+      client certificate with the requested duration. The duration can be from
+      1 hour to 24 hours. The endpoint may or may not honor the hint. If the
+      hint is left unspecified or is not honored, then the endpoint will pick
+      an appropriate default duration.
     pemCsr: Optional. A pem-encoded X.509 certificate signing request (CSR).
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -1295,8 +1344,9 @@ class GenerateClientCertificateRequest(_messages.Message):
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  pemCsr = _messages.StringField(1)
-  requestId = _messages.StringField(2)
+  certDuration = _messages.StringField(1)
+  pemCsr = _messages.StringField(2)
+  requestId = _messages.StringField(3)
 
 
 class GenerateClientCertificateResponse(_messages.Message):
@@ -1501,6 +1551,7 @@ class Instance(_messages.Message):
       projects/{project}/locations/{region}/clusters/{cluster_id}
     nodes: Output only. List of available read-only VMs in this instance,
       including the standby for a PRIMARY instance.
+    queryInsightsConfig: Configuration for query insights.
     readPoolConfig: Read pool specific config.
     reconciling: Output only. Reconciling
       (https://google.aip.dev/128#reconciliation). Set to true if the current
@@ -1679,12 +1730,13 @@ class Instance(_messages.Message):
   machineConfig = _messages.MessageField('MachineConfig', 12)
   name = _messages.StringField(13)
   nodes = _messages.MessageField('Node', 14, repeated=True)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 15)
-  reconciling = _messages.BooleanField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  writableNode = _messages.MessageField('Node', 20)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 15)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 16)
+  reconciling = _messages.BooleanField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
+  writableNode = _messages.MessageField('Node', 21)
 
 
 class IntegerRestrictions(_messages.Message):
@@ -2050,6 +2102,27 @@ class QuantityBasedRetention(_messages.Message):
   count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class QueryInsightsInstanceConfig(_messages.Message):
+  r"""QueryInsights Instance specific configuration.
+
+  Fields:
+    queryPlansPerMinute: Number of query execution plans captured by Insights
+      per minute for all queries combined. The default value is 5. Any integer
+      between 0 and 20 is considered valid.
+    queryStringLength: Query string length. The default value is 1024. Any
+      integer between 256 and 4500 is considered valid.
+    recordApplicationTags: Record application tags for an instance. This flag
+      is turned "on" by default.
+    recordClientAddress: Record client address for an instance. Client address
+      is PII information. This flag is turned "on" by default.
+  """
+
+  queryPlansPerMinute = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  queryStringLength = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+  recordApplicationTags = _messages.BooleanField(3)
+  recordClientAddress = _messages.BooleanField(4)
+
+
 class ReadPoolConfig(_messages.Message):
   r"""Configuration for a read pool instance.
 
@@ -2092,6 +2165,8 @@ class RestoreClusterRequest(_messages.Message):
     backupSource: Backup source.
     cluster: Required. The resource being created
     clusterId: Required. ID of the requesting object.
+    continuousBackupSource: ContinuousBackup source. Continuous backup needs
+      to be enabled in the source cluster for this operation to succeed.
     pitrSource: Point in time recovery source. PITR needs to be enabled in the
       source cluster for this operation to succeed.
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -2113,9 +2188,10 @@ class RestoreClusterRequest(_messages.Message):
   backupSource = _messages.MessageField('BackupSource', 1)
   cluster = _messages.MessageField('Cluster', 2)
   clusterId = _messages.StringField(3)
-  pitrSource = _messages.MessageField('PitrSource', 4)
-  requestId = _messages.StringField(5)
-  validateOnly = _messages.BooleanField(6)
+  continuousBackupSource = _messages.MessageField('ContinuousBackupSource', 4)
+  pitrSource = _messages.MessageField('PitrSource', 5)
+  requestId = _messages.StringField(6)
+  validateOnly = _messages.BooleanField(7)
 
 
 class SecondaryConfig(_messages.Message):

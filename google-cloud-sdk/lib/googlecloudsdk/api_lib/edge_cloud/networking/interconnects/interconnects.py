@@ -24,9 +24,9 @@ from googlecloudsdk.api_lib.edge_cloud.networking import utils
 class InterconnectsClient(object):
   """Client for private connections service in the API."""
 
-  def __init__(self, client=None, messages=None):
-    self._client = client or utils.GetClientInstance()
-    self._messages = messages or utils.GetMessagesModule()
+  def __init__(self, release_track, client=None, messages=None):
+    self._client = client or utils.GetClientInstance(release_track)
+    self._messages = messages or utils.GetMessagesModule(release_track)
     self._service = self._client.projects_locations_zones_interconnects
 
   def GetStatus(self, interconnect_ref):

@@ -69,6 +69,21 @@ def CreateDatabase(project, location, database, database_type):
               type=database_type, locationId=location)))
 
 
+def ListDatabases(project):
+  """Lists all Firestore databases under the project.
+
+  Args:
+    project: the project ID to list databases, a string.
+
+  Returns:
+    a List of Databases.
+  """
+  messages = GetMessages()
+  return GetService().List(
+      messages.FirestoreProjectsDatabasesListRequest(
+          parent='projects/{}'.format(project)))
+
+
 def GetExportDocumentsRequest(database, output_uri_prefix, collection_ids=None):
   """Returns a request for a Firestore Admin Export.
 

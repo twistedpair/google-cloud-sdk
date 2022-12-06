@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-
 from argcomplete.completers import FilesCompleter
 from cloudsdk.google.protobuf import descriptor_pb2
 from googlecloudsdk.api_lib.spanner import databases
@@ -107,20 +106,12 @@ class DatabaseRoleCompleter(completers.ListCommandCompleter):
         **kwargs)
 
 
-def Database(positional=True,
-             required=True,
-             text='Cloud Spanner database ID.'):
+def Database(positional=True, required=True, text='Cloud Spanner database ID.'):
   if positional:
-    return base.Argument(
-        'database',
-        completer=DatabaseCompleter,
-        help=text)
+    return base.Argument('database', completer=DatabaseCompleter, help=text)
   else:
     return base.Argument(
-        '--database',
-        required=required,
-        completer=DatabaseCompleter,
-        help=text)
+        '--database', required=required, completer=DatabaseCompleter, help=text)
 
 
 def Backup(positional=True, required=True, text='Cloud Spanner backup ID.'):
@@ -217,23 +208,15 @@ def Config(required=True):
 
 def Description(required=True):
   return base.Argument(
-      '--description',
-      required=required,
-      help='Description of the instance.')
+      '--description', required=required, help='Description of the instance.')
 
 
 def Instance(positional=True, text='Cloud Spanner instance ID.'):
   if positional:
-    return base.Argument(
-        'instance',
-        completer=InstanceCompleter,
-        help=text)
+    return base.Argument('instance', completer=InstanceCompleter, help=text)
   else:
     return base.Argument(
-        '--instance',
-        required=True,
-        completer=InstanceCompleter,
-        help=text)
+        '--instance', required=True, completer=InstanceCompleter, help=text)
 
 
 def Nodes(required=False):
@@ -431,3 +414,71 @@ def DatabaseRole():
       required=False,
       completer=DatabaseRoleCompleter,
       help='Cloud Spanner database role to assume for this request.')
+
+
+def GetSpannerMigrationSourceFlag():
+  return base.Argument(
+      '--source',
+      required=True,
+      help='Flag for specifying source database (e.g., PostgreSQL, MySQL, DynamoDB).'
+  )
+
+
+def GetSpannerMigrationPrefixFlag():
+  return base.Argument('--prefix', help='File prefix for generated files.')
+
+
+def GetSpannerMigrationSourceProfileFlag():
+  return base.Argument(
+      '--source-profile',
+      help='Flag for specifying connection profile for source database (e.g.,'
+      ' "file=<path>,format=dump").')
+
+
+def GetSpannerMigrationTargetFlag():
+  return base.Argument(
+      '--target',
+      help='Specifies the target database, defaults to Spanner '
+      '(accepted values: Spanner) (default "Spanner").')
+
+
+def GetSpannerMigrationTargetProfileFlag():
+  return base.Argument(
+      '--target-profile',
+      help='Flag for specifying connection profile for target database '
+      '(e.g., "dialect=postgresql)".')
+
+
+def GetSpannerMigrationSessionFlag():
+  return base.Argument(
+      '--session',
+      required=True,
+      help='Specifies the file that you restore session state from.')
+
+
+def GetSpannerMigrationSkipForeignKeysFlag():
+  return base.Argument(
+      '--skip-foreign-keys',
+      action='store_true',
+      help='Skip creating foreign keys after data migration is complete.')
+
+
+def GetSpannerMigrationWriteLimitFlag():
+  return base.Argument(
+      '--write-limit',
+      help='Number of parallel writers to Cloud Spanner during bulk data migrations (default 40).'
+  )
+
+
+def GetSpannerMigrationDryRunFlag():
+  return base.Argument(
+      '--dry-run',
+      action='store_true',
+      help='Flag for generating DDL and schema conversion report without'
+      ' creating a Cloud Spanner database.')
+
+
+def GetSpannerMigrationLogLevelFlag():
+  return base.Argument(
+      '--log-level',
+      help='To configure the log level for the execution (INFO, VERBOSE).')

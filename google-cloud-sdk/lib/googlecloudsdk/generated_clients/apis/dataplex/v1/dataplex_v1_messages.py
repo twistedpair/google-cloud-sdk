@@ -176,6 +176,39 @@ class DataplexProjectsLocationsDataAttributeBindingsTestIamPermissionsRequest(_m
   resource = _messages.StringField(2, required=True)
 
 
+class DataplexProjectsLocationsDataScansCreateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataScansCreateRequest object.
+
+  Fields:
+    dataScanId: Required. DataScan identifier. * Must contain only lowercase
+      letters, numbers and hyphens. * Must start with a letter. * Must end
+      with a number or a letter. * Must be between 1-63 characters. * Must be
+      unique within the customer project / location.
+    googleCloudDataplexV1DataScan: A GoogleCloudDataplexV1DataScan resource to
+      be passed as the request body.
+    parent: Required. The resource name of the parent location:
+      projects/{project}/locations/{location_id} where {project} refers to a
+      project_id or project_number and location_id refers to a GCP region.
+  """
+
+  dataScanId = _messages.StringField(1)
+  googleCloudDataplexV1DataScan = _messages.MessageField('GoogleCloudDataplexV1DataScan', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DataplexProjectsLocationsDataScansDeleteRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataScansDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the dataScan:
+      projects/{project}/locations/{location_id}/dataScans/{data_scan_id}
+      where {project} refers to a project_id or project_number and location_id
+      refers to a GCP region.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class DataplexProjectsLocationsDataScansGetIamPolicyRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataScansGetIamPolicyRequest object.
 
@@ -198,6 +231,157 @@ class DataplexProjectsLocationsDataScansGetIamPolicyRequest(_messages.Message):
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsDataScansGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataScansGetRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. Used to select the subset of DataScan
+      information to return. Defaults to BASIC.
+
+  Fields:
+    name: Required. The resource name of the dataScan:
+      projects/{project}/locations/{location_id}/dataScans/{data_scan_id}
+      where {project} refers to a project_id or project_number and location_id
+      refers to a GCP region.
+    view: Optional. Used to select the subset of DataScan information to
+      return. Defaults to BASIC.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Used to select the subset of DataScan information to return.
+    Defaults to BASIC.
+
+    Values:
+      DATA_SCAN_VIEW_UNSPECIFIED: The API will default to the BASIC view.
+      BASIC: Basic view that does not include spec and result.
+      FULL: Include everything.
+    """
+    DATA_SCAN_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
+class DataplexProjectsLocationsDataScansJobsGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataScansJobsGetRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. Used to select the subset of DataScan
+      information to return. Defaults to BASIC.
+
+  Fields:
+    name: Required. The resource name of the DataScanJob: projects/{project}/l
+      ocations/{location_id}/dataScans/{data_scan_id}/dataScanJobs/{data_scan_
+      job_id} where {project} refers to a project_id or project_number and
+      location_id refers to a GCP region.
+    view: Optional. Used to select the subset of DataScan information to
+      return. Defaults to BASIC.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Used to select the subset of DataScan information to return.
+    Defaults to BASIC.
+
+    Values:
+      DATA_SCAN_JOB_VIEW_UNSPECIFIED: The API will default to the BASIC view.
+      BASIC: Basic view that does not include spec and result.
+      FULL: Include everything.
+    """
+    DATA_SCAN_JOB_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
+class DataplexProjectsLocationsDataScansJobsListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataScansJobsListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number of DataScanJobs to return. The service
+      may return fewer than this value. If unspecified, at most 10
+      DataScanJobs will be returned. The maximum value is 1000; values above
+      1000 will be coerced to 1000.
+    pageToken: Optional. Page token received from a previous ListDataScanJobs
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to ListDataScanJobs must match the call that
+      provided the page token.
+    parent: Required. The resource name of the parent environment:
+      projects/{project}/locations/{location_id}/dataScans/{data_scan_id}
+      where {project} refers to a project_id or project_number and location_id
+      refers to a GCP region.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DataplexProjectsLocationsDataScansListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataScansListRequest object.
+
+  Fields:
+    filter: Optional. Filter request.
+    orderBy: Optional. Order by fields (name or create_time) for the result.
+      If not specified, the ordering is undefined.
+    pageSize: Optional. Maximum number of dataScans to return. The service may
+      return fewer than this value. If unspecified, at most 10 scans will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: Optional. Page token received from a previous ListDataScans
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to ListDataScans must match the call that
+      provided the page token.
+    parent: Required. projects/{project}/locations/{location_id} where
+      {project} refers to a project_id or project_number and location_id
+      refers to a GCP region.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class DataplexProjectsLocationsDataScansPatchRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataScansPatchRequest object.
+
+  Fields:
+    googleCloudDataplexV1DataScan: A GoogleCloudDataplexV1DataScan resource to
+      be passed as the request body.
+    name: Output only. The relative resource name of the scan, of the form:
+      projects/{project}/locations/{location_id}/dataScans/{datascan_id}.
+      where {project} refers to a project_id or project_number and location_id
+      refers to a GCP region.
+    updateMask: Required. Mask of fields to update.
+  """
+
+  googleCloudDataplexV1DataScan = _messages.MessageField('GoogleCloudDataplexV1DataScan', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class DataplexProjectsLocationsDataScansRunRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataScansRunRequest object.
+
+  Fields:
+    googleCloudDataplexV1RunDataScanRequest: A
+      GoogleCloudDataplexV1RunDataScanRequest resource to be passed as the
+      request body.
+    name: Required. The resource name of the DataScan:
+      projects/{project}/locations/{location_id}/dataScans/{data_scan_id}.
+      where {project} refers to a project_id or project_number and location_id
+      refers to a GCP region. Only on-demand DataScans are allowed.
+  """
+
+  googleCloudDataplexV1RunDataScanRequest = _messages.MessageField('GoogleCloudDataplexV1RunDataScanRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class DataplexProjectsLocationsDataScansSetIamPolicyRequest(_messages.Message):
@@ -2860,6 +3044,527 @@ class GoogleCloudDataplexV1DataAttributeBindingPath(_messages.Message):
   name = _messages.StringField(2)
 
 
+class GoogleCloudDataplexV1DataProfileResult(_messages.Message):
+  r"""DataProfileResult defines the output of DataProfileScan. Each field of
+  the table will have field type specific profile result.
+
+  Fields:
+    profile: This represents the profile information per field.
+    rowCount: The count of all rows in the sampled data. Return 0, if zero
+      rows.
+    scannedData: The data scanned for this profile.
+  """
+
+  profile = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultProfile', 1)
+  rowCount = _messages.IntegerField(2)
+  scannedData = _messages.MessageField('GoogleCloudDataplexV1ScannedData', 3)
+
+
+class GoogleCloudDataplexV1DataProfileResultProfile(_messages.Message):
+  r"""Profile information describing the structure and layout of the data and
+  contains the profile info.
+
+  Fields:
+    fields: The sequence of fields describing data in table entities.
+  """
+
+  fields = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultProfileField', 1, repeated=True)
+
+
+class GoogleCloudDataplexV1DataProfileResultProfileField(_messages.Message):
+  r"""Represents a column field within a table schema.
+
+  Fields:
+    mode: The mode of the field. Its value will be: REQUIRED, if it is a
+      required field. NULLABLE, if it is an optional field. REPEATED, if it is
+      a repeated field.
+    name: The name of the field.
+    profile: The profile information for the corresponding field.
+    type: The field data type. Possible values include: STRING BYTE INT64
+      INT32 INT16 DOUBLE FLOAT DECIMAL BOOLEAN BINARY TIMESTAMP DATE TIME NULL
+      RECORD
+  """
+
+  mode = _messages.StringField(1)
+  name = _messages.StringField(2)
+  profile = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfo', 3)
+  type = _messages.StringField(4)
+
+
+class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfo(_messages.Message):
+  r"""ProfileInfo defines the profile information for each schema field type.
+
+  Fields:
+    distinctRatio: The ratio of rows that are distinct against the rows in the
+      sampled data.
+    doubleProfile: The corresponding double field profile.
+    integerProfile: The corresponding integer field profile.
+    nullRatio: The ratio of null rows against the rows in the sampled data.
+    stringProfile: The corresponding string field profile.
+    topNValues: The array of top N values of the field in the sampled data.
+      Currently N is set as 10 or equal to distinct values in the field,
+      whichever is smaller. This will be optional for complex non-groupable
+      data-types such as JSON, ARRAY, JSON, STRUCT.
+  """
+
+  distinctRatio = _messages.FloatField(1)
+  doubleProfile = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoDoubleFieldInfo', 2)
+  integerProfile = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoIntegerFieldInfo', 3)
+  nullRatio = _messages.FloatField(4)
+  stringProfile = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoStringFieldInfo', 5)
+  topNValues = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoTopNValue', 6, repeated=True)
+
+
+class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoDoubleFieldInfo(_messages.Message):
+  r"""DoubleFieldInfo defines output for any double type field.
+
+  Fields:
+    average: The average of non-null values of double field in the sampled
+      data. Return NaN, if the field has a NaN. Optional if zero non-null
+      rows.
+    max: The maximum value of a double field in the sampled data. Return NaN,
+      if the field has a NaN. Optional if zero non-null rows.
+    min: The minimum value of a double field in the sampled data. Return NaN,
+      if the field has a NaN. Optional if zero non-null rows.
+    quartiles: A quartile divide the numebr of data points into four parts, or
+      quarters, of more-or-less equal size. Three main quartiles used are: The
+      first quartile (Q1) splits off the lowest 25% of data from the highest
+      75%. It is also known as the lower or 25th empirical quartile, as 25% of
+      the data is below this point. The second quartile (Q2) is the median of
+      a data set. So, 50% of the data lies below this point. The third
+      quartile (Q3) splits off the highest 25% of data from the lowest 75%. It
+      is known as the upper or 75th empirical quartile, as 75% of the data
+      lies below this point. So, here the quartiles is provided as an ordered
+      list of quartile values, occurring in order Q1, median, Q3.
+    standardDeviation: The standard deviation of non-null of double field in
+      the sampled data. Return NaN, if the field has a NaN. Optional if zero
+      non-null rows.
+  """
+
+  average = _messages.FloatField(1)
+  max = _messages.FloatField(2)
+  min = _messages.FloatField(3)
+  quartiles = _messages.FloatField(4, repeated=True)
+  standardDeviation = _messages.FloatField(5)
+
+
+class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoIntegerFieldInfo(_messages.Message):
+  r"""IntegerFieldInfo defines output for any integer type field.
+
+  Fields:
+    average: The average of non-null values of integer field in the sampled
+      data. Return NaN, if the field has a NaN. Optional if zero non-null
+      rows.
+    max: The maximum value of an integer field in the sampled data. Return
+      NaN, if the field has a NaN. Optional if zero non-null rows.
+    min: The minimum value of an integer field in the sampled data. Return
+      NaN, if the field has a NaN. Optional if zero non-null rows.
+    quartiles: A quartile divide the number of data points into four parts, or
+      quarters, of more-or-less equal size. Three main quartiles used are: The
+      first quartile (Q1) splits off the lowest 25% of data from the highest
+      75%. It is also known as the lower or 25th empirical quartile, as 25% of
+      the data is below this point. The second quartile (Q2) is the median of
+      a data set. So, 50% of the data lies below this point. The third
+      quartile (Q3) splits off the highest 25% of data from the lowest 75%. It
+      is known as the upper or 75th empirical quartile, as 75% of the data
+      lies below this point. So, here the quartiles is provided as an ordered
+      list of quartile values, occurring in order Q1, median, Q3.
+    standardDeviation: The standard deviation of non-null of integer field in
+      the sampled data. Return NaN, if the field has a NaN. Optional if zero
+      non-null rows.
+  """
+
+  average = _messages.FloatField(1)
+  max = _messages.IntegerField(2)
+  min = _messages.IntegerField(3)
+  quartiles = _messages.IntegerField(4, repeated=True)
+  standardDeviation = _messages.FloatField(5)
+
+
+class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoStringFieldInfo(_messages.Message):
+  r"""StringFieldInfo defines output info for any string type field.
+
+  Fields:
+    averageLength: The average length of a string field in the sampled data.
+      Optional if zero non-null rows.
+    maxLength: The maximum length of a string field in the sampled data.
+      Optional if zero non-null rows.
+    minLength: The minimum length of the string field in the sampled data.
+      Optional if zero non-null rows.
+  """
+
+  averageLength = _messages.FloatField(1)
+  maxLength = _messages.IntegerField(2)
+  minLength = _messages.IntegerField(3)
+
+
+class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoTopNValue(_messages.Message):
+  r"""The TopNValue defines the structure of output of top N values of a
+  field.
+
+  Fields:
+    count: The frequency count of the corresponding value in the field.
+    value: The value is the string value of the actual value from the field.
+  """
+
+  count = _messages.IntegerField(1)
+  value = _messages.StringField(2)
+
+
+class GoogleCloudDataplexV1DataProfileSpec(_messages.Message):
+  r"""DataProfileScan related setting."""
+
+
+class GoogleCloudDataplexV1DataQualityDimensionResult(_messages.Message):
+  r"""DataQualityDimensionResult provides a more detailed, per-dimension level
+  view of the results.
+
+  Fields:
+    passed: Whether the dimension passed or failed.
+  """
+
+  passed = _messages.BooleanField(1)
+
+
+class GoogleCloudDataplexV1DataQualityResult(_messages.Message):
+  r"""The output of a DataQualityScan.
+
+  Fields:
+    dimensions: A list of results at the dimension-level.
+    passed: Overall data quality result -- true if all rules passed.
+    rowCount: The count of rows processed.
+    rules: A list of all the rules in a job, and their results.
+    scannedData: The data scanned for this result.
+  """
+
+  dimensions = _messages.MessageField('GoogleCloudDataplexV1DataQualityDimensionResult', 1, repeated=True)
+  passed = _messages.BooleanField(2)
+  rowCount = _messages.IntegerField(3)
+  rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleResult', 4, repeated=True)
+  scannedData = _messages.MessageField('GoogleCloudDataplexV1ScannedData', 5)
+
+
+class GoogleCloudDataplexV1DataQualityRule(_messages.Message):
+  r"""A rule captures data quality intent about a data source.
+
+  Fields:
+    column: Optional. The unnested column which this rule is evaluated
+      against.
+    dimension: Required. The dimension a rule belongs to. Results are also
+      aggregated at the dimension-level. Supported dimensions are
+      "COMPLETENESS", "ACCURACY", "CONSISTENCY", "VALIDITY", "UNIQUENESS",
+      "INTEGRITY"
+    ignoreNull: Optional. Rows with null values will automatically fail a
+      rule, unless ignore_null is true. In that case, such null rows are
+      trivially considered passing. Only applicable to ColumnMap rules.
+    nonNullExpectation: ColumnMap rule which evaluates whether each column
+      value is null.
+    rangeExpectation: ColumnMap rule which evaluates whether each column value
+      lies between a specified range.
+    regexExpectation: ColumnMap rule which evaluates whether each column value
+      matches a specified regex.
+    rowConditionExpectation: Table rule which evaluates whether each row
+      passes the specified condition.
+    setExpectation: ColumnMap rule which evaluates whether each column value
+      is contained by a specified set.
+    statisticRangeExpectation: ColumnAggregate rule which evaluates whether
+      the column aggregate statistic lies between a specified range.
+    tableConditionExpectation: Table rule which evaluates whether the provided
+      expression is true.
+    threshold: Optional. The minimum ratio of passing_rows / total_rows
+      required to pass this rule, with a range of 0.0, 1.00 indicates default
+      value (i.e. 1.0)
+    uniquenessExpectation: ColumnAggregate rule which evaluates whether the
+      column has duplicates.
+  """
+
+  column = _messages.StringField(1)
+  dimension = _messages.StringField(2)
+  ignoreNull = _messages.BooleanField(3)
+  nonNullExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleNonNullExpectation', 4)
+  rangeExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleRangeExpectation', 5)
+  regexExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleRegexExpectation', 6)
+  rowConditionExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleRowConditionExpectation', 7)
+  setExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleSetExpectation', 8)
+  statisticRangeExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleStatisticRangeExpectation', 9)
+  tableConditionExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleTableConditionExpectation', 10)
+  threshold = _messages.FloatField(11)
+  uniquenessExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleUniquenessExpectation', 12)
+
+
+class GoogleCloudDataplexV1DataQualityRuleNonNullExpectation(_messages.Message):
+  r"""Evaluates whether each column value is null."""
+
+
+class GoogleCloudDataplexV1DataQualityRuleRangeExpectation(_messages.Message):
+  r"""Evaluates whether each column value lies between a specified range.
+
+  Fields:
+    maxValue: Optional. The maximum column value allowed for a row to pass
+      this validation. At least one of min_value and max_value need to be
+      provided.
+    minValue: Optional. The minimum column value allowed for a row to pass
+      this validation. At least one of min_value and max_value need to be
+      provided.
+    strictMaxEnabled: Optional. Whether each value needs to be strictly lesser
+      than ('<') the maximum, or if equality is allowed. Only relevant if a
+      max_value has been defined. Default = false.
+    strictMinEnabled: Optional. Whether each value needs to be strictly
+      greater than ('>') the minimum, or if equality is allowed. Only relevant
+      if a min_value has been defined. Default = false.
+  """
+
+  maxValue = _messages.StringField(1)
+  minValue = _messages.StringField(2)
+  strictMaxEnabled = _messages.BooleanField(3)
+  strictMinEnabled = _messages.BooleanField(4)
+
+
+class GoogleCloudDataplexV1DataQualityRuleRegexExpectation(_messages.Message):
+  r"""Evaluates whether each column value matches a specified regex.
+
+  Fields:
+    regex: A string attribute.
+  """
+
+  regex = _messages.StringField(1)
+
+
+class GoogleCloudDataplexV1DataQualityRuleResult(_messages.Message):
+  r"""DataQualityRuleResult provides a more detailed, per-rule level view of
+  the results.
+
+  Fields:
+    evaluatedCount: The number of rows a rule was evaluated against. This
+      field is only valid for ColumnMap type rules. Evaluated count can be
+      configured to either (1) include all rows (default) - with null rows
+      automatically failing rule evaluation OR (2) exclude null rows from the
+      evaluated_count, by setting ignore_nulls = true
+    failingRowsQuery: The query to find rows that did not pass this rule. Only
+      applies to ColumnMap and RowCondition rules.
+    nullCount: The number of rows with null values in the specified column.
+    passRatio: The ratio of passed_count / evaluated_count. This field is only
+      valid for ColumnMap type rules.
+    passed: Whether the rule passed or failed.
+    passedCount: The number of rows which passed a rule evaluation. This field
+      is only valid for ColumnMap type rules.
+    rule: The rule specified in the DataQualitySpec, as is.
+  """
+
+  evaluatedCount = _messages.IntegerField(1)
+  failingRowsQuery = _messages.StringField(2)
+  nullCount = _messages.IntegerField(3)
+  passRatio = _messages.FloatField(4)
+  passed = _messages.BooleanField(5)
+  passedCount = _messages.IntegerField(6)
+  rule = _messages.MessageField('GoogleCloudDataplexV1DataQualityRule', 7)
+
+
+class GoogleCloudDataplexV1DataQualityRuleRowConditionExpectation(_messages.Message):
+  r"""Evaluates whether each row passes the specified condition. The SQL
+  expression needs to use BigQuery standard SQL syntax and should produce a
+  boolean per row as the result. Example: col1 >= 0 AND col2 < 10
+
+  Fields:
+    sqlExpression: A string attribute.
+  """
+
+  sqlExpression = _messages.StringField(1)
+
+
+class GoogleCloudDataplexV1DataQualityRuleSetExpectation(_messages.Message):
+  r"""Evaluates whether each column value is contained by a specified set.
+
+  Fields:
+    values: A string attribute.
+  """
+
+  values = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudDataplexV1DataQualityRuleStatisticRangeExpectation(_messages.Message):
+  r"""Evaluates whether the column aggregate statistic lies between a
+  specified range.
+
+  Enums:
+    StatisticValueValuesEnum:
+
+  Fields:
+    maxValue: The maximum column statistic value allowed for a row to pass
+      this validation. At least one of min_value and max_value need to be
+      provided.
+    minValue: The minimum column statistic value allowed for a row to pass
+      this validation. At least one of min_value and max_value need to be
+      provided.
+    statistic: A StatisticValueValuesEnum attribute.
+    strictMaxEnabled: Whether column statistic needs to be strictly lesser
+      than ('<') the maximum, or if equality is allowed. Only relevant if a
+      max_value has been defined. Default = false.
+    strictMinEnabled: Whether column statistic needs to be strictly greater
+      than ('>') the minimum, or if equality is allowed. Only relevant if a
+      min_value has been defined. Default = false.
+  """
+
+  class StatisticValueValuesEnum(_messages.Enum):
+    r"""StatisticValueValuesEnum enum type.
+
+    Values:
+      STATISTIC_UNDEFINED: Unspecified statistic type
+      MEAN: Evaluate the column mean
+      MIN: Evaluate the column min
+      MAX: Evaluate the column max
+    """
+    STATISTIC_UNDEFINED = 0
+    MEAN = 1
+    MIN = 2
+    MAX = 3
+
+  maxValue = _messages.StringField(1)
+  minValue = _messages.StringField(2)
+  statistic = _messages.EnumField('StatisticValueValuesEnum', 3)
+  strictMaxEnabled = _messages.BooleanField(4)
+  strictMinEnabled = _messages.BooleanField(5)
+
+
+class GoogleCloudDataplexV1DataQualityRuleTableConditionExpectation(_messages.Message):
+  r"""Evaluates whether the provided expression is true. The SQL expression
+  needs to use BigQuery standard SQL syntax and should produce a scalar
+  boolean result. Example: MIN(col1) >= 0
+
+  Fields:
+    sqlExpression: A string attribute.
+  """
+
+  sqlExpression = _messages.StringField(1)
+
+
+class GoogleCloudDataplexV1DataQualityRuleUniquenessExpectation(_messages.Message):
+  r"""Evaluates whether the column has duplicates."""
+
+
+class GoogleCloudDataplexV1DataQualitySpec(_messages.Message):
+  r"""DataQualityScan related setting.
+
+  Fields:
+    rules: The list of rules to evaluate against a data source. At least one
+      rule is required.
+  """
+
+  rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRule', 1, repeated=True)
+
+
+class GoogleCloudDataplexV1DataScan(_messages.Message):
+  r"""Represents a user-visible job which provides the insights for the
+  related data source. For examples: - Data Quality: generates queries based
+  on the rules and run against the data to get data quality check results. -
+  Data Profile: analyzes the data in table(s) and generates insights about the
+  structure, content and relationships (such as null percent, cardinality,
+  min/max/mean, etc).
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the DataScan.
+    TypeValueValuesEnum: Output only. The type of DataScan.
+
+  Messages:
+    LabelsValue: Optional. User-defined labels for the scan.
+
+  Fields:
+    createTime: Output only. The time when the scan was created.
+    data: Required. The data source for DataScan.
+    dataProfileResult: Output only. The result of the data profile scan.
+    dataProfileSpec: DataProfileScan related setting.
+    dataQualityResult: Output only. The result of the data quality scan.
+    dataQualitySpec: DataQualityScan related setting.
+    description: Optional. Description of the scan. * Must be between 1-1024
+      characters.
+    displayName: Optional. User friendly display name. * Must be between 1-256
+      characters.
+    executionSpec: Optional. DataScan execution settings. If not specified,
+      the fields under it will use their default values.
+    executionStatus: Output only. Status of the data scan execution.
+    labels: Optional. User-defined labels for the scan.
+    name: Output only. The relative resource name of the scan, of the form:
+      projects/{project}/locations/{location_id}/dataScans/{datascan_id}.
+      where {project} refers to a project_id or project_number and location_id
+      refers to a GCP region.
+    state: Output only. Current state of the DataScan.
+    type: Output only. The type of DataScan.
+    uid: Output only. System generated globally unique ID for the scan. This
+      ID will be different if the scan is deleted and re-created with the same
+      name.
+    updateTime: Output only. The time when the scan was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the DataScan.
+
+    Values:
+      STATE_UNSPECIFIED: State is not specified.
+      ACTIVE: Resource is active, i.e., ready to use.
+      CREATING: Resource is under creation.
+      DELETING: Resource is under deletion.
+      ACTION_REQUIRED: Resource is active but has unresolved actions.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    ACTION_REQUIRED = 4
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of DataScan.
+
+    Values:
+      DATA_SCAN_TYPE_UNSPECIFIED: The DataScan Type is unspecified.
+      DATA_QUALITY: Data Quality Scan.
+      DATA_PROFILE: Data Profile Scan.
+    """
+    DATA_SCAN_TYPE_UNSPECIFIED = 0
+    DATA_QUALITY = 1
+    DATA_PROFILE = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User-defined labels for the scan.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  data = _messages.MessageField('GoogleCloudDataplexV1DataSource', 2)
+  dataProfileResult = _messages.MessageField('GoogleCloudDataplexV1DataProfileResult', 3)
+  dataProfileSpec = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpec', 4)
+  dataQualityResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResult', 5)
+  dataQualitySpec = _messages.MessageField('GoogleCloudDataplexV1DataQualitySpec', 6)
+  description = _messages.StringField(7)
+  displayName = _messages.StringField(8)
+  executionSpec = _messages.MessageField('GoogleCloudDataplexV1DataScanExecutionSpec', 9)
+  executionStatus = _messages.MessageField('GoogleCloudDataplexV1DataScanExecutionStatus', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  type = _messages.EnumField('TypeValueValuesEnum', 14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+
+
 class GoogleCloudDataplexV1DataScanEvent(_messages.Message):
   r"""These messages contain information about the execution of a datascan.
   The monitored resource is 'DataScan'
@@ -3008,6 +3713,114 @@ class GoogleCloudDataplexV1DataScanEventDataQualityResult(_messages.Message):
   dimensionPassed = _messages.MessageField('DimensionPassedValue', 1)
   passed = _messages.BooleanField(2)
   rowCount = _messages.IntegerField(3)
+
+
+class GoogleCloudDataplexV1DataScanExecutionSpec(_messages.Message):
+  r"""DataScan execution settings.
+
+  Fields:
+    field: Immutable. The unnested field (Date or Timestamp) that contains
+      values that monotonically increase over time.
+    trigger: Optional. Spec related to how often and when a scan should be
+      triggered. If not specified, the default is OnDemand, which means the
+      scan will not run until the user calls RunDataScan API.
+  """
+
+  field = _messages.StringField(1)
+  trigger = _messages.MessageField('GoogleCloudDataplexV1Trigger', 2)
+
+
+class GoogleCloudDataplexV1DataScanExecutionStatus(_messages.Message):
+  r"""Status of the data scan execution.
+
+  Fields:
+    latestJobEndTime: The time when the latest DataScanJob ended.
+    latestJobStartTime: The time when the latest DataScanJob started.
+  """
+
+  latestJobEndTime = _messages.StringField(1)
+  latestJobStartTime = _messages.StringField(2)
+
+
+class GoogleCloudDataplexV1DataScanJob(_messages.Message):
+  r"""A DataScanJob represents an instance of a data scan.
+
+  Enums:
+    StateValueValuesEnum: Output only. Execution state for the DataScanJob.
+    TypeValueValuesEnum: Output only. The type of the parent DataScan.
+
+  Fields:
+    dataProfileResult: Output only. The result of the data profile scan.
+    dataProfileSpec: Output only. DataProfileScan related setting.
+    dataQualityResult: Output only. The result of the data quality scan.
+    dataQualitySpec: Output only. DataQualityScan related setting.
+    endTime: Output only. The time when the DataScanJob ended.
+    message: Output only. Additional information about the current state.
+    name: Output only. The relative resource name of the DataScanJob, of the
+      form: projects/{project}/locations/{location_id}/dataScans/{datascan_id}
+      /jobs/{job_id}. where {project} refers to a project_id or project_number
+      and location_id refers to a GCP region.
+    startTime: Output only. The time when the DataScanJob was started.
+    state: Output only. Execution state for the DataScanJob.
+    type: Output only. The type of the parent DataScan.
+    uid: Output only. System generated globally unique ID for the DataScanJob.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Execution state for the DataScanJob.
+
+    Values:
+      STATE_UNSPECIFIED: The DataScanJob state is unspecified.
+      RUNNING: The DataScanJob is running.
+      CANCELING: The DataScanJob is canceling.
+      CANCELLED: The DataScanJob cancellation was successful.
+      SUCCEEDED: The DataScanJob completed successfully.
+      FAILED: The DataScanJob is no longer running due to an error.
+      PENDING: The DataScanJob has been created but not started to run yet.
+    """
+    STATE_UNSPECIFIED = 0
+    RUNNING = 1
+    CANCELING = 2
+    CANCELLED = 3
+    SUCCEEDED = 4
+    FAILED = 5
+    PENDING = 6
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the parent DataScan.
+
+    Values:
+      DATA_SCAN_TYPE_UNSPECIFIED: The DataScan Type is unspecified.
+      DATA_QUALITY: Data Quality Scan.
+      DATA_PROFILE: Data Profile Scan.
+    """
+    DATA_SCAN_TYPE_UNSPECIFIED = 0
+    DATA_QUALITY = 1
+    DATA_PROFILE = 2
+
+  dataProfileResult = _messages.MessageField('GoogleCloudDataplexV1DataProfileResult', 1)
+  dataProfileSpec = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpec', 2)
+  dataQualityResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResult', 3)
+  dataQualitySpec = _messages.MessageField('GoogleCloudDataplexV1DataQualitySpec', 4)
+  endTime = _messages.StringField(5)
+  message = _messages.StringField(6)
+  name = _messages.StringField(7)
+  startTime = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  uid = _messages.StringField(11)
+
+
+class GoogleCloudDataplexV1DataSource(_messages.Message):
+  r"""The data source for DataScan.
+
+  Fields:
+    entity: Immutable. The dataplex entity that contains the data for
+      DataScan, of the form: projects/{project_number}/locations/{location_id}
+      /lakes/{lake_id}/zones/{zone_id}/entities/{entity_id}.
+  """
+
+  entity = _messages.StringField(1)
 
 
 class GoogleCloudDataplexV1DataTaxonomy(_messages.Message):
@@ -3917,6 +4730,34 @@ class GoogleCloudDataplexV1ListDataAttributesResponse(_messages.Message):
   unreachableLocations = _messages.StringField(3, repeated=True)
 
 
+class GoogleCloudDataplexV1ListDataScanJobsResponse(_messages.Message):
+  r"""List DataScanJobs response.
+
+  Fields:
+    dataScanJobs: DataScanJobs (metadata only) under a given dataScan.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  dataScanJobs = _messages.MessageField('GoogleCloudDataplexV1DataScanJob', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudDataplexV1ListDataScansResponse(_messages.Message):
+  r"""List dataScans response.
+
+  Fields:
+    dataScans: DataScans (metadata only) under the given parent location.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachable: Locations that could not be reached.
+  """
+
+  dataScans = _messages.MessageField('GoogleCloudDataplexV1DataScan', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class GoogleCloudDataplexV1ListDataTaxonomiesResponse(_messages.Message):
   r"""List DataTaxonomies response.
 
@@ -4109,6 +4950,45 @@ class GoogleCloudDataplexV1ResourceAccessSpec(_messages.Message):
   owners = _messages.StringField(1, repeated=True)
   readers = _messages.StringField(2, repeated=True)
   writers = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudDataplexV1RunDataScanRequest(_messages.Message):
+  r"""Run DataScan Request"""
+
+
+class GoogleCloudDataplexV1RunDataScanResponse(_messages.Message):
+  r"""Run DataScan Response.
+
+  Fields:
+    job: DataScanJob created by RunDataScan API.
+  """
+
+  job = _messages.MessageField('GoogleCloudDataplexV1DataScanJob', 1)
+
+
+class GoogleCloudDataplexV1ScannedData(_messages.Message):
+  r"""The data scanned during processing (e.g. in incremental DataScan)
+
+  Fields:
+    incrementalField: The range denoted by values of an incremental field
+  """
+
+  incrementalField = _messages.MessageField('GoogleCloudDataplexV1ScannedDataIncrementalField', 1)
+
+
+class GoogleCloudDataplexV1ScannedDataIncrementalField(_messages.Message):
+  r"""A data range denoted by a pair of start/end values of a field.
+
+  Fields:
+    end: Value that marks the end of the range
+    field: The field that contains values which monotonically increases over
+      time (e.g. timestamp).
+    start: Value that marks the start of the range
+  """
+
+  end = _messages.StringField(1)
+  field = _messages.StringField(2)
+  start = _messages.StringField(3)
 
 
 class GoogleCloudDataplexV1Schema(_messages.Message):
@@ -4432,6 +5312,7 @@ class GoogleCloudDataplexV1StorageFormat(_messages.Message):
     format: Output only. The data format associated with the stored data,
       which represents content type values. The value is inferred from mime
       type.
+    iceberg: Optional. Additional information about iceberg tables.
     json: Optional. Additional information about CSV formatted data.
     mimeType: Required. The mime type descriptor for the data. Must match the
       pattern {type}/{subtype}. Supported values: application/x-parquet
@@ -4492,8 +5373,9 @@ class GoogleCloudDataplexV1StorageFormat(_messages.Message):
   compressionFormat = _messages.EnumField('CompressionFormatValueValuesEnum', 1)
   csv = _messages.MessageField('GoogleCloudDataplexV1StorageFormatCsvOptions', 2)
   format = _messages.EnumField('FormatValueValuesEnum', 3)
-  json = _messages.MessageField('GoogleCloudDataplexV1StorageFormatJsonOptions', 4)
-  mimeType = _messages.StringField(5)
+  iceberg = _messages.MessageField('GoogleCloudDataplexV1StorageFormatIcebergOptions', 4)
+  json = _messages.MessageField('GoogleCloudDataplexV1StorageFormatJsonOptions', 5)
+  mimeType = _messages.StringField(6)
 
 
 class GoogleCloudDataplexV1StorageFormatCsvOptions(_messages.Message):
@@ -4515,6 +5397,17 @@ class GoogleCloudDataplexV1StorageFormatCsvOptions(_messages.Message):
   encoding = _messages.StringField(2)
   headerRows = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   quote = _messages.StringField(4)
+
+
+class GoogleCloudDataplexV1StorageFormatIcebergOptions(_messages.Message):
+  r"""Describes Iceberg data format.
+
+  Fields:
+    metadataLocation: Optional. The location of where the iceberg metadata is
+      present, must be within the table path
+  """
+
+  metadataLocation = _messages.StringField(1)
 
 
 class GoogleCloudDataplexV1StorageFormatJsonOptions(_messages.Message):
@@ -4912,6 +5805,38 @@ class GoogleCloudDataplexV1TaskTriggerSpec(_messages.Message):
   schedule = _messages.StringField(3)
   startTime = _messages.StringField(4)
   type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
+class GoogleCloudDataplexV1Trigger(_messages.Message):
+  r"""DataScan scheduling and trigger settings.
+
+  Fields:
+    onDemand: The scan runs one-time shortly after DataScan Creation.
+    schedule: The scan is scheduled to run periodically.
+  """
+
+  onDemand = _messages.MessageField('GoogleCloudDataplexV1TriggerOnDemand', 1)
+  schedule = _messages.MessageField('GoogleCloudDataplexV1TriggerSchedule', 2)
+
+
+class GoogleCloudDataplexV1TriggerOnDemand(_messages.Message):
+  r"""The scan runs one-time via RunDataScan API."""
+
+
+class GoogleCloudDataplexV1TriggerSchedule(_messages.Message):
+  r"""The scan is scheduled to run periodically.
+
+  Fields:
+    cron: Required. Cron schedule (https://en.wikipedia.org/wiki/Cron) for
+      running scans periodically. To explicitly set a timezone to the cron
+      tab, apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
+      "TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid string
+      from IANA time zone database. For example, "CRON_TZ=America/New_York 1 *
+      * * *", or "TZ=America/New_York 1 * * * *". This field is required for
+      Schedule scans.
+  """
+
+  cron = _messages.StringField(1)
 
 
 class GoogleCloudDataplexV1Zone(_messages.Message):

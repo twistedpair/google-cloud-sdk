@@ -1508,12 +1508,18 @@ class AdvancedMachineFeatures(_messages.Message):
   GuestOsFeatures of an Image (e.g., whether or not the OS in the Image
   supports nested virtualization being enabled or disabled).
 
+  Enums:
+    PerformanceMonitoringUnitValueValuesEnum: Type of Performance Monitoring
+      Unit requested on instance.
+
   Fields:
     enableNestedVirtualization: Whether to enable nested virtualization or not
       (default is false).
     enableUefiNetworking: Whether to enable UEFI networking for instance
       creation.
     numaNodeCount: The number of vNUMA nodes.
+    performanceMonitoringUnit: Type of Performance Monitoring Unit requested
+      on instance.
     threadsPerCore: The number of threads per physical core. To disable
       simultaneous multithreading (SMT) set this to 1. If unset, the maximum
       number of threads supported per core by the underlying processor is
@@ -1525,11 +1531,26 @@ class AdvancedMachineFeatures(_messages.Message):
       platform's SMT width.
   """
 
+  class PerformanceMonitoringUnitValueValuesEnum(_messages.Enum):
+    r"""Type of Performance Monitoring Unit requested on instance.
+
+    Values:
+      ARCHITECTURAL: Architecturally defined non-LLC events.
+      ENHANCED: Most documented core/L2 and LLC events.
+      PERFORMANCE_MONITORING_UNIT_UNSPECIFIED: <no description>
+      STANDARD: Most documented core/L2 events.
+    """
+    ARCHITECTURAL = 0
+    ENHANCED = 1
+    PERFORMANCE_MONITORING_UNIT_UNSPECIFIED = 2
+    STANDARD = 3
+
   enableNestedVirtualization = _messages.BooleanField(1)
   enableUefiNetworking = _messages.BooleanField(2)
   numaNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  threadsPerCore = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  visibleCoreCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  performanceMonitoringUnit = _messages.EnumField('PerformanceMonitoringUnitValueValuesEnum', 4)
+  threadsPerCore = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  visibleCoreCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class AliasIpRange(_messages.Message):
@@ -3483,7 +3504,9 @@ class Backend(_messages.Message):
       available capacity. The valid ranges are 0.0 and [0.1,1.0]. You cannot
       configure a setting larger than 0 and smaller than 0.1. You cannot
       configure a setting of 0 when there is only one backend attached to the
-      backend service.
+      backend service. Not available with backends that don't support using a
+      balancingMode. This includes backends such as global internet NEGs,
+      regional serverless NEGs, and PSC NEGs.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     failover: This field designates whether this is a failover backend. More
@@ -15298,7 +15321,7 @@ class ComputeInstancesStopRequest(_messages.Message):
 
   Fields:
     discardLocalSsd: If true, discard the contents of any attached localSSD
-      partitions. Default value is false (== preserve localSSD data).
+      partitions. Default value is false.
     instance: Name of the instance resource to stop.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -15326,7 +15349,7 @@ class ComputeInstancesSuspendRequest(_messages.Message):
 
   Fields:
     discardLocalSsd: If true, discard the contents of any attached localSSD
-      partitions. Default value is false (== preserve localSSD data).
+      partitions. Default value is false.
     instance: Name of the instance resource to suspend.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -27506,6 +27529,37 @@ class ComputeResourcePoliciesListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(7)
 
 
+class ComputeResourcePoliciesPatchRequest(_messages.Message):
+  r"""A ComputeResourcePoliciesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    resourcePolicy: Id of the resource policy to patch.
+    resourcePolicyResource: A ResourcePolicy resource to be passed as the
+      request body.
+    updateMask: update_mask indicates fields to be updated as part of this
+      request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  resourcePolicy = _messages.StringField(4, required=True)
+  resourcePolicyResource = _messages.MessageField('ResourcePolicy', 5)
+  updateMask = _messages.StringField(6)
+
+
 class ComputeResourcePoliciesSetIamPolicyRequest(_messages.Message):
   r"""A ComputeResourcePoliciesSetIamPolicyRequest object.
 
@@ -33019,6 +33073,80 @@ class ComputeZoneOperationsWaitRequest(_messages.Message):
   zone = _messages.StringField(3, required=True)
 
 
+class ComputeZoneQueuedResourcesAggregatedListRequest(_messages.Message):
+  r"""A ComputeZoneQueuedResourcesAggregatedListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:` operator can be used with string fields to
+      match substrings. For non-string fields it is equivalent to the `=`
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. For example, to find all objects with `owner` label use: ```
+      labels.owner:* ``` You can also filter nested fields. For example, you
+      could specify `scheduling.automaticRestart = false` to include instances
+      only if they are not scheduled for automatic restarts. You can use
+      filtering on nested fields to filter based on resource labels. To filter
+      on multiple expressions, provide each separate expression within
+      parentheses. For example: ``` (scheduling.automaticRestart = true)
+      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
+      `AND` expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
+      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
+      true) ``` If you want to use a regular expression, use the `eq` (equal)
+      or `ne` (not equal) operator against a single un-parenthesized
+      expression with or without quotes or against multiple parenthesized
+      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
+      'single quoted literal'` `fieldname eq "double quoted literal"`
+      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
+      interpreted as a regular expression using Google RE2 library syntax. The
+      literal value must match the entire field. For example, to filter for
+      instances that do not end with name "instance", you would use `name ne
+      .*instance`.
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
 class ComputeZoneQueuedResourcesCancelRequest(_messages.Message):
   r"""A ComputeZoneQueuedResourcesCancelRequest object.
 
@@ -35412,16 +35540,9 @@ class DisksStopAsyncReplicationRequest(_messages.Message):
   r"""A DisksStopAsyncReplicationRequest object.
 
   Fields:
-    asyncSecondaryDisk: The secondary disk to stop asynchronous replication
-      to. Supplied if and only if the target disk is a primary disk in an
-      asynchronously replicated pair. You can provide this as a partial or
-      full URL to the resource. For example, the following are valid values: -
-      https://www.googleapis.com/compute/v1/projects/project/zones/zone
-      /disks/disk -
-      https://www.googleapis.com/compute/v1/projects/project/regions/region
-      /disks/disk - projects/project/zones/zone/disks/disk -
-      projects/project/regions/region/disks/disk - zones/zone/disks/disk -
-      regions/region/disks/disk
+    asyncSecondaryDisk: [Deprecated] The secondary disk to stop asynchronous
+      replication to. This field will not be included in the beta or v1 APIs
+      and will be removed from the alpha API in the near future.
   """
 
   asyncSecondaryDisk = _messages.StringField(1)
@@ -35571,7 +35692,8 @@ class ErrorInfo(_messages.Message):
     reason: The reason of the error. This is a constant value that identifies
       the proximate cause of the error. Error reasons are unique within a
       particular domain of errors. This should be at most 63 characters and
-      match /[A-Z0-9_]+/.
+      match a regular expression of `A-Z+[A-Z0-9]`, which represents
+      UPPER_SNAKE_CASE.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -36609,8 +36731,8 @@ class FirewallPolicy(_messages.Message):
     kind: [Output only] Type of the resource. Always compute#firewallPolicyfor
       firewall policies
     name: Name of the resource. For Organization Firewall Policies it's a
-      [Output Only] numeric ID allocated by GCP which uniquely identifies the
-      Organization Firewall Policy.
+      [Output Only] numeric ID allocated by Google Cloud which uniquely
+      identifies the Organization Firewall Policy.
     parent: [Output Only] The parent of the firewall policy. This field is not
       applicable to network firewall policies.
     region: [Output Only] URL of the region where the regional firewall policy
@@ -37150,6 +37272,12 @@ class ForwardingRule(_messages.Message):
       rule sends traffic. Required for Internal TCP/UDP Load Balancing and
       Network Load Balancing; must be omitted for all other load balancer
       types.
+    baseForwardingRule: [Output Only] The URL for the corresponding base
+      Forwarding Rule. By base Forwarding Rule, we mean the Forwarding Rule
+      that has the same IP address, protocol, and port settings with the
+      current Forwarding Rule, but without sourceIPRanges specified. Always
+      empty if the current Forwarding Rule does not have sourceIPRanges
+      specified.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -37441,34 +37569,35 @@ class ForwardingRule(_messages.Message):
   allowGlobalAccess = _messages.BooleanField(4)
   allowPscGlobalAccess = _messages.BooleanField(5)
   backendService = _messages.StringField(6)
-  creationTimestamp = _messages.StringField(7)
-  description = _messages.StringField(8)
-  fingerprint = _messages.BytesField(9)
-  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
-  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 11)
-  isMirroringCollector = _messages.BooleanField(12)
-  kind = _messages.StringField(13, default='compute#forwardingRule')
-  labelFingerprint = _messages.BytesField(14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 16)
-  metadataFilters = _messages.MessageField('MetadataFilter', 17, repeated=True)
-  name = _messages.StringField(18)
-  network = _messages.StringField(19)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 20)
-  noAutomateDnsZone = _messages.BooleanField(21)
-  portRange = _messages.StringField(22)
-  ports = _messages.StringField(23, repeated=True)
-  pscConnectionId = _messages.IntegerField(24, variant=_messages.Variant.UINT64)
-  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 25)
-  region = _messages.StringField(26)
-  selfLink = _messages.StringField(27)
-  selfLinkWithId = _messages.StringField(28)
-  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 29, repeated=True)
-  serviceLabel = _messages.StringField(30)
-  serviceName = _messages.StringField(31)
-  sourceIpRanges = _messages.StringField(32, repeated=True)
-  subnetwork = _messages.StringField(33)
-  target = _messages.StringField(34)
+  baseForwardingRule = _messages.StringField(7)
+  creationTimestamp = _messages.StringField(8)
+  description = _messages.StringField(9)
+  fingerprint = _messages.BytesField(10)
+  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 12)
+  isMirroringCollector = _messages.BooleanField(13)
+  kind = _messages.StringField(14, default='compute#forwardingRule')
+  labelFingerprint = _messages.BytesField(15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 17)
+  metadataFilters = _messages.MessageField('MetadataFilter', 18, repeated=True)
+  name = _messages.StringField(19)
+  network = _messages.StringField(20)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 21)
+  noAutomateDnsZone = _messages.BooleanField(22)
+  portRange = _messages.StringField(23)
+  ports = _messages.StringField(24, repeated=True)
+  pscConnectionId = _messages.IntegerField(25, variant=_messages.Variant.UINT64)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 26)
+  region = _messages.StringField(27)
+  selfLink = _messages.StringField(28)
+  selfLinkWithId = _messages.StringField(29)
+  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 30, repeated=True)
+  serviceLabel = _messages.StringField(31)
+  serviceName = _messages.StringField(32)
+  sourceIpRanges = _messages.StringField(33, repeated=True)
+  subnetwork = _messages.StringField(34)
+  target = _messages.StringField(35)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -39776,7 +39905,8 @@ class HealthCheckService(_messages.Message):
       An EndpointHealth message is returned for each pair in the health check
       service. - AND. If any health check of an endpoint reports UNHEALTHY,
       then UNHEALTHY is the HealthState of the endpoint. If all health checks
-      report HEALTHY, the HealthState of the endpoint is HEALTHY. .
+      report HEALTHY, the HealthState of the endpoint is HEALTHY. . This is
+      only allowed with regional HealthCheckService.
     HealthStatusAggregationStrategyValueValuesEnum: This field is deprecated.
       Use health_status_aggregation_policy instead. Policy for how the results
       from multiple health checks for the same endpoint are aggregated. -
@@ -39799,21 +39929,27 @@ class HealthCheckService(_messages.Message):
       conditionNotMet. To see the latest fingerprint, make a get() request to
       retrieve the HealthCheckService.
     healthChecks: A list of URLs to the HealthCheck resources. Must have at
-      least one HealthCheck, and not more than 10. HealthCheck resources must
-      have portSpecification=USE_SERVING_PORT or
+      least one HealthCheck, and not more than 10 for regional
+      HealthCheckService, and not more than 1 for global HealthCheckService.
+      HealthCheck resources must have portSpecification=USE_SERVING_PORT or
       portSpecification=USE_FIXED_PORT. For regional HealthCheckService, the
       HealthCheck must be regional and in the same region. For global
       HealthCheckService, HealthCheck must be global. Mix of regional and
       global HealthChecks is not supported. Multiple regional HealthChecks
       must belong to the same region. Regional HealthChecks must belong to the
-      same region as zones of NEGs.
+      same region as zones of NetworkEndpointGroups. For global
+      HealthCheckService using global INTERNET_IP_PORT NetworkEndpointGroups,
+      the global HealthChecks must specify sourceRegions, and HealthChecks
+      that specify sourceRegions can only be used with global INTERNET_IP_PORT
+      NetworkEndpointGroups.
     healthStatusAggregationPolicy: Optional. Policy for how the results from
       multiple health checks for the same endpoint are aggregated. Defaults to
       NO_AGGREGATION if unspecified. - NO_AGGREGATION. An EndpointHealth
       message is returned for each pair in the health check service. - AND. If
       any health check of an endpoint reports UNHEALTHY, then UNHEALTHY is the
       HealthState of the endpoint. If all health checks report HEALTHY, the
-      HealthState of the endpoint is HEALTHY. .
+      HealthState of the endpoint is HEALTHY. . This is only allowed with
+      regional HealthCheckService.
     healthStatusAggregationStrategy: This field is deprecated. Use
       health_status_aggregation_policy instead. Policy for how the results
       from multiple health checks for the same endpoint are aggregated. -
@@ -39834,7 +39970,9 @@ class HealthCheckService(_messages.Message):
       character, which cannot be a dash.
     networkEndpointGroups: A list of URLs to the NetworkEndpointGroup
       resources. Must not have more than 100. For regional HealthCheckService,
-      NEGs must be in zones in the region of the HealthCheckService.
+      NEGs must be in zones in the region of the HealthCheckService. For
+      global HealthCheckServices, the NetworkEndpointGroups must be global
+      INTERNET_IP_PORT.
     notificationEndpoints: A list of URLs to the NotificationEndpoint
       resources. Must not have more than 10. A list of endpoints for receiving
       notifications of change in health status. For regional
@@ -39856,7 +39994,8 @@ class HealthCheckService(_messages.Message):
     each pair in the health check service. - AND. If any health check of an
     endpoint reports UNHEALTHY, then UNHEALTHY is the HealthState of the
     endpoint. If all health checks report HEALTHY, the HealthState of the
-    endpoint is HEALTHY. .
+    endpoint is HEALTHY. . This is only allowed with regional
+    HealthCheckService.
 
     Values:
       AND: If any backend's health check reports UNHEALTHY, then UNHEALTHY is
@@ -42484,18 +42623,13 @@ class Instance(_messages.Message):
       using zonal DNS.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    instanceEncryptionKey: Encrypts or decrypts data for an instance with a
-      customer-supplied encryption key. If you are creating a new instance,
-      this field encrypts the local SSD and in-memory contents of the instance
-      using a key that you provide. If you are restarting an instance
-      protected with a customer-supplied encryption key, you must provide the
-      correct key in order to successfully restart the instance. If you do not
-      provide an encryption key when creating the instance, then the local SSD
-      and in-memory contents will be encrypted using an automatically
-      generated key and you do not need to provide a key to start the instance
-      later. Instance templates do not store customer-supplied encryption
-      keys, so you cannot use your own keys to encrypt local SSDs and in-
-      memory content in a managed instance group.
+    instanceEncryptionKey: Encrypts suspended data for an instance with a
+      customer-managed encryption key. If you are creating a new instance,
+      this field will encrypt the local SSD and in-memory contents of the
+      instance during the suspend operation. If you do not provide an
+      encryption key when creating the instance, then the local SSD and in-
+      memory contents will be encrypted using an automatically generated key
+      during the suspend operation.
     keyRevocationActionType: KeyRevocationActionType of the instance.
       Supported options are "STOP" and "NONE". The default value is "NONE" if
       it is not specified.
@@ -48069,7 +48203,9 @@ class Interconnect(_messages.Message):
     nocContactEmail: Email address to contact the customer NOC for operations
       and maintenance notifications regarding this Interconnect. If specified,
       this will be used for notifications in addition to all other forms
-      described, such as Stackdriver logs alerting and Cloud Notifications.
+      described, such as Cloud Monitoring logs alerting and Cloud
+      Notifications. This field is required for users who sign up for Cloud
+      Interconnect using workforce identity federation.
     operationalStatus: [Output Only] The current status of this Interconnect's
       functionality, which can take one of the following values: - OS_ACTIVE:
       A valid Interconnect, which is turned up and is ready to use.
@@ -48932,9 +49068,6 @@ class InterconnectAttachmentConfigurationConstraints(_messages.Message):
       field set to MD5_REQUIRED, and that property is propagated to the
       attachment. Similarly, if BGP MD5 is MD5_UNSUPPORTED, an error is
       returned if MD5 is requested.
-    NetworkConnectivityCenterValueValuesEnum: [Output Only] Network
-      Connectivity Center constraints, which can take one of the following
-      values: NCC_UNCONSTRAINED, NCC_SPOKE_REQUIRED
 
   Fields:
     bgpMd5: [Output Only] Whether the attachment's BGP session
@@ -48952,9 +49085,6 @@ class InterconnectAttachmentConfigurationConstraints(_messages.Message):
       {min: 64512, max: 65534}] allows the peer ASN to be 123 or anything in
       the range 64512-65534. This field is only advisory. Although the API
       accepts other ranges, these are the ranges that we recommend.
-    networkConnectivityCenter: [Output Only] Network Connectivity Center
-      constraints, which can take one of the following values:
-      NCC_UNCONSTRAINED, NCC_SPOKE_REQUIRED
   """
 
   class BgpMd5ValueValuesEnum(_messages.Enum):
@@ -48978,23 +49108,8 @@ class InterconnectAttachmentConfigurationConstraints(_messages.Message):
     MD5_REQUIRED = 1
     MD5_UNSUPPORTED = 2
 
-  class NetworkConnectivityCenterValueValuesEnum(_messages.Enum):
-    r"""[Output Only] Network Connectivity Center constraints, which can take
-    one of the following values: NCC_UNCONSTRAINED, NCC_SPOKE_REQUIRED
-
-    Values:
-      NCC_SPOKE_REQUIRED: If NCC_SPOKE_REQUIRED, the attachment is disabled
-        until the attachment is included in a Network Connectivity Center
-        spoke. This is true for attachments on Cross-Cloud Interconnect
-        connections.
-      NCC_UNCONSTRAINED: UNCONSTRAINED means there is no constraint.
-    """
-    NCC_SPOKE_REQUIRED = 0
-    NCC_UNCONSTRAINED = 1
-
   bgpMd5 = _messages.EnumField('BgpMd5ValueValuesEnum', 1)
   bgpPeerAsnRanges = _messages.MessageField('InterconnectAttachmentConfigurationConstraintsBgpPeerASNRange', 2, repeated=True)
-  networkConnectivityCenter = _messages.EnumField('NetworkConnectivityCenterValueValuesEnum', 3)
 
 
 class InterconnectAttachmentConfigurationConstraintsBgpPeerASNRange(_messages.Message):
@@ -49399,11 +49514,9 @@ class InterconnectDiagnostics(_messages.Message):
     Values:
       BUNDLE_AGGREGATION_TYPE_LACP: LACP is enabled.
       BUNDLE_AGGREGATION_TYPE_STATIC: LACP is disabled.
-      BUNDLE_AGGREGATION_TYPE_UNSPECIFIED: <no description>
     """
     BUNDLE_AGGREGATION_TYPE_LACP = 0
     BUNDLE_AGGREGATION_TYPE_STATIC = 1
-    BUNDLE_AGGREGATION_TYPE_UNSPECIFIED = 2
 
   class BundleOperationalStatusValueValuesEnum(_messages.Enum):
     r"""The operational status of the bundle interface.
@@ -49413,15 +49526,13 @@ class InterconnectDiagnostics(_messages.Message):
         is not established and/or all links in the bundle have DOWN
         operational status. If bundleAggregationType is STATIC: one or more
         links in the bundle has DOWN operational status.
-      BUNDLE_OPERATIONAL_STATUS_UNSPECIFIED: <no description>
       BUNDLE_OPERATIONAL_STATUS_UP: If bundleAggregationType is LACP: LACP is
         established and at least one link in the bundle has UP operational
         status. If bundleAggregationType is STATIC: all links in the bundle
         (typically just one) have UP operational status.
     """
     BUNDLE_OPERATIONAL_STATUS_DOWN = 0
-    BUNDLE_OPERATIONAL_STATUS_UNSPECIFIED = 1
-    BUNDLE_OPERATIONAL_STATUS_UP = 2
+    BUNDLE_OPERATIONAL_STATUS_UP = 1
 
   arpCaches = _messages.MessageField('InterconnectDiagnosticsARPEntry', 1, repeated=True)
   bundleAggregationType = _messages.EnumField('BundleAggregationTypeValueValuesEnum', 2)
@@ -49567,13 +49678,11 @@ class InterconnectDiagnosticsLinkStatus(_messages.Message):
     Values:
       LINK_OPERATIONAL_STATUS_DOWN: The interface is unable to communicate
         with the remote end.
-      LINK_OPERATIONAL_STATUS_UNSPECIFIED: <no description>
       LINK_OPERATIONAL_STATUS_UP: The interface has low level communication
         with the remote end.
     """
     LINK_OPERATIONAL_STATUS_DOWN = 0
-    LINK_OPERATIONAL_STATUS_UNSPECIFIED = 1
-    LINK_OPERATIONAL_STATUS_UP = 2
+    LINK_OPERATIONAL_STATUS_UP = 1
 
   arpCaches = _messages.MessageField('InterconnectDiagnosticsARPEntry', 1, repeated=True)
   circuitId = _messages.StringField(2)
@@ -58307,7 +58416,8 @@ class NotificationEndpointGrpcSettings(_messages.Message):
     resendInterval: Optional. This field is used to configure how often to
       send a full update of all non-healthy backends. If unspecified, full
       updates are not sent. If specified, must be in the range between 600
-      seconds to 3600 seconds. Nanos are disallowed.
+      seconds to 3600 seconds. Nanos are disallowed. Can only be set for
+      regional notification endpoints.
     retryDurationSec: How much time (in seconds) is spent attempting
       notification retries until a successful response is received. Default is
       30s. Limit is 20m (1200s). Must be a positive number.
@@ -62446,6 +62556,341 @@ class QueuedResourceStatusFailedData(_messages.Message):
   error = _messages.MessageField('ErrorValue', 1)
 
 
+class QueuedResourcesAggregatedList(_messages.Message):
+  r"""A QueuedResourcesAggregatedList object.
+
+  Messages:
+    ItemsValue: A list of QueuedResourcesScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of QueuedResourcesScopedList resources.
+    kind: [Output Only] Type of resource. Always
+      compute#queuedResourcesAggregatedList for lists of QueuedResource.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
+    warning: [Output Only] Informational warning message.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    r"""A list of QueuedResourcesScopedList resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: Name of the scope containing this set of queued
+        resources.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A QueuedResourcesScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('QueuedResourcesScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ItemsValue', 2)
+  kind = _messages.StringField(3, default='compute#queuedResources')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
+
+
+class QueuedResourcesScopedList(_messages.Message):
+  r"""A QueuedResourcesScopedList object.
+
+  Messages:
+    WarningValue: Informational warning which replaces the list of backend
+      services when the list is empty.
+
+  Fields:
+    queuedResources: List of QueuedResources contained in this scope.
+    warning: Informational warning which replaces the list of backend services
+      when the list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""Informational warning which replaces the list of backend services when
+    the list is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  queuedResources = _messages.MessageField('QueuedResource', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
+
+
 class QueuingPolicy(_messages.Message):
   r"""Queuing parameters for the requested deferred capacity.
 
@@ -62519,8 +62964,12 @@ class Quota(_messages.Message):
       EXTERNAL_VPN_GATEWAYS: <no description>
       FIREWALLS: <no description>
       FORWARDING_RULES: <no description>
+      GLOBAL_EXTERNAL_MANAGED_BACKEND_SERVICES: <no description>
       GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES: <no description>
+      GLOBAL_EXTERNAL_PROXY_LB_BACKEND_SERVICES: <no description>
       GLOBAL_INTERNAL_ADDRESSES: <no description>
+      GLOBAL_INTERNAL_MANAGED_BACKEND_SERVICES: <no description>
+      GLOBAL_INTERNAL_TRAFFIC_DIRECTOR_BACKEND_SERVICES: <no description>
       GPUS_ALL_REGIONS: <no description>
       HEALTH_CHECKS: <no description>
       IMAGES: <no description>
@@ -62583,7 +63032,11 @@ class Quota(_messages.Message):
       PUBLIC_DELEGATED_PREFIXES: <no description>
       QUEUED_RESOURCES: <no description>
       REGIONAL_AUTOSCALERS: <no description>
+      REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES: <no description>
+      REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
+      REGIONAL_INTERNAL_LB_BACKEND_SERVICES: <no description>
+      REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES: <no description>
       RESERVATIONS: <no description>
       RESOURCE_POLICIES: <no description>
       ROUTERS: <no description>
@@ -62657,101 +63110,109 @@ class Quota(_messages.Message):
     EXTERNAL_VPN_GATEWAYS = 39
     FIREWALLS = 40
     FORWARDING_RULES = 41
-    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 42
-    GLOBAL_INTERNAL_ADDRESSES = 43
-    GPUS_ALL_REGIONS = 44
-    HEALTH_CHECKS = 45
-    IMAGES = 46
-    INSTANCES = 47
-    INSTANCE_GROUPS = 48
-    INSTANCE_GROUP_MANAGERS = 49
-    INSTANCE_TEMPLATES = 50
-    INTERCONNECTS = 51
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 52
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 53
-    INTERCONNECT_TOTAL_GBPS = 54
-    INTERNAL_ADDRESSES = 55
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 56
-    IN_PLACE_SNAPSHOTS = 57
-    IN_USE_ADDRESSES = 58
-    IN_USE_BACKUP_SCHEDULES = 59
-    IN_USE_MAINTENANCE_WINDOWS = 60
-    IN_USE_SNAPSHOT_SCHEDULES = 61
-    LOCAL_SSD_TOTAL_GB = 62
-    M1_CPUS = 63
-    M2_CPUS = 64
-    M3_CPUS = 65
-    MACHINE_IMAGES = 66
-    N2A_CPUS = 67
-    N2D_CPUS = 68
-    N2_CPUS = 69
-    NETWORKS = 70
-    NETWORK_ENDPOINT_GROUPS = 71
-    NETWORK_FIREWALL_POLICIES = 72
-    NODE_GROUPS = 73
-    NODE_TEMPLATES = 74
-    NVIDIA_A100_80GB_GPUS = 75
-    NVIDIA_A100_GPUS = 76
-    NVIDIA_K80_GPUS = 77
-    NVIDIA_P100_GPUS = 78
-    NVIDIA_P100_VWS_GPUS = 79
-    NVIDIA_P4_GPUS = 80
-    NVIDIA_P4_VWS_GPUS = 81
-    NVIDIA_T4_GPUS = 82
-    NVIDIA_T4_VWS_GPUS = 83
-    NVIDIA_V100_GPUS = 84
-    PACKET_MIRRORINGS = 85
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 86
-    PREEMPTIBLE_CPUS = 87
-    PREEMPTIBLE_LOCAL_SSD_GB = 88
-    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 89
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 90
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 91
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 92
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 93
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 94
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 95
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 96
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 97
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 98
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 99
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 100
-    PSC_INTERNAL_LB_FORWARDING_RULES = 101
-    PUBLIC_ADVERTISED_PREFIXES = 102
-    PUBLIC_DELEGATED_PREFIXES = 103
-    QUEUED_RESOURCES = 104
-    REGIONAL_AUTOSCALERS = 105
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 106
-    RESERVATIONS = 107
-    RESOURCE_POLICIES = 108
-    ROUTERS = 109
-    ROUTES = 110
-    SECURITY_POLICIES = 111
-    SECURITY_POLICIES_PER_REGION = 112
-    SECURITY_POLICY_CEVAL_RULES = 113
-    SECURITY_POLICY_RULES = 114
-    SECURITY_POLICY_RULES_PER_REGION = 115
-    SERVICE_ATTACHMENTS = 116
-    SNAPSHOTS = 117
-    SSD_TOTAL_GB = 118
-    SSL_CERTIFICATES = 119
-    STATIC_ADDRESSES = 120
-    STATIC_BYOIP_ADDRESSES = 121
-    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 122
-    SUBNETWORKS = 123
-    T2A_CPUS = 124
-    T2D_CPUS = 125
-    TARGET_HTTPS_PROXIES = 126
-    TARGET_HTTP_PROXIES = 127
-    TARGET_INSTANCES = 128
-    TARGET_POOLS = 129
-    TARGET_SSL_PROXIES = 130
-    TARGET_TCP_PROXIES = 131
-    TARGET_VPN_GATEWAYS = 132
-    URL_MAPS = 133
-    VPN_GATEWAYS = 134
-    VPN_TUNNELS = 135
-    XPN_SERVICE_PROJECTS = 136
+    GLOBAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 42
+    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 43
+    GLOBAL_EXTERNAL_PROXY_LB_BACKEND_SERVICES = 44
+    GLOBAL_INTERNAL_ADDRESSES = 45
+    GLOBAL_INTERNAL_MANAGED_BACKEND_SERVICES = 46
+    GLOBAL_INTERNAL_TRAFFIC_DIRECTOR_BACKEND_SERVICES = 47
+    GPUS_ALL_REGIONS = 48
+    HEALTH_CHECKS = 49
+    IMAGES = 50
+    INSTANCES = 51
+    INSTANCE_GROUPS = 52
+    INSTANCE_GROUP_MANAGERS = 53
+    INSTANCE_TEMPLATES = 54
+    INTERCONNECTS = 55
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 56
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 57
+    INTERCONNECT_TOTAL_GBPS = 58
+    INTERNAL_ADDRESSES = 59
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 60
+    IN_PLACE_SNAPSHOTS = 61
+    IN_USE_ADDRESSES = 62
+    IN_USE_BACKUP_SCHEDULES = 63
+    IN_USE_MAINTENANCE_WINDOWS = 64
+    IN_USE_SNAPSHOT_SCHEDULES = 65
+    LOCAL_SSD_TOTAL_GB = 66
+    M1_CPUS = 67
+    M2_CPUS = 68
+    M3_CPUS = 69
+    MACHINE_IMAGES = 70
+    N2A_CPUS = 71
+    N2D_CPUS = 72
+    N2_CPUS = 73
+    NETWORKS = 74
+    NETWORK_ENDPOINT_GROUPS = 75
+    NETWORK_FIREWALL_POLICIES = 76
+    NODE_GROUPS = 77
+    NODE_TEMPLATES = 78
+    NVIDIA_A100_80GB_GPUS = 79
+    NVIDIA_A100_GPUS = 80
+    NVIDIA_K80_GPUS = 81
+    NVIDIA_P100_GPUS = 82
+    NVIDIA_P100_VWS_GPUS = 83
+    NVIDIA_P4_GPUS = 84
+    NVIDIA_P4_VWS_GPUS = 85
+    NVIDIA_T4_GPUS = 86
+    NVIDIA_T4_VWS_GPUS = 87
+    NVIDIA_V100_GPUS = 88
+    PACKET_MIRRORINGS = 89
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 90
+    PREEMPTIBLE_CPUS = 91
+    PREEMPTIBLE_LOCAL_SSD_GB = 92
+    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 93
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 94
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 95
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 96
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 97
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 98
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 99
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 100
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 101
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 102
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 103
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 104
+    PSC_INTERNAL_LB_FORWARDING_RULES = 105
+    PUBLIC_ADVERTISED_PREFIXES = 106
+    PUBLIC_DELEGATED_PREFIXES = 107
+    QUEUED_RESOURCES = 108
+    REGIONAL_AUTOSCALERS = 109
+    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 110
+    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 111
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 112
+    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 113
+    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 114
+    RESERVATIONS = 115
+    RESOURCE_POLICIES = 116
+    ROUTERS = 117
+    ROUTES = 118
+    SECURITY_POLICIES = 119
+    SECURITY_POLICIES_PER_REGION = 120
+    SECURITY_POLICY_CEVAL_RULES = 121
+    SECURITY_POLICY_RULES = 122
+    SECURITY_POLICY_RULES_PER_REGION = 123
+    SERVICE_ATTACHMENTS = 124
+    SNAPSHOTS = 125
+    SSD_TOTAL_GB = 126
+    SSL_CERTIFICATES = 127
+    STATIC_ADDRESSES = 128
+    STATIC_BYOIP_ADDRESSES = 129
+    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 130
+    SUBNETWORKS = 131
+    T2A_CPUS = 132
+    T2D_CPUS = 133
+    TARGET_HTTPS_PROXIES = 134
+    TARGET_HTTP_PROXIES = 135
+    TARGET_INSTANCES = 136
+    TARGET_POOLS = 137
+    TARGET_SSL_PROXIES = 138
+    TARGET_TCP_PROXIES = 139
+    TARGET_VPN_GATEWAYS = 140
+    URL_MAPS = 141
+    VPN_GATEWAYS = 142
+    VPN_TUNNELS = 143
+    XPN_SERVICE_PROJECTS = 144
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -63288,16 +63749,9 @@ class RegionDisksStopAsyncReplicationRequest(_messages.Message):
   r"""A RegionDisksStopAsyncReplicationRequest object.
 
   Fields:
-    asyncSecondaryDisk: The secondary disk to stop asynchronous replication
-      to. Supplied if and only if the target disk is a primary disk in an
-      asynchronously replicated pair. You can provide this as a partial or
-      full URL to the resource. For example, the following are valid values: -
-      https://www.googleapis.com/compute/v1/projects/project/zones/zone
-      /disks/disk -
-      https://www.googleapis.com/compute/v1/projects/project/regions/region
-      /disks/disk - projects/project/zones/zone/disks/disk -
-      projects/project/regions/region/disks/disk - zones/zone/disks/disk -
-      regions/region/disks/disk
+    asyncSecondaryDisk: [Deprecated] The secondary disk to stop asynchronous
+      replication to. This field will not be included in the beta or v1 APIs
+      and will be removed from the alpha API in the near future.
   """
 
   asyncSecondaryDisk = _messages.StringField(1)
@@ -65329,7 +65783,7 @@ class ResourceCommitment(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: Type of resource for which this commitment applies.
-      Possible values are VCPU and MEMORY
+      Possible values are VCPU, MEMORY, LOCAL_SSD, and ACCELERATOR.
 
   Fields:
     acceleratorType: Name of the accelerator type resource. Applicable only
@@ -65339,12 +65793,12 @@ class ResourceCommitment(_messages.Message):
       must be provided in MB. Memory must be a multiple of 256 MB, with up to
       6.5GB of memory per every vCPU.
     type: Type of resource for which this commitment applies. Possible values
-      are VCPU and MEMORY
+      are VCPU, MEMORY, LOCAL_SSD, and ACCELERATOR.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of resource for which this commitment applies. Possible values
-    are VCPU and MEMORY
+    are VCPU, MEMORY, LOCAL_SSD, and ACCELERATOR.
 
     Values:
       ACCELERATOR: <no description>

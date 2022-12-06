@@ -1416,7 +1416,7 @@
     },
     "DocumentOccurrence": {
       "id": "DocumentOccurrence",
-      "description": "DocumentOccurrence represents an SPDX Document Creation Information section: https:\/\/spdx.github.io\/spdx-spec\/2-document-creation-information\/",
+      "description": "DocumentOccurrence represents an SPDX Document Creation Information section: https:\/\/spdx.github.io\/spdx-spec\/v2.3\/document-creation-information\/",
       "type": "object",
       "properties": {
         "id": {
@@ -2728,7 +2728,7 @@
     },
     "DocumentNote": {
       "id": "DocumentNote",
-      "description": "DocumentNote represents an SPDX Document Creation Information section: https:\/\/spdx.github.io\/spdx-spec\/2-document-creation-information\/",
+      "description": "DocumentNote represents an SPDX Document Creation Information section: https:\/\/spdx.github.io\/spdx-spec\/v2.3\/document-creation-information\/",
       "type": "object",
       "properties": {
         "spdxVersion": {
@@ -4215,7 +4215,7 @@
           ]
         },
         "diskSizeGb": {
-          "description": "Requested disk size for the VM that runs the build. Note that this is *NOT* \"disk free\"; some of the space will be used by the operating system and build utilities. Also note that this is the minimum disk size that will be allocated for the build -- the build may run with a larger disk than requested. At present, the maximum disk size is 1000GB; builds that request more than the maximum are rejected with an error.",
+          "description": "Requested disk size for the VM that runs the build. Note that this is *NOT* \"disk free\"; some of the space will be used by the operating system and build utilities. Also note that this is the minimum disk size that will be allocated for the build -- the build may run with a larger disk than requested. At present, the maximum disk size is 2000GB; builds that request more than the maximum are rejected with an error.",
           "type": "string",
           "format": "int64"
         },

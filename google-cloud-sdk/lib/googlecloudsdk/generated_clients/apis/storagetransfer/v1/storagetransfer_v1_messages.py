@@ -357,6 +357,30 @@ class ErrorSummary(_messages.Message):
   errorLogEntries = _messages.MessageField('ErrorLogEntry', 3, repeated=True)
 
 
+class EventStream(_messages.Message):
+  r"""Specifies the Event-driven transfer options. Event-driven transfers
+  listen to an event stream to transfer updated files.
+
+  Fields:
+    eventStreamExpirationTime: Specifies the data and time at which Storage
+      Transfer Service stops listening for events from this stream. After this
+      time, any transfers in progress will complete, but no new transfers are
+      initiated.
+    eventStreamStartTime: Specifies the date and time that Storage Transfer
+      Service starts listening for events from this stream. If no start time
+      is specified or start time is in the past, Storage Transfer Service
+      starts listening immediately.
+    name: Required. Specifies a unique name of the resource such as AWS SQS
+      ARN in the form 'arn:aws:sqs:region:account_id:queue_name', or Pub/Sub
+      subscription resource name in the form
+      'projects/{project}/subscriptions/{sub}'.
+  """
+
+  eventStreamExpirationTime = _messages.StringField(1)
+  eventStreamStartTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+
+
 class GcsData(_messages.Message):
   r"""In a GcsData resource, an object's name is the Cloud Storage object's
   name and its "last modification time" refers to the object's `updated`
@@ -1642,6 +1666,9 @@ class TransferJob(_messages.Message):
     deletionTime: Output only. The time that the transfer job was deleted.
     description: A description provided by the user for the job. Its max
       length is 1024 bytes when Unicode-encoded.
+    eventStream: Specifies the event stream for the transfer job for event-
+      driven transfers. When EventStream is specified, the Schedule fields are
+      ignored.
     lastModificationTime: Output only. The time that the transfer job was last
       modified.
     latestOperationName: The name of the most recently started
@@ -1703,15 +1730,16 @@ class TransferJob(_messages.Message):
   creationTime = _messages.StringField(1)
   deletionTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  lastModificationTime = _messages.StringField(4)
-  latestOperationName = _messages.StringField(5)
-  loggingConfig = _messages.MessageField('LoggingConfig', 6)
-  name = _messages.StringField(7)
-  notificationConfig = _messages.MessageField('NotificationConfig', 8)
-  projectId = _messages.StringField(9)
-  schedule = _messages.MessageField('Schedule', 10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  transferSpec = _messages.MessageField('TransferSpec', 12)
+  eventStream = _messages.MessageField('EventStream', 4)
+  lastModificationTime = _messages.StringField(5)
+  latestOperationName = _messages.StringField(6)
+  loggingConfig = _messages.MessageField('LoggingConfig', 7)
+  name = _messages.StringField(8)
+  notificationConfig = _messages.MessageField('NotificationConfig', 9)
+  projectId = _messages.StringField(10)
+  schedule = _messages.MessageField('Schedule', 11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  transferSpec = _messages.MessageField('TransferSpec', 13)
 
 
 class TransferManifest(_messages.Message):
@@ -1759,6 +1787,8 @@ class TransferOperation(_messages.Message):
       FAILED: Terminated due to an unrecoverable failure.
       ABORTED: Aborted by the user.
       QUEUED: Temporarily delayed by the system. No user action is required.
+      SUSPENDING: The operation is suspending and draining the ongoing work to
+        completion.
     """
     STATUS_UNSPECIFIED = 0
     IN_PROGRESS = 1
@@ -1767,6 +1797,7 @@ class TransferOperation(_messages.Message):
     FAILED = 4
     ABORTED = 5
     QUEUED = 6
+    SUSPENDING = 7
 
   counters = _messages.MessageField('TransferCounters', 1)
   endTime = _messages.StringField(2)

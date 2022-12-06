@@ -69,6 +69,8 @@ class ClustersClient(client.ClientBase):
     kwargs = {
         'name': self._user_cluster_name(args),
         'force': flags.Get(args, 'force'),
+        'allowMissing': flags.Get(args, 'allow_missing'),
+        'validateOnly': flags.Get(args, 'validate_only'),
     }
     req = (
         self._messages.GkeonpremProjectsLocationsVmwareClustersUnenrollRequest(
@@ -370,10 +372,10 @@ class ClustersClient(client.ClientBase):
       return None
 
     file_content = args.static_ip_config_from_file
-    static_ip_config = file_content.get('staticIpConfig', None)
+    static_ip_config = file_content.get('staticIPConfig', None)
     if not static_ip_config:
       raise InvalidConfigFile(
-          'Missing field [staticIpConfig] in Static IP configuration file.')
+          'Missing field [staticIPConfig] in Static IP configuration file.')
 
     ip_blocks = static_ip_config.get('ipBlocks', [])
     if not ip_blocks:
@@ -401,6 +403,7 @@ class ClustersClient(client.ClientBase):
     kwargs = {
         'dnsServers': flags.Get(args, 'dns_servers', []),
         'ntpServers': flags.Get(args, 'ntp_servers', []),
+        'dnsSearchDomains': flags.Get(args, 'dns_search_domains', []),
     }
     if flags.IsSet(kwargs):
       return self._messages.VmwareHostConfig(**kwargs)
@@ -459,12 +462,25 @@ class ClustersClient(client.ClientBase):
 
   def _vmware_metal_lb_config(self, args):
     """Constructs proto message VmwareMetalLbConfig."""
+    if 'metal_lb_config_from_file' not in args.GetSpecifiedArgsDict():
+      return None
+
+    file_content = args.metal_lb_config_from_file
+    metal_lb_config = file_content.get('metalLBConfig', None)
+    if not metal_lb_config:
+      raise InvalidConfigFile(
+          'Missing field [metalLBConfig] in Metal LB configuration file.'
+      )
+
+    address_pools = metal_lb_config.get('addressPools', [])
+    if not address_pools:
+      raise InvalidConfigFile(
+          'Missing field [addressPools] in Metal LB configuration file.')
+
     kwargs = {
-        'addressPools': self._address_pools(args),
+        'addressPools': self._address_pools(address_pools),
     }
-    if any(kwargs.values()):
-      return self._messages.VmwareMetalLbConfig(**kwargs)
-    return None
+    return self._messages.VmwareMetalLbConfig(**kwargs)
 
   def _vmware_manual_lb_config(self, args):
     """Constructs proto message VmwareManualLbConfig."""
@@ -482,26 +498,35 @@ class ClustersClient(client.ClientBase):
       return self._messages.VmwareManualLbConfig(**kwargs)
     return None
 
-  def _address_pools(self, args):
+  def _address_pools(self, address_pools):
     """Constructs proto message field address_pools."""
-    address_pools = []
-    address_pool_flag_value = flags.Get(args, 'metal_lb_config_address_pools')
-    if address_pool_flag_value:
-      for address_pool in address_pool_flag_value:
-        address_pools.append(self._vmware_address_pool(address_pool))
-    return address_pools
+    address_pool_messages = []
+    for address_pool in address_pools:
+      address_pool_messages.append(self._vmware_address_pool(address_pool))
+    return address_pool_messages
 
-  def _vmware_address_pool(self, address_pool_args):
+  def _vmware_address_pool(self, address_pool):
     """Constructs proto message VmwareAddressPool."""
+    addresses = address_pool.get('addresses', [])
+    if not addresses:
+      raise InvalidConfigFile(
+          'Missing field [addresses] in Metal LB configuration file.')
+
+    avoid_buggy_ips = address_pool.get('avoidBuggyIPs', None)
+    manual_assign = address_pool.get('manualAssign', None)
+
+    pool = address_pool.get('pool', None)
+    if not pool:
+      raise InvalidConfigFile(
+          'Missing field [pool] in Metal LB configuration file.')
+
     kwargs = {
-        'addresses': address_pool_args.get('addresses', []),
-        'avoidBuggyIps': address_pool_args.get('avoid-buggy-ips', False),
-        'manualAssign': address_pool_args.get('manual-assign', False),
-        'pool': address_pool_args.get('pool', ''),
+        'addresses': addresses,
+        'avoidBuggyIps': avoid_buggy_ips,
+        'manualAssign': manual_assign,
+        'pool': pool,
     }
-    if any(kwargs.values()):
-      return self._messages.VmwareAddressPool(**kwargs)
-    return None
+    return self._messages.VmwareAddressPool(**kwargs)
 
 
 class InvalidConfigFile(exceptions.Error):

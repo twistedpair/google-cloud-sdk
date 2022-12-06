@@ -437,7 +437,11 @@ _KNOWN_ERRORS = {
         core_exceptions.NetworkIssueError,
     'socket.timeout':
         core_exceptions.NetworkIssueError,
+    'urllib3.exceptions.PoolError':
+        core_exceptions.NetworkIssueError,
     'urllib3.exceptions.ProtocolError':
+        core_exceptions.NetworkIssueError,
+    'urllib3.exceptions.SSLError':
         core_exceptions.NetworkIssueError,
     'urllib3.exceptions.TimeoutError':
         core_exceptions.NetworkIssueError,

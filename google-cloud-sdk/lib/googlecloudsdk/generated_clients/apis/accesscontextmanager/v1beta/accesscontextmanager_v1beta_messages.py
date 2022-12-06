@@ -28,10 +28,11 @@ class AccessLevel(_messages.Message):
     custom: A `CustomLevel` written in the Common Expression Language.
     description: Description of the `AccessLevel` and its use. Does not affect
       behavior.
-    name: Required. Resource name for the Access Level. The `short_name`
-      component must begin with a letter and only include alphanumeric and
-      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`. The
-      maximum length // of the `short_name` component is 50 characters.
+    name: Resource name for the `AccessLevel`. Format:
+      `accessPolicies/{access_policy}/accessLevels/{access_level}`. The
+      `access_level` component must begin with a letter, followed by
+      alphanumeric characters or `_`. Its maximum length is 50 characters.
+      After you create an `AccessLevel`, you cannot change its `name`.
     title: Human readable title. Must be unique within the Policy.
   """
 
@@ -179,10 +180,11 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest(_messages.Messa
 
   Fields:
     accessLevel: A AccessLevel resource to be passed as the request body.
-    name: Required. Resource name for the Access Level. The `short_name`
-      component must begin with a letter and only include alphanumeric and
-      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`. The
-      maximum length // of the `short_name` component is 50 characters.
+    name: Resource name for the `AccessLevel`. Format:
+      `accessPolicies/{access_policy}/accessLevels/{access_level}`. The
+      `access_level` component must begin with a letter, followed by
+      alphanumeric characters or `_`. Its maximum length is 50 characters.
+      After you create an `AccessLevel`, you cannot change its `name`.
     updateMask: Required. Mask to control which fields get updated. Must be
       non-empty.
   """
@@ -322,9 +324,11 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest(_messages.
   object.
 
   Fields:
-    name: Required. Resource name for the ServicePerimeter. The `short_name`
-      component must begin with a letter and only include alphanumeric and
-      '_'. Format: `accessPolicies/{policy_id}/servicePerimeters/{short_name}`
+    name: Resource name for the `ServicePerimeter`. Format:
+      `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`.
+      The `service_perimeter` component must begin with a letter, followed by
+      alphanumeric characters or `_`. After you create a `ServicePerimeter`,
+      you cannot change its `name`.
     servicePerimeter: A ServicePerimeter resource to be passed as the request
       body.
     updateMask: Required. Mask to control which fields get updated. Must be
@@ -829,9 +833,11 @@ class ServicePerimeter(_messages.Message):
       analyzing the differences between currently enforced and suggested
       restrictions. As of now, dry_run must be set to true if there is any
       proposed config
-    name: Required. Resource name for the ServicePerimeter. The `short_name`
-      component must begin with a letter and only include alphanumeric and
-      '_'. Format: `accessPolicies/{policy_id}/servicePerimeters/{short_name}`
+    name: Resource name for the `ServicePerimeter`. Format:
+      `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`.
+      The `service_perimeter` component must begin with a letter, followed by
+      alphanumeric characters or `_`. After you create a `ServicePerimeter`,
+      you cannot change its `name`.
     perimeterType: Perimeter type indicator. A single project is allowed to be
       a member of single regular perimeter, but multiple service perimeter
       bridges. A project cannot be a included in a perimeter bridge without
@@ -856,7 +862,8 @@ class ServicePerimeter(_messages.Message):
     service lists as well as access lists must be empty.
 
     Values:
-      PERIMETER_TYPE_REGULAR: Regular Perimeter.
+      PERIMETER_TYPE_REGULAR: Regular Perimeter. When no value is specified,
+        the perimeter uses this type.
       PERIMETER_TYPE_BRIDGE: Perimeter Bridge.
     """
     PERIMETER_TYPE_REGULAR = 0

@@ -22,9 +22,8 @@ from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
-from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
-import six
 
 
 class _BareMetalClusterClient(client.ClientBase):
@@ -97,90 +96,80 @@ class _BareMetalClusterClient(client.ClientBase):
 
   def _address_pools(self, args):
     """Constructs proto message field address_pools."""
-    address_pools = []
-    address_pool_flag_value = getattr(args, 'metal_lb_config_address_pools',
-                                      None)
-    if address_pool_flag_value:
-      for address_pool in address_pool_flag_value:
-        address_pools.append(self._address_pool(address_pool))
+    if not args.metal_lb_address_pools_from_file:
+      return []
 
-    return address_pools
+    address_pools = args.metal_lb_address_pools_from_file.get(
+        'addressPools', [])
 
-  def _address_pool(self, address_pool_args):
+    if not address_pools:
+      raise exceptions.BadArgumentException(
+          '--metal_lb_address_pools_from_file',
+          'Missing field [addressPools] in Metal LB address pools file.')
+
+    address_pool_messages = []
+    for address_pool in address_pools:
+      address_pool_messages.append(self._address_pool(address_pool))
+
+    return address_pool_messages
+
+  def _address_pool(self, address_pool):
     """Constructs proto message BareMetalLoadBalancerAddressPool."""
+    addresses = address_pool.get('addresses', [])
+    if not addresses:
+      raise exceptions.BadArgumentException(
+          '--metal_lb_address_pools_from_file',
+          'Missing field [addresses] in Metal LB address pools file.')
+
+    pool = address_pool.get('pool', None)
+    if not pool:
+      raise exceptions.BadArgumentException(
+          '--metal_lb_address_pools_from_file',
+          'Missing field [pool] in Metal LB address pools file.')
+
     kwargs = {
-        'addresses': address_pool_args.get('addresses', []),
-        'pool': address_pool_args.get('pool', ''),
-        'avoidBuggyIps': address_pool_args.get('avoid_buggy_ips', False),
-        'manualAssign': address_pool_args.get('manual_assign', False),
+        'addresses': addresses,
+        'avoidBuggyIps': address_pool.get('avoidBuggyIps', None),
+        'manualAssign': address_pool.get('manualAssign', None),
+        'pool': pool,
     }
 
-    if any(kwargs.values()):
-      return self._messages.BareMetalLoadBalancerAddressPool(**kwargs)
+    return self._messages.BareMetalLoadBalancerAddressPool(**kwargs)
 
-    return None
-
-  def _parse_node_labels(self, node_labels):
-    """Validates and parses a node label object.
-
-    Args:
-      node_labels: str of key-val pairs separated by ':' delimiter.
-
-    Returns:
-      If label is valid, returns a dict mapping message LabelsValue to its
-      value, otherwise, raise ArgumentTypeError.
-      For example,
-      {
-          'key': LABEL_KEY
-          'value': LABEL_VALUE
-      }
-    """
-    if not node_labels.get('labels'):
-      return None
-
-    input_node_labels = node_labels.get('labels', '').split(':')
-    valid_node_labels = ', '.join(
-        six.text_type(key) for key in input_node_labels)
-    additional_property_messages = []
-
-    for label in input_node_labels:
-      key_val_pair = label.split('=')
-      if len(key_val_pair) != 2:
-        raise arg_parsers.ArgumentTypeError(
-            'Node Label [{}] not in correct format, expect KEY=VALUE.'.format(
-                valid_node_labels))
-      additional_property_messages.append(
-          self._messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
-              key=key_val_pair[0], value=key_val_pair[1]))
-
-    labels_value_message = self._messages.BareMetalNodeConfig.LabelsValue(
-        additionalProperties=additional_property_messages)
-
-    return labels_value_message
-
-  def _metal_lb_node_config(self, node_config_args):
+  def _metal_lb_node_config(self, metal_lb_node_config):
     """Constructs proto message BareMetalNodeConfig."""
+    node_ip = metal_lb_node_config.get('nodeIp', '')
+    if not node_ip:
+      raise exceptions.BadArgumentException(
+          '--metal_lb_load_balancer_node_configs_from_file',
+          'Missing field [nodeIp] in Metal LB Node configs file.')
+
     kwargs = {
-        'nodeIp': node_config_args.get('node-ip', ''),
-        'labels': self._parse_node_labels(node_config_args),
+        'nodeIp': node_ip,
+        'labels': self._node_labels(metal_lb_node_config.get('labels', {}))
     }
 
-    if any(kwargs.values()):
-      return self._messages.BareMetalNodeConfig(**kwargs)
-
-    return None
+    return self._messages.BareMetalNodeConfig(**kwargs)
 
   def _metal_lb_node_configs(self, args):
     """Constructs proto message field node_configs."""
-    node_configs = []
-    node_config_flag_value = getattr(args,
-                                     'metal_lb_load_balancer_node_configs',
-                                     None)
-    if node_config_flag_value:
-      for node_config in node_config_flag_value:
-        node_configs.append(self._metal_lb_node_config(node_config))
+    if not args.metal_lb_load_balancer_node_configs_from_file:
+      return []
 
-    return node_configs
+    metal_lb_node_configs = args.metal_lb_load_balancer_node_configs_from_file.get(
+        'nodeConfigs', [])
+
+    if not metal_lb_node_configs:
+      raise exceptions.BadArgumentException(
+          '--metal_lb_load_balancer_node_configs_from_file',
+          'Missing field [nodeConfigs] in Metal LB Node configs file.')
+
+    metal_lb_node_configs_messages = []
+    for metal_lb_node_config in metal_lb_node_configs:
+      metal_lb_node_configs_messages.append(
+          self._metal_lb_node_config(metal_lb_node_config))
+
+    return metal_lb_node_configs_messages
 
   def _metal_lb_node_taints(self, args):
     """Constructs proto message NodeTaint."""
@@ -330,28 +319,56 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return None
 
-  def _node_config(self, node_config_args):
+  def _node_labels(self, labels):
+    """Constructs proto message LabelsValue."""
+    additional_property_messages = []
+    if not labels:
+      return None
+
+    for key, value in labels.items():
+      additional_property_messages.append(
+          self._messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
+              key=key, value=value))
+
+    labels_value_message = self._messages.BareMetalNodeConfig.LabelsValue(
+        additionalProperties=additional_property_messages)
+
+    return labels_value_message
+
+  def _control_plane_node_config(self, control_plane_node_config):
     """Constructs proto message BareMetalNodeConfig."""
+    node_ip = control_plane_node_config.get('nodeIp', '')
+    if not node_ip:
+      raise exceptions.BadArgumentException(
+          '--control_plane_node_configs_from_file',
+          'Missing field [nodeIp] in Control Plane Node configs file.')
+
     kwargs = {
-        'nodeIp': node_config_args.get('node-ip', ''),
-        'labels': self._parse_node_labels(node_config_args),
+        'nodeIp': node_ip,
+        'labels': self._node_labels(control_plane_node_config.get('labels', {}))
     }
 
-    if any(kwargs.values()):
-      return self._messages.BareMetalNodeConfig(**kwargs)
-
-    return None
+    return self._messages.BareMetalNodeConfig(**kwargs)
 
   def _control_plane_node_configs(self, args):
     """Constructs proto message field node_configs."""
-    node_configs = []
-    node_config_flag_value = getattr(args, 'control_plane_node_configs',
-                                     None)
-    if node_config_flag_value:
-      for node_config in node_config_flag_value:
-        node_configs.append(self._node_config(node_config))
+    if not args.control_plane_node_configs_from_file:
+      return []
 
-    return node_configs
+    control_plane_node_configs = args.control_plane_node_configs_from_file.get(
+        'nodeConfigs', [])
+
+    if not control_plane_node_configs:
+      raise exceptions.BadArgumentException(
+          '--control_plane_node_configs_from_file',
+          'Missing field [nodeConfigs] in Control Plane Node configs file.')
+
+    control_plane_node_configs_messages = []
+    for control_plane_node_config in control_plane_node_configs:
+      control_plane_node_configs_messages.append(
+          self._control_plane_node_config(control_plane_node_config))
+
+    return control_plane_node_configs_messages
 
   def _control_plane_node_taints(self, args):
     """Constructs proto message NodeTaint."""
@@ -545,6 +562,17 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return None
 
+  def _node_access_config(self, args):
+    """Constructs proto message BareMetalNodeAccessConfig."""
+    kwargs = {
+        'loginUser': getattr(args, 'login_user', 'root'),
+    }
+
+    if any(kwargs.values()):
+      return self._messages.BareMetalNodeAccessConfig(**kwargs)
+
+    return None
+
   def _bare_metal_user_cluster(self, args):
     """Constructs proto message Bare Metal Cluster."""
     kwargs = {
@@ -562,6 +590,7 @@ class _BareMetalClusterClient(client.ClientBase):
         'maintenanceConfig': self._maintenance_config(args),
         'nodeConfig': self._workload_node_config(args),
         'securityConfig': self._security_config(args),
+        'nodeAccessConfig': self._node_access_config(args),
     }
 
     if any(kwargs.values()):

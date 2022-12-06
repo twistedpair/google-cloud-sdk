@@ -1410,7 +1410,7 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
       operating system and build utilities. Also note that this is the minimum
       disk size that will be allocated for the build -- the build may run with
       a larger disk than requested. At present, the maximum disk size is
-      1000GB; builds that request more than the maximum are rejected with an
+      2000GB; builds that request more than the maximum are rejected with an
       error.
     dynamicSubstitutions: Option to specify whether or not to apply bash style
       string operations to the substitutions. NOTE: this is always enabled for
@@ -2804,7 +2804,7 @@ class Distribution(_messages.Message):
 
 class DocumentNote(_messages.Message):
   r"""DocumentNote represents an SPDX Document Creation Information section:
-  https://spdx.github.io/spdx-spec/2-document-creation-information/
+  https://spdx.github.io/spdx-spec/v2.3/document-creation-information/
 
   Fields:
     dataLicence: Compliance with the SPDX specification includes populating
@@ -2820,7 +2820,8 @@ class DocumentNote(_messages.Message):
 
 class DocumentOccurrence(_messages.Message):
   r"""DocumentOccurrence represents an SPDX Document Creation Information
-  section: https://spdx.github.io/spdx-spec/2-document-creation-information/
+  section: https://spdx.github.io/spdx-spec/v2.3/document-creation-
+  information/
 
   Fields:
     createTime: Identify when the SPDX file was originally created. The date

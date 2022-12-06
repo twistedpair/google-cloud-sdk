@@ -141,6 +141,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_PRIVATECLOUDS_MANAGEMENTDNSZONEBINDINGS = (
+      'projects.locations.privateClouds.managementDnsZoneBindings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/privateClouds/'
+              '{privateCloudsId}/managementDnsZoneBindings/'
+              '{managementDnsZoneBindingsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_VMWAREENGINENETWORKS = (
       'projects.locations.vmwareEngineNetworks',
       '{+name}',

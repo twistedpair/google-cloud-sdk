@@ -209,7 +209,8 @@ def AddConfigType(parser):
   Args:
     parser: The argparse parser to add the flag to.
   """
-  config_type_group = parser.add_group('Version configuration type', mutex=True)
+  config_type_group = parser.add_group(
+      'Version configuration type', mutex=True, required=True)
 
   create_config = config_type_group.add_group('Create configuration')
   flags.AddAdminClusterMembershipResourceArg(
@@ -217,6 +218,24 @@ def AddConfigType(parser):
 
   upgrade_config = config_type_group.add_group('Upgrade configuration')
   AddClusterResourceArg(
+      upgrade_config,
+      'to query version configuration',
+      positional=False,
+      required=False,
+      flag_name_overrides={'location': ''})
+
+
+def AddAdminConfigType(parser):
+  """Adds flags to specify admin cluster version config type.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  config_type_group = parser.add_group(
+      'Version configuration type', mutex=True)
+
+  upgrade_config = config_type_group.add_group('Upgrade configuration')
+  AddAdminClusterResourceArg(
       upgrade_config,
       'to query version configuration',
       positional=False,
@@ -309,19 +328,33 @@ def _AddMetalLBNodeConfigs(bare_metal_metal_lb_node_config):
     bare_metal_metal_lb_node_config: The parent group to add the flag
       to.
   """
+  metal_lb_node_configs_from_file_help_text = """
+Path of the YAML/JSON file that contains the Metal LB node configs.
+
+Examples:
+
+  nodeConfigs:
+  - nodeIp: 10.200.0.10
+    labels:
+      node1: label1
+      node2: label2
+  - nodeIp: 10.200.0.11
+    labels:
+      node3: label3
+      node4: label4
+
+List of supported fields in `nodeConfigs`
+
+KEY           | VALUE                     | NOTE
+--------------|---------------------------|---------------------------
+nodeIp        | string                    | required, mutable
+labels        | one or more key-val pairs | optional, mutable
+
+"""
   bare_metal_metal_lb_node_config.add_argument(
-      '--metal-lb-load-balancer-node-configs',
-      action='append',
-      type=arg_parsers.ArgDict(
-          spec={
-              'node-ip': str,
-              'labels': str,
-          },
-          required_keys=[
-              'node-ip',
-          ],
-      ),
-      help='MetalLB Node configuration.',
+      '--metal-lb-load-balancer-node-configs-from-file',
+      help=metal_lb_node_configs_from_file_help_text,
+      type=arg_parsers.YAMLFileContents(),
   )
 
 
@@ -380,23 +413,39 @@ def _AddMetalLBAddressPools(metal_lb_config_group, is_update=False):
     is_update: bool, whether the flag is for update command or not.
   """
   required = not is_update
+  metal_lb_address_pools_from_file_help_text = """
+Path of the YAML/JSON file that contains the MetalLB address pools.
+
+Examples:
+
+  addressPools:
+  - pool: pool-1
+    addresses:
+    - 10.200.0.14/32
+    - 10.200.0.15/32
+    avoidBuggyIps: True
+    manualAssign: True
+  - pool: pool-2
+    addresses:
+    - 10.200.0.16/32
+    avoidBuggyIps: False
+    manualAssign: False
+
+List of supported fields in `addressPools`
+
+KEY           | VALUE                 | NOTE
+--------------|-----------------------|---------------------------
+pool          | string                | required, mutable
+addresses     | one or more IP ranges | required, mutable
+avoidBuggyIps | bool                  | optional, mutable, defaults to False
+manualAssign  | bool                  | optional, mutable, defaults to False
+
+"""
   metal_lb_config_group.add_argument(
-      '--metal-lb-config-address-pools',
-      action='append',
+      '--metal-lb-address-pools-from-file',
       required=required,
-      type=arg_parsers.ArgDict(
-          spec={
-              'pool': str,
-              'addresses': arg_parsers.ArgList(),
-              'avoid-buggy-ips': bool,
-              'manual-assign': bool,
-          },
-          required_keys=[
-              'pool',
-              'addresses',
-          ],
-      ),
-      help='MetalLB typed load balancers address pool configuration.',
+      help=metal_lb_address_pools_from_file_help_text,
+      type=arg_parsers.YAMLFileContents(),
   )
 
 
@@ -585,20 +634,34 @@ def _AddControlPlaneNodeConfigs(bare_metal_node_config_group, is_update=False):
     is_update: bool, whether the flag is for update command or not.
   """
   required = not is_update
+  control_plane_node_configs_from_file_help_text = """
+Path of the YAML/JSON file that contains the control plane node configs.
+
+Examples:
+
+  nodeConfigs:
+  - nodeIp: 10.200.0.10
+    labels:
+      node1: label1
+      node2: label2
+  - nodeIp: 10.200.0.11
+    labels:
+      node3: label3
+      node4: label4
+
+List of supported fields in `nodeConfigs`
+
+KEY           | VALUE                     | NOTE
+--------------|---------------------------|---------------------------
+nodeIp        | string                    | required, mutable
+labels        | one or more key-val pairs | optional, mutable
+
+"""
   bare_metal_node_config_group.add_argument(
-      '--control-plane-node-configs',
-      action='append',
+      '--control-plane-node-configs-from-file',
       required=required,
-      type=arg_parsers.ArgDict(
-          spec={
-              'node-ip': str,
-              'labels': str,
-          },
-          required_keys=[
-              'node-ip',
-          ],
-      ),
-      help='Control Plane Node configuration.',
+      help=control_plane_node_configs_from_file_help_text,
+      type=arg_parsers.YAMLFileContents(),
   )
 
 
@@ -875,3 +938,97 @@ def AddSecurityConfig(parser, is_update=False):
   )
 
   _AddAuthorization(bare_metal_security_config_group, is_update)
+
+
+def AddNodeAccessConfig(parser):
+  """Adds a command group to set the node access config.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  bare_metal_node_access_config_group = parser.add_group(
+      help='Anthos on bare metal node access related settings for the user cluster.',
+  )
+
+  bare_metal_node_access_config_group.add_argument(
+      '--login-user',
+      type=str,
+      help='User name used to access node machines.',
+  )
+
+
+def GetOperationResourceSpec():
+  return concepts.ResourceSpec(
+      'gkeonprem.projects.locations.operations',
+      resource_name='operation',
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def AddOperationResourceArg(parser, verb):
+  """Adds a resource argument for operation in bare metal.
+
+  Args:
+    parser: The argparse parser to add the resource arg to.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'operation_id',
+      GetOperationResourceSpec(),
+      'operation {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AdminClusterMembershipIdAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='admin_cluster_membership',
+      help_text='admin cluster membership of the {resource}, in the form of projects/PROJECT/locations/LOCATION/memberships/MEMBERSHIP. '
+  )
+
+
+def AdminClusterMembershipLocationAttributeConfig():
+  """Gets admin cluster membership location resource attribute."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='location',
+      help_text='Google Cloud location for the {resource}.',
+  )
+
+
+def AdminClusterMembershipProjectAttributeConfig():
+  """Gets Google Cloud project resource attribute."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='project',
+      help_text='Google Cloud project for the {resource}.',
+  )
+
+
+def GetAdminClusterMembershipResourceSpec():
+  return concepts.ResourceSpec(
+      'gkehub.projects.locations.memberships',
+      resource_name='admin_cluster_membership',
+      membershipsId=AdminClusterMembershipIdAttributeConfig(),
+      locationsId=AdminClusterMembershipLocationAttributeConfig(),
+      projectsId=AdminClusterMembershipProjectAttributeConfig(),
+  )
+
+
+def AddAdminClusterMembershipResourceArg(parser,
+                                         positional=True,
+                                         required=True):
+  """Adds a resource argument for a bare metal admin cluster membership.
+
+  Args:
+    parser: The argparse parser to add the resource arg to.
+    positional: bool, whether the argument is positional or not.
+    required: bool, whether the argument is required or not.
+  """
+  name = 'admin_cluster_membership' if positional else '--admin-cluster-membership'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetAdminClusterMembershipResourceSpec(),
+      'membership of the admin cluster. Membership can be the membership ID or the full resource name.',
+      required=required,
+      flag_name_overrides={
+          'project': '--admin-cluster-membership-project',
+          'location': '--admin-cluster-membership-location',
+      }).AddToParser(parser)

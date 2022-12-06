@@ -173,7 +173,7 @@ class AuxiliaryGceNodePool(_messages.Message):
 
 
 class AuxiliaryNodeGroup(_messages.Message):
-  r"""Node group identification and configuration. information.
+  r"""Node group identification and configuration information.
 
   Fields:
     nodeGroup: Required. Node group configuration.
@@ -1952,10 +1952,9 @@ class DataprocProjectsRegionsClustersNodeGroupsCreateRequest(_messages.Message):
     requestId: Optional. A unique ID used to identify the request. If the
       server receives two CreateNodeGroupRequest (https://cloud.google.com/dat
       aproc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.
-      v1.CreateNodeGroupRequest)s with the same id, then the second request
-      will be ignored and the first google.longrunning.Operation created and
-      stored in the backend is returned.It is recommended to always set this
-      value to a UUID
+      v1.CreateNodeGroupRequests) with the same ID, the second request is
+      ignored and the first google.longrunning.Operation created and stored in
+      the backend is returned.Recommendation: Set this value to a UUID
       (https://en.wikipedia.org/wiki/Universally_unique_identifier).The ID
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
@@ -1976,10 +1975,9 @@ class DataprocProjectsRegionsClustersNodeGroupsDeleteRequest(_messages.Message):
     requestId: Optional. A unique ID used to identify the request. If the
       server receives two DeleteNodeGroupRequest (https://cloud.google.com/dat
       aproc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.
-      v1.DeleteNodeGroupRequest)s with the same id, then the second request
-      will be ignored and the first google.longrunning.Operation created and
-      stored in the backend is returned.It is recommended to always set this
-      value to a UUID
+      v1.DeleteNodeGroupRequests) with the same ID, the second request is
+      ignored and the first google.longrunning.Operation created and stored in
+      the backend is returned.Recommendation: Set this value to a UUID
       (https://en.wikipedia.org/wiki/Universally_unique_identifier).The ID
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
@@ -2006,12 +2004,12 @@ class DataprocProjectsRegionsClustersNodeGroupsListRequest(_messages.Message):
   Fields:
     pageSize: The maximum number of node groups to return. The service may
       return fewer than this value. If unspecified, at most 50 node groups are
-      returned. The maximum value is 1000; values above 1000 will be coerced
+      returned. The maximum value is 1000. Values greater than 1000 are forced
       to 1000.
     pageToken: A page token, received from a previous ListNodeGroups call.
-      Provide this to retrieve the subsequent page.When paginating, all other
-      parameters provided to ListNodeGroups must match the call that provided
-      the page token.
+      Provide this token to retrieve the subsequent page.When paginating, the
+      other parameters provided to ListNodeGroups must match the call that
+      provided the page token.
     parent: Required. The parent, which owns the collection of node groups.
       Format: projects/{project}/regions/{region}/clusters/{cluster}
   """
@@ -2750,12 +2748,11 @@ class DiskConfig(_messages.Message):
 
 
 class DriverRunner(_messages.Message):
-  r"""Configurations for the driver runner
+  r"""Driver runner configuration.
 
   Fields:
-    masterDriverRunner: Optional. (default) Run driver on master node
-    yarnDriverRunner: Optional. Configuration for running the driver on
-      workers using YARN
+    masterDriverRunner: Optional. (default) Run the driver on the master node.
+    yarnDriverRunner: Optional. Run the driver on worker nodes using YARN.
   """
 
   masterDriverRunner = _messages.MessageField('MasterDriverRunner', 1)
@@ -2763,11 +2760,11 @@ class DriverRunner(_messages.Message):
 
 
 class DriverSchedulingConfig(_messages.Message):
-  r"""Configurations for the driver scheduling
+  r"""Driver scheduling configuration.
 
   Fields:
-    memoryMb: Required. The amount of memory in MB this driver is requesting
-    vcores: Required. The number of vCPUs this driver is requesting
+    memoryMb: Required. The amount of memory in MB the driver is requesting.
+    vcores: Required. The number of vCPUs the driver is requesting.
   """
 
   memoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2860,9 +2857,9 @@ class ExecutionConfig(_messages.Message):
   Fields:
     idleTtl: Optional. The duration to keep the session alive while it's
       idling. Passing this threshold will cause the session to be terminated.
-      Minimum value is 30 minutes; maximum value is 14 days (see JSON
+      Minimum value is 10 minutes; maximum value is 14 days (see JSON
       representation of Duration (https://developers.google.com/protocol-
-      buffers/docs/proto3#json)).
+      buffers/docs/proto3#json)). Defaults to 4 hours if not set.
     kmsKey: Optional. The Cloud KMS key to use for encryption.
     networkTags: Optional. Tags used for network traffic control.
     networkUri: Optional. Network URI to connect workload to.
@@ -3891,7 +3888,7 @@ class Job(_messages.Message):
     driverOutputResourceUri: Output only. A URI pointing to the location of
       the stdout of the job's driver program.
     driverRunner: Optional. Configurations for the driver runner
-    driverSchedulingConfig: Optional. Configurations for the driver scheduling
+    driverSchedulingConfig: Optional. Driver scheduling configuration.
     hadoopJob: Optional. Job is a Hadoop job.
     hiveJob: Optional. Job is a Hive job.
     jobUuid: Output only. A UUID that uniquely identifies a job within the
@@ -4064,18 +4061,19 @@ class JobScheduling(_messages.Message):
   Fields:
     maxFailuresPerHour: Optional. Maximum number of times per hour a driver
       may be restarted as a result of driver exiting with non-zero code before
-      job is reported failed.A job may be reported as thrashing if driver
-      exits with non-zero code 4 times within 10 minute window.Maximum value
-      is 10.Note: Currently, this restartable job option is not supported in
-      Dataproc workflow template
+      job is reported failed.A job may be reported as thrashing if the driver
+      exits with a non-zero code four times within a 10-minute window.Maximum
+      value is 10.Note: This restartable job option is not supported in
+      Dataproc workflow templates
       (https://cloud.google.com/dataproc/docs/concepts/workflows/using-
-      workflows#adding_jobs_to_a_template) jobs.
-    maxFailuresTotal: Optional. Maximum number of times in total a driver may
-      be restarted as a result of driver exiting with non-zero code before job
-      is reported failed. Maximum value is 240.Note: Currently, this
-      restartable job option is not supported in Dataproc workflow template
+      workflows#adding_jobs_to_a_template).
+    maxFailuresTotal: Optional. Maximum total number of times a driver may be
+      restarted as a result of the driver exiting with a non-zero code. After
+      the maximum number is reached, the job will be reported as
+      failed.Maximum value is 240.Note: Currently, this restartable job option
+      is not supported in Dataproc workflow templates
       (https://cloud.google.com/dataproc/docs/concepts/workflows/using-
-      workflows#adding_jobs_to_a_template) jobs.
+      workflows#adding_jobs_to_a_template).
   """
 
   maxFailuresPerHour = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4657,10 +4655,7 @@ class ManagedGroupConfig(_messages.Message):
 
 
 class MasterDriverRunner(_messages.Message):
-  r"""The default mode of executing drivers: on master nodes Currently no
-  internal fields.
-  """
-
+  r"""The default mode of executing drivers: on master nodes"""
 
 
 class MetastoreConfig(_messages.Message):
@@ -4755,7 +4750,8 @@ class NamespacedGkeDeploymentTarget(_messages.Message):
 
 
 class NodeGroup(_messages.Message):
-  r"""Dataproc Node Group.
+  r"""Dataproc Node Group. The Dataproc NodeGroup resource is not related to
+  the Dataproc NodeGroupAffinity resource.
 
   Enums:
     RolesValueListEntryValuesEnum:
@@ -4831,7 +4827,9 @@ class NodeGroup(_messages.Message):
 
 
 class NodeGroupAffinity(_messages.Message):
-  r"""Node Group Affinity for clusters using sole-tenant node groups.
+  r"""Node Group Affinity for clusters using sole-tenant node groups. The
+  Dataproc NodeGroupAffinity resource is not related to the Dataproc NodeGroup
+  resource.
 
   Fields:
     nodeGroupUri: Required. The URI of a sole-tenant node group resource
@@ -5661,21 +5659,22 @@ class ResizeNodeGroupRequest(_messages.Message):
 
   Fields:
     gracefulDecommissionTimeout: Optional. Timeout for graceful YARN
-      decomissioning. Graceful decommissioning allows removing nodes from the
-      Compute Engine timeout without interrupting jobs in progress. Timeout
-      specifies how long to wait for jobs in progress to finish before
-      forcefully removing nodes (and potentially interrupting jobs). Default
-      timeout is 0 (for forceful decommission), and the maximum allowed
-      timeout is 1 day. (see JSON representation of Duration
+      decomissioning. Graceful decommissioning
+      (https://cloud.google.com/dataproc/docs/concepts/configuring-
+      clusters/scaling-clusters#graceful_decommissioning) allows the removal
+      of nodes from the Compute Engine node group without interrupting jobs in
+      progress. This timeout specifies how long to wait for jobs in progress
+      to finish before forcefully removing nodes (and potentially interrupting
+      jobs). Default timeout is 0 (for forceful decommission), and the maximum
+      allowed timeout is 1 day. (see JSON representation of Duration
       (https://developers.google.com/protocol-buffers/docs/proto3#json)).Only
       supported on Dataproc image versions 1.2 and higher.
     requestId: Optional. A unique ID used to identify the request. If the
       server receives two ResizeNodeGroupRequest (https://cloud.google.com/dat
       aproc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.
-      v1.ResizeNodeGroupRequest)s with the same id, then the second request
-      will be ignored and the first google.longrunning.Operation created and
-      stored in the backend is returned.It is recommended to always set this
-      value to a UUID
+      v1.ResizeNodeGroupRequests) with the same ID, the second request is
+      ignored and the first google.longrunning.Operation created and stored in
+      the backend is returned.Recommendation: Set this value to a UUID
       (https://en.wikipedia.org/wiki/Universally_unique_identifier).The ID
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
@@ -6099,6 +6098,7 @@ class SoftwareConfig(_messages.Message):
       HBASE: HBase. (beta)
       HIVE_WEBHCAT: The Hive Web HCatalog (the REST service for accessing
         HCatalog).
+      HUDI: Hudi.
       JUPYTER: The Jupyter Notebook.
       KERBEROS: The Kerberos security feature.
       PRESTO: The Presto query engine.
@@ -6117,16 +6117,17 @@ class SoftwareConfig(_messages.Message):
     FLINK = 4
     HBASE = 5
     HIVE_WEBHCAT = 6
-    JUPYTER = 7
-    KERBEROS = 8
-    PRESTO = 9
-    TRINO = 10
-    RANGER = 11
-    SOLR = 12
-    ZEPPELIN = 13
-    ZOOKEEPER = 14
-    DASK = 15
-    GPU_DRIVER = 16
+    HUDI = 7
+    JUPYTER = 8
+    KERBEROS = 9
+    PRESTO = 10
+    TRINO = 11
+    RANGER = 12
+    SOLR = 13
+    ZEPPELIN = 14
+    ZOOKEEPER = 15
+    DASK = 16
+    GPU_DRIVER = 17
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
@@ -7304,12 +7305,12 @@ class YarnApplication(_messages.Message):
 
 
 class YarnDriverRunner(_messages.Message):
-  r"""Schedule the driver on workers using YARN
+  r"""Schedule the driver on worker nodes using YARN.
 
   Fields:
-    memoryMb: Optional. The amount of memory in MB this driver is requesting
-      from YARN
-    vcores: Optional. The number of vCPUs this driver is requesting from YARN
+    memoryMb: Optional. The amount of memory in MB the driver is requesting
+      from YARN.
+    vcores: Optional. The number of vCPUs this driver is requesting from YARN.
   """
 
   memoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)

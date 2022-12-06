@@ -379,11 +379,13 @@ def RunKubectlCommand(args, out_func=None, err_func=None, namespace=None):
 
 
 def HandleKubectlErrorStream(err_func, err):
+  err_handler_func = err_func or log.status.Print
   if 'Unable to connect to the server' in err:
-    err_func(err)
-    err_func('\nPlease, check if you have connectivity to GKE control plane.\n')
+    err_handler_func(err)
+    err_handler_func(
+        '\nPlease, check if you have connectivity to GKE control plane.\n')
   else:
-    err_func(err)
+    err_handler_func(err)
 
 
 def ConvertImageVersionToNamespacePrefix(image_version):

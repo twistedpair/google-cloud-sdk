@@ -1333,11 +1333,6 @@ class _LegacyGenerator(object):
     # recreated here.
     self.Clean()
 
-    # TODO(b/251565106): Support for gsutil will be added in a later CL.
-    # TODO(b/251565107): Support for bq will be added in a later CL.
-    if self._cred_type == c_creds.EXTERNAL_ACCOUNT_AUTHORIZED_USER_CREDS_NAME:
-      return
-
     # Generates credentials used by bq and gsutil.
     if self._cred_type == c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME:
       cred = self.credentials
@@ -1367,9 +1362,12 @@ class _LegacyGenerator(object):
               '[Credentials]',
               'gs_external_account_file = {external_account_file}',
           ]).format(external_account_file=self._adc_path))
-      return
-
-    if self._cred_type == c_creds.USER_ACCOUNT_CREDS_NAME:
+    elif self._cred_type == c_creds.EXTERNAL_ACCOUNT_AUTHORIZED_USER_CREDS_NAME:
+      self._WriteFileContents(self._gsutil_path, '\n'.join([
+          '[Credentials]',
+          'gs_external_account_authorized_user_file = {external_account_file}',
+      ]).format(external_account_file=self._adc_path))
+    elif self._cred_type == c_creds.USER_ACCOUNT_CREDS_NAME:
       # We create a small .boto file for gsutil, to be put in BOTO_PATH.
       # Our client_id and client_secret should accompany our refresh token;
       # if a user loaded any other .boto files that specified a different
@@ -1386,12 +1384,15 @@ class _LegacyGenerator(object):
           ]).format(cid=config.CLOUDSDK_CLIENT_ID,
                     secret=config.CLOUDSDK_CLIENT_NOTSOSECRET,
                     token=self.credentials.refresh_token))
-    else:
+    elif self._cred_type == c_creds.SERVICE_ACCOUNT_CREDS_NAME:
       self._WriteFileContents(
           self._gsutil_path, '\n'.join([
               '[Credentials]',
               'gs_service_key_file = {key_file}',
           ]).format(key_file=self._adc_path))
+    else:
+      raise c_creds.CredentialFileSaveError(
+          'Unsupported credentials type {0}'.format(type(self.credentials)))
 
   def _WriteFileContents(self, filepath, contents):
     """Writes contents to a path, ensuring mkdirs.

@@ -71,11 +71,13 @@ class BatchRecognizeFileResult(_messages.Message):
 
   Fields:
     error: Error if one was encountered.
+    metadata: A RecognitionResponseMetadata attribute.
     uri: The Cloud Storage URI to which recognition results were written.
   """
 
   error = _messages.MessageField('Status', 1)
-  uri = _messages.StringField(2)
+  metadata = _messages.MessageField('RecognitionResponseMetadata', 2)
+  uri = _messages.StringField(3)
 
 
 class BatchRecognizeMetadata(_messages.Message):
@@ -159,6 +161,8 @@ class BatchRecognizeResponse(_messages.Message):
 
   Fields:
     results: Map from filename to the final result for that file.
+    totalBilledDuration: When available, billed audio seconds for the
+      corresponding request.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -186,6 +190,7 @@ class BatchRecognizeResponse(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   results = _messages.MessageField('ResultsValue', 1)
+  totalBilledDuration = _messages.StringField(2)
 
 
 class BatchRecognizeTranscriptionMetadata(_messages.Message):
@@ -1216,6 +1221,34 @@ class SpeechAdaptation(_messages.Message):
   phraseSets = _messages.MessageField('AdaptationPhraseSet', 2, repeated=True)
 
 
+class SpeechProjectsLocationsConfigGetRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsConfigGetRequest object.
+
+  Fields:
+    name: Required. The name of the config to retrieve. There is exactly one
+      config resource per project per location. The expected format is
+      `projects/{project}/locations/{location}/config`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpeechProjectsLocationsConfigUpdateRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsConfigUpdateRequest object.
+
+  Fields:
+    config: A Config resource to be passed as the request body.
+    name: Output only. The name of the config resource. There is exactly one
+      config resource per project per location. The expected format is
+      `projects/{project}/locations/{location}/config`.
+    updateMask: The list of fields to be updated.
+  """
+
+  config = _messages.MessageField('Config', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class SpeechProjectsLocationsCustomClassesCreateRequest(_messages.Message):
   r"""A SpeechProjectsLocationsCustomClassesCreateRequest object.
 
@@ -1312,18 +1345,6 @@ class SpeechProjectsLocationsCustomClassesPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
   validateOnly = _messages.BooleanField(4)
-
-
-class SpeechProjectsLocationsGetConfigRequest(_messages.Message):
-  r"""A SpeechProjectsLocationsGetConfigRequest object.
-
-  Fields:
-    name: Required. The name of the config to retrieve. There is exactly one
-      config resource per project per location. The expected format is
-      `projects/{project}/locations/{location}/config`.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class SpeechProjectsLocationsOperationsGetRequest(_messages.Message):
@@ -1558,22 +1579,6 @@ class SpeechProjectsLocationsRecognizersRecognizeRequest(_messages.Message):
 
   recognizeRequest = _messages.MessageField('RecognizeRequest', 1)
   recognizer = _messages.StringField(2, required=True)
-
-
-class SpeechProjectsLocationsUpdateConfigRequest(_messages.Message):
-  r"""A SpeechProjectsLocationsUpdateConfigRequest object.
-
-  Fields:
-    config: A Config resource to be passed as the request body.
-    name: Output only. The name of the config resource. There is exactly one
-      config resource per project per location. The expected format is
-      `projects/{project}/locations/{location}/config`.
-    updateMask: The list of fields to be updated.
-  """
-
-  config = _messages.MessageField('Config', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
 
 
 class SpeechRecognitionAlternative(_messages.Message):

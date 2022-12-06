@@ -84,7 +84,13 @@ VALID_ALGORITHMS_MAP = {
         'rsa-decrypt-oaep-4096-sha256',
         'rsa-decrypt-oaep-4096-sha512',
     ],
-    PURPOSE_ENUM.MAC: ['hmac-sha256',]
+    PURPOSE_ENUM.MAC: [
+        'hmac-sha1',
+        'hmac-sha224',
+        'hmac-sha256',
+        'hmac-sha384',
+        'hmac-sha512',
+    ]
 }
 
 # Derive available algorithms from VALID_ALGORITHMS_MAP.

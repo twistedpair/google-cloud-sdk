@@ -214,7 +214,7 @@ def AppendUpstreamPoliciesToRequest(repo_ref, repo_args, request):
         messages.ArtifactregistryProjectsLocationsRepositoriesPatchRequest):
       # Clear the updateMask for update request, so AR will replace all old
       # policies with policies from the file.
-      request.updateMask = ""
+      request.updateMask = None
     content = console_io.ReadFromFileOrStdin(
         repo_args.upstream_policy_file, binary=False)
     policies = json.loads(content)

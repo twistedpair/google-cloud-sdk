@@ -659,7 +659,7 @@ class LoggingV2(base_api.BaseApiClient):
       r"""Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of "global" Have a non-project parent when it is a _Default bucket.
 
       Args:
-        request: (LoggingBillingAccountsLocationsBucketsMoveRequest) input message
+        request: (MoveBucketRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -676,8 +676,8 @@ class LoggingV2(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v2/{+name}:move',
-        request_field='moveBucketRequest',
-        request_type_name='LoggingBillingAccountsLocationsBucketsMoveRequest',
+        request_field='<request>',
+        request_type_name='MoveBucketRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -2043,7 +2043,7 @@ class LoggingV2(base_api.BaseApiClient):
       r"""Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of "global" Have a non-project parent when it is a _Default bucket.
 
       Args:
-        request: (LoggingFoldersLocationsBucketsMoveRequest) input message
+        request: (MoveBucketRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -2060,8 +2060,8 @@ class LoggingV2(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v2/{+name}:move',
-        request_field='moveBucketRequest',
-        request_type_name='LoggingFoldersLocationsBucketsMoveRequest',
+        request_field='<request>',
+        request_type_name='MoveBucketRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -2987,7 +2987,7 @@ class LoggingV2(base_api.BaseApiClient):
       r"""Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of "global" Have a non-project parent when it is a _Default bucket.
 
       Args:
-        request: (LoggingLocationsBucketsMoveRequest) input message
+        request: (MoveBucketRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -3004,8 +3004,8 @@ class LoggingV2(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v2/{+name}:move',
-        request_field='moveBucketRequest',
-        request_type_name='LoggingLocationsBucketsMoveRequest',
+        request_field='<request>',
+        request_type_name='MoveBucketRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -3886,7 +3886,7 @@ class LoggingV2(base_api.BaseApiClient):
       r"""Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of "global" Have a non-project parent when it is a _Default bucket.
 
       Args:
-        request: (LoggingOrganizationsLocationsBucketsMoveRequest) input message
+        request: (MoveBucketRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -3903,8 +3903,8 @@ class LoggingV2(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v2/{+name}:move',
-        request_field='moveBucketRequest',
-        request_type_name='LoggingOrganizationsLocationsBucketsMoveRequest',
+        request_field='<request>',
+        request_type_name='MoveBucketRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -5039,7 +5039,7 @@ class LoggingV2(base_api.BaseApiClient):
       r"""Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of "global" Have a non-project parent when it is a _Default bucket.
 
       Args:
-        request: (LoggingProjectsLocationsBucketsMoveRequest) input message
+        request: (MoveBucketRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -5056,8 +5056,8 @@ class LoggingV2(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v2/{+name}:move',
-        request_field='moveBucketRequest',
-        request_type_name='LoggingProjectsLocationsBucketsMoveRequest',
+        request_field='<request>',
+        request_type_name='MoveBucketRequest',
         response_type_name='Operation',
         supports_download=False,
     )

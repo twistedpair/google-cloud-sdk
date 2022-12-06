@@ -484,6 +484,14 @@ def AddGitRepoSource(flag_config):
     flag_config: argparse argument group. Git repo source flags will be added to
       this group.
   """
+  flag_config.add_argument(
+      '--github-enterprise-config',
+      help="""\
+The resource name of the GitHub Enterprise config that should be applied to
+this source.
+Format: projects/{project}/locations/{location}/githubEnterpriseConfigs/{id}
+or projects/{project}/githubEnterpriseConfigs/{id}
+""")
   repo_config = flag_config.add_argument_group(
       help='Flags for repository information')
   repo_config.add_argument(
@@ -538,14 +546,16 @@ def ParseGitRepoSource(trigger, args, messages, required=False):
   trigger.sourceToBuild = messages.GitRepoSource(
       uri=args.repo,
       ref=ref,
-      repoType=messages.GitRepoSource.RepoTypeValueValuesEnum(args.repo_type))
+      repoType=messages.GitRepoSource.RepoTypeValueValuesEnum(args.repo_type),
+      githubEnterpriseConfig=args.github_enterprise_config)
 
   if args.build_config:
     trigger.gitFileSource = messages.GitFileSource(
         path=args.build_config,
         uri=args.repo,
         revision=ref,
-        repoType=messages.GitFileSource.RepoTypeValueValuesEnum(args.repo_type))
+        repoType=messages.GitFileSource.RepoTypeValueValuesEnum(args.repo_type),
+        githubEnterpriseConfig=args.github_enterprise_config)
 
 
 def ParseRequireApproval(trigger, args, messages):

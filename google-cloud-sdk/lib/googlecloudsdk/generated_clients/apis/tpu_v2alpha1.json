@@ -303,7 +303,7 @@
             "TPU node is restarting.",
             "TPU node is undergoing reimaging.",
             "TPU node is being deleted.",
-            "TPU node is being repaired and may be unusable. Details can be found in the `help_description` field.",
+            "TPU node is being repaired and may be unusable. Details can be found in the 'help_description' field.",
             "TPU node is stopped.",
             "TPU node is currently stopping.",
             "TPU node is currently starting.",
@@ -845,10 +845,10 @@
           "type": "string",
           "enumDescriptions": [
             "State of the QueuedResource request is not known\/set.",
-            "The QueuedResource request has been received. We\u2019re still working on determining if we will be able to honor this request.",
+            "The QueuedResource request has been received. We're still working on determining if we will be able to honor this request.",
             "The QueuedResource request has passed initial validation\/admission control and has been persisted in the queue.",
             "The QueuedResource request has been selected. The associated resources are currently being provisioned (or very soon will begin provisioning).",
-            "The request could not be completed. This may be due to some late-discovered problem with the request itself, or due to unavailability of resources within the constraints of the request (e.g., the \u2018valid until\u2019 start timing constraint expired).",
+            "The request could not be completed. This may be due to some late-discovered problem with the request itself, or due to unavailability of resources within the constraints of the request (e.g., the 'valid until' start timing constraint expired).",
             "The QueuedResource is being deleted.",
             "The resources specified in the QueuedResource request have been provisioned and are ready for use by the end-user\/consumer.",
             "The resources specified in the QueuedResource request are being deleted. This may have been initiated by the user, or the Cloud TPU service. Inspect the state data for more details.",
@@ -965,6 +965,315 @@
       "description": "Network traffic configuration.",
       "type": "object",
       "properties": {
+        "anticipatedTrafficMatrix": {
+          "description": "Traffic Matrix for anticipated network traffic",
+          "$ref": "LogicalTrafficMatrix"
+        }
+      }
+    },
+    "LogicalTrafficMatrix": {
+      "id": "LogicalTrafficMatrix",
+      "description": "Describes the anticipated network traffic pattern between nodes (henceforth referred to as \"coordinates\") participating in a distributed computation. We note the following conventions for coordinates: - Slice coordinates are 0-indexed and contiguous with respect to their owning traffic matrix. - Chip coordinates are 0-indexed and contiguous relative to their owning-slice. Chip coordinates map 1:1 to the physical TPU chips deployed in their owning slice.",
+      "type": "object",
+      "properties": {
+        "customTrafficMatrix": {
+          "description": "Custom generator syntax used to represent chip-chip granularity traffic matrix (TM) that is too large to be reasonably represented as a simple adjacency list.",
+          "$ref": "CustomTrafficMatrix"
+        },
+        "sliceToSliceAdjacencyList": {
+          "description": "Adjacency list representation of a slice->slice granularity TM. Slice-to-slice encoding assumes traffic flows out of each slice uniformly. This assumption is inconsequential for superblock (SB) Network Aware Scheduling (NAS) of slices that fit within a SB (e.g. VLP).",
+          "$ref": "SliceToSliceAdjacencyList"
+        }
+      }
+    },
+    "CustomTrafficMatrix": {
+      "id": "CustomTrafficMatrix",
+      "description": "Represents a custom traffic matrix passed directly by the calling client.",
+      "type": "object",
+      "properties": {
+        "shapeGeneratedEntry": {
+          "description": "List of distinct shape generators that describe the traffic matrix.",
+          "type": "array",
+          "items": {
+            "$ref": "ShapeGeneratedEntry"
+          }
+        }
+      }
+    },
+    "ShapeGeneratedEntry": {
+      "id": "ShapeGeneratedEntry",
+      "description": "Shape-based generator that efficiently encodes uniform traffic shapes (e.g. \"horizontal ring traffic between all chips in two neighboring slices\"). A single entry represents all the instantiations of a unique traffic shape in the traffic matrix.",
+      "type": "object",
+      "properties": {
+        "abstractTrafficShape": {
+          "description": "0-indexed \"abstract\" traffic shape. See the definition of `AbstractTrafficShape` for details.",
+          "$ref": "AbstractTrafficShape"
+        },
+        "trafficShapeInstantiation": {
+          "description": "List of coordinates in which we instantiate copies of `abstract_traffic_shape`. Conceptually, each coordinate in `traffic_shape_instantiation` represents an offset that converts a 0-indexed \"abstract\" traffic shape into a concrete traffic shape with absolute coordinates in the traffic matrix.",
+          "$ref": "CoordinateList"
+        },
+        "traffic": {
+          "description": "Anticipated traffic across each edge in the concrete traffic shape defined above.",
+          "$ref": "Traffic"
+        }
+      }
+    },
+    "AbstractTrafficShape": {
+      "id": "AbstractTrafficShape",
+      "description": "Represents an abstract traffic shape in the traffic matrix. By \"traffic shape\", we mean a list of coordinates and the directed edges of traffic that flow between them. By \"abstract\", we mean that each traffic shape is defined relative to 0-indexed coordinates. These abstract coordinates are converted to absolute coordinates when instantiated in `traffic_shape_instantiation`.",
+      "type": "object",
+      "properties": {
+        "ringTraffic": {
+          "description": "Ring traffic shape.",
+          "$ref": "RingTraffic"
+        },
+        "allToAllTraffic": {
+          "description": "All to all traffic shape.",
+          "$ref": "AllToAllTraffic"
+        },
+        "nToMTraffic": {
+          "description": "N to m traffic shape",
+          "$ref": "NToMTraffic"
+        }
+      }
+    },
+    "RingTraffic": {
+      "id": "RingTraffic",
+      "description": "Predefined traffic shape in which each (i_th) `group` member sends traffic to the subsequent (i_th+1) `group` member, looping around at the end.",
+      "type": "object",
+      "properties": {
+        "group": {
+          "description": "Sorted list of coordinates participating in the Ring Traffic exchange.",
+          "$ref": "CoordinateList"
+        },
+        "trafficDirection": {
+          "description": "If UNSPECIFIED or UNIDIRECTIONAL, the i_th member sends traffic to the i+1_th member, looping at the end. If BIDIRECTIONAL, the i_th member additionally sends traffic to the i-1_th member, looping at the start.",
+          "type": "string",
+          "enumDescriptions": [
+            "Traffic direction is not specified",
+            "Traffic is sent in one direction.",
+            "Traffic is sent in both directions."
+          ],
+          "enum": [
+            "TRAFFIC_DIRECTION_UNSPECIFIED",
+            "TRAFFIC_DIRECTION_UNIDIRECTIONAL",
+            "TRAFFIC_DIRECTION_BIDIRECTIONAL"
+          ]
+        }
+      }
+    },
+    "CoordinateList": {
+      "id": "CoordinateList",
+      "description": "Defines a list of related `src` and\/or `dst` coordinates in the traffic matrix.",
+      "type": "object",
+      "properties": {
+        "chipCoordinateRangeGenerator": {
+          "description": "A list of chip coordinates represented by the provided range generator.",
+          "$ref": "ChipCoordinateRangeGenerator"
+        },
+        "chipCoordinate": {
+          "description": "A list of individually defined chip coordinates.",
+          "$ref": "ChipCoordinateList"
+        }
+      }
+    },
+    "ChipCoordinateRangeGenerator": {
+      "id": "ChipCoordinateRangeGenerator",
+      "description": "Compactly represents a list of Chip coordinates as the cross-product of each term. For example: * slice_coordinates: { 0, 1, 2, 3 } * x_coordinates: { 0 } * y_coordinates: { 0, 1 } Represents all the chips in the first column (x) and first 2 rows (y) of the first 4 slices.",
+      "type": "object",
+      "properties": {
+        "sliceCoordinates": {
+          "description": "Slice coordinates for chip coordinate range",
+          "$ref": "Range"
+        },
+        "xCoordinates": {
+          "description": "X coordinates for chip coordinate range.",
+          "$ref": "Range"
+        },
+        "yCoordinates": {
+          "description": "Y coordinates for chip coordinate range.",
+          "$ref": "Range"
+        },
+        "zCoordinates": {
+          "description": "If specifying 2D coordinates, z_coordinate may be omitted.",
+          "$ref": "Range"
+        }
+      }
+    },
+    "Range": {
+      "id": "Range",
+      "description": "Compactly represents a range of numbers. The parameters take inspiration from Python's \"range(start, stop, step)\" function and can be described with the following pseudocode: `for (int i = start; i < end; i += step) { add i to list }` E.g. { start: 0, end: 10, step: 2 } can be used to describe the even numbers between 0 and 9.",
+      "type": "object",
+      "properties": {
+        "start": {
+          "description": "Start of the range. Required.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "end": {
+          "description": "End of the range (exclusive). Required.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "step": {
+          "description": "Describes the distance between elements for sparse ranges. Optional term defaulted to `1` if absent.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ChipCoordinateList": {
+      "id": "ChipCoordinateList",
+      "description": "Represents a list of individually defined chip coordinates.",
+      "type": "object",
+      "properties": {
+        "coordinates": {
+          "description": "List of chip coordinates.",
+          "type": "array",
+          "items": {
+            "$ref": "ChipCoordinate"
+          }
+        }
+      }
+    },
+    "ChipCoordinate": {
+      "id": "ChipCoordinate",
+      "description": "Represents a single chip in a logical traffic matrix.",
+      "type": "object",
+      "properties": {
+        "sliceCoordinate": {
+          "description": "Coordinate of slice that chip is in.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "xCoordinate": {
+          "description": "X coordinate of chip.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "yCoordinate": {
+          "description": "Y coordinate of chip.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "zCoordinate": {
+          "description": "Z coordinate of chip.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "AllToAllTraffic": {
+      "id": "AllToAllTraffic",
+      "description": "Predefined traffic shape in which each `group` member sends traffic to each other `group` member (except self).",
+      "type": "object",
+      "properties": {
+        "group": {
+          "description": "List of coordinates participating in the AllToAll traffic exchange.",
+          "$ref": "CoordinateList"
+        }
+      }
+    },
+    "NToMTraffic": {
+      "id": "NToMTraffic",
+      "description": "Predefined traffic shape in which each `src_group` member sends traffic to each `dst_group` member. For example: * 1 entry in `src` and many entries in `dst` represent `One to Many` traffic. * 1 entry in `dst` and many entries in `src` represent `Many to One` traffic.",
+      "type": "object",
+      "properties": {
+        "srcGroup": {
+          "description": "`src` coordinates sending data to all coordinates in `dst_group`.",
+          "$ref": "CoordinateList"
+        },
+        "dstGroup": {
+          "description": "`dst` coordinates receiving data from all coordinates in `src_group`.",
+          "$ref": "CoordinateList"
+        },
+        "trafficDirection": {
+          "description": "If UNSPECIFIED or UNIDIRECTIONAL, each `src_group` member sends traffic to each `dst_group` member. If BIDIRECTIONAL, each `dst_group` member additionally sends traffic to each `src_group` member.",
+          "type": "string",
+          "enumDescriptions": [
+            "Traffic direction is not specified",
+            "Traffic is sent in one direction.",
+            "Traffic is sent in both directions."
+          ],
+          "enum": [
+            "TRAFFIC_DIRECTION_UNSPECIFIED",
+            "TRAFFIC_DIRECTION_UNIDIRECTIONAL",
+            "TRAFFIC_DIRECTION_BIDIRECTIONAL"
+          ]
+        }
+      }
+    },
+    "Traffic": {
+      "id": "Traffic",
+      "description": "Expected traffic between two coordinates.",
+      "type": "object",
+      "properties": {
+        "peakTraffic": {
+          "description": "Expected peak traffic.",
+          "$ref": "PeakTraffic"
+        }
+      }
+    },
+    "PeakTraffic": {
+      "id": "PeakTraffic",
+      "description": "Expected peak traffic between two coordinates.",
+      "type": "object",
+      "properties": {
+        "peakTrafficGbps": {
+          "description": "Gigabits per second.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "SliceToSliceAdjacencyList": {
+      "id": "SliceToSliceAdjacencyList",
+      "description": "Adjacency list representation of a slice-to-slice traffic matrix.",
+      "type": "object",
+      "properties": {
+        "srcTraffic": {
+          "description": "One entry per slice containing the traffic leaving that slice.",
+          "type": "array",
+          "items": {
+            "$ref": "SrcSliceTraffic"
+          }
+        }
+      }
+    },
+    "SrcSliceTraffic": {
+      "id": "SrcSliceTraffic",
+      "description": "All the non-zero edges of traffic leaving a src `slice_coord` directed towards dst slices.",
+      "type": "object",
+      "properties": {
+        "sliceCoord": {
+          "description": "Src slice coordinate.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "dstTraffic": {
+          "description": "List of traffic edges directed towards dst slices.",
+          "type": "array",
+          "items": {
+            "$ref": "DstSliceTraffic"
+          }
+        }
+      }
+    },
+    "DstSliceTraffic": {
+      "id": "DstSliceTraffic",
+      "description": "A single edge of traffic directed towards a dst `slice_coord`.",
+      "type": "object",
+      "properties": {
+        "sliceCoord": {
+          "description": "Dst slice coordinate.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "traffic": {
+          "description": "Traffic directed towards this slice.",
+          "$ref": "Traffic"
+        }
       }
     },
     "GenerateServiceIdentityRequest": {

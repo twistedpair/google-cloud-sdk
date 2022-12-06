@@ -862,6 +862,11 @@ def ToJsonGoogleAuth(credentials):
     # The credentials should already have the JSON representation set on info
     # property.
     creds_dict = credentials.info
+    # Pluggable auth doesn't overwrite the "info" method.
+    # We manually inject tokeninfo_username for later retrieve and injection.
+    # TODO(b/258323440)
+    if credentials.is_workforce_pool and hasattr(credentials, 'interactive'):
+      creds_dict['external_account_id'] = credentials.external_account_id
   elif creds_type == CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT_AUTHORIZED_USER:
     creds_dict = {
         'type': creds_type.key,
@@ -1088,8 +1093,17 @@ def FromJsonGoogleAuth(json_value):
       elif (json_key.get('credential_source') is not None and
             json_key.get('credential_source').get('executable') is not None):
         from google.auth import pluggable  # pylint: disable=g-import-not-at-top
+        executable = json_key.get('credential_source').get('executable')
         cred = pluggable.Credentials.from_info(
             json_key, scopes=config.CLOUDSDK_SCOPES)
+        if cred.is_workforce_pool and executable.get(
+            'interactive_timeout_millis'):
+          cred.interactive = True
+          # Currently we manually inject the external_account_id.
+          # TODO(b/258323440). Once we have the change done in SDK, we remove
+          # the current injection.
+          setattr(cred, '_tokeninfo_username',
+                  json_key.get('external_account_id') or '')
       else:
         from google.auth import identity_pool  # pylint: disable=g-import-not-at-top
         cred = identity_pool.Credentials.from_info(

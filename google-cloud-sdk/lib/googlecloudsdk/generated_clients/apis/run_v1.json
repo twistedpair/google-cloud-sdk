@@ -280,7 +280,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The name of the resource. In Cloud Run, name is required when creating top-level resources (Service, Job), must be unique within a Cloud Run project\/region, and cannot be changed once created. More info: https:\/\/kubernetes.io\/docs\/user-guide\/identifiers#names If ObjectMeta is part of a CreateServiceRequest, name must contain fewer than 50 characters.",
+          "description": "Required. The name of the resource. In Cloud Run, name is required when creating top-level resources (Service, Job), must be unique within a Cloud Run project\/region, and cannot be changed once created. More info: https:\/\/kubernetes.io\/docs\/user-guide\/identifiers#names",
           "type": "string"
         },
         "generateName": {
@@ -3295,7 +3295,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The fully qualified name of the service to retrieve. It can be any of the following forms: * `namespaces\/{project_id_or_number}\/services\/{service_name}` * `projects\/{project_id_or_number}\/locations\/{region}\/services\/{service_name}` * `projects\/{project_id_or_number}\/regions\/{region}\/services\/{service_name}`",
+                      "description": "Required. The fully qualified name of the service to retrieve. It can be any of the following forms: * `namespaces\/{project_id_or_number}\/services\/{service_name}` (only when the `endpoint` is regional) * `projects\/{project_id_or_number}\/locations\/{region}\/services\/{service_name}` * `projects\/{project_id_or_number}\/regions\/{region}\/services\/{service_name}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3353,7 +3353,7 @@
                   "httpMethod": "PUT",
                   "parameters": {
                     "name": {
-                      "description": "Required. The fully qualified name of the service to replace. It can be any of the following forms: * `namespaces\/{project_id_or_number}\/services\/{service_name}` * `projects\/{project_id_or_number}\/locations\/{region}\/services\/{service_name}` * `projects\/{project_id_or_number}\/regions\/{region}\/services\/{service_name}`",
+                      "description": "Required. The fully qualified name of the service to replace. It can be any of the following forms: * `namespaces\/{project_id_or_number}\/services\/{service_name}` (only when the `endpoint` is regional) * `projects\/{project_id_or_number}\/locations\/{region}\/services\/{service_name}` * `projects\/{project_id_or_number}\/regions\/{region}\/services\/{service_name}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3386,7 +3386,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The fully qualified name of the service to delete. It can be any of the following forms: * `namespaces\/{project_id_or_number}\/services\/{service_name}` * `projects\/{project_id_or_number}\/locations\/{region}\/services\/{service_name}` * `projects\/{project_id_or_number}\/regions\/{region}\/services\/{service_name}`",
+                      "description": "Required. The fully qualified name of the service to delete. It can be any of the following forms: * `namespaces\/{project_id_or_number}\/services\/{service_name}` (only when the `endpoint` is regional) * `projects\/{project_id_or_number}\/locations\/{region}\/services\/{service_name}` * `projects\/{project_id_or_number}\/regions\/{region}\/services\/{service_name}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4614,7 +4614,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The fully qualified name of the service to retrieve. It can be any of the following forms: * `namespaces\/{project_id_or_number}\/services\/{service_name}` * `projects\/{project_id_or_number}\/locations\/{region}\/services\/{service_name}` * `projects\/{project_id_or_number}\/regions\/{region}\/services\/{service_name}`",
+                  "description": "Required. The fully qualified name of the service to retrieve. It can be any of the following forms: * `namespaces\/{project_id_or_number}\/services\/{service_name}` (only when the `endpoint` is regional) * `projects\/{project_id_or_number}\/locations\/{region}\/services\/{service_name}` * `projects\/{project_id_or_number}\/regions\/{region}\/services\/{service_name}`",
                   "pattern": "^namespaces\/[^\/]+\/services\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4672,7 +4672,7 @@
               "httpMethod": "PUT",
               "parameters": {
                 "name": {
-                  "description": "Required. The fully qualified name of the service to replace. It can be any of the following forms: * `namespaces\/{project_id_or_number}\/services\/{service_name}` * `projects\/{project_id_or_number}\/locations\/{region}\/services\/{service_name}` * `projects\/{project_id_or_number}\/regions\/{region}\/services\/{service_name}`",
+                  "description": "Required. The fully qualified name of the service to replace. It can be any of the following forms: * `namespaces\/{project_id_or_number}\/services\/{service_name}` (only when the `endpoint` is regional) * `projects\/{project_id_or_number}\/locations\/{region}\/services\/{service_name}` * `projects\/{project_id_or_number}\/regions\/{region}\/services\/{service_name}`",
                   "pattern": "^namespaces\/[^\/]+\/services\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4705,7 +4705,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "Required. The fully qualified name of the service to delete. It can be any of the following forms: * `namespaces\/{project_id_or_number}\/services\/{service_name}` * `projects\/{project_id_or_number}\/locations\/{region}\/services\/{service_name}` * `projects\/{project_id_or_number}\/regions\/{region}\/services\/{service_name}`",
+                  "description": "Required. The fully qualified name of the service to delete. It can be any of the following forms: * `namespaces\/{project_id_or_number}\/services\/{service_name}` (only when the `endpoint` is regional) * `projects\/{project_id_or_number}\/locations\/{region}\/services\/{service_name}` * `projects\/{project_id_or_number}\/regions\/{region}\/services\/{service_name}`",
                   "pattern": "^namespaces\/[^\/]+\/services\/[^\/]+$",
                   "location": "path",
                   "required": true,

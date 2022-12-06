@@ -342,6 +342,17 @@ class _ErrorContext(object):
     return arg
 
 
+class _HandleLaterError(Exception):
+  """Error to be handled in a subsequent call to self.error.
+
+  This error exists to provide a way to break out of self.error so that we can
+  deduce a better error later; it will always be caught in parser_extensions and
+  never surfaced as a user-facing error (at least in theory; if that does happen
+  then it's a bug.)
+  """
+  pass
+
+
 class ArgumentParser(argparse.ArgumentParser):
   """A custom subclass for arg parsing behavior.
 
@@ -504,8 +515,10 @@ class ArgumentParser(argparse.ArgumentParser):
     """
     self._error_context = None
     parser = self if wrapper else super(ArgumentParser, self)
-    namespace, unknown_args = (
-        parser.parse_known_args(args, namespace) or (namespace, []))
+    try:
+      namespace, unknown_args = parser.parse_known_args(args, namespace)
+    except _HandleLaterError:
+      unknown_args = []
     error_context = self._error_context
     self._error_context = None
     if not unknown_args and hasattr(parser, 'flags_locations'):
@@ -518,8 +531,6 @@ class ArgumentParser(argparse.ArgumentParser):
     We are committed to an argparse error. See if we can do better than the
     observed error in context by isolating each flag arg to determine if the
     argparse error complained about a flag arg value instead of a positional.
-    Accumulate required flag args to ensure that all valid flag args are
-    checked.
 
     Args:
       context: The _ErrorContext containing the error to improve.
@@ -528,28 +539,17 @@ class ArgumentParser(argparse.ArgumentParser):
       namespace: The namespace for the current parser.
     """
     self._probe_error = True
-    required = []
-    skip = False
     for arg in args:
-      if skip:
-        skip = False
-        required.append(arg)
-        continue
       try:
         if not arg.startswith('-'):
           break
       except AttributeError:
         break
-      _, _, error_context = self._ParseKnownArgs(required + [arg], namespace)
+      _, _, error_context = self._ParseKnownArgs([arg], namespace)
       if not error_context:
         continue
-      if 'is required' in error_context.message:
-        required.append(arg)
-        if '=' in arg:
-          skip = True
-      elif 'too few arguments' not in error_context.message:
-        context = error_context
-        break
+      context = error_context
+      break
     self._probe_error = False
     context.error.argument = context.AddLocations(context.error.argument)
     context.parser.error(context=context, reproduce=True)
@@ -696,7 +696,7 @@ class ArgumentParser(argparse.ArgumentParser):
         self._Suggest(unknown_args)
       elif error_context:
         if self._probe_error:
-          return
+          raise _HandleLaterError()
         error_context.parser._DeduceBetterError(  # pylint: disable=protected-access
             error_context, args, namespace)
       namespace._parsers.append(self)  # pylint: disable=protected-access
@@ -984,7 +984,20 @@ class ArgumentParser(argparse.ArgumentParser):
       message: str, The error message to print.
       context: _ErrorContext, An error context with affected parser.
       reproduce: bool, Reproduce a previous call to this method from context.
+
+    Raises:
+      _HandleLaterError: if the error should be handled in a subsequent call to
+        this method.
     """
+    # Ignore errors better handled by validate_specified_args().
+    if '_ARGCOMPLETE' not in os.environ:
+      if re.search('too few arguments', message):
+        return
+      if (re.search('arguments? .* required', message) and
+          not re.search('in dict arg but not provided', message) and
+          not re.search(r'\[.*\brequired\b.*\]', message)):
+        return
+
     if reproduce and context:
       # Reproduce a previous call to this method from the info in context.
       message = context.message
@@ -1010,21 +1023,18 @@ class ArgumentParser(argparse.ArgumentParser):
           not isinstance(error, parser_errors.DetailedArgumentError) and
           (
               self._probe_error or
-              'Invalid choice' in message or
-              'unknown parser' in message
+              'Invalid choice' in message
           )
          ):
-        if 'unknown parser' in message:
-          return
         if self._probe_error and 'expected one argument' in message:
-          return
+          raise _HandleLaterError()
         # Save this context for later. We may be able to deduce a better error
         # message. For instance, argparse might complain about an invalid
         # command choice 'flag-value' for '--unknown-flag flag-value', but
         # with a little finagling in parse_known_args() we can verify that
         # '--unknown-flag' is in fact an unknown flag and error out on that.
         self._SetErrorContext(context or _ErrorContext(message, parser, error))
-        return
+        raise _HandleLaterError()
 
     # Add file/line info if specified.
 
@@ -1033,15 +1043,6 @@ class ArgumentParser(argparse.ArgumentParser):
       parts = message.split(':', 1)
       arg = context.AddLocations(parts[0][len(prefix):])
       message = '{}{}:{}'.format(prefix, arg, parts[1])
-
-    # Ignore errors better handled by validate_specified_args().
-    if '_ARGCOMPLETE' not in os.environ:
-      if re.search('too few arguments', message):
-        return
-      if (re.search('arguments? .* required', message) and
-          not re.search('in dict arg but not provided', message) and
-          not re.search(r'\[.*\brequired\b.*\]', message)):
-        return
 
     # No need to output help/usage text if we are in completion mode. However,
     # we do need to populate group/command level choices. These choices are not

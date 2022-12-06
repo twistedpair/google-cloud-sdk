@@ -37,7 +37,6 @@ from googlecloudsdk.core import resources as cloud_resources
 from googlecloudsdk.core.util import times
 import six
 
-
 EMAIL_REGEX = re.compile(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)')
 
 _DEFAULT_DEVICE_NAME_CONTAINER_WARNING = (
@@ -454,8 +453,8 @@ def ParseDiskResourceFromAttachedDisk(resources, attached_disk):
         regional or zonal disk.
   """
   try:
-    disk = resources.Parse(attached_disk.source,
-                           collection='compute.regionDisks')
+    disk = resources.Parse(
+        attached_disk.source, collection='compute.regionDisks')
     if disk:
       return disk
   except (cloud_resources.WrongResourceCollectionException,
@@ -463,8 +462,7 @@ def ParseDiskResourceFromAttachedDisk(resources, attached_disk):
     pass
 
   try:
-    disk = resources.Parse(attached_disk.source,
-                           collection='compute.disks')
+    disk = resources.Parse(attached_disk.source, collection='compute.disks')
     if disk:
       return disk
   except (cloud_resources.WrongResourceCollectionException,
@@ -503,9 +501,7 @@ def ParseDiskType(resources, disk_type, project, location, scope):
     collection = 'compute.regionDiskTypes'
     params = {'project': project, 'region': location}
   disk_type_ref = resources.Parse(
-      disk_type,
-      collection=collection,
-      params=params)
+      disk_type, collection=collection, params=params)
   return disk_type_ref
 
 
@@ -558,8 +554,9 @@ def GetScheduling(args,
       'maintenance_freeze_duration'):
     freeze_duration = args.maintenance_freeze_duration
   maintenance_interval = None
-  if hasattr(args, 'maintenance_interval') and args.IsSpecified(
-      'maintenance_interval'):
+  if hasattr(
+      args,
+      'maintenance_interval') and args.IsSpecified('maintenance_interval'):
     maintenance_interval = args.maintenance_interval
   provisioning_model = None
   if (hasattr(args, 'provisioning_model') and
@@ -577,13 +574,11 @@ def GetScheduling(args,
     host_error_timeout_seconds = args.host_error_timeout_seconds
 
   max_run_duration = None
-  if support_max_run_duration and hasattr(
-      args, 'max_run_duration'):
+  if support_max_run_duration and hasattr(args, 'max_run_duration'):
     max_run_duration = args.max_run_duration
 
   termination_time = None
-  if support_max_run_duration and hasattr(
-      args, 'termination_time'):
+  if support_max_run_duration and hasattr(args, 'termination_time'):
     termination_time = args.termination_time
 
   # Make sure restart_on_failure always retain user-provided value,
@@ -682,8 +677,13 @@ def CheckSpecifiedMachineTypeArgs(args, skip_defaults):
           IsAnySpecified(args, 'machine_type', 'custom_cpu', 'custom_memory'))
 
 
-def CreateMachineTypeUri(args, compute_client, resource_parser, project,
-                         location, scope, confidential_vm=False):
+def CreateMachineTypeUri(args,
+                         compute_client,
+                         resource_parser,
+                         project,
+                         location,
+                         scope,
+                         confidential_vm=False):
   """Create a machine type URI for given args and instance reference."""
 
   machine_type_name = CreateMachineTypeName(args, confidential_vm)
@@ -750,8 +750,7 @@ def GetLabels(args, client, instance_properties=False):
     labels_value = client.messages.InstanceProperties.LabelsValue
   if args.labels:
     return labels_value(additionalProperties=[
-        labels_value.AdditionalProperty(
-            key=key, value=value)
+        labels_value.AdditionalProperty(key=key, value=value)
         for key, value in sorted(six.iteritems(args.labels))
     ])
   return None

@@ -22,8 +22,7 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
-from googlecloudsdk.calliope import arg_parsers
-import six
+from googlecloudsdk.calliope import exceptions
 
 
 class _BareMetalNodePoolsClient(client.ClientBase):
@@ -60,36 +59,47 @@ class _BareMetalNodePoolsClient(client.ClientBase):
 
     return labels_value_message
 
-  def _parse_node_labels(self, node_labels):
-    """Validates and parses a node label object.
+  def _node_configs(self, args):
+    """Constructs proto message field node_configs."""
+    if not args.node_configs_from_file:
+      return []
 
-    Args:
-      node_labels: str of kay-val pairs separated by ':' delimiter.
+    node_configs = args.node_configs_from_file.get('nodeConfigs', [])
 
-    Returns:
-      If label is valid, returns a dict mapping message LabelsValue to its
-      value, otherwise, raise ArgumentTypeError.
-      For example,
-      {
-          'key': LABEL_KEY
-          'value': LABEL_VALUE
-      }
-    """
-    if not node_labels.get('labels'):
+    if not node_configs:
+      raise exceptions.BadArgumentException(
+          '--node_configs_from_file',
+          'Missing field [nodeConfigs] in Node configs file.')
+
+    node_config_messages = []
+    for node_config in node_configs:
+      node_config_messages.append(self._bare_metal_node_config(node_config))
+
+    return node_config_messages
+
+# TODO(b/260737834): Create a common function for all nodeConfigs
+  def _bare_metal_node_config(self, node_config):
+    """Constructs proto message BareMetalNodeConfig."""
+    node_ip = node_config.get('nodeIp', '')
+    if not node_ip:
+      raise exceptions.BadArgumentException(
+          '--node_configs_from_file',
+          'Missing field [nodeIp] in Node configs file.')
+
+    kwargs = {
+        'nodeIp': node_ip,
+        'labels': self._node_config_labels(node_config.get('labels', {}))
+    }
+
+    return self._messages.BareMetalNodeConfig(**kwargs)
+
+  def _node_config_labels(self, labels):
+    """Constructs proto message LabelsValue."""
+    additional_property_messages = []
+    if not labels:
       return None
 
-    input_node_labels = node_labels.get('labels', '').split(':')
-    valid_node_labels = ', '.join(
-        six.text_type(key) for key in input_node_labels)
-    additional_property_messages = []
-
-    for label in input_node_labels:
-      key_val_pair = label.split('=')
-      if len(key_val_pair) != 2:
-        raise arg_parsers.ArgumentTypeError(
-            'Node Label [{}] not in correct format, expect KEY=VALUE.'.format(
-                valid_node_labels))
-      key, value = key_val_pair[0], key_val_pair[1]
+    for key, value in labels.items():
       additional_property_messages.append(
           self._messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
               key=key, value=value))
@@ -109,29 +119,6 @@ class _BareMetalNodePoolsClient(client.ClientBase):
 
     if any(kwargs.values()):
       return self._messages.BareMetalNodePoolConfig(**kwargs)
-
-    return None
-
-  def _node_configs(self, args):
-    """Constructs proto message field node_configs."""
-    node_configs = []
-    node_config_flag_value = getattr(args, 'node_configs',
-                                     None)
-    if node_config_flag_value:
-      for node_config in node_config_flag_value:
-        node_configs.append(self._node_config(node_config))
-
-    return node_configs
-
-  def _node_config(self, node_config_args):
-    """Constructs proto message BareMetalNodeConfig."""
-    kwargs = {
-        'nodeIp': node_config_args.get('node-ip', ''),
-        'labels': self._parse_node_labels(node_config_args),
-    }
-
-    if any(kwargs.values()):
-      return self._messages.BareMetalNodeConfig(**kwargs)
 
     return None
 

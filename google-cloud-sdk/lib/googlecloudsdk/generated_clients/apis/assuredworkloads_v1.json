@@ -321,12 +321,12 @@
           }
         },
         "partner": {
-          "description": "Optional. Compliance Regime associated with this workload.",
+          "description": "Optional. Partner regime associated with this workload.",
           "type": "string",
           "enumDescriptions": [
-            "Unknown partner regime\/controls.",
-            "S3NS regime\/controls.",
-            "TSystem regime\/controls."
+            "",
+            "Enum representing S3NS partner.",
+            "Enum representing T_SYSTEM partner."
           ],
           "enum": [
             "PARTNER_UNSPECIFIED",
@@ -527,6 +527,45 @@
         "nextPageToken": {
           "description": "The next page token. Return empty if reached the last page.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAssuredworkloadsV1MutatePartnerPermissionsRequest": {
+      "id": "GoogleCloudAssuredworkloadsV1MutatePartnerPermissionsRequest",
+      "description": "Request of updating permission settings for a partner workload.",
+      "type": "object",
+      "properties": {
+        "partnerPermissions": {
+          "description": "Required. The partner permissions to be updated.",
+          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadPartnerPermissions"
+        },
+        "updateMask": {
+          "description": "Required. The list of fields to be updated. E.g. update_mask { paths: \"partner_permissions.data_logs_viewer\"}",
+          "type": "string",
+          "format": "google-fieldmask"
+        },
+        "etag": {
+          "description": "Optional. The etag of the workload. If this is provided, it must match the server's etag.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAssuredworkloadsV1WorkloadPartnerPermissions": {
+      "id": "GoogleCloudAssuredworkloadsV1WorkloadPartnerPermissions",
+      "description": "Permissions granted to the AW Partner SA account for the customer workload",
+      "type": "object",
+      "properties": {
+        "remediateFolderViolations": {
+          "description": "Allow partner to monitor folder and remediate violations",
+          "type": "boolean"
+        },
+        "dataLogsViewer": {
+          "description": "Allow partner to view data and logs",
+          "type": "boolean"
+        },
+        "serviceAccessApprover": {
+          "description": "Allow partner to approve or reject Service Access requests",
+          "type": "boolean"
         }
       }
     },
@@ -1093,6 +1132,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Lists Assured Workloads under a CRM Node."
+                },
+                "mutatePartnerPermissions": {
+                  "id": "assuredworkloads.organizations.locations.workloads.mutatePartnerPermissions",
+                  "path": "v1/{+name}:mutatePartnerPermissions",
+                  "flatPath": "v1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}:mutatePartnerPermissions",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The `name` field is used to identify the workload. Format: organizations\/{org_id}\/locations\/{location_id}\/workloads\/{workload_id}",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/workloads\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAssuredworkloadsV1MutatePartnerPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudAssuredworkloadsV1Workload"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update the permissions settings for an existing partner workload. For force updates don't set etag field in the Workload. Only one update operation per workload can be in progress."
                 }
               }
               ,

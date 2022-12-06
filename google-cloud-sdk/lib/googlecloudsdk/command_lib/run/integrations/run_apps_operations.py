@@ -52,22 +52,23 @@ _DEFAULT_APP_NAME = 'default'
 
 
 @contextlib.contextmanager
-def Connect(conn_context):
+def Connect(conn_context, release_track):
   """Provide a RunAppsOperations instance to use.
 
   Arguments:
     conn_context: a context manager that yields a ConnectionInfo and manages a
       dynamic context.
+    release_track: the release track of the command.
 
   Yields:
     A RunAppsOperations instance.
   """
   # pylint: disable=protected-access
-  client = apis.GetClientInstance(
-      conn_context.api_name,
-      conn_context.api_version)
+  client = apis.GetClientInstance(conn_context.api_name,
+                                  conn_context.api_version)
 
-  yield RunAppsOperations(client, conn_context.api_version, conn_context.region)
+  yield RunAppsOperations(client, conn_context.api_version, conn_context.region,
+                          release_track)
 
 
 def _HandleQueueingException(err):
@@ -92,18 +93,20 @@ def _HandleQueueingException(err):
 class RunAppsOperations(object):
   """Client used by Cloud Run Integrations to communicate with the API."""
 
-  def __init__(self, client, api_version, region):
+  def __init__(self, client, api_version, region, release_track):
     """Inits RunAppsOperations with given API clients.
 
     Args:
       client: The API client for interacting with RunApps APIs.
       api_version: Version of resources & clients (v1alpha1, v1beta1)
       region: str, The region of the control plane.
+      release_track: the release track of the command.
     """
 
     self._client = client
     self._api_version = api_version
     self._region = region
+    self._release_track = release_track
 
   @property
   def client(self):
@@ -140,9 +143,8 @@ class RunAppsOperations(object):
     if integration_name:
       tracker.UpdateStage(
           stages.UPDATE_APPLICATION,
-          'You can check the status at any time by running '
-          '`gcloud alpha run integrations describe {}`'.format(
-              integration_name))
+          messages_util.CheckStatusMessage(self._release_track,
+                                           integration_name))
     try:
       self._UpdateApplication(appname, appconfig, etag)
     except api_exceptions.HttpConflictError as err:
@@ -369,7 +371,9 @@ class RunAppsOperations(object):
 
     resources_map[name] = {resource_type: resource_config}
 
-    match_type_names = typekit.GetCreateSelectors(name, service)
+    match_type_names = typekit.GetCreateSelectors(name)
+    if service:
+      self._AppendTypeMatcher(match_type_names, _SERVICE_TYPE, service)
     if typekit.is_ingress_service:
       # For ingress resource, expand the check list and selector to include all
       # binded services.
@@ -387,8 +391,8 @@ class RunAppsOperations(object):
     else:
       services = typekit.GetRefServices(name, resource_config, resources_map)
 
-    self.EnsureCloudRunServices(services, resources_map)
-    self.CheckCloudRunServices(services)
+    self.EnsureCloudRunResources(services, resources_map)
+    self.CheckCloudRunServicesExistence(services)
 
     resource_stages = typekit.GetCreateComponentTypes(
         selectors=match_type_names,
@@ -458,10 +462,14 @@ class RunAppsOperations(object):
     flags.ValidateUpdateParameters(typekit.integration_type, parameters)
 
     resource_config = existing_resource[typekit.resource_type]
-    typekit.UpdateResourceConfig(parameters, resource_config)
 
-    match_type_names = typekit.GetCreateSelectors(name, add_service,
-                                                  remove_service)
+    specified_services = []
+    services_in_params = typekit.UpdateResourceConfig(parameters,
+                                                      resource_config)
+    if services_in_params:
+      specified_services.extend(services_in_params)
+
+    match_type_names = typekit.GetCreateSelectors(name)
 
     if add_service:
       typekit.BindServiceToIntegration(
@@ -469,6 +477,7 @@ class RunAppsOperations(object):
           resources_map.setdefault(add_service,
                                    {}).setdefault(_SERVICE_TYPE, {}),
           parameters)
+      specified_services.append(add_service)
 
     if remove_service:
       if remove_service in resources_map:
@@ -476,30 +485,32 @@ class RunAppsOperations(object):
             name, resource_config, remove_service,
             resources_map[remove_service].setdefault(_SERVICE_TYPE,
                                                      {}), parameters)
+        if self.GetCloudRunService(remove_service):
+          # remove_service missing will not lead to failure.
+          # only add it to selector if it exists.
+          self._AppendTypeMatcher(match_type_names, _SERVICE_TYPE,
+                                  remove_service)
       else:
         raise exceptions.ServiceNotFoundError(
             'Service [{}] is not found among integrations'.format(
                 remove_service))
 
-    services = []
-    if typekit.is_ingress_service:
-      # For ingress resource, expand the check list and selector to include all
-      # binded services.
-      services = typekit.GetRefServices(name, resource_config, resources_map)
-      for service in services:
-        if service != add_service:
-          match_type_names.append({'type': _SERVICE_TYPE, 'name': service})
-    elif add_service:
-      services.append(add_service)
-    elif self._IsBackingResource(resource_type) and remove_service is None:
-      services.extend(
-          typekit.GetRefServices(name, resource_config, resources_map))
-      for service in services:
-        match_type_names.append({'type': _SERVICE_TYPE, 'name': service})
+    if specified_services:
+      for service in specified_services:
+        # Specified services are always added to selector.
+        self._AppendTypeMatcher(match_type_names, _SERVICE_TYPE, service)
+      self.EnsureCloudRunResources(specified_services, resources_map)
+      self.CheckCloudRunServicesExistence(specified_services)
 
-    if services:
-      self.EnsureCloudRunServices(services, resources_map)
-      self.CheckCloudRunServices(services)
+    if typekit.is_ingress_service or (self._IsBackingResource(resource_type) and
+                                      add_service is None and
+                                      remove_service is None):
+      ref_svcs = typekit.GetRefServices(name, resource_config, resources_map)
+      for service in ref_svcs:
+        if service not in specified_services and self.GetCloudRunService(
+            service):
+          # Non-specified services are only added to selector if it exists.
+          self._AppendTypeMatcher(match_type_names, _SERVICE_TYPE, service)
 
     deploy_message = messages_util.GetDeployMessage(resource_type)
     application = encoding.DictToMessage(app_dict, self.messages.Application)
@@ -559,17 +570,18 @@ class RunAppsOperations(object):
     service_match_type_names = []
     if services:
       for service in services:
-        service_match_type_names.append({
-            'type': _SERVICE_TYPE,
-            'name': service
-        })
+        if self.GetCloudRunService(service):
+          # Only configure service to unbind if it exists
+          service_match_type_names.append({
+              'type': _SERVICE_TYPE,
+              'name': service
+          })
     delete_match_type_names = typekit.GetDeleteSelectors(name)
-    should_configure_service = bool(services)
     resource_stages = typekit.GetDeleteComponentTypes(
         selectors=delete_match_type_names, app_dict=app_dict)
     stages_map = stages.IntegrationDeleteStages(
         destroy_resource_types=resource_stages,
-        should_configure_service=should_configure_service)
+        should_configure_service=bool(service_match_type_names))
 
     def StatusUpdate(tracker, operation, unused_status):
       self._UpdateDeploymentTracker(tracker, operation, stages_map)
@@ -586,14 +598,20 @@ class RunAppsOperations(object):
         application = encoding.DictToMessage(app_dict,
                                              self.messages.Application)
         # TODO(b/222748706): refine message on failure.
-        self.ApplyAppConfig(
-            tracker=tracker,
-            tracker_update_func=StatusUpdate,
-            appname=_DEFAULT_APP_NAME,
-            appconfig=application.config,
-            match_type_names=service_match_type_names,
-            intermediate_step=True,
-            etag=application.etag)
+        if service_match_type_names:
+          self.ApplyAppConfig(
+              tracker=tracker,
+              tracker_update_func=StatusUpdate,
+              appname=_DEFAULT_APP_NAME,
+              appconfig=application.config,
+              match_type_names=service_match_type_names,
+              intermediate_step=True,
+              etag=application.etag)
+        else:
+          self._UpdateApplication(
+              appname=_DEFAULT_APP_NAME,
+              appconfig=application.config,
+              etag=application.etag)
       # Undeploy integration resource
       delete_selector = {'matchTypeNames': delete_match_type_names}
       self._UndeployResource(name, delete_selector, tracker, StatusUpdate)
@@ -779,7 +797,7 @@ class RunAppsOperations(object):
         collection='run.namespaces.services')
     return service_ref
 
-  def EnsureCloudRunServices(self, service_names, resources_map):
+  def EnsureCloudRunResources(self, service_names, resources_map):
     """Make sure resources block for the Cloud Run services exists.
 
     Args:
@@ -789,7 +807,23 @@ class RunAppsOperations(object):
     for service in service_names:
       resources_map.setdefault(service, {}).setdefault(_SERVICE_TYPE, {})
 
-  def CheckCloudRunServices(self, service_names):
+  def GetCloudRunService(self, service_name):
+    """Check for existence of Cloud Run services.
+
+    Args:
+      service_name: str, name of the service
+
+    Returns:
+      the Cloud Run service object
+    """
+    conn_context = connection_context.RegionalConnectionContext(
+        self._region, global_methods.SERVERLESS_API_NAME,
+        global_methods.SERVERLESS_API_VERSION)
+    with serverless_operations.Connect(conn_context) as client:
+      service_ref = self.GetServiceRef(service_name)
+      return client.GetService(service_ref)
+
+  def CheckCloudRunServicesExistence(self, service_names):
     """Check for existence of Cloud Run services.
 
     Args:
@@ -798,16 +832,11 @@ class RunAppsOperations(object):
     Raises:
       exceptions.ServiceNotFoundError: when a Cloud Run service doesn't exist.
     """
-    conn_context = connection_context.RegionalConnectionContext(
-        self._region, global_methods.SERVERLESS_API_NAME,
-        global_methods.SERVERLESS_API_VERSION)
-    with serverless_operations.Connect(conn_context) as client:
-      for name in service_names:
-        service_ref = self.GetServiceRef(name)
-        service = client.GetService(service_ref)
-        if not service:
-          raise exceptions.ServiceNotFoundError(
-              'Service [{}] could not be found.'.format(name))
+    for name in service_names:
+      service = self.GetCloudRunService(name)
+      if not service:
+        raise exceptions.ServiceNotFoundError(
+            'Service [{}] could not be found.'.format(name))
 
   def CheckDeploymentState(self, response):
     """Throws any unexpected states contained within deployment reponse.
@@ -845,3 +874,9 @@ class RunAppsOperations(object):
       raise exceptions.IntegrationsOperationError(
           'Configuration returned in unexpected state "{}".'.format(
               response.status.state.name))
+
+  def _AppendTypeMatcher(self, type_matchers, res_type, res_name):
+    for matcher in type_matchers:
+      if matcher['type'] == res_type and matcher['name'] == res_name:
+        return
+    type_matchers.append({'type': res_type, 'name': res_name})

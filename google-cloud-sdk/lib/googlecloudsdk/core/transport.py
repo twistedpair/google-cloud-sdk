@@ -195,6 +195,14 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
       handlers.append(
           Handler(SetHeader('X-Goog-Request-Reason', request_reason)))
 
+    request_org_restriction_headers = properties.VALUES.resource_policy.org_restriction_header.Get(
+    )
+    if request_org_restriction_headers:
+      handlers.append(
+          Handler(
+              SetHeader('X-Goog-Allowed-Resources',
+                        request_org_restriction_headers)))
+
     # Do this one last so that it sees the effects of the other modifiers.
     if properties.VALUES.core.log_http.GetBool():
       redact_token = properties.VALUES.core.log_http_redact_token.GetBool()

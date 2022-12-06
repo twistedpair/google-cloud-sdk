@@ -13,6 +13,104 @@ from apitools.base.py import extra_types
 package = 'networksecurity'
 
 
+class AddAddressGroupItemsRequest(_messages.Message):
+  r"""Request used by the AddAddressGroupItems method.
+
+  Fields:
+    items: Required. List of items to add.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  items = _messages.StringField(1, repeated=True)
+  requestId = _messages.StringField(2)
+
+
+class AddressGroup(_messages.Message):
+  r"""AddressGroup is a resource that specifies how a collection of IP/DNS
+  used in Firewall Policy.
+
+  Enums:
+    TypeValueValuesEnum: Required. The type of the Address Group. Possible
+      values are "IPv4" or "IPV6".
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the AddressGroup
+      resource.
+
+  Fields:
+    capacity: Required. Capacity of the Address Group
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. Free-text description of the resource.
+    items: Optional. List of items.
+    labels: Optional. Set of label tags associated with the AddressGroup
+      resource.
+    name: Required. Name of the AddressGroup resource. It matches pattern
+      `projects/*/locations/{location}/addressGroups/`.
+    selfLink: Output only. Server-defined fully-qualified URL for this
+      resource.
+    type: Required. The type of the Address Group. Possible values are "IPv4"
+      or "IPV6".
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of the Address Group. Possible values are "IPv4" or
+    "IPV6".
+
+    Values:
+      TYPE_UNSPECIFIED: Default value.
+      IPV4: IP v4 ranges.
+      IPV6: IP v6 ranges.
+    """
+    TYPE_UNSPECIFIED = 0
+    IPV4 = 1
+    IPV6 = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the AddressGroup resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  capacity = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  items = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  selfLink = _messages.StringField(7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+
+
 class AuthorizationLoggingOptions(_messages.Message):
   r"""Authorization-related information used by Cloud Audit Logging.
 
@@ -65,10 +163,13 @@ class AuthorizationPolicy(_messages.Message):
     labels: Optional. Set of label tags associated with the
       AuthorizationPolicy resource.
     name: Required. Name of the AuthorizationPolicy resource. It matches
-      pattern `projects/*/locations/{location}/authorizationPolicies/`.
-    rules: Optional. List of rules to match. If not set, the action specified
-      in the 'action' field will be applied without any additional rule
-      checks.
+      pattern
+      `projects/{project}/locations/{location}/authorizationPolicies/`.
+    rules: Optional. List of rules to match. Note that at least one of the
+      rules must match in order for the action specified in the 'action' field
+      to be taken. A rule is a match if there is a matching source and
+      destination. If left blank, the action specified in the `action` field
+      will be applied on every request.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -79,7 +180,8 @@ class AuthorizationPolicy(_messages.Message):
     Values:
       ACTION_UNSPECIFIED: Default value.
       ALLOW: Grant access.
-      DENY: Deny access.
+      DENY: Deny access. Deny rules should be avoided unless they are used to
+        provide a default "deny all" fallback.
     """
     ACTION_UNSPECIFIED = 0
     ALLOW = 1
@@ -201,21 +303,44 @@ class ClientTlsPolicy(_messages.Message):
   updateTime = _messages.StringField(8)
 
 
+class CloneAddressGroupItemsRequest(_messages.Message):
+  r"""Request used by the CloneAddressGroupItems method.
+
+  Fields:
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    sourceAddressGroup: Required. Source address group to clone items from.
+  """
+
+  requestId = _messages.StringField(1)
+  sourceAddressGroup = _messages.StringField(2)
+
+
 class CreateReferenceRequest(_messages.Message):
   r"""The CreateReferenceRequest request.
 
   Fields:
     parent: Required. The parent resource name (target_resource of this
-      reference). For example: `targetservice.googleapis.com/projects/{my-
+      reference). For example: `//targetservice.googleapis.com/projects/{my-
       project}/locations/{location}/instances/{my-instance}`.
     reference: Required. The reference to be created.
-    referenceId: The unique id of this resource. Can be any arbitrary string,
-      either GUID or any other string. Must be unique within a scope of a
-      target resource, but does not have to be globally unique. Reference ID
-      is part of resource name of the reference. Resource name is generated in
-      the following way: {parent}/references/{reference_id}. Reference ID
+    referenceId: The unique id of this resource. Must be unique within a scope
+      of a target resource, but does not have to be globally unique. Reference
+      ID is part of resource name of the reference. Resource name is generated
+      in the following way: {parent}/references/{reference_id}. Reference ID
       field is currently required but id auto generation might be added in the
-      future.
+      future. It can be any arbitrary string, either GUID or any other string,
+      however CLHs can use preprocess callbacks to perform a custom
+      validation.
     requestId: Optional. Request ID is an idempotency ID of the request. It
       must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
       is not supported.
@@ -231,9 +356,10 @@ class DeleteReferenceRequest(_messages.Message):
   r"""The DeleteReferenceRequest request.
 
   Fields:
-    name: Required. Resource name of the reference, in the following format:
-      `{targer_service}/{target_resource}/references/{reference_id}`. For
-      example: `targetservice.googleapis.com/projects/{my-
+    name: Required. Full resource name of the reference, in the following
+      format:
+      `//{targer_service}/{target_resource}/references/{reference_id}`. For
+      example: `//targetservice.googleapis.com/projects/{my-
       project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
     requestId: Optional. Request ID is an idempotency ID of the request. It
       must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
@@ -248,21 +374,26 @@ class Destination(_messages.Message):
   r"""Specification of traffic destination attributes.
 
   Fields:
-    hosts: Required. List of host names to match. Matched against HOST header
-      in http requests. Each host can be an exact match, or a prefix match
-      (example, "mydomain.*") or a suffix match (example, *.myorg.com") or a
-      presence(any) match "*".
+    hosts: Required. List of host names to match. Matched against the
+      ":authority" header in http requests. At least one host should match.
+      Each host can be an exact match, or a prefix match (example
+      "mydomain.*") or a suffix match (example "*.myorg.com") or a presence
+      (any) match "*".
     httpHeaderMatch: Optional. Match against key:value pair in http header.
       Provides a flexible match based on HTTP headers, for potentially
-      advanced use cases.
-    methods: Optional. A list of HTTP methods to match. Should not be set for
-      gRPC services.
+      advanced use cases. At least one header should match. Avoid using header
+      matches to make authorization decisions unless there is a strong
+      guarantee that requests arrive through a trusted client or proxy.
+    methods: Optional. A list of HTTP methods to match. At least one method
+      should match. Should not be set for gRPC services.
     paths: Optional. A list of HTTP paths to match. gRPC methods must be
       presented as fully-qualified name in the form of
-      "/packageName.serviceName/methodName". Each path can be an exact match,
-      or a prefix match (example, "/packageName.serviceName/*") or a suffix
-      match (example, */video") or a presence(any) match "*".
-    ports: Required. List of destination ports to match.
+      "/packageName.serviceName/methodName". At least one path should match.
+      Each path can be an exact match, or a prefix match (example,
+      "/packageName.serviceName/*") or a suffix match (example, "*/video") or
+      a presence (any) match "*".
+    ports: Required. List of destination ports to match. At least one port
+      should match.
   """
 
   hosts = _messages.StringField(1, repeated=True)
@@ -276,8 +407,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -322,9 +452,10 @@ class GetReferenceRequest(_messages.Message):
   r"""The GetReferenceRequest request.
 
   Fields:
-    name: Required. Resource name of the reference, in the following format:
-      `{target_service}/{target_resource}/references/{reference_id}`. For
-      example: `targetservice.googleapis.com/projects/{my-
+    name: Required. Full resource name of the reference, in the following
+      format:
+      `//{target_service}/{target_resource}/references/{reference_id}`. For
+      example: `//targetservice.googleapis.com/projects/{my-
       project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
   """
 
@@ -373,20 +504,18 @@ class GoogleIamV1AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-    exemptedMembers: A string attribute.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('GoogleIamV1AuditLogConfig', 1, repeated=True)
-  exemptedMembers = _messages.StringField(2, repeated=True)
-  service = _messages.StringField(3)
+  service = _messages.StringField(2)
 
 
 class GoogleIamV1AuditLogConfig(_messages.Message):
@@ -426,7 +555,7 @@ class GoogleIamV1AuditLogConfig(_messages.Message):
 
 
 class GoogleIamV1Binding(_messages.Message):
-  r"""Associates `members` with a `role`.
+  r"""Associates `members`, or principals, with a `role`.
 
   Fields:
     bindingId: A string attribute.
@@ -434,20 +563,28 @@ class GoogleIamV1Binding(_messages.Message):
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
-      might grant the same role to one or more of the members in this binding.
-      To learn which resources support conditions in their IAM policies, see
-      the [IAM
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the identities requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
@@ -469,8 +606,8 @@ class GoogleIamV1Binding(_messages.Message):
       group retains the role in the binding. * `domain:{domain}`: The G Suite
       domain (primary) that represents all the users of that domain. For
       example, `google.com` or `example.com`.
-    role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
   bindingId = _messages.StringField(1)
@@ -538,18 +675,21 @@ class GoogleIamV1Condition(_messages.Message):
         (go/security-realms). When used with IN, the condition indicates "any
         of the request's realms match one of the given values; with NOT_IN,
         "none of the realms match any of the given values". Note that a value
-        can be: - 'self' (i.e., allow connections from clients that are in the
-        same security realm) - 'self:metro' (i.e., clients that are in the
-        same metro) - 'self:cloud-region' (i.e., allow connections from
-        clients that are in the same cloud region) - 'guardians' (i.e., allow
+        can be: - 'self:campus' (i.e., clients that are in the same campus) -
+        'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-
+        region' (i.e., allow connections from clients that are in the same
+        cloud region) - 'self:prod-region' (i.e., allow connections from
+        clients that are in the same prod region) - 'guardians' (i.e., allow
         connections from its guardian realms. See go/security-realms-
-        glossary#guardian for more information.) - a realm (e.g., 'campus-
-        abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see: go/realm-
-        groups) A match is determined by a realm group membership check
-        performed by a RealmAclRep object (go/realm-acl-howto). It is not
-        permitted to grant access based on the *absence* of a realm, so realm
-        conditions can only be used in a "positive" context (e.g., ALLOW/IN or
-        DENY/NOT_IN).
+        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
+        allow connections from clients that are in the same security realm,
+        which is currently but not guaranteed to be campus-sized) - a realm
+        (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
+        see: go/realm-groups) A match is determined by a realm group
+        membership check performed by a RealmAclRep object (go/realm-acl-
+        howto). It is not permitted to grant access based on the *absence* of
+        a realm, so realm conditions can only be used in a "positive" context
+        (e.g., ALLOW/IN or DENY/NOT_IN).
       APPROVER: An approver (distinct from the requester) that has authorized
         this request. When used with IN, the condition indicates that one of
         the approvers associated with the request matches the specified
@@ -719,15 +859,15 @@ class GoogleIamV1LogConfig(_messages.Message):
 class GoogleIamV1Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
-  `bindings`. A `binding` binds one or more `members` to a single `role`.
-  Members can be user accounts, service accounts, Google groups, and domains
-  (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role. For some types of
-  Google Cloud resources, a `binding` can also specify a `condition`, which is
-  a logical expression that allows access to a resource only if the expression
-  evaluates to `true`. A condition can add constraints based on attributes of
-  the request, the resource, or both. To learn which resources support
-  conditions in their IAM policies, see the [IAM
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
   policies). **JSON example:** { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
@@ -743,15 +883,21 @@ class GoogleIamV1Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally, may
-      specify a `condition` that determines how and when the `bindings` are
-      applied. Each of the `bindings` must contain at least one member.
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -763,7 +909,6 @@ class GoogleIamV1Policy(_messages.Message):
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    iamOwned: A boolean attribute.
     rules: If more than one rule is specified, the rules are applied in the
       following manner: - All matching LOG rules are always applied. - If any
       DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
@@ -793,9 +938,8 @@ class GoogleIamV1Policy(_messages.Message):
   auditConfigs = _messages.MessageField('GoogleIamV1AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('GoogleIamV1Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
-  iamOwned = _messages.BooleanField(4)
-  rules = _messages.MessageField('GoogleIamV1Rule', 5, repeated=True)
-  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('GoogleIamV1Rule', 4, repeated=True)
+  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class GoogleIamV1Rule(_messages.Message):
@@ -811,8 +955,8 @@ class GoogleIamV1Rule(_messages.Message):
     description: Human-readable description of the rule.
     in_: If one or more 'in' clauses are specified, the rule matches if the
       PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
-    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
-      any entries that match the LOG action.
+    logConfig: The config returned to callers of CheckPolicy for any entries
+      that match the LOG action.
     notIn: If one or more 'not_in' clauses are specified, the rule matches if
       the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
       for in and not_in entries can be found at in the Local IAM documentation
@@ -857,8 +1001,8 @@ class GoogleIamV1SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -873,7 +1017,7 @@ class GoogleIamV1TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """
@@ -893,7 +1037,7 @@ class GoogleIamV1TestIamPermissionsResponse(_messages.Message):
 
 
 class HttpHeaderMatch(_messages.Message):
-  r"""Specification of HTTP header match atrributes.
+  r"""Specification of HTTP header match attributes.
 
   Fields:
     headerName: Required. The name of the HTTP header to match. For matching
@@ -910,6 +1054,50 @@ class HttpHeaderMatch(_messages.Message):
 
   headerName = _messages.StringField(1)
   regexMatch = _messages.StringField(2)
+
+
+class ListAddressGroupReferencesResponse(_messages.Message):
+  r"""Response of the ListAddressGroupReferences method.
+
+  Fields:
+    addressGroupReferences: A list of references that matches the specified
+      filter in the request.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  addressGroupReferences = _messages.MessageField('ListAddressGroupReferencesResponseAddressGroupReference', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListAddressGroupReferencesResponseAddressGroupReference(_messages.Message):
+  r"""The Reference of AddressGroup.
+
+  Fields:
+    firewallPolicy: FirewallPolicy that is using the Address Group.
+    rulePriority: Rule priority of the FirewallPolicy that is using the
+      Address Group.
+  """
+
+  firewallPolicy = _messages.StringField(1)
+  rulePriority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class ListAddressGroupsResponse(_messages.Message):
+  r"""Response returned by the ListAddressGroups method.
+
+  Fields:
+    addressGroups: List of AddressGroups resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  addressGroups = _messages.MessageField('AddressGroup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListAuthorizationPoliciesResponse(_messages.Message):
@@ -979,7 +1167,7 @@ class ListReferencesRequest(_messages.Message):
     pageToken: The next_page_token value returned from a previous List
       request, if any.
     parent: Required. The parent resource name (target_resource of this
-      reference). For example: `targetservice.googleapis.com/projects/{my-
+      reference). For example: `//targetservice.googleapis.com/projects/{my-
       project}/locations/{location}/instances/{my-instance}`.
   """
 
@@ -1100,11 +1288,487 @@ class MTLSPolicy(_messages.Message):
   r"""Specification of the MTLSPolicy.
 
   Fields:
-    clientValidationCa: Required. Defines the mechanism to obtain the
-      Certificate Authority certificate to validate the client certificate.
+    clientValidationCa:  Defines the mechanism to obtain the Certificate
+      Authority certificate to validate the client certificate.
   """
 
   clientValidationCa = _messages.MessageField('ValidationCA', 1, repeated=True)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsAddItemsRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsAddItemsRequest
+  object.
+
+  Fields:
+    addAddressGroupItemsRequest: A AddAddressGroupItemsRequest resource to be
+      passed as the request body.
+    addressGroup: Required. A name of the AddressGroup to add items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+  """
+
+  addAddressGroupItemsRequest = _messages.MessageField('AddAddressGroupItemsRequest', 1)
+  addressGroup = _messages.StringField(2, required=True)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsCloneItemsRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsCloneItemsRequest
+  object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to clone items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    cloneAddressGroupItemsRequest: A CloneAddressGroupItemsRequest resource to
+      be passed as the request body.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  cloneAddressGroupItemsRequest = _messages.MessageField('CloneAddressGroupItemsRequest', 2)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsCreateRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsCreateRequest
+  object.
+
+  Fields:
+    addressGroup: A AddressGroup resource to be passed as the request body.
+    addressGroupId: Required. Short name of the AddressGroup resource to be
+      created. This value should be 1-63 characters long, containing only
+      letters, numbers, hyphens, and underscores, and should not start with a
+      number. E.g. "authz_policy".
+    parent: Required. The parent resource of the AddressGroup. Must be in the
+      format `projects/*/locations/{location}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  addressGroup = _messages.MessageField('AddressGroup', 1)
+  addressGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. A name of the AddressGroup to delete. Must be in the
+      format `projects/*/locations/{location}/addressGroups/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsGetRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsGetRequest object.
+
+  Fields:
+    name: Required. A name of the AddressGroup to get. Must be in the format
+      `projects/*/locations/{location}/addressGroups/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsListReferencesRequest(_messages.Message):
+  r"""A
+  NetworksecurityOrganizationsLocationsAddressGroupsListReferencesRequest
+  object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to clone items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    pageSize: The maximum number of references to return. If unspecified,
+      server will pick an appropriate default. Server may return fewer items
+      than requested. A caller should only rely on response's next_page_token
+      to determine if there are more AddressGroupUsers left to be queried.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsListRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of AddressGroups to return per call.
+    pageToken: The value returned by the last `ListAddressGroupsResponse`
+      Indicates that this is a continuation of a prior `ListAddressGroups`
+      call, and that the system should return the next page of data.
+    parent: Required. The project and location from which the AddressGroups
+      should be listed, specified in the format
+      `projects/*/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsPatchRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsPatchRequest object.
+
+  Fields:
+    addressGroup: A AddressGroup resource to be passed as the request body.
+    name: Required. Name of the AddressGroup resource. It matches pattern
+      `projects/*/locations/{location}/addressGroups/`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the AddressGroup resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  addressGroup = _messages.MessageField('AddressGroup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsRemoveItemsRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsRemoveItemsRequest
+  object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to remove items from.
+      Must be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    removeAddressGroupItemsRequest: A RemoveAddressGroupItemsRequest resource
+      to be passed as the request body.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  removeAddressGroupItemsRequest = _messages.MessageField('RemoveAddressGroupItemsRequest', 2)
+
+
+class NetworksecurityOrganizationsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class NetworksecurityOrganizationsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityOrganizationsLocationsOperationsGetRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityOrganizationsLocationsOperationsListRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsAddItemsRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsAddItemsRequest object.
+
+  Fields:
+    addAddressGroupItemsRequest: A AddAddressGroupItemsRequest resource to be
+      passed as the request body.
+    addressGroup: Required. A name of the AddressGroup to add items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+  """
+
+  addAddressGroupItemsRequest = _messages.MessageField('AddAddressGroupItemsRequest', 1)
+  addressGroup = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsCloneItemsRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsCloneItemsRequest object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to clone items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    cloneAddressGroupItemsRequest: A CloneAddressGroupItemsRequest resource to
+      be passed as the request body.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  cloneAddressGroupItemsRequest = _messages.MessageField('CloneAddressGroupItemsRequest', 2)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsCreateRequest object.
+
+  Fields:
+    addressGroup: A AddressGroup resource to be passed as the request body.
+    addressGroupId: Required. Short name of the AddressGroup resource to be
+      created. This value should be 1-63 characters long, containing only
+      letters, numbers, hyphens, and underscores, and should not start with a
+      number. E.g. "authz_policy".
+    parent: Required. The parent resource of the AddressGroup. Must be in the
+      format `projects/*/locations/{location}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  addressGroup = _messages.MessageField('AddressGroup', 1)
+  addressGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the AddressGroup to delete. Must be in the
+      format `projects/*/locations/{location}/addressGroups/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsGetIamPolicyRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsGetRequest object.
+
+  Fields:
+    name: Required. A name of the AddressGroup to get. Must be in the format
+      `projects/*/locations/{location}/addressGroups/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsListReferencesRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsListReferencesRequest
+  object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to clone items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    pageSize: The maximum number of references to return. If unspecified,
+      server will pick an appropriate default. Server may return fewer items
+      than requested. A caller should only rely on response's next_page_token
+      to determine if there are more AddressGroupUsers left to be queried.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of AddressGroups to return per call.
+    pageToken: The value returned by the last `ListAddressGroupsResponse`
+      Indicates that this is a continuation of a prior `ListAddressGroups`
+      call, and that the system should return the next page of data.
+    parent: Required. The project and location from which the AddressGroups
+      should be listed, specified in the format
+      `projects/*/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsPatchRequest object.
+
+  Fields:
+    addressGroup: A AddressGroup resource to be passed as the request body.
+    name: Required. Name of the AddressGroup resource. It matches pattern
+      `projects/*/locations/{location}/addressGroups/`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the AddressGroup resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  addressGroup = _messages.MessageField('AddressGroup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsRemoveItemsRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsRemoveItemsRequest
+  object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to remove items from.
+      Must be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    removeAddressGroupItemsRequest: A RemoveAddressGroupItemsRequest resource
+      to be passed as the request body.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  removeAddressGroupItemsRequest = _messages.MessageField('RemoveAddressGroupItemsRequest', 2)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsSetIamPolicyRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class NetworksecurityProjectsLocationsAuthorizationPoliciesCreateRequest(_messages.Message):
@@ -1119,7 +1783,7 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesCreateRequest(_messag
       containing only letters, numbers, hyphens, and underscores, and should
       not start with a number. E.g. "authz_policy".
     parent: Required. The parent resource of the AuthorizationPolicy. Must be
-      in the format `projects/*/locations/{location}`.
+      in the format `projects/{project}/locations/{location}`.
   """
 
   authorizationPolicy = _messages.MessageField('AuthorizationPolicy', 1)
@@ -1133,7 +1797,8 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesDeleteRequest(_messag
 
   Fields:
     name: Required. A name of the AuthorizationPolicy to delete. Must be in
-      the format `projects/*/locations/{location}/authorizationPolicies/*`.
+      the format
+      `projects/{project}/locations/{location}/authorizationPolicies/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1145,17 +1810,22 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesGetIamPolicyRequest(_
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1168,7 +1838,8 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesGetRequest(_messages.
 
   Fields:
     name: Required. A name of the AuthorizationPolicy to get. Must be in the
-      format `projects/*/locations/{location}/authorizationPolicies/*`.
+      format
+      `projects/{project}/locations/{location}/authorizationPolicies/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1186,7 +1857,7 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesListRequest(_messages
       system should return the next page of data.
     parent: Required. The project and location from which the
       AuthorizationPolicies should be listed, specified in the format
-      `projects/*/locations/{location}`.
+      `projects/{project}/locations/{location}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1202,7 +1873,8 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesPatchRequest(_message
     authorizationPolicy: A AuthorizationPolicy resource to be passed as the
       request body.
     name: Required. Name of the AuthorizationPolicy resource. It matches
-      pattern `projects/*/locations/{location}/authorizationPolicies/`.
+      pattern
+      `projects/{project}/locations/{location}/authorizationPolicies/`.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the AuthorizationPolicy resource by the update. The
       fields specified in the update_mask are relative to the resource, not
@@ -1224,8 +1896,9 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesSetIamPolicyRequest(_
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -1241,8 +1914,9 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesTestIamPermissionsReq
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -1284,17 +1958,22 @@ class NetworksecurityProjectsLocationsClientTlsPoliciesGetIamPolicyRequest(_mess
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1359,8 +2038,9 @@ class NetworksecurityProjectsLocationsClientTlsPoliciesSetIamPolicyRequest(_mess
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -1377,8 +2057,9 @@ class NetworksecurityProjectsLocationsClientTlsPoliciesTestIamPermissionsRequest
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -1400,7 +2081,7 @@ class NetworksecurityProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     includeUnrevealedLocations: If true, the returned list will include
       locations which are not yet revealed.
@@ -1502,17 +2183,22 @@ class NetworksecurityProjectsLocationsServerTlsPoliciesGetIamPolicyRequest(_mess
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1577,8 +2263,9 @@ class NetworksecurityProjectsLocationsServerTlsPoliciesSetIamPolicyRequest(_mess
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -1595,8 +2282,9 @@ class NetworksecurityProjectsLocationsServerTlsPoliciesTestIamPermissionsRequest
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -1750,16 +2438,21 @@ class Reference(_messages.Message):
       Cumulative size of the field must not be more than 1KiB. Note: For the
       Arcus Reference API, you must add the proto you store in this field to
       http://cs/symbol:cloud.cluster.reference.ReferencePayload
-    name: Output only. Resource name of the reference. Includes target
-      resource as a parent and reference uid
+    name: Output only. Relative resource name of the reference. Includes
+      target resource as a parent and reference uid
       `{target_resource}/references/{reference_id}`. For example,
       `projects/{my-project}/locations/{location}/instances/{my-
       instance}/references/{xyz}`.
     sourceResource: Required. Full resource name of the resource which refers
       the target resource. For example:
       //tpu.googleapis.com/projects/myproject/nodes/mynode
+    targetUniqueId: Output only. The unique_id of the target resource. Example
+      1: (For arcus resource) A-1-0-2-387420123-13-913517247483640811
+      unique_id format defined in go/m11n-unique-id-as-resource-id Example 2:
+      (For CCFE resource) 123e4567-e89b-12d3-a456-426614174000
     type: Required. Type of the reference. A service might impose limits on
-      number of references of a specific type.
+      number of references of a specific type. Note: It's recommended to use
+      CAPITALS_WITH_UNDERSCORES style for a type name.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1792,19 +2485,45 @@ class Reference(_messages.Message):
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   name = _messages.StringField(3)
   sourceResource = _messages.StringField(4)
-  type = _messages.StringField(5)
+  targetUniqueId = _messages.StringField(5)
+  type = _messages.StringField(6)
+
+
+class RemoveAddressGroupItemsRequest(_messages.Message):
+  r"""Request used by the RemoveAddressGroupItems method.
+
+  Fields:
+    items: Required. List of items to remove.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  items = _messages.StringField(1, repeated=True)
+  requestId = _messages.StringField(2)
 
 
 class Rule(_messages.Message):
   r"""Specification of rules.
 
   Fields:
-    destinations: Optional. List of attributes for the traffic destination. If
+    destinations: Optional. List of attributes for the traffic destination.
+      All of the destinations must match. A destination is a match if a
+      request matches all the specified hosts, ports, methods and headers. If
       not set, the action specified in the 'action' field will be applied
       without any rule checks for the destination.
-    sources: Optional. List of attributes for the traffic source. If not set,
-      the action specified in the 'action' field will be applied without any
-      rule checks for the source.
+    sources: Optional. List of attributes for the traffic source. All of the
+      sources must match. A source is a match if both principals and ip_blocks
+      match. If not set, the action specified in the 'action' field will be
+      applied without any rule checks for the source.
   """
 
   destinations = _messages.MessageField('Destination', 1, repeated=True)
@@ -1814,40 +2533,41 @@ class Rule(_messages.Message):
 class ServerTlsPolicy(_messages.Message):
   r"""ServerTlsPolicy is a resource that specifies how a server should
   authenticate incoming requests. This resource itself does not affect
-  configuration unless it is attached to a target https proxy or endpoint
+  configuration unless it is attached to a target HTTPS proxy or endpoint
   config selector resource.
 
   Messages:
-    LabelsValue: Optional. Set of label tags associated with the resource.
+    LabelsValue: Set of label tags associated with the resource.
 
   Fields:
-    allowOpen: Optional. Determines if server allows plaintext connections. If
-      set to true, server allows plain text connections. By default, it is set
-      to false. This setting is not exclusive of other encryption modes. For
-      example, if allow_open and mtls_policy are set, server allows both plain
-      text and mTLS connections. See documentation of other encryption modes
-      to confirm compatibility.
+    allowOpen:  Determines if server allows plaintext connections. If set to
+      true, server allows plain text connections. By default, it is set to
+      false. This setting is not exclusive of other encryption modes. For
+      example, if `allow_open` and `mtls_policy` are set, server allows both
+      plain text and mTLS connections. See documentation of other encryption
+      modes to confirm compatibility. Consider using it if you wish to upgrade
+      in place your deployment to TLS while having mixed TLS and non-TLS
+      traffic reaching port :80.
     createTime: Output only. The timestamp when the resource was created.
-    description: Optional. Free-text description of the resource.
-    labels: Optional. Set of label tags associated with the resource.
-    mtlsPolicy: Optional. Defines a mechanism to provision peer validation
-      certificates for peer to peer authentication (Mutual TLS - mTLS). If not
-      specified, client certificate will not be requested. The connection is
-      treated as TLS and not mTLS. If allow_open and mtls_policy are set,
-      server allows both plain text and mTLS connections.
+    description: Free-text description of the resource.
+    labels: Set of label tags associated with the resource.
+    mtlsPolicy:  Defines a mechanism to provision peer validation certificates
+      for peer to peer authentication (Mutual TLS - mTLS). If not specified,
+      client certificate will not be requested. The connection is treated as
+      TLS and not mTLS. If `allow_open` and `mtls_policy` are set, server
+      allows both plain text and mTLS connections.
     name: Required. Name of the ServerTlsPolicy resource. It matches the
       pattern
       `projects/*/locations/{location}/serverTlsPolicies/{server_tls_policy}`
-    serverCertificate: Optional. Defines a mechanism to provision server
-      identity (public and private keys). Cannot be combined with allow_open
-      as a permissive mode that allows both plain text and TLS is not
-      supported.
+    serverCertificate:  Defines a mechanism to provision server identity
+      (public and private keys). Cannot be combined with `allow_open` as a
+      permissive mode that allows both plain text and TLS is not supported.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Set of label tags associated with the resource.
+    r"""Set of label tags associated with the resource.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1884,12 +2604,16 @@ class Source(_messages.Message):
 
   Fields:
     ipBlocks: Optional. List of CIDR ranges to match based on source IP
-      address. Single IP (e.g., "1.2.3.4") and CIDR (e.g., "1.2.3.0/24") are
-      supported.
+      address. At least one IP block should match. Single IP (e.g., "1.2.3.4")
+      and CIDR (e.g., "1.2.3.0/24") are supported. Authorization based on
+      source IP alone should be avoided. The IP addresses of any load
+      balancers or proxies should be considered untrusted.
     principals: Optional. List of peer identities to match for authorization.
-      Each peer can be an exact match, or a prefix match (example,
-      "namespace/*") or a suffix match (example, */service-account") or a
-      presence match "*".
+      At least one principal should match. Each peer can be an exact match, or
+      a prefix match (example, "namespace/*") or a suffix match (example,
+      "*/service-account") or a presence match "*". Authorization based on the
+      principal name without certificate validation (configured by
+      ServerTlsPolicy resource) is considered insecure.
   """
 
   ipBlocks = _messages.StringField(1, repeated=True)

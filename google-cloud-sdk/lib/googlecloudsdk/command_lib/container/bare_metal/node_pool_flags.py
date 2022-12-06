@@ -134,20 +134,34 @@ def _AddNodeConfigs(bare_metal_node_pool_config_group, is_update=False):
     is_update: bool, whether the flag is for update command or not.
   """
   required = not is_update
+  node_pool_configs_from_file_help_text = """
+Path of the YAML/JSON file that contains the node configs.
+
+Examples:
+
+  nodeConfigs:
+  - nodeIp: 10.200.0.10
+    labels:
+      node1: label1
+      node2: label2
+  - nodeIp: 10.200.0.11
+    labels:
+      node3: label3
+      node4: label4
+
+List of supported fields in `nodeConfigs`
+
+KEY           | VALUE                     | NOTE
+--------------|---------------------------|---------------------------
+nodeIp        | string                    | required, mutable
+labels        | one or more key-val pairs | optional, mutable
+
+"""
   bare_metal_node_pool_config_group.add_argument(
-      '--node-configs',
-      action='append',
+      '--node-configs-from-file',
       required=required,
-      type=arg_parsers.ArgDict(
-          spec={
-              'node-ip': str,
-              'labels': str,
-          },
-          required_keys=[
-              'node-ip',
-          ],
-      ),
-      help='Node configuration.',
+      help=node_pool_configs_from_file_help_text,
+      type=arg_parsers.YAMLFileContents(),
   )
 
 

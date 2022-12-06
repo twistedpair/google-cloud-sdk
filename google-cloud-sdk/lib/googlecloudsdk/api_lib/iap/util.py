@@ -46,7 +46,6 @@ PROJECTS_COLLECTION = 'iap.projects'
 IAP_WEB_COLLECTION = 'iap.projects.iap_web'
 IAP_WEB_SERVICES_COLLECTION = 'iap.projects.iap_web.services'
 IAP_WEB_SERVICES_VERSIONS_COLLECTION = 'iap.projects.iap_web.services.versions'
-IAP_GATEWAY_COLLECTION = 'iap.projects.iap_gateway'
 IAP_TCP_DESTGROUP_COLLECTION = 'iap.projects.iap_tunnel.locations.destGroups'
 IAP_TCP_LOCATIONS_COLLECTION = 'iap.projects.iap_tunnel.locations'
 
@@ -166,22 +165,6 @@ class IAPWeb(IapIamResource):
         None, params={
             'projectsId': '{}/iap_web'.format(project.projectNumber),
         }, collection=PROJECTS_COLLECTION)
-
-
-class IAPGateway(IapIamResource):
-  """IAP IAM gateway resource."""
-
-  def _Name(self):
-    return 'iap_gateway'
-
-  def _Parse(self):
-    project = _GetProject(self.project)
-    return self.registry.Parse(
-        None,
-        params={
-            'projectsId': '{}/iap_gateway'.format(project.projectNumber),
-        },
-        collection=PROJECTS_COLLECTION)
 
 
 def _AppEngineAppId(app_id):

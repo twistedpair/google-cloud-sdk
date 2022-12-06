@@ -223,6 +223,66 @@ def AddAdminClusterResourceArg(parser,
   ).AddToParser(parser)
 
 
+def GetAdminClusterMembershipResource(membership_name):
+  return resources.REGISTRY.ParseRelativeName(
+      membership_name, collection='gkehub.projects.locations.memberships')
+
+
+def AdminClusterMembershipIdAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='admin_cluster_membership',
+      help_text='admin cluster membership of the {resource}, in the form of projects/PROJECT/locations/LOCATION/memberships/MEMBERSHIP. '
+  )
+
+
+def AdminClusterMembershipLocationAttributeConfig():
+  """Gets admin cluster membership location resource attribute."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='location',
+      help_text='Google Cloud location for the {resource}.',
+  )
+
+
+def AdminClusterMembershipProjectAttributeConfig():
+  """Gets Google Cloud project resource attribute."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='project',
+      help_text='Google Cloud project for the {resource}.',
+  )
+
+
+def GetAdminClusterMembershipResourceSpec():
+  return concepts.ResourceSpec(
+      'gkehub.projects.locations.memberships',
+      resource_name='admin_cluster_membership',
+      membershipsId=AdminClusterMembershipIdAttributeConfig(),
+      locationsId=AdminClusterMembershipLocationAttributeConfig(),
+      projectsId=AdminClusterMembershipProjectAttributeConfig(),
+  )
+
+
+def AddAdminClusterMembershipResourceArg(parser,
+                                         positional=True,
+                                         required=True):
+  """Adds a resource argument for a VMware admin cluster membership.
+
+  Args:
+    parser: The argparse parser to add the resource arg to.
+    positional: bool, whether the argument is positional or not.
+    required: bool, whether the argument is required or not.
+  """
+  name = 'admin_cluster_membership' if positional else '--admin-cluster-membership'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetAdminClusterMembershipResourceSpec(),
+      'membership of the admin cluster. Membership can be the membership ID or the full resource name.',
+      required=required,
+      flag_name_overrides={
+          'project': '--admin-cluster-membership-project',
+          'location': '--admin-cluster-membership-location',
+      }).AddToParser(parser)
+
+
 def NodePoolAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='node_pool', help_text='node pool of the {resource}.')
@@ -255,7 +315,7 @@ def AddNodePoolResourceArg(parser, verb, positional=True):
       required=True).AddToParser(parser)
 
 
-def AddForceUnenroll(parser):
+def AddForceUnenrollCluster(parser):
   """Adds a flag for force unenroll operation when there are existing node pools.
 
   Args:
@@ -323,6 +383,22 @@ def AddAllowMissingUpdateCluster(parser):
       action='store_true',
       hidden=True,
       help='If set, and the Anthos cluster on VMware is not found, the update request will try to create a new cluster with the provided configuration.',
+  )
+
+
+def AddAllowMissingUnenrollCluster(parser):
+  """Adds a flag to enable allow missing in an unenroll cluster request.
+
+  If set, and the Anthos on VMware cluster is not found, the request will
+  succeed but no action will be taken on the server and return a completed LRO.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--allow-missing',
+      action='store_true',
+      help='If set, and the VMware Cluster is not found, the request will succeed but no action will be taken on the server and return a completed LRO.'
   )
 
 
@@ -547,14 +623,16 @@ def AddVmwareNodePoolAutoscalingConfig(parser, for_update=False):
   )
 
 
-def AddVersion(parser):
+def AddVersion(parser, required=False):
   """Adds a flag to specify the Anthos cluster on VMware version.
 
   Args:
     parser: The argparse parser to add the flag to.
+    required: bool, whether the argument is required or not.
   """
   parser.add_argument(
       '--version',
+      required=required,
       help='Anthos Cluster on VMware version for the user cluster resource',
   )
 
@@ -603,23 +681,47 @@ def _AddMetalLbConfig(lb_config_mutex_group, for_update=False):
   required = False if for_update else True
   metal_lb_config_group = lb_config_mutex_group.add_group(
       'MetalLB Configuration')
+
+  metal_lb_config_from_file_help_text = """
+Path of the YAML/JSON file that contains the MetalLB configurations.
+
+Examples:
+
+  metalLBConfig:
+    addressPools:
+    - pool: lb-test-ip
+      addresses:
+      - 10.251.133.79/32
+      - 10.251.133.80/32
+      avoidBuggyIPs: True
+      manualAssign: False
+    - pool: ingress-ip
+      addresses:
+      - 10.251.133.70/32
+      avoidBuggyIPs: False
+      manualAssign: True
+
+List of supported fields in `metalLBConfig`
+
+KEY           | VALUE                     | NOTE
+--------------|---------------------------|------------------
+addressPools  | one or more addressPools  | required, mutable
+
+List of supported fields in `addressPools`
+
+KEY           | VALUE                 | NOTE
+--------------|-----------------------|---------------------------
+pool          | string                | required, mutable
+addresses     | one or more IP ranges | required, mutable
+avoidBuggyIPs | bool                  | optional, mutable, defaults to False
+manualAssign  | bool                  | optional, mutable, defaults to False
+
+"""
   metal_lb_config_group.add_argument(
-      '--metal-lb-config-address-pools',
-      action='append',
+      '--metal-lb-config-from-file',
       required=required,
-      type=arg_parsers.ArgDict(
-          spec={
-              'pool': str,
-              'addresses': arg_parsers.ArgList(),
-              'avoid-buggy-ips': bool,
-              'manual-assign': bool,
-          },
-          required_keys=[
-              'pool',
-              'addresses',
-          ],
-      ),
-      help='MetalLB typed load balancers configuration.',
+      help=metal_lb_config_from_file_help_text,
+      type=arg_parsers.YAMLFileContents(),
   )
 
 
@@ -812,7 +914,8 @@ def AddConfigType(parser):
   Args:
     parser: The argparse parser to add the flag to.
   """
-  config_type_group = parser.add_group('Version configuration type', mutex=True)
+  config_type_group = parser.add_group(
+      'Version configuration type', mutex=True, required=True)
 
   create_config = config_type_group.add_group('Create configuration')
   flags.AddAdminClusterMembershipResourceArg(
@@ -853,11 +956,11 @@ def _AddVmwareStaticIpConfig(ip_configuration_mutex_group):
     ip_configuration_mutex_group: The parent group to add the flag to.
   """
   static_ip_config_from_file_help_text = """
-Path of the YAML/JSON file that contains the Static IP configurations, used by Anthos on VMware user cluster node pools.
+Path of the YAML/JSON file that contains the static IP configurations, used by Anthos on VMware user cluster node pools.
 
 Examples:
 
-    staticIpConfig:
+    staticIPConfig:
       ipBlocks:
       - gateway: 10.251.31.254
         netmask: 255.255.252.0
@@ -871,7 +974,7 @@ Examples:
         - hostname: hostname-4
           ip: 4.4.4.4
 
-List of supported fields in `staticIpConfig`
+List of supported fields in `staticIPConfig`
 
 KEY       | VALUE                 | NOTE
 --------- | --------------------  | -----------------
@@ -879,7 +982,7 @@ ipBlocks  | one or more ipBlocks  | required, mutable
 
 List of supported fields in `ipBlocks`
 
-KEY     | VALUE           | Note
+KEY     | VALUE           | NOTE
 ------- | --------------- | -------------------
 gateway | IP address      | required, immutable
 netmask | IP address      | required, immutable
@@ -937,13 +1040,19 @@ def _AddVmwareHostConfig(vmware_network_config_group, for_update=False):
       '--dns-servers',
       metavar='DNS_SERVERS',
       type=arg_parsers.ArgList(str),
-      help='DNS server IP address',
+      help='DNS server IP address.',
   )
   vmware_host_config_group.add_argument(
       '--ntp-servers',
       metavar='NTP_SERVERS',
       type=arg_parsers.ArgList(str),
-      help='NTP server IP address',
+      help='NTP server IP address.',
+  )
+  vmware_host_config_group.add_argument(
+      '--dns-search-domains',
+      type=arg_parsers.ArgList(str),
+      metavar='DNS_SEARCH_DOMAINS',
+      help='DNS search domains.',
   )
 
 

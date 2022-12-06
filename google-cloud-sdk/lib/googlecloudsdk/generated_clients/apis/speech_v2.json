@@ -1398,6 +1398,11 @@
           "additionalProperties": {
             "$ref": "BatchRecognizeFileResult"
           }
+        },
+        "totalBilledDuration": {
+          "description": "When available, billed audio seconds for the corresponding request.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -1413,6 +1418,9 @@
         "error": {
           "description": "Error if one was encountered.",
           "$ref": "Status"
+        },
+        "metadata": {
+          "$ref": "RecognitionResponseMetadata"
         }
       }
     }
@@ -1421,68 +1429,6 @@
     "projects": {
       "resources": {
         "locations": {
-          "methods": {
-            "getConfig": {
-              "id": "speech.projects.locations.getConfig",
-              "path": "v2/{+name}",
-              "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/config",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "Required. The name of the config to retrieve. There is exactly one config resource per project per location. The expected format is `projects\/{project}\/locations\/{location}\/config`.",
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/config$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Config"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Returns the requested Config."
-            },
-            "updateConfig": {
-              "id": "speech.projects.locations.updateConfig",
-              "path": "v2/{+name}",
-              "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/config",
-              "httpMethod": "PATCH",
-              "parameters": {
-                "name": {
-                  "description": "Output only. The name of the config resource. There is exactly one config resource per project per location. The expected format is `projects\/{project}\/locations\/{location}\/config`.",
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/config$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "updateMask": {
-                  "description": "The list of fields to be updated.",
-                  "location": "query",
-                  "type": "string",
-                  "format": "google-fieldmask"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "Config"
-              },
-              "response": {
-                "$ref": "Config"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Updates the Config."
-            }
-          }
-          ,
           "resources": {
             "operations": {
               "methods": {
@@ -1822,6 +1768,69 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Performs batch asynchronous speech recognition: send a request with N audio files and receive a long running operation that can be polled to see when the transcriptions are finished."
+                }
+              }
+            },
+            "config": {
+              "methods": {
+                "get": {
+                  "id": "speech.projects.locations.config.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/config",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the config to retrieve. There is exactly one config resource per project per location. The expected format is `projects\/{project}\/locations\/{location}\/config`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/config$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Config"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns the requested Config."
+                },
+                "update": {
+                  "id": "speech.projects.locations.config.update",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/config",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The name of the config resource. There is exactly one config resource per project per location. The expected format is `projects\/{project}\/locations\/{location}\/config`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/config$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The list of fields to be updated.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Config"
+                  },
+                  "response": {
+                    "$ref": "Config"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the Config."
                 }
               }
             },

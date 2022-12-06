@@ -20,10 +20,13 @@ from __future__ import unicode_literals
 
 OPERATIONS_FORMAT = """
 table(
-    metadata.target.basename():label=NAME,
-    metadata.verb:label=TYPE,
+    name.basename():label=NAME,
+    metadata.verb:label=ACTION,
+    metadata.target.segment(-2):label=TYPE,
+    metadata.target.basename():label=TARGET,
     name.segment(3):label=LOCATION,
     done:label=DONE,
-    metadata.createTime
+    metadata.createTime.date():label=START_TIME:sort=1,
+    metadata.endTime.date():label=END_TIME
 )
 """

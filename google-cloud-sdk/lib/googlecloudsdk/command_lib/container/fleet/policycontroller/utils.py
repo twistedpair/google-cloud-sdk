@@ -132,7 +132,7 @@ def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
   if args.monitoring is not None:
     poco_hub_config.monitoring = build_poco_monitoring_config(
         args.monitoring.split(','), messages)
-  if args.no_monitoring is not None:
+  if args.no_monitoring:
     poco_hub_config.monitoring = build_poco_monitoring_config([], messages)
   if hasattr(args, 'suspend') and args.suspend is not None:
     if args.suspend:

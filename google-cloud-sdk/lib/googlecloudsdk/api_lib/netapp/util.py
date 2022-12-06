@@ -18,9 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from typing import Any
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import exceptions
 
 
 # TODO(b/239613419), when ready, introduce BETA and GA release tracks
@@ -28,14 +28,28 @@ VERSION_MAP = {base.ReleaseTrack.ALPHA: "v1alpha1"}
 
 
 # The messages module can also be accessed from client.MESSAGES_MODULE
-def GetMessagesModule(
-    release_track: base.ReleaseTrack = base.ReleaseTrack.ALPHA) -> Any:
+def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):
   """Import and return the appropriate NetApp messages module."""
-  api_version: str = VERSION_MAP.get(release_track)
+  api_version = VERSION_MAP.get(release_track)
   return apis.GetMessagesModule(api_name="netapp", api_version=api_version)
 
 
-def GetClientInstance(
-    release_track: base.ReleaseTrack = base.ReleaseTrack.ALPHA) -> Any:
+def GetClientInstance(release_track=base.ReleaseTrack.ALPHA):
   api_version = VERSION_MAP.get(release_track)
   return apis.GetClientInstance(api_name="netapp", api_version=api_version)
+
+
+class Error(exceptions.Error):
+  """Base class for exceptions in this module."""
+
+
+class InvalidArgumentError(Error):
+  """Raised when command line argument constraints are violated."""
+
+
+class InvalidCapacityError(Error):
+  """Raised when an invalid capacity value is provided."""
+
+
+class InvalidNameError(Error):
+  """Raised when an invalid share name, network VPC name, Storage Pool, Active Directory, Encryption Key name value is provided."""

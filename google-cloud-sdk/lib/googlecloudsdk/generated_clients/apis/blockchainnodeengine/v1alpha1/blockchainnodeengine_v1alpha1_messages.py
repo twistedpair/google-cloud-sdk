@@ -17,13 +17,15 @@ class BlockchainNode(_messages.Message):
   r"""Client-facing representation of a Blockchain Node.
 
   Enums:
-    BlockchainTypeValueValuesEnum:
+    BlockchainTypeValueValuesEnum: Immutable. The blockchain type of the node.
+    StateValueValuesEnum: Output only. A status representing the state of the
+      node.
 
   Messages:
     LabelsValue: User-provided key-value pairs.
 
   Fields:
-    blockchainType: A BlockchainTypeValueValuesEnum attribute.
+    blockchainType: Immutable. The blockchain type of the node.
     connectionInfo: A ConnectionInformation attribute.
     createTime: Output only. The timestamp at which the Blockchain Node was
       first created.
@@ -31,12 +33,13 @@ class BlockchainNode(_messages.Message):
     labels: User-provided key-value pairs.
     name: Output only. The fully qualified name of the blockchain node. e.g.
       projects/my-project/locations/us-central1/blockchainNodes/my-node.
+    state: Output only. A status representing the state of the node.
     updateTime: Output only. The timestamp at which the Blockchain Node was
       last updated.
   """
 
   class BlockchainTypeValueValuesEnum(_messages.Enum):
-    r"""BlockchainTypeValueValuesEnum enum type.
+    r"""Immutable. The blockchain type of the node.
 
     Values:
       BLOCKCHAIN_TYPE_UNSPECIFIED: <no description>
@@ -44,6 +47,26 @@ class BlockchainNode(_messages.Message):
     """
     BLOCKCHAIN_TYPE_UNSPECIFIED = 0
     ETHEREUM = 1
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. A status representing the state of the node.
+
+    Values:
+      STATE_UNSPECIFIED: The state has not been specified.
+      CREATING: The node has been requested and is in the process of being
+        created.
+      DELETING: The existing node is undergoing deletion, but not yet
+        finished.
+      DELETED: The node has been deleted.
+      RUNNING: The node is running and ready for use.
+      ERROR: The node is in an unexpected or errored state.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    DELETING = 2
+    DELETED = 3
+    RUNNING = 4
+    ERROR = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -75,7 +98,8 @@ class BlockchainNode(_messages.Message):
   ethereumDetails = _messages.MessageField('EthereumDetails', 4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class BlockchainnodeengineProjectsLocationsBlockchainNodesCreateRequest(_messages.Message):
@@ -184,10 +208,10 @@ class BlockchainnodeengineProjectsLocationsBlockchainNodesPatchRequest(_messages
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the Node resource by the update. The fields specified in
-      the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields will be overwritten.
+      overwritten in the Blockchain Node resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
   """
 
   blockchainNode = _messages.MessageField('BlockchainNode', 1)
@@ -294,20 +318,21 @@ class EthereumDetails(_messages.Message):
   r"""Ethereum-specific Blockchain Node details.
 
   Enums:
-    ConsensusClientValueValuesEnum:
-    ExecutionClientValueValuesEnum:
-    NetworkValueValuesEnum:
-    NodeTypeValueValuesEnum:
+    ConsensusClientValueValuesEnum: Immutable. The consensus client
+    ExecutionClientValueValuesEnum: Immutable. The execution client
+    NetworkValueValuesEnum: Immutable. The Ethereum environment being
+      accessed.
+    NodeTypeValueValuesEnum: Immutable. The type of Ethereum node.
 
   Fields:
-    consensusClient: A ConsensusClientValueValuesEnum attribute.
-    executionClient: A ExecutionClientValueValuesEnum attribute.
-    network: A NetworkValueValuesEnum attribute.
-    nodeType: A NodeTypeValueValuesEnum attribute.
+    consensusClient: Immutable. The consensus client
+    executionClient: Immutable. The execution client
+    network: Immutable. The Ethereum environment being accessed.
+    nodeType: Immutable. The type of Ethereum node.
   """
 
   class ConsensusClientValueValuesEnum(_messages.Enum):
-    r"""ConsensusClientValueValuesEnum enum type.
+    r"""Immutable. The consensus client
 
     Values:
       CONSENSUS_CLIENT_UNSPECIFIED: <no description>
@@ -317,7 +342,7 @@ class EthereumDetails(_messages.Message):
     LIGHTHOUSE = 1
 
   class ExecutionClientValueValuesEnum(_messages.Enum):
-    r"""ExecutionClientValueValuesEnum enum type.
+    r"""Immutable. The execution client
 
     Values:
       EXECUTION_CLIENT_UNSPECIFIED: <no description>
@@ -327,7 +352,7 @@ class EthereumDetails(_messages.Message):
     GETH = 1
 
   class NetworkValueValuesEnum(_messages.Enum):
-    r"""NetworkValueValuesEnum enum type.
+    r"""Immutable. The Ethereum environment being accessed.
 
     Values:
       NETWORK_UNSPECIFIED: <no description>
@@ -337,7 +362,7 @@ class EthereumDetails(_messages.Message):
     MAINNET = 1
 
   class NodeTypeValueValuesEnum(_messages.Enum):
-    r"""NodeTypeValueValuesEnum enum type.
+    r"""Immutable. The type of Ethereum node.
 
     Values:
       NODE_TYPE_UNSPECIFIED: <no description>
@@ -385,7 +410,7 @@ class IpInformation(_messages.Message):
 
 
 class ListBlockchainNodesResponse(_messages.Message):
-  r"""Message for response to listing Nodes
+  r"""Message for response to listing Blockchain Nodes
 
   Fields:
     blockchainNodes: The list of nodes

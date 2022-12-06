@@ -206,6 +206,23 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class ChildStatusReference(_messages.Message):
+  r"""ChildStatusReference is used to point to the statuses of individual
+  TaskRuns and Runs within this PipelineRun.
+
+  Fields:
+    name: Name is the name of the TaskRun or Run this is referencing.
+    pipelineTaskName: PipelineTaskName is the name of the PipelineTask this is
+      referencing.
+    whenExpressions: WhenExpressions is the list of checks guarding the
+      execution of the PipelineTask
+  """
+
+  name = _messages.StringField(1)
+  pipelineTaskName = _messages.StringField(2)
+  whenExpressions = _messages.MessageField('WhenExpression', 3, repeated=True)
+
+
 class CloudbuildProjectsLocationsConnectionsAccessReadTokenRequest(_messages.Message):
   r"""A CloudbuildProjectsLocationsConnectionsAccessReadTokenRequest object.
 
@@ -242,10 +259,8 @@ class CloudbuildProjectsLocationsConnectionsCreateRequest(_messages.Message):
     connection: A Connection resource to be passed as the request body.
     connectionId: Required. The ID to use for the Connection, which will
       become the final component of the Connection's resource name. Names must
-      be unique per-project per-location. This value should be 4-63
-      characters, start with a lowercase letter, contain only lowercase
-      letters, digits and dashes, and end with a lowercase letter or a digit.
-      Regex: `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
+      be unique per-project per-location. Allows alphanumeric characters and
+      any of -._~%!$&'()*+,;=@.
     parent: Required. Project and location where the connection will be
       created. Format: `projects/*/locations/*`.
   """
@@ -439,7 +454,9 @@ class CloudbuildProjectsLocationsConnectionsRepositoriesCreateRequest(_messages.
       or match the parent specified there.
     repository: A Repository resource to be passed as the request body.
     repositoryId: Required. The ID to use for the repository, which will
-      become the final component of the repository's resource name.
+      become the final component of the repository's resource name. This ID
+      should be unique in the connection. Allows alphanumeric characters and
+      any of -._~%!$&'()*+,;=@.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1045,7 +1062,9 @@ class CreateRepositoryRequest(_messages.Message):
       or match the parent specified there.
     repository: Required. The repository to create.
     repositoryId: Required. The ID to use for the repository, which will
-      become the final component of the repository's resource name.
+      become the final component of the repository's resource name. This ID
+      should be unique in the connection. Allows alphanumeric characters and
+      any of -._~%!$&'()*+,;=@.
   """
 
   parent = _messages.StringField(1)
@@ -2037,6 +2056,8 @@ class PipelineRun(_messages.Message):
 
   Fields:
     annotations: User annotations. See https://google.aip.dev/128#annotations
+    childReferences: Output only. List of TaskRun and Run names and
+      PipelineTask names for children of this PipelineRun.
     completionTime: Output only. Time the pipeline completed.
     conditions: Output only. Kubernetes Conditions convention for PipelineRun
       status and error.
@@ -2057,7 +2078,8 @@ class PipelineRun(_messages.Message):
       expressions evaluating to false.
     startTime: Output only. Time the pipeline is actually started.
     taskRuns: Output only. List of TaskRuns and their status.
-    timeout: Time after which the Pipeline times out.
+    timeout: Time after which the Pipeline times out. Deprecated - use
+      timeouts instead.
     timeouts: Time after which the Pipeline times out. Currently three keys
       are accepted in the map pipeline, tasks and finally with
       Timeouts.pipeline >= Timeouts.tasks + Timeouts.finally
@@ -2130,28 +2152,29 @@ class PipelineRun(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  completionTime = _messages.StringField(2)
-  conditions = _messages.MessageField('Condition', 3, repeated=True)
-  createTime = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  params = _messages.MessageField('Param', 8, repeated=True)
-  pipelineRef = _messages.MessageField('PipelineRef', 9)
-  pipelineRunStatus = _messages.EnumField('PipelineRunStatusValueValuesEnum', 10)
-  pipelineSpec = _messages.MessageField('PipelineSpec', 11)
-  resolvedPipelineSpec = _messages.MessageField('PipelineSpec', 12)
-  serviceAccount = _messages.StringField(13)
-  skippedTasks = _messages.MessageField('SkippedTask', 14, repeated=True)
-  startTime = _messages.StringField(15)
-  taskRuns = _messages.MessageField('PipelineRunTaskRunStatus', 16, repeated=True)
-  timeout = _messages.StringField(17)
-  timeouts = _messages.MessageField('TimeoutFields', 18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
-  workerPool = _messages.StringField(21)
-  workflow = _messages.StringField(22)
-  workspaces = _messages.MessageField('WorkspaceBinding', 23, repeated=True)
+  childReferences = _messages.MessageField('ChildStatusReference', 2, repeated=True)
+  completionTime = _messages.StringField(3)
+  conditions = _messages.MessageField('Condition', 4, repeated=True)
+  createTime = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  params = _messages.MessageField('Param', 9, repeated=True)
+  pipelineRef = _messages.MessageField('PipelineRef', 10)
+  pipelineRunStatus = _messages.EnumField('PipelineRunStatusValueValuesEnum', 11)
+  pipelineSpec = _messages.MessageField('PipelineSpec', 12)
+  resolvedPipelineSpec = _messages.MessageField('PipelineSpec', 13)
+  serviceAccount = _messages.StringField(14)
+  skippedTasks = _messages.MessageField('SkippedTask', 15, repeated=True)
+  startTime = _messages.StringField(16)
+  taskRuns = _messages.MessageField('PipelineRunTaskRunStatus', 17, repeated=True)
+  timeout = _messages.StringField(18)
+  timeouts = _messages.MessageField('TimeoutFields', 19)
+  uid = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
+  workerPool = _messages.StringField(22)
+  workflow = _messages.StringField(23)
+  workspaces = _messages.MessageField('WorkspaceBinding', 24, repeated=True)
 
 
 class PipelineRunTaskRunStatus(_messages.Message):
@@ -3381,7 +3404,8 @@ class WorkflowOptions(_messages.Message):
   Fields:
     executionEnvironment: Contains the workerpool.
     statusUpdateOptions: How/where status on the workflow is posted.
-    timeout: Time after which the Workflow times out.
+    timeout: Time after which the Workflow times out. Deprecated - use
+      timeouts instead.
     timeouts: Time after which the Pipeline times out. Currently three keys
       are accepted in the map pipeline, tasks and finally with
       Timeouts.pipeline >= Timeouts.tasks + Timeouts.finally

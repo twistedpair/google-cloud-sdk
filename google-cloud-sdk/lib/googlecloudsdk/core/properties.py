@@ -384,6 +384,7 @@ class _Sections(object):
       SDK.
     ml_engine: Section, The section containing ml_engine properties for the
       Cloud SDK.
+    netapp: Section, The section containing netapp properties for the Cloud SDK.
     notebooks: Section, The section containing notebook properties for the Cloud
       SDK.
     privateca: Section, The section containing privateca properties for the
@@ -393,6 +394,8 @@ class _Sections(object):
     recaptcha: Section, The section containing recaptcha properties for the
       Cloud SDK.
     redis: Section, The section containing redis properties for the Cloud SDK.
+    resource_policy: Section, The section containing resource policy
+      configurations for the Cloud SDK.
     run: Section, The section containing run properties for the Cloud SDK.
     runapps: Section, The section containing runapps properties for the Cloud
       SDK.
@@ -478,12 +481,14 @@ class _Sections(object):
     self.metastore = _SectionMetastore()
     self.metrics = _SectionMetrics()
     self.ml_engine = _SectionMlEngine()
+    self.netapp = _SectionNetapp()
     self.notebooks = _SectionNotebooks()
     self.privateca = _SectionPrivateCa()
     self.proxy = _SectionProxy()
     self.pubsub = _SectionPubsub()
     self.recaptcha = _SectionRecaptcha()
     self.redis = _SectionRedis()
+    self.resource_policy = _SectionResourcePolicy()
     self.run = _SectionRun()
     self.runapps = _SectionRunApps()
     self.secrets = _SectionSecrets()
@@ -552,12 +557,14 @@ class _Sections(object):
         self.metastore,
         self.metrics,
         self.ml_engine,
+        self.netapp,
         self.notebooks,
         self.pubsub,
         self.privateca,
         self.proxy,
         self.recaptcha,
         self.redis,
+        self.resource_policy,
         self.run,
         self.runapps,
         self.secrets,
@@ -1196,6 +1203,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.metastore = self._Add('metastore', command='gcloud metastore')
     self.ml = self._Add('ml', hidden=True)
     self.monitoring = self._Add('monitoring', command='gcloud monitoring')
+    self.netapp = self._Add('netapp', command='gcloud netapp')
     self.networkconnectivity = self._Add(
         'networkconnectivity', command='gcloud network-connectivity')
     self.networkmanagement = self._Add(
@@ -1253,6 +1261,7 @@ class _SectionApiEndpointOverrides(_Section):
         command='gcloud storage insights',
         hidden=True)
     self.stream = self._Add('stream', hidden=True)
+    self.telcoautomation = self._Add('telcoautomation', hidden=True)
     self.testing = self._Add('testing', command='gcloud firebase test')
     self.toolresults = self._Add('toolresults', hidden=True)
     self.tpu = self._Add('tpu', hidden=True)
@@ -1507,6 +1516,12 @@ class _SectionAuth(_Section):
         'Workload and Workforce Identity Federation. It can be used with '
         'Private Service Connect.'
     )
+    self.login_config_file = self._Add(
+        'login_config_file',
+        hidden=True,
+        help_text='Sets the created login configuration file in '
+        'auth/login_config_file. Calling `gcloud auth login` will automatically '
+        'use this login configuration unless it is explicitly unset.')
 
 
 class _SectionBatch(_Section):
@@ -2768,6 +2783,25 @@ class _SectionMlEngine(_Section):
                    'interpreter found on system `PATH`.'))
 
 
+class _SectionNetapp(_Section):
+  """Contains the properties for the 'netapp' section."""
+
+  def __init__(self):
+    super(_SectionNetapp, self).__init__('netapp')
+
+    self.location = self._Add(
+        'location',
+        help_text='Default location to use when working with Cloud NetApp Files'
+                  ' resources. When a `location` value is required but not '
+                  'provided, the command will fall back to this value, if set.')
+
+    self.region = self._Add(
+        'region',
+        help_text='Default region to use when working with Cloud NetApp Files '
+        'regions. When a `--region` flag is required but not '
+        'provided, the command will fall back to this value, if set.')
+
+
 class _SectionNotebooks(_Section):
   """Contains the properties for the 'notebooks' section."""
 
@@ -2874,6 +2908,25 @@ class _SectionRedis(_Section):
         help_text='Default region to use when working with Cloud '
         'Memorystore for Redis resources. When a `region` is required but not '
         'provided by a flag, the command will fall back to this value, if set.')
+
+
+class _SectionResourcePolicy(_Section):
+  """Contains the properties for the 'resource_policy' section."""
+
+  def __init__(self):
+    super(_SectionResourcePolicy, self).__init__('resource_policy', hidden=True)
+    self.org_restriction_header = self._Add(
+        'org_restriction_header',
+        default=None,
+        help_text='Default organization restriction header to use when '
+        'working with GCP resources. If set, the value '
+        'must be in JSON format and must contain a comma separated list '
+        'of authorized GCP organization IDs. The JSON must then be encoded '
+        'by following the RFC 4648, section 5, specifications. '
+        'See https://www.rfc-editor.org/rfc/rfc4648#section-5 '
+        'for more information about base 64 encoding. And visit '
+        'https://cloud.google.com/resource-manager/docs/organization-restrictions/overview '
+        'for more information about organization restrictions.')
 
 
 class _SectionRun(_Section):

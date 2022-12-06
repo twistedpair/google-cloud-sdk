@@ -249,7 +249,7 @@ def APIEndpoint():
   """
   endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
   hub_endpoint_override = endpoint_overrides.get('gkehub', '')
-  if not hub_endpoint_override:
+  if not hub_endpoint_override or 'gkehub.googleapis.com' in hub_endpoint_override:
     return PROD_API
   elif 'staging-gkehub' in hub_endpoint_override:
     return STAGING_API

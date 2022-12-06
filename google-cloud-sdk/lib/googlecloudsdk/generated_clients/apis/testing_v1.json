@@ -220,7 +220,11 @@
             "APK contains no code. See also https:\/\/developer.android.com\/guide\/topics\/manifest\/application-element.html#code",
             "Either the provided input APK path was malformed, the APK file does not exist, or the user does not have permission to access the APK file.",
             "APK is built for a preview SDK which is unsupported",
-            "The matrix expanded to contain too many executions."
+            "The matrix expanded to contain too many executions.",
+            "Deprecated: Not enough device quota to run the executions in this matrix.",
+            "Not enough test quota to run the executions in this matrix.",
+            "A required cloud service api is not activated. See: https:\/\/firebase.google.com\/docs\/test-lab\/android\/continuous#requirements",
+            "There was an unknown permission issue running this test."
           ],
           "enum": [
             "INVALID_MATRIX_DETAILS_UNSPECIFIED",
@@ -258,7 +262,11 @@
             "NO_CODE_APK",
             "INVALID_INPUT_APK",
             "INVALID_APK_PREVIEW_SDK",
-            "MATRIX_TOO_LARGE"
+            "MATRIX_TOO_LARGE",
+            "DEVICE_QUOTA_EXCEEDED",
+            "TEST_QUOTA_EXCEEDED",
+            "SERVICE_NOT_ACTIVATED",
+            "UNKNOWN_PERMISSION_ERROR"
           ]
         },
         "flakyTestAttempts": {
@@ -360,6 +368,10 @@
         "iosTestLoop": {
           "description": "An iOS application with a test loop.",
           "$ref": "IosTestLoop"
+        },
+        "iosRoboTest": {
+          "description": "An iOS Robo test.",
+          "$ref": "IosRoboTest"
         },
         "disableVideoRecording": {
           "description": "Disables video recording. May reduce test latency.",
@@ -936,6 +948,25 @@
         "appBundleId": {
           "description": "Output only. The bundle id for the application under test.",
           "type": "string"
+        }
+      }
+    },
+    "IosRoboTest": {
+      "id": "IosRoboTest",
+      "description": "A test that explores an iOS application on an iOS device.",
+      "type": "object",
+      "properties": {
+        "appIpa": {
+          "description": "Required. The ipa stored at this file should be used to run the test.",
+          "$ref": "FileReference"
+        },
+        "appBundleId": {
+          "description": "The bundle ID for the app-under-test. This is determined by examining the application's \"Info.plist\" file.",
+          "type": "string"
+        },
+        "roboScript": {
+          "description": "An optional Roboscript to customize the crawl. See https:\/\/firebase.google.com\/docs\/test-lab\/android\/robo-scripts-reference for more information about Roboscripts.",
+          "$ref": "FileReference"
         }
       }
     },
@@ -1637,7 +1668,7 @@
           "type": "string"
         },
         "deviceCapacity": {
-          "description": "A static capacity of an Android version.",
+          "description": "The number of online devices for an Android version.",
           "type": "string",
           "enumDescriptions": [
             "The value of device capacity is unknown or unset.",
@@ -1919,7 +1950,7 @@
           "type": "string"
         },
         "deviceCapacity": {
-          "description": "A static capacity of an iOS version.",
+          "description": "The number of online devices for an iOS version.",
           "type": "string",
           "enumDescriptions": [
             "The value of device capacity is unknown or unset.",

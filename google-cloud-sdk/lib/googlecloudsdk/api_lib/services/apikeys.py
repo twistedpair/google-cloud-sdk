@@ -30,6 +30,7 @@ _API_NAME = 'apikeys'
 
 _RELEASE_TRACK_TO_API_VERSION = {
     calliope_base.ReleaseTrack.ALPHA: 'v2',
+    calliope_base.ReleaseTrack.BETA: 'v2',
     calliope_base.ReleaseTrack.GA: 'v2'
 }
 

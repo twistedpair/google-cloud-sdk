@@ -584,8 +584,8 @@ class ApigeeOrganizationsAppsListRequest(_messages.Message):
       of apps for the organization. Defaults to `false`.
     filter: Optional. The filter expression to be used to get the list of
       apps, where filtering can be done on developerEmail, apiProduct,
-      consumerKey, status, appId createdAt and appFamily. Example: filter =
-      "developerEmail = foo@bar.com"
+      consumerKey, status, appId createdAt, appFamily, appGroup. Example:
+      filter = "developerEmail = foo@bar.com"
     ids: Optional. Comma-separated list of app IDs on which to filter.
     includeCred: Optional. Flag that specifies whether to include credentials
       in the response.
@@ -1966,6 +1966,19 @@ class ApigeeOrganizationsEnvironmentsFlowhooksGetRequest(_messages.Message):
   Fields:
     name: Required. Name of the flow hook in the following format:
       `organizations/{org}/environments/{env}/flowhooks/{flowhook}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsGetApiSecurityRuntimeConfigRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsGetApiSecurityRuntimeConfigRequest
+  object.
+
+  Fields:
+    name: Required. Name of the environment API Security Runtime configuration
+      resource. Use the following structure in your request:
+      `organizations/{org}/environments/{env}/apiSecurityRuntimeConfig`
   """
 
   name = _messages.StringField(1, required=True)
@@ -4918,11 +4931,36 @@ class GoogleCloudApigeeV1ApiSecurityConfig(_messages.Message):
   expiresAt = _messages.IntegerField(2)
 
 
+class GoogleCloudApigeeV1ApiSecurityRuntimeConfig(_messages.Message):
+  r"""Response for
+  GetApiSecurityRuntimeConfig[EnvironmentService.GetApiSecurityRuntimeConfig].
+
+  Fields:
+    location: A list of up to 5 Cloud Storage Blobs that contain
+      SecurityActions.
+    name: Name of the environment API Security Runtime configuration resource.
+      Format:
+      `organizations/{org}/environments/{env}/apiSecurityRuntimeConfig`
+    revisionId: Revision ID of the API Security Runtime configuration. The
+      higher the value, the more recently the configuration was deployed.
+    uid: Unique ID for the API Security Runtime configuration. The ID will
+      only change if the environment is deleted and recreated.
+    updateTime: Time that the API Security Runtime configuration was updated.
+  """
+
+  location = _messages.StringField(1, repeated=True)
+  name = _messages.StringField(2)
+  revisionId = _messages.IntegerField(3)
+  uid = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+
+
 class GoogleCloudApigeeV1App(_messages.Message):
   r"""A GoogleCloudApigeeV1App object.
 
   Fields:
     apiProducts: List of API products associated with the app.
+    appGroup: Name of the AppGroup
     appId: ID of the app.
     attributes: List of attributes.
     callbackUrl: Callback URL used by OAuth 2.0 authorization servers to
@@ -4946,19 +4984,20 @@ class GoogleCloudApigeeV1App(_messages.Message):
   """
 
   apiProducts = _messages.MessageField('GoogleCloudApigeeV1ApiProductRef', 1, repeated=True)
-  appId = _messages.StringField(2)
-  attributes = _messages.MessageField('GoogleCloudApigeeV1Attribute', 3, repeated=True)
-  callbackUrl = _messages.StringField(4)
-  companyName = _messages.StringField(5)
-  createdAt = _messages.IntegerField(6)
-  credentials = _messages.MessageField('GoogleCloudApigeeV1Credential', 7, repeated=True)
-  developerEmail = _messages.StringField(8)
-  developerId = _messages.StringField(9)
-  keyExpiresIn = _messages.IntegerField(10)
-  lastModifiedAt = _messages.IntegerField(11)
-  name = _messages.StringField(12)
-  scopes = _messages.StringField(13, repeated=True)
-  status = _messages.StringField(14)
+  appGroup = _messages.StringField(2)
+  appId = _messages.StringField(3)
+  attributes = _messages.MessageField('GoogleCloudApigeeV1Attribute', 4, repeated=True)
+  callbackUrl = _messages.StringField(5)
+  companyName = _messages.StringField(6)
+  createdAt = _messages.IntegerField(7)
+  credentials = _messages.MessageField('GoogleCloudApigeeV1Credential', 8, repeated=True)
+  developerEmail = _messages.StringField(9)
+  developerId = _messages.StringField(10)
+  keyExpiresIn = _messages.IntegerField(11)
+  lastModifiedAt = _messages.IntegerField(12)
+  name = _messages.StringField(13)
+  scopes = _messages.StringField(14, repeated=True)
+  status = _messages.StringField(15)
 
 
 class GoogleCloudApigeeV1ArchiveDeployment(_messages.Message):
@@ -9482,7 +9521,8 @@ class GoogleCloudApigeeV1SecurityReport(_messages.Message):
       myenv/securityReports/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd` or following
       format if query is running at host level: `/organizations/myorg/hostSecu
       rityReports/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd`
-    state: Query state could be "enqueued", "running", "completed", "failed".
+    state: Query state could be "enqueued", "running", "completed", "expired"
+      and "failed".
     updated: Output only. Last updated timestamp for the query.
   """
 

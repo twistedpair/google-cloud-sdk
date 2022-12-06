@@ -327,10 +327,6 @@
           "readOnly": true,
           "type": "string"
         },
-        "externalIpAccess": {
-          "description": "Deprecated: True if vCenter and NSX can be accessed via internet; false otherwise. Resolution of FQDNs requires local DNS configuration for the private cloud domain. NAT is set up on NSX for external IP ingress traffic, and users must manually configure NSX firewall to allow HTTPS traffic.",
-          "type": "boolean"
-        },
         "managementCidr": {
           "description": "Required. Management CIDR used by VMware management appliances.",
           "type": "string"
@@ -410,10 +406,6 @@
           "description": "Internal IP address of the appliance.",
           "type": "string"
         },
-        "externalIp": {
-          "description": "Deprecated: External IP address of the appliance.",
-          "type": "string"
-        },
         "version": {
           "description": "Version of the appliance.",
           "type": "string"
@@ -448,10 +440,6 @@
           "description": "Internal IP address of the appliance.",
           "type": "string"
         },
-        "externalIp": {
-          "description": "Deprecated: External IP address of the appliance.",
-          "type": "string"
-        },
         "version": {
           "description": "Version of the appliance.",
           "type": "string"
@@ -484,10 +472,6 @@
       "properties": {
         "internalIp": {
           "description": "Internal IP address of the appliance.",
-          "type": "string"
-        },
-        "externalIp": {
-          "description": "Deprecated: External IP address of the appliance.",
           "type": "string"
         },
         "version": {
@@ -674,10 +658,6 @@
           "type": "string",
           "format": "google-datetime"
         },
-        "displayName": {
-          "description": "User-provided name for this resource.",
-          "type": "string"
-        },
         "internalIp": {
           "description": "The internal IP address of a workload VM.",
           "type": "string"
@@ -781,10 +761,6 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
-        },
-        "displayName": {
-          "description": "User-provided name for this subnet.",
-          "type": "string"
         },
         "description": {
           "description": "User-provided description for this subnet.",
@@ -1520,6 +1496,72 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "ListManagementDnsZoneBindingsResponse": {
+      "id": "ListManagementDnsZoneBindingsResponse",
+      "description": "Response message for VmwareEngine.ListManagementDnsZoneBindings",
+      "type": "object",
+      "properties": {
+        "managementDnsZoneBindings": {
+          "description": "A list of management DNS zone bindings.",
+          "type": "array",
+          "items": {
+            "$ref": "ManagementDnsZoneBinding"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached when making an aggregated query using wildcards.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ManagementDnsZoneBinding": {
+      "id": "ManagementDnsZoneBinding",
+      "description": "Represents a binding between a network and the management DNS zone. A management DNS zone is the Cloud DNS cross-project binding zone that VMware Engine creates for each private cloud. It contains FQDNs and corresponding IP addresses for the private cloud's ESXi hosts and management VM appliances like vCenter and NSX Manager.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this binding. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/managementDnsZoneBindings\/my-management-dns-zone-binding`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The state of the resource.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value should never be used.",
+            "The binding is ready.",
+            "The binding is being created.",
+            "The binding is being updated.",
+            "The binding is being deleted.",
+            "The binding has failed."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING",
+            "UPDATING",
+            "DELETING",
+            "FAILED"
+          ]
+        },
+        "vpcNetwork": {
+          "description": "Network to bind is a standard consumer VPC. Specify the name in the following form for consumer VPC network: `projects\/{project}\/global\/networks\/{network_id}`. `{project}` can either be a project number or a project ID.",
+          "type": "string"
+        },
+        "vmwareEngineNetwork": {
+          "description": "Network to bind is a VMware Engine network. Specify the name in the following form for VMware engine network: `projects\/{project}\/locations\/global\/vmwareEngineNetworks\/{vmware_engine_network_id}`. `{project}` can either be a project number or a project ID.",
+          "type": "string"
         }
       }
     },
@@ -3207,6 +3249,188 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                    }
+                  }
+                },
+                "managementDnsZoneBindings": {
+                  "methods": {
+                    "list": {
+                      "id": "vmwareengine.projects.locations.privateClouds.managementDnsZoneBindings.list",
+                      "path": "v1/{+parent}/managementDnsZoneBindings",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/managementDnsZoneBindings",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the private cloud to be queried for management DNS zone bindings. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of management DNS zone bindings to return in one page. The service may return fewer than this value. The maximum value is coerced to 1000. The default value of this field is 500.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous `ListManagementDnsZoneBindings` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListManagementDnsZoneBindings` must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of Management DNS Zone Bindings, you can exclude the ones named `example-management-dns-zone-binding` by specifying `name != \"example-management-dns-zone-binding\"`. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-management-dns-zone-binding\") (createTime > \"2021-04-12T08:15:10.40Z\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"example-management-dns-zone-binding-1\") AND (createTime > \"2021-04-12T08:15:10.40Z\") OR (name = \"example-management-dns-zone-binding-2\") ```",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Sorts list results by a certain order. By default, returned results are ordered by `name` in ascending order. You can also sort results in descending order based on the `name` value using `orderBy=\"name desc\"`. Currently, only ordering by `name` is supported.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListManagementDnsZoneBindingsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists Consumer VPCs bound to Management DNS Zone of a given private cloud."
+                    },
+                    "get": {
+                      "id": "vmwareengine.projects.locations.privateClouds.managementDnsZoneBindings.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/managementDnsZoneBindings/{managementDnsZoneBindingsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the management DNS zone binding to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/managementDnsZoneBindings\/my-management-dns-zone-binding`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/managementDnsZoneBindings\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "ManagementDnsZoneBinding"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Retrieves a 'ManagementDnsZoneBinding' resource by its resource name."
+                    },
+                    "create": {
+                      "id": "vmwareengine.projects.locations.privateClouds.managementDnsZoneBindings.create",
+                      "path": "v1/{+parent}/managementDnsZoneBindings",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/managementDnsZoneBindings",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the private cloud to create a new management DNS zone binding for. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "managementDnsZoneBindingId": {
+                          "description": "Required. The user-provided identifier of the `ManagementDnsZoneBinding` resource to be created. This identifier must be unique among `ManagementDnsZoneBinding` resources within the parent and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034) (section 3.5)",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if the original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "ManagementDnsZoneBinding"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new `ManagementDnsZoneBinding` resource in a private cloud. This RPC creates the DNS binding and the resource that represents the DNS binding of the consumer VPC network to the management DNS zone. A management DNS zone is the Cloud DNS cross-project binding zone that VMware Engine creates for each private cloud. It contains FQDNs and corresponding IP addresses for the private cloud's ESXi hosts and management VM appliances like vCenter and NSX Manager."
+                    },
+                    "patch": {
+                      "id": "vmwareengine.projects.locations.privateClouds.managementDnsZoneBindings.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/managementDnsZoneBindings/{managementDnsZoneBindingsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. The resource name of this binding. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/managementDnsZoneBindings\/my-management-dns-zone-binding`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/managementDnsZoneBindings\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Field mask is used to specify the fields to be overwritten in the `ManagementDnsZoneBinding` resource by the update. The fields specified in the `update_mask` are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "requestId": {
+                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if the original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ManagementDnsZoneBinding"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates a `ManagementDnsZoneBinding` resource. Only fields specified in `update_mask` are applied."
+                    },
+                    "delete": {
+                      "id": "vmwareengine.projects.locations.privateClouds.managementDnsZoneBindings.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/managementDnsZoneBindings/{managementDnsZoneBindingsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the management DNS zone binding to delete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/managementDnsZoneBindings\/my-management-dns-zone-binding`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/managementDnsZoneBindings\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if the original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a `ManagementDnsZoneBinding` resource. When a management DNS zone binding is deleted, the corresponding consumer VPC network is no longer bound to the management DNS zone."
                     }
                   }
                 }

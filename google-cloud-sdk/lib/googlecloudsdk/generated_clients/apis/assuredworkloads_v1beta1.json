@@ -337,12 +337,12 @@
           }
         },
         "partner": {
-          "description": "Optional. Compliance Regime associated with this workload.",
+          "description": "Optional. Partner regime associated with this workload.",
           "type": "string",
           "enumDescriptions": [
-            "Unknown partner regime\/controls.",
-            "S3NS regime\/controls.",
-            "TSystems regime\/controls."
+            "",
+            "Enum representing S3NS partner.",
+            "Enum representing T_SYSTEM partner."
           ],
           "enum": [
             "PARTNER_UNSPECIFIED",

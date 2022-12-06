@@ -150,6 +150,12 @@
           "type": "string",
           "format": "google-datetime"
         },
+        "duration": {
+          "description": "Output only. Measures the duration of the execution.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-duration"
+        },
         "state": {
           "description": "Output only. Current state of the execution.",
           "readOnly": true,
@@ -441,7 +447,7 @@
                           "type": "string",
                           "enumDescriptions": [
                             "The default \/ unset value.",
-                            "Includes only basic metadata about the execution. Following fields are returned: name, start_time, end_time, state and workflow_revision_id.",
+                            "Includes only basic metadata about the execution. Following fields are returned: name, start_time, end_time, duration, state and workflow_revision_id.",
                             "Includes all data."
                           ],
                           "enum": [
@@ -509,7 +515,7 @@
                           "type": "string",
                           "enumDescriptions": [
                             "The default \/ unset value.",
-                            "Includes only basic metadata about the execution. Following fields are returned: name, start_time, end_time, state and workflow_revision_id.",
+                            "Includes only basic metadata about the execution. Following fields are returned: name, start_time, end_time, duration, state and workflow_revision_id.",
                             "Includes all data."
                           ],
                           "enum": [

@@ -489,6 +489,23 @@
           "items": {
             "$ref": "CustomClass"
           }
+        },
+        "abnfGrammar": {
+          "description": "Augmented Backus-Naur form (ABNF) is a standardized grammar notation comprised by a set of derivation rules. See specifications: https:\/\/www.w3.org\/TR\/speech-grammar",
+          "$ref": "ABNFGrammar"
+        }
+      }
+    },
+    "ABNFGrammar": {
+      "id": "ABNFGrammar",
+      "type": "object",
+      "properties": {
+        "abnfStrings": {
+          "description": "All declarations and rules of an ABNF grammar broken up into multiple strings that will end up concatenated.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

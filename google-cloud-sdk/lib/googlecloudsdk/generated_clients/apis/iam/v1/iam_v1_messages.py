@@ -3582,7 +3582,7 @@ class WorkforcePoolProvider(_messages.Message):
       expression to access a JSON representation of the authentication
       credential issued by the provider. The maximum length of an attribute
       mapping expression is 2048 characters. When evaluated, the total size of
-      all mapped attributes must not exceed 8KB. For OIDC providers, you must
+      all mapped attributes must not exceed 4KB. For OIDC providers, you must
       supply a custom mapping that includes the `google.subject` attribute.
       For example, the following maps the `sub` claim of the incoming
       credential to the `subject` attribute on a Google token: ```
@@ -3641,7 +3641,7 @@ class WorkforcePoolProvider(_messages.Message):
       expression to access a JSON representation of the authentication
       credential issued by the provider. The maximum length of an attribute
       mapping expression is 2048 characters. When evaluated, the total size of
-      all mapped attributes must not exceed 8KB. For OIDC providers, you must
+      all mapped attributes must not exceed 4KB. For OIDC providers, you must
       supply a custom mapping that includes the `google.subject` attribute.
       For example, the following maps the `sub` claim of the incoming
       credential to the `subject` attribute on a Google token: ```
@@ -3713,7 +3713,7 @@ class WorkforcePoolProvider(_messages.Message):
     expression to access a JSON representation of the authentication
     credential issued by the provider. The maximum length of an attribute
     mapping expression is 2048 characters. When evaluated, the total size of
-    all mapped attributes must not exceed 8KB. For OIDC providers, you must
+    all mapped attributes must not exceed 4KB. For OIDC providers, you must
     supply a custom mapping that includes the `google.subject` attribute. For
     example, the following maps the `sub` claim of the incoming credential to
     the `subject` attribute on a Google token: ``` {"google.subject":

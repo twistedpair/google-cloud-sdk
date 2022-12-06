@@ -572,10 +572,10 @@ class Container(_messages.Message):
     options: Arbitrary additional options to include in the "docker run"
       command when running this container, e.g. "--network host".
     password: Optional password for logging in to a docker registry. If
-      password matches "projects/*/secrets/*/versions/*" then Batch will read
+      password matches `projects/*/secrets/*/versions/*` then Batch will read
       the password from the Secret Manager;
     username: Optional username for logging in to a docker registry. If
-      username matches "projects/*/secrets/*/versions/*" then Batch will read
+      username matches `projects/*/secrets/*/versions/*` then Batch will read
       the username from the Secret Manager.
     volumes: Volumes to mount (bind mount) from the host machine files or
       directories into the container, formatted to match docker run's --volume
@@ -1435,7 +1435,11 @@ class NetworkInterface(_messages.Message):
   r"""A network interface.
 
   Fields:
-    network: The URL of the network resource.
+    network: The URL of an existing network resource. You can specify the
+      network as a full or partial URL. For example, the following are all
+      valid URLs: https://www.googleapis.com/compute/v1/projects/{project}/glo
+      bal/networks/{network} projects/{project}/global/networks/{network}
+      global/networks/{network}
     noExternalIpAddress: Default is false (with an external IP address).
       Required if no external public IP address is attached to the VM. If no
       external public IP address, additional configuration is required to
@@ -1443,7 +1447,12 @@ class NetworkInterface(_messages.Message):
       https://cloud.google.com/vpc/docs/configure-private-google-access and
       https://cloud.google.com/nat/docs/gce-example#create-nat for more
       information.
-    subnetwork: The URL of the Subnetwork resource.
+    subnetwork: The URL of an existing subnetwork resource in the network. You
+      can specify the subnetwork as a full or partial URL. For example, the
+      following are all valid URLs: https://www.googleapis.com/compute/v1/proj
+      ects/{project}/regions/{region}/subnetworks/{subnetwork}
+      projects/{project}/regions/{region}/subnetworks/{subnetwork}
+      regions/{region}/subnetworks/{subnetwork}
   """
 
   network = _messages.StringField(1)
@@ -2105,14 +2114,12 @@ class TaskSpec(_messages.Message):
   r"""Spec of a task
 
   Messages:
-    EnvironmentsValue: Environment variables to set before running the Task.
-      You can set up to 100 environments.
+    EnvironmentsValue: Deprecated: please use environment(non-plural) instead.
 
   Fields:
     computeResource: ComputeResource requirements.
     environment: Environment variables to set before running the Task.
-    environments: Environment variables to set before running the Task. You
-      can set up to 100 environments.
+    environments: Deprecated: please use environment(non-plural) instead.
     lifecyclePolicies: Lifecycle management schema when any task in a task
       group is failed. The valid size of lifecycle policies are [0, 10]. For
       each lifecycle policy, when the condition is met, the action in that
@@ -2140,8 +2147,7 @@ class TaskSpec(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EnvironmentsValue(_messages.Message):
-    r"""Environment variables to set before running the Task. You can set up
-    to 100 environments.
+    r"""Deprecated: please use environment(non-plural) instead.
 
     Messages:
       AdditionalProperty: An additional property for a EnvironmentsValue

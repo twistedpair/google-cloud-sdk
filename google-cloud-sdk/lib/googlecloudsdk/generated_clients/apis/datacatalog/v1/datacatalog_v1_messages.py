@@ -194,6 +194,20 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesGetRequest(_messages.Message
   name = _messages.StringField(1, required=True)
 
 
+class DatacatalogProjectsLocationsEntryGroupsEntriesImportRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsEntryGroupsEntriesImportRequest object.
+
+  Fields:
+    googleCloudDatacatalogV1ImportEntriesRequest: A
+      GoogleCloudDatacatalogV1ImportEntriesRequest resource to be passed as
+      the request body.
+    parent: Required. Target entry group for ingested entries.
+  """
+
+  googleCloudDatacatalogV1ImportEntriesRequest = _messages.MessageField('GoogleCloudDatacatalogV1ImportEntriesRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class DatacatalogProjectsLocationsEntryGroupsEntriesListRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsEntryGroupsEntriesListRequest object.
 
@@ -566,6 +580,52 @@ class DatacatalogProjectsLocationsExportMetadataRequest(_messages.Message):
 
   googleCloudDatacatalogV1ExportMetadataRequest = _messages.MessageField('GoogleCloudDatacatalogV1ExportMetadataRequest', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class DatacatalogProjectsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsOperationsCancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatacatalogProjectsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatacatalogProjectsLocationsOperationsGetRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatacatalogProjectsLocationsOperationsListRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class DatacatalogProjectsLocationsTagTemplatesCreateRequest(_messages.Message):
@@ -1291,29 +1351,98 @@ class GoogleCloudDatacatalogV1ClusterSpec(_messages.Message):
 class GoogleCloudDatacatalogV1ColumnSchema(_messages.Message):
   r"""A column within a schema. Columns can be nested inside other columns.
 
+  Enums:
+    HighestIndexingTypeValueValuesEnum: Optional. Most important inclusion of
+      this column.
+
   Fields:
     column: Required. Name of the column. Must be a UTF-8 string without dots
       (.). The maximum size is 64 bytes.
+    defaultValue: Optional. Default value for the column.
     description: Optional. Description of the column. Default value is an
       empty string. The description must be a UTF-8 string with the maximum
       size of 2000 bytes.
     gcRule: Optional. Garbage collection policy for the column or column
       family. Applies to systems like Cloud Bigtable.
+    highestIndexingType: Optional. Most important inclusion of this column.
+    lookerColumnSpec: Looker specific column info of this column.
     mode: Optional. A column's mode indicates whether values in this column
       are required, nullable, or repeated. Only `NULLABLE`, `REQUIRED`, and
       `REPEATED` values are supported. Default mode is `NULLABLE`.
+    ordinalPosition: Optional. Ordinal position
     subcolumns: Optional. Schema of sub-columns. A column can have zero or
       more sub-columns.
     type: Required. Type of the column. Must be a UTF-8 string with the
       maximum size of 128 bytes.
   """
 
+  class HighestIndexingTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Most important inclusion of this column.
+
+    Values:
+      INDEXING_TYPE_UNSPECIFIED: Unspecified.
+      INDEXING_TYPE_NONE: Column not a part of an index.
+      INDEXING_TYPE_NON_UNIQUE: Column Part of non unique index.
+      INDEXING_TYPE_UNIQUE: Column part of unique index.
+      INDEXING_TYPE_PRIMARY_KEY: Column part of the primary key.
+    """
+    INDEXING_TYPE_UNSPECIFIED = 0
+    INDEXING_TYPE_NONE = 1
+    INDEXING_TYPE_NON_UNIQUE = 2
+    INDEXING_TYPE_UNIQUE = 3
+    INDEXING_TYPE_PRIMARY_KEY = 4
+
   column = _messages.StringField(1)
-  description = _messages.StringField(2)
-  gcRule = _messages.StringField(3)
-  mode = _messages.StringField(4)
-  subcolumns = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchema', 5, repeated=True)
-  type = _messages.StringField(6)
+  defaultValue = _messages.StringField(2)
+  description = _messages.StringField(3)
+  gcRule = _messages.StringField(4)
+  highestIndexingType = _messages.EnumField('HighestIndexingTypeValueValuesEnum', 5)
+  lookerColumnSpec = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchemaLookerColumnSpec', 6)
+  mode = _messages.StringField(7)
+  ordinalPosition = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  subcolumns = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchema', 9, repeated=True)
+  type = _messages.StringField(10)
+
+
+class GoogleCloudDatacatalogV1ColumnSchemaLookerColumnSpec(_messages.Message):
+  r"""Column info specific to Looker System.
+
+  Enums:
+    TypeValueValuesEnum: Looker specific column type of this column.
+
+  Fields:
+    type: Looker specific column type of this column.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Looker specific column type of this column.
+
+    Values:
+      LOOKER_COLUMN_TYPE_UNSPECIFIED: Unspecified.
+      DIMENSION: Dimension.
+      DIMENSION_GROUP: Dimension group - parent for Dimension.
+      FILTER: Filter.
+      MEASURE: Measure.
+      PAREMETER: Parameter.
+    """
+    LOOKER_COLUMN_TYPE_UNSPECIFIED = 0
+    DIMENSION = 1
+    DIMENSION_GROUP = 2
+    FILTER = 3
+    MEASURE = 4
+    PAREMETER = 5
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
+class GoogleCloudDatacatalogV1CommonUsageStats(_messages.Message):
+  r"""Common statistics on the entry's usage. They can be set on any system.
+
+  Fields:
+    viewCount: View count in source system.
+  """
+
+  viewCount = _messages.IntegerField(1)
 
 
 class GoogleCloudDatacatalogV1Contacts(_messages.Message):
@@ -1415,6 +1544,8 @@ class GoogleCloudDatacatalogV1DatabaseTableSpec(_messages.Message):
     TypeValueValuesEnum: Type of this table.
 
   Fields:
+    databaseViewSpec: Spec what aplies to tables that are actually views. Not
+      set for "real" tables.
     dataplexTable: Output only. Fields specific to a Dataplex table and
       present only in the Dataplex table entries.
     type: Type of this table.
@@ -1432,8 +1563,38 @@ class GoogleCloudDatacatalogV1DatabaseTableSpec(_messages.Message):
     NATIVE = 1
     EXTERNAL = 2
 
-  dataplexTable = _messages.MessageField('GoogleCloudDatacatalogV1DataplexTableSpec', 1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  databaseViewSpec = _messages.MessageField('GoogleCloudDatacatalogV1DatabaseTableSpecDatabaseViewSpec', 1)
+  dataplexTable = _messages.MessageField('GoogleCloudDatacatalogV1DataplexTableSpec', 2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class GoogleCloudDatacatalogV1DatabaseTableSpecDatabaseViewSpec(_messages.Message):
+  r"""Specification that applies to database view.
+
+  Enums:
+    ViewTypeValueValuesEnum: Type of this view.
+
+  Fields:
+    baseTable: Name of a singular table this view reflects one to one.
+    sqlQuery: SQL query used to generate this view.
+    viewType: Type of this view.
+  """
+
+  class ViewTypeValueValuesEnum(_messages.Enum):
+    r"""Type of this view.
+
+    Values:
+      VIEW_TYPE_UNSPECIFIED: Default unknown view type.
+      STANDARD_VIEW: Standard view.
+      MATERIALIZED_VIEW: Materialized view.
+    """
+    VIEW_TYPE_UNSPECIFIED = 0
+    STANDARD_VIEW = 1
+    MATERIALIZED_VIEW = 2
+
+  baseTable = _messages.StringField(1)
+  sqlQuery = _messages.StringField(2)
+  viewType = _messages.EnumField('ViewTypeValueValuesEnum', 3)
 
 
 class GoogleCloudDatacatalogV1DataplexExternalTable(_messages.Message):
@@ -1464,12 +1625,16 @@ class GoogleCloudDatacatalogV1DataplexExternalTable(_messages.Message):
       CLOUD_PUBSUB: Cloud Pub/Sub.
       DATAPROC_METASTORE: Dataproc Metastore.
       DATAPLEX: Dataplex.
+      CLOUD_SQL: Cloud Sql
+      LOOKER: Looker
     """
     INTEGRATED_SYSTEM_UNSPECIFIED = 0
     BIGQUERY = 1
     CLOUD_PUBSUB = 2
     DATAPROC_METASTORE = 3
     DATAPLEX = 4
+    CLOUD_SQL = 5
+    LOOKER = 6
 
   dataCatalogEntry = _messages.StringField(1)
   fullyQualifiedName = _messages.StringField(2)
@@ -1563,16 +1728,14 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       type.
     dataStreamSpec: Additional specification of a non-Pub/Sub data stream.
     databaseTableSpec: Specification that applies to a table resource. Valid
-      only for entries with the `TABLE` type.
+      only for entries with the `TABLE` or `EXPLORE` type.
     description: Entry description that can consist of several sentences or
       paragraphs that describe entry contents. The description must not
       contain Unicode non-characters as well as C0 and C1 control codes except
       tabs (HT), new lines (LF), carriage returns (CR), and page breaks (FF).
       The maximum size is 2000 bytes when encoded in UTF-8. Default value is
       an empty string.
-    displayName: Display name of an entry. The name must contain only Unicode
-      letters, numbers (0-9), underscores (_), dashes (-), spaces ( ), and
-      can't start or end with spaces. The maximum size is 200 bytes when
+    displayName: Display name of an entry. The maximum size is 500 bytes when
       encoded in UTF-8. Default value is an empty string.
     filesetSpec: Specification that applies to a fileset resource. Valid only
       for entries with the `FILESET` type.
@@ -1604,6 +1767,8 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       periods (.), colons (:), slashes (/), dashes (-), and hashes (#). The
       maximum size is 200 bytes when encoded in UTF-8.
+    lookerSystemSpec: Specification that applies to Looker sysstem. Only
+      settable when `user_specified_system` is equal to `LOOKER`
     name: Output only. The resource name of an entry in URL format. Note: The
       entry itself and its child resources might not be stored in the location
       specified in its name.
@@ -1618,6 +1783,9 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       in the `IntegratedSystem` enum. For entries with
       `user_specified_system`, this field is optional and defaults to an empty
       timestamp.
+    sqlDatabaseSystemSpec: Specification that applies to a relational database
+      system. Only settable when `user_specified_system` is equal to
+      `SQL_DATABASE`
     type: The type of the entry. Only used for entries with types listed in
       the `EntryType` enum. Currently, only `FILESET` enum value is allowed.
       All other entries created in Data Catalog must use the
@@ -1649,12 +1817,16 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       CLOUD_PUBSUB: Cloud Pub/Sub.
       DATAPROC_METASTORE: Dataproc Metastore.
       DATAPLEX: Dataplex.
+      CLOUD_SQL: Cloud Sql
+      LOOKER: Looker
     """
     INTEGRATED_SYSTEM_UNSPECIFIED = 0
     BIGQUERY = 1
     CLOUD_PUBSUB = 2
     DATAPROC_METASTORE = 3
     DATAPLEX = 4
+    CLOUD_SQL = 5
+    LOOKER = 6
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the entry. Only used for entries with types listed in the
@@ -1681,6 +1853,13 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       LAKE: A Dataplex lake.
       ZONE: A Dataplex zone.
       SERVICE: A service, for example, a Dataproc Metastore service.
+      DATABASE_SCHEMA: Schema within a relational database.
+      DASHBOARD: A Dashboard, for example from Looker.
+      EXPLORE: A Looker Explore. For more information, see [Looker Explore
+        API] (https://developers.looker.com/api/explorer/4.0/methods/LookmlMod
+        el/lookml_model_explore).
+      LOOK: A Looker Look. For more information, see [Looker Look API]
+        (https://developers.looker.com/api/explorer/4.0/methods/Look).
     """
     ENTRY_TYPE_UNSPECIFIED = 0
     TABLE = 1
@@ -1694,6 +1873,10 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     LAKE = 9
     ZONE = 10
     SERVICE = 11
+    DATABASE_SCHEMA = 12
+    DASHBOARD = 13
+    EXPLORE = 14
+    LOOK = 15
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1737,15 +1920,17 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
   integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 14)
   labels = _messages.MessageField('LabelsValue', 15)
   linkedResource = _messages.StringField(16)
-  name = _messages.StringField(17)
-  personalDetails = _messages.MessageField('GoogleCloudDatacatalogV1PersonalDetails', 18)
-  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 19)
-  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 20)
-  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 21)
-  type = _messages.EnumField('TypeValueValuesEnum', 22)
-  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 23)
-  userSpecifiedSystem = _messages.StringField(24)
-  userSpecifiedType = _messages.StringField(25)
+  lookerSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1LookerSystemSpec', 17)
+  name = _messages.StringField(18)
+  personalDetails = _messages.MessageField('GoogleCloudDatacatalogV1PersonalDetails', 19)
+  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 20)
+  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 21)
+  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 22)
+  sqlDatabaseSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1SqlDatabaseSystemSpec', 23)
+  type = _messages.EnumField('TypeValueValuesEnum', 24)
+  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 25)
+  userSpecifiedSystem = _messages.StringField(26)
+  userSpecifiedType = _messages.StringField(27)
 
 
 class GoogleCloudDatacatalogV1EntryGroup(_messages.Message):
@@ -1932,6 +2117,68 @@ class GoogleCloudDatacatalogV1GcsFilesetSpec(_messages.Message):
   sampleGcsFileSpecs = _messages.MessageField('GoogleCloudDatacatalogV1GcsFileSpec', 2, repeated=True)
 
 
+class GoogleCloudDatacatalogV1ImportEntriesMetadata(_messages.Message):
+  r"""Metadata message for long-running operation returned by the
+  ImportEntries.
+
+  Enums:
+    StateValueValuesEnum: State of the import operation.
+
+  Fields:
+    errors: Partial errors that are encountered during the ImportEntries
+      operation. There is no guarantee that all the encountered errors are
+      reported. However, if no errors are reported, it means that no errors
+      were encountered.
+    state: State of the import operation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the import operation.
+
+    Values:
+      IMPORT_STATE_UNSPECIFIED: Default value. This value is unused.
+      IMPORT_QUEUED: The dump with entries has been queued for import.
+      IMPORT_IN_PROGRESS: The import of entries is in progress.
+      IMPORT_DONE: The import of entries has been finished.
+      IMPORT_OBSOLETE: The import of entries has been abandoned in favor of a
+        newer request.
+    """
+    IMPORT_STATE_UNSPECIFIED = 0
+    IMPORT_QUEUED = 1
+    IMPORT_IN_PROGRESS = 2
+    IMPORT_DONE = 3
+    IMPORT_OBSOLETE = 4
+
+  errors = _messages.MessageField('Status', 1, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class GoogleCloudDatacatalogV1ImportEntriesRequest(_messages.Message):
+  r"""Request message for ImportEntries method.
+
+  Fields:
+    gcsBucketPath: Path to a Cloud Storage bucket that contains a dump ready
+      for ingestion.
+  """
+
+  gcsBucketPath = _messages.StringField(1)
+
+
+class GoogleCloudDatacatalogV1ImportEntriesResponse(_messages.Message):
+  r"""Response message for long-running operation returned by the
+  ImportEntries.
+
+  Fields:
+    deletedEntriesCount: Number of entries deleted as a result of import
+      operation.
+    upsertedEntriesCount: Cumulative number of entries created and entries
+      updated as a result of import operation.
+  """
+
+  deletedEntriesCount = _messages.IntegerField(1)
+  upsertedEntriesCount = _messages.IntegerField(2)
+
+
 class GoogleCloudDatacatalogV1ImportTaxonomiesRequest(_messages.Message):
   r"""Request message for ImportTaxonomies.
 
@@ -2060,6 +2307,31 @@ class GoogleCloudDatacatalogV1ListTaxonomiesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   taxonomies = _messages.MessageField('GoogleCloudDatacatalogV1Taxonomy', 2, repeated=True)
+
+
+class GoogleCloudDatacatalogV1LookerSystemSpec(_messages.Message):
+  r"""Specification that applies to entries that are part `LOOKER` system
+  (user_specified_type)
+
+  Fields:
+    parentInstanceDisplayName: Name of the parent Looker Instance. Empty if it
+      does not exist.
+    parentInstanceId: ID of the parent Looker Instance. Empty if it does not
+      exist. Example value: `someinstance.looker.com`
+    parentModelDisplayName: Name of the parent Model. Empty if it does not
+      exist.
+    parentModelId: ID of the parent Model. Empty if it does not exist.
+    parentViewDisplayName: Name of the parent View. Empty if it does not
+      exist.
+    parentViewId: ID of the parent View. Empty if it does not exist.
+  """
+
+  parentInstanceDisplayName = _messages.StringField(1)
+  parentInstanceId = _messages.StringField(2)
+  parentModelDisplayName = _messages.StringField(3)
+  parentModelId = _messages.StringField(4)
+  parentViewDisplayName = _messages.StringField(5)
+  parentViewId = _messages.StringField(6)
 
 
 class GoogleCloudDatacatalogV1ModifyEntryContactsRequest(_messages.Message):
@@ -2453,12 +2725,16 @@ class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
       CLOUD_PUBSUB: Cloud Pub/Sub.
       DATAPROC_METASTORE: Dataproc Metastore.
       DATAPLEX: Dataplex.
+      CLOUD_SQL: Cloud Sql
+      LOOKER: Looker
     """
     INTEGRATED_SYSTEM_UNSPECIFIED = 0
     BIGQUERY = 1
     CLOUD_PUBSUB = 2
     DATAPROC_METASTORE = 3
     DATAPLEX = 4
+    CLOUD_SQL = 5
+    LOOKER = 6
 
   class SearchResultTypeValueValuesEnum(_messages.Enum):
     r"""Type of the search result. You can use this field to determine which
@@ -2539,6 +2815,25 @@ class GoogleCloudDatacatalogV1SerializedTaxonomy(_messages.Message):
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
   policyTags = _messages.MessageField('GoogleCloudDatacatalogV1SerializedPolicyTag', 4, repeated=True)
+
+
+class GoogleCloudDatacatalogV1SqlDatabaseSystemSpec(_messages.Message):
+  r"""Specification that applies to entries that are part `SQL_DATABASE`
+  system (user_specified_type)
+
+  Fields:
+    databaseVersion: Version of the database engine.
+    instanceHost: Host of the SQL database enum InstanceHost { UNDEFINED = 0;
+      SELF_HOSTED = 1; CLOUD_SQL = 2; AMAZON_RDS = 3; AZURE_SQL = 4; } Host of
+      the enclousing database instance.
+    sqlEngine: SQL Database Engine. enum SqlEngine { UNDEFINED = 0; MY_SQL =
+      1; POSTGRE_SQL = 2; SQL_SERVER = 3; } Engine of the enclosing database
+      instance.
+  """
+
+  databaseVersion = _messages.StringField(1)
+  instanceHost = _messages.StringField(2)
+  sqlEngine = _messages.StringField(3)
 
 
 class GoogleCloudDatacatalogV1StarEntryRequest(_messages.Message):
@@ -2881,16 +3176,50 @@ class GoogleCloudDatacatalogV1UsageSignal(_messages.Message):
   be performed again on the next day.
 
   Messages:
+    CommonUsageWithinTimeRangeValue: Common usage statistics over each of the
+      predefined time ranges. Supported time ranges are `{"24H", "7D", "30D",
+      "Lifetime"}`.
     UsageWithinTimeRangeValue: Output only. BigQuery usage statistics over
       each of the predefined time ranges. Supported time ranges are `{"24H",
       "7D", "30D"}`.
 
   Fields:
+    commonUsageWithinTimeRange: Common usage statistics over each of the
+      predefined time ranges. Supported time ranges are `{"24H", "7D", "30D",
+      "Lifetime"}`.
+    favoriteCount: Favorite count in the source system.
     updateTime: The end timestamp of the duration of usage statistics.
     usageWithinTimeRange: Output only. BigQuery usage statistics over each of
       the predefined time ranges. Supported time ranges are `{"24H", "7D",
       "30D"}`.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CommonUsageWithinTimeRangeValue(_messages.Message):
+    r"""Common usage statistics over each of the predefined time ranges.
+    Supported time ranges are `{"24H", "7D", "30D", "Lifetime"}`.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        CommonUsageWithinTimeRangeValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        CommonUsageWithinTimeRangeValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CommonUsageWithinTimeRangeValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudDatacatalogV1CommonUsageStats attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudDatacatalogV1CommonUsageStats', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class UsageWithinTimeRangeValue(_messages.Message):
@@ -2919,8 +3248,10 @@ class GoogleCloudDatacatalogV1UsageSignal(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  updateTime = _messages.StringField(1)
-  usageWithinTimeRange = _messages.MessageField('UsageWithinTimeRangeValue', 2)
+  commonUsageWithinTimeRange = _messages.MessageField('CommonUsageWithinTimeRangeValue', 1)
+  favoriteCount = _messages.IntegerField(2)
+  updateTime = _messages.StringField(3)
+  usageWithinTimeRange = _messages.MessageField('UsageWithinTimeRangeValue', 4)
 
 
 class GoogleCloudDatacatalogV1UsageStats(_messages.Message):
@@ -2954,6 +3285,19 @@ class GoogleCloudDatacatalogV1ViewSpec(_messages.Message):
   """
 
   viewQuery = _messages.StringField(1)
+
+
+class ListOperationsResponse(_messages.Message):
+  r"""The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
 class Operation(_messages.Message):

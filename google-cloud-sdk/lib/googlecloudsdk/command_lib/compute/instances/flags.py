@@ -1090,29 +1090,23 @@ def ValidateDiskBootFlags(args, enable_kms=False):
       raise exceptions.BadArgumentException(
           '--boot-disk-device-name',
           'Each instance can have exactly one boot disk. '
-          'One boot disk was specified through [--disk or --create-disk]'
-      )
+          'One boot disk was specified through [--disk or --create-disk]')
 
     if args.boot_disk_type:
       raise exceptions.BadArgumentException(
-          '--boot-disk-type',
-          'Each instance can have exactly one boot disk. '
-          'One boot disk was specified through [--disk or --create-disk]'
-      )
+          '--boot-disk-type', 'Each instance can have exactly one boot disk. '
+          'One boot disk was specified through [--disk or --create-disk]')
 
     if args.boot_disk_size:
       raise exceptions.BadArgumentException(
-          '--boot-disk-size',
-          'Each instance can have exactly one boot disk. '
-          'One boot disk was specified through [--disk or --create-disk]'
-      )
+          '--boot-disk-size', 'Each instance can have exactly one boot disk. '
+          'One boot disk was specified through [--disk or --create-disk]')
 
     if not args.boot_disk_auto_delete:
       raise exceptions.BadArgumentException(
           '--no-boot-disk-auto-delete',
           'Each instance can have exactly one boot disk. '
-          'One boot disk was specified through [--disk or --create-disk]'
-      )
+          'One boot disk was specified through [--disk or --create-disk]')
 
     if enable_kms:
       if args.boot_disk_kms_key:
@@ -1298,6 +1292,10 @@ def AddAddressArgs(parser,
       'private-network-ip': str,
       'aliases': str,
       'network-attachment': str,
+      'ipv6-address': str,
+      'ipv6-prefix-length': int,
+      'internal-ipv6-address': str,
+      'internal-ipv6-prefix-length': int,
   }
 
   multiple_network_interface_cards_spec['network-tier'] = _ValidateNetworkTier
@@ -1317,8 +1315,9 @@ def AddAddressArgs(parser,
       Adds a network interface to the instance. Mutually exclusive with any
       of these flags: *--address*, *--network*, *--network-tier*, *--subnet*,
       *--private-network-ip*, *--stack-type*, *--ipv6-network-tier*,
-      *--ipv6-public-ptr-domain*. This flag can be repeated to specify multiple
-      network interfaces.
+      *--ipv6-public-ptr-domain*, *--internal-ipv6-address*,
+      *--internal-ipv6-prefix-length*, *--ipv6-address*, *--ipv6-prefix-length*.
+      This flag can be repeated to specify multiple network interfaces.
     """)
   else:
     network_interface_help_texts.append("""\
@@ -3252,8 +3251,8 @@ def AddIPv6AddressArgs(parser):
       type=NonEmptyString('--ipv6-address'),
       help="""
       Assigns the given external IPv6 address to the instance that is created.
-      The address must be the first IP in the range. This option can only be
-      used when creating a single instance.
+      The address must be the first IP address in the range. This option can be
+      used only when creating a single instance.
     """)
 
 
@@ -3262,20 +3261,21 @@ def AddIPv6PrefixLengthArgs(parser):
       '--ipv6-prefix-length',
       type=int,
       help="""
-      Prefix Length of the External IPv6 address range, should be used together
-      with --ipv6-address. Currently only /96 is supported and the default value
-      is 96.
+      The prefix length of the external IPv6 address range. This field should be
+      used together with --ipv6-address. Only the /96 IP address range is
+      supported, and the default value is 96.
     """)
 
 
 def AddInternalIPv6AddressArgs(parser):
   parser.add_argument(
       '--internal-ipv6-address',
-      type=NonEmptyString('--ipv6-address'),
+      type=NonEmptyString('--internal-ipv6-address'),
       help="""
-      Assigns the given internal IPv6 address or range to the instance that is
-      created. The address must be the first IP in the range or a IP range with
-      /96. This option can only be used when creating a single instance.
+      Assigns the given internal IPv6 address or range to the instance
+        that is created. The address must be the first IP address in the range
+        or a /96 IP address range. This option can be used only when creating a single
+        instance.
     """)
 
 
@@ -3285,10 +3285,9 @@ def AddInternalIPv6PrefixLengthArgs(parser):
       type=int,
       help="""
       Optional field that indicates the prefix length of the internal IPv6
-      address range, should be used together with
-      `--internal-ipv6-address=fd20::`. Currently only /96 is supported and the
-      default value is 96. If not set, the prefix length from
-      `--internal-ipv6-address=fd20::/96` will be used or assigned a default
+      address range, should be used together with --internal-ipv6-address. Only
+      /96 is supported and the default value is 96. If not set, the prefix
+      length from --internal-ipv6-address will be used or assigned a default
       value of 96.
     """)
 

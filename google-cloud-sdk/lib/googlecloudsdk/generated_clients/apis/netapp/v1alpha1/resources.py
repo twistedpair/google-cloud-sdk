@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://netapp.googleapis.com/v1alpha1/'
-DOCS_URL = 'go/netappfiles:high-level-design'
+DOCS_URL = 'https://cloud.google.com/netapp/'
 
 
 class Collections(enum.Enum):

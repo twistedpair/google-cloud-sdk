@@ -389,9 +389,9 @@ class ClusterUpgradeGKEUpgradeOverride(_messages.Message):
   example, a user can skip soaking by overriding the soaking to 0.
 
   Fields:
-    postConditions: Post conditions to override for the specified upgrade
-      (name + version).
-    upgrade: Which upgrade to override.
+    postConditions: Required. Post conditions to override for the specified
+      upgrade (name + version). Required.
+    upgrade: Required. Which upgrade to override. Required.
   """
 
   postConditions = _messages.MessageField('ClusterUpgradePostConditions', 1)
@@ -446,8 +446,8 @@ class ClusterUpgradePostConditions(_messages.Message):
   eligible clusters.
 
   Fields:
-    soaking: Amount of time to "soak" after a rollout has been finished before
-      marking it COMPLETE. Cannot exceed 30 days.
+    soaking: Required. Amount of time to "soak" after a rollout has been
+      finished before marking it COMPLETE. Cannot exceed 30 days. Required.
   """
 
   soaking = _messages.StringField(1)
@@ -500,7 +500,8 @@ class ClusterUpgradeScopeSpec(_messages.Message):
   Fields:
     gkeUpgradeOverrides: Allow users to override some properties of each GKE
       upgrade.
-    postConditions: Post conditions to evaluate to mark an upgrade COMPLETE.
+    postConditions: Required. Post conditions to evaluate to mark an upgrade
+      COMPLETE. Required.
     upstreamScopes: This scope consumes upgrades that have COMPLETE status
       code in the upstream scopes. See ScopeGKEUpgradeState.Code for code
       definitions. The scope name should be in the form:
@@ -4543,6 +4544,7 @@ class Namespace(_messages.Message):
     name: The resource name for the namespace
       `projects/{project}/locations/{location}/namespaces/{namespace}`
     state: Output only. State of the namespace resource.
+    tenancyProject: Tenancy Project associated with the namespace
     uid: Output only. Google-generated UUID for this resource. This is unique
       across all namespace resources. If a namespace resource is deleted and
       another resource with the same name is created, it gets a different uid.
@@ -4553,8 +4555,9 @@ class Namespace(_messages.Message):
   deleteTime = _messages.StringField(2)
   name = _messages.StringField(3)
   state = _messages.MessageField('NamespaceLifecycleState', 4)
-  uid = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  tenancyProject = _messages.IntegerField(5)
+  uid = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class NamespaceBinding(_messages.Message):

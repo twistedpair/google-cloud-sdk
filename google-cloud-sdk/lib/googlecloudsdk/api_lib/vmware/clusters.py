@@ -81,5 +81,5 @@ class ClustersClient(util.VmwareClientBase):
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsClustersPatchRequest(
         name=resource.RelativeName(),
         cluster=cluster,
-        updateMask='node_type_configs')
+        updateMask='node_type_configs.*.node_count')
     return self.service.Patch(request)

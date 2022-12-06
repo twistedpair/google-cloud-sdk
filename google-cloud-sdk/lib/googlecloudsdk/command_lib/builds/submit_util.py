@@ -259,8 +259,11 @@ def _SetSource(build_config,
     except api_exceptions.HttpForbiddenError:
       raise BucketForbiddenError(
           'The user is forbidden from accessing the bucket [{}]. Please check '
-          'your organization\'s policy or if the user has the "serviceusage.services.use" permission'
-          .format(gcs_source_staging_dir.bucket))
+          'your organization\'s policy or if the user has the '
+          '"serviceusage.services.use" permission. Giving the user Owner, '
+          'Editor, or Viewer roles may also fix this issue. Alternatively, use '
+          'the --no-source option and access your source code via a different '
+          'method.'.format(gcs_source_staging_dir.bucket))
     except storage_api.BucketInWrongProjectError:
       # If we're using the default bucket but it already exists in a different
       # project, then it could belong to a malicious attacker (b/33046325).
@@ -426,20 +429,37 @@ def _SetWorkerPoolConfig(build_config, messages, arg_disk_size, arg_memory,
   return build_config
 
 
-def CreateBuildConfig(tag, no_cache, messages, substitutions, arg_config,
-                      is_specified_source, no_source, source,
-                      gcs_source_staging_dir, ignore_file, arg_gcs_log_dir,
-                      arg_machine_type, arg_disk_size, arg_worker_pool,
-                      buildpack, hide_logs=False):
+def CreateBuildConfig(tag,
+                      no_cache,
+                      messages,
+                      substitutions,
+                      arg_config,
+                      is_specified_source,
+                      no_source,
+                      source,
+                      gcs_source_staging_dir,
+                      ignore_file,
+                      arg_gcs_log_dir,
+                      arg_machine_type,
+                      arg_disk_size,
+                      arg_worker_pool,
+                      buildpack,
+                      hide_logs=False):
   """Returns a build config."""
 
   timeout_str = _GetBuildTimeout()
   build_config = _SetBuildSteps(tag, no_cache, messages, substitutions,
                                 arg_config, no_source, source, timeout_str,
                                 buildpack)
-  build_config = _SetSource(build_config, messages, is_specified_source,
-                            no_source, source, gcs_source_staging_dir,
-                            ignore_file, hide_logs=hide_logs)
+  build_config = _SetSource(
+      build_config,
+      messages,
+      is_specified_source,
+      no_source,
+      source,
+      gcs_source_staging_dir,
+      ignore_file,
+      hide_logs=hide_logs)
   build_config = _SetLogsBucket(build_config, arg_gcs_log_dir)
   build_config = _SetMachineType(build_config, messages, arg_machine_type)
   build_config = _SetDiskSize(build_config, messages, arg_disk_size)

@@ -1621,6 +1621,9 @@ class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
       addresses go to the internet. When set to PRIVATE, Cloud DNS always
       sends queries through the VPC network for this target.
     ipv4Address: IPv4 address of a target name server.
+    ipv6Address: IPv6 address of a target name server. Does not accept both
+      fields (ipv4 & ipv6) being populated. Public preview as of November
+      2022.
     kind: A string attribute.
   """
 
@@ -1642,7 +1645,8 @@ class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
 
   forwardingPath = _messages.EnumField('ForwardingPathValueValuesEnum', 1)
   ipv4Address = _messages.StringField(2)
-  kind = _messages.StringField(3, default='dns#managedZoneForwardingConfigNameServerTarget')
+  ipv6Address = _messages.StringField(3)
+  kind = _messages.StringField(4, default='dns#managedZoneForwardingConfigNameServerTarget')
 
 
 class ManagedZoneOperationsListResponse(_messages.Message):
@@ -2010,6 +2014,8 @@ class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
       addresses go to the internet. When set to PRIVATE, Cloud DNS always
       sends queries through the VPC network for this target.
     ipv4Address: IPv4 address to forward queries to.
+    ipv6Address: IPv6 address to forward to. Does not accept both fields (ipv4
+      & ipv6) being populated. Public preview as of November 2022.
     kind: A string attribute.
   """
 
@@ -2031,7 +2037,8 @@ class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
 
   forwardingPath = _messages.EnumField('ForwardingPathValueValuesEnum', 1)
   ipv4Address = _messages.StringField(2)
-  kind = _messages.StringField(3, default='dns#policyAlternativeNameServerConfigTargetNameServer')
+  ipv6Address = _messages.StringField(3)
+  kind = _messages.StringField(4, default='dns#policyAlternativeNameServerConfigTargetNameServer')
 
 
 class PolicyNetwork(_messages.Message):

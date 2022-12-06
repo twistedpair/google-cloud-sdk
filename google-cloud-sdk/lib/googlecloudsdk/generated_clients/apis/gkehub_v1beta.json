@@ -700,6 +700,10 @@
           "type": "string",
           "format": "google-datetime"
         },
+        "fleetDefaultMemberConfig": {
+          "description": "Optional. Feature configuration applicable to all memberships of the fleet.",
+          "$ref": "CommonFleetDefaultMemberConfigSpec"
+        },
         "scopeSpecs": {
           "description": "Optional. Scope-specific configuration for this Feature. If this Feature does not support any per-Scope configuration, this field may be unused. The keys indicate which Scope the configuration is for, in the form: `projects\/{p}\/locations\/global\/scopes\/{s}` Where {p} is the project, {s} is a valid Scope in this project. {p} WILL match the Feature's project. {p} will always be returned as the project number, but the project ID is also accepted during input. If the same Scope is specified in the map twice (using the project ID form, and the project number form), exactly ONE of the entries will be saved, with no guarantees as to which. For this reason, it is recommended the same format be used for all entries when mutating a Feature.",
           "type": "object",
@@ -2492,6 +2496,17 @@
       "description": "**FleetObservability**: An empty state left as an example membership-specific Feature state.",
       "type": "object",
       "properties": {
+      }
+    },
+    "CommonFleetDefaultMemberConfigSpec": {
+      "id": "CommonFleetDefaultMemberConfigSpec",
+      "description": "CommonFleetDefaultMemberConfigSpec contains default configuration information for memberships of a fleet",
+      "type": "object",
+      "properties": {
+        "identityservice": {
+          "description": "Identity Service-specific spec.",
+          "$ref": "IdentityServiceMembershipSpec"
+        }
       }
     },
     "ScopeFeatureSpec": {

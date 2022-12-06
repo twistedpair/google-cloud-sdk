@@ -14,6 +14,17 @@ from apitools.base.py import extra_types
 package = 'speech'
 
 
+class ABNFGrammar(_messages.Message):
+  r"""A ABNFGrammar object.
+
+  Fields:
+    abnfStrings: All declarations and rules of an ABNF grammar broken up into
+      multiple strings that will end up concatenated.
+  """
+
+  abnfStrings = _messages.StringField(1, repeated=True)
+
+
 class ClassItem(_messages.Message):
   r"""An item of the class.
 
@@ -770,6 +781,9 @@ class SpeechAdaptation(_messages.Message):
   r"""Speech adaptation configuration.
 
   Fields:
+    abnfGrammar: Augmented Backus-Naur form (ABNF) is a standardized grammar
+      notation comprised by a set of derivation rules. See specifications:
+      https://www.w3.org/TR/speech-grammar
     customClasses: A collection of custom classes. To specify the classes
       inline, leave the class' `name` blank and fill in the rest of its
       fields, giving it a unique `custom_class_id`. Refer to the inline
@@ -780,9 +794,10 @@ class SpeechAdaptation(_messages.Message):
       Any phrase set can use any custom class.
   """
 
-  customClasses = _messages.MessageField('CustomClass', 1, repeated=True)
-  phraseSetReferences = _messages.StringField(2, repeated=True)
-  phraseSets = _messages.MessageField('PhraseSet', 3, repeated=True)
+  abnfGrammar = _messages.MessageField('ABNFGrammar', 1)
+  customClasses = _messages.MessageField('CustomClass', 2, repeated=True)
+  phraseSetReferences = _messages.StringField(3, repeated=True)
+  phraseSets = _messages.MessageField('PhraseSet', 4, repeated=True)
 
 
 class SpeechAdaptationInfo(_messages.Message):

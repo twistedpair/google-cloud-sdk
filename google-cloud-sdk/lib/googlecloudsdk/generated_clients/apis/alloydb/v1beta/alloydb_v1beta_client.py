@@ -729,7 +729,7 @@ class AlloydbV1beta(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v1beta/{+name}:cancel',
-        request_field='cancelOperationRequest',
+        request_field='',
         request_type_name='AlloydbProjectsLocationsOperationsCancelRequest',
         response_type_name='Empty',
         supports_download=False,

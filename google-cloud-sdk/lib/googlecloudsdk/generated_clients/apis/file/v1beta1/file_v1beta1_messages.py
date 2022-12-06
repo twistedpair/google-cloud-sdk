@@ -221,7 +221,7 @@ class FileProjectsLocationsBackupsCreateRequest(_messages.Message):
       hyphens, and cannot end with a hyphen.
     parent: Required. The backup's project and location, in the format
       `projects/{project_id}/locations/{location}`. In Filestore, backup
-      locations map to GCP regions, for example **us-west1**.
+      locations map to Google Cloud regions, for example **us-west1**.
   """
 
   backup = _messages.MessageField('Backup', 1)
@@ -263,9 +263,9 @@ class FileProjectsLocationsBackupsListRequest(_messages.Message):
       results to retrieve for this list request.
     parent: Required. The project and location for which to retrieve backup
       information, in the format `projects/{project_id}/locations/{location}`.
-      In Filestore, backup locations map to GCP regions, for example **us-
-      west1**. To retrieve backup information for all locations, use "-" for
-      the `{location}` value.
+      In Filestore, backup locations map to Google Cloud regions, for example
+      **us-west1**. To retrieve backup information for all locations, use "-"
+      for the `{location}` value.
   """
 
   filter = _messages.StringField(1)
@@ -312,7 +312,7 @@ class FileProjectsLocationsInstancesCreateRequest(_messages.Message):
       or hyphens, and cannot end with a hyphen.
     parent: Required. The instance's project and location, in the format
       `projects/{project_id}/locations/{location}`. In Filestore, locations
-      map to GCP zones, for example **us-west1-b**.
+      map to Google Cloud zones, for example **us-west1-b**.
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -358,9 +358,9 @@ class FileProjectsLocationsInstancesListRequest(_messages.Message):
       results to retrieve for this list request.
     parent: Required. The project and location for which to retrieve instance
       information, in the format `projects/{project_id}/locations/{location}`.
-      In Cloud Filestore, locations map to GCP zones, for example **us-
-      west1-b**. To retrieve instance information for all locations, use "-"
-      for the `{location}` value.
+      In Cloud Filestore, locations map to Google Cloud zones, for example
+      **us-west1-b**. To retrieve instance information for all locations, use
+      "-" for the `{location}` value.
   """
 
   filter = _messages.StringField(1)
@@ -1551,7 +1551,7 @@ class Location(_messages.Message):
 
 
 class MaintenancePolicy(_messages.Message):
-  r"""Defines policies to service maintenance events.
+  r"""LINT.IfChange Defines policies to service maintenance events.
 
   Enums:
     StateValueValuesEnum: Optional. The state of the policy.
@@ -1915,11 +1915,11 @@ class OperationMetadata(_messages.Message):
 
 class RestoreInstanceRequest(_messages.Message):
   r"""RestoreInstanceRequest restores an existing instance's file share from a
-  snapshot or backup.
+  backup.
 
   Fields:
     fileShare: Required. Name of the file share in the Filestore instance that
-      the snapshot is being restored to.
+      the backup is being restored to.
     sourceBackup: The resource name of the backup, in the format
       `projects/{project_id}/locations/{location_id}/backups/{backup_id}`.
     sourceSnapshot: The resource name of the snapshot, in the format

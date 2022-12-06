@@ -40,22 +40,16 @@ class RedisTypeKit(base.TypeKit):
       if param in parameters:
         instance[param] = parameters[param]
 
-  def GetCreateSelectors(self,
-                         integration_name,
-                         add_service_name,
-                         remove_service_name=None):
+  def GetCreateSelectors(self, integration_name):
     """Returns create selectors for given integration and service.
 
     Args:
       integration_name: str, name of integration.
-      add_service_name: str, name of the service being added.
-      remove_service_name: str, name of the service being removed.
 
     Returns:
       list of dict typed names.
     """
-    selectors = super(RedisTypeKit, self).GetCreateSelectors(
-        integration_name, add_service_name, remove_service_name)
+    selectors = super(RedisTypeKit, self).GetCreateSelectors(integration_name)
     selectors.append({'type': 'vpc', 'name': '*'})
     return selectors
 

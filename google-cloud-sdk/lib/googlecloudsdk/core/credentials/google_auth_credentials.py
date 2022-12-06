@@ -37,6 +37,7 @@ from six.moves import urllib
 
 from google.auth import _helpers
 from google.auth import credentials as google_auth_credentials
+from google.auth import external_account_authorized_user as google_auth_external_account_authorized_user
 from google.auth import exceptions as google_auth_exceptions
 from google.oauth2 import _client as google_auth_client
 from google.oauth2 import credentials
@@ -168,21 +169,39 @@ class Credentials(credentials.Credentials):
     """Creates an object from creds of google.oauth2.credentials.Credentials.
 
     Args:
-      creds: google.oauth2.credentials.Credentials, The input credentials.
+      creds: Union[
+          google.oauth2.credentials.Credentials,
+          google.auth.external_account_authorized_user.Credentials
+      ], The input credentials.
     Returns:
       Credentials of Credentials.
     """
-    res = cls(
-        creds.token,
-        refresh_token=creds.refresh_token,
-        id_token=creds.id_token,
-        token_uri=creds.token_uri,
-        client_id=creds.client_id,
-        client_secret=creds.client_secret,
-        scopes=creds.scopes,
-        quota_project_id=creds.quota_project_id)
-    res.expiry = creds.expiry
-    return res
+    if isinstance(creds, credentials.Credentials):
+      res = cls(
+          creds.token,
+          refresh_token=creds.refresh_token,
+          id_token=creds.id_token,
+          token_uri=creds.token_uri,
+          client_id=creds.client_id,
+          client_secret=creds.client_secret,
+          scopes=creds.scopes,
+          quota_project_id=creds.quota_project_id)
+      res.expiry = creds.expiry
+      return res
+
+    if isinstance(creds,
+                  google_auth_external_account_authorized_user.Credentials):
+      return cls(
+          creds.token,
+          expiry=creds.expiry,
+          refresh_token=creds.refresh_token,
+          token_uri=creds.token_url,
+          client_id=creds.client_id,
+          client_secret=creds.client_secret,
+          scopes=creds.scopes,
+          quota_project_id=creds.quota_project_id)
+
+    raise exceptions.InvalidCredentials('Invalid Credentials')
 
 
 def _RefreshGrant(request,

@@ -131,7 +131,12 @@ def Get(instance_relative_name):
           name=instance_relative_name))
 
 
-def Create(instance_name, content, location, version, target_location_configs):
+def Create(instance_name,
+           content,
+           location,
+           version,
+           target_location_configs,
+           fallback_url=None):
   """Create a new Immersive Stream for XR service instance.
 
   Args:
@@ -142,6 +147,8 @@ def Create(instance_name, content, location, version, target_location_configs):
     version: string - content build version tag
     target_location_configs: A LocationConfigsValue proto message represents the
       target location configs to achieve
+    fallback_url: string - A url to redirect users to when the instance is
+      unable to provide the streaming experience
 
   Returns:
     An Operation object which can be used to check on the progress of the
@@ -156,6 +163,9 @@ def Create(instance_name, content, location, version, target_location_configs):
       contentBuildVersion=build_version,
       name=instance_name,
       locationConfigs=target_location_configs)
+  if fallback_url:
+    stream_config = messages.StreamConfig(fallbackUri=fallback_url)
+    instance.streamConfig = stream_config
   service = client.ProjectsLocationsStreamInstancesService(client)
 
   return service.Create(
@@ -217,3 +227,29 @@ def UpdateContentBuildVersion(instance_ref, version):
           name=instance_ref.RelativeName(),
           streamInstance=instance,
           updateMask='content_build_version'))
+
+
+def UpdateFallbackUrl(instance_ref, fallback_url):
+  """Update fallback url of an Immersive Stream for XR service instance.
+
+  Args:
+    instance_ref: resource object - service instance to be updated
+    fallback_url: string - fallback url to redirect users to when the instance
+      is not available
+
+  Returns:
+    An Operation object which can be used to check on the progress of the
+    service instance update.
+  """
+  client = api_util.GetClient()
+  messages = api_util.GetMessages()
+  service = client.ProjectsLocationsStreamInstancesService(client)
+
+  stream_config = messages.StreamConfig(fallbackUri=fallback_url)
+  instance = messages.StreamInstance()
+  instance.streamConfig = stream_config
+  return service.Patch(
+      messages.StreamProjectsLocationsStreamInstancesPatchRequest(
+          name=instance_ref.RelativeName(),
+          streamInstance=instance,
+          updateMask='stream_config'))

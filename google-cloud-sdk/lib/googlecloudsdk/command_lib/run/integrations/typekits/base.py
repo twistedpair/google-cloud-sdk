@@ -131,27 +131,17 @@ class TypeKit(object):
       name = '{}-{}'.format(name, count)
     return name
 
-  def GetCreateSelectors(self,
-                         integration_name,
-                         add_service_name,
-                         remove_service_name=None):
+  def GetCreateSelectors(self, integration_name):
     """Returns create selectors for given integration and service.
 
     Args:
       integration_name: str, name of integration.
-      add_service_name: str, name of the service being added.
-      remove_service_name: str, name of the service being removed.
 
     Returns:
       list of dict typed names.
     """
-    service_name = add_service_name or remove_service_name
-    selectors = [{'type': self.resource_type, 'name': integration_name}]
 
-    if service_name:
-      selectors.append({'type': 'service', 'name': service_name})
-
-    return selectors
+    return [{'type': self.resource_type, 'name': integration_name}]
 
   def GetDeleteSelectors(self, integration_name):
     """Returns selectors for deleting the integration.

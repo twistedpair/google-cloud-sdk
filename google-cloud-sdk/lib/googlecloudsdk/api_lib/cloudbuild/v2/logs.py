@@ -28,21 +28,32 @@ from googlecloudsdk.core import log
 
 class GCLLogTailer(v1_logs_util.TailerBase):
   """Helper class to tail logs from GCL, printing content as available."""
+  CLOUDBUILD_BUCKET = 'cloudbuild'
+  ALL_LOGS_VIEW = '_AllLogs'
 
-  def __init__(self, project, log_filter, out=log.status):
+  def __init__(self, project, location, log_filter, out=log.status):
     self.tailer = v1_logs_util.GetGCLLogTailer()
     self.log_filter = log_filter
     self.project = project
-    self.parent = 'projects/{project_id}'.format(project_id=self.project)
+    self.location = location
+    self.hybrid_pool_default_log_view = 'projects/{project_id}/locations/global/buckets/_Default/views/{view}'.format(
+        project_id=self.project, view=self.ALL_LOGS_VIEW)
+    self.cloud_build_log_view = 'projects/{project_id}/locations/{location}/buckets/{bucket}/views/{view}'.format(
+        project_id=self.project,
+        location=self.location,
+        bucket=self.CLOUDBUILD_BUCKET,
+        view=self.ALL_LOGS_VIEW)
+
     self.out = out
     self.buffer_window_seconds = 2
 
   @classmethod
-  def FromFilter(cls, project, log_filter, out=log.out):
+  def FromFilter(cls, project, location, log_filter, out=log.out):
     """Build a GCLLogTailer from a log filter."""
     return cls(
         project=project,
         log_filter=log_filter,
+        location=location,
         out=out,
     )
 
@@ -53,7 +64,10 @@ class GCLLogTailer(v1_logs_util.TailerBase):
       return
 
     output_logs = self.tailer.TailLogs(
-        [self.parent],
+        [
+            self.cloud_build_log_view,
+            self.hybrid_pool_default_log_view,
+        ],
         self.log_filter,
         buffer_window_seconds=self.buffer_window_seconds)
 
@@ -77,7 +91,11 @@ class GCLLogTailer(v1_logs_util.TailerBase):
   def Print(self):
     """Print GCL logs to the console."""
     output_logs = common.FetchLogs(
-        log_filter=self.log_filter, order_by='asc', parent=self.parent)
+        log_filter=self.log_filter,
+        order_by='asc',
+        resource_names=[
+            self.cloud_build_log_view, self.hybrid_pool_default_log_view
+        ])
 
     self._PrintFirstLine(' REMOTE RUN OUTPUT ')
 
@@ -113,6 +131,9 @@ class CloudBuildLogClient(object):
       time.sleep(1)
 
     if log_tailer:
+      # wait for another minute since logs can still be coming in after run
+      # is completed
+      time.sleep(60)
       log_tailer.Stop()
 
     return run
@@ -121,7 +142,7 @@ class CloudBuildLogClient(object):
     """Streams the logs for a run if available."""
     run = v2_client_util.GetRun(project, region, run_id, run_type)
     log_filter = self._GetLogFilter(run.createTime, run_id, run_type, region)
-    log_tailer = GCLLogTailer.FromFilter(project, log_filter, out=out)
+    log_tailer = GCLLogTailer.FromFilter(project, region, log_filter, out=out)
 
     t = None
     if log_tailer:
@@ -146,7 +167,7 @@ class CloudBuildLogClient(object):
     """Print the logs for a run."""
     run = v2_client_util.GetRun(project, region, run_id, run_type)
     log_filter = self._GetLogFilter(run.createTime, run_id, run_type, region)
-    log_tailer = GCLLogTailer.FromFilter(project, log_filter)
+    log_tailer = GCLLogTailer.FromFilter(project, region, log_filter)
 
     if log_tailer:
       log_tailer.Print()

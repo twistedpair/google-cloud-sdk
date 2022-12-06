@@ -2159,6 +2159,18 @@
               "SNOMEDCT_US"
             ]
           }
+        },
+        "alternativeOutputFormat": {
+          "description": "Alternative output format to be generated based on the results of analysis.",
+          "type": "string",
+          "enumDescriptions": [
+            "No alternative output format is specified.",
+            "FHIR bundle output."
+          ],
+          "enum": [
+            "ALTERNATIVE_OUTPUT_FORMAT_UNSPECIFIED",
+            "FHIR_BUNDLE"
+          ]
         }
       }
     },
@@ -2187,6 +2199,10 @@
           "items": {
             "$ref": "EntityMentionRelationship"
           }
+        },
+        "fhirBundle": {
+          "description": "The FHIR bundle ([`R4`](https:\/\/www.hl7.org\/fhir\/R4)) that includes all the entities, the entity mentions, and the relationships in JSON format.",
+          "type": "string"
         }
       }
     },
@@ -2208,7 +2224,7 @@
           "$ref": "TextSpan"
         },
         "linkedEntities": {
-          "description": "linked_entities are candidate ontological concepts that this entity mention may refer to. They are sorted by decreasing confidence.it",
+          "description": "linked_entities are candidate ontological concepts that this entity mention may refer to. They are sorted by decreasing confidence.",
           "type": "array",
           "items": {
             "$ref": "LinkedEntity"

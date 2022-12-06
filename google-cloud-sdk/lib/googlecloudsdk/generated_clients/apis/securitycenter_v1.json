@@ -632,6 +632,10 @@
           "items": {
             "$ref": "File"
           }
+        },
+        "kernelRootkit": {
+          "description": "Kernel Rootkit signature.",
+          "$ref": "KernelRootkit"
         }
       }
     },
@@ -1868,6 +1872,49 @@
         }
       }
     },
+    "KernelRootkit": {
+      "id": "KernelRootkit",
+      "description": "Kernel mode rootkit signatures.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Rootkit name when available.",
+          "type": "string"
+        },
+        "unexpectedCodeModification": {
+          "description": "Flag indicating unexpected modifications of kernel code memory.",
+          "type": "boolean"
+        },
+        "unexpectedReadOnlyDataModification": {
+          "description": "Flag indicating unexpected modifications of kernel read-only data memory.",
+          "type": "boolean"
+        },
+        "unexpectedFtraceHandler": {
+          "description": "Flag indicating presence of ftrace points with callbacks pointing to regions that are not in the expected kernel or module code range.",
+          "type": "boolean"
+        },
+        "unexpectedKprobeHandler": {
+          "description": "Flag indicating presence of kprobe points with callbacks pointing to regions that are not in the expected kernel or module code range.",
+          "type": "boolean"
+        },
+        "unexpectedKernelCodePages": {
+          "description": "Flag indicating presence of kernel code pages that are not in the expected kernel, module code regions.",
+          "type": "boolean"
+        },
+        "unexpectedSystemCallHandler": {
+          "description": "Flag indicating presence of system call handlers that are are not in the expected kernel, module code regions.",
+          "type": "boolean"
+        },
+        "unexpectedInterruptHandler": {
+          "description": "Flag indicating presence of interrupt handlers that are are not in the expected kernel, module code regions.",
+          "type": "boolean"
+        },
+        "unexpectedProcessesInRunqueue": {
+          "description": "Flag indicating unexpected process(es) in the scheduler run-queue, those that are in the run-queue, but not in the process task-list.",
+          "type": "boolean"
+        }
+      }
+    },
     "GoogleCloudSecuritycenterV1MuteConfig": {
       "id": "GoogleCloudSecuritycenterV1MuteConfig",
       "description": "A mute config is a Cloud SCC resource that contains the configuration to mute create\/update events of findings.",
@@ -1914,7 +1961,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The relative resource name of this notification config. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/notificationConfigs\/notify_public_bucket\".",
+          "description": "The relative resource name of this notification config. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/notificationConfigs\/notify_public_bucket\", \"folders\/{folder_id}\/notificationConfigs\/notify_public_bucket\", or \"projects\/{project_id}\/notificationConfigs\/notify_public_bucket\".",
           "type": "string"
         },
         "description": {
@@ -3100,6 +3147,10 @@
         "findingCategory": {
           "description": "The additional taxonomy group within findings from a given source.",
           "type": "string"
+        },
+        "name": {
+          "description": "Full resource name of the finding.",
+          "type": "string"
         }
       }
     },
@@ -3976,7 +4027,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "Required. Name of the notification config to delete. Its format is \"organizations\/[organization_id]\/notificationConfigs\/[config_id]\".",
+                  "description": "Required. Name of the notification config to delete. Its format is \"organizations\/[organization_id]\/notificationConfigs\/[config_id]\", \"folders\/[folder_id]\/notificationConfigs\/[config_id]\", or \"projects\/[project_id]\/notificationConfigs\/[config_id]\".",
                   "pattern": "^folders\/[^\/]+\/notificationConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4001,7 +4052,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. Name of the notification config to get. Its format is \"organizations\/[organization_id]\/notificationConfigs\/[config_id]\".",
+                  "description": "Required. Name of the notification config to get. Its format is \"organizations\/[organization_id]\/notificationConfigs\/[config_id]\", \"folders\/[folder_id]\/notificationConfigs\/[config_id]\", or \"projects\/[project_id]\/notificationConfigs\/[config_id]\".",
                   "pattern": "^folders\/[^\/]+\/notificationConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4026,7 +4077,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. Name of the organization to list notification configs. Its format is \"organizations\/[organization_id]\", \"folders\/[folder_id]\", or \"projects\/[project_id]\".",
+                  "description": "Required. Name of the parent to list notification configs. Its format is \"organizations\/[organization_id]\", \"folders\/[folder_id]\", or \"projects\/[project_id]\".",
                   "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4062,7 +4113,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The relative resource name of this notification config. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/notificationConfigs\/notify_public_bucket\".",
+                  "description": "The relative resource name of this notification config. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/notificationConfigs\/notify_public_bucket\", \"folders\/{folder_id}\/notificationConfigs\/notify_public_bucket\", or \"projects\/{project_id}\/notificationConfigs\/notify_public_bucket\".",
                   "pattern": "^folders\/[^\/]+\/notificationConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4257,7 +4308,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Name of the organization to groupBy. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
+                  "description": "Required. Name of the parent to groupBy. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
                   "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4285,7 +4336,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. Name of the organization assets should belong to. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
+                  "description": "Required. Name of the parent assets should belong to. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
                   "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5214,7 +5265,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "Required. Name of the notification config to delete. Its format is \"organizations\/[organization_id]\/notificationConfigs\/[config_id]\".",
+                  "description": "Required. Name of the notification config to delete. Its format is \"organizations\/[organization_id]\/notificationConfigs\/[config_id]\", \"folders\/[folder_id]\/notificationConfigs\/[config_id]\", or \"projects\/[project_id]\/notificationConfigs\/[config_id]\".",
                   "pattern": "^projects\/[^\/]+\/notificationConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5239,7 +5290,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. Name of the notification config to get. Its format is \"organizations\/[organization_id]\/notificationConfigs\/[config_id]\".",
+                  "description": "Required. Name of the notification config to get. Its format is \"organizations\/[organization_id]\/notificationConfigs\/[config_id]\", \"folders\/[folder_id]\/notificationConfigs\/[config_id]\", or \"projects\/[project_id]\/notificationConfigs\/[config_id]\".",
                   "pattern": "^projects\/[^\/]+\/notificationConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5264,7 +5315,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. Name of the organization to list notification configs. Its format is \"organizations\/[organization_id]\", \"folders\/[folder_id]\", or \"projects\/[project_id]\".",
+                  "description": "Required. Name of the parent to list notification configs. Its format is \"organizations\/[organization_id]\", \"folders\/[folder_id]\", or \"projects\/[project_id]\".",
                   "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5300,7 +5351,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The relative resource name of this notification config. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/notificationConfigs\/notify_public_bucket\".",
+                  "description": "The relative resource name of this notification config. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/notificationConfigs\/notify_public_bucket\", \"folders\/{folder_id}\/notificationConfigs\/notify_public_bucket\", or \"projects\/{project_id}\/notificationConfigs\/notify_public_bucket\".",
                   "pattern": "^projects\/[^\/]+\/notificationConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5495,7 +5546,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Name of the organization to groupBy. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
+                  "description": "Required. Name of the parent to groupBy. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
                   "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5523,7 +5574,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. Name of the organization assets should belong to. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
+                  "description": "Required. Name of the parent assets should belong to. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
                   "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -7148,7 +7199,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "Required. Name of the notification config to delete. Its format is \"organizations\/[organization_id]\/notificationConfigs\/[config_id]\".",
+                  "description": "Required. Name of the notification config to delete. Its format is \"organizations\/[organization_id]\/notificationConfigs\/[config_id]\", \"folders\/[folder_id]\/notificationConfigs\/[config_id]\", or \"projects\/[project_id]\/notificationConfigs\/[config_id]\".",
                   "pattern": "^organizations\/[^\/]+\/notificationConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -7173,7 +7224,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. Name of the notification config to get. Its format is \"organizations\/[organization_id]\/notificationConfigs\/[config_id]\".",
+                  "description": "Required. Name of the notification config to get. Its format is \"organizations\/[organization_id]\/notificationConfigs\/[config_id]\", \"folders\/[folder_id]\/notificationConfigs\/[config_id]\", or \"projects\/[project_id]\/notificationConfigs\/[config_id]\".",
                   "pattern": "^organizations\/[^\/]+\/notificationConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -7198,7 +7249,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. Name of the organization to list notification configs. Its format is \"organizations\/[organization_id]\", \"folders\/[folder_id]\", or \"projects\/[project_id]\".",
+                  "description": "Required. Name of the parent to list notification configs. Its format is \"organizations\/[organization_id]\", \"folders\/[folder_id]\", or \"projects\/[project_id]\".",
                   "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -7234,7 +7285,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The relative resource name of this notification config. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/notificationConfigs\/notify_public_bucket\".",
+                  "description": "The relative resource name of this notification config. See: https:\/\/cloud.google.com\/apis\/design\/resource_names#relative_resource_name Example: \"organizations\/{organization_id}\/notificationConfigs\/notify_public_bucket\", \"folders\/{folder_id}\/notificationConfigs\/notify_public_bucket\", or \"projects\/{project_id}\/notificationConfigs\/notify_public_bucket\".",
                   "pattern": "^organizations\/[^\/]+\/notificationConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -7429,7 +7480,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Name of the organization to groupBy. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
+                  "description": "Required. Name of the parent to groupBy. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
                   "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -7457,7 +7508,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. Name of the organization assets should belong to. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
+                  "description": "Required. Name of the parent assets should belong to. Its format is \"organizations\/[organization_id], folders\/[folder_id], or projects\/[project_id]\".",
                   "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,

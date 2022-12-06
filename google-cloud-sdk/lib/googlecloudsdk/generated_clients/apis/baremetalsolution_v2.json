@@ -250,6 +250,20 @@
           "description": "Output only. Text field about info for logging in.",
           "readOnly": true,
           "type": "string"
+        },
+        "workloadProfile": {
+          "description": "The workload profile for the instance.",
+          "type": "string",
+          "enumDescriptions": [
+            "The workload profile is in an unknown state.",
+            "The workload profile is generic.",
+            "The workload profile is hana."
+          ],
+          "enum": [
+            "WORKLOAD_PROFILE_UNSPECIFIED",
+            "WORKLOAD_PROFILE_GENERIC",
+            "WORKLOAD_PROFILE_HANA"
+          ]
         }
       }
     },
@@ -493,6 +507,20 @@
         "notes": {
           "description": "Input only. User-specified notes for new Volume. Used to provision Volumes that require manual intervention.",
           "type": "string"
+        },
+        "workloadProfile": {
+          "description": "The workload profile for the volume.",
+          "type": "string",
+          "enumDescriptions": [
+            "The workload profile is in an unknown state.",
+            "The workload profile is generic.",
+            "The workload profile is hana."
+          ],
+          "enum": [
+            "WORKLOAD_PROFILE_UNSPECIFIED",
+            "GENERIC",
+            "HANA"
+          ]
         }
       }
     },
@@ -918,8 +946,15 @@
       "type": "object",
       "properties": {
         "volume": {
-          "description": "Required. Name of the Volume to attach.",
+          "description": "Name of the Volume to attach.",
           "type": "string"
+        },
+        "volumes": {
+          "description": "Names of the multiple Volumes to attach. The volumes attaching will be an additive operation and will have no effect on existing attached volumes.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -929,12 +964,19 @@
       "type": "object",
       "properties": {
         "volume": {
-          "description": "Required. Name of the Volume to detach.",
+          "description": "Name of the Volume to detach.",
           "type": "string"
         },
         "skipReboot": {
           "description": "If true, performs Volume unmapping without instance reboot.",
           "type": "boolean"
+        },
+        "volumes": {
+          "description": "Names of the multiple Volumes to detach. The detaching of volumes will have no effect on other existing attached volumes.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

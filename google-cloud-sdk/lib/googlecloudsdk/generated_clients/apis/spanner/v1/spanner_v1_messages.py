@@ -378,7 +378,8 @@ class CopyBackupEncryptionConfig(_messages.Message):
         will be using the same Cloud KMS key as the source backup.
       GOOGLE_DEFAULT_ENCRYPTION: Use Google default encryption.
       CUSTOMER_MANAGED_ENCRYPTION: Use customer managed encryption. If
-        specified, `kms_key_name` must contain a valid Cloud KMS key.
+        specified, either `kms_key_name` or `kms_key_names` must contain valid
+        Cloud KMS key(s).
     """
     ENCRYPTION_TYPE_UNSPECIFIED = 0
     USE_CONFIG_DEFAULT_OR_BACKUP_ENCRYPTION = 1
@@ -793,6 +794,28 @@ class DiagnosticMessage(_messages.Message):
   shortMessage = _messages.MessageField('LocalizedString', 5)
 
 
+class DirectedReadOptions(_messages.Message):
+  r"""The DirectedReadOptions can be used to indicate which replicas or
+  regions should be used for non-transactional reads or queries.
+  DirectedReadOptions may only be specified for a read-only transaction,
+  otherwise the API will return an `INVALID_ARGUMENT` error.
+
+  Fields:
+    excludeReplicas: Exclude_replicas indicates that should be excluded from
+      serving requests. Spanner will not route requests to the replicas in
+      this list.
+    includeReplicas: Include_replicas indicates the order of replicas (as they
+      appear in this list) to process the request. If all replicas are
+      exhausted without finding a healthy replica, Spanner will wait for a
+      replica in the list to become available, requests may fail due to
+      `DEADLINE_EXCEEDED` errors. In particular, the request will never be
+      sent to a region or replica which does not appear in the list.
+  """
+
+  excludeReplicas = _messages.MessageField('ExcludeReplicas', 1)
+  includeReplicas = _messages.MessageField('IncludeReplicas', 2)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -850,6 +873,17 @@ class EncryptionInfo(_messages.Message):
   encryptionStatus = _messages.MessageField('Status', 1)
   encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 2)
   kmsKeyVersion = _messages.StringField(3)
+
+
+class ExcludeReplicas(_messages.Message):
+  r"""An ExcludeReplicas contains a repeated set of ReplicaSelection that
+  should be excluded from serving requests.
+
+  Fields:
+    replicaSelections: The directed read replica selector.
+  """
+
+  replicaSelections = _messages.MessageField('ReplicaSelection', 1, repeated=True)
 
 
 class ExecuteBatchDmlRequest(_messages.Message):
@@ -938,6 +972,7 @@ class ExecuteSqlRequest(_messages.Message):
       statement with unbound parameters.
 
   Fields:
+    directedReadOptions: Directed read options for this request.
     paramTypes: It is not always possible for Cloud Spanner to infer the right
       SQL type from a JSON value. For example, values of type `BYTES` and
       values of type `STRING` both appear in params as JSON strings. In these
@@ -1063,16 +1098,17 @@ class ExecuteSqlRequest(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  paramTypes = _messages.MessageField('ParamTypesValue', 1)
-  params = _messages.MessageField('ParamsValue', 2)
-  partitionToken = _messages.BytesField(3)
-  queryMode = _messages.EnumField('QueryModeValueValuesEnum', 4)
-  queryOptions = _messages.MessageField('QueryOptions', 5)
-  requestOptions = _messages.MessageField('RequestOptions', 6)
-  resumeToken = _messages.BytesField(7)
-  seqno = _messages.IntegerField(8)
-  sql = _messages.StringField(9)
-  transaction = _messages.MessageField('TransactionSelector', 10)
+  directedReadOptions = _messages.MessageField('DirectedReadOptions', 1)
+  paramTypes = _messages.MessageField('ParamTypesValue', 2)
+  params = _messages.MessageField('ParamsValue', 3)
+  partitionToken = _messages.BytesField(4)
+  queryMode = _messages.EnumField('QueryModeValueValuesEnum', 5)
+  queryOptions = _messages.MessageField('QueryOptions', 6)
+  requestOptions = _messages.MessageField('RequestOptions', 7)
+  resumeToken = _messages.BytesField(8)
+  seqno = _messages.IntegerField(9)
+  sql = _messages.StringField(10)
+  transaction = _messages.MessageField('TransactionSelector', 11)
 
 
 class Expr(_messages.Message):
@@ -1219,6 +1255,21 @@ class GetPolicyOptions(_messages.Message):
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class IncludeReplicas(_messages.Message):
+  r"""An IncludeReplicas contains a repeated set of ReplicaSelection which
+  indicates the order in which replicas should be considered.
+
+  Fields:
+    autoFailover: If true, Spanner will route requests to healthy replica
+      outside the list when all the replicas in the include_replicas list are
+      unavailable or unhealthy. Default value is `false`.
+    replicaSelections: The directed read replica selector.
+  """
+
+  autoFailover = _messages.BooleanField(1)
+  replicaSelections = _messages.MessageField('ReplicaSelection', 2, repeated=True)
 
 
 class IndexedHotKey(_messages.Message):
@@ -2971,6 +3022,7 @@ class ReadRequest(_messages.Message):
   Fields:
     columns: Required. The columns of table to be returned for each row
       matching this request.
+    directedReadOptions: Directed read options for this request.
     index: If non-empty, the name of an index on table. This index is used
       instead of the table primary key when interpreting key_set and sorting
       result rows. See key_set for further information.
@@ -3002,14 +3054,15 @@ class ReadRequest(_messages.Message):
   """
 
   columns = _messages.StringField(1, repeated=True)
-  index = _messages.StringField(2)
-  keySet = _messages.MessageField('KeySet', 3)
-  limit = _messages.IntegerField(4)
-  partitionToken = _messages.BytesField(5)
-  requestOptions = _messages.MessageField('RequestOptions', 6)
-  resumeToken = _messages.BytesField(7)
-  table = _messages.StringField(8)
-  transaction = _messages.MessageField('TransactionSelector', 9)
+  directedReadOptions = _messages.MessageField('DirectedReadOptions', 2)
+  index = _messages.StringField(3)
+  keySet = _messages.MessageField('KeySet', 4)
+  limit = _messages.IntegerField(5)
+  partitionToken = _messages.BytesField(6)
+  requestOptions = _messages.MessageField('RequestOptions', 7)
+  resumeToken = _messages.BytesField(8)
+  table = _messages.StringField(9)
+  transaction = _messages.MessageField('TransactionSelector', 10)
 
 
 class ReadWrite(_messages.Message):
@@ -3084,6 +3137,42 @@ class ReplicaInfo(_messages.Message):
   defaultLeaderLocation = _messages.BooleanField(1)
   location = _messages.StringField(2)
   type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class ReplicaSelection(_messages.Message):
+  r"""The directed read replica selector. Callers must provide one or more of
+  the following fields for replica selection: * `location` - The location must
+  be one of the regions within the multi-region configuration of your
+  database. * `type` - The type of the replica. Some examples of using
+  replica_selectors are: * `location:us-east1` --> The "us-east1" replica(s)
+  of any available type will be used to process the request. *
+  `type:READ_ONLY` --> The "READ_ONLY" type replica(s) in nearest . available
+  location will be used to process the request. * `location:us-east1
+  type:READ_ONLY` --> The "READ_ONLY" type replica(s) in location "us-east1"
+  will be used to process the request.
+
+  Enums:
+    TypeValueValuesEnum: The type of replica.
+
+  Fields:
+    location: The location or region of the serving requests, e.g. "us-east1".
+    type: The type of replica.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of replica.
+
+    Values:
+      TYPE_UNSPECIFIED: Not specified.
+      READ_WRITE: Read-write replicas support both reads and writes.
+      READ_ONLY: Read-only replicas only support reads (not writes).
+    """
+    TYPE_UNSPECIFIED = 0
+    READ_WRITE = 1
+    READ_ONLY = 2
+
+  location = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class RequestOptions(_messages.Message):

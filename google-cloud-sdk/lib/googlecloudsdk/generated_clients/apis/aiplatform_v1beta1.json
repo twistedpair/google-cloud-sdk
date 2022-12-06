@@ -391,11 +391,11 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the Dataset. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "description": "Required. The user-defined name of the Dataset. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
           "type": "string"
         },
         "description": {
-          "description": "Optional. The description of the Dataset.",
+          "description": "The description of the Dataset.",
           "type": "string"
         },
         "metadataSchemaUri": {
@@ -731,7 +731,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the AnnotationSpec. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "description": "Required. The user-defined name of the AnnotationSpec. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
           "type": "string"
         },
         "createTime": {
@@ -1616,7 +1616,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The display name of the Endpoint. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "description": "Required. The display name of the Endpoint. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
           "type": "string"
         },
         "description": {
@@ -2132,6 +2132,11 @@
             "UPDATING"
           ]
         },
+        "onlineStorageTtlDays": {
+          "description": "Optional. TTL in days for feature values that will be stored in online serving storage. The Feature Store online storage periodically removes obsolete feature values older than `online_storage_ttl_days` since the feature generation time. Note that `online_storage_ttl_days` should be less than or equal to `offline_storage_ttl_days` for each EntityType under a featurestore. If not set, default to 4000 days",
+          "type": "integer",
+          "format": "int32"
+        },
         "encryptionSpec": {
           "description": "Optional. Customer-managed encryption key spec for data storage. If set, both of the online and offline data storage will be secured by this key.",
           "$ref": "GoogleCloudAiplatformV1beta1EncryptionSpec"
@@ -2228,6 +2233,11 @@
         "monitoringConfig": {
           "description": "Optional. The default monitoring configuration for all Features with value type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 under this EntityType. If this is populated with [FeaturestoreMonitoringConfig.monitoring_interval] specified, snapshot analysis monitoring is enabled. Otherwise, snapshot analysis monitoring is disabled.",
           "$ref": "GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig"
+        },
+        "offlineStorageTtlDays": {
+          "description": "Optional. Config for data retention policy in offline storage. TTL in days for feature values that will be stored in offline storage. The Feature Store offline storage periodically removes obsolete feature values older than `offline_storage_ttl_days` since the feature generation time. If unset (or explicitly set to 0), default to 4000 days TTL.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -2950,7 +2960,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The display name of the Index. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "description": "Required. The display name of the Index. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
           "type": "string"
         },
         "description": {
@@ -3399,7 +3409,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The display name of the CustomJob. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "description": "Required. The display name of the CustomJob. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
           "type": "string"
         },
         "jobSpec": {
@@ -3755,7 +3765,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the DataLabelingJob. The name can be up to 128 characters long and can be consist of any UTF-8 characters. Display name of a DataLabelingJob.",
+          "description": "Required. The user-defined name of the DataLabelingJob. The name can be up to 128 characters long and can consist of any UTF-8 characters. Display name of a DataLabelingJob.",
           "type": "string"
         },
         "datasets": {
@@ -3995,7 +4005,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The display name of the HyperparameterTuningJob. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "description": "Required. The display name of the HyperparameterTuningJob. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
           "type": "string"
         },
         "studySpec": {
@@ -4739,7 +4749,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1BatchDedicatedResources"
         },
         "serviceAccount": {
-          "description": "The service account that the DeployedModel's container runs as. If not specified, a system generated one will be used, which has minimal permissions and the custom container, if used, may not have enough permission to access other GCP resources. Users deploying the Model must have the `iam.serviceAccounts.actAs` permission on this service account.",
+          "description": "The service account that the DeployedModel's container runs as. If not specified, a system generated one will be used, which has minimal permissions and the custom container, if used, may not have enough permission to access other Google Cloud resources. Users deploying the Model must have the `iam.serviceAccounts.actAs` permission on this service account.",
           "type": "string"
         },
         "manualBatchTuningParameters": {
@@ -4796,7 +4806,7 @@
           "$ref": "GoogleRpcStatus"
         },
         "partialFailures": {
-          "description": "Output only. Partial failures encountered. For example, single files that can't be read. This field never exceeds 20 entries. Status details fields contain standard GCP error details.",
+          "description": "Output only. Partial failures encountered. For example, single files that can't be read. This field never exceeds 20 entries. Status details fields contain standard Google Cloud error details.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -5469,7 +5479,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the ModelDeploymentMonitoringJob. The name can be up to 128 characters long and can be consist of any UTF-8 characters. Display name of a ModelDeploymentMonitoringJob.",
+          "description": "Required. The user-defined name of the ModelDeploymentMonitoringJob. The name can be up to 128 characters long and can consist of any UTF-8 characters. Display name of a ModelDeploymentMonitoringJob.",
           "type": "string"
         },
         "endpoint": {
@@ -5768,7 +5778,7 @@
           ]
         },
         "topFeatureCount": {
-          "description": "If set, all attribution scores between SearchModelDeploymentMonitoringStatsAnomaliesRequest.start_time and SearchModelDeploymentMonitoringStatsAnomaliesRequest.end_time are fetched, and page token doesn't take affect in this case. Only used to retrieve attribution score for the top Features which has the highest attribution score in the latest monitoring run.",
+          "description": "If set, all attribution scores between SearchModelDeploymentMonitoringStatsAnomaliesRequest.start_time and SearchModelDeploymentMonitoringStatsAnomaliesRequest.end_time are fetched, and page token doesn't take effect in this case. Only used to retrieve attribution score for the top Features which has the highest attribution score in the latest monitoring run.",
           "type": "integer",
           "format": "int32"
         }
@@ -6772,7 +6782,7 @@
           "format": "google-datetime"
         },
         "displayName": {
-          "description": "Required. The display name of the Model. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "description": "Required. The display name of the Model. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
           "type": "string"
         },
         "description": {
@@ -7661,7 +7671,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "The display name of the Pipeline. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
+          "description": "The display name of the Pipeline. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
           "type": "string"
         },
         "createTime": {
@@ -7753,7 +7763,7 @@
           "type": "string"
         },
         "network": {
-          "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Pipeline Job's workload should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. Private services access must already be configured for the network. Pipeline job will apply the network configuration to the GCP resources being launched, if applied, such as Vertex AI Training or Dataflow job. If left unspecified, the workload is not peered with any network.",
+          "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Pipeline Job's workload should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. Private services access must already be configured for the network. Pipeline job will apply the network configuration to the Google Cloud resources being launched, if applied, such as Vertex AI Training or Dataflow job. If left unspecified, the workload is not peered with any network.",
           "type": "string"
         },
         "templateUri": {
@@ -8445,7 +8455,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can be consist of any UTF-8 characters. This field should be unique on project-level.",
+          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can consist of any UTF-8 characters. This field should be unique on project-level.",
           "type": "string"
         },
         "specialistManagersCount": {
@@ -8498,7 +8508,7 @@
     },
     "GoogleCloudAiplatformV1beta1Tensorboard": {
       "id": "GoogleCloudAiplatformV1beta1Tensorboard",
-      "description": "Tensorboard is a physical database that stores users' training metrics. A default Tensorboard is provided in each region of a GCP project. If needed users can also create extra Tensorboards in their projects.",
+      "description": "Tensorboard is a physical database that stores users' training metrics. A default Tensorboard is provided in each region of a Google Cloud project. If needed users can also create extra Tensorboards in their projects.",
       "type": "object",
       "properties": {
         "name": {
@@ -9344,7 +9354,7 @@
       "type": "object",
       "properties": {
         "partialFailures": {
-          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard GCP error details.",
+          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard Google Cloud error details.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -10757,7 +10767,7 @@
           ]
         },
         "displayName": {
-          "description": "Required. The user-defined name of the Human in the Loop. The name can be up to 128 characters long and can be consist of any UTF-8 characters. This field should be unique on project-level.",
+          "description": "Required. The user-defined name of the Human in the Loop. The name can be up to 128 characters long and can consist of any UTF-8 characters. This field should be unique on project-level.",
           "type": "string"
         },
         "specialistPool": {
@@ -10864,7 +10874,7 @@
           "$ref": "GoogleCloudAiplatformInternalAutoAssignConfig"
         },
         "marketplaceEntitlement": {
-          "description": "GCP Marketplace entitlement information to be attached to this HITL.",
+          "description": "Google Cloud Marketplace entitlement information to be attached to this HITL.",
           "$ref": "GoogleCloudAiplatformInternalHumanInTheLoopMarketplaceEntitlement"
         },
         "labelingTimeLimit": {
@@ -10997,7 +11007,7 @@
           "type": "string"
         },
         "sourceProject": {
-          "description": "The requester's numeric resource name of GCP Projects, e.g. 'projects\/1234'.",
+          "description": "The requester's numeric resource name of Google Cloud projects, e.g. 'projects\/1234'.",
           "type": "string"
         }
       }
@@ -11099,11 +11109,11 @@
     },
     "GoogleCloudAiplatformInternalHumanInTheLoopMarketplaceEntitlement": {
       "id": "GoogleCloudAiplatformInternalHumanInTheLoopMarketplaceEntitlement",
-      "description": "Metadata describing a GCP Marketplace entitlement.",
+      "description": "Metadata describing a Google Cloud Marketplace entitlement.",
       "type": "object",
       "properties": {
         "cloudCommerceEntitlementId": {
-          "description": "The unique id from the GCP Marketplace entitlement.",
+          "description": "The unique id from the Google Cloud Marketplace entitlement.",
           "type": "string"
         },
         "providerName": {
@@ -11141,7 +11151,7 @@
     },
     "GoogleCloudAiplatformInternalHumanInTheLoopEntitlement": {
       "id": "GoogleCloudAiplatformInternalHumanInTheLoopEntitlement",
-      "description": "A HumanInTheLoopEntitlement represents a purchase of Human-in-the-Loop (HITL) product made by a customer on the GCP Marketplace. It allows to the purchased HITL product and to ensure the appropriate billing events occur.",
+      "description": "A HumanInTheLoopEntitlement represents a purchase of Human-in-the-Loop (HITL) product made by a customer on the Google Cloud Marketplace. It allows to the purchased HITL product and to ensure the appropriate billing events occur.",
       "type": "object",
       "properties": {
         "name": {
@@ -11193,19 +11203,19 @@
     },
     "GoogleCloudAiplatformInternalHumanInTheLoopEntitlementCloudCommerceEntitlement": {
       "id": "GoogleCloudAiplatformInternalHumanInTheLoopEntitlementCloudCommerceEntitlement",
-      "description": "Metadata for the corresponding entitlement in GCP Cloud Commerce.",
+      "description": "Metadata for the corresponding entitlement in Google Cloud Commerce.",
       "type": "object",
       "properties": {
         "entitlementId": {
-          "description": "The string valued identifier generated by GCP Cloud Commerce. This ID is consistent across consumer and partner side.",
+          "description": "The string valued identifier generated by Google Cloud Commerce. This ID is consistent across consumer and partner side.",
           "type": "string"
         },
         "providerId": {
-          "description": "The string valued identifier of the service provider that this entitlement was created against. Each service provider is assigned a unique provider value when they onboard with GCP platform.",
+          "description": "The string valued identifier of the service provider that this entitlement was created against. Each service provider is assigned a unique provider value when they onboard with Google Cloud.",
           "type": "string"
         },
         "account": {
-          "description": "The resource name of the GCP Cloud Commerce account that this entitlement is based on.",
+          "description": "The resource name of the Google Cloud Commerce account that this entitlement is based on.",
           "type": "string"
         },
         "product": {
@@ -11273,6 +11283,13 @@
           "description": "Number of Feature values that have been imported by the operation.",
           "type": "string",
           "format": "int64"
+        },
+        "sourceUris": {
+          "description": "The source URI from where Feature values are imported.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "invalidRowCount": {
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
@@ -11550,7 +11567,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can be consist of any UTF-8 characters. This field should be unique on project-level.",
+          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can consist of any UTF-8 characters. This field should be unique on project-level.",
           "type": "string"
         },
         "specialistManagersCount": {
@@ -11718,7 +11735,7 @@
       "type": "object",
       "properties": {
         "partialFailures": {
-          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard GCP error details.",
+          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard Google Cloud error details.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -14334,7 +14351,7 @@
     },
     "GoogleCloudAiplatformUiGcpResources": {
       "id": "GoogleCloudAiplatformUiGcpResources",
-      "description": "The schema of the GCP resource. It will be used to parse the output parameter \"GCP_RESOURCES\"",
+      "description": "The schema of the Google Cloud resource. It will be used to parse the output parameter \"GCP_RESOURCES\"",
       "type": "object",
       "properties": {
         "resources": {
@@ -14360,6 +14377,7 @@
             "",
             "",
             "",
+            "",
             ""
           ],
           "enum": [
@@ -14368,7 +14386,8 @@
             "DATAFLOWJOB",
             "BIGQUERYJOB",
             "BATCHPREDICTIONJOB",
-            "HYPERPARAMETERTUNINGJOB"
+            "HYPERPARAMETERTUNINGJOB",
+            "DATAPROCBATCH"
           ]
         },
         "resourceUri": {
@@ -14652,7 +14671,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can be consist of any UTF-8 characters. This field should be unique on project-level.",
+          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can consist of any UTF-8 characters. This field should be unique on project-level.",
           "type": "string"
         },
         "specialistManagersCount": {
@@ -15105,6 +15124,11 @@
         "model": {
           "description": "The name of the copied Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
           "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is copied.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -15364,7 +15388,7 @@
       "type": "object",
       "properties": {
         "groupColumns": {
-          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. \u2018region\u2019 for a hierarchy of stores or \u2018department\u2019 for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. (\u2018blue\u2019, \u2018large\u2019) for \u2018color\u2019 and \u2018size\u2019, up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
+          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. 'region' for a hierarchy of stores or 'department' for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. ('blue', 'large') for 'color' and 'size', up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
           "type": "array",
           "items": {
             "type": "string"
@@ -17682,7 +17706,7 @@
       "type": "object",
       "properties": {
         "partialFailures": {
-          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard GCP error details.",
+          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard Google Cloud error details.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -18767,7 +18791,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can be consist of any UTF-8 characters. This field should be unique on project-level.",
+          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can consist of any UTF-8 characters. This field should be unique on project-level.",
           "type": "string"
         },
         "specialistManagersCount": {
@@ -19681,21 +19705,14 @@
       "properties": {
       }
     },
-    "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadata": {
-      "id": "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadata",
-      "description": "Runtime operation information for MigrationService.BatchMigrateResources.",
+    "GoogleCloudAiplatformV1beta1BatchCreateFeaturesOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1BatchCreateFeaturesOperationMetadata",
+      "description": "Details of operations that perform batch create Features.",
       "type": "object",
       "properties": {
         "genericMetadata": {
-          "description": "The common part of the operation metadata.",
+          "description": "Operation metadata for Feature.",
           "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
-        },
-        "partialResults": {
-          "description": "Partial results that reflect the latest migration operation progress.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadataPartialResult"
-          }
         }
       }
     },
@@ -19705,7 +19722,7 @@
       "type": "object",
       "properties": {
         "partialFailures": {
-          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard GCP error details.",
+          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard Google Cloud error details.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -19723,6 +19740,38 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1BatchCreateFeaturesResponse": {
+      "id": "GoogleCloudAiplatformV1beta1BatchCreateFeaturesResponse",
+      "description": "Response message for FeaturestoreService.BatchCreateFeatures.",
+      "type": "object",
+      "properties": {
+        "features": {
+          "description": "The Features created.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1Feature"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadata",
+      "description": "Runtime operation information for MigrationService.BatchMigrateResources.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        },
+        "partialResults": {
+          "description": "Partial results that reflect the latest migration operation progress.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadataPartialResult"
+          }
         }
       }
     },
@@ -19800,6 +19849,36 @@
       "properties": {
       }
     },
+    "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateMetatdata": {
+      "id": "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateMetatdata",
+      "description": "This message will be placed in the metadata field of a google.longrunning.Operation associated with a CheckTrialEarlyStoppingState request.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for suggesting Trials.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        },
+        "study": {
+          "description": "The name of the Study that the Trial belongs to.",
+          "type": "string"
+        },
+        "trial": {
+          "description": "The Trial name.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateResponse": {
+      "id": "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateResponse",
+      "description": "Response message for VizierService.CheckTrialEarlyStoppingState.",
+      "type": "object",
+      "properties": {
+        "shouldStop": {
+          "description": "True if the Trial should stop.",
+          "type": "boolean"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1CreateDatasetOperationMetadata": {
       "id": "GoogleCloudAiplatformV1beta1CreateDatasetOperationMetadata",
       "description": "Runtime operation information for DatasetService.CreateDataset.",
@@ -19829,6 +19908,39 @@
       "properties": {
         "genericMetadata": {
           "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CreateEntityTypeOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1CreateEntityTypeOperationMetadata",
+      "description": "Details of operations that perform create EntityType.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for EntityType.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CreateFeatureOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1CreateFeatureOperationMetadata",
+      "description": "Details of operations that perform create Feature.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for Feature.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CreateFeaturestoreOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1CreateFeaturestoreOperationMetadata",
+      "description": "Details of operations that perform create Featurestore.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for Featurestore.",
           "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
         }
       }
@@ -19947,94 +20059,6 @@
       "properties": {
         "genericMetadata": {
           "description": "The operation generic information.",
-          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1CreateEntityTypeOperationMetadata": {
-      "id": "GoogleCloudAiplatformV1beta1CreateEntityTypeOperationMetadata",
-      "description": "Details of operations that perform create EntityType.",
-      "type": "object",
-      "properties": {
-        "genericMetadata": {
-          "description": "Operation metadata for EntityType.",
-          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1BatchCreateFeaturesOperationMetadata": {
-      "id": "GoogleCloudAiplatformV1beta1BatchCreateFeaturesOperationMetadata",
-      "description": "Details of operations that perform batch create Features.",
-      "type": "object",
-      "properties": {
-        "genericMetadata": {
-          "description": "Operation metadata for Feature.",
-          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1BatchCreateFeaturesResponse": {
-      "id": "GoogleCloudAiplatformV1beta1BatchCreateFeaturesResponse",
-      "description": "Response message for FeaturestoreService.BatchCreateFeatures.",
-      "type": "object",
-      "properties": {
-        "features": {
-          "description": "The Features created.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1beta1Feature"
-          }
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateMetatdata": {
-      "id": "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateMetatdata",
-      "description": "This message will be placed in the metadata field of a google.longrunning.Operation associated with a CheckTrialEarlyStoppingState request.",
-      "type": "object",
-      "properties": {
-        "genericMetadata": {
-          "description": "Operation metadata for suggesting Trials.",
-          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
-        },
-        "study": {
-          "description": "The name of the Study that the Trial belongs to.",
-          "type": "string"
-        },
-        "trial": {
-          "description": "The Trial name.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateResponse": {
-      "id": "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateResponse",
-      "description": "Response message for VizierService.CheckTrialEarlyStoppingState.",
-      "type": "object",
-      "properties": {
-        "shouldStop": {
-          "description": "True if the Trial should stop.",
-          "type": "boolean"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1CreateFeatureOperationMetadata": {
-      "id": "GoogleCloudAiplatformV1beta1CreateFeatureOperationMetadata",
-      "description": "Details of operations that perform create Feature.",
-      "type": "object",
-      "properties": {
-        "genericMetadata": {
-          "description": "Operation metadata for Feature.",
-          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1CreateFeaturestoreOperationMetadata": {
-      "id": "GoogleCloudAiplatformV1beta1CreateFeaturestoreOperationMetadata",
-      "description": "Details of operations that perform create Featurestore.",
-      "type": "object",
-      "properties": {
-        "genericMetadata": {
-          "description": "Operation metadata for Featurestore.",
           "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
         }
       }
@@ -20265,6 +20289,13 @@
           "description": "Number of Feature values that have been imported by the operation.",
           "type": "string",
           "format": "int64"
+        },
+        "sourceUris": {
+          "description": "The source URI from where Feature values are imported.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "invalidRowCount": {
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
@@ -20668,6 +20699,11 @@
       "properties": {
         "model": {
           "description": "The name of the copied Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is copied.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -21177,6 +21213,56 @@
             "type": "number",
             "format": "float"
           }
+        },
+        "tftFeatureImportance": {
+          "description": "Only use these if TFt is enabled.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTftFeatureImportance"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTftFeatureImportance": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaPredictPredictionTftFeatureImportance",
+      "type": "object",
+      "properties": {
+        "contextWeights": {
+          "description": "TFT feature importance values. Each pair for {context\/horizon\/attribute} should have the same shape since the weight corresponds to the column names.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "contextColumns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "horizonWeights": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "horizonColumns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "attributeWeights": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "attributeColumns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -21555,7 +21641,7 @@
       "type": "object",
       "properties": {
         "groupColumns": {
-          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. \u2018region\u2019 for a hierarchy of stores or \u2018department\u2019 for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. (\u2018blue\u2019, \u2018large\u2019) for \u2018color\u2019 and \u2018size\u2019, up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
+          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. 'region' for a hierarchy of stores or 'department' for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. ('blue', 'large') for 'color' and 'size', up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
           "type": "array",
           "items": {
             "type": "string"
@@ -23215,7 +23301,7 @@
       "type": "object",
       "properties": {
         "partialFailures": {
-          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard GCP error details.",
+          "description": "Output only. Partial failures encountered. E.g. single files that couldn't be read. This field should never exceed 20 entries. Status details field will contain standard Google Cloud error details.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -24842,6 +24928,13 @@
           "type": "string",
           "format": "int64"
         },
+        "sourceUris": {
+          "description": "The source URI from where Feature values are imported.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "invalidRowCount": {
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
           "type": "string",
@@ -25007,7 +25100,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can be consist of any UTF-8 characters. This field should be unique on project-level.",
+          "description": "Required. The user-defined name of the SpecialistPool. The name can be up to 128 characters long and can consist of any UTF-8 characters. This field should be unique on project-level.",
           "type": "string"
         },
         "specialistManagersCount": {
@@ -25396,6 +25489,11 @@
       "properties": {
         "model": {
           "description": "The name of the copied Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+          "type": "string"
+        },
+        "modelVersionId": {
+          "description": "Output only. The version ID of the model that is copied.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -25905,6 +26003,56 @@
             "type": "number",
             "format": "float"
           }
+        },
+        "tftFeatureImportance": {
+          "description": "Only use these if TFt is enabled.",
+          "$ref": "GoogleCloudAiplatformV1SchemaPredictPredictionTftFeatureImportance"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaPredictPredictionTftFeatureImportance": {
+      "id": "GoogleCloudAiplatformV1SchemaPredictPredictionTftFeatureImportance",
+      "type": "object",
+      "properties": {
+        "contextWeights": {
+          "description": "TFT feature importance values. Each pair for {context\/horizon\/attribute} should have the same shape since the weight corresponds to the column names.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "contextColumns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "horizonWeights": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "horizonColumns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "attributeWeights": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "attributeColumns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -26283,7 +26431,7 @@
       "type": "object",
       "properties": {
         "groupColumns": {
-          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. \u2018region\u2019 for a hierarchy of stores or \u2018department\u2019 for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. (\u2018blue\u2019, \u2018large\u2019) for \u2018color\u2019 and \u2018size\u2019, up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
+          "description": "A list of time series attribute column names that define the time series hierarchy. Only one level of hierarchy is supported, ex. 'region' for a hierarchy of stores or 'department' for a hierarchy of products. If multiple columns are specified, time series will be grouped by their combined values, ex. ('blue', 'large') for 'color' and 'size', up to 5 columns are accepted. If no group columns are specified, all time series are considered to be part of the same group.",
           "type": "array",
           "items": {
             "type": "string"
@@ -28821,7 +28969,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Field mask is used to specify the fields to be overwritten in the Featurestore resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `labels` * `online_serving_config.fixed_node_count` * `online_serving_config.scaling`",
+                      "description": "Field mask is used to specify the fields to be overwritten in the Featurestore resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `labels` * `online_serving_config.fixed_node_count` * `online_serving_config.scaling` * `online_storage_ttl_days`",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -29243,7 +29391,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Field mask is used to specify the fields to be overwritten in the EntityType resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `description` * `labels` * `monitoring_config.snapshot_analysis.disabled` * `monitoring_config.snapshot_analysis.monitoring_interval_days` * `monitoring_config.snapshot_analysis.staleness_days` * `monitoring_config.import_features_analysis.state` * `monitoring_config.import_features_analysis.anomaly_detection_baseline` * `monitoring_config.numerical_threshold_config.value` * `monitoring_config.categorical_threshold_config.value`",
+                          "description": "Field mask is used to specify the fields to be overwritten in the EntityType resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `description` * `labels` * `monitoring_config.snapshot_analysis.disabled` * `monitoring_config.snapshot_analysis.monitoring_interval_days` * `monitoring_config.snapshot_analysis.staleness_days` * `monitoring_config.import_features_analysis.state` * `monitoring_config.import_features_analysis.anomaly_detection_baseline` * `monitoring_config.numerical_threshold_config.value` * `monitoring_config.categorical_threshold_config.value` * `offline_storage_ttl_days`",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -30327,6 +30475,161 @@
                         "name": {
                           "description": "The name of the operation resource to wait on.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/edgeDevices\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "timeout": {
+                          "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-duration"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+                    }
+                  }
+                }
+              }
+            },
+            "persistentResources": {
+              "resources": {
+                "operations": {
+                  "methods": {
+                    "list": {
+                      "id": "aiplatform.projects.locations.persistentResources.operations.list",
+                      "path": "v1beta1/{+name}/operations",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/persistentResources/{persistentResourcesId}/operations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation's parent resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/persistentResources\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The standard list filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningListOperationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                    },
+                    "get": {
+                      "id": "aiplatform.projects.locations.persistentResources.operations.get",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/persistentResources/{persistentResourcesId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/persistentResources\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    },
+                    "delete": {
+                      "id": "aiplatform.projects.locations.persistentResources.operations.delete",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/persistentResources/{persistentResourcesId}/operations/{operationsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be deleted.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/persistentResources\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                    },
+                    "cancel": {
+                      "id": "aiplatform.projects.locations.persistentResources.operations.cancel",
+                      "path": "v1beta1/{+name}:cancel",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/persistentResources/{persistentResourcesId}/operations/{operationsId}:cancel",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be cancelled.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/persistentResources\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                    },
+                    "wait": {
+                      "id": "aiplatform.projects.locations.persistentResources.operations.wait",
+                      "path": "v1beta1/{+name}:wait",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/persistentResources/{persistentResourcesId}/operations/{operationsId}:wait",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to wait on.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/persistentResources\/[^\/]+\/operations\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"

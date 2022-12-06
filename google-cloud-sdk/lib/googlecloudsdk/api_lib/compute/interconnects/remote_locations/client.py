@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.compute import path_simplifier
+
 
 class InterconnectRemoteLocation(object):
   """Abstracts Interconnect Remote Location resource."""
@@ -34,6 +36,19 @@ class InterconnectRemoteLocation(object):
   def _messages(self):
     return self._compute_client.messages
 
+  def _MapInterconnectLocationUrlToName(self, resource):
+
+    def PermittedConnection(permitted_connection):
+      return {
+          'interconnectLocation':
+              path_simplifier.Name(permitted_connection.interconnectLocation)
+      }
+
+    return [
+        PermittedConnection(permitted_connection)
+        for permitted_connection in resource.permittedConnections
+    ]
+
   def _MakeDescribeRequestTuple(self):
     return (self._client.interconnectRemoteLocations, 'Get',
             self._messages.ComputeInterconnectRemoteLocationsGetRequest(
@@ -44,5 +59,9 @@ class InterconnectRemoteLocation(object):
     requests = [self._MakeDescribeRequestTuple()]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)
-      return resources[0]
+      resource = resources[0]
+      if resource.permittedConnections:
+        resource.permittedConnections = self._MapInterconnectLocationUrlToName(
+            resource)
+      return resource
     return requests

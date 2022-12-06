@@ -2536,6 +2536,8 @@ class MaterializedViewDefinition(_messages.Message):
   r"""A MaterializedViewDefinition object.
 
   Fields:
+    allow_non_incremental_definition: [Optional] Allow non incremental
+      materialized view definition. The default value is "false".
     enableRefresh: [Optional] [TrustedTester] Enable automatic refresh of the
       materialized view when the base table is updated. The default value is
       "true".
@@ -2549,11 +2551,12 @@ class MaterializedViewDefinition(_messages.Message):
       "1800000" (30 minutes).
   """
 
-  enableRefresh = _messages.BooleanField(1)
-  lastRefreshTime = _messages.IntegerField(2)
-  maxStaleness = _messages.BytesField(3)
-  query = _messages.StringField(4)
-  refreshIntervalMs = _messages.IntegerField(5)
+  allow_non_incremental_definition = _messages.BooleanField(1)
+  enableRefresh = _messages.BooleanField(2)
+  lastRefreshTime = _messages.IntegerField(3)
+  maxStaleness = _messages.BytesField(4)
+  query = _messages.StringField(5)
+  refreshIntervalMs = _messages.IntegerField(6)
 
 
 class MlStatistics(_messages.Message):

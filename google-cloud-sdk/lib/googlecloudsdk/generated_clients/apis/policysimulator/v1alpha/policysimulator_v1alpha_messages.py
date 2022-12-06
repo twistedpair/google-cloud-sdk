@@ -1590,6 +1590,32 @@ class GoogleTypeExpr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class PolicysimulatorFoldersLocationsReplaysOperationsGetRequest(_messages.Message):
+  r"""A PolicysimulatorFoldersLocationsReplaysOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class PolicysimulatorFoldersLocationsReplaysOperationsListRequest(_messages.Message):
+  r"""A PolicysimulatorFoldersLocationsReplaysOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class PolicysimulatorOperationsGetRequest(_messages.Message):
   r"""A PolicysimulatorOperationsGetRequest object.
 
@@ -1611,7 +1637,7 @@ class PolicysimulatorOperationsListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  name = _messages.StringField(2)
+  name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
 
@@ -1688,6 +1714,60 @@ class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsRequest(_m
 
   googleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreview = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreview', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class PolicysimulatorOrganizationsLocationsReplaysOperationsGetRequest(_messages.Message):
+  r"""A PolicysimulatorOrganizationsLocationsReplaysOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class PolicysimulatorOrganizationsLocationsReplaysOperationsListRequest(_messages.Message):
+  r"""A PolicysimulatorOrganizationsLocationsReplaysOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class PolicysimulatorProjectsLocationsReplaysOperationsGetRequest(_messages.Message):
+  r"""A PolicysimulatorProjectsLocationsReplaysOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class PolicysimulatorProjectsLocationsReplaysOperationsListRequest(_messages.Message):
+  r"""A PolicysimulatorProjectsLocationsReplaysOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

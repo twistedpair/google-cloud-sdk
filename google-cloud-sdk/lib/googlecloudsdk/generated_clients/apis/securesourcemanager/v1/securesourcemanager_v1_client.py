@@ -616,7 +616,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Test IAM permissions on a repository.
+      r"""Test IAM permissions on a repository. IAM permission checks are not required on this method.
 
       Args:
         request: (SecuresourcemanagerProjectsLocationsRepositoriesTestIamPermissionsRequest) input message

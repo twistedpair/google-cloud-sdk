@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20221104",
+ "revision": "20221130",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -2137,6 +2137,10 @@
    "id": "MaterializedViewDefinition",
    "type": "object",
    "properties": {
+    "allow_non_incremental_definition": {
+     "type": "boolean",
+     "description": "[Optional] Allow non incremental materialized view definition. The default value is \"false\"."
+    },
     "enableRefresh": {
      "type": "boolean",
      "description": "[Optional] [TrustedTester] Enable automatic refresh of the materialized view when the base table is updated. The default value is \"true\"."

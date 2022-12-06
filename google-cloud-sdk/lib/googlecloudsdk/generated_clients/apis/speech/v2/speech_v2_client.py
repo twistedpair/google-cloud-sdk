@@ -39,12 +39,77 @@ class SpeechV2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_config = self.ProjectsLocationsConfigService(self)
     self.projects_locations_customClasses = self.ProjectsLocationsCustomClassesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_phraseSets = self.ProjectsLocationsPhraseSetsService(self)
     self.projects_locations_recognizers = self.ProjectsLocationsRecognizersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsConfigService(base_api.BaseApiService):
+    """Service class for the projects_locations_config resource."""
+
+    _NAME = 'projects_locations_config'
+
+    def __init__(self, client):
+      super(SpeechV2.ProjectsLocationsConfigService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns the requested Config.
+
+      Args:
+        request: (SpeechProjectsLocationsConfigGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Config) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/config',
+        http_method='GET',
+        method_id='speech.projects.locations.config.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='SpeechProjectsLocationsConfigGetRequest',
+        response_type_name='Config',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Updates the Config.
+
+      Args:
+        request: (SpeechProjectsLocationsConfigUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Config) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/config',
+        http_method='PATCH',
+        method_id='speech.projects.locations.config.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='config',
+        request_type_name='SpeechProjectsLocationsConfigUpdateRequest',
+        response_type_name='Config',
+        supports_download=False,
+    )
 
   class ProjectsLocationsCustomClassesService(base_api.BaseApiService):
     """Service class for the projects_locations_customClasses resource."""
@@ -689,60 +754,6 @@ class SpeechV2(base_api.BaseApiClient):
       super(SpeechV2.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def GetConfig(self, request, global_params=None):
-      r"""Returns the requested Config.
-
-      Args:
-        request: (SpeechProjectsLocationsGetConfigRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Config) The response message.
-      """
-      config = self.GetMethodConfig('GetConfig')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetConfig.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/config',
-        http_method='GET',
-        method_id='speech.projects.locations.getConfig',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v2/{+name}',
-        request_field='',
-        request_type_name='SpeechProjectsLocationsGetConfigRequest',
-        response_type_name='Config',
-        supports_download=False,
-    )
-
-    def UpdateConfig(self, request, global_params=None):
-      r"""Updates the Config.
-
-      Args:
-        request: (SpeechProjectsLocationsUpdateConfigRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Config) The response message.
-      """
-      config = self.GetMethodConfig('UpdateConfig')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    UpdateConfig.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/config',
-        http_method='PATCH',
-        method_id='speech.projects.locations.updateConfig',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask'],
-        relative_path='v2/{+name}',
-        request_field='config',
-        request_type_name='SpeechProjectsLocationsUpdateConfigRequest',
-        response_type_name='Config',
-        supports_download=False,
-    )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""

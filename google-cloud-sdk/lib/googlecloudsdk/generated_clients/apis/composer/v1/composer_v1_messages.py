@@ -168,6 +168,21 @@ class ComposerProjectsLocationsEnvironmentsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class ComposerProjectsLocationsEnvironmentsLoadSnapshotRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsLoadSnapshotRequest object.
+
+  Fields:
+    environment: The resource name of the target environment in the form:
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
+    loadSnapshotRequest: A LoadSnapshotRequest resource to be passed as the
+      request body.
+  """
+
+  environment = _messages.StringField(1, required=True)
+  loadSnapshotRequest = _messages.MessageField('LoadSnapshotRequest', 2)
+
+
 class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsPatchRequest object.
 
@@ -259,6 +274,21 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
   environment = _messages.MessageField('Environment', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class ComposerProjectsLocationsEnvironmentsSaveSnapshotRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsSaveSnapshotRequest object.
+
+  Fields:
+    environment: The resource name of the source environment in the form:
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
+    saveSnapshotRequest: A SaveSnapshotRequest resource to be passed as the
+      request body.
+  """
+
+  environment = _messages.StringField(1, required=True)
+  saveSnapshotRequest = _messages.MessageField('SaveSnapshotRequest', 2)
 
 
 class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
@@ -520,6 +550,9 @@ class EnvironmentConfig(_messages.Message):
       Composer environments in versions composer-1.*.*-airflow-*.*.*.
     privateEnvironmentConfig: The configuration used for the Private IP Cloud
       Composer environment.
+    recoveryConfig: Optional. The Recovery settings configuration of an
+      environment. This field is supported for Cloud Composer environments in
+      versions composer-2.*.*-airflow-*.*.* and newer.
     softwareConfig: The configuration settings for software inside the
       environment.
     webServerConfig: Optional. The configuration settings for the Airflow web
@@ -562,10 +595,11 @@ class EnvironmentConfig(_messages.Message):
   nodeConfig = _messages.MessageField('NodeConfig', 9)
   nodeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
   privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 11)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 12)
-  webServerConfig = _messages.MessageField('WebServerConfig', 13)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 14)
-  workloadsConfig = _messages.MessageField('WorkloadsConfig', 15)
+  recoveryConfig = _messages.MessageField('RecoveryConfig', 12)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 13)
+  webServerConfig = _messages.MessageField('WebServerConfig', 14)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 15)
+  workloadsConfig = _messages.MessageField('WorkloadsConfig', 16)
 
 
 class IPAllocationPolicy(_messages.Message):
@@ -677,6 +711,29 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class LoadSnapshotRequest(_messages.Message):
+  r"""Request to load a snapshot into a Cloud Composer environment.
+
+  Fields:
+    skipAirflowOverridesSetting: Whether or not to skip setting Airflow
+      overrides when loading the environment's state.
+    skipEnvironmentVariablesSetting: Whether or not to skip setting
+      environment variables when loading the environment's state.
+    skipGcsDataCopying: Whether or not to skip copying Cloud Storage data when
+      loading the environment's state.
+    skipPypiPackagesInstallation: Whether or not to skip installing Pypi
+      packages when loading the environment's state.
+    snapshotPath: A Cloud Storage path to a snapshot to load, e.g.: "gs://my-
+      bucket/snapshots/project_location_environment_timestamp".
+  """
+
+  skipAirflowOverridesSetting = _messages.BooleanField(1)
+  skipEnvironmentVariablesSetting = _messages.BooleanField(2)
+  skipGcsDataCopying = _messages.BooleanField(3)
+  skipPypiPackagesInstallation = _messages.BooleanField(4)
+  snapshotPath = _messages.StringField(5)
 
 
 class LoadSnapshotResponse(_messages.Message):
@@ -1103,6 +1160,28 @@ class PrivateEnvironmentConfig(_messages.Message):
   webServerIpv4ReservedRange = _messages.StringField(10)
 
 
+class RecoveryConfig(_messages.Message):
+  r"""The Recovery settings of an environment.
+
+  Fields:
+    scheduledSnapshotsConfig: Optional. The configuration for scheduled
+      snapshot creation mechanism.
+  """
+
+  scheduledSnapshotsConfig = _messages.MessageField('ScheduledSnapshotsConfig', 1)
+
+
+class SaveSnapshotRequest(_messages.Message):
+  r"""Request to create a snapshot of a Cloud Composer environment.
+
+  Fields:
+    snapshotLocation: Location in a Cloud Storage where the snapshot is going
+      to be stored, e.g.: "gs://my-bucket/snapshots".
+  """
+
+  snapshotLocation = _messages.StringField(1)
+
+
 class SaveSnapshotResponse(_messages.Message):
   r"""Response to SaveSnapshotRequest.
 
@@ -1114,6 +1193,26 @@ class SaveSnapshotResponse(_messages.Message):
   """
 
   snapshotPath = _messages.StringField(1)
+
+
+class ScheduledSnapshotsConfig(_messages.Message):
+  r"""The configuration for scheduled snapshot creation mechanism.
+
+  Fields:
+    enabled: Optional. Whether scheduled snapshots creation is enabled.
+    snapshotCreationSchedule: Optional. The cron expression representing the
+      time when snapshots creation mechanism runs. This field is subject to
+      additional validation around frequency of execution.
+    snapshotLocation: Optional. The Cloud Storage location for storing
+      automatically created snapshots.
+    timeZone: Optional. Time zone that sets the context to interpret
+      snapshot_creation_schedule.
+  """
+
+  enabled = _messages.BooleanField(1)
+  snapshotCreationSchedule = _messages.StringField(2)
+  snapshotLocation = _messages.StringField(3)
+  timeZone = _messages.StringField(4)
 
 
 class SchedulerResource(_messages.Message):

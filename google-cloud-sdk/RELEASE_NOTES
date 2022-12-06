@@ -5,6 +5,226 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 411.0.0 (2022-12-06)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Added rhel-9 and rhel-9-byol options to `--os` flag for:
+  * `gcloud compute images import` in GA,
+  * `gcloud compute instances import` in GA
+  * `gcloud compute machine-images import` in GA
+
+
+### Google Cloud CLI
+
+* Added `gcloud topic` command group to alpha and beta.
+
+### App Engine
+
+* Add `--service-account` flag of `gcloud app create` to GA, which allows to create an app with a user-managed service account.
+* Add `--service-account` flag of `gcloud app update` to GA, which allows to update the app with a user-managed service account.
+
+### App Engine Flexible Environment
+
+* Add `--service-account` flag of `gcloud app create` to GA, which allows to create an app with a user-managed service account.
+* Add `--service-account` flag of `gcloud app update` to GA, which allows to update the app with a user-managed service account.
+
+### BigQuery
+
+* Expose enable_resumable_uploads flag in public bq.
+* Formatting fix for bigquery_client.py.
+* Changed "locking" Owned Test Accounts to "getting" to avoid overloading AccountProviderService.
+* Extended api logging to include URIs of requests.
+* Extends encodings supported during file upload.
+* Messages and fails early when the user tries to upload with an invalid schema.
+* Adds support for GOOGLE_CLOUD_QUOTA_PROJECT environment variable.
+* Adds configuration for external accounts using token_uri.
+* Dataset name validation and feedback.
+
+### Cloud Bigtable
+
+*    Promoted `gcloud bigtable instances tables create` to beta and GA.
+*    Promoted `gcloud bigtable instances tables delete` to beta and GA.
+*    Promoted `gcloud bigtable instances tables update` to beta and GA.
+*    Added `include-stats` option to `cbt lookup` and `cbt read` commands.
+*    Added `cbt notices` command, which displays licenses covering all direct
+     and indirect dependencies.
+
+### Cloud Build
+
+* Bugfix to enforce limits to be applied after filters.
+* Added `--enterprise-config` flag to `builds triggers create github` to support creating GitHub Enterprise trigger.
+
+### Cloud Composer
+
+*   Added `--enable-scheduled-snapshot-creation` to `gcloud beta composer
+    environments create/update` to enable snapshots of the environment creation
+    according to a schedule. Can be specified for Composer 2.0.32 or greater.
+*   Added `--snapshot-creation-schedule` to `gcloud beta composer environments
+    create/update` to specify cron expression when snapshots of the environment
+    should be created.
+*   Added `--snapshot-location` to `gcloud beta composer environments
+    create/update` to specify the Cloud Storage location for storing
+    automatically created snapshots.
+*   Added `--snapshot-schedule-timezone` to `gcloud beta composer environments
+    create/update` to specify Timezone that sets the context to interpret
+    snapshot_creation_schedule.
+*   Added `--disable-scheduled-snapshot-creation` to `gcloud beta composer
+    environments update` to disable the automatic snapshots creation.
+
+### Cloud Firestore
+
+* Add apiScope output for Firestore index. ApiScope can be viewed in `gcloud firestore indexes composite list` and `gcloud firestore indexes composite describe`.
+* Added databaseId support for Firestore index.
+
+### Cloud IDS
+
+* Added `--threat_exceptions` flag to exclude certain threat types from being
+ reported.
+
+### Cloud Key Management Service
+
+*   Modified `gcloud kms import-jobs create` to accept new SHA256 import methods
+    `rsa-oaep-3072-sha256`, `rsa-oaep-3072-sha256-aes-256`,
+    `rsa-oaep-4096-sha256`, and `rsa-oaep-4096-sha256-aes-256`.
+
+### Cloud Pub/Sub
+
+*   Promoted `--enable-exactly-once-delivery` flag of `gcloud pubsub subscriptions create` to GA.
+*   Promoted `--enable-exactly-once-delivery` flag of `gcloud pubsub subscriptions update` to GA.
+
+### Cloud Run
+
+* Promoted `--execution-environment` of `gcloud run` from beta to GA.
+* Fixed issue where `gcloud beta run jobs execute` with `--wait` flag, and
+  other jobs commands to wait for an execution to complete, failed to wait more
+  than 30 minutes.
+* Fixed issue where `gcloud beta run integrations delete` failed when the
+  associated Cloud Run service is deleted.
+
+### Cloud SQL
+
+* Promoted `--timeout` flag for `gcloud sql instances create` to GA.
+* Added `--restore-database-name` flag to `gcloud sql instance clone --point-in-time` to support single database PITR restore for SQL Server.
+
+### Cloud Services
+
+*   Updated `gcloud services list` to retry 429 errors.
+*   Set the default page size for `gcloud services list` to 200.
+*   Promoted `gcloud services api-keys lookup` to beta.
+
+### Cloud Spanner
+
+*   Added `--skip-init` flag to `gcloud spanner samples run`.
+
+### Cloud Storage
+
+* Promoted `gcloud storage buckets update` retention flags to GA.
+  * `--default-event-based-hold`
+  * `--retention-period`
+  * `--clear-retention-period`
+  * `--lock-retention-period`
+* Promoted `gcloud storage buckets update --uniform-bucket-level-access` to GA.
+* Rebuilt `gcloud-crc32c` 1.0.0 on latest version of golang.
+* Updated gsutil component to 5.17.
+
+### Compute Engine
+
+* Added `--merge-source-commitment` to `gcloud compute commitments create` for beta and GA.
+* Fixed issue where `gcloud compute instance-groups unmanaged list-instances`
+  would fail to fall back to the `compute/zone` property when `--zone` was
+  missing.
+* Added customRequestHeaders and customResponseHeaders to modifiable fields list in `gcloud compute backend-services edit`.
+
+### Dataproc Metastore
+
+* Added support for querying and mutating Dataproc Metastore metadata. The following commands have been added to the alpha and beta release tracks:
+  * `metastore services queryMetadata`
+  * `metastore services alterLocation`
+  * `metastore services moveTableToDatabase`
+
+### Distributed Cloud Edge
+
+* Added warning to long running operation metadata of `gcloud edge-cloud container cluster create/update`
+when the cluster has a maintenance window configuration that overlaps with other
+clusters' in the same project.
+
+### Firebase Test Lab
+
+*   Added `--type=robo` flag to `gcloud firebase test ios run` to support running iOS Robo tests.
+
+### GKE Hub
+
+* Fixed bug in `gcloud container fleet` and `gcloud container hub` command groups where a membership with ambiguous location was not given default value `global`.
+
+### Kubernetes Engine
+
+*   Promoted `--cluster-dns-scope=cluster` flag of
+    `gcloud container clusters create` and `gcloud container clusters update` to
+    GA.
+*   Promoted `--binauthz-evaluation-mode=MONITORING`,
+    `binauthz-evaluation-mode=MONITORING_AND_PROJECT_SINGLETON_POLICY_ENFORCE`,
+    and `--binauthz-policy` flags of `gcloud container clusters create`, `gcloud
+    container clusters create-auto`, and `gcloud container clusters update` to
+    beta.
+*   Corrected outdated description help text of `gcloud container node-pools
+    delete`.
+*   Promoted `--placement-type` flag for `gcloud container clusters create`
+    command to GA.
+*   Promoted `--placement-type` flag for `gcloud container node-pools create`
+    command to GA.
+*   Added `--async` flag to `gcloud container node-pools create/update` to allow
+    the in-progress operation to be returned, instead of the node pool.
+*   Additionally, default formatting for `gcloud container node-pools
+    create/update/delete --async` has been added to provide a more
+    human-readable format of the operation; potentially impacting parsing of
+    output. It is recommended to use `--format` when parsing `gcloud` CLI
+    output.
+* Updates default kubectl from 1.22.14 to 1.23.14.
+* Additional kubectl versions:
+  * kubectl.1.20 (1.20.15)
+  * kubectl.1.21 (1.21.14)
+  * kubectl.1.22 (1.22.15)
+  * kubectl.1.23 (1.23.14)
+  * kubectl.1.24 (1.24.8)
+  * kubectl.1.25 (1.25.4)
+
+*   Added `--windows-os-version` flag to `gcloud container node-pools
+    create/update` to allow create Windows node pools using Windows
+    Server LTSC 2022 Containerd node image.
+
+### Media CDN
+
+* Added `gcloud edge-cache` command group to enable configuration of Media CDN.
+
+### Network Connectivity
+
+* Promoted `gcloud network-connectivity internal-ranges` command group to GA.
+
+### Network Security
+
+* Promoting networksecurity firewall API to v1beta1.
+* Promoted commands under `gcloud network-security org-address-groups` and
+  `gcloud network-security address-groups` to beta.
+
+### Recommender
+
+*   Added billing account scope support for `gcloud recommender recommender-config describe`.
+*   Added billing account scope support for `gcloud recommender recommender-config update`.
+*   Added billing account scope support for `gcloud recommender insight-type-config describe`.
+*   Added billing account scope support for `gcloud recommender insight-type-config update`.
+
+### Terraform
+
+*   Added support for environment variables `GOOGLE_PROJECT`,
+    `GOOGLE_CLOUD_PROJECT`, `GCLOUD_PROJECT` in `gcloud beta terraform vet`.
+*   Fixed an issue where `gcloud beta terraform vet` would fail while trying to
+    format and output pre-formatted error strings.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 410.0.0 (2022-11-15)
 
 ### Google Cloud CLI
@@ -125,7 +345,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Breaking Changes
 
 *   **(Compute Engine)** Modified stockout errors to show entire error object to user in yaml format instead of just error message.
-*   **(Compute Engine)** 
 *   **(Compute Engine)** Modified quota exceeded errors to show additional information to user instead of just error message.
 
 

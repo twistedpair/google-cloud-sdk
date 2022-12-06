@@ -39,11 +39,223 @@ class TranslateV3(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_datasets_examples = self.ProjectsLocationsDatasetsExamplesService(self)
+    self.projects_locations_datasets = self.ProjectsLocationsDatasetsService(self)
     self.projects_locations_glossaries_glossaryEntries = self.ProjectsLocationsGlossariesGlossaryEntriesService(self)
     self.projects_locations_glossaries = self.ProjectsLocationsGlossariesService(self)
+    self.projects_locations_models = self.ProjectsLocationsModelsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsDatasetsExamplesService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets_examples resource."""
+
+    _NAME = 'projects_locations_datasets_examples'
+
+    def __init__(self, client):
+      super(TranslateV3.ProjectsLocationsDatasetsExamplesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists sentence pairs in the dataset.
+
+      Args:
+        request: (TranslateProjectsLocationsDatasetsExamplesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListExamplesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/examples',
+        http_method='GET',
+        method_id='translate.projects.locations.datasets.examples.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/examples',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsDatasetsExamplesListRequest',
+        response_type_name='ListExamplesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDatasetsService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets resource."""
+
+    _NAME = 'projects_locations_datasets'
+
+    def __init__(self, client):
+      super(TranslateV3.ProjectsLocationsDatasetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Dataset.
+
+      Args:
+        request: (TranslateProjectsLocationsDatasetsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/datasets',
+        http_method='POST',
+        method_id='translate.projects.locations.datasets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v3/{+parent}/datasets',
+        request_field='dataset',
+        request_type_name='TranslateProjectsLocationsDatasetsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a dataset and all of its contents.
+
+      Args:
+        request: (TranslateProjectsLocationsDatasetsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}',
+        http_method='DELETE',
+        method_id='translate.projects.locations.datasets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsDatasetsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def ExportData(self, request, global_params=None):
+      r"""Exports dataset's data to the provided output location.
+
+      Args:
+        request: (TranslateProjectsLocationsDatasetsExportDataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ExportData')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportData.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:exportData',
+        http_method='POST',
+        method_id='translate.projects.locations.datasets.exportData',
+        ordered_params=['dataset'],
+        path_params=['dataset'],
+        query_params=[],
+        relative_path='v3/{+dataset}:exportData',
+        request_field='exportDataRequest',
+        request_type_name='TranslateProjectsLocationsDatasetsExportDataRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a Dataset.
+
+      Args:
+        request: (TranslateProjectsLocationsDatasetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Dataset) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}',
+        http_method='GET',
+        method_id='translate.projects.locations.datasets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsDatasetsGetRequest',
+        response_type_name='Dataset',
+        supports_download=False,
+    )
+
+    def ImportData(self, request, global_params=None):
+      r"""Import sentence pairs into translation Dataset.
+
+      Args:
+        request: (TranslateProjectsLocationsDatasetsImportDataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ImportData')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ImportData.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:importData',
+        http_method='POST',
+        method_id='translate.projects.locations.datasets.importData',
+        ordered_params=['dataset'],
+        path_params=['dataset'],
+        query_params=[],
+        relative_path='v3/{+dataset}:importData',
+        request_field='importDataRequest',
+        request_type_name='TranslateProjectsLocationsDatasetsImportDataRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists datasets.
+
+      Args:
+        request: (TranslateProjectsLocationsDatasetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDatasetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/datasets',
+        http_method='GET',
+        method_id='translate.projects.locations.datasets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/datasets',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsDatasetsListRequest',
+        response_type_name='ListDatasetsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsGlossariesGlossaryEntriesService(base_api.BaseApiService):
     """Service class for the projects_locations_glossaries_glossaryEntries resource."""
@@ -332,6 +544,124 @@ class TranslateV3(base_api.BaseApiClient):
         request_field='glossary',
         request_type_name='TranslateProjectsLocationsGlossariesPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsModelsService(base_api.BaseApiService):
+    """Service class for the projects_locations_models resource."""
+
+    _NAME = 'projects_locations_models'
+
+    def __init__(self, client):
+      super(TranslateV3.ProjectsLocationsModelsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Model.
+
+      Args:
+        request: (TranslateProjectsLocationsModelsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/models',
+        http_method='POST',
+        method_id='translate.projects.locations.models.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v3/{+parent}/models',
+        request_field='model',
+        request_type_name='TranslateProjectsLocationsModelsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a model.
+
+      Args:
+        request: (TranslateProjectsLocationsModelsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/models/{modelsId}',
+        http_method='DELETE',
+        method_id='translate.projects.locations.models.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsModelsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a model.
+
+      Args:
+        request: (TranslateProjectsLocationsModelsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Model) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/models/{modelsId}',
+        http_method='GET',
+        method_id='translate.projects.locations.models.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsModelsGetRequest',
+        response_type_name='Model',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists models.
+
+      Args:
+        request: (TranslateProjectsLocationsModelsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListModelsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/models',
+        http_method='GET',
+        method_id='translate.projects.locations.models.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/models',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsModelsListRequest',
+        response_type_name='ListModelsResponse',
         supports_download=False,
     )
 

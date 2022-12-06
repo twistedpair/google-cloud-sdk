@@ -163,6 +163,33 @@ class ComposerV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def LoadSnapshot(self, request, global_params=None):
+      r"""Loads a snapshot of a Cloud Composer environment. As a result of this operation, a snapshot of environment's specified in LoadSnapshotRequest is loaded into the environment.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsLoadSnapshotRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('LoadSnapshot')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LoadSnapshot.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:loadSnapshot',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.loadSnapshot',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1/{+environment}:loadSnapshot',
+        request_field='loadSnapshotRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsLoadSnapshotRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Update an environment.
 
@@ -186,6 +213,33 @@ class ComposerV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='environment',
         request_type_name='ComposerProjectsLocationsEnvironmentsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SaveSnapshot(self, request, global_params=None):
+      r"""Creates a snapshots of a Cloud Composer environment. As a result of this operation, snapshot of environment's state is stored in a location specified in the SaveSnapshotRequest.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsSaveSnapshotRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SaveSnapshot')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SaveSnapshot.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:saveSnapshot',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.saveSnapshot',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1/{+environment}:saveSnapshot',
+        request_field='saveSnapshotRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsSaveSnapshotRequest',
         response_type_name='Operation',
         supports_download=False,
     )

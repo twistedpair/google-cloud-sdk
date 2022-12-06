@@ -22,7 +22,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import contextlib
-import datetime
 import functools
 
 from apitools.base.py import encoding
@@ -375,35 +374,9 @@ class ServiceConditionPoller(ConditionPoller):
   """A ConditionPoller for services."""
 
   def __init__(self, getter, tracker, dependencies=None, serv=None):
-
-    def GetIfProbablyNewer():
-      """Workaround for https://github.com/knative/serving/issues/4149).
-
-      The workaround is to wait for the condition lastTransitionTime to
-      change. Note that the granularity of lastTransitionTime is seconds
-      so to avoid hanging in the unlikely case that two updates happen
-      in the same second we limit waiting for the change to 5 seconds.
-
-      Returns:
-        The requested resource or None if it seems stale.
-      """
-      resource = getter()
-      if (resource and self._old_last_transition_time and
-          self._old_last_transition_time == resource.last_transition_time and
-          not self.HaveFiveSecondsPassed()):
-        return None
-      else:
-        return resource
-
-    super(ServiceConditionPoller, self).__init__(GetIfProbablyNewer, tracker,
+    super(ServiceConditionPoller, self).__init__(getter, tracker,
                                                  dependencies)
     self._resource_fail_type = serverless_exceptions.DeploymentFailedError
-    self._old_last_transition_time = serv.last_transition_time if serv else None
-    self._start_time = datetime.datetime.now()
-    self._five_seconds = datetime.timedelta(seconds=5)
-
-  def HaveFiveSecondsPassed(self):
-    return datetime.datetime.now() - self._start_time > self._five_seconds
 
 
 class _NewRevisionForcingChange(config_changes_mod.RevisionNameChanges):
@@ -609,11 +582,12 @@ class ServerlessOperations(object):
     except api_exceptions.HttpNotFoundError:
       return None
 
-  def WaitForCondition(self, poller):
+  def WaitForCondition(self, poller, max_wait_ms=0):
     """Wait for a configuration to be ready in latest revision.
 
     Args:
       poller: A ConditionPoller object.
+      max_wait_ms: int, if not 0, passed to waiter.PollUntilDone.
 
     Returns:
       A condition.Conditions object.
@@ -624,7 +598,10 @@ class ServerlessOperations(object):
     """
 
     try:
-      return waiter.PollUntilDone(poller, None, wait_ceiling_ms=1000)
+      if max_wait_ms == 0:
+        return waiter.PollUntilDone(poller, None, wait_ceiling_ms=1000)
+      return waiter.PollUntilDone(
+          poller, None, max_wait_ms=max_wait_ms, wait_ceiling_ms=1000)
     except retry.RetryException as err:
       conditions = poller.GetConditions()
       # err.message already indicates timeout. Check ready_cond_type for more
@@ -1568,7 +1545,7 @@ class ServerlessOperations(object):
         terminal_condition,
         dependencies=stages.ExecutionDependencies())
     try:
-      self.WaitForCondition(poller)
+      self.WaitForCondition(poller, None if wait else 0)
     except serverless_exceptions.ExecutionFailedError:
       raise serverless_exceptions.ExecutionFailedError(
           'The execution failed.' +

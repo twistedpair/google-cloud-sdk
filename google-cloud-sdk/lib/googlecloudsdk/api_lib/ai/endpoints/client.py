@@ -58,8 +58,8 @@ def _GetModelDeploymentResourceType(model_ref,
   Args:
     model_ref: a model resource object.
     client: an apis.GetClientInstance object.
-    shared_resources_ref: str, the shared deployment resource pool
-        the model should use, formatted as the full URI
+    shared_resources_ref: str, the shared deployment resource pool the model
+      should use, formatted as the full URI
 
   Returns:
     A string which value must be 'DEDICATED_RESOURCES', 'AUTOMATIC_RESOURCES'
@@ -131,7 +131,7 @@ class EndpointsClient(object):
       network: str, the full name of the Google Compute Engine network.
       endpoint_id: str or None, the id of the new endpoint.
       encryption_kms_key_name: str or None, the Cloud KMS resource identifier of
-      the customer managed encryption key used to protect a resource.
+        the customer managed encryption key used to protect a resource.
       request_response_logging_table: str or None, the BigQuery table uri for
         request-response logging.
       request_response_logging_rate: float or None, the sampling rate for
@@ -186,7 +186,7 @@ class EndpointsClient(object):
       network: str, the full name of the Google Compute Engine network.
       endpoint_id: str or None, the id of the new endpoint.
       encryption_kms_key_name: str or None, the Cloud KMS resource identifier of
-      the customer managed encryption key used to protect a resource.
+        the customer managed encryption key used to protect a resource.
       request_response_logging_table: str or None, the BigQuery table uri for
         request-response logging.
       request_response_logging_rate: float or None, the sampling rate for
@@ -452,8 +452,8 @@ class EndpointsClient(object):
   def PredictBeta(self, endpoint_ref, instances_json):
     """Sends online prediction request to an endpoint using v1beta1 API."""
     predict_request = self.messages.GoogleCloudAiplatformV1beta1PredictRequest(
-        instances=_ConvertPyListToMessageList(
-            extra_types.JsonValue, instances_json['instances']))
+        instances=_ConvertPyListToMessageList(extra_types.JsonValue,
+                                              instances_json['instances']))
     if 'parameters' in instances_json:
       predict_request.parameters = encoding.PyValueToMessage(
           extra_types.JsonValue, instances_json['parameters'])
@@ -495,11 +495,15 @@ class EndpointsClient(object):
   def ExplainBeta(self, endpoint_ref, instances_json, args):
     """Sends online explanation request to an endpoint using v1beta1 API."""
     explain_request = self.messages.GoogleCloudAiplatformV1beta1ExplainRequest(
-        instances=_ConvertPyListToMessageList(
-            extra_types.JsonValue, instances_json['instances']))
+        instances=_ConvertPyListToMessageList(extra_types.JsonValue,
+                                              instances_json['instances']))
     if 'parameters' in instances_json:
       explain_request.parameters = encoding.PyValueToMessage(
           extra_types.JsonValue, instances_json['parameters'])
+    if 'explanation_spec_override' in instances_json:
+      explain_request.explanationSpecOverride = encoding.PyValueToMessage(
+          self.messages.GoogleCloudAiplatformV1beta1ExplanationSpecOverride,
+          instances_json['explanation_spec_override'])
     if args.deployed_model_id is not None:
       explain_request.deployedModelId = args.deployed_model_id
 
@@ -664,8 +668,8 @@ class EndpointsClient(object):
         runs as.
       traffic_split: dict or None, the new traffic split of the endpoint.
       deployed_model_id: str or None, id of the deployed model.
-      shared_resources_ref: str or None, the shared deployment resource pool
-        the model should use
+      shared_resources_ref: str or None, the shared deployment resource pool the
+        model should use
 
     Returns:
       A long-running operation for DeployModel.

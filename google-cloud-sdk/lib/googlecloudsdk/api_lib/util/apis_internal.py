@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Library for obtaining API clients and messages.
 
 This should only be called by api_lib.util.apis, core.resources, gcloud meta
@@ -28,8 +27,8 @@ from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
 from googlecloudsdk.generated_clients.apis import apis_map
-
 import six
+from six.moves.urllib.parse import urljoin
 from six.moves.urllib.parse import urlparse
 
 
@@ -150,8 +149,8 @@ def _GetClientInstance(api_name,
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
     no_http: bool, True to not create an http object for this client.
-    http_client: bring your own http client to use.
-      Incompatible with no_http=True.
+    http_client: bring your own http client to use. Incompatible with
+      no_http=True.
     check_response_func: error handling callback to give to apitools.
     http_timeout_sec: int, seconds of http timeout to set, defaults if None.
 
@@ -194,8 +193,8 @@ def _GetGapicClientClass(api_name,
   Args:
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
-    transport_choice: apis_util.GapicTransport,
-        The transport to be used by the client.
+    transport_choice: apis_util.GapicTransport, The transport to be used by the
+      client.
   """
   api_def = _GetApiDef(api_name, api_version)
   if transport_choice == apis_util.GapicTransport.GRPC_ASYNCIO:
@@ -227,9 +226,9 @@ def _GetGapicClientInstance(api_name,
     api_version: str, The version of the API.
     credentials: google.auth.credentials.Credentials, the credentials to use.
     address_override_func: function, function to call to override the client
-        host. It takes a single argument which is the original host.
-    transport_choice: apis_util.GapicTransport,
-        The transport to be used by the client.
+      host. It takes a single argument which is the original host.
+    transport_choice: apis_util.GapicTransport, The transport to be used by the
+      client.
 
   Returns:
     An instance of the specified GAPIC API client.
@@ -252,8 +251,10 @@ def _GetGapicClientInstance(api_name,
   client_class = _GetGapicClientClass(
       api_name, api_version, transport_choice=transport_choice)
 
-  return client_class(credentials, address_override_func=AddressOverride,
-                      mtls_enabled=mtls_enabled)
+  return client_class(
+      credentials,
+      address_override_func=AddressOverride,
+      mtls_enabled=mtls_enabled)
 
 
 def _GetMtlsEndpoint(api_name, api_version, client_class=None):
@@ -280,13 +281,24 @@ def _MtlsAllowed(api_name, api_version):
   return api_def.enable_mtls
 
 
+def _BuildEndpointOverride(endpoint_override, base_url):
+  """Constructs a normalized endpoint URI depending on the client base_url."""
+  url_base = urlparse(base_url)
+  url_endpoint_override = urlparse(endpoint_override)
+  if url_base.path == '/' or url_endpoint_override.path != '/':
+    return endpoint_override
+  return urljoin(
+      '{}://{}'.format(url_endpoint_override.scheme,
+                       url_endpoint_override.netloc), url_base.path)
+
+
 def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
   """Returns effective endpoint for given api."""
   endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
   endpoint_override = endpoint_overrides.get(api_name)
-  if endpoint_override:
-    return endpoint_override
   client_class = client_class or _GetClientClass(api_name, api_version)
+  if endpoint_override:
+    return _BuildEndpointOverride(endpoint_override, client_class.BASE_URL)
   if properties.VALUES.context_aware.always_use_mtls_endpoint.GetBool():
     return _GetMtlsEndpoint(api_name, api_version, client_class)
   if (properties.VALUES.context_aware.use_client_certificate.GetBool() and
@@ -319,8 +331,8 @@ def _GetMessagesModule(api_name, api_version):
   api_def = _GetApiDef(api_name, api_version)
   # fromlist below must not be empty, see:
   # http://stackoverflow.com/questions/2724260/why-does-pythons-import-require-fromlist.
-  return __import__(api_def.apitools.messages_full_modulepath,
-                    fromlist=['something'])
+  return __import__(
+      api_def.apitools.messages_full_modulepath, fromlist=['something'])
 
 
 def _GetResourceModule(api_name, api_version):
@@ -329,8 +341,8 @@ def _GetResourceModule(api_name, api_version):
   api_def = _GetApiDef(api_name, api_version)
   # fromlist below must not be empty, see:
   # http://stackoverflow.com/questions/2724260/why-does-pythons-import-require-fromlist.
-  return __import__(api_def.apitools.class_path + '.' + 'resources',
-                    fromlist=['something'])
+  return __import__(
+      api_def.apitools.class_path + '.' + 'resources', fromlist=['something'])
 
 
 def _GetApiCollections(api_name, api_version):

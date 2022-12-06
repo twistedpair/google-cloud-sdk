@@ -567,6 +567,26 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_PERSISTENTRESOURCES = (
+      'projects.locations.persistentResources',
+      'projects/{projectsId}/locations/{locationsId}/persistentResources/'
+      '{persistentResourcesId}',
+      {},
+      ['projectsId', 'locationsId', 'persistentResourcesId'],
+      True
+  )
+  PROJECTS_LOCATIONS_PERSISTENTRESOURCES_OPERATIONS = (
+      'projects.locations.persistentResources.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'persistentResources/{persistentResourcesId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_PIPELINEJOBS = (
       'projects.locations.pipelineJobs',
       '{+name}',

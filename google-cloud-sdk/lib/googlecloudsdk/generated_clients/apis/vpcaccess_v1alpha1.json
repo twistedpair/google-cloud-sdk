@@ -374,7 +374,7 @@
           "type": "boolean"
         },
         "projectNumber": {
-          "description": "The numeric project id of the VM.",
+          "description": "The host project number for the VPC network that the VM is programmed to talk to. In shared VPC this may differ from the project number that the Connector and Serverless app attached to it belong to.",
           "type": "string"
         }
       }
