@@ -148,6 +148,13 @@ class SecurityPolicyRule(object):
     }.get(action, action)
 
   def _MakeDeleteRequestTuple(self):
+    if getattr(self.ref, 'region', None) is not None:
+      return (self._client.regionSecurityPolicies, 'RemoveRule',
+              self._messages.ComputeRegionSecurityPoliciesRemoveRuleRequest(
+                  project=self.ref.project,
+                  priority=self._ConvertPriorityToInt(self.ref.Name()),
+                  region=self.ref.region,
+                  securityPolicy=self.ref.securityPolicy))
     return (self._client.securityPolicies, 'RemoveRule',
             self._messages.ComputeSecurityPoliciesRemoveRuleRequest(
                 project=self.ref.project,
@@ -155,6 +162,13 @@ class SecurityPolicyRule(object):
                 securityPolicy=self.ref.securityPolicy))
 
   def _MakeDescribeRequestTuple(self):
+    if getattr(self.ref, 'region', None) is not None:
+      return (self._client.regionSecurityPolicies, 'GetRule',
+              self._messages.ComputeRegionSecurityPoliciesGetRuleRequest(
+                  project=self.ref.project,
+                  priority=self._ConvertPriorityToInt(self.ref.Name()),
+                  region=self.ref.region,
+                  securityPolicy=self.ref.securityPolicy))
     return (self._client.securityPolicies, 'GetRule',
             self._messages.ComputeSecurityPoliciesGetRuleRequest(
                 project=self.ref.project,
@@ -206,6 +220,13 @@ class SecurityPolicyRule(object):
     if rate_limit_options is not None:
       security_policy_rule.rateLimitOptions = rate_limit_options
 
+    if getattr(self.ref, 'region', None) is not None:
+      return (self._client.regionSecurityPolicies, 'AddRule',
+              self._messages.ComputeRegionSecurityPoliciesAddRuleRequest(
+                  project=self.ref.project,
+                  securityPolicyRule=security_policy_rule,
+                  region=self.ref.region,
+                  securityPolicy=self.ref.securityPolicy))
     return (self._client.securityPolicies, 'AddRule',
             self._messages.ComputeSecurityPoliciesAddRuleRequest(
                 project=self.ref.project,
@@ -263,6 +284,14 @@ class SecurityPolicyRule(object):
     if preconfig_waf_config is not None:
       security_policy_rule.preconfiguredWafConfig = preconfig_waf_config
 
+    if getattr(self.ref, 'region', None) is not None:
+      return (self._client.regionSecurityPolicies, 'PatchRule',
+              self._messages.ComputeRegionSecurityPoliciesPatchRuleRequest(
+                  project=self.ref.project,
+                  priority=self._ConvertPriorityToInt(self.ref.Name()),
+                  securityPolicyRule=security_policy_rule,
+                  region=self.ref.region,
+                  securityPolicy=self.ref.securityPolicy))
     return (self._client.securityPolicies, 'PatchRule',
             self._messages.ComputeSecurityPoliciesPatchRuleRequest(
                 project=self.ref.project,

@@ -229,15 +229,14 @@ class CloudWildcardIterator(WildcardIterator):
         cloud_api.Capability.ENCRYPTION in self._client.capabilities and
         self._fields_scope != cloud_api.FieldsScope.SHORT and
         isinstance(resource, resource_reference.ObjectResource) and
-        resource.decryption_key_hash
-    )
+        resource.decryption_key_hash_sha256)
 
     if not should_decrypt_resource:
       return resource
 
     request_config = request_config_factory.get_request_config(
         resource.storage_url,
-        decryption_key_hash=resource.decryption_key_hash,
+        decryption_key_hash_sha256=resource.decryption_key_hash_sha256,
         error_on_missing_key=self._error_on_missing_key)
     return self._client.get_object_metadata(
         resource.bucket, resource.name, request_config)

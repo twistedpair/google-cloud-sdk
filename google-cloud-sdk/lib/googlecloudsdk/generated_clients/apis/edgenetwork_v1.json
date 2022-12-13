@@ -1,0 +1,2388 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "edgenetwork:v1",
+  "name": "edgenetwork",
+  "canonicalName": "Edge Network",
+  "version": "v1",
+  "revision": "0",
+  "title": "Distributed Cloud Edge Network API",
+  "description": "",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/distributed-cloud-edge/docs",
+  "protocol": "rest",
+  "rootUrl": "https://edgenetwork.googleapis.com/",
+  "mtlsRootUrl": "https://edgenetwork.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://edgenetwork.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
+  "schemas": {
+    "ListOperationsResponse": {
+      "id": "ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CancelOperationRequest": {
+      "id": "CancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "InitializeZoneRequest": {
+      "id": "InitializeZoneRequest",
+      "description": "Message for initializing a specified zone",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "InitializeZoneResponse": {
+      "id": "InitializeZoneResponse",
+      "description": "The response of initializing a zone",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListZonesResponse": {
+      "id": "ListZonesResponse",
+      "description": "Message for response to listing Zones",
+      "type": "object",
+      "properties": {
+        "zones": {
+          "description": "The list of Zone",
+          "type": "array",
+          "items": {
+            "$ref": "Zone"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Zone": {
+      "id": "Zone",
+      "description": "A Google Edge Cloud zone.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The resource name of the zone.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the zone was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the zone was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels as key value pairs",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "layoutName": {
+          "description": "The deployment layout type.",
+          "type": "string"
+        }
+      }
+    },
+    "ListNetworksResponse": {
+      "id": "ListNetworksResponse",
+      "description": "Message for response to listing Networks",
+      "type": "object",
+      "properties": {
+        "networks": {
+          "description": "The list of Network",
+          "type": "array",
+          "items": {
+            "$ref": "Network"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Network": {
+      "id": "Network",
+      "description": "Message describing Network object",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The canonical resource name of the network.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the network was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the network was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels associated with this resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Optional. A free-text description of the resource. Max length 1024 characters.",
+          "type": "string"
+        },
+        "mtu": {
+          "description": "IP (L3) MTU value of the network. Valid values are: 1500 and 9000. Default to 1500 if not set.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "DiagnoseNetworkResponse": {
+      "id": "DiagnoseNetworkResponse",
+      "description": "DiagnoseNetworkResponse contains the current status for a specific network.",
+      "type": "object",
+      "properties": {
+        "updateTime": {
+          "description": "The time when the network status was last updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "result": {
+          "description": "The network status of a specific network.",
+          "$ref": "NetworkStatus"
+        }
+      }
+    },
+    "NetworkStatus": {
+      "id": "NetworkStatus",
+      "description": "NetworkStatus has a list of status for the subnets under the current network.",
+      "type": "object",
+      "properties": {
+        "subnetStatus": {
+          "description": "A list of status for the subnets under the current network.",
+          "type": "array",
+          "items": {
+            "$ref": "SubnetStatus"
+          }
+        }
+      }
+    },
+    "SubnetStatus": {
+      "id": "SubnetStatus",
+      "description": "SubnetStatus contains detailed and current technical information about this subnet resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of CCFE subnet resource.",
+          "type": "string"
+        },
+        "macAddress": {
+          "description": "BVI MAC address.",
+          "type": "string"
+        },
+        "linkLayerAddresses": {
+          "description": "A list of LinkLayerAddress, describing the ip address and corresponding link-layer address of the neighbors for this subnet.",
+          "type": "array",
+          "items": {
+            "$ref": "LinkLayerAddress"
+          }
+        }
+      }
+    },
+    "LinkLayerAddress": {
+      "id": "LinkLayerAddress",
+      "description": "LinkLayerAddress contains an IP address and corresponding link-layer address.",
+      "type": "object",
+      "properties": {
+        "macAddress": {
+          "description": "The MAC address of this neighbor.",
+          "type": "string"
+        },
+        "ipAddress": {
+          "description": "The IP address of this neighbor.",
+          "type": "string"
+        }
+      }
+    },
+    "ListSubnetsResponse": {
+      "id": "ListSubnetsResponse",
+      "description": "Message for response to listing Subnets",
+      "type": "object",
+      "properties": {
+        "subnets": {
+          "description": "The list of Subnet",
+          "type": "array",
+          "items": {
+            "$ref": "Subnet"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Subnet": {
+      "id": "Subnet",
+      "description": "Message describing Subnet object",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The canonical resource name of the subnet.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the subnet was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the subnet was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels associated with this resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Optional. A free-text description of the resource. Max length 1024 characters.",
+          "type": "string"
+        },
+        "network": {
+          "description": "Required. The network that this subnetwork belongs to.",
+          "type": "string"
+        },
+        "ipv4Cidr": {
+          "description": "The ranges of ipv4 addresses that are owned by this subnetwork.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ipv6Cidr": {
+          "description": "The ranges of ipv6 addresses that are owned by this subnetwork.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vlanId": {
+          "description": "Optional. VLAN id provided by user. If not specified we assign one automatically.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "state": {
+          "description": "Output only. Current stage of the resource to the device by config push.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state.",
+            "The resource is being prepared to be applied to the rack.",
+            "The resource has started being applied to the rack.",
+            "The resource has been pushed to the rack.",
+            "The resource failed to push to the rack.",
+            "The resource is under deletion."
+          ],
+          "enum": [
+            "STATE_UNKNOWN",
+            "STATE_PENDING",
+            "STATE_PROVISIONING",
+            "STATE_RUNNING",
+            "STATE_SUSPENDED",
+            "STATE_DELETING"
+          ]
+        }
+      }
+    },
+    "ListInterconnectsResponse": {
+      "id": "ListInterconnectsResponse",
+      "description": "Message for response to listing Interconnects",
+      "type": "object",
+      "properties": {
+        "interconnects": {
+          "description": "The list of Interconnect",
+          "type": "array",
+          "items": {
+            "$ref": "Interconnect"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Interconnect": {
+      "id": "Interconnect",
+      "description": "Message describing Interconnect object",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The canonical resource name of the interconnect.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the subnet was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the subnet was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels associated with this resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Optional. A free-text description of the resource. Max length 1024 characters.",
+          "type": "string"
+        },
+        "interconnectType": {
+          "description": "Optional. Type of interconnect, which takes only the value 'DEDICATED' for now.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Dedicated Interconnect."
+          ],
+          "enum": [
+            "INTERCONNECT_TYPE_UNSPECIFIED",
+            "DEDICATED"
+          ]
+        },
+        "uuid": {
+          "description": "Output only. Unique identifier for the link.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deviceCloudResourceName": {
+          "description": "Output only. Cloud resource name of the switch device.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "physicalPorts": {
+          "description": "Output only. Physical ports (e.g., TenGigE0\/0\/0\/1) that form the interconnect.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "DiagnoseInterconnectResponse": {
+      "id": "DiagnoseInterconnectResponse",
+      "description": "DiagnoseInterconnectResponse contains the current diagnostics for a specific interconnect.",
+      "type": "object",
+      "properties": {
+        "updateTime": {
+          "description": "The time when the interconnect diagnostics was last updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "result": {
+          "description": "The network status of a specific interconnect.",
+          "$ref": "InterconnectDiagnostics"
+        }
+      }
+    },
+    "InterconnectDiagnostics": {
+      "id": "InterconnectDiagnostics",
+      "description": "Diagnostics information about interconnect, contains detailed and current technical information about Google's side of the connection.",
+      "type": "object",
+      "properties": {
+        "macAddress": {
+          "description": "The MAC address of the Interconnect's bundle interface.",
+          "type": "string"
+        },
+        "linkLayerAddresses": {
+          "description": "A list of LinkLayerAddress, describing the ip address and corresponding link-layer address of the neighbors for this interconnect.",
+          "type": "array",
+          "items": {
+            "$ref": "LinkLayerAddress"
+          }
+        },
+        "links": {
+          "description": "A list of LinkStatus objects, used to describe the status for each link on the Interconnect.",
+          "type": "array",
+          "items": {
+            "$ref": "LinkStatus"
+          }
+        }
+      }
+    },
+    "LinkStatus": {
+      "id": "LinkStatus",
+      "description": "Describing the status for each link on the Interconnect.",
+      "type": "object",
+      "properties": {
+        "circuitId": {
+          "description": "The unique ID for this link assigned during turn up by Google.",
+          "type": "string"
+        },
+        "lacpStatus": {
+          "description": "Describing the state of a LACP link.",
+          "$ref": "LinkLACPStatus"
+        },
+        "lldpStatuses": {
+          "description": "A list of LinkLLDPStatus objects, used to describe LLDP status of each peer for each link on the Interconnect.",
+          "type": "array",
+          "items": {
+            "$ref": "LinkLLDPStatus"
+          }
+        },
+        "packetCounts": {
+          "description": "Packet counts specific statistics for this link.",
+          "$ref": "PacketCounts"
+        }
+      }
+    },
+    "LinkLACPStatus": {
+      "id": "LinkLACPStatus",
+      "description": "Describing the status of a LACP link.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "The state of a LACP link.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default state indicating state is in unknown state.",
+            "The link is configured and active within the bundle.",
+            "The link is not configured within the bundle, this means the rest of the object should be empty."
+          ],
+          "enum": [
+            "UNKNOWN",
+            "ACTIVE",
+            "DETACHED"
+          ]
+        },
+        "googleSystemId": {
+          "description": "System ID of the port on Google's side of the LACP exchange.",
+          "type": "string"
+        },
+        "neighborSystemId": {
+          "description": "System ID of the port on the neighbor's side of the LACP exchange.",
+          "type": "string"
+        },
+        "aggregatable": {
+          "description": "A true value indicates that the participant will allow the link to be used as part of the aggregate. A false value indicates the link should be used as an individual link.",
+          "type": "boolean"
+        },
+        "collecting": {
+          "description": "If true, the participant is collecting incoming frames on the link, otherwise false",
+          "type": "boolean"
+        },
+        "distributing": {
+          "description": "When true, the participant is distributing outgoing frames; when false, distribution is disabled",
+          "type": "boolean"
+        }
+      }
+    },
+    "LinkLLDPStatus": {
+      "id": "LinkLLDPStatus",
+      "description": "Describing a LLDP link.",
+      "type": "object",
+      "properties": {
+        "peerSystemName": {
+          "description": "The peer system's administratively assigned name.",
+          "type": "string"
+        },
+        "peerSystemDescription": {
+          "description": "The textual description of the network entity of LLDP peer.",
+          "type": "string"
+        },
+        "peerChassisId": {
+          "description": "The peer chassis component of the endpoint identifier associated with the transmitting LLDP agent.",
+          "type": "string"
+        },
+        "peerChassisIdType": {
+          "description": "The format and source of the peer chassis identifier string.",
+          "type": "string"
+        },
+        "peerPortId": {
+          "description": "The port component of the endpoint identifier associated with the transmitting LLDP agent. If the specified port is an IEEE 802.3 Repeater port, then this TLV is optional.",
+          "type": "string"
+        },
+        "peerPortIdType": {
+          "description": "The format and source of the peer port identifier string.",
+          "type": "string"
+        }
+      }
+    },
+    "PacketCounts": {
+      "id": "PacketCounts",
+      "description": "Containing a collection of interface-related statistics objects.",
+      "type": "object",
+      "properties": {
+        "inboundUnicast": {
+          "description": "The number of packets that are delivered.",
+          "type": "string",
+          "format": "int64"
+        },
+        "inboundErrors": {
+          "description": "The number of inbound packets that contained errors.",
+          "type": "string",
+          "format": "int64"
+        },
+        "inboundDiscards": {
+          "description": "The number of inbound packets that were chosen to be discarded even though no errors had been detected to prevent their being deliverable.",
+          "type": "string",
+          "format": "int64"
+        },
+        "outboundUnicast": {
+          "description": "The total number of packets that are requested be transmitted.",
+          "type": "string",
+          "format": "int64"
+        },
+        "outboundErrors": {
+          "description": "The number of outbound packets that could not be transmitted because of errors.",
+          "type": "string",
+          "format": "int64"
+        },
+        "outboundDiscards": {
+          "description": "The number of outbound packets that were chosen to be discarded even though no errors had been detected to prevent their being transmitted.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ListInterconnectAttachmentsResponse": {
+      "id": "ListInterconnectAttachmentsResponse",
+      "description": "Message for response to listing InterconnectAttachments",
+      "type": "object",
+      "properties": {
+        "interconnectAttachments": {
+          "description": "The list of InterconnectAttachment",
+          "type": "array",
+          "items": {
+            "$ref": "InterconnectAttachment"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "InterconnectAttachment": {
+      "id": "InterconnectAttachment",
+      "description": "Message describing InterconnectAttachment object",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The canonical resource name of the interconnect attachment.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the interconnect attachment was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the interconnect attachment was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels associated with this resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Optional. A free-text description of the resource. Max length 1024 characters.",
+          "type": "string"
+        },
+        "interconnect": {
+          "description": "Required. The canonical name of underlying Interconnect object that this attachment's traffic will traverse through. The name is in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/interconnects\/{interconnect}.",
+          "type": "string"
+        },
+        "network": {
+          "description": "Optional. The canonical Network name in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/networks\/{network}.",
+          "type": "string"
+        },
+        "vlanId": {
+          "description": "Required. VLAN id provided by user. Must be site-wise unique.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "mtu": {
+          "description": "IP (L3) MTU value of the virtual edge cloud. Valid values are: 1500 and 9000. Default to 1500 if not set.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "state": {
+          "description": "Output only. Current stage of the resource to the device by config push.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state.",
+            "The resource is being prepared to be applied to the rack.",
+            "The resource has started being applied to the rack.",
+            "The resource has been pushed to the rack.",
+            "The resource failed to push to the rack.",
+            "The resource is under deletion."
+          ],
+          "enum": [
+            "STATE_UNKNOWN",
+            "STATE_PENDING",
+            "STATE_PROVISIONING",
+            "STATE_RUNNING",
+            "STATE_SUSPENDED",
+            "STATE_DELETING"
+          ]
+        }
+      }
+    },
+    "ListRoutersResponse": {
+      "id": "ListRoutersResponse",
+      "description": "Message for response to listing Routers",
+      "type": "object",
+      "properties": {
+        "routers": {
+          "description": "The list of Router",
+          "type": "array",
+          "items": {
+            "$ref": "Router"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Router": {
+      "id": "Router",
+      "description": "Message describing Router object",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The canonical resource name of the router.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the router was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the router was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels associated with this resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Optional. A free-text description of the resource. Max length 1024 characters.",
+          "type": "string"
+        },
+        "network": {
+          "description": "Required. The canonical name of the network to which this router belongs. The name is in the form of projects\/{project}\/locations\/{location}\/zones\/{zone}\/networks\/{network}.",
+          "type": "string"
+        },
+        "interface": {
+          "description": "Router interfaces.",
+          "type": "array",
+          "items": {
+            "$ref": "Interface"
+          }
+        },
+        "bgpPeer": {
+          "description": "BGP peers.",
+          "type": "array",
+          "items": {
+            "$ref": "BgpPeer"
+          }
+        },
+        "bgp": {
+          "description": "BGP information specific to this router.",
+          "$ref": "Bgp"
+        },
+        "state": {
+          "description": "Output only. Current stage of the resource to the device by config push.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state.",
+            "The resource is being prepared to be applied to the rack.",
+            "The resource has started being applied to the rack.",
+            "The resource has been pushed to the rack.",
+            "The resource failed to push to the rack.",
+            "The resource is under deletion."
+          ],
+          "enum": [
+            "STATE_UNKNOWN",
+            "STATE_PENDING",
+            "STATE_PROVISIONING",
+            "STATE_RUNNING",
+            "STATE_SUSPENDED",
+            "STATE_DELETING"
+          ]
+        },
+        "routeAdvertisements": {
+          "description": "Optional. A list of CIDRs in IP\/Length format to advertise northbound as static routes from this router.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Interface": {
+      "id": "Interface",
+      "description": "Router Interface defines the GDCE zone side layer-3 information for building the BGP session.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of this interface entry. Unique within the Zones resource.",
+          "type": "string"
+        },
+        "ipv4Cidr": {
+          "description": "IP address and range of the interface. This value is only used when linked_interconnect_attachment is set.",
+          "type": "string"
+        },
+        "linkedInterconnectAttachment": {
+          "description": "The canonical name of the linked Interconnect attachment.",
+          "type": "string"
+        },
+        "subnetwork": {
+          "description": "The canonical name of the subnetwork resource that this interface belongs to.",
+          "type": "string"
+        },
+        "loopbackIpAddresses": {
+          "description": "Create loopback interface in the router when specified. The number of IP addresses must match the number of TOR devices.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "BgpPeer": {
+      "id": "BgpPeer",
+      "description": "BGPPeer defines the peer side layer-3 information for building the BGP session.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of this BGP peer. Unique within the Zones resource.",
+          "type": "string"
+        },
+        "interface": {
+          "description": "Name of the RouterInterface the BGP peer is associated with.",
+          "type": "string"
+        },
+        "interfaceIpv4Cidr": {
+          "description": "IP range of the interface within Google.",
+          "type": "string"
+        },
+        "peerIpv4Cidr": {
+          "description": "IP range of the BGP interface outside Google.",
+          "type": "string"
+        },
+        "peerAsn": {
+          "description": "Peer BGP Autonomous System Number (ASN). Each BGP interface may use a different value.",
+          "type": "integer",
+          "format": "uint32"
+        }
+      }
+    },
+    "Bgp": {
+      "id": "Bgp",
+      "description": "BGP information specific to this router.",
+      "type": "object",
+      "properties": {
+        "asn": {
+          "description": "Locally assigned BGP ASN.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "keepaliveIntervalInSeconds": {
+          "description": "The interval in seconds between BGP keepalive messages that are sent to the peer. Default is 20 with value between 20 and 60.",
+          "type": "integer",
+          "format": "uint32"
+        }
+      }
+    },
+    "DiagnoseRouterResponse": {
+      "id": "DiagnoseRouterResponse",
+      "description": "DiagnoseRouterResponse contains the current status for a specific router.",
+      "type": "object",
+      "properties": {
+        "updateTime": {
+          "description": "The time when the router status was last updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "result": {
+          "description": "The network status of a specific router.",
+          "$ref": "RouterStatus"
+        }
+      }
+    },
+    "RouterStatus": {
+      "id": "RouterStatus",
+      "description": "Describing the current status of a router.",
+      "type": "object",
+      "properties": {
+        "network": {
+          "description": "The canonical name of the network to which this router belongs.",
+          "type": "string"
+        },
+        "bgpPeerStatus": {
+          "description": "A list of BgpPeerStatus objects, describing all BGP peers related to this router.",
+          "type": "array",
+          "items": {
+            "$ref": "BgpPeerStatus"
+          }
+        }
+      }
+    },
+    "BgpPeerStatus": {
+      "id": "BgpPeerStatus",
+      "description": "Status of a BGP peer.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of this BGP peer. Unique within the Routers resource.",
+          "type": "string"
+        },
+        "ipAddress": {
+          "description": "IP address of the local BGP interface.",
+          "type": "string"
+        },
+        "peerIpAddress": {
+          "description": "IP address of the remote BGP interface.",
+          "type": "string"
+        },
+        "status": {
+          "description": "The current status of BGP.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default status indicating BGP session is in unknown state.",
+            "The UP status indicating BGP session is established.",
+            "The DOWN state indicating BGP session is not established yet."
+          ],
+          "enum": [
+            "UNKNOWN",
+            "UP",
+            "DOWN"
+          ]
+        },
+        "state": {
+          "description": "BGP state as specified in RFC1771.",
+          "type": "string"
+        },
+        "uptime": {
+          "description": "Time this session has been up. Format: 14 years, 51 weeks, 6 days, 23 hours, 59 minutes, 59 seconds",
+          "type": "string"
+        },
+        "uptimeSeconds": {
+          "description": "Time this session has been up, in seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "prefixCounter": {
+          "description": "A collection of counts for prefixes.",
+          "$ref": "PrefixCounter"
+        }
+      }
+    },
+    "PrefixCounter": {
+      "id": "PrefixCounter",
+      "description": "PrefixCounter contains a collection of prefixes related counts.",
+      "type": "object",
+      "properties": {
+        "advertised": {
+          "description": "Number of prefixes advertised.",
+          "type": "string",
+          "format": "int64"
+        },
+        "denied": {
+          "description": "Number of prefixes denied.",
+          "type": "string",
+          "format": "int64"
+        },
+        "received": {
+          "description": "Number of prefixes received.",
+          "type": "string",
+          "format": "int64"
+        },
+        "sent": {
+          "description": "Number of prefixes sent.",
+          "type": "string",
+          "format": "int64"
+        },
+        "suppressed": {
+          "description": "Number of prefixes suppressed.",
+          "type": "string",
+          "format": "int64"
+        },
+        "withdrawn": {
+          "description": "Number of prefixes withdrawn.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have been cancelled successfully have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "resources": {
+        "locations": {
+          "methods": {
+            "list": {
+              "id": "edgenetwork.projects.locations.list",
+              "path": "v1/{+name}/locations",
+              "flatPath": "v1/projects/{projectsId}/locations",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ListLocationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists information about the supported locations for this service."
+            },
+            "get": {
+              "id": "edgenetwork.projects.locations.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Location"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets information about a location."
+            }
+          }
+          ,
+          "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "edgenetwork.projects.locations.operations.list",
+                  "path": "v1/{+name}/operations",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "edgenetwork.projects.locations.operations.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
+                "delete": {
+                  "id": "edgenetwork.projects.locations.operations.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                },
+                "cancel": {
+                  "id": "edgenetwork.projects.locations.operations.cancel",
+                  "path": "v1/{+name}:cancel",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CancelOperationRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                }
+              }
+            },
+            "zones": {
+              "methods": {
+                "initialize": {
+                  "id": "edgenetwork.projects.locations.zones.initialize",
+                  "path": "v1/{+name}:initialize",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}:initialize",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the zone resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "InitializeZoneRequest"
+                  },
+                  "response": {
+                    "$ref": "InitializeZoneResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "InitializeZone will initialize resources for a zone in a project."
+                },
+                "list": {
+                  "id": "edgenetwork.projects.locations.zones.list",
+                  "path": "v1/{+parent}/zones",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent value for ListZonesRequest",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results the server should return.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Filtering results",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Hint for how to order the results",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListZonesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Zones in a given project and location."
+                },
+                "get": {
+                  "id": "edgenetwork.projects.locations.zones.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Zone"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single Zone."
+                }
+              }
+              ,
+              "resources": {
+                "networks": {
+                  "methods": {
+                    "list": {
+                      "id": "edgenetwork.projects.locations.zones.networks.list",
+                      "path": "v1/{+parent}/networks",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/networks",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Parent value for ListNetworksRequest",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A token identifying a page of results the server should return.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Filtering results",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Hint for how to order the results",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListNetworksResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists Networks in a given project and location."
+                    },
+                    "get": {
+                      "id": "edgenetwork.projects.locations.zones.networks.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/networks/{networksId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the resource",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/networks\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Network"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single Network."
+                    },
+                    "diagnose": {
+                      "id": "edgenetwork.projects.locations.zones.networks.diagnose",
+                      "path": "v1/{+name}:diagnose",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/networks/{networksId}:diagnose",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the network resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/networks\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "DiagnoseNetworkResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Get the diagnostics of a single network resource."
+                    },
+                    "create": {
+                      "id": "edgenetwork.projects.locations.zones.networks.create",
+                      "path": "v1/{+parent}/networks",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/networks",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Value for parent.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "networkId": {
+                          "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and network_id from the method_signature of Create RPC",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Network"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new Network in a given project and location."
+                    },
+                    "delete": {
+                      "id": "edgenetwork.projects.locations.zones.networks.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/networks/{networksId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the resource",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/networks\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a single Network."
+                    }
+                  }
+                },
+                "subnets": {
+                  "methods": {
+                    "list": {
+                      "id": "edgenetwork.projects.locations.zones.subnets.list",
+                      "path": "v1/{+parent}/subnets",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/subnets",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Parent value for ListSubnetsRequest",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A token identifying a page of results the server should return.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Filtering results",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Hint for how to order the results",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListSubnetsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists Subnets in a given project and location."
+                    },
+                    "get": {
+                      "id": "edgenetwork.projects.locations.zones.subnets.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/subnets/{subnetsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the resource",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/subnets\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Subnet"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single Subnet."
+                    },
+                    "create": {
+                      "id": "edgenetwork.projects.locations.zones.subnets.create",
+                      "path": "v1/{+parent}/subnets",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/subnets",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Value for parent.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "subnetId": {
+                          "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and subnet_id from the method_signature of Create RPC",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Subnet"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new Subnet in a given project and location."
+                    },
+                    "patch": {
+                      "id": "edgenetwork.projects.locations.zones.subnets.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/subnets/{subnetsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The canonical resource name of the subnet.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/subnets\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Field mask is used to specify the fields to be overwritten in the Subnet resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "Subnet"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the parameters of a single Subnet."
+                    },
+                    "delete": {
+                      "id": "edgenetwork.projects.locations.zones.subnets.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/subnets/{subnetsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the resource",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/subnets\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a single Subnet."
+                    }
+                  }
+                },
+                "interconnects": {
+                  "methods": {
+                    "list": {
+                      "id": "edgenetwork.projects.locations.zones.interconnects.list",
+                      "path": "v1/{+parent}/interconnects",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/interconnects",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Parent value for ListInterconnectsRequest",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A token identifying a page of results the server should return.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Filtering results",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Hint for how to order the results",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListInterconnectsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists Interconnects in a given project and location."
+                    },
+                    "get": {
+                      "id": "edgenetwork.projects.locations.zones.interconnects.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/interconnects/{interconnectsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the resource",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/interconnects\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Interconnect"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single Interconnect."
+                    },
+                    "diagnose": {
+                      "id": "edgenetwork.projects.locations.zones.interconnects.diagnose",
+                      "path": "v1/{+name}:diagnose",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/interconnects/{interconnectsId}:diagnose",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the interconnect resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/interconnects\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "DiagnoseInterconnectResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Get the diagnostics of a single interconnect resource."
+                    }
+                  }
+                },
+                "interconnectAttachments": {
+                  "methods": {
+                    "list": {
+                      "id": "edgenetwork.projects.locations.zones.interconnectAttachments.list",
+                      "path": "v1/{+parent}/interconnectAttachments",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/interconnectAttachments",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Parent value for ListInterconnectAttachmentsRequest",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A token identifying a page of results the server should return.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Filtering results",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Hint for how to order the results",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListInterconnectAttachmentsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists InterconnectAttachments in a given project and location."
+                    },
+                    "get": {
+                      "id": "edgenetwork.projects.locations.zones.interconnectAttachments.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/interconnectAttachments/{interconnectAttachmentsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the resource",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/interconnectAttachments\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "InterconnectAttachment"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single InterconnectAttachment."
+                    },
+                    "create": {
+                      "id": "edgenetwork.projects.locations.zones.interconnectAttachments.create",
+                      "path": "v1/{+parent}/interconnectAttachments",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/interconnectAttachments",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Value for parent.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "interconnectAttachmentId": {
+                          "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and interconnect_attachment_id from the method_signature of Create RPC",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "InterconnectAttachment"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new InterconnectAttachment in a given project and location."
+                    },
+                    "delete": {
+                      "id": "edgenetwork.projects.locations.zones.interconnectAttachments.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/interconnectAttachments/{interconnectAttachmentsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the resource",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/interconnectAttachments\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a single InterconnectAttachment."
+                    }
+                  }
+                },
+                "routers": {
+                  "methods": {
+                    "list": {
+                      "id": "edgenetwork.projects.locations.zones.routers.list",
+                      "path": "v1/{+parent}/routers",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/routers",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Parent value for ListRoutersRequest",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A token identifying a page of results the server should return.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Filtering results",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Hint for how to order the results",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListRoutersResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists Routers in a given project and location."
+                    },
+                    "get": {
+                      "id": "edgenetwork.projects.locations.zones.routers.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/routers/{routersId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the resource",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/routers\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Router"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single Router."
+                    },
+                    "diagnose": {
+                      "id": "edgenetwork.projects.locations.zones.routers.diagnose",
+                      "path": "v1/{+name}:diagnose",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/routers/{routersId}:diagnose",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the router resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/routers\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "DiagnoseRouterResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Get the diagnostics of a single router resource."
+                    },
+                    "create": {
+                      "id": "edgenetwork.projects.locations.zones.routers.create",
+                      "path": "v1/{+parent}/routers",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/routers",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Value for parent.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "routerId": {
+                          "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and router_id from the method_signature of Create RPC",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Router"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new Router in a given project and location."
+                    },
+                    "patch": {
+                      "id": "edgenetwork.projects.locations.zones.routers.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/routers/{routersId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The canonical resource name of the router.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/routers\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Field mask is used to specify the fields to be overwritten in the Router resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "Router"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the parameters of a single Router."
+                    },
+                    "delete": {
+                      "id": "edgenetwork.projects.locations.zones.routers.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/routers/{routersId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the resource",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+\/routers\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a single Router."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

@@ -244,7 +244,7 @@
           "type": "string"
         },
         "textStyles": {
-          "description": "Placeholder. Styles for the Document.text.",
+          "description": "Styles for the Document.text.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDocumentaiV1DocumentStyle"
@@ -1817,6 +1817,13 @@
             "GA",
             "DEPRECATED"
           ]
+        },
+        "sampleDocumentUris": {
+          "description": "A set of Cloud Storage URIs of sample documents for this processor.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -2719,7 +2726,7 @@
           "type": "string"
         },
         "textStyles": {
-          "description": "Placeholder. Styles for the Document.text.",
+          "description": "Styles for the Document.text.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDocumentaiV1beta1DocumentStyle"
@@ -3998,7 +4005,7 @@
           "type": "string"
         },
         "textStyles": {
-          "description": "Placeholder. Styles for the Document.text.",
+          "description": "Styles for the Document.text.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDocumentaiV1beta2DocumentStyle"

@@ -9906,7 +9906,7 @@ class GoogleCloudApigeeV1SyncAuthorization(_messages.Message):
 
 
 class GoogleCloudApigeeV1TargetServer(_messages.Message):
-  r"""TargetServer configuration. TargetServers are used to decouple a proxy's
+  r"""TargetServer configuration. TargetServers are used to decouple a proxy
   TargetEndpoint HTTPTargetConnections from concrete URLs for backend
   services.
 

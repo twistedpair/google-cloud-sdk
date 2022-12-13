@@ -840,6 +840,27 @@ class FirestoreProjectsDatabasesCreateRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class FirestoreProjectsDatabasesDeleteRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesDeleteRequest object.
+
+  Fields:
+    allowMissing: If set to true and the Database is not found, the request
+      will succeed but no action will be taken.
+    etag: The current etag of the Database. If an etag is provided and does
+      not match the current etag of the database, deletion will be blocked and
+      a FAILED_PRECONDITION error will be returned.
+    name: Required. A name of the form
+      `projects/{project_id}/databases/{database_id}`
+    validateOnly: If set, validate the request and preview the response, but
+      do not actually delete the database.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
 class FirestoreProjectsDatabasesDocumentsBatchGetRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesDocumentsBatchGetRequest object.
 
@@ -977,28 +998,37 @@ class FirestoreProjectsDatabasesDocumentsListDocumentsRequest(_messages.Message)
   r"""A FirestoreProjectsDatabasesDocumentsListDocumentsRequest object.
 
   Fields:
-    collectionId: Required. The collection ID, relative to `parent`, to list.
-      For example: `chatrooms` or `messages`.
+    collectionId: Optional. The collection ID, relative to `parent`, to list.
+      For example: `chatrooms` or `messages`. This is optional, and when not
+      provided, Firestore will list documents from all collections under the
+      provided `parent`.
     mask_fieldPaths: The list of field paths in the mask. See Document.fields
       for a field path syntax reference.
-    orderBy: The order to sort results by. For example: `priority desc, name`.
-    pageSize: The maximum number of documents to return.
-    pageToken: The `next_page_token` value returned from a previous List
-      request, if any.
+    orderBy: Optional. The optional ordering of the documents to return. For
+      example: `priority desc, __name__ desc`. This mirrors the `ORDER BY`
+      used in Firestore queries but in a string representation. When absent,
+      documents are ordered based on `__name__ ASC`.
+    pageSize: Optional. The maximum number of documents to return in a single
+      response. Firestore may return fewer than this value.
+    pageToken: Optional. A page token, received from a previous
+      `ListDocuments` response. Provide this to retrieve the subsequent page.
+      When paginating, all other parameters (with the exception of
+      `page_size`) must match the values set in the request that generated the
+      page token.
     parent: Required. The parent resource name. In the format:
       `projects/{project_id}/databases/{database_id}/documents` or `projects/{
       project_id}/databases/{database_id}/documents/{document_path}`. For
       example: `projects/my-project/databases/my-database/documents` or
       `projects/my-project/databases/my-database/documents/chatrooms/my-
       chatroom`
-    readTime: Reads documents as they were at the given time. This may not be
-      older than 270 seconds.
-    showMissing: If the list should show missing documents. A missing document
-      is a document that does not exist but has sub-documents. These documents
-      will be returned with a key but will not have fields,
-      Document.create_time, or Document.update_time set. Requests with
-      `show_missing` may not specify `where` or `order_by`.
-    transaction: Reads documents in a transaction.
+    readTime: Perform the read at the provided time. This may not be older
+      than 270 seconds.
+    showMissing: If the list should show missing documents. A document is
+      missing if it does not exist, but there are sub-documents nested
+      underneath it. When true, such missing documents will be returned with a
+      key but will not have fields, `create_time`, or `update_time` set.
+      Requests with `show_missing` may not specify `where` or `order_by`.
+    transaction: Perform the read as part of an already active transaction.
   """
 
   collectionId = _messages.StringField(1, required=True)
@@ -1016,28 +1046,37 @@ class FirestoreProjectsDatabasesDocumentsListRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesDocumentsListRequest object.
 
   Fields:
-    collectionId: Required. The collection ID, relative to `parent`, to list.
-      For example: `chatrooms` or `messages`.
+    collectionId: Optional. The collection ID, relative to `parent`, to list.
+      For example: `chatrooms` or `messages`. This is optional, and when not
+      provided, Firestore will list documents from all collections under the
+      provided `parent`.
     mask_fieldPaths: The list of field paths in the mask. See Document.fields
       for a field path syntax reference.
-    orderBy: The order to sort results by. For example: `priority desc, name`.
-    pageSize: The maximum number of documents to return.
-    pageToken: The `next_page_token` value returned from a previous List
-      request, if any.
+    orderBy: Optional. The optional ordering of the documents to return. For
+      example: `priority desc, __name__ desc`. This mirrors the `ORDER BY`
+      used in Firestore queries but in a string representation. When absent,
+      documents are ordered based on `__name__ ASC`.
+    pageSize: Optional. The maximum number of documents to return in a single
+      response. Firestore may return fewer than this value.
+    pageToken: Optional. A page token, received from a previous
+      `ListDocuments` response. Provide this to retrieve the subsequent page.
+      When paginating, all other parameters (with the exception of
+      `page_size`) must match the values set in the request that generated the
+      page token.
     parent: Required. The parent resource name. In the format:
       `projects/{project_id}/databases/{database_id}/documents` or `projects/{
       project_id}/databases/{database_id}/documents/{document_path}`. For
       example: `projects/my-project/databases/my-database/documents` or
       `projects/my-project/databases/my-database/documents/chatrooms/my-
       chatroom`
-    readTime: Reads documents as they were at the given time. This may not be
-      older than 270 seconds.
-    showMissing: If the list should show missing documents. A missing document
-      is a document that does not exist but has sub-documents. These documents
-      will be returned with a key but will not have fields,
-      Document.create_time, or Document.update_time set. Requests with
-      `show_missing` may not specify `where` or `order_by`.
-    transaction: Reads documents in a transaction.
+    readTime: Perform the read at the provided time. This may not be older
+      than 270 seconds.
+    showMissing: If the list should show missing documents. A document is
+      missing if it does not exist, but there are sub-documents nested
+      underneath it. When true, such missing documents will be returned with a
+      key but will not have fields, `create_time`, or `update_time` set.
+      Requests with `show_missing` may not specify `where` or `order_by`.
+    transaction: Perform the read as part of an already active transaction.
   """
 
   collectionId = _messages.StringField(1, required=True)
@@ -2222,7 +2261,8 @@ class ListDocumentsResponse(_messages.Message):
 
   Fields:
     documents: The Documents found.
-    nextPageToken: The next page token.
+    nextPageToken: A token to retrieve the next page of documents. If this
+      field is omitted, there are no subsequent pages.
   """
 
   documents = _messages.MessageField('Document', 1, repeated=True)

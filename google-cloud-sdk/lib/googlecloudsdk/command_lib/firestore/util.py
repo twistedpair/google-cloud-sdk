@@ -160,28 +160,6 @@ def ValidateFieldArg(ref, unused_args, request):
   return request
 
 
-def CreateIndexMessage(messages, index):
-  """Creates a message for the given index.
-
-  Args:
-    messages: The Cloud Firestore messages module.
-    index: The index ArgDict.
-  Returns:
-    GoogleFirestoreAdminV1Index
-  """
-  # Currently all indexes are COLLECTION-scoped
-  query_scope = (
-      messages.GoogleFirestoreAdminV1Index.QueryScopeValueValuesEnum.COLLECTION)
-  # Since this is a single-field index there will only be 1 field
-  index_fields = [
-      messages.GoogleFirestoreAdminV1IndexField(
-          arrayConfig=index.get('array-config'), order=index.get('order'))
-  ]
-
-  return messages.GoogleFirestoreAdminV1Index(
-      queryScope=query_scope, fields=index_fields)
-
-
 def ValidateFieldIndexArgs(args):
   """Validates the repeated --index arg.
 
@@ -194,13 +172,14 @@ def ValidateFieldIndexArgs(args):
     return
 
   for index in args.index:
-    order = index.get('order')
-    array_config = index.get('array-config')
-    if (order and array_config) or (not order and not array_config):
-      raise exceptions.InvalidArgumentException(
-          '--index',
-          "Exactly one of 'order' or 'array-config' must be specified "
-          "for each --index flag provided.")
+    for field in index.fields:
+      order = field.order
+      array_config = field.arrayConfig
+      if (order and array_config) or (not order and not array_config):
+        raise exceptions.InvalidArgumentException(
+            '--index',
+            "Exactly one of 'order' or 'array-config' must be specified "
+            "for each --index flag provided.")
 
 
 def UpdateFieldRequestTtls(ref, args, request):
@@ -229,8 +208,23 @@ def UpdateFieldRequestTtls(ref, args, request):
   return request
 
 
-def CreateFieldUpdateRequest(ref, args):
-  """Python hook to create the field update request.
+def AddQueryScope(indexes):
+  messages = GetMessagesModule()
+  scope = (
+      messages.GoogleFirestoreAdminV1Index.QueryScopeValueValuesEnum.COLLECTION)
+
+  for index in indexes:
+    index.queryScope = scope
+  return indexes
+
+
+def ValidateFieldUpdateRequest(unused_ref, args, req):
+  ValidateFieldIndexArgs(args)
+  return req
+
+
+def AddIndexConfigToUpdateRequest(ref, args, req):
+  """Update patch request to include indexConfig.
 
   The mapping of index config message to API behavior is as follows:
     None          - Clears the exemption
@@ -240,60 +234,28 @@ def CreateFieldUpdateRequest(ref, args):
   Args:
     ref: The field resource reference.
     args: The parsed arg namespace.
+    req: The auto-generated patch request.
   Returns:
     FirestoreProjectsDatabasesCollectionGroupsFieldsPatchRequest
   """
-  ValidateFieldIndexArgs(args)
-
   messages = GetMessagesModule()
-  index_config = None
+
   if args.disable_indexes:
     index_config = messages.GoogleFirestoreAdminV1IndexConfig(indexes=[])
-  elif args.IsSpecified('index'):
-    # args.index is a repeated argument
-    index_config = messages.GoogleFirestoreAdminV1IndexConfig(
-        indexes=[CreateIndexMessage(messages, index) for index in args.index])
-
-  field = messages.GoogleFirestoreAdminV1Field(
-      name=ref.RelativeName(), indexConfig=index_config)
-
-  request = (
-      messages.FirestoreProjectsDatabasesCollectionGroupsFieldsPatchRequest(
-          name=ref.RelativeName(),
-          updateMask='indexConfig',
-          googleFirestoreAdminV1Field=field))
-
-  return request
-
-
-def GetDatabaseType(value):
-  """Return API required format for type specified by value."""
-  messages = GetMessagesModule()
-  if value == 'firestore-native':
-    return messages.GoogleFirestoreAdminV1Database.TypeValueValuesEnum.FIRESTORE_NATIVE
-  elif value == 'datastore-mode':
-    return messages.GoogleFirestoreAdminV1Database.TypeValueValuesEnum.DATASTORE_MODE
+  elif args.IsSpecified('index') and req.googleFirestoreAdminV1Field:
+    index_config = req.googleFirestoreAdminV1Field.indexConfig
   else:
-    raise exceptions.InvalidArgumentException('invalid type: ' + value)
+    index_config = None
+
+  # TODO(b/261024675): Edit modify_request_hook whenever the resource arg can be
+  # automatically mapped to googleFirestoreAdminV1Field.name
+  req.googleFirestoreAdminV1Field = messages.GoogleFirestoreAdminV1Field(
+      name=ref.RelativeName(), indexConfig=index_config)
+  return req
 
 
-def CreateDatabaseUpdateRequest(ref, args):
-  """Create a database update request.
-
-  Args:
-    ref: The resource ref.
-    args: The parsed arg namespace.
-
-  Returns:
-    A new database update request with new retention.
-  """
-  messages = GetMessagesModule()
-  database = messages.GoogleFirestoreAdminV1Database(
-      name=ref.RelativeName(),
-      type=GetDatabaseType(args.type))
-  request = (
-      messages.FirestoreProjectsDatabasesPatchRequest(
-          name=ref.RelativeName(),
-          updateMask='type',
-          googleFirestoreAdminV1Database=database))
-  return request
+# TODO(b/261024675): Remove modify_request_hook whenever the resource arg can be
+# automatically mapped to googleFirestoreAdminV1Database.name
+def ModifyDatabaseUpdateRequest(ref, unused_args, req):
+  req.googleFirestoreAdminV1Database.name = ref.RelativeName()
+  return req

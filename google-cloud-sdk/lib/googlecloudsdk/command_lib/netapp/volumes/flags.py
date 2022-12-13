@@ -27,6 +27,20 @@ from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
+VOLUMES_LIST_FORMAT = """\
+    table(
+        name.basename():label=VOLUME_NAME:sort=1,
+        storagePool,
+        capacityGib:label=CAPACITY_GB,
+        serviceLevel,
+        network,
+        shareName,
+        state,
+        createTime.date(),
+        labels,
+        description
+    )"""
+
 ## Helper functions to add args / flags for Volumes gcloud commands ##
 
 
@@ -74,27 +88,19 @@ def AddVolumeNetworkArg(parser, required=True):
       help=network_help)
 
 
-def GetVolumeProtocolsArgMapper(messages):
-  """Returns the Choice Enum mapper for Protocols.
+def GetVolumeProtocolEnumFromArg(choice, messages):
+  """Returns the Choice Enum for Protocols.
 
   Args:
+    choice: The choice for protocol input as string
     messages: The messages module.
 
   Returns:
-    the choice arg Enum mapper
+    the protocol enum
   """
-  protocols_arg_mapper = (
-      arg_utils.ChoiceEnumMapper(
-          '--protocols',
-          messages.Volume.ProtocolsValueListEntryValuesEnum,
-          help_str="""The File share protocol types for the Cloud NetApp Files Volume.""",
-          custom_mappings={
-              'NFSV3': ('nfsv3', """File System Protocol NFSv3."""),
-              'NFSV4': ('nfsv4', """File System Protocol NFSv3."""),
-              'SMB': ('smb', """File System Protocol SMB."""),
-          },
-          default='PROTOCOL_UNSPECIFIED'))
-  return protocols_arg_mapper
+  return arg_utils.ChoiceToEnum(
+      choice=choice,
+      enum_type=messages.Volume.ProtocolsValueListEntryValuesEnum)
 
 
 def AddVolumeProtocolsArg(parser, required=True):
@@ -103,8 +109,14 @@ def AddVolumeProtocolsArg(parser, required=True):
       '--protocols',
       type=arg_parsers.ArgList(min_length=1, element_type=str),
       required=required,
+      metavar='PROTOCOL',
       help="""Type of File System protocols for the Cloud NetApp Files Volume\
-           .""")
+Valid component values are:
+            `NFSV3`, `NFSV4`, `SMB`
+
+            For more information, look at\
+https://cloud.google.com/netapp/docs/reference\
+/rest/v1alpha1/projects.locations.volumes#protocols.""")
 
 
 def AddVolumeShareNameArg(parser, required=True):
@@ -184,6 +196,7 @@ def AddVolumeExportPolicyArg(parser):
   parser.add_argument(
       '--export-policy',
       type=arg_parsers.ArgDict(spec=export_policy_arg_spec),
+      action='append',
       help=export_policy_help)
 
 
@@ -192,38 +205,23 @@ def AddVolumeUnixPermissionsArg(parser):
   parser.add_argument(
       '--unix-permissions',
       type=str,
-      help="""Unix permissions the mount point will be created with.
-      Unix permissions are only applicable with NFS protocol only""")
+      help="""Unix permissions the mount point will be created with.\
+Unix permissions are only applicable with NFS protocol only""")
 
 
-def GetVolumeSmbSettingsArg(messages):
-  """Returns a --smb-settings choice enum mapper arg.
+def GetVolumeSmbSettingsEnumFromArg(choice, messages):
+  """Returns the Choice Enum for SMB Setting.
 
   Args:
+    choice: The choice for SMB setting input as string
     messages: The messages module.
 
   Returns:
     The choice arg.
   """
-  smb_settings_arg = (
-      arg_utils.ChoiceEnumMapper(
-          '--smb-settings',
-          messages.Volume.SmbSettingsValueListEntryValuesEnum,
-          ## TODO(b/239958861) Review, and add detailed smb settings help text
-          help_str="""The SMB Settings of the Volume.""",
-          custom_mappings={
-              'ENCRYPT_DATA': 'encrypt-data',
-              'BROWSABLE': 'browsable',
-              'CHANGE_NOTIFY': 'change-notify',
-              'NON_BROWSABLE': 'non-browsable',
-              'OPLOCKS': 'oplocks',
-              'SHOW_SNAPSHOT': 'show-snapshot',
-              'SHOW_PREVIOUS_VERSIONS': 'show-previous-versions',
-              'ACCESS_BASED_ENUMERATION': 'access-based-enumeration',
-              'CONTINUOUSLY_AVAILABLE': 'continuously-available'
-          },
-          default='SMB_SETTINGS_UNSPECIFIED'))
-  return smb_settings_arg
+  return arg_utils.ChoiceToEnum(
+      choice=choice,
+      enum_type=messages.Volume.SmbSettingsValueListEntryValuesEnum)
 
 
 def AddVolumeSmbSettingsArg(parser):
@@ -231,11 +229,21 @@ def AddVolumeSmbSettingsArg(parser):
   parser.add_argument(
       '--smb-settings',
       type=arg_parsers.ArgList(min_length=1, element_type=str),
-      help="""The SMB Settings of the Volume.The SMB Settings of the Volume.""")
+      metavar='SMB_SETTING',
+      help="""List of settings specific to SMB protocol\
+for a Cloud NetApp Files Volume\
+Valid component values are:
+  `ENCRYPT_DATA`, `BROWSABLE`, `CHANGE_NOTIFY`, 'NON_BROWSABLE',
+  'OPLOCKS', 'SHOW_SNAPSHOT', 'SHOW_PREVIOUS_VERSIONS',
+  'ACCESS_BASED_ENUMERATION', 'CONTINUOUSLY_AVAILABLE'
+
+            For more information, look at\
+https://cloud.google.com/netapp/docs/reference\
+/rest/v1alpha1/projects.locations.volumes#smbsettings.""")
 
 
 def AddVolumeHourlySnapshotArg(parser):
-  """Adds the --hourly-snapshot arg to the arg parser."""
+  """Adds the --snapshot-hourly arg to the arg parser."""
   hourly_snapshot_arg_spec = {
       'snapshots-to-keep': float,
       'minute': float,
@@ -244,13 +252,13 @@ def AddVolumeHourlySnapshotArg(parser):
   Make a snapshot every hour e.g. at 04:00, 05:20, 06:00
   """
   parser.add_argument(
-      '--hourly-snapshot',
+      '--snapshot-hourly',
       type=arg_parsers.ArgDict(spec=hourly_snapshot_arg_spec),
       help=hourly_snapshot_help)
 
 
 def AddVolumeDailySnapshotArg(parser):
-  """Adds the --daily-snapshot arg to the arg parser."""
+  """Adds the --snapshot-daily arg to the arg parser."""
   daily_snapshot_arg_spec = {
       'snapshots-to-keep': float,
       'minute': float,
@@ -260,13 +268,13 @@ def AddVolumeDailySnapshotArg(parser):
   Make a snapshot every day e.g. at 06:00, 05:20, 23:50
   """
   parser.add_argument(
-      '--daily-snapshot',
+      '--snapshot-daily',
       type=arg_parsers.ArgDict(spec=daily_snapshot_arg_spec),
       help=daily_snapshot_help)
 
 
 def AddVolumeWeeklySnapshotArg(parser):
-  """Adds the --weekly-snapshot arg to the arg parser."""
+  """Adds the --snapshot-weekly arg to the arg parser."""
   weekly_snapshot_arg_spec = {
       'snapshots-to-keep': float,
       'minute': float,
@@ -278,13 +286,13 @@ def AddVolumeWeeklySnapshotArg(parser):
   Sunday 23:50
   """
   parser.add_argument(
-      '--weekly-snapshot',
+      '--snapshot-weekly',
       type=arg_parsers.ArgDict(spec=weekly_snapshot_arg_spec),
       help=weekly_snapshot_help)
 
 
 def AddVolumeMonthlySnapshotArg(parser):
-  """Addss the --monthly-snapshot arg to the arg parser."""
+  """Addss the --snapshot-monthly arg to the arg parser."""
   monthly_snapshot_arg_spec = {
       'snapshots-to-keep': float,
       'minute': float,
@@ -295,7 +303,7 @@ def AddVolumeMonthlySnapshotArg(parser):
   Make a snapshot once a month e.g. at 2nd 04:00, 7th 05:20, 24th 23:50
   """
   parser.add_argument(
-      '--monthly-snapshot',
+      '--snapshot-monthly',
       type=arg_parsers.ArgDict(spec=monthly_snapshot_arg_spec),
       help=monthly_snapshot_help)
 
@@ -322,15 +330,23 @@ def AddVolumeSnapshotDirectoryArg(parser):
           """)
 
 
-def GetVolumeSecurityStyleArg(messages):
-  """Returns a --security-style choice enum mapper arg.
+def GetVolumeSecurityStyleEnumFromArg(choice, messages):
+  """Returns the Choice Enum for Security style.
 
   Args:
+    choice: The choice for Security style input as string
     messages: The messages module.
 
   Returns:
     The choice arg.
   """
+  return arg_utils.ChoiceToEnum(
+      choice=choice,
+      enum_type=messages.Volume.SecurityStyleValueValuesEnum)
+
+
+def AddVolumeSecurityStyleArg(parser, messages):
+  """Adds the --security-style arg to the arg parser."""
   security_style_arg = (
       arg_utils.ChoiceEnumMapper(
           '--security-style',
@@ -343,12 +359,7 @@ def GetVolumeSecurityStyleArg(messages):
               'NTFS': ('ntfs', """NTFS security style for Volume."""),
           },
           default='SECURITY_STYLE_UNSPECIFIED'))
-  return security_style_arg
-
-
-def AddVolumeSecurityStyleArg(parser, messages):
-  """Adds the --security-style arg to the arg parser."""
-  GetVolumeSecurityStyleArg(messages).choice_arg.AddToParser(parser)
+  security_style_arg.choice_arg.AddToParser(parser)
 
 
 def AddVolumeEnableKerberosArg(parser):
@@ -378,16 +389,6 @@ def AddVolumeForceArg(parser):
       action='store_true',
       help="""Forces the deletion of a volume and its child resources, such as snapshots."""
   )
-
-
-def AddVolumeActiveDirectoryArg(parser):
-  """Adds the --active-directory resource arg to the arg parser."""
-  concept_parsers.ConceptParser.ForResource(
-      '--active-directory',
-      flags.GetActiveDirectoryResourceSpec(),
-      group_help='The Active Directory associated with Volume.',
-      flag_name_overrides={'location': ''}).AddToParser(
-          parser)
 
 
 def AddVolumeRevertSnapshotArg(parser, required=True):
@@ -441,7 +442,6 @@ def AddVolumeCreateArgs(parser, release_track):
   AddVolumeSecurityStyleArg(parser, messages)
   AddVolumeEnableKerberosArg(parser)
   AddVolumeEnableLdapArg(parser)
-  AddVolumeActiveDirectoryArg(parser)
   labels_util.AddCreateLabelsFlags(parser)
 
 
@@ -470,6 +470,7 @@ def AddVolumeUpdateArgs(parser, release_track):
   AddVolumeExportPolicyArg(parser)
   AddVolumeUnixPermissionsArg(parser)
   AddVolumeSmbSettingsArg(parser)
+  AddVolumeFromSnapshotArg(parser)
   AddVolumeHourlySnapshotArg(parser)
   AddVolumeDailySnapshotArg(parser)
   AddVolumeWeeklySnapshotArg(parser)
@@ -479,5 +480,4 @@ def AddVolumeUpdateArgs(parser, release_track):
   AddVolumeSecurityStyleArg(parser, messages)
   AddVolumeEnableKerberosArg(parser)
   AddVolumeEnableLdapArg(parser)
-  AddVolumeActiveDirectoryArg(parser)
   labels_util.AddUpdateLabelsFlags(parser)

@@ -1655,8 +1655,6 @@ class TestMatrix(_messages.Message):
       INVALID_APK_PREVIEW_SDK: APK is built for a preview SDK which is
         unsupported
       MATRIX_TOO_LARGE: The matrix expanded to contain too many executions.
-      DEVICE_QUOTA_EXCEEDED: Deprecated: Not enough device quota to run the
-        executions in this matrix.
       TEST_QUOTA_EXCEEDED: Not enough test quota to run the executions in this
         matrix.
       SERVICE_NOT_ACTIVATED: A required cloud service api is not activated.
@@ -1701,10 +1699,9 @@ class TestMatrix(_messages.Message):
     INVALID_INPUT_APK = 33
     INVALID_APK_PREVIEW_SDK = 34
     MATRIX_TOO_LARGE = 35
-    DEVICE_QUOTA_EXCEEDED = 36
-    TEST_QUOTA_EXCEEDED = 37
-    SERVICE_NOT_ACTIVATED = 38
-    UNKNOWN_PERMISSION_ERROR = 39
+    TEST_QUOTA_EXCEEDED = 36
+    SERVICE_NOT_ACTIVATED = 37
+    UNKNOWN_PERMISSION_ERROR = 38
 
   class OutcomeSummaryValueValuesEnum(_messages.Enum):
     r"""Output Only. The overall outcome of the test. Only set when the test

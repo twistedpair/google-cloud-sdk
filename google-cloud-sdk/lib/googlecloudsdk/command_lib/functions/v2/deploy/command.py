@@ -148,10 +148,20 @@ _GCF_GEN2_UNITS = [
     'Pi',
 ]
 
-_VALUE_PATTERN = r"""
+# GCF 2nd gen valid cpu units
+_GCF_GEN2_CPU_UNITS = ['m'] + _GCF_GEN2_UNITS
+
+_MEMORY_VALUE_PATTERN = r"""
     ^                                    # Beginning of input marker.
     (?P<amount>\d+)                      # Amount.
     ((?P<suffix>[-/ac-zAC-Z]+)([bB])?)?  # Optional scale and optional 'b'.
+    $                                    # End of input marker.
+"""
+
+_CPU_VALUE_PATTERN = r"""
+    ^                                    # Beginning of input marker.
+    (?P<amount>\d*.?\d*)                 # Amount.
+    (?P<suffix>[-/ac-zAC-Z]+)?           # Optional scale.
     $                                    # End of input marker.
 """
 
@@ -394,6 +404,9 @@ def _GetServiceConfig(args, messages, existing_function):
 
   ingress_settings, ingress_updated_fields = _GetIngressSettings(args, messages)
 
+  concurrency = getattr(args, 'concurrency', None)
+  cpu = getattr(args, 'cpu', None)
+
   updated_fields = set()
 
   if args.serve_all_traffic_latest_revision:
@@ -401,6 +414,10 @@ def _GetServiceConfig(args, messages, existing_function):
     updated_fields.add('service_config.all_traffic_on_latest_revision')
   if args.memory is not None:
     updated_fields.add('service_config.available_memory')
+  if concurrency is not None:
+    updated_fields.add('service_config.max_instance_request_concurrency')
+  if cpu is not None:
+    updated_fields.add('service_config.available_cpu')
   if args.max_instances is not None or args.clear_max_instances:
     updated_fields.add('service_config.max_instance_count')
   if args.min_instances is not None or args.clear_min_instances:
@@ -440,8 +457,9 @@ def _GetServiceConfig(args, messages, existing_function):
       secretEnvironmentVariables=secrets_util.SecretEnvVarsToMessages(
           secret_env_vars, messages),
       secretVolumes=secrets_util.SecretVolumesToMessages(
-          secret_volumes, messages,
-          normalize_for_v2=True)), service_updated_fields
+          secret_volumes, messages, normalize_for_v2=True),
+      maxInstanceRequestConcurrency=concurrency,
+      availableCpu=_ValidateK8sCpuStr(cpu)), service_updated_fields
 
 
 def _ParseMemoryStrToK8sMemory(memory):
@@ -466,7 +484,7 @@ def _ParseMemoryStrToK8sMemory(memory):
   if memory is None or not memory:
     return None
 
-  match = re.match(_VALUE_PATTERN, memory, re.VERBOSE)
+  match = re.match(_MEMORY_VALUE_PATTERN, memory, re.VERBOSE)
   if not match:
     raise exceptions.InvalidArgumentException(
         '--memory', 'Invalid memory value for: {} specified.'.format(memory))
@@ -488,6 +506,44 @@ def _ParseMemoryStrToK8sMemory(memory):
         '--memory', 'Invalid suffix for: {} specified.'.format(memory))
 
   parsed_memory = amount + corrected_suffix
+  return parsed_memory
+
+
+def _ValidateK8sCpuStr(cpu):
+  """Validates user provided cpu to kubernetes expected format.
+
+  k8s format:
+  https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/generated.proto
+
+  Args:
+    cpu: str, input from `args.cpu`
+
+  Returns:
+    k8s_cpu: str|None, in kubernetes cpu format.
+
+  Raises:
+    InvalidArgumentException: User provided invalid input for flag.
+  """
+  if cpu is None:
+    return None
+
+  match = re.match(_CPU_VALUE_PATTERN, cpu, re.VERBOSE)
+  if not match:
+    raise exceptions.InvalidArgumentException(
+        '--cpu', 'Invalid cpu value for: {} specified.'.format(cpu))
+
+  suffix = match.group('suffix') or ''
+  amount = match.group('amount')
+
+  if not amount or amount == '.':
+    raise exceptions.InvalidArgumentException(
+        '--cpu', 'Invalid amount for: {} specified.'.format(cpu))
+
+  if suffix and suffix not in _GCF_GEN2_CPU_UNITS:
+    raise exceptions.InvalidArgumentException(
+        '--cpu', 'Invalid suffix for: {} specified.'.format(cpu))
+
+  parsed_memory = amount + suffix
   return parsed_memory
 
 
@@ -533,8 +589,7 @@ def _GetEventTrigger(args, messages, existing_function):
   if event_trigger and trigger_types.IsPubsubType(event_trigger.eventType):
     pubsub_sa = 'service-{}@gcp-sa-pubsub.iam.gserviceaccount.com'.format(
         projects_util.GetProjectNumber(api_util.GetProject()))
-    if not api_util.HasRoleBinding(pubsub_sa,
-                                   'roles/pubsub.serviceAgent'):
+    if not api_util.HasRoleBinding(pubsub_sa, 'roles/pubsub.serviceAgent'):
       api_util.PromptToBindRoleIfMissing(
           pubsub_sa,
           'roles/iam.serviceAccountTokenCreator',

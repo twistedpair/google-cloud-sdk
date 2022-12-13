@@ -355,6 +355,17 @@ class GcsApi(cloud_api.CloudApi):
           cloud_errors.translate_error(e, gcs_error_util.ERROR_TRANSLATION))
 
   @gcs_error_util.catch_http_error_raise_gcs_api_error()
+  def lock_bucket_retention_policy(self, bucket_resource, request_config):
+    metageneration_precondition = (
+        request_config.precondition_metageneration_match or
+        bucket_resource.metageneration)
+    request = self.messages.StorageBucketsLockRetentionPolicyRequest(
+        bucket=bucket_resource.storage_url.bucket_name,
+        ifMetagenerationMatch=metageneration_precondition)
+    return gcs_metadata_util.get_bucket_resource_from_metadata(
+        self.client.buckets.LockRetentionPolicy(request))
+
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
   def patch_bucket(self,
                    bucket_resource,
                    request_config,
@@ -618,11 +629,11 @@ class GcsApi(cloud_api.CloudApi):
     """See super class."""
     if (request_config.system_posix_data and cloud_resource.metadata and
         cloud_resource.metadata.metadata):
-      custom_metadata_dict = encoding_helper.MessageToDict(
+      custom_fields_dict = encoding_helper.MessageToDict(
           cloud_resource.metadata.metadata)
       posix_attributes_to_set = (
           posix_util.get_posix_attributes_from_custom_metadata_dict(
-              cloud_resource.storage_url.url_string, custom_metadata_dict))
+              cloud_resource.storage_url.url_string, custom_fields_dict))
     else:
       posix_attributes_to_set = None
 

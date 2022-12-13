@@ -193,6 +193,14 @@ def _ErrorFromInvalidMatrix(matrix):
           'scheme',
       enum_values.MALFORMED_APP_BUNDLE:
           'The iOS application bundle (.app) is invalid',
+      enum_values.MATRIX_TOO_LARGE:
+          'The matrix expanded to contain too many executions.',
+      enum_values.TEST_QUOTA_EXCEEDED:
+          'Not enough test quota to run the executions in this matrix.',
+      enum_values.SERVICE_NOT_ACTIVATED:
+          'A required cloud service api is not activated.',
+      enum_values.UNKNOWN_PERMISSION_ERROR:
+          'There was an unknown permission issue running this test.',
   }
   details_enum = matrix.invalidMatrixDetails
   if details_enum in error_dict:

@@ -159,6 +159,7 @@ rules:
   verbs: ["get", "list", "watch"]
 - apiGroups: ["cluster.k8s.io"]
   resources: ["clusters", "controlplanes", "machineclasses", "machinedeployments", "machines", "machinesets"]
+  verbs: ["get", "list", "watch"]
 - apiGroups: ["cluster.x-k8s.io"]
   resources: ["clusters", "controlplanes", "machineclasses", "machinedeployments", "machines", "machinesets"]
   verbs: ["get", "list", "watch"]

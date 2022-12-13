@@ -666,10 +666,6 @@ def EscapeVersionNameHook(ref, unused_args, req):
   return req
 
 
-def IssueGetProjectSettingsRequest(unused_ref, args):
-  return ar_requests.GetProjectSettings(GetProject(args))
-
-
 def GetRedirectionEnablementReport(project):
   """Prints a redirection enablement report and returns mis-configured repos.
 
@@ -733,6 +729,13 @@ def GetRedirectionEnablementReport(project):
   printer.Finish()
   log.status.Print()
   return missing_repos
+
+
+# TODO(b/261183749): Remove modify_request_hook when singleton resource args
+# are enabled in declarative.
+def UpdateSettingsResource(unused_ref, unused_args, req):
+  req.name = req.name + "/projectSettings"
+  return req
 
 
 def CheckRedirectionPermission(project):

@@ -80,11 +80,11 @@ class _BareMetalNodePoolsClient(client.ClientBase):
 # TODO(b/260737834): Create a common function for all nodeConfigs
   def _bare_metal_node_config(self, node_config):
     """Constructs proto message BareMetalNodeConfig."""
-    node_ip = node_config.get('nodeIp', '')
+    node_ip = node_config.get('nodeIP', '')
     if not node_ip:
       raise exceptions.BadArgumentException(
           '--node_configs_from_file',
-          'Missing field [nodeIp] in Node configs file.')
+          'Missing field [nodeIP] in Node configs file.')
 
     kwargs = {
         'nodeIp': node_ip,

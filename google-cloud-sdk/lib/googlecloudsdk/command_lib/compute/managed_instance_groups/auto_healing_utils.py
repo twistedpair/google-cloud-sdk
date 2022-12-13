@@ -20,11 +20,16 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute.health_checks import flags as health_checks_flags
 
 
 HEALTH_CHECK_ARG = health_checks_flags.HealthCheckArgument(
-    '', '--health-check', required=False, include_regional_health_check=False)
+    '',
+    '--health-check',
+    required=False,
+    include_regional_health_check=True,
+    scope_flags_usage=compute_flags.ScopeFlagsUsage.DONT_USE_SCOPE_FLAGS)
 
 
 # Allow only up to 1 year initial delay

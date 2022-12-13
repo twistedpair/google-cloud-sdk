@@ -101,7 +101,13 @@ def SecurityPolicyRegionalArgumentForTargetResource(resource, required=False):
           ).format(resource)))
 
 
-def SecurityPolicyMultiScopeArgumentForTargetResource(resource, required=False):
+def SecurityPolicyMultiScopeArgumentForTargetResource(
+    resource,
+    required=False,
+    region_hidden=False,
+    scope_flags_usage=compute_flags.ScopeFlagsUsage
+    .GENERATE_DEDICATED_SCOPE_FLAGS,
+    short_help_text=None):
   return compute_flags.ResourceArgument(
       resource_name='security policy',
       name='--security-policy',
@@ -110,10 +116,13 @@ def SecurityPolicyMultiScopeArgumentForTargetResource(resource, required=False):
       required=required,
       global_collection='compute.securityPolicies',
       regional_collection='compute.regionSecurityPolicies',
+      region_hidden=region_hidden,
       short_help=(
-          ('The security policy that will be set for this {0}. To remove the '
+          (short_help_text or
+           'The security policy that will be set for this {0}. To remove the '
            'policy from this {0} set the policy to an empty string.'
-          ).format(resource)))
+          ).format(resource)),
+      scope_flags_usage=scope_flags_usage)
 
 
 def EdgeSecurityPolicyArgumentForTargetResource(resource, required=False):
@@ -138,6 +147,20 @@ def SecurityPolicyArgumentForRules(required=False):
       plural=False,
       required=required,
       global_collection='compute.securityPolicies',
+      short_help='The security policy that this rule belongs to.')
+
+
+def SecurityPolicyMultiScopeArgumentForRules(required=False):
+  return compute_flags.ResourceArgument(
+      resource_name='security policy',
+      name='--security-policy',
+      completer=SecurityPoliciesCompleter,
+      plural=False,
+      required=required,
+      global_collection='compute.securityPolicies',
+      regional_collection='compute.regionSecurityPolicies',
+      region_hidden=True,
+      scope_flags_usage=compute_flags.ScopeFlagsUsage.USE_EXISTING_SCOPE_FLAGS,
       short_help='The security policy that this rule belongs to.')
 
 

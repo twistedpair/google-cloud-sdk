@@ -49,6 +49,67 @@ class GoogleCloudRecaptchaenterpriseV1AccountDefenderAssessment(_messages.Messag
   labels = _messages.EnumField('LabelsValueListEntryValuesEnum', 1, repeated=True)
 
 
+class GoogleCloudRecaptchaenterpriseV1AccountVerificationInfo(_messages.Message):
+  r"""Information about account verification, used for identity verification.
+
+  Enums:
+    LatestVerificationResultValueValuesEnum: Output only. Result of the latest
+      account verification challenge.
+
+  Fields:
+    endpoints: Endpoints that can be used for identity verification.
+    languageCode: Language code preference for the verification message, set
+      as a IETF BCP 47 language code.
+    latestVerificationResult: Output only. Result of the latest account
+      verification challenge.
+    username: Username of the account that is being verified. Deprecated.
+      Customers should now provide the hashed account ID field in Event.
+  """
+
+  class LatestVerificationResultValueValuesEnum(_messages.Enum):
+    r"""Output only. Result of the latest account verification challenge.
+
+    Values:
+      RESULT_UNSPECIFIED: No information about the latest account
+        verification.
+      SUCCESS_USER_VERIFIED: The user was successfully verified. This means
+        the account verification challenge was successfully completed.
+      ERROR_USER_NOT_VERIFIED: The user failed the verification challenge.
+      ERROR_SITE_ONBOARDING_INCOMPLETE: The site is not properly onboarded to
+        use the account verification feature.
+      ERROR_RECIPIENT_NOT_ALLOWED: The recipient is not allowed for account
+        verification. This can occur during integration but should not occur
+        in production.
+      ERROR_RECIPIENT_ABUSE_LIMIT_EXHAUSTED: The recipient has already been
+        sent too many verification codes in a short amount of time.
+      ERROR_CRITICAL_INTERNAL: The verification flow could not be completed
+        due to a critical internal error.
+      ERROR_CUSTOMER_QUOTA_EXHAUSTED: The client has exceeded their two factor
+        request quota for this period of time.
+      ERROR_VERIFICATION_BYPASSED: The request cannot be processed at the time
+        because of an incident. This bypass can be restricted to a problematic
+        destination email domain, a customer, or could affect the entire
+        service.
+      ERROR_VERDICT_MISMATCH: The request parameters do not match with the
+        token provided and cannot be processed.
+    """
+    RESULT_UNSPECIFIED = 0
+    SUCCESS_USER_VERIFIED = 1
+    ERROR_USER_NOT_VERIFIED = 2
+    ERROR_SITE_ONBOARDING_INCOMPLETE = 3
+    ERROR_RECIPIENT_NOT_ALLOWED = 4
+    ERROR_RECIPIENT_ABUSE_LIMIT_EXHAUSTED = 5
+    ERROR_CRITICAL_INTERNAL = 6
+    ERROR_CUSTOMER_QUOTA_EXHAUSTED = 7
+    ERROR_VERIFICATION_BYPASSED = 8
+    ERROR_VERDICT_MISMATCH = 9
+
+  endpoints = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1EndpointVerificationInfo', 1, repeated=True)
+  languageCode = _messages.StringField(2)
+  latestVerificationResult = _messages.EnumField('LatestVerificationResultValueValuesEnum', 3)
+  username = _messages.StringField(4)
+
+
 class GoogleCloudRecaptchaenterpriseV1AndroidKeySettings(_messages.Message):
   r"""Settings specific to keys that can be used by Android apps.
 
@@ -183,6 +244,9 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
   Fields:
     accountDefenderAssessment: Assessment returned by account defender when a
       hashed_account_id is provided.
+    accountVerification: Account verification information for identity
+      verification. The assessment event must include a token and site key to
+      use this feature.
     event: The event being assessed.
     name: Output only. The resource name for the Assessment in the format
       "projects/{project}/assessments/{assessment}".
@@ -195,11 +259,12 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
   """
 
   accountDefenderAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AccountDefenderAssessment', 1)
-  event = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Event', 2)
-  name = _messages.StringField(3)
-  privatePasswordLeakVerification = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification', 4)
-  riskAnalysis = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RiskAnalysis', 5)
-  tokenProperties = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TokenProperties', 6)
+  accountVerification = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AccountVerificationInfo', 2)
+  event = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Event', 3)
+  name = _messages.StringField(4)
+  privatePasswordLeakVerification = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification', 5)
+  riskAnalysis = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RiskAnalysis', 6)
+  tokenProperties = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TokenProperties', 7)
 
 
 class GoogleCloudRecaptchaenterpriseV1ChallengeMetrics(_messages.Message):
@@ -223,6 +288,25 @@ class GoogleCloudRecaptchaenterpriseV1ChallengeMetrics(_messages.Message):
   nocaptchaCount = _messages.IntegerField(2)
   pageloadCount = _messages.IntegerField(3)
   passedCount = _messages.IntegerField(4)
+
+
+class GoogleCloudRecaptchaenterpriseV1EndpointVerificationInfo(_messages.Message):
+  r"""Information about a verification endpoint that can be used for 2FA.
+
+  Fields:
+    emailAddress: Email address for which to trigger a verification request.
+    lastVerificationTime: Output only. Timestamp of the last successful
+      verification for the endpoint, if any.
+    phoneNumber: Phone number for which to trigger a verification request.
+      Should be given in E.164 format.
+    requestToken: Output only. Token to provide to the client to trigger
+      endpoint verification. It must be used within 15 minutes.
+  """
+
+  emailAddress = _messages.StringField(1)
+  lastVerificationTime = _messages.StringField(2)
+  phoneNumber = _messages.StringField(3)
+  requestToken = _messages.StringField(4)
 
 
 class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
@@ -860,11 +944,14 @@ class GoogleCloudRecaptchaenterpriseV1WafSettings(_messages.Message):
       SESSION_TOKEN: Use reCAPTCHA session-tokens to protect the whole user
         session on the site's domain.
       ACTION_TOKEN: Use reCAPTCHA action-tokens to protect user actions.
+      EXPRESS: Use reCAPTCHA WAF express protection to protect any context
+        other than web pages, like APIs and IoT devices.
     """
     WAF_FEATURE_UNSPECIFIED = 0
     CHALLENGE_PAGE = 1
     SESSION_TOKEN = 2
     ACTION_TOKEN = 3
+    EXPRESS = 4
 
   class WafServiceValueValuesEnum(_messages.Enum):
     r"""Required. The WAF service that uses this key.

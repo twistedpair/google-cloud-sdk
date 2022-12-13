@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
+from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 _WAF_EXCLUSION_REQUEST_FIELD_HELP_TEXT = """
 You can specify an exact match or a partial match by using a field operator and
@@ -164,6 +165,12 @@ def AddPriority(parser, operation, is_plural=False):
             'from highest priority to lowest priority where 0 is the highest '
             'priority and 2147483647 is the lowest priority.'.format(
                 's' if is_plural else '', operation)))
+
+
+def AddRegionFlag(parser, operation):
+  """Adds the region argument to the argparse to specify the security policy region."""
+  return compute_flags.AddRegionFlag(
+      parser, 'security policy', operation, hidden=True)
 
 
 def AddMatcher(parser, required=True):

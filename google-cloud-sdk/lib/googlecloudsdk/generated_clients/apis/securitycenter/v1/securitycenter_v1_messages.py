@@ -1003,8 +1003,8 @@ class Finding(_messages.Message):
       start with a letter and contain alphanumeric characters or underscores
       only.
     state: The state of the finding.
-    vulnerability: Represents vulnerability specific fields like cve, cvss
-      scores etc. CVE stands for Common Vulnerabilities and Exposures
+    vulnerability: Represents vulnerability-specific fields like CVE and CVS
+      scores. CVE stands for Common Vulnerabilities and Exposures
       (https://cve.mitre.org/about/)
   """
 
@@ -1521,10 +1521,10 @@ class GoogleCloudSecuritycenterV1ExternalSystem(_messages.Message):
       finding's ticket/tracker was updated in the external system.
     externalUid: Identifier that's used to track the given finding in the
       external system.
-    name: External System Name e.g. jira, demisto, etc. e.g.:
-      `organizations/1234/sources/5678/findings/123456/externalSystems/jira`
-      `folders/1234/sources/5678/findings/123456/externalSystems/jira`
-      `projects/1234/sources/5678/findings/123456/externalSystems/jira`
+    name: Full resource name of the external system, for example:
+      "organizations/1234/sources/5678/findings/123456/externalSystems/jira",
+      "folders/1234/sources/5678/findings/123456/externalSystems/jira",
+      "projects/1234/sources/5678/findings/123456/externalSystems/jira"
     status: Most recent status of the corresponding finding's ticket/tracker
       in the external system.
   """
@@ -2428,25 +2428,25 @@ class KernelRootkit(_messages.Message):
 
   Fields:
     name: Rootkit name when available.
-    unexpectedCodeModification: Flag indicating unexpected modifications of
-      kernel code memory.
-    unexpectedFtraceHandler: Flag indicating presence of ftrace points with
+    unexpectedCodeModification: True when unexpected modifications of kernel
+      read-only data memory are present.
+    unexpectedFtraceHandler: True when `ftrace` points are present with
       callbacks pointing to regions that are not in the expected kernel or
       module code range.
-    unexpectedInterruptHandler: Flag indicating presence of interrupt handlers
-      that are are not in the expected kernel, module code regions.
-    unexpectedKernelCodePages: Flag indicating presence of kernel code pages
-      that are not in the expected kernel, module code regions.
-    unexpectedKprobeHandler: Flag indicating presence of kprobe points with
+    unexpectedInterruptHandler: True when interrupt handlers that are are not
+      in the expected kernel or module code regions are present.
+    unexpectedKernelCodePages: True when kernel code pages that are not in the
+      expected kernel or module code regions are present.
+    unexpectedKprobeHandler: True when `kprobe` points are present with
       callbacks pointing to regions that are not in the expected kernel or
       module code range.
-    unexpectedProcessesInRunqueue: Flag indicating unexpected process(es) in
-      the scheduler run-queue, those that are in the run-queue, but not in the
-      process task-list.
+    unexpectedProcessesInRunqueue: True when unexpected processes in the
+      scheduler run queue are present. Such processes are in the run queue,
+      but not in the process task list.
     unexpectedReadOnlyDataModification: Flag indicating unexpected
       modifications of kernel read-only data memory.
-    unexpectedSystemCallHandler: Flag indicating presence of system call
-      handlers that are are not in the expected kernel, module code regions.
+    unexpectedSystemCallHandler: True when system call handlers that are are
+      not in the expected kernel or module code regions are present.
   """
 
   name = _messages.StringField(1)
@@ -3664,7 +3664,7 @@ class SecuritycenterFoldersBigQueryExportsCreateRequest(_messages.Message):
     googleCloudSecuritycenterV1BigQueryExport: A
       GoogleCloudSecuritycenterV1BigQueryExport resource to be passed as the
       request body.
-    parent: Required. Resource name of the new big query export's parent. Its
+    parent: Required. Resource name of the new BigQuery export's parent. Its
       format is "organizations/[organization_id]", "folders/[folder_id]", or
       "projects/[project_id]".
   """
@@ -3678,7 +3678,7 @@ class SecuritycenterFoldersBigQueryExportsDeleteRequest(_messages.Message):
   r"""A SecuritycenterFoldersBigQueryExportsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the big query export to delete. Its format is
+    name: Required. Name of the BigQuery export to delete. Its format is
       organizations/{organization}/bigQueryExports/{export_id},
       folders/{folder}/bigQueryExports/{export_id}, or
       projects/{project}/bigQueryExports/{export_id}
@@ -3691,7 +3691,7 @@ class SecuritycenterFoldersBigQueryExportsGetRequest(_messages.Message):
   r"""A SecuritycenterFoldersBigQueryExportsGetRequest object.
 
   Fields:
-    name: Required. Name of the big query export to retrieve. Its format is
+    name: Required. Name of the BigQuery export to retrieve. Its format is
       organizations/{organization}/bigQueryExports/{export_id},
       folders/{folder}/bigQueryExports/{export_id}, or
       projects/{project}/bigQueryExports/{export_id}
@@ -3854,7 +3854,7 @@ class SecuritycenterFoldersNotificationConfigsCreateRequest(_messages.Message):
 
   Fields:
     configId: Required. Unique identifier provided by the client within the
-      parent scope. It must be between 1 and 128 characters, and contains
+      parent scope. It must be between 1 and 128 characters, and contain
       alphanumeric characters, underscores or hyphens only.
     notificationConfig: A NotificationConfig resource to be passed as the
       request body.
@@ -4111,10 +4111,10 @@ class SecuritycenterFoldersSourcesFindingsExternalSystemsPatchRequest(_messages.
     googleCloudSecuritycenterV1ExternalSystem: A
       GoogleCloudSecuritycenterV1ExternalSystem resource to be passed as the
       request body.
-    name: External System Name e.g. jira, demisto, etc. e.g.:
-      `organizations/1234/sources/5678/findings/123456/externalSystems/jira`
-      `folders/1234/sources/5678/findings/123456/externalSystems/jira`
-      `projects/1234/sources/5678/findings/123456/externalSystems/jira`
+    name: Full resource name of the external system, for example:
+      "organizations/1234/sources/5678/findings/123456/externalSystems/jira",
+      "folders/1234/sources/5678/findings/123456/externalSystems/jira",
+      "projects/1234/sources/5678/findings/123456/externalSystems/jira"
     updateMask: The FieldMask to use when updating the external system
       resource. If empty all mutable fields will be updated.
   """
@@ -4261,11 +4261,10 @@ class SecuritycenterFoldersSourcesFindingsSetMuteRequest(_messages.Message):
   r"""A SecuritycenterFoldersSourcesFindingsSetMuteRequest object.
 
   Fields:
-    name: Required. The relative resource name of the finding. See:
-      https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Example: "organizations/{organization_id}/sources/{source_id}/finding
-      s/{finding_id}",
-      "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
+    name: Required. The [relative resource name](https://cloud.google.com/apis
+      /design/resource_names#relative_resource_name) of the finding. Example:
+      "organizations/{organization_id}/sources/{source_id}/findings/{finding_i
+      d}", "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
       "projects/{project_id}/sources/{source_id}/findings/{finding_id}".
     setMuteRequest: A SetMuteRequest resource to be passed as the request
       body.
@@ -4279,10 +4278,7 @@ class SecuritycenterFoldersSourcesFindingsSetStateRequest(_messages.Message):
   r"""A SecuritycenterFoldersSourcesFindingsSetStateRequest object.
 
   Fields:
-    name: Required. The relative resource name of the finding. See:
-      https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Example: "organizations/{organization_id}/sources/{source_id}/finding
-      s/{finding_id}".
+    name: A string attribute.
     setFindingStateRequest: A SetFindingStateRequest resource to be passed as
       the request body.
   """
@@ -4501,7 +4497,7 @@ class SecuritycenterOrganizationsBigQueryExportsCreateRequest(_messages.Message)
     googleCloudSecuritycenterV1BigQueryExport: A
       GoogleCloudSecuritycenterV1BigQueryExport resource to be passed as the
       request body.
-    parent: Required. Resource name of the new big query export's parent. Its
+    parent: Required. Resource name of the new BigQuery export's parent. Its
       format is "organizations/[organization_id]", "folders/[folder_id]", or
       "projects/[project_id]".
   """
@@ -4515,7 +4511,7 @@ class SecuritycenterOrganizationsBigQueryExportsDeleteRequest(_messages.Message)
   r"""A SecuritycenterOrganizationsBigQueryExportsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the big query export to delete. Its format is
+    name: Required. Name of the BigQuery export to delete. Its format is
       organizations/{organization}/bigQueryExports/{export_id},
       folders/{folder}/bigQueryExports/{export_id}, or
       projects/{project}/bigQueryExports/{export_id}
@@ -4528,7 +4524,7 @@ class SecuritycenterOrganizationsBigQueryExportsGetRequest(_messages.Message):
   r"""A SecuritycenterOrganizationsBigQueryExportsGetRequest object.
 
   Fields:
-    name: Required. Name of the big query export to retrieve. Its format is
+    name: Required. Name of the BigQuery export to retrieve. Its format is
       organizations/{organization}/bigQueryExports/{export_id},
       folders/{folder}/bigQueryExports/{export_id}, or
       projects/{project}/bigQueryExports/{export_id}
@@ -4702,7 +4698,7 @@ class SecuritycenterOrganizationsNotificationConfigsCreateRequest(_messages.Mess
 
   Fields:
     configId: Required. Unique identifier provided by the client within the
-      parent scope. It must be between 1 and 128 characters, and contains
+      parent scope. It must be between 1 and 128 characters, and contain
       alphanumeric characters, underscores or hyphens only.
     notificationConfig: A NotificationConfig resource to be passed as the
       request body.
@@ -5032,10 +5028,10 @@ class SecuritycenterOrganizationsSourcesFindingsExternalSystemsPatchRequest(_mes
     googleCloudSecuritycenterV1ExternalSystem: A
       GoogleCloudSecuritycenterV1ExternalSystem resource to be passed as the
       request body.
-    name: External System Name e.g. jira, demisto, etc. e.g.:
-      `organizations/1234/sources/5678/findings/123456/externalSystems/jira`
-      `folders/1234/sources/5678/findings/123456/externalSystems/jira`
-      `projects/1234/sources/5678/findings/123456/externalSystems/jira`
+    name: Full resource name of the external system, for example:
+      "organizations/1234/sources/5678/findings/123456/externalSystems/jira",
+      "folders/1234/sources/5678/findings/123456/externalSystems/jira",
+      "projects/1234/sources/5678/findings/123456/externalSystems/jira"
     updateMask: The FieldMask to use when updating the external system
       resource. If empty all mutable fields will be updated.
   """
@@ -5182,11 +5178,10 @@ class SecuritycenterOrganizationsSourcesFindingsSetMuteRequest(_messages.Message
   r"""A SecuritycenterOrganizationsSourcesFindingsSetMuteRequest object.
 
   Fields:
-    name: Required. The relative resource name of the finding. See:
-      https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Example: "organizations/{organization_id}/sources/{source_id}/finding
-      s/{finding_id}",
-      "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
+    name: Required. The [relative resource name](https://cloud.google.com/apis
+      /design/resource_names#relative_resource_name) of the finding. Example:
+      "organizations/{organization_id}/sources/{source_id}/findings/{finding_i
+      d}", "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
       "projects/{project_id}/sources/{source_id}/findings/{finding_id}".
     setMuteRequest: A SetMuteRequest resource to be passed as the request
       body.
@@ -5200,10 +5195,7 @@ class SecuritycenterOrganizationsSourcesFindingsSetStateRequest(_messages.Messag
   r"""A SecuritycenterOrganizationsSourcesFindingsSetStateRequest object.
 
   Fields:
-    name: Required. The relative resource name of the finding. See:
-      https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Example: "organizations/{organization_id}/sources/{source_id}/finding
-      s/{finding_id}".
+    name: A string attribute.
     setFindingStateRequest: A SetFindingStateRequest resource to be passed as
       the request body.
   """
@@ -5503,7 +5495,7 @@ class SecuritycenterProjectsBigQueryExportsCreateRequest(_messages.Message):
     googleCloudSecuritycenterV1BigQueryExport: A
       GoogleCloudSecuritycenterV1BigQueryExport resource to be passed as the
       request body.
-    parent: Required. Resource name of the new big query export's parent. Its
+    parent: Required. Resource name of the new BigQuery export's parent. Its
       format is "organizations/[organization_id]", "folders/[folder_id]", or
       "projects/[project_id]".
   """
@@ -5517,7 +5509,7 @@ class SecuritycenterProjectsBigQueryExportsDeleteRequest(_messages.Message):
   r"""A SecuritycenterProjectsBigQueryExportsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the big query export to delete. Its format is
+    name: Required. Name of the BigQuery export to delete. Its format is
       organizations/{organization}/bigQueryExports/{export_id},
       folders/{folder}/bigQueryExports/{export_id}, or
       projects/{project}/bigQueryExports/{export_id}
@@ -5530,7 +5522,7 @@ class SecuritycenterProjectsBigQueryExportsGetRequest(_messages.Message):
   r"""A SecuritycenterProjectsBigQueryExportsGetRequest object.
 
   Fields:
-    name: Required. Name of the big query export to retrieve. Its format is
+    name: Required. Name of the BigQuery export to retrieve. Its format is
       organizations/{organization}/bigQueryExports/{export_id},
       folders/{folder}/bigQueryExports/{export_id}, or
       projects/{project}/bigQueryExports/{export_id}
@@ -5693,7 +5685,7 @@ class SecuritycenterProjectsNotificationConfigsCreateRequest(_messages.Message):
 
   Fields:
     configId: Required. Unique identifier provided by the client within the
-      parent scope. It must be between 1 and 128 characters, and contains
+      parent scope. It must be between 1 and 128 characters, and contain
       alphanumeric characters, underscores or hyphens only.
     notificationConfig: A NotificationConfig resource to be passed as the
       request body.
@@ -5948,10 +5940,10 @@ class SecuritycenterProjectsSourcesFindingsExternalSystemsPatchRequest(_messages
     googleCloudSecuritycenterV1ExternalSystem: A
       GoogleCloudSecuritycenterV1ExternalSystem resource to be passed as the
       request body.
-    name: External System Name e.g. jira, demisto, etc. e.g.:
-      `organizations/1234/sources/5678/findings/123456/externalSystems/jira`
-      `folders/1234/sources/5678/findings/123456/externalSystems/jira`
-      `projects/1234/sources/5678/findings/123456/externalSystems/jira`
+    name: Full resource name of the external system, for example:
+      "organizations/1234/sources/5678/findings/123456/externalSystems/jira",
+      "folders/1234/sources/5678/findings/123456/externalSystems/jira",
+      "projects/1234/sources/5678/findings/123456/externalSystems/jira"
     updateMask: The FieldMask to use when updating the external system
       resource. If empty all mutable fields will be updated.
   """
@@ -6098,11 +6090,10 @@ class SecuritycenterProjectsSourcesFindingsSetMuteRequest(_messages.Message):
   r"""A SecuritycenterProjectsSourcesFindingsSetMuteRequest object.
 
   Fields:
-    name: Required. The relative resource name of the finding. See:
-      https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Example: "organizations/{organization_id}/sources/{source_id}/finding
-      s/{finding_id}",
-      "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
+    name: Required. The [relative resource name](https://cloud.google.com/apis
+      /design/resource_names#relative_resource_name) of the finding. Example:
+      "organizations/{organization_id}/sources/{source_id}/findings/{finding_i
+      d}", "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
       "projects/{project_id}/sources/{source_id}/findings/{finding_id}".
     setMuteRequest: A SetMuteRequest resource to be passed as the request
       body.
@@ -6116,10 +6107,7 @@ class SecuritycenterProjectsSourcesFindingsSetStateRequest(_messages.Message):
   r"""A SecuritycenterProjectsSourcesFindingsSetStateRequest object.
 
   Fields:
-    name: Required. The relative resource name of the finding. See:
-      https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Example: "organizations/{organization_id}/sources/{source_id}/finding
-      s/{finding_id}".
+    name: A string attribute.
     setFindingStateRequest: A SetFindingStateRequest resource to be passed as
       the request body.
   """
@@ -6195,7 +6183,12 @@ class ServiceAccountDelegationInfo(_messages.Message):
 
 
 class SetFindingStateRequest(_messages.Message):
-  r"""Request message for updating a finding's state.
+  r"""Request message for updating a finding's state. The [relative resource n
+  ame](https://cloud.google.com/apis/design/resource_names#relative_resource_n
+  ame) of the finding. Example:
+  "organizations/{organization_id}/sources/{source_id}/findings/{finding_id}",
+  "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
+  "projects/{project_id}/sources/{source_id}/findings/{finding_id}".
 
   Enums:
     StateValueValuesEnum: Required. The desired State of the finding.

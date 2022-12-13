@@ -649,6 +649,8 @@ class DataplexProjectsLocationsDataTaxonomiesListRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataTaxonomiesListRequest object.
 
   Fields:
+    filter: Optional. Filter request.
+    orderBy: Optional. Order by fields for the result.
     pageSize: Optional. Maximum number of DataTaxonomies to return. The
       service may return fewer than this value. If unspecified, at most 10
       DataTaxonomies will be returned. The maximum value is 1000; values above
@@ -662,9 +664,11 @@ class DataplexProjectsLocationsDataTaxonomiesListRequest(_messages.Message):
       location_id refers to a GCP region.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class DataplexProjectsLocationsDataTaxonomiesPatchRequest(_messages.Message):

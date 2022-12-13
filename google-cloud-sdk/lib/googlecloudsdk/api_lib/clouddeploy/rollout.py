@@ -143,3 +143,21 @@ class RolloutClient(object):
     )
 
     return self._service.RetryJob(request)
+
+  def AdvanceRollout(self, name, phase):
+    """Calls the AdvanceRollout API to advance a rollout to the next phase.
+
+    Args:
+      name: Name of the Rollout. Format is
+        projects/{project}/locations/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/rollouts/{rollout}.
+      phase: The phase id on the rollout resource.
+
+    Returns:
+      AdvanceRolloutResponse message.
+    """
+    request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsAdvanceRequest(
+        name=name,
+        advanceRolloutRequest=self.messages.AdvanceRolloutRequest(phaseId=phase)
+    )
+
+    return self._service.Advance(request)

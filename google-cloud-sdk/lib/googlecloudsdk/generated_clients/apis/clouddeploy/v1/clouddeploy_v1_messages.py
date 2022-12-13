@@ -41,6 +41,20 @@ class AdvanceChildRolloutJobRun(_messages.Message):
   rolloutPhaseId = _messages.StringField(2)
 
 
+class AdvanceRolloutRequest(_messages.Message):
+  r"""The request object used by `AdvanceRollout`.
+
+  Fields:
+    phaseId: Required. The phase ID to advance the `Rollout` to.
+  """
+
+  phaseId = _messages.StringField(1)
+
+
+class AdvanceRolloutResponse(_messages.Message):
+  r"""The response object from `AdvanceRollout`."""
+
+
 class AnthosCluster(_messages.Message):
   r"""Information specifying an Anthos Cluster.
 
@@ -204,6 +218,39 @@ class BuildArtifact(_messages.Message):
   tag = _messages.StringField(2)
 
 
+class Canary(_messages.Message):
+  r"""Canary represents the canary deployment strategy.
+
+  Fields:
+    canaryDeployment: Configures the progressive based deployment for a
+      Target.
+    customCanaryDeployment: Configures the progressive based deployment for a
+      Target, but allows customizing at the phase level where a phase
+      represents each of the percentage deployments.
+    runtimeConfig: Optional. Runtime specific configurations for the
+      deployment strategy. The runtime configuration is used to determine how
+      Cloud Deploy will split traffic to enable a progressive deployment.
+  """
+
+  canaryDeployment = _messages.MessageField('CanaryDeployment', 1)
+  customCanaryDeployment = _messages.MessageField('CustomCanaryDeployment', 2)
+  runtimeConfig = _messages.MessageField('RuntimeConfig', 3)
+
+
+class CanaryDeployment(_messages.Message):
+  r"""CanaryDeployment represents the canary deployment configuration
+
+  Fields:
+    percentages: Required. The percentage based deployments that will occur as
+      a part of a `Rollout`. List is expected in ascending order and each
+      integer n is 0 <= n < 100.
+    verify: Whether to run verify tests after each percentage deployment.
+  """
+
+  percentages = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  verify = _messages.BooleanField(2)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -218,6 +265,19 @@ class ChildRolloutJobs(_messages.Message):
 
   advanceRolloutJobs = _messages.MessageField('Job', 1, repeated=True)
   createRolloutJobs = _messages.MessageField('Job', 2, repeated=True)
+
+
+class CloudRunConfig(_messages.Message):
+  r"""CloudRunConfig contains the Cloud Run runtime configuration.
+
+  Fields:
+    automaticTrafficControl: Whether Cloud Deploy should update the traffic
+      stanza in a Cloud Run Service on the user's behalf to facilitate traffic
+      splitting. This is required to be true for CanaryDeployments, but
+      optional for CustomCanaryDeployments.
+  """
+
+  automaticTrafficControl = _messages.BooleanField(1)
 
 
 class CloudRunLocation(_messages.Message):
@@ -247,6 +307,19 @@ class CloudRunMetadata(_messages.Message):
   revision = _messages.StringField(1)
   service = _messages.StringField(2)
   serviceUrls = _messages.StringField(3, repeated=True)
+
+
+class CloudRunRenderMetadata(_messages.Message):
+  r"""CloudRunRenderMetadata contains Cloud Run information associated with a
+  `Release` render.
+
+  Fields:
+    service: Output only. The name of the Cloud Run Service in the rendered
+      manifest. Format is
+      projects/{project}/locations/{location}/services/{service}.
+  """
+
+  service = _messages.StringField(1)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesCreateRequest(_messages.Message):
@@ -506,6 +579,23 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesListRequest(_messages
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsAdvanceRequest(_messages.Message):
+  r"""A
+  ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsAdvanceRequest
+  object.
+
+  Fields:
+    advanceRolloutRequest: A AdvanceRolloutRequest resource to be passed as
+      the request body.
+    name: Required. Name of the Rollout. Format is projects/{project}/location
+      s/{location}/deliveryPipelines/{deliveryPipeline}/
+      releases/{release}/rollouts/{rollout}.
+  """
+
+  advanceRolloutRequest = _messages.MessageField('AdvanceRolloutRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsApproveRequest(_messages.Message):
@@ -1013,6 +1103,18 @@ class CreateChildRolloutJobRun(_messages.Message):
   rolloutPhaseId = _messages.StringField(2)
 
 
+class CustomCanaryDeployment(_messages.Message):
+  r"""CustomCanaryDeployment represents the custom canary deployment
+  configuration.
+
+  Fields:
+    phaseConfigs: Required. Configuration for each phase in the canary
+      deployment in the order executed.
+  """
+
+  phaseConfigs = _messages.MessageField('PhaseConfig', 1, repeated=True)
+
+
 class Date(_messages.Message):
   r"""Represents a whole or partial calendar date, such as a birthday. The
   time of day and time zone are either specified elsewhere or are
@@ -1246,11 +1348,15 @@ class DeployJobRun(_messages.Message):
         check Cloud Build logs.
       DEADLINE_EXCEEDED: The deploy build did not complete within the alloted
         time.
+      MISSING_RESOURCES_FOR_CANARY: There were missing resources in the
+        runtime environment required for a canary deployment. Check the Cloud
+        Build logs for more information.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1
     EXECUTION_FAILED = 2
     DEADLINE_EXCEEDED = 3
+    MISSING_RESOURCES_FOR_CANARY = 4
 
   build = _messages.StringField(1)
   failureCause = _messages.EnumField('FailureCauseValueValuesEnum', 2)
@@ -1380,6 +1486,21 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GatewayServiceMesh(_messages.Message):
+  r"""Information about the Kubernetes Gateway API service mesh configuration.
+
+  Fields:
+    deployment: Required. Name of the Kubernetes Deployment whose traffic is
+      managed by the specified HTTPRoute and Service.
+    httpRoute: Required. Name of the Gateway API HTTPRoute.
+    service: Required. Name of the Kubernetes Service.
+  """
+
+  deployment = _messages.StringField(1)
+  httpRoute = _messages.StringField(2)
+  service = _messages.StringField(3)
+
+
 class GkeCluster(_messages.Message):
   r"""Information specifying a GKE Cluster.
 
@@ -1412,6 +1533,8 @@ class Job(_messages.Message):
     id: Output only. The ID of the Job.
     jobRun: Output only. The name of the `JobRun` responsible for the most
       recent invocation of this Job.
+    skipMessage: Output only. Additional information on why the Job was
+      skipped, if available.
     state: Output only. The current state of the Job.
     verifyJob: Output only. A verify Job.
   """
@@ -1428,6 +1551,7 @@ class Job(_messages.Message):
       SUCCEEDED: The Job succeeded.
       FAILED: The Job failed.
       ABORTED: The Job was aborted.
+      SKIPPED: The Job was skipped.
     """
     STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1436,14 +1560,16 @@ class Job(_messages.Message):
     SUCCEEDED = 4
     FAILED = 5
     ABORTED = 6
+    SKIPPED = 7
 
   advanceChildRolloutJob = _messages.MessageField('AdvanceChildRolloutJob', 1)
   createChildRolloutJob = _messages.MessageField('CreateChildRolloutJob', 2)
   deployJob = _messages.MessageField('DeployJob', 3)
   id = _messages.StringField(4)
   jobRun = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  verifyJob = _messages.MessageField('VerifyJob', 7)
+  skipMessage = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  verifyJob = _messages.MessageField('VerifyJob', 8)
 
 
 class JobRun(_messages.Message):
@@ -1545,6 +1671,18 @@ class JobRunNotificationEvent(_messages.Message):
   rolloutUid = _messages.StringField(5)
   targetId = _messages.StringField(6)
   type = _messages.EnumField('TypeValueValuesEnum', 7)
+
+
+class KubernetesConfig(_messages.Message):
+  r"""KubernetesConfig contains the Kubernetes runtime configuration.
+
+  Fields:
+    gatewayServiceMesh: Kubernetes Gateway API service mesh configuration.
+    serviceNetworking: Kubernetes Service networking configuration.
+  """
+
+  gatewayServiceMesh = _messages.MessageField('GatewayServiceMesh', 1)
+  serviceNetworking = _messages.MessageField('ServiceNetworking', 2)
 
 
 class ListDeliveryPipelinesResponse(_messages.Message):
@@ -1895,6 +2033,8 @@ class Phase(_messages.Message):
     childRolloutJobs: Output only. ChildRollout job composition.
     deploymentJobs: Output only. Deployment job composition.
     id: Output only. The ID of the Phase.
+    skipMessage: Output only. Additional information on why the Phase was
+      skipped, if available.
     state: Output only. Current state of the Phase.
   """
 
@@ -1908,6 +2048,7 @@ class Phase(_messages.Message):
       SUCCEEDED: The Phase has succeeded.
       FAILED: The Phase has failed.
       ABORTED: The Phase was aborted.
+      SKIPPED: The Phase was skipped.
     """
     STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1915,11 +2056,50 @@ class Phase(_messages.Message):
     SUCCEEDED = 3
     FAILED = 4
     ABORTED = 5
+    SKIPPED = 6
 
   childRolloutJobs = _messages.MessageField('ChildRolloutJobs', 1)
   deploymentJobs = _messages.MessageField('DeploymentJobs', 2)
   id = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  skipMessage = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
+class PhaseArtifact(_messages.Message):
+  r"""Contains the paths to the artifacts, relative to the URI, for a phase.
+
+  Fields:
+    manifestPath: Output only. File path of the rendered manifest relative to
+      the URI.
+    skaffoldConfigPath: Output only. File path of the resolved Skaffold
+      configuration relative to the URI.
+  """
+
+  manifestPath = _messages.StringField(1)
+  skaffoldConfigPath = _messages.StringField(2)
+
+
+class PhaseConfig(_messages.Message):
+  r"""PhaseConfig represents the configuration for a phase in the custom
+  canary deployment.
+
+  Fields:
+    percentage: Required. Percentage deployment for the phase.
+    phaseId: Required. The ID to assign to the `Rollout` phase. This value
+      must consist of lower-case letters, numbers, and hyphens, start with a
+      letter and end with a letter or a number, and have a max length of 63
+      characters. In other words, it must match the following regex:
+      `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
+    profiles: Skaffold profiles to use when rendering the manifest for this
+      phase. These are in addition to the profiles list specified in the
+      `DeliveryPipeline` stage.
+    verify: Whether to run verify tests after the deployment.
+  """
+
+  percentage = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  phaseId = _messages.StringField(2)
+  profiles = _messages.StringField(3, repeated=True)
+  verify = _messages.BooleanField(4)
 
 
 class PipelineCondition(_messages.Message):
@@ -2317,6 +2497,16 @@ class ReleaseRenderEvent(_messages.Message):
   release = _messages.StringField(2)
 
 
+class RenderMetadata(_messages.Message):
+  r"""RenderMetadata includes information associated with a `Release` render.
+
+  Fields:
+    cloudRun: Output only. Metadata associated with rendering for Cloud Run.
+  """
+
+  cloudRun = _messages.MessageField('CloudRunRenderMetadata', 1)
+
+
 class RetryJobRequest(_messages.Message):
   r"""RetryJobRequest is the request object used by `RetryJob`.
 
@@ -2595,6 +2785,19 @@ class RolloutNotificationEvent(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
+class RuntimeConfig(_messages.Message):
+  r"""RuntimeConfig contains the runtime specific configurations for a
+  deployment strategy.
+
+  Fields:
+    cloudRun: Cloud Run runtime configuration.
+    kubernetes: Kubernetes runtime configuration.
+  """
+
+  cloudRun = _messages.MessageField('CloudRunConfig', 1)
+  kubernetes = _messages.MessageField('KubernetesConfig', 2)
+
+
 class SerialPipeline(_messages.Message):
   r"""SerialPipeline defines a sequential set of stages for a
   `DeliveryPipeline`.
@@ -2605,6 +2808,19 @@ class SerialPipeline(_messages.Message):
   """
 
   stages = _messages.MessageField('Stage', 1, repeated=True)
+
+
+class ServiceNetworking(_messages.Message):
+  r"""Information about the Kubernetes Service networking configuration.
+
+  Fields:
+    deployment: Required. Name of the Kubernetes Deployment whose traffic is
+      managed by the specified Service.
+    service: Required. Name of the Kubernetes Service.
+  """
+
+  deployment = _messages.StringField(1)
+  service = _messages.StringField(2)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2785,11 +3001,14 @@ class Strategy(_messages.Message):
   r"""Strategy contains deployment strategy information.
 
   Fields:
+    canary: Canary deployment strategy provides progressive percentage based
+      deployments to a Target.
     standard: Standard deployment strategy executes a single deploy and allows
       verifying the deployment.
   """
 
-  standard = _messages.MessageField('Standard', 1)
+  canary = _messages.MessageField('Canary', 1)
+  standard = _messages.MessageField('Standard', 2)
 
 
 class Target(_messages.Message):
@@ -2928,19 +3147,52 @@ class Target(_messages.Message):
 class TargetArtifact(_messages.Message):
   r"""The artifacts produced by a target render operation.
 
+  Messages:
+    PhaseArtifactsValue: Output only. Map from the phase ID to the phase
+      artifacts for the `Target`.
+
   Fields:
     artifactUri: Output only. URI of a directory containing the artifacts.
       This contains deployment configuration used by Skaffold during a
       rollout, and all paths are relative to this location.
     manifestPath: Output only. File path of the rendered manifest relative to
       the URI.
+    phaseArtifacts: Output only. Map from the phase ID to the phase artifacts
+      for the `Target`.
     skaffoldConfigPath: Output only. File path of the resolved Skaffold
       configuration relative to the URI.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PhaseArtifactsValue(_messages.Message):
+    r"""Output only. Map from the phase ID to the phase artifacts for the
+    `Target`.
+
+    Messages:
+      AdditionalProperty: An additional property for a PhaseArtifactsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type PhaseArtifactsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PhaseArtifactsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PhaseArtifact attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PhaseArtifact', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   artifactUri = _messages.StringField(1)
   manifestPath = _messages.StringField(2)
-  skaffoldConfigPath = _messages.StringField(3)
+  phaseArtifacts = _messages.MessageField('PhaseArtifactsValue', 3)
+  skaffoldConfigPath = _messages.StringField(4)
 
 
 class TargetNotificationEvent(_messages.Message):
@@ -2991,6 +3243,8 @@ class TargetRender(_messages.Message):
       unspecified while the render in progress.
     failureMessage: Output only. Additional information about the render
       failure, if available.
+    metadata: Output only. Metadata related to the `Release` render for this
+      Target.
     renderingBuild: Output only. The resource name of the Cloud Build `Build`
       object that is used to render the manifest for this target. Format is
       `projects/{project}/locations/{location}/builds/{build}`.
@@ -3032,8 +3286,9 @@ class TargetRender(_messages.Message):
 
   failureCause = _messages.EnumField('FailureCauseValueValuesEnum', 1)
   failureMessage = _messages.StringField(2)
-  renderingBuild = _messages.StringField(3)
-  renderingState = _messages.EnumField('RenderingStateValueValuesEnum', 4)
+  metadata = _messages.MessageField('RenderMetadata', 3)
+  renderingBuild = _messages.StringField(4)
+  renderingState = _messages.EnumField('RenderingStateValueValuesEnum', 5)
 
 
 class TargetsPresentCondition(_messages.Message):

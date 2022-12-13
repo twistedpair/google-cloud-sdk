@@ -131,7 +131,7 @@
           "$ref": "EntityKey"
         },
         "parent": {
-          "description": "Required. Immutable. The resource name of the entity under which this `Group` resides in the Cloud Identity resource hierarchy. Must be of the form `identitysources\/{identity_source_id}` for external- identity-mapped groups or `customers\/{customer_id}` for Google Groups. The `customer_id` must begin with \"C\" (for example, 'C046psxkn').",
+          "description": "Required. Immutable. The resource name of the entity under which this `Group` resides in the Cloud Identity resource hierarchy. Must be of the form `identitysources\/{identity_source_id}` for external- identity-mapped groups or `customers\/{customer_id}` for Google Groups. The `customer_id` must begin with \"C\" (for example, 'C046psxkn'). [Find your customer ID.] (https:\/\/support.google.com\/cloudidentity\/answer\/10070793)",
           "type": "string"
         },
         "displayName": {
@@ -2358,7 +2358,7 @@
           "httpMethod": "GET",
           "parameters": {
             "query": {
-              "description": "Required. The search query. Must be specified in [Common Expression Language](https:\/\/opensource.google\/projects\/cel). May only contain equality operators on the parent and inclusion operators on labels (e.g., `parent == 'customers\/{customer_id}' && 'cloudidentity.googleapis.com\/groups.discussion_forum' in labels`). The `customer_id` must begin with \"C\" (for example, 'C046psxkn').",
+              "description": "Required. The search query. Must be specified in [Common Expression Language](https:\/\/opensource.google\/projects\/cel). Must contain equality operators on the parent, e.g. `parent == 'customers\/{customer_id}'`. The `customer_id` must begin with \"C\" (for example, 'C046psxkn'). [Find your customer ID.] (https:\/\/support.google.com\/cloudidentity\/answer\/10070793) Can contain optionally inclusion operators on label. e.g. `cloudidentity.googleapis.com\/groups.discussion_forum' in labels`). Can contain optional either equality operator on domain_name or startsWith\/contains\/equality operator on group key, e.g. `domain_name == \u2018abc.com\u2019`, `group_key.startsWith('dev')` , `group_key.contains('dev') , group_key == 'dev@abc.com'` Can contain optionally startsWith\/contains\/equality operator on display name, e.g. `display_name.startsWith('dev')` , `display_name.contains('dev')`, `display_name == 'dev'`",
               "location": "query",
               "type": "string"
             },
@@ -2387,6 +2387,11 @@
               "description": "The `next_page_token` value returned from a previous search request, if any.",
               "location": "query",
               "type": "string"
+            },
+            "orderBy": {
+              "description": "The ordering of groups for the display name or email in the search groups response. The syntax for this field can be found at https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order. Example: Sort by the ascending name: order_by=\"display_name\" Sort by the descending group key email: order_by=\"group_key desc\"",
+              "location": "query",
+              "type": "string"
             }
           },
           "parameterOrder": [
@@ -2408,7 +2413,7 @@
           "httpMethod": "GET",
           "parameters": {
             "parent": {
-              "description": "Required. The parent resource under which to list all `Group` resources. Must be of the form `identitysources\/{identity_source_id}` for external- identity-mapped groups or `customers\/{customer_id}` for Google Groups. The `customer_id` must begin with \"C\" (for example, 'C046psxkn').",
+              "description": "Required. The parent resource under which to list all `Group` resources. Must be of the form `identitysources\/{identity_source_id}` for external- identity-mapped groups or `customers\/{customer_id}` for Google Groups. The `customer_id` must begin with \"C\" (for example, 'C046psxkn'). [Find your customer ID.] (https:\/\/support.google.com\/cloudidentity\/answer\/10070793)",
               "location": "query",
               "type": "string"
             },

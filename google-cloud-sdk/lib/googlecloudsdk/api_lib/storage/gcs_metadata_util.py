@@ -221,10 +221,10 @@ def get_object_resource_from_metadata(metadata):
       generation=generation)
 
   if metadata.customerEncryption:
-    decryption_key_hash = metadata.customerEncryption.keySha256
+    decryption_key_hash_sha256 = metadata.customerEncryption.keySha256
     encryption_algorithm = metadata.customerEncryption.encryptionAlgorithm
   else:
-    decryption_key_hash = encryption_algorithm = None
+    decryption_key_hash_sha256 = encryption_algorithm = None
 
   return gcs_resource_reference.GcsObjectResource(
       url,
@@ -237,9 +237,9 @@ def get_object_resource_from_metadata(metadata):
       content_type=metadata.contentType,
       crc32c_hash=metadata.crc32c,
       creation_time=metadata.timeCreated,
-      custom_metadata=_message_to_dict(metadata.metadata),
+      custom_fields=_message_to_dict(metadata.metadata),
       custom_time=metadata.customTime,
-      decryption_key_hash=decryption_key_hash,
+      decryption_key_hash_sha256=decryption_key_hash_sha256,
       encryption_algorithm=encryption_algorithm,
       etag=metadata.etag,
       event_based_hold=(metadata.eventBasedHold
@@ -398,6 +398,10 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
       _get_list_with_added_and_removed_acl_grants(
           bucket_metadata.acl, resource_args, is_bucket=True))
 
+  if resource_args.default_object_acl_file_path is not None:
+    bucket_metadata.defaultObjectAcl = gcs_metadata_field_converters.process_acl_file(
+        resource_args.default_object_acl_file_path)
+
   if resource_args.labels_file_path is not None:
     bucket_metadata.labels = gcs_metadata_field_converters.process_labels(
         resource_args.labels_file_path)
@@ -493,12 +497,12 @@ def update_object_metadata_from_request_config(object_metadata,
     existing_metadata = encoding_helper.MessageToDict(
         object_metadata.metadata)
 
-  custom_metadata_dict = metadata_util.get_updated_custom_metadata(
+  custom_fields_dict = metadata_util.get_updated_custom_fields(
       existing_metadata, request_config, file_path=file_path)
-  if custom_metadata_dict is not None:
+  if custom_fields_dict is not None:
     messages = apis.GetMessagesModule('storage', 'v1')
     object_metadata.metadata = encoding_helper.DictToMessage(
-        custom_metadata_dict, messages.Object.MetadataValue)
+        custom_fields_dict, messages.Object.MetadataValue)
 
   # Gzip handling.
   should_gzip_locally = gzip_util.should_gzip_locally(

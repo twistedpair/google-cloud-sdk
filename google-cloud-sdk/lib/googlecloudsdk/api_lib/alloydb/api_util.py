@@ -26,7 +26,8 @@ from googlecloudsdk.core import resources
 DEFAULT_RELEASE_TRACK = base.ReleaseTrack.ALPHA
 VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1alpha',
-    base.ReleaseTrack.BETA: 'v1beta'
+    base.ReleaseTrack.BETA: 'v1beta',
+    base.ReleaseTrack.GA: 'v1',
 }
 API_VERSION_DEFAULT = VERSION_MAP[DEFAULT_RELEASE_TRACK]
 

@@ -17395,6 +17395,36 @@ class ComputeNodeGroupsSetNodeTemplateRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeNodeGroupsSimulateMaintenanceEventRequest(_messages.Message):
+  r"""A ComputeNodeGroupsSimulateMaintenanceEventRequest object.
+
+  Fields:
+    nodeGroup: Name of the NodeGroup resource whose nodes will go under
+      maintenance simulation.
+    nodeGroupsSimulateMaintenanceEventRequest: A
+      NodeGroupsSimulateMaintenanceEventRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  nodeGroup = _messages.StringField(1, required=True)
+  nodeGroupsSimulateMaintenanceEventRequest = _messages.MessageField('NodeGroupsSimulateMaintenanceEventRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeNodeGroupsTestIamPermissionsRequest(_messages.Message):
   r"""A ComputeNodeGroupsTestIamPermissionsRequest object.
 
@@ -33821,13 +33851,14 @@ class ForwardingRule(_messages.Message):
       regional forwarding rules, this target must be in the same region as the
       forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
-      appropriate to the target object. For more information, see the "Target"
+      appropriate to the target object. - For load balancers, see the "Target"
       column in [Port specifications](https://cloud.google.com/load-
-      balancing/docs/forwarding-rule-concepts#ip_address_specifications). For
-      Private Service Connect forwarding rules that forward traffic to Google
-      APIs, provide the name of a supported Google API bundle: - vpc-sc - APIs
-      that support VPC Service Controls. - all-apis - All supported Google
-      APIs.
+      balancing/docs/forwarding-rule-concepts#ip_address_specifications). -
+      For Private Service Connect forwarding rules that forward traffic to
+      Google APIs, provide the name of a supported Google API bundle: - vpc-sc
+      - APIs that support VPC Service Controls. - all-apis - All supported
+      Google APIs. - For Private Service Connect forwarding rules that forward
+      traffic to managed services, the target must be a service attachment.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -49624,6 +49655,16 @@ class NodeGroupsSetNodeTemplateRequest(_messages.Message):
   """
 
   nodeTemplate = _messages.StringField(1)
+
+
+class NodeGroupsSimulateMaintenanceEventRequest(_messages.Message):
+  r"""A NodeGroupsSimulateMaintenanceEventRequest object.
+
+  Fields:
+    nodes: Names of the nodes to go under maintenance simulation.
+  """
+
+  nodes = _messages.StringField(1, repeated=True)
 
 
 class NodeTemplate(_messages.Message):

@@ -60,8 +60,9 @@ def AppendParentArg():
   parent_spec_data = yaml_data.ResourceYAMLData.FromPath("scc.parent")
   arg_specs = [
       resource_args.GetResourcePresentationSpec(
-          verb="to be used for the SCC (Security Command Center) command",
+          verb="to be used for the `gcloud scc` command",
           name="parent",
+          help_text="{name} organization, folder, or project in the Google Cloud resource hierarchy {verb}. Specify the argument as either [RESOURCE_TYPE/RESOURCE_ID] or [RESOURCE_ID], as shown in the preceding examples.",
           required=True,
           prefixes=False,
           positional=True,

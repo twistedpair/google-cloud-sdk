@@ -31,7 +31,8 @@ from googlecloudsdk.core import resources
 
 
 class VolumesClient(object):
-  """Wrapper for working with Storage Pool in the Cloud NetApp Files API Client."""
+  """Wrapper for working with Storage Pool in the Cloud NetApp Files API Client.
+  """
 
   def __init__(self, release_track=base.ReleaseTrack.ALPHA):
     if release_track == base.ReleaseTrack.ALPHA:
@@ -119,7 +120,6 @@ class VolumesClient(object):
                         security_style=None,
                         enable_kerberos=None,
                         enable_ldap=None,
-                        active_directory=None,
                         snapshot=None,
                         labels=None):
     """Parses the command line arguments for Create Volume into a config.
@@ -141,7 +141,6 @@ class VolumesClient(object):
       security_style: the security style of the Volume
       enable_kerberos: Bool on whether to use kerberos for Volume
       enable_ldap: Bool on whether to use LDAP for Volume
-      active_directory: the Active Directory associated with the Volume
       snapshot: the snapshot name to create Volume from
       labels: the parsed labels value.
 
@@ -154,7 +153,7 @@ class VolumesClient(object):
     volume.capacityGib = capacity
     volume.description = description
     volume.labels = labels
-    volume.storagePoolName = storage_pool
+    volume.storagePool = storage_pool
     volume.shareName = share_name
     self._adapter.ParseExportPolicy(volume, export_policy)
     self._adapter.ParseProtocols(volume, protocols)
@@ -169,7 +168,6 @@ class VolumesClient(object):
     volume.securityStyle = security_style
     volume.kerberosEnabled = enable_kerberos
     volume.ldapEnabled = enable_ldap
-    volume.activeDirectoryName = active_directory
     volume.restoreParameters = self.messages.RestoreParameters(
         sourceSnapshot=snapshot
     ) if snapshot else None
@@ -221,7 +219,7 @@ class VolumesClient(object):
                                security_style=None,
                                enable_kerberos=None,
                                enable_ldap=None,
-                               active_directory=None):
+                               snapshot=None):
     """Parses updates into a volume config.
 
     Args:
@@ -242,7 +240,7 @@ class VolumesClient(object):
       security_style: the Security Style for a Volume, if any
       enable_kerberos: Bool on whether Kerberos is enabled, if any
       enable_ldap: Bool on whether LDAP is enabled, if any
-      active_directory: The Active Directory for the Volume, if any
+      snapshot: the snapshot name to create Volume from
 
     Returns:
       The volume message.
@@ -265,7 +263,7 @@ class VolumesClient(object):
         security_style=security_style,
         enable_kerberos=enable_kerberos,
         enable_ldap=enable_ldap,
-        active_directory=active_directory)
+        snapshot=snapshot)
 
   def UpdateVolume(self, volume_ref, volume_config, update_mask, async_):
     """Updates a Cloud NetApp Volume.
@@ -310,33 +308,34 @@ class AlphaVolumesAdapter(object):
     if not export_policy:
       return
     export_policy_config = self.messages.ExportPolicy()
-    simple_export_policy_rule = self.messages.SimpleExportPolicyRule()
-    for key, val in export_policy.items():
-      if key == 'allowed-clients':
-        simple_export_policy_rule.allowedClients = val
-      if key == 'access-type':
-        simple_export_policy_rule.accessType = (
-            self.messages.SimpleExportPolicyRule.AccessTypeValueValuesEnum
-            .lookup_by_name(val))
-      if key == 'has-root-access':
-        simple_export_policy_rule.hasRootAccess = val
-      if key == 'kerberos-5-read-only':
-        simple_export_policy_rule.kerberos5ReadOnly = val
-      if key == 'kerberos-5-read-write':
-        simple_export_policy_rule.kerberos5ReadWrite = val
-      if key == 'kerberos-5i-read-only':
-        simple_export_policy_rule.kerberos5iReadOnly = val
-      if key == 'kerberos-5i-read-write':
-        simple_export_policy_rule.kerberos5iReadWrite = val
-      if key == 'kerberos-5p-read-only':
-        simple_export_policy_rule.kerberos5pReadOnly = val
-      if key == 'kerberos-5p-read-write':
-        simple_export_policy_rule.kerberos5pReadWrite = val
-      if key == 'nfsv3':
-        simple_export_policy_rule.nfsv3 = val
-      if key == 'nfsv4':
-        simple_export_policy_rule.nfsv4 = val
-    export_policy_config.rules.append(simple_export_policy_rule)
+    for policy in export_policy:
+      simple_export_policy_rule = self.messages.SimpleExportPolicyRule()
+      for key, val in policy.items():
+        if key == 'allowed-clients':
+          simple_export_policy_rule.allowedClients = val
+        if key == 'access-type':
+          simple_export_policy_rule.accessType = (
+              self.messages.SimpleExportPolicyRule.AccessTypeValueValuesEnum
+              .lookup_by_name(val))
+        if key == 'has-root-access':
+          simple_export_policy_rule.hasRootAccess = val
+        if key == 'kerberos-5-read-only':
+          simple_export_policy_rule.kerberos5ReadOnly = val
+        if key == 'kerberos-5-read-write':
+          simple_export_policy_rule.kerberos5ReadWrite = val
+        if key == 'kerberos-5i-read-only':
+          simple_export_policy_rule.kerberos5iReadOnly = val
+        if key == 'kerberos-5i-read-write':
+          simple_export_policy_rule.kerberos5iReadWrite = val
+        if key == 'kerberos-5p-read-only':
+          simple_export_policy_rule.kerberos5pReadOnly = val
+        if key == 'kerberos-5p-read-write':
+          simple_export_policy_rule.kerberos5pReadWrite = val
+        if key == 'nfsv3':
+          simple_export_policy_rule.nfsv3 = val
+        if key == 'nfsv4':
+          simple_export_policy_rule.nfsv4 = val
+      export_policy_config.rules.append(simple_export_policy_rule)
     volume.exportPolicy = export_policy_config
 
   def ParseProtocols(self, volume, protocols):
@@ -423,42 +422,47 @@ class AlphaVolumesAdapter(object):
                                security_style=None,
                                enable_kerberos=None,
                                enable_ldap=None,
-                               active_directory=None):
+                               active_directory=None,
+                               snapshot=None):
     """Parse update information into an updated Volume message."""
-    if description:
+    if description is not None:
       volume_config.description = description
-    if labels:
+    if labels is not None:
       volume_config.labels = labels
-    if capacity:
+    if capacity is not None:
       volume_config.capacityGib = capacity
-    if storage_pool:
-      volume_config.storagePoolName = storage_pool
-    if protocols:
+    if storage_pool is not None:
+      volume_config.storagePool = storage_pool
+    if protocols is not None:
       self.ParseProtocols(volume_config, protocols)
-    if share_name:
+    if share_name is not None:
       volume_config.shareName = share_name
-    if export_policy:
+    if export_policy is not None:
       self.ParseExportPolicy(volume_config, export_policy)
-    if network:
+    if network is not None:
       volume_config.network = network.get('name')
       if 'reserved-ip-range' in network:
         volume_config.psaRange = network.get('reserved-ip-range')
-    if unix_permissions:
+    if unix_permissions is not None:
       volume_config.unixPermissions = unix_permissions
-    if smb_settings:
+    if smb_settings is not None:
       volume_config.smbSettings = smb_settings
-    if snapshot_policy:
+    if snapshot_policy is not None:
       self.ParseSnapshotPolicy(volume_config, snapshot_policy)
-    if snap_reserve:
+    if snap_reserve is not None:
       volume_config.snapReserve = snap_reserve
-    if snapshot_directory:
+    if snapshot_directory is not None:
       volume_config.snapshotDirectory = snapshot_directory
-    if security_style:
+    if security_style is not None:
       volume_config.securityStyle = security_style
-    if enable_kerberos:
+    if enable_kerberos is not None:
       volume_config.kerberosEnabled = enable_kerberos
-    if enable_ldap:
+    if enable_ldap is not None:
       volume_config.ldapEnabled = enable_ldap
-    if active_directory:
-      volume_config.activeDirectoryName = active_directory
+    if active_directory is not None:
+      volume_config.activeDirectory = active_directory
+    if snapshot is not None:
+      volume_config.restoreParameters = self.messages.RestoreParameters(
+          sourceSnapshot=snapshot
+      )
     return volume_config

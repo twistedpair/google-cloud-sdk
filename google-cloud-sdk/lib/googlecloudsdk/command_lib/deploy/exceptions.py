@@ -57,12 +57,12 @@ class AbandonedReleaseError(exceptions.Error):
     super(AbandonedReleaseError, self).__init__(error_template)
 
 
-class NoSnappedTargetsError(exceptions.Error):
-  """Error when a release doesn't contain any snapped target resource."""
+class NoStagesError(exceptions.Error):
+  """Error when a release doesn't contain any pipeline stages."""
 
   def __init__(self, release_name):
-    super(NoSnappedTargetsError, self).__init__(
-        'No snapped targets in the release {}.'.format(release_name))
+    super(NoStagesError, self).__init__(
+        'No pipeline stages in the release {}.'.format(release_name))
 
 
 class InvalidReleaseNameError(exceptions.Error):

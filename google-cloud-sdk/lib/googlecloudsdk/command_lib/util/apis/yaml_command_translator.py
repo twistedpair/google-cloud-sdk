@@ -356,7 +356,17 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
       base.Argument('--{}'.format(arg), help='').RemoveFromParser(parser)
     return parser
 
-  def _CommonRun(self, args, existing_message=None):
+  def _UpdateRuntimeMethod(self, args):
+    if not self.spec.request.modify_method_hook:
+      return
+
+    ref = self.arg_generator.GetRequestResourceRef(args)
+    self.spec.request.method = self.spec.request.modify_method_hook(ref, args)
+    self.method = registry.GetMethod(
+        self.spec.request.collection, self.spec.request.method,
+        self.spec.request.api_version)
+
+  def _CommonRun(self, args, existing_message=None, update_mask=None):
     """Performs run actions common to all commands.
 
     Parses the resource argument into a resource reference
@@ -366,6 +376,7 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
     Args:
       args: The argparse parser.
       existing_message: the apitools message returned from previous request.
+      update_mask: auto-generated mask from updated fields.
 
     Returns:
       (resources.Resource, response), A tuple of the parsed resource reference
@@ -379,11 +390,7 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
           default=self.spec.input.default_continue,
           throw_if_unattended=True, cancel_on_no=True)
 
-    if self.spec.request.modify_method_hook:
-      self.spec.request.method = self.spec.request.modify_method_hook(ref, args)
-      self.method = registry.GetMethod(
-          self.spec.request.collection, self.spec.request.method,
-          self.spec.request.api_version)
+    self._UpdateRuntimeMethod(args)
 
     if self.spec.request.issue_request_hook:
       # Making the request is overridden, just call into the custom code.
@@ -394,9 +401,15 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
       request = self.spec.request.create_request_hook(ref, args)
     else:
       parse_resource = self.spec.request.parse_resource_into_request
+      static_fields = {}
+      if update_mask:
+        static_fields.update(update_mask)
+      if self.spec.request.static_fields:
+        static_fields.update(self.spec.request.static_fields)
+
       request = self.arg_generator.CreateRequest(
           args,
-          self.spec.request.static_fields,
+          static_fields,
           self.spec.request.resource_method_params,
           self.spec.arguments.labels,
           self.spec.command_type,
@@ -946,6 +959,13 @@ class UpdateCommandGenerator(BaseCommandGenerator):
           labels_util.AddUpdateLabelsFlags(parser)
 
       def Run(self_, args):
+        # Check if the update is full-update, which requires a get request.
+        existing_message = None
+        if self.spec.update:
+          if self.spec.update.read_modify_update:
+            existing_message = self._GetExistingResource(args)
+
+        self._UpdateRuntimeMethod(args)
         # Check if mask is required for an update request, if required, return
         # the dotted path, e.g. updateRequest.fieldMask.
         mask_path = update.GetMaskFieldPath(self.method)
@@ -956,15 +976,11 @@ class UpdateCommandGenerator(BaseCommandGenerator):
             mask_string = ''
           else:
             mask_string = update.GetMaskString(args, self.spec, mask_path)
-          self.spec.request.static_fields[mask_path] = mask_string
+          update_mask = {mask_path: mask_string}
+        else:
+          update_mask = None
 
-        # Check if the update is full-update, which requires a get request.
-        existing_message = None
-        if self.spec.update:
-          if self.spec.update.read_modify_update:
-            existing_message = self._GetExistingResource(args)
-
-        ref, response = self._CommonRun(args, existing_message)
+        ref, response = self._CommonRun(args, existing_message, update_mask)
         if self.spec.async_:
           request_string = None
           if ref:

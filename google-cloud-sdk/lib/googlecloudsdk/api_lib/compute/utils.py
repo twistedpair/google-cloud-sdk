@@ -354,4 +354,9 @@ def IsQuotaExceededError(error):
   return hasattr(error, 'code') and error.code == 'QUOTA_EXCEEDED'
 
 
-
+def JsonErrorHasDetails(data):
+  try:
+    error = data.get('error')
+    return 'details' in error.keys()
+  except (KeyError, AttributeError):
+    return False

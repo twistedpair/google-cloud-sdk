@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 import base64
 import collections
-import glob
 import json
 import os
 import os.path
@@ -36,6 +35,9 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.auth import auth_util
+from googlecloudsdk.command_lib.code import builders
+from googlecloudsdk.command_lib.code import common
+from googlecloudsdk.command_lib.code import dataobject
 from googlecloudsdk.command_lib.code import secrets
 from googlecloudsdk.command_lib.code import yaml_helper
 from googlecloudsdk.command_lib.iam import iam_util
@@ -64,61 +66,16 @@ _C_IDENTIFIER = r'^[a-zA-Z_][a-zA-Z_0-9]*$'
 _FLAG_UNSPECIFIED = object()
 
 
-class InvalidLocationError(exceptions.Error):
-  """File is in an invalid location."""
-
-
 class _ParseError(TypeError):
   """File does not parse with the expected schema."""
 
 
-class _DataType(type):
-  """Dumb immutable data type."""
-
-  # TODO(b/154131605): This a type that is an immutable data object. Can't use
-  # attrs because it's not part of googlecloudsdk and can't use namedtuple
-  # because it's not efficient on python 2 (it generates code, which needs
-  # to be parsed and interpretted). Remove this code when we get support
-  # for attrs or another dumb data object in gcloud.
-
-  def __new__(mcs, classname, bases, class_dict):
-    class_dict = class_dict.copy()
-    names = class_dict.get('NAMES', tuple())
-    class_dict.update(
-        (name, mcs._CreateAccessor(i)) for i, name in enumerate(names))
-
-    return super(_DataType, mcs).__new__(mcs, classname, bases, class_dict)
-
-  @staticmethod
-  def _CreateAccessor(i):
-    """Create an tuple accessor property."""
-    return property(lambda tpl: tpl[i])
-
-
-class DataObject(six.with_metaclass(_DataType, tuple)):
-  """Parent class of dumb data object."""
-
-  def __new__(cls, **kwargs):
-    names = getattr(cls, 'NAMES', tuple())
-    invalid_names = set(kwargs) - set(names)
-    if invalid_names:
-      raise ValueError('Invalid names: ' + repr(invalid_names))
-
-    tpl = tuple(kwargs[name] if name in kwargs else None for name in names)
-    return super(DataObject, cls).__new__(cls, tpl)
-
-  def replace(self, **changes):
-    # https://docs.python.org/3/library/dataclasses.html#dataclasses.replace
-    out = dict((n, changes.get(n, getattr(self, n, None))) for n in self.NAMES)
-    return self.__class__(**out)
-
-
-class ServiceAccountSetting(DataObject):
+class ServiceAccountSetting(dataobject.DataObject):
   """Setting object representing a service account."""
   NAMES = ('name',)
 
 
-class ApplicationDefaultCredentialSetting(DataObject):
+class ApplicationDefaultCredentialSetting(dataobject.DataObject):
   """Setting object representing the application default credential."""
 
   _instance = None
@@ -129,44 +86,6 @@ class ApplicationDefaultCredentialSetting(DataObject):
                             cls).__new__(cls, **kwargs)
 
     return cls._instance
-
-
-class BuildpackBuilder(DataObject):
-  """Settings for building with a buildpack.
-
-    Attributes:
-      builder: Name of the builder.
-      trust: True if the lifecycle should trust this builder.
-      devmode: Build with devmode.
-  """
-
-  NAMES = ('builder', 'trust', 'devmode')
-
-
-class DockerfileBuilder(DataObject):
-  """Data for a request to build with an existing Dockerfile."""
-
-  # The 'dockerfile' attribute may be relative to the Settings.context dir or
-  # it may be an absolute path. Note that Settings.context is determined later
-  # than this instance is made, so it has to be passed into the methods below.
-  NAMES = ('dockerfile',)
-
-  def DockerfileAbsPath(self, context):
-    return os.path.abspath(os.path.join(context, self.dockerfile))
-
-  def DockerfileRelPath(self, context):
-    return os.path.relpath(self.DockerfileAbsPath(context), context)
-
-  def Validate(self, context):
-    complete_path = self.DockerfileAbsPath(context)
-    if os.path.commonprefix([context, complete_path]) != context:
-      raise InvalidLocationError(
-          'Invalid Dockerfile path. Dockerfile must be located in the build '
-          'context directory.\n'
-          'Dockerfile: {0}\n'
-          'Build Context Directory: {1}'.format(complete_path, context))
-    if not os.path.exists(complete_path):
-      raise InvalidLocationError(complete_path + ' does not exist.')
 
 
 def _GaeBuilderPackagePath(runtime):
@@ -181,19 +100,19 @@ def _GaeBuilderPackagePath(runtime):
   return 'gcr.io/gae-runtimes/buildpacks/%s/builder:latest' % runtime
 
 
-def _IsGcpBaseBuilder(builder):
+def _IsGcpBaseBuilder(bldr):
   """Return true if the builder is the GCP base builder.
 
   Args:
-    builder: Name of the builder.
+    bldr: Name of the builder.
 
   Returns:
     True if the builder is the GCP base builder.
   """
-  return builder == _DEFAULT_BUILDPACK_BUILDER
+  return bldr == _DEFAULT_BUILDPACK_BUILDER
 
 
-class _SecretPath(DataObject):
+class _SecretPath(dataobject.DataObject):
   """Configuration for a single secret version.
 
     Attributes:
@@ -204,7 +123,7 @@ class _SecretPath(DataObject):
   NAMES = ('key', 'path')
 
 
-class _SecretVolume(DataObject):
+class _SecretVolume(dataobject.DataObject):
   """Configuration for a single volume that mounts secret versions.
 
     Attributes:
@@ -249,7 +168,7 @@ class _SecretVolume(DataObject):
     return self.secret_name == other.secret_name
 
 
-class _SecretEnvVar(DataObject):
+class _SecretEnvVar(dataobject.DataObject):
   """Configuration for a single env var that's pulled from a secret.
 
   Attributes:
@@ -263,7 +182,7 @@ class _SecretEnvVar(DataObject):
   NAMES = ('name', 'key', 'mapped_secret')
 
 
-class Settings(DataObject):
+class Settings(dataobject.DataObject):
   """Settings for local development environments.
 
     Attributes:
@@ -302,7 +221,7 @@ class Settings(DataObject):
     # Service names may not include space, _ and upper case characters.
     service_name = dir_name.replace('_', '-').replace(' ', '-').lower()
     dockerfile_arg_default = 'Dockerfile'
-    builder = DockerfileBuilder(dockerfile=dockerfile_arg_default)
+    builder = builders.DockerfileBuilder(dockerfile=dockerfile_arg_default)
 
     return cls(
         builder=builder,
@@ -455,7 +374,8 @@ class Settings(DataObject):
     except yaml.Error:
       raise _ParseError()
     builder_url = _GaeBuilderPackagePath(service_config.parsed.runtime)
-    builder = BuildpackBuilder(builder=builder_url, trust=True, devmode=False)
+    builder = builders.BuildpackBuilder(
+        builder=builder_url, trust=True, devmode=False)
     return self.replace(builder=builder)
 
   def WithArgs(self, args):
@@ -492,13 +412,14 @@ class Settings(DataObject):
       if args.IsKnownAndSpecified('builder'):
         replacements['builder'] = _BuilderFromArg(args.builder)
       elif args.IsKnownAndSpecified('dockerfile'):
-        replacements['builder'] = DockerfileBuilder(dockerfile=args.dockerfile)
+        replacements['builder'] = builders.DockerfileBuilder(
+            dockerfile=args.dockerfile)
       else:
-        if isinstance(self.builder, DockerfileBuilder):
+        if isinstance(self.builder, builders.DockerfileBuilder):
           try:
             replacements['builder'] = self.builder
             replacements['builder'].Validate(context)
-          except InvalidLocationError:
+          except builders.InvalidLocationError:
             log.status.Print('No Dockerfile detected. '
                              'Using GCP buildpacks to build the container')
             replacements['builder'] = _BuilderFromArg(
@@ -568,44 +489,12 @@ class Settings(DataObject):
 
   def Build(self):
     """Validate and compute settings after all user inputs have been read."""
-    if isinstance(self.builder, DockerfileBuilder):
+    if isinstance(self.builder, builders.DockerfileBuilder):
       self.builder.Validate(self.context)
     replacements = {}
     if self.image is None:
       replacements['image'] = _DefaultImageName(self.service_name)
     return self.replace(**replacements)
-
-
-def _ChooseExistingServiceYaml(context, arg):
-  """Rules for choosing a service.yaml or app.yaml file.
-
-  The rules are meant to discover common filename variants like
-  'service.dev.yml' or 'staging-service.yaml'.
-
-  Args:
-    context: Build context dir. Could be '.'.
-    arg: User's path (relative to context or absolute) to a yaml file with
-      service config, or None. The service config could be a knative Service
-      description or an appengine app.yaml.
-
-  Returns:
-    Absolute path to a yaml file, or None.
-  """
-  if arg is not None:
-    complete_abs_path = os.path.abspath(os.path.join(context, arg))
-    if os.path.exists(complete_abs_path):
-      return complete_abs_path
-    raise exceptions.Error("File '{}' not found.".format(complete_abs_path))
-  for pattern in [
-      '*service.dev.yaml',
-      '*service.dev.yml',
-      '*service.yaml',
-      '*service.yml',
-  ]:
-    matches = glob.glob(os.path.join(context, pattern))
-    if matches:
-      return sorted(matches)[0]
-  return None
 
 
 def _MergedEnvVars(env_vars, env_vars_secrets, new_env_vars,
@@ -663,7 +552,7 @@ def AssembleSettings(args, release_track):
   settings = Settings.Defaults()
   context_dir = getattr(args, 'source', None) or os.path.curdir
   service_config_arg = getattr(args, 'service_config', None)
-  yaml_file = _ChooseExistingServiceYaml(context_dir, service_config_arg)
+  yaml_file = common.ChooseExistingServiceYaml(context_dir, service_config_arg)
   if yaml_file:
     try:
       settings = settings.WithServiceYaml(
@@ -703,7 +592,7 @@ def _DefaultImageName(service_name):
 
 def _BuilderFromArg(builder_arg):
   is_gcp_base_builder = _IsGcpBaseBuilder(builder_arg)
-  return BuildpackBuilder(
+  return builders.BuildpackBuilder(
       builder=builder_arg,
       trust=is_gcp_base_builder,
       devmode=is_gcp_base_builder)

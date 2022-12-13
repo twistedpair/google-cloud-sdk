@@ -311,12 +311,14 @@ def _AlphaHttpPushQueueFlags():
           type=arg_parsers.ArgDict(
               key_type=_GetHttpUriOverrideKeysValidator(),
               min_length=1,
-              max_length=5,
+              max_length=6,
               operators={':': None}),
           metavar='KEY:VALUE',
           help="""\
-          If provided, the specified HTTP target URI override is used for
-          all tasks in the queue, no matter what is set at the task-level.
+          If provided, the specified HTTP target URI override is used for all
+          tasks in the queue depending on what is set as the mode.
+          Allowed values for mode are: ALWAYS, IF_NOT_EXISTS. If not set, mode
+          defaults to ALWAYS.
 
           KEY must be at least one of: [{}]. Any missing keys will use the
           default.

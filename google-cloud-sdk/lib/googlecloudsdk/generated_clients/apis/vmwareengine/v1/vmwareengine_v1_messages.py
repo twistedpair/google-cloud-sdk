@@ -740,6 +740,21 @@ class ListPrivateCloudsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListPrivateConnectionsResponse(_messages.Message):
+  r"""Response message for VmwareEngine.ListPrivateConnections
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    privateConnections: A list of private connections.
+    unreachable: Unreachable resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  privateConnections = _messages.MessageField('PrivateConnection', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListSubnetsResponse(_messages.Message):
   r"""Response message for VmwareEngine.ListSubnets
 
@@ -922,12 +937,20 @@ class ManagementDnsZoneBinding(_messages.Message):
     StateValueValuesEnum: Output only. The state of the resource.
 
   Fields:
+    createTime: Output only. Creation time of this resource.
+    description: User-provided description for this resource.
+    etag: Checksum that may be sent on update and delete requests to ensure
+      that the user-provided value is up to date before the server processes a
+      request. The server computes checksums based on the value of other
+      fields in the request.
     name: Output only. The resource name of this binding. Resource names are
       schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-west1-a/privateClouds/my-
       cloud/managementDnsZoneBindings/my-management-dns-zone-binding`
     state: Output only. The state of the resource.
+    uid: Output only. System-generated unique identifier for the resource.
+    updateTime: Output only. Last update time of this resource.
     vmwareEngineNetwork: Network to bind is a VMware Engine network. Specify
       the name in the following form for VMware engine network: `projects/{pro
       ject}/locations/global/vmwareEngineNetworks/{vmware_engine_network_id}`.
@@ -956,10 +979,15 @@ class ManagementDnsZoneBinding(_messages.Message):
     DELETING = 4
     FAILED = 5
 
-  name = _messages.StringField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
-  vmwareEngineNetwork = _messages.StringField(3)
-  vpcNetwork = _messages.StringField(4)
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  uid = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+  vmwareEngineNetwork = _messages.StringField(8)
+  vpcNetwork = _messages.StringField(9)
 
 
 class NetworkConfig(_messages.Message):
@@ -1662,6 +1690,119 @@ class PrivateCloud(_messages.Message):
   uid = _messages.StringField(11)
   updateTime = _messages.StringField(12)
   vcenter = _messages.MessageField('Vcenter', 13)
+
+
+class PrivateConnection(_messages.Message):
+  r"""Private connection resource that provides connectivity for VMware Engine
+  private clouds.
+
+  Enums:
+    RoutingModeValueValuesEnum: Required. Routing Mode.
+    StateValueValuesEnum: Output only. State of the private connection.
+    TypeValueValuesEnum: Required. Private connection type.
+
+  Fields:
+    createTime: Output only. Creation time of this resource.
+    description: Optional. User-provided description for this private
+      connection.
+    exportedRoutes: Output only. Exported routes of the private connection.
+    importedRoutes: Output only. Imported routes of the private connection.
+    name: Output only. The resource name of the private connection. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1/privateConnections/my-
+      connection`
+    network: Required. Network to create private connection. Specify the name
+      in the following form: `projects/{project}/global/networks/{network_id}`
+      For type = PRIVATE_SERVICE_ACCESS, this field represents
+      servicenetworking VPC, e.g. projects/project-
+      tp/global/networks/servicenetworking. For type = NETAPP_CLOUD_VOLUME,
+      this field represents NetApp service VPC, e.g. projects/project-
+      tp/global/networks/netapp-tenant-vpc. For type = DELL_POWERSCALE, this
+      field represent Dell service VPC, e.g. projects/project-
+      tp/global/networks/dell-tenant-vpc. For type= THIRD_PARTY_SERVICE, this
+      field could represent a consumer VPC or any other producer VPC to which
+      the VMware Engine Network needs to be connected, e.g.
+      projects/project/global/networks/vpc.
+    peeringId: Output only. VPC network peering id between given network VPC
+      and VMwareEngineNetwork.
+    routingMode: Required. Routing Mode.
+    state: Output only. State of the private connection.
+    type: Required. Private connection type.
+    uid: Output only. System-generated unique identifier for the resource.
+    updateTime: Output only. Last update time of this resource.
+    vmwareEngineNetwork: Required. The relative resource name of Legacy VMware
+      Engine network. Specify the name in the following form: `projects/{proje
+      ct}/locations/{location}/vmwareEngineNetworks/{vmware_engine_network_id}
+      ` where `{project}`, `{location}` will be same as specified in private
+      connection resource name and `{vmware_engine_network_id}` will be in the
+      form of `{location}`-default e.g. projects/project/locations/us-
+      west1/vmwareEngineNetworks/us-west1-default.
+  """
+
+  class RoutingModeValueValuesEnum(_messages.Enum):
+    r"""Required. Routing Mode.
+
+    Values:
+      ROUTING_MODE_UNSPECIFIED: The default value. This value should never be
+        used.
+      GLOBAL: Global Routing Mode
+      REGIONAL: Regional Routing Mode
+    """
+    ROUTING_MODE_UNSPECIFIED = 0
+    GLOBAL = 1
+    REGIONAL = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the private connection.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value is used if the state is
+        omitted.
+      CREATING: The private connection is being created.
+      ACTIVE: The private connection is ready.
+      UPDATING: The private connection is being updated.
+      DELETING: The private connection is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    UPDATING = 3
+    DELETING = 4
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. Private connection type.
+
+    Values:
+      TYPE_UNSPECIFIED: The default value. This value should never be used.
+      PRIVATE_SERVICE_ACCESS: Connection used for establishing [private
+        services access](https://cloud.google.com/vpc/docs/private-services-
+        access).
+      NETAPP_CLOUD_VOLUMES: Connection used for connecting to NetApp Cloud
+        Volumes.
+      DELL_POWERSCALE: Connection used for connecting to Dell PowerScale.
+      THIRD_PARTY_SERVICE: Connection used for connecting to third-party
+        services.
+    """
+    TYPE_UNSPECIFIED = 0
+    PRIVATE_SERVICE_ACCESS = 1
+    NETAPP_CLOUD_VOLUMES = 2
+    DELL_POWERSCALE = 3
+    THIRD_PARTY_SERVICE = 4
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  exportedRoutes = _messages.MessageField('PeeringRoute', 3, repeated=True)
+  importedRoutes = _messages.MessageField('PeeringRoute', 4, repeated=True)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  peeringId = _messages.StringField(7)
+  routingMode = _messages.EnumField('RoutingModeValueValuesEnum', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  vmwareEngineNetwork = _messages.StringField(13)
 
 
 class ResetNsxCredentialsRequest(_messages.Message):
@@ -3691,6 +3832,164 @@ class VmwareengineProjectsLocationsPrivateCloudsUndeleteRequest(_messages.Messag
 
   name = _messages.StringField(1, required=True)
   undeletePrivateCloudRequest = _messages.MessageField('UndeletePrivateCloudRequest', 2)
+
+
+class VmwareengineProjectsLocationsPrivateConnectionsCreateRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateConnectionsCreateRequest object.
+
+  Fields:
+    parent: Required. The resource name of the location to create the new
+      private connection in. Private connection is a regional resource.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1`
+    privateConnection: A PrivateConnection resource to be passed as the
+      request body.
+    privateConnectionId: Required. The user-provided identifier of the new
+      private connection. This identifier must be unique among private
+      connection resources within the parent and becomes the final token in
+      the name URI. The identifier must meet the following requirements: *
+      Only contains 1-63 alphanumeric characters and hyphens * Begins with an
+      alphabetical character * Ends with a non-hyphen character * Not
+      formatted as a UUID * Complies with [RFC
+      1034](https://datatracker.ietf.org/doc/html/rfc1034) (section 3.5)
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  privateConnection = _messages.MessageField('PrivateConnection', 2)
+  privateConnectionId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsPrivateConnectionsDeleteRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateConnectionsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the private connection to be deleted.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1/privateConnections/my-
+      connection`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class VmwareengineProjectsLocationsPrivateConnectionsGetRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateConnectionsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the private connection to retrieve.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1/privateConnections/my-
+      connection`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateConnectionsListRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateConnectionsListRequest object.
+
+  Fields:
+    filter: A filter expression that matches resources returned in the
+      response. The expression must specify the field name, a comparison
+      operator, and the value that you want to use for filtering. The value
+      must be a string, a number, or a boolean. The comparison operator must
+      be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of
+      private connections, you can exclude the ones named `example-connection`
+      by specifying `name != "example-connection"`. To filter on multiple
+      expressions, provide each separate expression within parentheses. For
+      example: ``` (name = "example-connection") (createTime >
+      "2022-09-22T08:15:10.40Z") ``` By default, each expression is an `AND`
+      expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (name = "example-connection-1") AND
+      (createTime > "2021-04-12T08:15:10.40Z") OR (name = "example-
+      connection-2") ```
+    orderBy: Sorts list results by a certain order. By default, returned
+      results are ordered by `name` in ascending order. You can also sort
+      results in descending order based on the `name` value using
+      `orderBy="name desc"`. Currently, only ordering by `name` is supported.
+    pageSize: The maximum number of private connections to return in one page.
+      The maximum value is coerced to 1000. The default value of this field is
+      500.
+    pageToken: A page token, received from a previous `ListPrivateConnections`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListPrivateConnections` must match the
+      call that provided the page token.
+    parent: Required. The resource name of the location to query for private
+      connections. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/us-west1`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateConnectionsPatchRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateConnectionsPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of the private connection. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1/privateConnections/my-
+      connection`
+    privateConnection: A PrivateConnection resource to be passed as the
+      request body.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the `PrivateConnection` resource by the update. The
+      fields specified in the `update_mask` are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  privateConnection = _messages.MessageField('PrivateConnection', 2)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class VmwareengineProjectsLocationsVmwareEngineNetworksCreateRequest(_messages.Message):

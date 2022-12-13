@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import copy
+import enum
 import functools
 
 from googlecloudsdk.api_lib.compute import filter_rewrite
@@ -98,6 +99,13 @@ A list of regions can be fetched by running:
 
   $ gcloud compute regions list
 """
+
+
+class ScopeFlagsUsage(enum.Enum):
+  """Enum representing gCloud flag generation options for ResourceArgument."""
+  GENERATE_DEDICATED_SCOPE_FLAGS = 1
+  USE_EXISTING_SCOPE_FLAGS = 2
+  DONT_USE_SCOPE_FLAGS = 3
 
 
 class ScopesFetchingException(exceptions.Error):
@@ -644,26 +652,27 @@ class ResourceArgument(object):
     and zonal qualifiers (or any combination of) for each resource.
   """
 
-  def __init__(self,
-               name=None,
-               resource_name=None,
-               completer=None,
-               plural=False,
-               required=True,
-               zonal_collection=None,
-               regional_collection=None,
-               global_collection=None,
-               global_help_text=None,
-               region_explanation=None,
-               region_help_text=None,
-               region_hidden=False,
-               zone_explanation=None,
-               zone_help_text=None,
-               zone_hidden=False,
-               short_help=None,
-               detailed_help=None,
-               custom_plural=None,
-               use_existing_default_scope=None):
+  def __init__(
+      self,
+      name=None,
+      resource_name=None,
+      completer=None,
+      plural=False,
+      required=True,
+      zonal_collection=None,
+      regional_collection=None,
+      global_collection=None,
+      global_help_text=None,
+      region_explanation=None,
+      region_help_text=None,
+      region_hidden=False,
+      zone_explanation=None,
+      zone_help_text=None,
+      zone_hidden=False,
+      short_help=None,
+      detailed_help=None,
+      custom_plural=None,
+      scope_flags_usage=ScopeFlagsUsage.GENERATE_DEDICATED_SCOPE_FLAGS):
 
     """Constructor.
 
@@ -691,16 +700,22 @@ class ResourceArgument(object):
                              by default.
       zone_help_text: str, if provided, zone flag help text will be overridden
                            with this value.
-      zone_hidden: bool, Hide region in help if True.
+      zone_hidden: bool, Hide zone in help if True.
       short_help: str, help for the flag being added, if not provided help text
                        will be 'The name[s] of the ${resource_name}[s].'.
       detailed_help: str, detailed help for the flag being added, if not
                           provided there will be no detailed help for the flag.
       custom_plural: str, If plural is True then this string will be used as
                           plural resource name.
-      use_existing_default_scope: bool, when set to True, already existing
+      scope_flags_usage: ScopeFlagsUsage, when set to
+                                  USE_EXISTING_SCOPE_FLAGS, already existing
                                   zone and/or region flags will be used for
-                                  this argument.
+                                  this argument,
+                                  GENERATE_DEDICATED_SCOPE_FLAGS, new scope
+                                  flags will be created,
+                                  DONT_USE_SCOPE_FLAGS to not generate
+                                  additional flags and use single argumant for
+                                  all scopes.
 
     Raises:
       exceptions.Error: if there some inconsistency in arguments.
@@ -708,11 +723,12 @@ class ResourceArgument(object):
     self.name_arg = name or 'name'
     self._short_help = short_help
     self._detailed_help = detailed_help
-    self.use_existing_default_scope = use_existing_default_scope
+    self.scope_flags_usage = scope_flags_usage
     if self.name_arg.startswith('--'):
       self.is_flag = True
       self.name = self.name_arg[2:].replace('-', '_')
-      flag_prefix = (None if self.use_existing_default_scope else
+      flag_prefix = (None if self.scope_flags_usage
+                     == ScopeFlagsUsage.USE_EXISTING_SCOPE_FLAGS else
                      self.name_arg[2:])
       self.scopes = ResourceArgScopes(flag_prefix=flag_prefix)
     else:  # positional
@@ -794,7 +810,7 @@ class ResourceArgument(object):
 
     (mutex_group or parser).add_argument(self.name_arg, **params)
 
-    if self.use_existing_default_scope:
+    if self.scope_flags_usage != ScopeFlagsUsage.GENERATE_DEDICATED_SCOPE_FLAGS:
       return
 
     if len(self.scopes) > 1:
@@ -826,13 +842,14 @@ class ResourceArgument(object):
           plural=self.plural,
           custom_plural=self.custom_plural)
 
-    if not self.plural:
-      resource_mention = '{} is'.format(self.resource_name)
-    elif self.plural and not self.custom_plural:
-      resource_mention = '{}s are'.format(self.resource_name)
-    else:
-      resource_mention = '{} are'.format(self.custom_plural)
     if compute_scope.ScopeEnum.GLOBAL in self.scopes and len(self.scopes) > 1:
+      if not self.plural:
+        resource_mention = '{} is'.format(self.resource_name)
+      elif self.plural and not self.custom_plural:
+        resource_mention = '{}s are'.format(self.resource_name)
+      else:
+        resource_mention = '{} are'.format(self.custom_plural)
+
       scope.add_argument(
           self.scopes[compute_scope.ScopeEnum.GLOBAL].flag,
           action='store_true',

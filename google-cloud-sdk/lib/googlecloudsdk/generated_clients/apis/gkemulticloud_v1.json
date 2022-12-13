@@ -2160,6 +2160,16 @@
           "description": "Output only. Human-readable status of any error that occurred during the operation.",
           "readOnly": true,
           "type": "string"
+        },
+        "verb": {
+          "description": "Output only. The verb associated with the API method which triggered this operation. Possible values are \"create\", \"delete\", \"update\" and \"import\".",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether it has been requested cancellation for the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     }

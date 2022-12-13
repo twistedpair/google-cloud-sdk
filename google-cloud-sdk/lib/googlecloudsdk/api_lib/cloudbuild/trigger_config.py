@@ -56,7 +56,7 @@ def AddTriggerArgs(parser, add_region_flag=True):
   flag_config = trigger_config.add_argument_group(
       help='Flag based trigger configuration')
   if add_region_flag:
-    build_flags.AddRegionFlag(flag_config, hidden=True, required=False)
+    build_flags.AddRegionFlag(flag_config, hidden=False, required=False)
   AddFlagConfigArgs(flag_config)
 
   return flag_config
@@ -87,7 +87,7 @@ def AddGitLabEnterpriseTriggerArgs(parser):
   # Trigger configuration
   flag_config = trigger_config.add_argument_group(
       help='Flag based trigger configuration')
-  build_flags.AddRegionFlag(flag_config, hidden=False, required=True)
+  build_flags.AddRegionFlag(flag_config, hidden=False, required=False)
   AddFlagConfigArgs(flag_config)
 
   return flag_config
@@ -264,10 +264,18 @@ def AddBuildConfigArgs(flag_config, add_docker_args=True):
   # groups so we have to have one flag outside of the config argument group.
   AddSubstitutions(flag_config)
 
-  build_config = AddBuildFileConfigArgs(flag_config)
+  build_config = flag_config.add_mutually_exclusive_group(required=True)
 
-  inline = build_config.add_argument_group(help='Build configuration file')
-  inline.add_argument(
+  build_config.add_argument(
+      '--build-config',
+      metavar='PATH',
+      help="""\
+Path to a YAML or JSON file containing the build configuration in the repository.
+
+For more details, see: https://cloud.google.com/cloud-build/docs/build-config
+""")
+
+  build_config.add_argument(
       '--inline-config',
       metavar='PATH',
       help="""\
@@ -323,6 +331,7 @@ def AddBuildDockerArgs(argument_group, require_docker_image=False):
       help='Dockerfile build configuration flags')
   docker.add_argument(
       '--dockerfile',
+      required=True,
       help="""\
 Path of Dockerfile to use for builds in the repository.
 
@@ -353,32 +362,6 @@ Use a build configuration (cloudbuild.yaml) file for building multiple images in
       '--dockerfile-image',
       required=require_docker_image,
       help=docker_image_help_text)
-
-
-def AddBuildFileConfigArgs(flag_config):
-  """Adds additional argparse flags to a group for build configuration options.
-
-  Args:
-    flag_config: argparse argument group. Additional flags will be added to this
-      group to cover common build configuration settings.
-
-  Returns:
-    build_config: a build config.
-  """
-
-  build_config = flag_config.add_mutually_exclusive_group(required=True)
-  build_file_config = build_config.add_argument_group(
-      help='Build file configuration flags')
-  build_file_config.add_argument(
-      '--build-config',
-      metavar='PATH',
-      help="""\
-Path to a YAML or JSON file containing the build configuration in the repository.
-
-For more details, see: https://cloud.google.com/cloud-build/docs/build-config
-""")
-
-  return build_config
 
 
 def ParseRepoEventArgs(trigger, args):

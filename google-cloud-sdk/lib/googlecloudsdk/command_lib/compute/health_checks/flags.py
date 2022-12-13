@@ -33,13 +33,16 @@ def HealthCheckArgument(protocol_string,
                         name=None,
                         required=True,
                         plural=False,
-                        include_regional_health_check=True):
+                        include_regional_health_check=True,
+                        scope_flags_usage=compute_flags
+                        .ScopeFlagsUsage.GENERATE_DEDICATED_SCOPE_FLAGS):
   return compute_flags.ResourceArgument(
       name=name,
       resource_name='{} health check'.format(protocol_string),
       completer=compute_completers.HealthChecksCompleter,
       plural=plural,
       required=required,
+      scope_flags_usage=scope_flags_usage,
       global_collection='compute.healthChecks',
       regional_collection='compute.regionHealthChecks'
       if include_regional_health_check else None,

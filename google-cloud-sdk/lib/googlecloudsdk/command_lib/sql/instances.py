@@ -297,6 +297,11 @@ class _BaseInstances(object):
       settings.ipConfiguration.privateNetwork = reducers.PrivateNetworkUrl(
           args.network)
 
+    if args.IsKnownAndSpecified('enable_google_private_path'):
+      if not settings.ipConfiguration:
+        settings.ipConfiguration = sql_messages.IpConfiguration()
+      settings.ipConfiguration.enablePrivatePathForGoogleCloudServices = args.enable_google_private_path
+
     if args.deletion_protection is not None:
       settings.deletionProtectionEnabled = args.deletion_protection
 
@@ -320,12 +325,6 @@ class _BaseInstances(object):
               '--storage-auto-increase', 'To set the storage capacity limit '
               'using [--storage-auto-increase-limit], '
               '[--storage-auto-increase] must be enabled.')
-
-      if ('enable_google_private_path' in args) and args.IsSpecified(
-          'enable_google_private_path'):
-        if not settings.ipConfiguration:
-          settings.ipConfiguration = sql_messages.IpConfiguration()
-        settings.ipConfiguration.enablePrivatePathForGoogleCloudServices = args.enable_google_private_path
 
     if _IsAlpha(release_track):
       if args.IsSpecified('workload_tier'):

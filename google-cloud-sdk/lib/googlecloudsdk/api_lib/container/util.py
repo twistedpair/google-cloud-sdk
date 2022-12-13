@@ -717,7 +717,7 @@ def _GetStackTypeCustomMappings():
   }
 
 
-def GetCreateStackTypeMapper(messages, hidden=True):
+def GetCreateStackTypeMapper(messages, hidden=False):
   """Returns a mapper from text options to the StackType enum.
 
   Args:
@@ -749,7 +749,7 @@ STACK_TYPE must be one of:
       help_str=help_text)
 
 
-def GetUpdateStackTypeMapper(messages, hidden=True):
+def GetUpdateStackTypeMapper(messages, hidden=False):
   """Returns a mapper from text options to the StackType enum.
 
   Args:

@@ -152,6 +152,9 @@ class MatrixCreator(object):
         testTimeout=matrix_ops.ReformatDuration(self._args.timeout),
         iosRoboTest=self._messages.IosRoboTest(
             appIpa=self._BuildFileReference(self._args.app)))
+    if getattr(self._args, 'robo_script', None):
+      spec.iosRoboTest.roboScript = self._BuildFileReference(
+          os.path.basename(self._args.robo_script))
     return spec
 
   def _TestSpecFromType(self, test_type):

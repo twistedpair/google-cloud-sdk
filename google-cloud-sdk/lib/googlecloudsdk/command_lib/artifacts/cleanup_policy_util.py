@@ -80,8 +80,24 @@ def RepositoryToCleanupPoliciesResponse(response, unused_args):
 
 
 def RepositoryToSetCleanupPolicyResponse(response, unused_args):
-  if not response.cleanupPolicies:
-    raise ar_exceptions.ArtifactRegistryError(
-        'Failed to set cleanup policy. Cleanup policies are currently in '
-        'private preview.')
   return response.cleanupPolicies.additionalProperties
+
+
+def SetOverwriteMask(unused_ref, args, request):
+  if args.overwrite:
+    request.updateMask = None
+  else:
+    request.updateMask = 'cleanup_policies'
+  return request
+
+
+def DeleteCleanupPolicyFields(unused_ref, args, request):
+  removed_policies = args.policynames.split(',')
+  remaining_policies = []
+  if request.repository.cleanupPolicies:
+    for policy in request.repository.cleanupPolicies.additionalProperties:
+      if policy.key not in removed_policies:
+        remaining_policies.append(policy)
+  request.repository.cleanupPolicies.additionalProperties = remaining_policies
+  request.updateMask = None
+  return request

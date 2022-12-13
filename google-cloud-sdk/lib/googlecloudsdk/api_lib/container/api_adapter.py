@@ -2182,11 +2182,10 @@ class APIAdapter(object):
         policy.tpuIpv4CidrBlock = options.tpu_ipv4_cidr
       if options.stack_type is not None:
         policy.stackType = util.GetCreateStackTypeMapper(
-            self.messages, hidden=True).GetEnumForChoice(options.stack_type)
+            self.messages).GetEnumForChoice(options.stack_type)
       if options.ipv6_access_type is not None:
         policy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
-            self.messages,
-            hidden=True).GetEnumForChoice(options.ipv6_access_type)
+            self.messages).GetEnumForChoice(options.ipv6_access_type)
 
       cluster.clusterIpv4Cidr = None
       cluster.ipAllocationPolicy = policy
@@ -3027,7 +3026,7 @@ class APIAdapter(object):
     if options.stack_type is not None:
       update = self.messages.ClusterUpdate(
           desiredStackType=util.GetUpdateStackTypeMapper(
-              self.messages, hidden=True).GetEnumForChoice(options.stack_type))
+              self.messages).GetEnumForChoice(options.stack_type))
 
     if options.enable_cost_allocation is not None:
       update = self.messages.ClusterUpdate(
@@ -4560,11 +4559,10 @@ class V1Beta1Adapter(V1Adapter):
 
     if options.stack_type is not None:
       cluster.ipAllocationPolicy.stackType = util.GetCreateStackTypeMapper(
-          self.messages, hidden=False).GetEnumForChoice(options.stack_type)
+          self.messages).GetEnumForChoice(options.stack_type)
     if options.ipv6_access_type is not None:
       cluster.ipAllocationPolicy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
-          self.messages,
-          hidden=False).GetEnumForChoice(options.ipv6_access_type)
+          self.messages).GetEnumForChoice(options.ipv6_access_type)
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -5080,12 +5078,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
 
     if options.stack_type is not None:
       cluster.ipAllocationPolicy.stackType = util.GetCreateStackTypeMapper(
-          self.messages, hidden=False).GetEnumForChoice(options.stack_type)
+          self.messages).GetEnumForChoice(options.stack_type)
 
     if options.ipv6_access_type is not None:
       cluster.ipAllocationPolicy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
-          self.messages,
-          hidden=False).GetEnumForChoice(options.ipv6_access_type)
+          self.messages).GetEnumForChoice(options.ipv6_access_type)
 
     cluster.master = _GetMasterForClusterCreate(options, self.messages)
 

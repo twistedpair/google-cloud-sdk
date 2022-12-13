@@ -1365,7 +1365,7 @@
     },
     "GoogleCloudApigeeV1TargetServer": {
       "id": "GoogleCloudApigeeV1TargetServer",
-      "description": "TargetServer configuration. TargetServers are used to decouple a proxy's TargetEndpoint HTTPTargetConnections from concrete URLs for backend services.",
+      "description": "TargetServer configuration. TargetServers are used to decouple a proxy TargetEndpoint HTTPTargetConnections from concrete URLs for backend services.",
       "type": "object",
       "properties": {
         "name": {

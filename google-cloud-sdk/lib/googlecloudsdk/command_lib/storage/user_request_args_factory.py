@@ -99,6 +99,9 @@ class _UserBucketArgs(_UserResourceArgs):
                cors_file_path=None,
                default_encryption_key=None,
                default_event_based_hold=None,
+               default_object_acl_file_path=None,
+               default_object_acl_grants_to_add=None,
+               default_object_acl_grants_to_remove=None,
                default_storage_class=None,
                enable_autoclass=None,
                labels_file_path=None,
@@ -111,6 +114,7 @@ class _UserBucketArgs(_UserResourceArgs):
                public_access_prevention=None,
                requester_pays=None,
                retention_period=None,
+               retention_period_to_be_locked=None,
                uniform_bucket_level_access=None,
                versioning=None,
                web_error_page=None,
@@ -121,6 +125,9 @@ class _UserBucketArgs(_UserResourceArgs):
     self.cors_file_path = cors_file_path
     self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
+    self.default_object_acl_file_path = default_object_acl_file_path
+    self.default_object_acl_grants_to_add = default_object_acl_grants_to_add
+    self.default_object_acl_grants_to_remove = default_object_acl_grants_to_remove
     self.default_storage_class = default_storage_class
     self.enable_autoclass = enable_autoclass
     self.labels_file_path = labels_file_path
@@ -132,6 +139,7 @@ class _UserBucketArgs(_UserResourceArgs):
     self.log_object_prefix = log_object_prefix
     self.public_access_prevention = public_access_prevention
     self.retention_period = retention_period
+    self.retention_period_to_be_locked = retention_period_to_be_locked
     self.requester_pays = requester_pays
     self.uniform_bucket_level_access = uniform_bucket_level_access
     self.versioning = versioning
@@ -145,6 +153,12 @@ class _UserBucketArgs(_UserResourceArgs):
             self.cors_file_path == other.cors_file_path and
             self.default_encryption_key == other.default_encryption_key and
             self.default_event_based_hold == other.default_event_based_hold and
+            self.default_object_acl_file_path
+            == other.default_object_acl_file_path and
+            self.default_object_acl_grants_to_add
+            == other.default_object_acl_grants_to_add and
+            self.default_object_acl_grants_to_remove
+            == other.default_object_acl_grants_to_remove and
             self.default_storage_class == other.default_storage_class and
             self.enable_autoclass == other.enable_autoclass and
             self.labels_file_path == other.labels_file_path and
@@ -157,6 +171,8 @@ class _UserBucketArgs(_UserResourceArgs):
             self.public_access_prevention == other.public_access_prevention and
             self.requester_pays == other.requester_pays and
             self.retention_period == other.retention_period and
+            self.retention_period_to_be_locked
+            == other.retention_period_to_be_locked and
             self.uniform_bucket_level_access
             == other.uniform_bucket_level_access and
             self.versioning == other.versioning and
@@ -177,9 +193,9 @@ class _UserObjectArgs(_UserResourceArgs):
       content_encoding=None,
       content_language=None,
       content_type=None,
-      custom_metadata_to_set=None,
-      custom_metadata_to_remove=None,
-      custom_metadata_to_update=None,
+      custom_fields_to_set=None,
+      custom_fields_to_remove=None,
+      custom_fields_to_update=None,
       custom_time=None,
       event_based_hold=None,
       md5_hash=None,
@@ -195,9 +211,9 @@ class _UserObjectArgs(_UserResourceArgs):
     self.content_encoding = content_encoding
     self.content_language = content_language
     self.content_type = content_type
-    self.custom_metadata_to_set = custom_metadata_to_set
-    self.custom_metadata_to_remove = custom_metadata_to_remove
-    self.custom_metadata_to_update = custom_metadata_to_update
+    self.custom_fields_to_set = custom_fields_to_set
+    self.custom_fields_to_remove = custom_fields_to_remove
+    self.custom_fields_to_update = custom_fields_to_update
     self.custom_time = custom_time
     self.event_based_hold = event_based_hold
     self.md5_hash = md5_hash
@@ -208,22 +224,21 @@ class _UserObjectArgs(_UserResourceArgs):
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (
-        super(_UserObjectArgs, self).__eq__(other) and
-        self.cache_control == other.cache_control and
-        self.content_disposition == other.content_disposition and
-        self.content_encoding == other.content_encoding and
-        self.content_language == other.content_language and
-        self.content_type == other.content_type and
-        self.custom_metadata_to_set == other.custom_metadata_to_set and
-        self.custom_metadata_to_remove == other.custom_metadata_to_remove and
-        self.custom_metadata_to_update == other.custom_metadata_to_update and
-        self.custom_time == other.custom_time and
-        self.event_based_hold == other.event_based_hold and
-        self.md5_hash == other.md5_hash and
-        self.preserve_acl == other.preserve_acl and
-        self.storage_class == other.storage_class and
-        self.temporary_hold == other.temporary_hold)
+    return (super(_UserObjectArgs, self).__eq__(other) and
+            self.cache_control == other.cache_control and
+            self.content_disposition == other.content_disposition and
+            self.content_encoding == other.content_encoding and
+            self.content_language == other.content_language and
+            self.content_type == other.content_type and
+            self.custom_fields_to_set == other.custom_fields_to_set and
+            self.custom_fields_to_remove == other.custom_fields_to_remove and
+            self.custom_fields_to_update == other.custom_fields_to_update and
+            self.custom_time == other.custom_time and
+            self.event_based_hold == other.event_based_hold and
+            self.md5_hash == other.md5_hash and
+            self.preserve_acl == other.preserve_acl and
+            self.storage_class == other.storage_class and
+            self.temporary_hold == other.temporary_hold)
 
 
 class _UserRequestArgs:
@@ -320,6 +335,12 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           default_encryption_key=default_encryption_key,
           default_event_based_hold=getattr(args, 'default_event_based_hold',
                                            None),
+          default_object_acl_file_path=getattr(args, 'default_object_acl_file',
+                                               None),
+          default_object_acl_grants_to_add=getattr(
+              args, 'add_default_object_acl_grant', None),
+          default_object_acl_grants_to_remove=getattr(
+              args, 'remove_default_object_acl_grant', None),
           default_storage_class=default_storage_class,
           enable_autoclass=getattr(args, 'enable_autoclass', None),
           labels_file_path=labels_file_path,
@@ -334,6 +355,8 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
               'public_access_prevention'),
           requester_pays=getattr(args, 'requester_pays', None),
           retention_period=retention_period,
+          retention_period_to_be_locked=getattr(args, 'lock_retention_period',
+                                                None),
           uniform_bucket_level_access=getattr(args,
                                               'uniform_bucket_level_access',
                                               None),
@@ -354,7 +377,7 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
                                                'content_md5')
       content_type = _get_value_or_clear_from_flag(args, 'clear_content_type',
                                                    'content_type')
-      custom_metadata_to_set = _get_value_or_clear_from_flag(
+      custom_fields_to_set = _get_value_or_clear_from_flag(
           args, 'clear_custom_metadata', 'custom_metadata')
       custom_time = _get_value_or_clear_from_flag(args, 'clear_custom_time',
                                                   'custom_time')
@@ -373,11 +396,9 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           content_encoding=content_encoding,
           content_language=content_language,
           content_type=content_type,
-          custom_metadata_to_set=custom_metadata_to_set,
-          custom_metadata_to_remove=getattr(args, 'remove_custom_metadata',
-                                            None),
-          custom_metadata_to_update=getattr(args, 'update_custom_metadata',
-                                            None),
+          custom_fields_to_set=custom_fields_to_set,
+          custom_fields_to_remove=getattr(args, 'remove_custom_metadata', None),
+          custom_fields_to_update=getattr(args, 'update_custom_metadata', None),
           custom_time=custom_time,
           event_based_hold=event_based_hold,
           md5_hash=md5_hash,

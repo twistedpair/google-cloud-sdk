@@ -220,12 +220,11 @@ def AddEnableGooglePrivatePath(parser):
   parser.add_argument(
       '--enable-google-private-path',
       required=False,
-      hidden=True,
-      help='Enable private path for Google Cloud services. '
-      'This field specifies whether the instance should be '
-      'accessible to Google internal Cloud services, e.g. BigQuery. '
-      'This is only applicable to MySQL and Postgres instances that use '
-      'private IP.  Currently SQL Server isn\'t supported.',
+      help='Enable a private path for Google Cloud services. '
+      'This flag specifies whether the instance is accessible to '
+      'internal Google Cloud services such as BigQuery. '
+      'This is only applicable to MySQL and PostgreSQL instances that '
+      'don\'t use public IP. Currently, SQL Server isn\'t supported.',
       **kwargs)
 
 

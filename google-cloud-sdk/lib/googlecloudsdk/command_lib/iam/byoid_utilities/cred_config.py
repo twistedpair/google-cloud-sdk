@@ -32,26 +32,53 @@ class ConfigType(enum.Enum):
   WORKFORCE_POOLS = 2
 
 
-class STSTokenEndpoints():
-  """Simple class to build STS token endpoints.
+class ByoidEndpoints(object):
+  """Base class for BYOID endpoints.
 
   In the future this should be extended to support other TPC use cases
   or replaced by a common TPC endpoint builder.
   """
 
-  def __init__(self, enable_mtls=False):
-    self._sts_template = 'https://sts.{mtls}googleapis.com/{api}'
+  def __init__(self, service, enable_mtls=False):
+    self._sts_template = 'https://{service}.{mtls}googleapis.com'
+    self._service = service
     self._mtls = 'mtls.' if enable_mtls else ''
+
+  @property
+  def _base_url(self):
+    return self._sts_template.format(service=self._service, mtls=self._mtls)
+
+
+class StsEndpoints(ByoidEndpoints):
+  """Simple class to build STS endpoints."""
+
+  def __init__(self, enable_mtls=False):
+    super(StsEndpoints, self).__init__('sts', enable_mtls=enable_mtls)
 
   @property
   def token_url(self):
     api = 'v1/token'
-    return self._sts_template.format(mtls=self._mtls, api=api)
+    return '{}/{}'.format(self._base_url, api)
 
   @property
   def token_info_url(self):
     api = 'v1/introspect'
-    return self._sts_template.format(mtls=self._mtls, api=api)
+    return '{}/{}'.format(self._base_url, api)
+
+
+class IamEndpoints(ByoidEndpoints):
+  """Simple class to build IAM Credential endpoints."""
+
+  def __init__(self, service_account, enable_mtls=False):
+    self._service_account = service_account
+    super(IamEndpoints, self).__init__(
+        'iamcredentials', enable_mtls=enable_mtls)
+
+  @property
+  def impersonation_url(self):
+    api = 'v1/projects/-/serviceAccounts/{}:generateAccessToken'.format(
+        self._service_account)
+    return '{}/{}'.format(self._base_url, api)
 
 RESOURCE_TYPE = 'credential configuration file'
 
@@ -59,7 +86,7 @@ RESOURCE_TYPE = 'credential configuration file'
 def create_credential_config(args, config_type):
   """Creates the byoid credential config based on CLI arguments."""
   enable_mtls = getattr(args, 'enable_mtls', False)
-  token_endpoint_builder = STSTokenEndpoints(enable_mtls=enable_mtls)
+  token_endpoint_builder = StsEndpoints(enable_mtls=enable_mtls)
 
   try:
     generator = get_generator(args, config_type)
@@ -75,9 +102,11 @@ def create_credential_config(args, config_type):
       output['workforce_pool_user_project'] = args.workforce_pool_user_project
 
     if args.service_account:
-      output['service_account_impersonation_url'] = ''.join((
-          'https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/',
-          args.service_account, ':generateAccessToken'))
+
+      sa_endpoint_builder = IamEndpoints(
+          args.service_account, enable_mtls=enable_mtls)
+      output['service_account_impersonation_url'] = (
+          sa_endpoint_builder.impersonation_url)
 
       service_account_impersonation = {}
 

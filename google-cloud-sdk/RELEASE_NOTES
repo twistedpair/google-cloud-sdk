@@ -5,6 +5,155 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 412.0.0 (2022-12-13)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Modified concurrent operation quota errors to show additional information to user instead of just error message.
+
+
+### Google Cloud CLI
+
+* Added property `core/parse_error_details`. If set, `gcloud` CLI will parse
+  and display errors in a more human readable format, where available.
+
+### AI
+
+* Modified `--region` flag of `gcloud ai endpoints` to include new online
+  prediction regions.
+* Modified `--region` flag of `gcloud ai models` to include new online
+  prediction regions.
+* Modified `--region` flag of `gcloud ai custom-jobs` to include new online
+  training regions.
+* Modified `--region` flag of `gcloud ai hp-tuning-jobs` to include new online
+  training regions.
+
+### AlloyDB
+
+* Introduced `gcloud alloydb` track.
+
+### Anthos Multi-Cloud
+
+* Promoted `gcloud container attached` to GA.
+
+### App Engine
+
+*   Updated `gcloud beta app instances ssh` to use an IAP tunnel when attempting
+    to SSH to an instance without an external IP.
+
+### Cloud Build
+
+* Modified one of `gcloud builds triggers run --branch`, `gcloud builds triggers run --tag`, and `gcloud builds triggers run --sha` flag to be required.
+* Make `--region` flag visible in `builds triggers create ` command group.
+Set `--dockerfile` flag as required for `builds triggers create` command group.
+* Ungroup `--build-config` flag and `--inline-config` flag for `builds triggers create`  command group.
+* Promoted `gcloud builds triggers` to GA.
+
+### Cloud Composer
+
+* Added `gcloud composer environments snapshots load` - to load a snapshot into
+  the environment.
+* Added `gcloud composer environments snapshots save` - save a snapshot of the
+  environment.
+* Added `--enable-scheduled-snapshot-creation` to `gcloud composer
+  environments create/update` to enable snapshots of the environment creation
+  according to a schedule. Can be specified for Composer 2.0.32 or greater.
+* Added `--snapshot-creation-schedule` to `gcloud composer environments
+  create/update` to specify cron expression when snapshots of the environment
+  should be created.
+* Added `--snapshot-location` to `gcloud composer environments
+  create/update` to specify the Cloud Storage location for storing
+  automatically created snapshots.
+* Added `--snapshot-schedule-timezone` to `gcloud composer environments
+  create/update` to specify Timezone that sets the context to interpret
+  snapshot_creation_schedule.
+* Added `--disable-scheduled-snapshot-creation` to `gcloud composer
+  environments update` to disable the automatic snapshots creation.
+
+### Cloud Datastream
+
+* Fixed issue where `gcloud datastream create` failed for Postgresql source config.
+
+### Cloud Functions
+
+* Added `--cpu` flag to `gcloud beta functions deploy` for 2nd Gen functions to alpha and beta.
+* Added `--concurrency` flag to `gcloud beta functions deploy` for 2nd Gen functions to alpha and beta.
+
+### Cloud Pub/Sub
+
+*   Added `--event-time` and `--publish-time` flags to
+    `gcloud pubsub lite-subscriptions create` to create Pub/Sub Lite
+    subscriptions from a nominated timestamp.
+*   Added `--export-pubsub-topic`, `--export-dead-letter-topic` and
+    `--export-desired-state` flags to `gcloud pubsub lite-subscriptions create`
+    to create Pub/Sub Lite export subscriptions.
+*   Added `--export-pubsub-topic`, `--export-dead-letter-topic` and
+    `--export-desired-state` flags to `gcloud pubsub lite-subscriptions update`
+    to update Pub/Sub Lite export subscriptions.
+
+### Cloud SQL
+
+*   Added `--enable-google-private-path` flag to `gcloud sql instances create`
+    and `gcloud sql instances patch` commands in Alpha, Beta, and GA.
+    This field specifies whether the instance is accessible
+    to internal Google Cloud services such as BigQuery.
+    This is applicable only to MySQL and PostgreSQL instances that don't
+    use public IP. Currently, SQL Server isn't supported.
+
+### Cloud Services
+
+*   Promoted `gcloud services api-keys delete` to beta.
+*   Promoted `gcloud services api-keys undelete` to beta.
+
+### Cloud Workstations
+
+* Added `gcloud beta workstations configs list` which lists workstation configs under a specified cluster.
+
+### Config Controller
+
+*   Added `--full-management` flag to `gcloud anthos config controller create`
+    to allow creating Config Controller on GKE Autopilot instances.
+
+### Database Migration
+
+*   Updated `gcloud database-migration connection-profiles create` to support
+    creating AlloyDB connection profiles.
+
+### Firebase Test Lab
+
+*   Added `--robo-script` flag to `gcloud firebase test ios run` to customize an
+    iOS Robo crawl with a Robo script.
+
+### Identity and Access Management
+
+* Added `--executable-interactive-timeout-millis` flag to
+  `gcloud iam workforce pools create-cred-config`. This enables using
+  executable-sourced credentials with user interactivity with
+  `gcloud auth login --cred-file=/path/to/interactive/executable/config.json`
+  when using Workforce Identity Federation.
+
+### Kubernetes Engine
+
+*   Added `--stack-type` and `--ipv6-access-type` arguments to
+`gcloud container clusters create` command to support dual stack GKE clusters.
+*   Added `--stack-type` argument to `gcloud container clusters update` command
+    to support changing stack type between IPv4 and dual stack GKE clusters.
+* Added `--ephemeral-storage-local-ssd` to `gcloud beta container clusters create`, `gcloud beta container node-pools create`, `gcloud container clusters create`, `gcloud container node-pools create`. This flag is used to configure nodes' ephemeral storage to be backed by local SSDs.
+* Added `--local-nvme-ssd-block` to `gcloud beta container clusters create`, `gcloud beta container node-pools create`, `gcloud container clusters create`, `gcloud container node-pools create`. This flag is used to initialize nodes in node-pool with raw-block local NVMe SSDs attached.
+
+### Notebooks
+
+* Added support for Shielded VM configuration to `gcloud notebooks instances create`.
+* Added support for reservation configuration to `gcloud notebooks instances create`.
+
+### Terraform
+
+*   Added zone and region option for `gcloud beta terraform vet`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 411.0.0 (2022-12-06)
 
 ### Breaking Changes

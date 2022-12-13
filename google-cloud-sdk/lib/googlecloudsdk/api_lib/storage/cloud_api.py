@@ -206,6 +206,25 @@ class CloudApi(object):
     """
     raise NotImplementedError('list_buckets must be overridden.')
 
+  def lock_bucket_retention_policy(self, bucket_resource, request_config):
+    """Locks a bucket's retention policy.
+
+    Args:
+      bucket_resource (UnknownResource): The bucket with the policy to lock.
+      request_config (RequestConfig): Object containing general API function
+        arguments. Subclasses for specific cloud providers are available.
+
+    Returns:
+      resource_reference.BucketResource containing the bucket metadata.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+          this interface.
+    """
+    raise NotImplementedError(
+        'lock_bucket_retention_policy must be overridden.')
+
   def patch_bucket(self, bucket_resource, request_config, fields_scope=None):
     """Patches bucket metadata.
 

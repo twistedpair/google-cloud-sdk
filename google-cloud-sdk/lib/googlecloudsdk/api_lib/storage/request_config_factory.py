@@ -39,10 +39,12 @@ S3_REQUEST_ERROR_FIELDS = {
     'gzip_settings': 'Gzip Transforms',
 }
 S3_RESOURCE_ERROR_FIELDS = {
+    'default_object_acl_file': 'Setting Default Object ACL',
     'enable_autoclass': 'Enabling Autoclass',
     'predefined_default_object_acl': 'Setting Predefined Default ACL',
     'public_access_prevention': 'Public Access Prevention',
     'retention_period': 'Setting Retention Period',
+    'retention_period_to_be_locked': 'Locking Retention Period',
 }
 S3_RESOURCE_WARNING_FIELDS = {
     'custom_time': 'Setting Custom Time',
@@ -169,6 +171,12 @@ class _GcsBucketConfig(_BucketConfig):
       added to the bucket.
     default_event_based_hold (bool|None): Determines if event-based holds will
       automatically be applied to new objects in bucket.
+    default_object_acl_file_path (str|None): File path to default object ACL
+      file.
+    default_object_acl_grants_to_add (str|None): Add default object ACL grants
+      to an entity for objects in the bucket.
+    default_object_acl_grants_to_remove (str|None): Remove default object ACL
+      grants.
     default_storage_class (str|None): Storage class assigned to objects in the
       bucket by default.
     enable_autoclass (bool|None): Enable, disable, or don't do anything to the
@@ -190,6 +198,9 @@ class _GcsBucketConfig(_BucketConfig):
                cors_file_path=None,
                default_encryption_key=None,
                default_event_based_hold=None,
+               default_object_acl_file_path=None,
+               default_object_acl_grants_to_add=None,
+               default_object_acl_grants_to_remove=None,
                default_storage_class=None,
                enable_autoclass=None,
                labels_file_path=None,
@@ -201,6 +212,7 @@ class _GcsBucketConfig(_BucketConfig):
                log_object_prefix=None,
                public_access_prevention=None,
                retention_period=None,
+               retention_period_to_be_locked=None,
                requester_pays=None,
                uniform_bucket_level_access=None,
                versioning=None,
@@ -215,25 +227,35 @@ class _GcsBucketConfig(_BucketConfig):
     self.public_access_prevention = public_access_prevention
     self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
+    self.default_object_acl_file_path = default_object_acl_file_path
+    self.default_object_acl_grants_to_add = default_object_acl_grants_to_add
+    self.default_object_acl_grants_to_remove = default_object_acl_grants_to_remove
     self.default_storage_class = default_storage_class
     self.enable_autoclass = enable_autoclass
     self.requester_pays = requester_pays
     self.retention_period = retention_period
+    self.retention_period_to_be_locked = retention_period_to_be_locked
     self.uniform_bucket_level_access = uniform_bucket_level_access
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (super(_GcsBucketConfig, self).__eq__(other) and
-            self.public_access_prevention == other.public_access_prevention and
-            self.default_encryption_key == other.default_encryption_key and
-            self.default_event_based_hold == other.default_event_based_hold and
-            self.default_storage_class == other.default_storage_class and
-            self.enable_autoclass == other.enable_autoclass and
-            self.requester_pays == other.requester_pays and
-            self.retention_period == other.retention_period and
-            self.uniform_bucket_level_access
-            == other.uniform_bucket_level_access)
+    return (
+        super(_GcsBucketConfig, self).__eq__(other) and
+        self.public_access_prevention == other.public_access_prevention and
+        self.default_encryption_key == other.default_encryption_key and
+        self.default_event_based_hold == other.default_event_based_hold and
+        self.default_object_acl_grants_to_add
+        == other.default_object_acl_grants_to_add and
+        self.default_object_acl_grants_to_remove
+        == other.default_object_acl_grants_to_remove and
+        self.default_storage_class == other.default_storage_class and
+        self.enable_autoclass == other.enable_autoclass and
+        self.requester_pays == other.requester_pays and
+        self.retention_period == other.retention_period and
+        self.retention_period_to_be_locked
+        == other.retention_period_to_be_locked and
+        self.uniform_bucket_level_access == other.uniform_bucket_level_access)
 
 
 class _S3BucketConfig(_BucketConfig):
@@ -259,9 +281,9 @@ class _ObjectConfig(_ResourceConfig):
     content_language (str|None): Content's language (e.g. "en" = "English).
     content_type (str|None): Type of data contained in content (e.g.
       "text/html").
-    custom_metadata_to_set (dict|None): Custom metadata fields set by user.
-    custom_metadata_to_remove (dict|None): Custom metadata fields to be removed.
-    custom_metadata_to_update (dict|None): Custom metadata fields to be added or
+    custom_fields_to_set (dict|None): Custom metadata fields set by user.
+    custom_fields_to_remove (dict|None): Custom metadata fields to be removed.
+    custom_fields_to_update (dict|None): Custom metadata fields to be added or
       changed.
     decryption_key (encryption_util.EncryptionKey): The key that should be used
       to decrypt information in GCS.
@@ -285,9 +307,9 @@ class _ObjectConfig(_ResourceConfig):
                content_encoding=None,
                content_language=None,
                content_type=None,
-               custom_metadata_to_set=None,
-               custom_metadata_to_remove=None,
-               custom_metadata_to_update=None,
+               custom_fields_to_set=None,
+               custom_fields_to_remove=None,
+               custom_fields_to_update=None,
                decryption_key=None,
                encryption_key=None,
                md5_hash=None,
@@ -301,9 +323,9 @@ class _ObjectConfig(_ResourceConfig):
     self.content_encoding = content_encoding
     self.content_language = content_language
     self.content_type = content_type
-    self.custom_metadata_to_set = custom_metadata_to_set
-    self.custom_metadata_to_remove = custom_metadata_to_remove
-    self.custom_metadata_to_update = custom_metadata_to_update
+    self.custom_fields_to_set = custom_fields_to_set
+    self.custom_fields_to_remove = custom_fields_to_remove
+    self.custom_fields_to_update = custom_fields_to_update
     self.decryption_key = decryption_key
     self.encryption_key = encryption_key
     self.md5_hash = md5_hash
@@ -314,21 +336,20 @@ class _ObjectConfig(_ResourceConfig):
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (
-        super(_ObjectConfig, self).__eq__(other) and
-        self.cache_control == other.cache_control and
-        self.content_disposition == other.content_disposition and
-        self.content_encoding == other.content_encoding and
-        self.content_language == other.content_language and
-        self.content_type == other.content_type and
-        self.custom_metadata_to_set == other.custom_metadata_to_set and
-        self.custom_metadata_to_remove == other.custom_metadata_to_remove and
-        self.custom_metadata_to_update == other.custom_metadata_to_update and
-        self.decryption_key == other.decryption_key and
-        self.encryption_key == other.encryption_key and
-        self.md5_hash == other.md5_hash and self.size == other.size and
-        self.preserve_acl == other.preserve_acl and
-        self.storage_class == other.storage_class)
+    return (super(_ObjectConfig, self).__eq__(other) and
+            self.cache_control == other.cache_control and
+            self.content_disposition == other.content_disposition and
+            self.content_encoding == other.content_encoding and
+            self.content_language == other.content_language and
+            self.content_type == other.content_type and
+            self.custom_fields_to_set == other.custom_fields_to_set and
+            self.custom_fields_to_remove == other.custom_fields_to_remove and
+            self.custom_fields_to_update == other.custom_fields_to_update and
+            self.decryption_key == other.decryption_key and
+            self.encryption_key == other.encryption_key and
+            self.md5_hash == other.md5_hash and self.size == other.size and
+            self.preserve_acl == other.preserve_acl and
+            self.storage_class == other.storage_class)
 
 
 class _GcsObjectConfig(_ObjectConfig):
@@ -353,9 +374,9 @@ class _GcsObjectConfig(_ObjectConfig):
                content_encoding=None,
                content_language=None,
                content_type=None,
-               custom_metadata_to_set=None,
-               custom_metadata_to_remove=None,
-               custom_metadata_to_update=None,
+               custom_fields_to_set=None,
+               custom_fields_to_remove=None,
+               custom_fields_to_update=None,
                custom_time=None,
                decryption_key=None,
                encryption_key=None,
@@ -372,9 +393,9 @@ class _GcsObjectConfig(_ObjectConfig):
         content_encoding=content_encoding,
         content_language=content_language,
         content_type=content_type,
-        custom_metadata_to_set=custom_metadata_to_set,
-        custom_metadata_to_remove=custom_metadata_to_remove,
-        custom_metadata_to_update=custom_metadata_to_update,
+        custom_fields_to_set=custom_fields_to_set,
+        custom_fields_to_remove=custom_fields_to_remove,
+        custom_fields_to_update=custom_fields_to_update,
         decryption_key=decryption_key,
         encryption_key=encryption_key,
         md5_hash=md5_hash,
@@ -517,7 +538,7 @@ def _check_for_unsupported_s3_fields(user_request_args):
 
 def _get_request_config_resource_args(url,
                                       content_type=None,
-                                      decryption_key_hash=None,
+                                      decryption_key_hash_sha256=None,
                                       encryption_key=None,
                                       error_on_missing_key=True,
                                       md5_hash=None,
@@ -538,6 +559,12 @@ def _get_request_config_resource_args(url,
               user_resource_args.default_encryption_key)
           new_resource_args.default_event_based_hold = (
               user_resource_args.default_event_based_hold)
+          new_resource_args.default_object_acl_file_path = (
+              user_resource_args.default_object_acl_file_path)
+          new_resource_args.default_object_acl_grants_to_add = (
+              user_resource_args.default_object_acl_grants_to_add)
+          new_resource_args.default_object_acl_grants_to_remove = (
+              user_resource_args.default_object_acl_grants_to_remove)
           new_resource_args.default_storage_class = (
               user_resource_args.default_storage_class)
           new_resource_args.enable_autoclass = (
@@ -546,6 +573,8 @@ def _get_request_config_resource_args(url,
               user_resource_args.public_access_prevention)
           new_resource_args.retention_period = (
               user_resource_args.retention_period)
+          new_resource_args.retention_period_to_be_locked = (
+              user_resource_args.retention_period_to_be_locked)
           new_resource_args.uniform_bucket_level_access = (
               user_resource_args.uniform_bucket_level_access)
 
@@ -601,9 +630,9 @@ def _get_request_config_resource_args(url,
 
     new_resource_args.encryption_key = (
         encryption_key or encryption_util.get_encryption_key())
-    if decryption_key_hash:
+    if decryption_key_hash_sha256:
       new_resource_args.decryption_key = encryption_util.get_decryption_key(
-          decryption_key_hash, url if error_on_missing_key else None)
+          decryption_key_hash_sha256, url if error_on_missing_key else None)
 
     if user_resource_args:
       # User args should override existing settings.
@@ -620,12 +649,12 @@ def _get_request_config_resource_args(url,
       new_resource_args.content_disposition = user_resource_args.content_disposition
       new_resource_args.content_encoding = user_resource_args.content_encoding
       new_resource_args.content_language = user_resource_args.content_language
-      new_resource_args.custom_metadata_to_set = (
-          user_resource_args.custom_metadata_to_set)
-      new_resource_args.custom_metadata_to_remove = (
-          user_resource_args.custom_metadata_to_remove)
-      new_resource_args.custom_metadata_to_update = (
-          user_resource_args.custom_metadata_to_update)
+      new_resource_args.custom_fields_to_set = (
+          user_resource_args.custom_fields_to_set)
+      new_resource_args.custom_fields_to_remove = (
+          user_resource_args.custom_fields_to_remove)
+      new_resource_args.custom_fields_to_update = (
+          user_resource_args.custom_fields_to_update)
       new_resource_args.preserve_acl = user_resource_args.preserve_acl
 
       if user_resource_args.storage_class:
@@ -645,7 +674,7 @@ def _get_request_config_resource_args(url,
 
 def get_request_config(url,
                        content_type=None,
-                       decryption_key_hash=None,
+                       decryption_key_hash_sha256=None,
                        encryption_key=None,
                        error_on_missing_key=True,
                        md5_hash=None,
@@ -653,7 +682,7 @@ def get_request_config(url,
                        user_request_args=None):
   """Generates API-specific RequestConfig. See output classes for arg info."""
   resource_args = _get_request_config_resource_args(
-      url, content_type, decryption_key_hash, encryption_key,
+      url, content_type, decryption_key_hash_sha256, encryption_key,
       error_on_missing_key, md5_hash, size, user_request_args)
 
   if url.scheme == storage_url.ProviderPrefix.GCS:
@@ -672,7 +701,8 @@ def get_request_config(url,
     request_config = _S3RequestConfig(resource_args=resource_args)
   else:
     request_config = _RequestConfig(resource_args=resource_args)
-
+  request_config.default_object_acl_file_path = getattr(
+      user_request_args, 'default_object_acl_file_path', None)
   request_config.predefined_acl_string = getattr(user_request_args,
                                                  'predefined_acl_string', None)
   request_config.predefined_default_object_acl_string = getattr(

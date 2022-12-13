@@ -22,9 +22,12 @@ import copy
 import json
 
 from googlecloudsdk.api_lib.compute import batch_helper
+from googlecloudsdk.api_lib.compute import single_request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute import waiters
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
+
 import six
 from six.moves import zip  # pylint: disable=redefined-builtin
 
@@ -202,6 +205,11 @@ def _IsEmptyOperation(operation, service):
   return True
 
 
+def _ForceBatchRequest():
+  """Check if compute/force_batch_request property is set."""
+  return properties.VALUES.compute.force_batch_request.GetBool()
+
+
 def ListJson(requests, http, batch_url, errors):
   """Makes a series of list and/or aggregatedList batch requests.
 
@@ -243,7 +251,8 @@ def MakeRequests(requests,
                  followup_overrides=None,
                  log_result=True,
                  log_warnings=True,
-                 timeout=None):
+                 timeout=None,
+                 enable_single_request=False):
   """Makes one or more requests to the API.
 
   Each request can be either a synchronous API call or an asynchronous
@@ -284,6 +293,8 @@ def MakeRequests(requests,
     log_warnings: Whether warnings for completed operation should be printed.
     timeout: The maximum amount of time, in seconds, to wait for the
       operations to reach the DONE state.
+    enable_single_request: if requests is single, send single request instead
+      of batch request
 
   Yields:
     A response for each request. For deletion requests, no corresponding
@@ -294,8 +305,16 @@ def MakeRequests(requests,
         requests=requests, http=http, batch_url=batch_url, errors=errors):
       yield item
     return
-  responses, new_errors = batch_helper.MakeRequests(
-      requests=requests, http=http, batch_url=batch_url)
+
+  # send single request only if the requests size one and if enable_single_
+  # request is set to true
+  if not _ForceBatchRequest() and enable_single_request and len(requests) == 1:
+    service, method, request_body = requests[0]
+    responses, new_errors = single_request_helper.MakeSingleRequest(
+        service=service, method=method, request_body=request_body)
+  else:
+    responses, new_errors = batch_helper.MakeRequests(
+        requests=requests, http=http, batch_url=batch_url)
   errors.extend(new_errors)
 
   operation_service = None
@@ -361,7 +380,8 @@ def MakeRequests(requests,
         progress_tracker=progress_tracker,
         errors=errors,
         log_result=log_result,
-        timeout=timeout):
+        timeout=timeout,
+        enable_single_request=enable_single_request):
       yield response
 
     if warnings and log_warnings:

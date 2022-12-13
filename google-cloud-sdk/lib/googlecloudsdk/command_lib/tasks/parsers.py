@@ -601,12 +601,22 @@ def _ParseUriOverride(messages,
                       host=None,
                       port=None,
                       path=None,
-                      query=None):
+                      query=None,
+                      mode=None):
+  """Parses the attributes of 'args' for URI Override."""
   scheme = (
-      messages.HttpRequest.SchemeValueValuesEnum(scheme.upper())
+      messages.UriOverride.SchemeValueValuesEnum(scheme.upper())
       if scheme else None)
+  uri_override_enforce_mode = (
+      messages.UriOverride.UriOverrideEnforceModeValueValuesEnum(mode.upper())
+      if mode else None)
   return messages.UriOverride(
-      scheme=scheme, host=host, port=int(port), path=path, query=query)
+      scheme=scheme,
+      host=host,
+      port=int(port),
+      path=path,
+      query=query,
+      uriOverrideEnforceMode=uri_override_enforce_mode)
 
 
 def _ParsePullMessageArgs(args, task_type, messages):

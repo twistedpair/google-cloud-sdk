@@ -37,9 +37,10 @@ def AddExcludeExportRangesFlag(parser, hide_exclude_export_ranges_flag):
       required=False,
       type=arg_parsers.ArgList(),
       default=[],
-      metavar='BLOCKLISTED_RANGE',
+      metavar='CIDR_RANGE',
       hidden=hide_exclude_export_ranges_flag,
-      help='IP range(s) to hide from other VPC subnets.')
+      help="""IP address range(s) to hide from subnets in VPC networks that are peered
+        through Network Connectivity Center peering.""")
 
 
 def AddAsyncFlag(parser):

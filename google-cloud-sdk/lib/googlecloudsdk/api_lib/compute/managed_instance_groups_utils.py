@@ -35,6 +35,7 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute.managed_instance_groups import auto_healing_utils
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import log
@@ -1458,7 +1459,10 @@ def _ComputeInstanceGroupSize(items, client, resources):
 def GetHealthCheckUri(resources, args):
   """Creates health check reference from args."""
   if args.health_check:
-    ref = auto_healing_utils.HEALTH_CHECK_ARG.ResolveAsResource(args, resources)
+    ref = auto_healing_utils.HEALTH_CHECK_ARG.ResolveAsResource(
+        args,
+        resources,
+        default_scope=compute_flags.compute_scope.ScopeEnum.GLOBAL)
     return ref.SelfLink()
   if args.http_health_check:
     return resources.Parse(

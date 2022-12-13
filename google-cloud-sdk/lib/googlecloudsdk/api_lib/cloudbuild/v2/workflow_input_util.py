@@ -80,6 +80,9 @@ def _ResourcesTransform(workflow):
   has_resources = False
   for resource in workflow.get("resources", []):
     has_resources = True
+    if "kind" not in resource:
+      raise cloudbuild_exceptions.InvalidYamlError(
+          "Kind is required for resource.")
 
     if "ref" in resource and "kind" in resource and resource[
         "kind"] == "cloudbuild.googleapis.com/SecretManagerSecret":

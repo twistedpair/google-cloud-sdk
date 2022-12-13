@@ -1306,7 +1306,7 @@ class GoogleCloudDocumentaiV1Document(_messages.Message):
       Document.text. This is usually used for annotating corrections to OCR
       mistakes. Text changes for a given revision may not overlap with each
       other.
-    textStyles: Placeholder. Styles for the Document.text.
+    textStyles: Styles for the Document.text.
     uri: Optional. Currently supports Google Cloud Storage URI of the form
       `gs://bucket_name/object_name`. Object versioning is not supported. See
       [Google Cloud Storage Request
@@ -2507,6 +2507,8 @@ class GoogleCloudDocumentaiV1ProcessorType(_messages.Message):
     launchStage: Launch stage of the processor type
     name: The resource name of the processor type. Format:
       `projects/{project}/processorTypes/{processor_type}`
+    sampleDocumentUris: A set of Cloud Storage URIs of sample documents for
+      this processor.
     type: The processor type, e.g., `OCR_PROCESSOR`, `INVOICE_PROCESSOR`, etc.
   """
 
@@ -2559,7 +2561,8 @@ class GoogleCloudDocumentaiV1ProcessorType(_messages.Message):
   category = _messages.StringField(3)
   launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 4)
   name = _messages.StringField(5)
-  type = _messages.StringField(6)
+  sampleDocumentUris = _messages.StringField(6, repeated=True)
+  type = _messages.StringField(7)
 
 
 class GoogleCloudDocumentaiV1ProcessorTypeLocationInfo(_messages.Message):
@@ -2920,7 +2923,7 @@ class GoogleCloudDocumentaiV1beta1Document(_messages.Message):
       Document.text. This is usually used for annotating corrections to OCR
       mistakes. Text changes for a given revision may not overlap with each
       other.
-    textStyles: Placeholder. Styles for the Document.text.
+    textStyles: Styles for the Document.text.
     uri: Optional. Currently supports Google Cloud Storage URI of the form
       `gs://bucket_name/object_name`. Object versioning is not supported. See
       [Google Cloud Storage Request
@@ -3915,7 +3918,7 @@ class GoogleCloudDocumentaiV1beta2Document(_messages.Message):
       Document.text. This is usually used for annotating corrections to OCR
       mistakes. Text changes for a given revision may not overlap with each
       other.
-    textStyles: Placeholder. Styles for the Document.text.
+    textStyles: Styles for the Document.text.
     uri: Optional. Currently supports Google Cloud Storage URI of the form
       `gs://bucket_name/object_name`. Object versioning is not supported. See
       [Google Cloud Storage Request

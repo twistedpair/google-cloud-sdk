@@ -22,7 +22,6 @@ type:
     enum_value: FIRESTORE_NATIVE
   - arg_value: datastore-mode
     enum_value: DATASTORE_MODE
-  processor: googlecloudsdk.command_lib.firestore.util:GetDatabaseType
 
 query_scope:
   api_field: googleFirestoreAdminV1Index.queryScope
@@ -80,3 +79,57 @@ field_config:
           enum_value: ASCENDING
         - arg_value: descending
           enum_value: DESCENDING
+
+index:
+  api_field: googleFirestoreAdminV1Field.indexConfig.indexes
+  arg_name: index
+  metavar: KEY=VALUE
+  processor: googlecloudsdk.command_lib.firestore.util:AddQueryScope
+  help_text: |
+    An index for the field.
+
+    This flag can be repeated to provide multiple indexes. Any existing indexes will
+    be overwritten with the ones provided. Any omitted indexes will be deleted if
+    they currently exist.
+
+    The following keys are allowed:
+
+    *order*:::: Specifies the order. Valid options are: 'ascending', 'descending'.
+    Exactly one of 'order' or 'array-config' must be specified.
+
+    *array-config*:::: Specifies the configuration for an array field. The only
+    valid option is 'contains'. Exactly one of 'order' or 'array-config' must be
+    specified.
+
+  type:
+    arg_dict:
+      flatten: false
+      spec:
+      - api_field: fields.arrayConfig
+        arg_name: array-config
+        type: str
+        required: false
+        choices:
+        - arg_value: contains
+          enum_value: CONTAINS
+      - api_field: fields.order
+        arg_name: order
+        type: str
+        required: false
+        choices:
+        - arg_value: ascending
+          enum_value: ASCENDING
+        - arg_value: descending
+          enum_value: DESCENDING
+
+disable_indexes:
+  arg_name: disable-indexes
+  help_text: If provided, the field will no longer be indexed at all.
+  action: store_true
+
+clear_exemption:
+  arg_name: clear-exemption
+  help_text: |
+    If provided, the field's current index configuration will be
+    reverted to inherit from its ancestor index configurations.
+  action: store_true

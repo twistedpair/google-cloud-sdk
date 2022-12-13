@@ -105,7 +105,7 @@ starting-offset:
   - arg_value: end
   type: googlecloudsdk.command_lib.util.hooks.types:LowerCaseType
   help_text: |
-    The offset at which a newly created or seeked subscription will start receiving messages. A
+    The offset at which a newly created or seeked subscription starts receiving messages. A
     subscription can be initialized at the offset of the oldest retained message (`beginning`), or
     at the current HEAD offset (`end`).
 
@@ -113,18 +113,19 @@ publish-time:
   arg_name: publish-time
   type: googlecloudsdk.calliope.arg_parsers:Datetime.Parse
   help_text: |
-    The publish time to seek a subscription to. Messages with publish time greater than or equal to
-    this time will be delivered post-seek.
+    The publish time to which you seek a subscription. Messages with publish time greater than or
+    equal to the specified time are delivered after the seek operation.
     Run $ gcloud topic datetimes for information on time formats.
 
 event-time:
   arg_name: event-time
   type: googlecloudsdk.calliope.arg_parsers:Datetime.Parse
   help_text: |
-    The event time to seek a subscription to. Seeks to the first message with event time greater
-    than or equal to the specified event time. As event times are user supplied, subsequent messages
-    may have event times less than the specified event time and should be filtered by the client, if
-    necessary. Messages missing an event time use publish time as a fallback.
+    The event time to which you seek a subscription. The subscription seeks to the first message
+    with event time greater than or equal to the specified event time. Messages missing an event
+    time use publish time as a fallback. As event times are user supplied, subsequent messages may
+    have event times less than the specified event time and must be filtered by the client, if
+    necessary.
     Run $ gcloud topic datetimes for information on time formats.
 
 operation-done:
@@ -162,8 +163,8 @@ export-pubsub-topic:
   api_field: subscription.exportConfig.pubsubConfig.topic
   arg_name: export-pubsub-topic
   help_text: |
-    The name of the destination Pub/Sub topic to export messages to. Must be the topic's fully
-    specified path if it is not in the same project as the subscription to be created.
+    The name of the destination Pub/Sub topic to which messages are exported. Must be the topic's
+    fully specified path if it is not in the same project as the subscription to be created.
 
 export-desired-state:
   api_field: subscription.exportConfig.desiredState
@@ -175,8 +176,8 @@ export-desired-state:
     enum_value: PAUSED
   type: googlecloudsdk.command_lib.util.hooks.types:LowerCaseType
   help_text: |
-    The desired state of the export. Messages are processed for ACTIVE exports. Message processing
-    is suspended for PAUSED exports.
+    The desired state of the export. Process messages by setting the value to ACTIVE or pause
+    message processing by setting the value to PAUSED.
 
 export-dead-letter-topic:
   api_field: subscription.exportConfig.deadLetterTopic

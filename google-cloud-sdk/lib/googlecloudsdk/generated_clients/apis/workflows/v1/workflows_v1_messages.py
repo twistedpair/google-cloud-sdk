@@ -57,7 +57,7 @@ class ListWorkflowsResponse(_messages.Message):
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
     unreachable: Unreachable resources.
-    workflows: The workflows which match the request.
+    workflows: The workflows that match the request.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -335,7 +335,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class StateError(_messages.Message):
-  r"""Describes an error related to the current state of the Workflow.
+  r"""Describes an error related to the current state of the workflow.
 
   Fields:
     details: Provides specifics about the error.
@@ -404,29 +404,29 @@ class Workflow(_messages.Message):
   Messages:
     LabelsValue: Labels associated with this workflow. Labels can contain at
       most 64 entries. Keys and values can be no longer than 63 characters and
-      can only contain lowercase letters, numeric characters, underscores and
+      can only contain lowercase letters, numeric characters, underscores, and
       dashes. Label keys must start with a letter. International characters
       are allowed.
 
   Fields:
-    createTime: Output only. The timestamp of when the workflow was created.
+    createTime: Output only. The timestamp for when the workflow was created.
     cryptoKeyName: Optional. The resource name of a KMS crypto key used to
-      encrypt/decrypt the data associated with the workflow. Format: projects/
-      {project}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey}
-      Using `-` as a wildcard for the `{project}` or not providing one at all
-      will infer the project from the account. If not provided, data
+      encrypt or decrypt the data associated with the workflow. Format: projec
+      ts/{project}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoK
+      ey} Using `-` as a wildcard for the `{project}` or not providing one at
+      all will infer the project from the account. If not provided, data
       associated with the workflow will not be CMEK-encrypted.
     description: Description of the workflow provided by the user. Must be at
       most 1000 unicode characters long.
     labels: Labels associated with this workflow. Labels can contain at most
       64 entries. Keys and values can be no longer than 63 characters and can
-      only contain lowercase letters, numeric characters, underscores and
+      only contain lowercase letters, numeric characters, underscores, and
       dashes. Label keys must start with a letter. International characters
       are allowed.
     name: The resource name of the workflow. Format:
       projects/{project}/locations/{location}/workflows/{workflow}
-    revisionCreateTime: Output only. The timestamp that the latest revision of
-      the workflow was created.
+    revisionCreateTime: Output only. The timestamp for the latest revision of
+      the workflow's creation.
     revisionId: Output only. The revision of the workflow. A new revision of a
       workflow is created as a result of updating the following properties of
       a workflow: - Service account - Workflow code to be executed The format
@@ -444,10 +444,11 @@ class Workflow(_messages.Message):
       field for an existing workflow results in a new workflow revision.
     sourceContents: Workflow code to be executed. The size limit is 128KB.
     state: Output only. State of the workflow deployment.
-    stateError: Output only. Error regarding the state of the Workflow. For
-      example, this field will have error details if the Execution data is
+    stateError: Output only. Error regarding the state of the workflow. For
+      example, this field will have error details if the execution data is
       unavailable due to revoked KMS key permissions.
-    updateTime: Output only. The last update timestamp of the workflow.
+    updateTime: Output only. The timestamp for when the workflow was last
+      updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -466,7 +467,7 @@ class Workflow(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""Labels associated with this workflow. Labels can contain at most 64
     entries. Keys and values can be no longer than 63 characters and can only
-    contain lowercase letters, numeric characters, underscores and dashes.
+    contain lowercase letters, numeric characters, underscores, and dashes.
     Label keys must start with a letter. International characters are allowed.
 
     Messages:
@@ -603,7 +604,7 @@ class WorkflowsProjectsLocationsWorkflowsGetRequest(_messages.Message):
   r"""A WorkflowsProjectsLocationsWorkflowsGetRequest object.
 
   Fields:
-    name: Required. Name of the workflow which information should be
+    name: Required. Name of the workflow for which information should be
       retrieved. Format:
       projects/{project}/locations/{location}/workflows/{workflow}
   """
@@ -616,14 +617,15 @@ class WorkflowsProjectsLocationsWorkflowsListRequest(_messages.Message):
 
   Fields:
     filter: Filter to restrict results to specific workflows.
-    orderBy: Comma-separated list of fields that that specify the order of the
+    orderBy: Comma-separated list of fields that specify the order of the
       results. Default sorting order for a field is ascending. To specify
-      descending order for a field, append a " desc" suffix. If not specified,
-      the results will be returned in an unspecified order.
-    pageSize: Maximum number of workflows to return per call. The service may
-      return fewer than this value. If the value is not specified, a default
-      value of 500 will be used. The maximum permitted value is 1000 and
-      values greater than 1000 will be coerced down to 1000.
+      descending order for a field, append a "desc" suffix. If not specified,
+      the results are returned in an unspecified order.
+    pageSize: Maximum number of workflows to return per call. The service
+      might return fewer than this value even if not at the end of the
+      collection. If a value is not specified, a default value of 500 is used.
+      The maximum permitted value is 1000 and values greater than 1000 are
+      coerced down to 1000.
     pageToken: A page token, received from a previous `ListWorkflows` call.
       Provide this to retrieve the subsequent page. When paginating, all other
       parameters provided to `ListWorkflows` must match the call that provided

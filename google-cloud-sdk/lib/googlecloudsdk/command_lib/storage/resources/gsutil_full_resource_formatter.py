@@ -108,7 +108,7 @@ _OBJECT_DISPLAY_TITLES_AND_DEFAULTS = (
             title='Custom-Time', default=None),
         noncurrent_time=base.FieldDisplayTitleAndDefault(
             title='Noncurrent time', default=None),
-        custom_metadata=base.FieldDisplayTitleAndDefault(
+        custom_fields=base.FieldDisplayTitleAndDefault(
             title='Metadata', default=None),
         crc32c_hash=base.FieldDisplayTitleAndDefault(
             title='Hash (crc32c)', default=None),
@@ -116,7 +116,7 @@ _OBJECT_DISPLAY_TITLES_AND_DEFAULTS = (
             title='Hash (md5)', default=None),
         encryption_algorithm=base.FieldDisplayTitleAndDefault(
             title='Encryption algorithm', default=None),
-        decryption_key_hash=base.FieldDisplayTitleAndDefault(
+        decryption_key_hash_sha256=base.FieldDisplayTitleAndDefault(
             title='Encryption key SHA256', default=None),
         etag=base.FieldDisplayTitleAndDefault(
             title='ETag', default=shim_format_util.NONE_STRING),
@@ -152,7 +152,7 @@ class GsutilFullResourceFormatter(base.FullResourceFormatter):
         object_resource)
     shim_format_util.replace_object_values_with_encryption_string(
         object_resource, 'encrypted')
-    shim_format_util.reformat_custom_metadata_for_gsutil(object_resource)
+    shim_format_util.reformat_custom_fields_for_gsutil(object_resource)
     return base.get_formatted_string(
         url,
         object_resource,

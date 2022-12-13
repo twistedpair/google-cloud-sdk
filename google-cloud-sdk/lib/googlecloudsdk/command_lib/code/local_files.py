@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 import functools
 import itertools
 
+from googlecloudsdk.command_lib.code import builders
 from googlecloudsdk.command_lib.code import local
 from googlecloudsdk.command_lib.code import yaml_helper
 from googlecloudsdk.core import yaml
@@ -119,7 +120,7 @@ class LocalRuntimeFiles(object):
     artifact['context'] = six.ensure_text(
         self._settings.context.encode('unicode_escape'))
 
-    if isinstance(self._settings.builder, local.BuildpackBuilder):
+    if isinstance(self._settings.builder, builders.BuildpackBuilder):
       artifact['buildpacks'] = {
           'builder': self._settings.builder.builder,
       }

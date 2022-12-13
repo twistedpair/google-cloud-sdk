@@ -275,7 +275,8 @@ def MakeSecondaryDiskArg(required=False):
       detailed_help=_ASYNC_SECONDARY_DISK_HELP,
       plural=False,
       required=required,
-      use_existing_default_scope=False,
+      scope_flags_usage=compute_flags.ScopeFlagsUsage
+      .GENERATE_DEDICATED_SCOPE_FLAGS,
       zone_help_text=_ASYNC_SECONDARY_DISK_ZONE_EXPLANATION,
       region_help_text=_ASYNC_SECONDARY_DISK_REGION_EXPLANATION)
 
@@ -300,7 +301,7 @@ SOURCE_INSTANT_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     required=False,
     short_help='Source instant snapshot used to create the disks.',
     detailed_help=_DETAILED_SOURCE_INSTANT_SNAPSHOT_HELP,
-    use_existing_default_scope=True)
+    scope_flags_usage=compute_flags.ScopeFlagsUsage.USE_EXISTING_SCOPE_FLAGS)
 
 SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     resource_name='source disk',
@@ -326,6 +327,7 @@ ASYNC_PRIMARY_DISK_ARG = compute_flags.ResourceArgument(
     detailed_help=_ASYNC_PRIMARY_DISK_HELP,
     plural=False,
     required=False,
-    use_existing_default_scope=False,
+    scope_flags_usage=compute_flags.ScopeFlagsUsage
+    .GENERATE_DEDICATED_SCOPE_FLAGS,
     zone_help_text=_ASYNC_PRIMARY_DISK_ZONE_EXPLANATION,
     region_help_text=_ASYNC_PRIMARY_DISK_REGION_EXPLANATION)

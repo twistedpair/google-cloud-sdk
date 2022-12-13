@@ -2221,7 +2221,7 @@
       "type": "object",
       "properties": {
         "includeReplicas": {
-          "description": "Include_replicas indicates the order of replicas (as they appear in this list) to process the request. If all replicas are exhausted without finding a healthy replica, Spanner will wait for a replica in the list to become available, requests may fail due to `DEADLINE_EXCEEDED` errors. In particular, the request will never be sent to a region or replica which does not appear in the list.",
+          "description": "Include_replicas indicates the order of replicas (as they appear in this list) to process the request. If auto_failover_disabled is set to true and all replicas are exhausted without finding a healthy replica, Spanner will wait for a replica in the list to become available, requests may fail due to `DEADLINE_EXCEEDED` errors.",
           "$ref": "IncludeReplicas"
         },
         "excludeReplicas": {
@@ -2242,8 +2242,8 @@
             "$ref": "ReplicaSelection"
           }
         },
-        "autoFailover": {
-          "description": "If true, Spanner will route requests to healthy replica outside the list when all the replicas in the include_replicas list are unavailable or unhealthy. Default value is `false`.",
+        "autoFailoverDisabled": {
+          "description": "If true, Spanner will not route requests to a replica outside the include_replicas list when all of the specified replicas are unavailable or unhealthy. Default value is `false`.",
           "type": "boolean"
         }
       }

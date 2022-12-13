@@ -229,6 +229,14 @@ class CommonFlags(FlagDefs):
             key_type=six.text_type, value_type=six.text_type),
         help='List of key-value pairs to set as secrets.')
 
+  def AddCloud(self):
+    self._AddFlag(
+        '--cloud',
+        default=False,
+        action='store_true',
+        hidden=True,
+        help='deploy code to Cloud Run')
+
   def _GetGroup(self, klass):
     if klass not in self._group_cache:
       group = klass()
@@ -278,6 +286,7 @@ class CommonFlags(FlagDefs):
     self.AddCpu()
     self.EnvVarsGroup().AddEnvVars()
     self.EnvVarsGroup().AddEnvVarsFile()
+    self.AddCloud()
 
 
 class InvalidFlagError(exceptions.Error):

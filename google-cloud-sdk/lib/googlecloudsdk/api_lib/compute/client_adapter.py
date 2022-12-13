@@ -87,8 +87,42 @@ class ClientAdapter(object):
                    followup_overrides=None,
                    log_warnings=True,
                    log_result=True,
-                   timeout=None):
-    """Sends given request in batch mode."""
+                   timeout=None,
+                   enable_single_request=False):
+    """By default, sends given request in batch mode.
+
+    If enable_single_request flag is set to true, then the client_adapter.py
+    will send single request if the requests size is one.
+
+    Args:
+      requests: A list of requests to make. Each element must be a 3-element
+        tuple where the first element is the service, the second element is the
+        string name of the method on the service, and the last element is a
+        protocol buffer representing the request.
+      errors_to_collect: A list for capturing errors. If any response contains
+        an error, it is added to this list.
+      project_override: The override project for the returned operation to poll
+        from.
+      progress_tracker: progress tracker to be ticked while waiting for
+        operations to finish.
+      no_followup: If True, do not followup operation with a GET request.
+      always_return_operation: If True, return operation object even if
+        operation fails.
+      followup_overrides: A list of new resource names to GET once the operation
+        finishes. Generally used in renaming calls.
+      log_warnings: Whether warnings for completed operation should be printed.
+      log_result: Whether the Operation Waiter should print the result in past
+        tense of each request.
+      timeout: The maximum amount of time, in seconds, to wait for the
+        operations to reach the DONE state.
+      enable_single_request: if requests is single, send single request instead
+        of batch request
+
+    Returns:
+      A response for each request. For deletion requests, no corresponding
+      responses are returned.
+    """
+
     errors = errors_to_collect if errors_to_collect is not None else []
     objects = list(
         request_helper.MakeRequests(
@@ -103,7 +137,8 @@ class ClientAdapter(object):
             followup_overrides=followup_overrides,
             log_warnings=log_warnings,
             log_result=log_result,
-            timeout=timeout))
+            timeout=timeout,
+            enable_single_request=enable_single_request))
     if errors_to_collect is None and errors:
       utils.RaiseToolException(
           errors, error_message='Could not fetch resource:')

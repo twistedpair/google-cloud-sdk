@@ -124,9 +124,9 @@ def replace_time_values_with_gsutil_style_strings(resource):
       setattr(resource, key, _gsutil_format_datetime_string(gcloud_datetime))
 
 
-def reformat_custom_metadata_for_gsutil(object_resource):
+def reformat_custom_fields_for_gsutil(object_resource):
   """Reformats custom metadata full format string in gsutil style."""
-  metadata = object_resource.custom_metadata
+  metadata = object_resource.custom_fields
   if not metadata:
     return
 
@@ -140,4 +140,4 @@ def reformat_custom_metadata_for_gsutil(object_resource):
   for k, v in iterable_metadata:
     metadata_lines.append(
         resource_util.get_padded_metadata_key_value_line(k, v, extra_indent=2))
-  object_resource.custom_metadata = '\n' + '\n'.join(metadata_lines)
+  object_resource.custom_fields = '\n' + '\n'.join(metadata_lines)

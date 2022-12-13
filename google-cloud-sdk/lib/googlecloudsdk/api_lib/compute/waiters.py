@@ -22,9 +22,11 @@ from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.compute import batch_helper
 from googlecloudsdk.api_lib.compute import path_simplifier
+from googlecloudsdk.api_lib.compute import single_request_helper
 from googlecloudsdk.api_lib.util import exceptions as http_exceptions
 from googlecloudsdk.command_lib.util import time_util
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 
 _POLLING_TIMEOUT_SEC = 60 * 30
 _MAX_TIME_BETWEEN_POLLS_SEC = 5
@@ -357,9 +359,15 @@ class OperationData(object):
         pass
 
 
-def WaitForOperations(
-    operations_data, http, batch_url, warnings, errors,
-    progress_tracker=None, timeout=None, log_result=True):
+def WaitForOperations(operations_data,
+                      http,
+                      batch_url,
+                      warnings,
+                      errors,
+                      progress_tracker=None,
+                      timeout=None,
+                      log_result=True,
+                      enable_single_request=False):
   """Blocks until the given operations are done or until a timeout is reached.
 
   Args:
@@ -374,6 +382,8 @@ def WaitForOperations(
       operations to reach the DONE state.
     log_result: Whether the Operation Waiter should print the result in past
       tense of each request.
+    enable_single_request: if requests is single, send single request instead
+      of batch request
 
   Yields:
     The resources pointed to by the operations' targetLink fields if
@@ -477,11 +487,14 @@ def WaitForOperations(
     if not requests:
       break
 
-    responses, request_errors = batch_helper.MakeRequests(
-        requests=requests,
-        http=http,
-        batch_url=batch_url)
-
+    if not properties.VALUES.compute.force_batch_request.GetBool(
+    ) and enable_single_request and len(requests) == 1:
+      service, method, request_body = requests[0]
+      responses, request_errors = single_request_helper.MakeSingleRequest(
+          service=service, method=method, request_body=request_body)
+    else:
+      responses, request_errors = batch_helper.MakeRequests(
+          requests=requests, http=http, batch_url=batch_url)
     errors.extend(request_errors)
 
     all_done = True

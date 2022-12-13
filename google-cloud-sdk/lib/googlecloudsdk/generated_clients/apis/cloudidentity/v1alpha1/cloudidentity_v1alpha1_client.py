@@ -536,7 +536,7 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
         method_id='cloudidentity.groups.search',
         ordered_params=[],
         path_params=[],
-        query_params=['pageSize', 'pageToken', 'query', 'view'],
+        query_params=['orderBy', 'pageSize', 'pageToken', 'query', 'view'],
         relative_path='v1alpha1/groups:search',
         request_field='',
         request_type_name='CloudidentityGroupsSearchRequest',

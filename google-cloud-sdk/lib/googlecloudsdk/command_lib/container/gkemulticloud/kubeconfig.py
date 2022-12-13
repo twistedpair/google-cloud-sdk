@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import base64
 import os
+import subprocess
 
 from googlecloudsdk.api_lib.container import kubeconfig as kubeconfig_util
 from googlecloudsdk.api_lib.container import util
@@ -333,11 +334,39 @@ def _ExecAuthPlugin(cmd_path, cmd_args):
     bin_name = 'gcloud'
     if platforms.OperatingSystem.IsWindows():
       bin_name = 'gcloud.cmd'
-    sdk_bin_path = config.Paths().sdk_bin_path
-    if sdk_bin_path is None:
-      log.error(kubeconfig_util.SDK_BIN_PATH_NOT_FOUND)
-      raise kubeconfig_util.Error(kubeconfig_util.SDK_BIN_PATH_NOT_FOUND)
-    cmd_path = os.path.join(sdk_bin_path, bin_name)
+    command = bin_name
+
+    # Check if command is in PATH and executable. Else, print critical(RED)
+    # warning as kubectl will break if command is not executable.
+    try:
+      subprocess.run([command, '--version'],
+                     timeout=5,
+                     check=False,
+                     stdout=subprocess.DEVNULL,
+                     stderr=subprocess.DEVNULL)
+      cmd_path = command
+    except Exception:  # pylint: disable=broad-except
+      # Provide SDK Full path if command is not in PATH. This helps work
+      # around scenarios where cloud-sdk install location is not in PATH
+      # as sdk was installed using other distributions methods Eg: brew
+      try:
+        # config.Paths().sdk_bin_path throws an exception in some test envs,
+        # but is commonly defined in prod environments
+        sdk_bin_path = config.Paths().sdk_bin_path
+        if sdk_bin_path is None:
+          log.critical(kubeconfig_util.SDK_BIN_PATH_NOT_FOUND)
+          raise kubeconfig_util.Error(kubeconfig_util.SDK_BIN_PATH_NOT_FOUND)
+        else:
+          sdk_path_bin_name = os.path.join(sdk_bin_path, command)
+          subprocess.run([sdk_path_bin_name, '--version'],
+                         timeout=5,
+                         check=False,
+                         stdout=subprocess.DEVNULL,
+                         stderr=subprocess.DEVNULL)
+          # update command if sdk_path_bin_name works
+          cmd_path = sdk_path_bin_name
+      except Exception:  # pylint: disable=broad-except
+        log.critical(kubeconfig_util.SDK_BIN_PATH_NOT_FOUND)
 
   cfg = {
       'command': cmd_path,

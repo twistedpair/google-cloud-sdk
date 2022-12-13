@@ -68,7 +68,7 @@ class Execution(_messages.Message):
     r"""The call logging level associated to this execution.
 
     Values:
-      CALL_LOG_LEVEL_UNSPECIFIED: No call logging specified.
+      CALL_LOG_LEVEL_UNSPECIFIED: No call logging level specified.
       LOG_ALL_CALLS: Log all call steps within workflows, all call returns,
         and all exceptions raised.
       LOG_ERRORS_ONLY: Log only exceptions that are raised from call steps

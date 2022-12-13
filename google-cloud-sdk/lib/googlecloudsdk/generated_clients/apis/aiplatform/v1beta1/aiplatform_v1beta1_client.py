@@ -1909,6 +1909,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SearchDataItems(self, request, global_params=None):
+      r"""Searches DataItems in a Dataset.
+
+      Args:
+        request: (AiplatformProjectsLocationsDatasetsSearchDataItemsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1SearchDataItemsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchDataItems')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchDataItems.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:searchDataItems',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.datasets.searchDataItems',
+        ordered_params=['dataset'],
+        path_params=['dataset'],
+        query_params=['annotationFilters', 'annotationsFilter', 'annotationsLimit', 'dataItemFilter', 'dataLabelingJob', 'fieldMask', 'orderBy', 'orderByAnnotation_orderBy', 'orderByAnnotation_savedQuery', 'orderByDataItem', 'pageSize', 'pageToken', 'savedQuery'],
+        relative_path='v1beta1/{+dataset}:searchDataItems',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDatasetsSearchDataItemsRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1SearchDataItemsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsDeploymentResourcePoolsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_deploymentResourcePools_operations resource."""
 

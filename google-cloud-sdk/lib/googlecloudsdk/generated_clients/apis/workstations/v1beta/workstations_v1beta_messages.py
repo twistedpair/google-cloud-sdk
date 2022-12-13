@@ -235,7 +235,14 @@ class Expr(_messages.Message):
 
 
 class GceConfidentialInstanceConfig(_messages.Message):
-  r"""A set of Confidential Google Compute Engine Instance option."""
+  r"""A set of Confidential Google Compute Engine Instance option.
+
+  Fields:
+    enableConfidentialCompute: Whether the instance has confidential compute
+      enabled.
+  """
+
+  enableConfidentialCompute = _messages.BooleanField(1)
 
 
 class GceInstance(_messages.Message):
@@ -1070,7 +1077,7 @@ class WorkstationConfig(_messages.Message):
     host: Runtime host for the Workstation.
     idleTimeout: How long to wait before automatically stopping an instance
       that hasn't received any user traffic. A value of 0 indicates that this
-      instance should never time out due to idleness.
+      instance should never time out due to idleness. Defaults to 20 minutes.
     name: Full name of this resource.
     persistentDirectories: Directories to persist across Workstation sessions.
     reconciling: Output only. Indicates whether this resource is currently
@@ -1078,7 +1085,7 @@ class WorkstationConfig(_messages.Message):
     runningTimeout: How long to wait before automatically stopping a
       workstation after it started. A value of 0 indicates that workstations
       using this config should never time out. Must be greater than 0 and less
-      than 24 hours if encryption_key is set.
+      than 24 hours if encryption_key is set. Defaults to 12 hours.
     uid: Output only. A system-assigned unique identified for this resource.
     updateTime: Output only. Time when this resource was most recently
       updated.

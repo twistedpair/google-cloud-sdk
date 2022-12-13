@@ -157,7 +157,13 @@ def PopulatePublicKey(api_client, service_id, version_id, instance_id,
       messages=compute_base_classes.ComputeApiHolder(
           release_track).client.messages)
   user = oslogin_state.user
-  remote = ssh.Remote(instance.vmIp, user=user)
+  instance_ip_mode_enum = (
+      api_client.messages.Network.InstanceIpModeValueValuesEnum)
+  host = (
+      instance.id if
+      version.version.network.instanceIpMode is instance_ip_mode_enum.INTERNAL
+      else instance.vmIp)
+  remote = ssh.Remote(host=host, user=user)
   if not oslogin_state.oslogin_enabled:
     ssh_key = '{user}:{key} {user}'.format(user=user, key=public_key.ToEntry())
     log.status.Print('Sending public key to instance [{}].'.format(rel_name))

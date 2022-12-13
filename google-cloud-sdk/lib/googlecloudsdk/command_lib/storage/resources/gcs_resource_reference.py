@@ -145,6 +145,11 @@ class GcsBucketResource(resource_reference.BucketResource):
       return int(self.retention_policy['retentionPeriod'])
     return None
 
+  @property
+  def retention_policy_is_locked(self):
+    return (self.retention_policy and
+            self.retention_policy.get('isLocked', False))
+
   def get_displayable_bucket_data(self):
     """Returns the DisplaybleBucketData instance."""
     # TODO(b/240444753): Make better use of ObjectResource attributes.
@@ -222,9 +227,9 @@ class GcsObjectResource(resource_reference.ObjectResource):
                content_type=None,
                crc32c_hash=None,
                creation_time=None,
-               custom_metadata=None,
+               custom_fields=None,
                custom_time=None,
-               decryption_key_hash=None,
+               decryption_key_hash_sha256=None,
                encryption_algorithm=None,
                etag=None,
                event_based_hold=None,
@@ -251,9 +256,9 @@ class GcsObjectResource(resource_reference.ObjectResource):
         content_type,
         crc32c_hash,
         creation_time,
-        custom_metadata,
+        custom_fields,
         custom_time,
-        decryption_key_hash,
+        decryption_key_hash_sha256,
         encryption_algorithm,
         etag,
         event_based_hold,
@@ -320,4 +325,4 @@ class GcsObjectResource(resource_reference.ObjectResource):
 
   def is_encrypted(self):
     cmek_in_metadata = self.metadata.kmsKeyName if self.metadata else False
-    return cmek_in_metadata or self.decryption_key_hash
+    return cmek_in_metadata or self.decryption_key_hash_sha256

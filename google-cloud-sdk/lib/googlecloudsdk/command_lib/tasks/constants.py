@@ -44,7 +44,7 @@ APP_ENGINE_TASK = 'app-engine'
 HTTP_TASK = 'http'
 
 APP_ENGINE_ROUTING_KEYS = ('service', 'version', 'instance')
-HTTP_URI_OVERIDE_KEYS = ('scheme', 'host', 'port', 'path', 'query')
+HTTP_URI_OVERIDE_KEYS = ('scheme', 'host', 'port', 'path', 'query', 'mode')
 
 
 APP_ENGINE_DEFAULT_LOCATION_WARNING = (

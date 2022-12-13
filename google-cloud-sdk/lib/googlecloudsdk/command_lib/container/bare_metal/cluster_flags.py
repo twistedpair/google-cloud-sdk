@@ -334,11 +334,11 @@ Path of the YAML/JSON file that contains the Metal LB node configs.
 Examples:
 
   nodeConfigs:
-  - nodeIp: 10.200.0.10
+  - nodeIP: 10.200.0.10
     labels:
       node1: label1
       node2: label2
-  - nodeIp: 10.200.0.11
+  - nodeIP: 10.200.0.11
     labels:
       node3: label3
       node4: label4
@@ -347,7 +347,7 @@ List of supported fields in `nodeConfigs`
 
 KEY           | VALUE                     | NOTE
 --------------|---------------------------|---------------------------
-nodeIp        | string                    | required, mutable
+nodeIP        | string                    | required, mutable
 labels        | one or more key-val pairs | optional, mutable
 
 """
@@ -423,12 +423,12 @@ Examples:
     addresses:
     - 10.200.0.14/32
     - 10.200.0.15/32
-    avoidBuggyIps: True
+    avoidBuggyIPs: True
     manualAssign: True
   - pool: pool-2
     addresses:
     - 10.200.0.16/32
-    avoidBuggyIps: False
+    avoidBuggyIPs: False
     manualAssign: False
 
 List of supported fields in `addressPools`
@@ -437,7 +437,7 @@ KEY           | VALUE                 | NOTE
 --------------|-----------------------|---------------------------
 pool          | string                | required, mutable
 addresses     | one or more IP ranges | required, mutable
-avoidBuggyIps | bool                  | optional, mutable, defaults to False
+avoidBuggyIPs | bool                  | optional, mutable, defaults to False
 manualAssign  | bool                  | optional, mutable, defaults to False
 
 """
@@ -640,11 +640,11 @@ Path of the YAML/JSON file that contains the control plane node configs.
 Examples:
 
   nodeConfigs:
-  - nodeIp: 10.200.0.10
+  - nodeIP: 10.200.0.10
     labels:
       node1: label1
       node2: label2
-  - nodeIp: 10.200.0.11
+  - nodeIP: 10.200.0.11
     labels:
       node3: label3
       node4: label4
@@ -653,7 +653,7 @@ List of supported fields in `nodeConfigs`
 
 KEY           | VALUE                     | NOTE
 --------------|---------------------------|---------------------------
-nodeIp        | string                    | required, mutable
+nodeIP        | string                    | required, mutable
 labels        | one or more key-val pairs | optional, mutable
 
 """

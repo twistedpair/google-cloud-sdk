@@ -90,9 +90,9 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
       source_file_path = None
 
     if (isinstance(self._source_resource, resource_reference.ObjectResource) and
-        self._source_resource.custom_metadata):
+        self._source_resource.custom_fields):
       object_metadata.metadata = encoding_helper.DictToAdditionalPropertyMessage(
-          self._source_resource.custom_metadata,
+          self._source_resource.custom_fields,
           self._messages.Object.MetadataValue)
 
     gcs_metadata_util.update_object_metadata_from_request_config(

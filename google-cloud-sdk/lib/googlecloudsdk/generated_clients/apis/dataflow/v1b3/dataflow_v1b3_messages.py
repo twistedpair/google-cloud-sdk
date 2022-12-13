@@ -4990,6 +4990,8 @@ class ParameterMetadata(_messages.Message):
       PUBSUB_TOPIC: The parameter specifies a Pub/Sub Topic.
       PUBSUB_SUBSCRIPTION: The parameter specifies a Pub/Sub Subscription.
       BIGQUERY_TABLE: The parameter specifies a BigQuery table.
+      JAVASCRIPT_UDF_FILE: The parameter specifies a JavaScript UDF in Cloud
+        Storage.
     """
     DEFAULT = 0
     TEXT = 1
@@ -5002,6 +5004,7 @@ class ParameterMetadata(_messages.Message):
     PUBSUB_TOPIC = 8
     PUBSUB_SUBSCRIPTION = 9
     BIGQUERY_TABLE = 10
+    JAVASCRIPT_UDF_FILE = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CustomMetadataValue(_messages.Message):

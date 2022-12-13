@@ -805,11 +805,10 @@ class DirectedReadOptions(_messages.Message):
       serving requests. Spanner will not route requests to the replicas in
       this list.
     includeReplicas: Include_replicas indicates the order of replicas (as they
-      appear in this list) to process the request. If all replicas are
-      exhausted without finding a healthy replica, Spanner will wait for a
-      replica in the list to become available, requests may fail due to
-      `DEADLINE_EXCEEDED` errors. In particular, the request will never be
-      sent to a region or replica which does not appear in the list.
+      appear in this list) to process the request. If auto_failover_disabled
+      is set to true and all replicas are exhausted without finding a healthy
+      replica, Spanner will wait for a replica in the list to become
+      available, requests may fail due to `DEADLINE_EXCEEDED` errors.
   """
 
   excludeReplicas = _messages.MessageField('ExcludeReplicas', 1)
@@ -1262,13 +1261,13 @@ class IncludeReplicas(_messages.Message):
   indicates the order in which replicas should be considered.
 
   Fields:
-    autoFailover: If true, Spanner will route requests to healthy replica
-      outside the list when all the replicas in the include_replicas list are
-      unavailable or unhealthy. Default value is `false`.
+    autoFailoverDisabled: If true, Spanner will not route requests to a
+      replica outside the include_replicas list when all of the specified
+      replicas are unavailable or unhealthy. Default value is `false`.
     replicaSelections: The directed read replica selector.
   """
 
-  autoFailover = _messages.BooleanField(1)
+  autoFailoverDisabled = _messages.BooleanField(1)
   replicaSelections = _messages.MessageField('ReplicaSelection', 2, repeated=True)
 
 

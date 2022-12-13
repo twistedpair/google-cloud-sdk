@@ -458,8 +458,7 @@ def SetExportConfigResources(args, psl, project, location, export_config):
 
 def GetExportConfig(args, psl, project, location, requires_seek):
   """Returns an ExportConfig from arguments."""
-  if not hasattr(args,
-                 'export_pubsub_topic') or args.export_pubsub_topic is None:
+  if args.export_pubsub_topic is None:
     return None
 
   desired_state = GetDesiredExportState(args, psl)
@@ -487,9 +486,7 @@ def ExecuteCreateSubscriptionRequest(resource_ref, args):
   location = GetLocation(args)
   project_id = GetProject(args)
   project_number = six.text_type(ProjectIdToProjectNumber(project_id))
-  requires_seek = False
-  if hasattr(args, 'publish_time') and hasattr(args, 'event_time'):
-    requires_seek = args.publish_time or args.event_time
+  requires_seek = args.publish_time or args.event_time
 
   # Request 1 - Create the subscription.
   create_request = psl.PubsubliteAdminProjectsLocationsSubscriptionsCreateRequest(

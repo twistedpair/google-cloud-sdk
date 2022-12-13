@@ -129,7 +129,7 @@ class _BareMetalClusterClient(client.ClientBase):
 
     kwargs = {
         'addresses': addresses,
-        'avoidBuggyIps': address_pool.get('avoidBuggyIps', None),
+        'avoidBuggyIps': address_pool.get('avoidBuggyIPs', None),
         'manualAssign': address_pool.get('manualAssign', None),
         'pool': pool,
     }
@@ -138,11 +138,11 @@ class _BareMetalClusterClient(client.ClientBase):
 
   def _metal_lb_node_config(self, metal_lb_node_config):
     """Constructs proto message BareMetalNodeConfig."""
-    node_ip = metal_lb_node_config.get('nodeIp', '')
+    node_ip = metal_lb_node_config.get('nodeIP', '')
     if not node_ip:
       raise exceptions.BadArgumentException(
           '--metal_lb_load_balancer_node_configs_from_file',
-          'Missing field [nodeIp] in Metal LB Node configs file.')
+          'Missing field [nodeIP] in Metal LB Node configs file.')
 
     kwargs = {
         'nodeIp': node_ip,
@@ -337,11 +337,11 @@ class _BareMetalClusterClient(client.ClientBase):
 
   def _control_plane_node_config(self, control_plane_node_config):
     """Constructs proto message BareMetalNodeConfig."""
-    node_ip = control_plane_node_config.get('nodeIp', '')
+    node_ip = control_plane_node_config.get('nodeIP', '')
     if not node_ip:
       raise exceptions.BadArgumentException(
           '--control_plane_node_configs_from_file',
-          'Missing field [nodeIp] in Control Plane Node configs file.')
+          'Missing field [nodeIP] in Control Plane Node configs file.')
 
     kwargs = {
         'nodeIp': node_ip,

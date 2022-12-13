@@ -442,10 +442,10 @@ class S3Api(cloud_api.CloudApi):
     """See super class."""
     if (request_config.system_posix_data and cloud_resource.metadata and
         'Metadata' in cloud_resource.metadata):
-      custom_metadata_dict = cloud_resource.metadata['Metadata']
+      custom_fields_dict = cloud_resource.metadata['Metadata']
       posix_attributes_to_set = (
           posix_util.get_posix_attributes_from_custom_metadata_dict(
-              cloud_resource.storage_url.url_string, custom_metadata_dict))
+              cloud_resource.storage_url.url_string, custom_fields_dict))
     else:
       posix_attributes_to_set = None
 
@@ -656,8 +656,8 @@ class S3Api(cloud_api.CloudApi):
       file_path = None
 
     if isinstance(source_resource, resource_reference.ObjectResource):
-      if source_resource.custom_metadata:
-        extra_args['Metadata'] = source_resource.custom_metadata
+      if source_resource.custom_fields:
+        extra_args['Metadata'] = source_resource.custom_fields
 
     s3_metadata_util.update_object_metadata_dict_from_request_config(
         extra_args,

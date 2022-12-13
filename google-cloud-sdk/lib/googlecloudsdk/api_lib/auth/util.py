@@ -23,6 +23,9 @@ from __future__ import unicode_literals
 import abc
 import json
 
+from google.auth import external_account_authorized_user
+from google.oauth2 import credentials as oauth2_credentials
+
 from googlecloudsdk.command_lib.util import check_browser
 from googlecloudsdk.core import config
 from googlecloudsdk.core import context_aware
@@ -329,7 +332,12 @@ def DoInstalledAppBrowserFlowGoogleAuth(scopes,
     user_creds = BrowserFlowWithNoBrowserFallbackRunner(
         scopes, client_config).Run(**query_params)
   if user_creds:
-    return c_google_auth.Credentials.FromGoogleAuthUserCredentials(user_creds)
+    if isinstance(user_creds, oauth2_credentials.Credentials):
+      # c_google_auth.Credentials adds reauth capabilities to oauth2
+      # credentials, which is needed as they are long-term credentials.
+      return c_google_auth.Credentials.FromGoogleAuthUserCredentials(user_creds)
+    if isinstance(user_creds, external_account_authorized_user.Credentials):
+      return user_creds
 
 
 def GetClientSecretsType(client_id_file):

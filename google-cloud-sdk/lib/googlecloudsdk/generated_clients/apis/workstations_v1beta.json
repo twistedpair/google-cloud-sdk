@@ -382,12 +382,12 @@
           "type": "string"
         },
         "idleTimeout": {
-          "description": "How long to wait before automatically stopping an instance that hasn't received any user traffic. A value of 0 indicates that this instance should never time out due to idleness.",
+          "description": "How long to wait before automatically stopping an instance that hasn't received any user traffic. A value of 0 indicates that this instance should never time out due to idleness. Defaults to 20 minutes.",
           "type": "string",
           "format": "google-duration"
         },
         "runningTimeout": {
-          "description": "How long to wait before automatically stopping a workstation after it started. A value of 0 indicates that workstations using this config should never time out. Must be greater than 0 and less than 24 hours if encryption_key is set.",
+          "description": "How long to wait before automatically stopping a workstation after it started. A value of 0 indicates that workstations using this config should never time out. Must be greater than 0 and less than 24 hours if encryption_key is set. Defaults to 12 hours.",
           "type": "string",
           "format": "google-duration"
         },
@@ -500,6 +500,10 @@
       "description": "A set of Confidential Google Compute Engine Instance option.",
       "type": "object",
       "properties": {
+        "enableConfidentialCompute": {
+          "description": "Whether the instance has confidential compute enabled.",
+          "type": "boolean"
+        }
       }
     },
     "PersistentDirectory": {

@@ -310,7 +310,7 @@ def hash_gcs_rewrite_parameters_for_tracker_file(source_object_resource,
     raise ValueError('Missing required parameter values.')
 
   source_encryption = (
-      source_object_resource.decryption_key_hash or
+      source_object_resource.decryption_key_hash_sha256 or
       source_object_resource.kms_key)
   destination_encryption = None
   if (request_config and request_config.resource_args and

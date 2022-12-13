@@ -146,7 +146,7 @@ class WorkflowsV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new workflow. If a workflow with the specified name already exists in the specified project and location, the long running operation will return ALREADY_EXISTS error.
+      r"""Creates a new workflow. If a workflow with the specified name already exists in the specified project and location, the long running operation returns a ALREADY_EXISTS error.
 
       Args:
         request: (WorkflowsProjectsLocationsWorkflowsCreateRequest) input message
@@ -200,7 +200,7 @@ class WorkflowsV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Workflow.
+      r"""Gets details of a single workflow.
 
       Args:
         request: (WorkflowsProjectsLocationsWorkflowsGetRequest) input message
@@ -227,7 +227,7 @@ class WorkflowsV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Workflows in a given project and location. The default order is not specified.
+      r"""Lists workflows in a given project and location. The default order is not specified.
 
       Args:
         request: (WorkflowsProjectsLocationsWorkflowsListRequest) input message
@@ -254,7 +254,7 @@ class WorkflowsV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an existing workflow. Running this method has no impact on already running executions of the workflow. A new revision of the workflow may be created as a result of a successful update operation. In that case, such revision will be used in new workflow executions.
+      r"""Updates an existing workflow. Running this method has no impact on already running executions of the workflow. A new revision of the workflow might be created as a result of a successful update operation. In that case, the new revision is used in new workflow executions.
 
       Args:
         request: (WorkflowsProjectsLocationsWorkflowsPatchRequest) input message

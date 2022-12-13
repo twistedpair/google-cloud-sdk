@@ -97,26 +97,30 @@ def GetToTargetID(release_obj, is_create):
     the target ID.
 
   Raises:
-    NoSnappedTargetsError: if no target snapshots in the release.
+    NoStagesError: if no pipeline stages exist in the release.
     ReleaseInactiveError: if this is not called during release creation and the
     specified release has no rollouts.
   """
 
-  if not release_obj.targetSnapshots:
-    raise exceptions.NoSnappedTargetsError(release_obj.name)
+  if not release_obj.deliveryPipelineSnapshot.serialPipeline.stages:
+    raise exceptions.NoStagesError(release_obj.name)
   # Use release short name to avoid the issue by mixed use of
   # the project number and id.
   release_ref = resources.REGISTRY.ParseRelativeName(
       release_obj.name,
       collection='clouddeploy.projects.locations.deliveryPipelines.releases',
   )
-  to_target = release_obj.targetSnapshots[0].name
-  # The order of target snapshots represents the promotion sequence.
+  to_target = (
+      release_obj.deliveryPipelineSnapshot.serialPipeline.stages[0].targetId)
+  # The order of pipeline stages represents the promotion sequence.
   # E.g. test->stage->prod. Here we start with the last stage.
-  reversed_snapshots = list(reversed(release_obj.targetSnapshots))
+  reversed_stages = list(
+      reversed(release_obj.deliveryPipelineSnapshot.serialPipeline.stages))
   release_dict = release_ref.AsDict()
-  for i, snapshot in enumerate(reversed_snapshots):
-    target_ref = target_util.TargetReferenceFromName(snapshot.name)
+  for i, stage in enumerate(reversed_stages):
+    target_ref = target_util.TargetReference(stage.targetId,
+                                             release_dict['projectsId'],
+                                             release_dict['locationsId'])
     # Starting with the last target in the promotion sequence per above, find
     # the last successfully deployed rollout to that target.
     current_rollout = target_util.GetCurrentRollout(
@@ -139,7 +143,7 @@ def GetToTargetID(release_obj, is_create):
       # promotion sequence to its next stage in the promotion sequence.
       if current_rollout_ref.Parent().Name() == release_ref.Name():
         if i > 0:
-          to_target = reversed_snapshots[i - 1].name
+          to_target = reversed_stages[i - 1].targetId
         else:
           log.status.Print(
               _LAST_TARGET_IN_SEQUENCE.format(release_ref.Name(),
@@ -152,7 +156,9 @@ def GetToTargetID(release_obj, is_create):
 
   # This means the release is not deployed to any target,
   # to_target flag is required in this case.
-  if to_target == release_obj.targetSnapshots[0].name and not is_create:
+  if (to_target
+      == release_obj.deliveryPipelineSnapshot.serialPipeline.stages[0].targetId
+      and not is_create):
     raise exceptions.ReleaseInactiveError()
 
   return target_util.TargetId(to_target)

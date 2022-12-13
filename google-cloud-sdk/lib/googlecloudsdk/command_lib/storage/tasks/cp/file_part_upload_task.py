@@ -171,19 +171,17 @@ class FilePartUploadTask(file_part_task.FilePartTask):
             component_number=self._component_number)
 
         complete = False
-        encryption_key_hash = getattr(encryption_util.get_encryption_key(),
-                                      'sha256', None)
+        encryption_key_hash_sha256 = getattr(
+            encryption_util.get_encryption_key(), 'sha256', None)
         tracker_callback = functools.partial(
             tracker_file_util.write_resumable_upload_tracker_file,
-            tracker_file_path, complete, encryption_key_hash)
+            tracker_file_path, complete, encryption_key_hash_sha256)
 
         tracker_data = tracker_file_util.read_resumable_upload_tracker_file(
             tracker_file_path)
 
-        if (
-            tracker_data is None or
-            tracker_data.encryption_key_sha256 != encryption_key_hash
-        ):
+        if (tracker_data is None or
+            tracker_data.encryption_key_sha256 != encryption_key_hash_sha256):
           serialization_data = None
         else:
           # TODO(b/190093425): Print a better message for component uploads once
@@ -194,9 +192,10 @@ class FilePartUploadTask(file_part_task.FilePartTask):
 
           if tracker_data.complete:
             try:
-              metadata_request_config = request_config_factory.get_request_config(
-                  destination_url,
-                  decryption_key_hash=encryption_key_hash)
+              metadata_request_config = (
+                  request_config_factory.get_request_config(
+                      destination_url,
+                      decryption_key_hash_sha256=encryption_key_hash_sha256))
               # Providing a decryption key means the response will include the
               # object's hash if the keys match, and raise an error if they do
               # not. This is desirable since we want to re-upload objects with
@@ -212,8 +211,9 @@ class FilePartUploadTask(file_part_task.FilePartTask):
               # The API call will not error if we provide an encryption key but
               # the destination is unencrypted, hence the additional (defensive)
               # check below.
-              destination_key_hash = destination_resource.decryption_key_hash
-              if (destination_key_hash == encryption_key_hash and
+              destination_key_hash = (
+                  destination_resource.decryption_key_hash_sha256)
+              if (destination_key_hash == encryption_key_hash_sha256 and
                   self._existing_destination_is_valid(destination_resource)):
                 return self._get_output(destination_resource)
 

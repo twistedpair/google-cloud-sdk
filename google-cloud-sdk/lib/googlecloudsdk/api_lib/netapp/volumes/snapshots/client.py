@@ -203,9 +203,9 @@ class AlphaSnapshotsAdapter(object):
                                  description=None,
                                  labels=None):
     """Parse update information into an updated Snapshot message."""
-    if description:
+    if description is not None:
       snapshot_config.description = description
-    if labels:
+    if labels is not None:
       snapshot_config.labels = labels
     return snapshot_config
 

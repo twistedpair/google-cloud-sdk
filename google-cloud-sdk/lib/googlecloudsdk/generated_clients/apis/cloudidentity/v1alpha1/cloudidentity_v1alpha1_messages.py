@@ -383,7 +383,8 @@ class CloudidentityGroupsListRequest(_messages.Message):
       resources. Must be of the form `identitysources/{identity_source_id}`
       for external- identity-mapped groups or `customers/{customer_id}` for
       Google Groups. The `customer_id` must begin with "C" (for example,
-      'C046psxkn').
+      'C046psxkn'). [Find your customer ID.]
+      (https://support.google.com/cloudidentity/answer/10070793)
     view: The level of detail to be returned. If unspecified, defaults to
       `View.BASIC`.
   """
@@ -680,6 +681,11 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
       defaults to `View.BASIC`.
 
   Fields:
+    orderBy: The ordering of groups for the display name or email in the
+      search groups response. The syntax for this field can be found at
+      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+      Example: Sort by the ascending name: order_by="display_name" Sort by the
+      descending group key email: order_by="group_key desc"
     pageSize: The maximum number of results to return. Note that the number of
       results returned may be less than this value even if there are more
       available results. To fetch all results, clients must continue calling
@@ -690,11 +696,19 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
     pageToken: The `next_page_token` value returned from a previous search
       request, if any.
     query: Required. The search query. Must be specified in [Common Expression
-      Language](https://opensource.google/projects/cel). May only contain
-      equality operators on the parent and inclusion operators on labels
-      (e.g., `parent == 'customers/{customer_id}' &&
-      'cloudidentity.googleapis.com/groups.discussion_forum' in labels`). The
-      `customer_id` must begin with "C" (for example, 'C046psxkn').
+      Language](https://opensource.google/projects/cel). Must contain equality
+      operators on the parent, e.g. `parent == 'customers/{customer_id}'`. The
+      `customer_id` must begin with "C" (for example, 'C046psxkn'). [Find your
+      customer ID.] (https://support.google.com/cloudidentity/answer/10070793)
+      Can contain optionally inclusion operators on label. e.g.
+      `cloudidentity.googleapis.com/groups.discussion_forum' in labels`). Can
+      contain optional either equality operator on domain_name or
+      startsWith/contains/equality operator on group key, e.g. `domain_name ==
+      'abc.com'`, `group_key.startsWith('dev')` , `group_key.contains('dev') ,
+      group_key == 'dev@abc.com'` Can contain optionally
+      startsWith/contains/equality operator on display name, e.g.
+      `display_name.startsWith('dev')` , `display_name.contains('dev')`,
+      `display_name == 'dev'`
     view: The level of detail to be returned. If unspecified, defaults to
       `View.BASIC`.
   """
@@ -712,10 +726,11 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
     BASIC = 1
     FULL = 2
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  query = _messages.StringField(3)
-  view = _messages.EnumField('ViewValueValuesEnum', 4)
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  query = _messages.StringField(4)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
 class CustomAttributeValue(_messages.Message):
@@ -1790,7 +1805,9 @@ class Group(_messages.Message):
       this `Group` resides in the Cloud Identity resource hierarchy. Must be
       of the form `identitysources/{identity_source_id}` for external-
       identity-mapped groups or `customers/{customer_id}` for Google Groups.
-      The `customer_id` must begin with "C" (for example, 'C046psxkn').
+      The `customer_id` must begin with "C" (for example, 'C046psxkn'). [Find
+      your customer ID.]
+      (https://support.google.com/cloudidentity/answer/10070793)
     posixGroups: The POSIX groups associated with the `Group`.
     updateTime: Output only. The time when the `Group` was last updated.
   """

@@ -1320,8 +1320,9 @@ def AddLocalSSDsAlphaFlags(parser, for_node_pool=False, suppressed=False):
   AddLocalSSDFlag(
       group, suppressed=suppressed, help_text=local_ssd_relationship)
   AddEphemeralStorageLocalSSDFlag(
-      group, for_node_pool=for_node_pool, hidden=True)
-  AddLocalNvmeSSDBlockFlag(group, for_node_pool=for_node_pool, hidden=True)
+      group, for_node_pool=for_node_pool, hidden=suppressed)
+  AddLocalNvmeSSDBlockFlag(
+      group, for_node_pool=for_node_pool, hidden=suppressed)
 
 
 def AddLocalSSDsBetaFlags(parser, for_node_pool=False, suppressed=False):
@@ -1330,8 +1331,9 @@ def AddLocalSSDsBetaFlags(parser, for_node_pool=False, suppressed=False):
   AddLocalSSDFlag(group, suppressed=suppressed)
   AddEphemeralStorageFlag(group, for_node_pool=for_node_pool, hidden=suppressed)
   AddEphemeralStorageLocalSSDFlag(
-      group, for_node_pool=for_node_pool, hidden=True)
-  AddLocalNvmeSSDBlockFlag(group, for_node_pool=for_node_pool, hidden=True)
+      group, for_node_pool=for_node_pool, hidden=suppressed)
+  AddLocalNvmeSSDBlockFlag(
+      group, for_node_pool=for_node_pool, hidden=suppressed)
 
 
 def AddLocalSSDsGAFlags(parser, for_node_pool=False, suppressed=False):
@@ -1340,14 +1342,15 @@ def AddLocalSSDsGAFlags(parser, for_node_pool=False, suppressed=False):
   group = parser.add_mutually_exclusive_group()
   AddLocalSSDFlag(group, suppressed=suppressed)
   AddEphemeralStorageLocalSSDFlag(
-      group, for_node_pool=for_node_pool, hidden=True)
-  AddLocalNvmeSSDBlockFlag(group, for_node_pool=for_node_pool, hidden=True)
+      group, for_node_pool=for_node_pool, hidden=suppressed)
+  AddLocalNvmeSSDBlockFlag(
+      group, for_node_pool=for_node_pool, hidden=suppressed)
 
 
 def AddLocalSSDVolumeConfigsFlag(parser, for_node_pool=False, help_text=''):
   """Adds a --local-ssd-volumes flag to the given parser."""
   help_text += """\
-Adds the requested local SSDs on all nodes in default node pool(s) in new cluster.
+Adds the requested local SSDs on all nodes in default node pool(s) in the new cluster.
 
 Examples:
 
@@ -1392,7 +1395,7 @@ def AddLocalNvmeSSDBlockFlag(parser,
                              help_text=''):
   """Adds a --local-nvme-ssd-block flag to the given parser."""
   help_text += """\
-Adds the requested local SSDs on all nodes in default node pool(s) in new cluster.
+Adds the requested local SSDs on all nodes in default node pool(s) in the new cluster.
 
 Examples:
 
@@ -1431,7 +1434,7 @@ Examples:
 
 'local-ssd-count' specifies the number of local SSDs to use to back ephemeral
 storage. Local SDDs use NVMe interfaces and each is 375 GB in size.
-If 'local-ssd-count=0', it means to disable using local SSDs as ephemeral storage.
+Setting 'local-ssd-count=0' disables using local SSDs as ephemeral storage.
 
 See https://cloud.google.com/compute/docs/disks/local-ssd for more information.
 """.format('node-pool-1 --cluster=example cluster'
@@ -1460,7 +1463,7 @@ Examples:
 
 'count' specifies the number of local SSDs to use to back ephemeral
 storage. Local SDDs use NVMe interfaces and each is 375 GB in size.
-If 'count=0', it means to disable using local SSDs as ephemeral storage.
+Setting 'count=0' disables using local SSDs as ephemeral storage.
 
 See https://cloud.google.com/compute/docs/disks/local-ssd for more information.
 """.format('node-pool-1 --cluster=example cluster'
@@ -2886,7 +2889,8 @@ def AddAddonsFlagsWithOptions(parser, addon_options):
   """Adds the --addons flag to the parser with the given addon options."""
   visible_addon_options = [
       addon for addon in addon_options
-      if addon != api_adapter.APPLICATIONMANAGER]
+      if addon != api_adapter.APPLICATIONMANAGER
+  ]
   visible_addon_options += api_adapter.VISIBLE_CLOUDRUN_ADDONS
   parser.add_argument(
       '--addons',
@@ -3431,7 +3435,7 @@ def AddStackTypeFlag(parser, hidden=False):
     parser: A given parser.
     hidden: If true, suppress help text for added options.
   """
-  help_text = "IP stack type of the node VMs. Defaults to 'ipv4'"
+  help_text = 'IP stack type of the node VMs.'
   parser.add_argument(
       '--stack-type',
       hidden=hidden,

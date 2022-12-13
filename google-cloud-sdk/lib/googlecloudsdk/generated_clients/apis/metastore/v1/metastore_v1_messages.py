@@ -227,8 +227,8 @@ class Consumer(_messages.Message):
       endpoint. It is accessible to hosts in the subnet and to all hosts in a
       subnet in the same region and same network. There must be at least one
       IP address available in the subnet's primary range. The subnet is
-      specified in the following form:`projects/{project_number}/regions/{regi
-      on_id}/subnetworks/{subnetwork_id}
+      specified in the following form:projects/{project_number}/regions/{regio
+      n_id}/subnetworks/{subnetwork_id}
   """
 
   endpointUri = _messages.StringField(1)

@@ -27,11 +27,12 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 ## Helper functions to add args / flags for Active Directory gcloud commands ##
 
 
-def AddActiveDirectoryDomainArg(parser):
+def AddActiveDirectoryDomainArg(parser, required=True):
   """Adds a --domain arg to the given parser."""
   parser.add_argument(
       '--domain',
       type=str,
+      required=required,
       help="""The Active Directory domain."""
   )
 
@@ -110,6 +111,7 @@ def AddActiveDirectoryBackupOperatorsArg(parser):
   parser.add_argument(
       '--backup-operators',
       type=arg_parsers.ArgList(element_type=str),
+      metavar='BACKUP_OPERATOR',
       help="""Users to be added to the Built-in Backup Operator Active Directory group."""
   )
 
@@ -119,6 +121,7 @@ def AddActiveDirectorySecurityOperatorsArg(parser):
   parser.add_argument(
       '--security-operators',
       type=arg_parsers.ArgList(element_type=str),
+      metavar='SECURITY_OPERATOR',
       help="""Domain users to be given the Security privilege."""
   )
 
@@ -205,7 +208,7 @@ def AddActiveDirectoryDeleteArgs(parser):
   """Add args for deleting an Active Directory."""
   concept_parsers.ConceptParser([
       flags.GetActiveDirectoryPresentationSpec(
-          'The Active Directory to update.')
+          'The Active Directory to delete.')
   ]).AddToParser(parser)
   flags.AddResourceAsyncFlag(parser)
 
@@ -221,12 +224,12 @@ def AddActiveDirectoryUpdateArgs(parser):
   labels_util.AddUpdateLabelsFlags(parser)
   AddActiveDirectoryDomainArg(parser)
   AddActiveDirectorySiteArg(parser)
-  AddActiveDirectoryDnsArg(parser, required=False)
-  AddActiveDirectoryNetBiosArg(parser, required=False)
+  AddActiveDirectoryDnsArg(parser)
+  AddActiveDirectoryNetBiosArg(parser)
   AddActiveDirectoryOrganizationalUnitArg(parser)
   AddActiveDirectoryAesEncryptionArg(parser)
-  AddActiveDirectoryUsernameArg(parser, required=False)
-  AddActiveDirectoryPasswordArg(parser, required=False)
+  AddActiveDirectoryUsernameArg(parser)
+  AddActiveDirectoryPasswordArg(parser)
   AddActiveDirectoryBackupOperatorsArg(parser)
   AddActiveDirectorySecurityOperatorsArg(parser)
   AddActivevDirectoryKdcHostnameArg(parser)

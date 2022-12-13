@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib import memcache
-from googlecloudsdk.command_lib.memcache import instances_util
 
 
 def ChooseUpdateMethod(unused_ref, args):
@@ -34,60 +33,56 @@ def AddFieldToUpdateMask(update_mask, field):
     update_mask.append(field)
 
 
-def CreateUpdateRequest(ref, args):
-  """Returns an Update or UpdateParameters request depending on the args given."""
-  messages = memcache.Messages(ref.GetCollectionInfo().api_version)
-  mask = []
-  instance = messages.Instance()
-  maintenance_policy = _GetMaintenancePolicy(messages)
-  weekly_maintenance_window = messages.WeeklyMaintenanceWindow()
-  start_time = messages.TimeOfDay()
-  if args.IsSpecified('maintenance_window_day'):
-    AddFieldToUpdateMask(mask, 'maintenancePolicy')
-    weekly_maintenance_window.day = messages.WeeklyMaintenanceWindow.DayValueValuesEnum(
-        args.maintenance_window_day.upper())
-  if args.IsSpecified('maintenance_window_start_time'):
-    AddFieldToUpdateMask(mask, 'maintenancePolicy')
-    start_time.hours = instances_util.CheckMaintenanceWindowStartTimeField(
-        int(args.maintenance_window_start_time))
-    weekly_maintenance_window.startTime = start_time
-  if args.IsSpecified('maintenance_window_duration'):
-    AddFieldToUpdateMask(mask, 'maintenancePolicy')
-    weekly_maintenance_window.duration = instances_util.ConvertDurationToJsonFormat(
-        int(args.maintenance_window_duration))
-  if 'maintenancePolicy' in mask:
-    maintenance_policy.weeklyMaintenanceWindow = [weekly_maintenance_window]
-    instance.maintenancePolicy = maintenance_policy
-  if args.IsSpecified('maintenance_window_any'):
-    AddFieldToUpdateMask(mask, 'maintenancePolicy')
-    instance.maintenancePolicy = None
+def ModifyMaintenanceMask(unused_ref, args, req):
+  """Update patch mask for maintenancePolicy.
 
+  Args:
+    unused_ref: The field resource reference.
+    args: The parsed arg namespace.
+    req: The auto-generated patch request.
+  Returns:
+    FirestoreProjectsDatabasesCollectionGroupsFieldsPatchRequest
+  """
+  policy_is_updated = (
+      hasattr(req, 'instance') and
+      hasattr(req.instance, 'maintenancePolicy') and
+      req.instance.maintenancePolicy)
+
+  # By default the update mask has the full path that was update
+  # ie maintenancePolicy.weeklyMaintenanceWindow.day
+  if args.IsSpecified('maintenance_window_any') or policy_is_updated:
+    policy = 'maintenancePolicy'
+    mask = list(filter(
+        lambda m: m and policy not in m, req.updateMask.split(',')))
+    AddFieldToUpdateMask(mask, policy)
+    req.updateMask = ','.join(mask)
+
+  return req
+
+
+# TODO(b/261326299): This hook is needed because the modify_method_hook does not
+# determine the message until runtime. Update yaml translator to be able to map
+# args to api fields when there is a dynamic method
+def ModifyParams(ref, args, req):
+  """Update patch request to include parameters.
+
+  Args:
+    ref: The field resource reference.
+    args: The parsed arg namespace.
+    req: The auto-generated patch request.
+  Returns:
+    FirestoreProjectsDatabasesCollectionGroupsFieldsPatchRequest
+  """
   if args.IsSpecified('parameters'):
+    messages = memcache.Messages(ref.GetCollectionInfo().api_version)
     params = encoding.DictToMessage(args.parameters,
                                     messages.MemcacheParameters.ParamsValue)
     parameters = messages.MemcacheParameters(params=params)
     param_req = messages.UpdateParametersRequest(
         updateMask='params', parameters=parameters)
-    request = (
-        messages.MemcacheProjectsLocationsInstancesUpdateParametersRequest(
-            name=ref.RelativeName(), updateParametersRequest=param_req))
-  else:
-    if args.IsSpecified('display_name'):
-      AddFieldToUpdateMask(mask, 'displayName')
-      instance.displayName = args.display_name
-    if args.IsSpecified('node_count'):
-      AddFieldToUpdateMask(mask, 'nodeCount')
-      instance.nodeCount = args.node_count
-    if args.IsSpecified('labels'):
-      AddFieldToUpdateMask(mask, 'labels')
-      instance.labels = messages.Instance.LabelsValue(
-          additionalProperties=args.labels)
-    update_mask = ','.join(mask)
-    request = (
-        messages.MemcacheProjectsLocationsInstancesPatchRequest(
-            name=ref.RelativeName(), instance=instance, updateMask=update_mask))
+    req.updateParametersRequest = param_req
 
-  return request
+  return req
 
 
 def _GetMaintenancePolicy(message_module):

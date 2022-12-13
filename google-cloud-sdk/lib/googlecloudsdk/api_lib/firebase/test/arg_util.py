@@ -636,6 +636,19 @@ def AddIosBetaArgs(parser):
            'valid when *--type=game-loop* is also set.'
   )
 
+  # The following args are specific to iOS Robo tests.
+
+  parser.add_argument(
+      '--robo-script',
+      help="""\
+      The path to a Robo Script JSON file. The path may be in the local
+      filesystem or in Google Cloud Storage using gs:// notation. You can
+      guide the Robo test to perform specific actions by specifying a Robo
+      Script with this argument. Learn more at
+      https://firebase.google.com/docs/test-lab/robo-ux-test#scripting.
+      This flag is only valid when *--type=robo* is also set.
+      """)
+
 
 def AddMatrixArgs(parser):
   """Register the repeatable args which define the axes for a test matrix.

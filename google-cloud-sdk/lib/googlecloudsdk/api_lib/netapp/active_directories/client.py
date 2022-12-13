@@ -287,39 +287,39 @@ class AlphaActiveDirectoriesAdapter(object):
                                         description=None,
                                         labels=None):
     """Parses updates into an active directory config."""
-    if domain:
+    if domain is not None:
       activedirectory_config.domain = domain
-    if site:
+    if site is not None:
       activedirectory_config.site = site
-    if dns:
+    if dns is not None:
       activedirectory_config.dns = dns
-    if net_bios:
+    if net_bios is not None:
       activedirectory_config.netBios = net_bios
-    if organizational_unit:
+    if organizational_unit is not None:
       activedirectory_config.organizationalUnit = organizational_unit
-    if aes_encryption:
+    if aes_encryption is not None:
       activedirectory_config.aesEncryption = aes_encryption
-    if username:
+    if username is not None:
       activedirectory_config.username = username
-    if password:
+    if password is not None:
       activedirectory_config.password = password
-    if backup_operators:
+    if backup_operators is not None:
       activedirectory_config.backupOperators = backup_operators
-    if security_operators:
+    if security_operators is not None:
       activedirectory_config.securityOperators = security_operators
-    if kdc_hostname:
+    if kdc_hostname is not None:
       activedirectory_config.kdcHostname = kdc_hostname
-    if kdc_ip:
+    if kdc_ip is not None:
       activedirectory_config.kdcIp = kdc_ip
-    if nfs_users_with_ldap:
+    if nfs_users_with_ldap is not None:
       activedirectory_config.nfsUsersWithLdap = nfs_users_with_ldap
-    if ldap_signing:
+    if ldap_signing is not None:
       activedirectory_config.ldapSigning = ldap_signing
-    if encrypt_dc_connections:
+    if encrypt_dc_connections is not None:
       activedirectory_config.encryptDcConnections = encrypt_dc_connections
-    if description:
+    if description is not None:
       activedirectory_config.description = description
-    if labels:
+    if labels is not None:
       activedirectory_config.labels = labels
     return activedirectory_config
 

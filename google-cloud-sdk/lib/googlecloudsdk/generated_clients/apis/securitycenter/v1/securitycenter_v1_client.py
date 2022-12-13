@@ -179,7 +179,7 @@ class SecuritycenterV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a big query export.
+      r"""Creates a BigQuery export.
 
       Args:
         request: (SecuritycenterFoldersBigQueryExportsCreateRequest) input message
@@ -206,7 +206,7 @@ class SecuritycenterV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an existing big query export.
+      r"""Deletes an existing BigQuery export.
 
       Args:
         request: (SecuritycenterFoldersBigQueryExportsDeleteRequest) input message
@@ -233,7 +233,7 @@ class SecuritycenterV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a big query export.
+      r"""Gets a BigQuery export.
 
       Args:
         request: (SecuritycenterFoldersBigQueryExportsGetRequest) input message
@@ -1298,7 +1298,7 @@ class SecuritycenterV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a big query export.
+      r"""Creates a BigQuery export.
 
       Args:
         request: (SecuritycenterOrganizationsBigQueryExportsCreateRequest) input message
@@ -1325,7 +1325,7 @@ class SecuritycenterV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an existing big query export.
+      r"""Deletes an existing BigQuery export.
 
       Args:
         request: (SecuritycenterOrganizationsBigQueryExportsDeleteRequest) input message
@@ -1352,7 +1352,7 @@ class SecuritycenterV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a big query export.
+      r"""Gets a BigQuery export.
 
       Args:
         request: (SecuritycenterOrganizationsBigQueryExportsGetRequest) input message
@@ -2751,7 +2751,7 @@ class SecuritycenterV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a big query export.
+      r"""Creates a BigQuery export.
 
       Args:
         request: (SecuritycenterProjectsBigQueryExportsCreateRequest) input message
@@ -2778,7 +2778,7 @@ class SecuritycenterV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an existing big query export.
+      r"""Deletes an existing BigQuery export.
 
       Args:
         request: (SecuritycenterProjectsBigQueryExportsDeleteRequest) input message
@@ -2805,7 +2805,7 @@ class SecuritycenterV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a big query export.
+      r"""Gets a BigQuery export.
 
       Args:
         request: (SecuritycenterProjectsBigQueryExportsGetRequest) input message

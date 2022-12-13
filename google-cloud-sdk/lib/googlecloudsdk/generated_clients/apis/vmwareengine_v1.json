@@ -1534,6 +1534,18 @@
           "readOnly": true,
           "type": "string"
         },
+        "createTime": {
+          "description": "Output only. Creation time of this resource.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Last update time of this resource.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
         "state": {
           "description": "Output only. The state of the resource.",
           "readOnly": true,
@@ -1555,12 +1567,25 @@
             "FAILED"
           ]
         },
+        "description": {
+          "description": "User-provided description for this resource.",
+          "type": "string"
+        },
         "vpcNetwork": {
           "description": "Network to bind is a standard consumer VPC. Specify the name in the following form for consumer VPC network: `projects\/{project}\/global\/networks\/{network_id}`. `{project}` can either be a project number or a project ID.",
           "type": "string"
         },
         "vmwareEngineNetwork": {
           "description": "Network to bind is a VMware Engine network. Specify the name in the following form for VMware engine network: `projects\/{project}\/locations\/global\/vmwareEngineNetworks\/{vmware_engine_network_id}`. `{project}` can either be a project number or a project ID.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. System-generated unique identifier for the resource.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "etag": {
+          "description": "Checksum that may be sent on update and delete requests to ensure that the user-provided value is up to date before the server processes a request. The server computes checksums based on the value of other fields in the request.",
           "type": "string"
         }
       }
@@ -1682,6 +1707,144 @@
           "type": "array",
           "items": {
             "$ref": "VmwareEngineNetwork"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Unreachable resources.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PrivateConnection": {
+      "id": "PrivateConnection",
+      "description": "Private connection resource that provides connectivity for VMware Engine private clouds.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the private connection. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/privateConnections\/my-connection`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Creation time of this resource.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Last update time of this resource.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "description": {
+          "description": "Optional. User-provided description for this private connection.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. State of the private connection.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value is used if the state is omitted.",
+            "The private connection is being created.",
+            "The private connection is ready.",
+            "The private connection is being updated.",
+            "The private connection is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "UPDATING",
+            "DELETING"
+          ]
+        },
+        "importedRoutes": {
+          "description": "Output only. Imported routes of the private connection.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "PeeringRoute"
+          }
+        },
+        "exportedRoutes": {
+          "description": "Output only. Exported routes of the private connection.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "PeeringRoute"
+          }
+        },
+        "vmwareEngineNetwork": {
+          "description": "Required. The relative resource name of Legacy VMware Engine network. Specify the name in the following form: `projects\/{project}\/locations\/{location}\/vmwareEngineNetworks\/{vmware_engine_network_id}` where `{project}`, `{location}` will be same as specified in private connection resource name and `{vmware_engine_network_id}` will be in the form of `{location}`-default e.g. projects\/project\/locations\/us-west1\/vmwareEngineNetworks\/us-west1-default.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Required. Private connection type.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value should never be used.",
+            "Connection used for establishing [private services access](https:\/\/cloud.google.com\/vpc\/docs\/private-services-access).",
+            "Connection used for connecting to NetApp Cloud Volumes.",
+            "Connection used for connecting to Dell PowerScale.",
+            "Connection used for connecting to third-party services."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "PRIVATE_SERVICE_ACCESS",
+            "NETAPP_CLOUD_VOLUMES",
+            "DELL_POWERSCALE",
+            "THIRD_PARTY_SERVICE"
+          ]
+        },
+        "network": {
+          "description": "Required. Network to create private connection. Specify the name in the following form: `projects\/{project}\/global\/networks\/{network_id}` For type = PRIVATE_SERVICE_ACCESS, this field represents servicenetworking VPC, e.g. projects\/project-tp\/global\/networks\/servicenetworking. For type = NETAPP_CLOUD_VOLUME, this field represents NetApp service VPC, e.g. projects\/project-tp\/global\/networks\/netapp-tenant-vpc. For type = DELL_POWERSCALE, this field represent Dell service VPC, e.g. projects\/project-tp\/global\/networks\/dell-tenant-vpc. For type= THIRD_PARTY_SERVICE, this field could represent a consumer VPC or any other producer VPC to which the VMware Engine Network needs to be connected, e.g. projects\/project\/global\/networks\/vpc.",
+          "type": "string"
+        },
+        "peeringId": {
+          "description": "Output only. VPC network peering id between given network VPC and VMwareEngineNetwork.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "routingMode": {
+          "description": "Required. Routing Mode.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value should never be used.",
+            "Global Routing Mode",
+            "Regional Routing Mode"
+          ],
+          "enum": [
+            "ROUTING_MODE_UNSPECIFIED",
+            "GLOBAL",
+            "REGIONAL"
+          ]
+        },
+        "uid": {
+          "description": "Output only. System-generated unique identifier for the resource.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "ListPrivateConnectionsResponse": {
+      "id": "ListPrivateConnectionsResponse",
+      "description": "Response message for VmwareEngine.ListPrivateConnections",
+      "type": "object",
+      "properties": {
+        "privateConnections": {
+          "description": "A list of private connections.",
+          "type": "array",
+          "items": {
+            "$ref": "PrivateConnection"
           }
         },
         "nextPageToken": {
@@ -4327,6 +4490,188 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Lists `VmwareEngineNetwork` resources in a given project and location."
+                }
+              }
+            },
+            "privateConnections": {
+              "methods": {
+                "create": {
+                  "id": "vmwareengine.projects.locations.privateConnections.create",
+                  "path": "v1/{+parent}/privateConnections",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateConnections",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the location to create the new private connection in. Private connection is a regional resource. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "privateConnectionId": {
+                      "description": "Required. The user-provided identifier of the new private connection. This identifier must be unique among private connection resources within the parent and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034) (section 3.5)",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "PrivateConnection"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new private connection that can be used for accessing private Clouds."
+                },
+                "get": {
+                  "id": "vmwareengine.projects.locations.privateConnections.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateConnections/{privateConnectionsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the private connection to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/privateConnections\/my-connection`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "PrivateConnection"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Retrieves a `PrivateConnection` resource by its resource name. The resource contains details of the private connection, such as connected network, routing mode and state."
+                },
+                "list": {
+                  "id": "vmwareengine.projects.locations.privateConnections.list",
+                  "path": "v1/{+parent}/privateConnections",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateConnections",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the location to query for private connections. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of private connections to return in one page. The maximum value is coerced to 1000. The default value of this field is 500.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous `ListPrivateConnections` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListPrivateConnections` must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of private connections, you can exclude the ones named `example-connection` by specifying `name != \"example-connection\"`. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-connection\") (createTime > \"2022-09-22T08:15:10.40Z\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"example-connection-1\") AND (createTime > \"2021-04-12T08:15:10.40Z\") OR (name = \"example-connection-2\") ```",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Sorts list results by a certain order. By default, returned results are ordered by `name` in ascending order. You can also sort results in descending order based on the `name` value using `orderBy=\"name desc\"`. Currently, only ordering by `name` is supported.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListPrivateConnectionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists `PrivateConnection` resources in a given project and location."
+                },
+                "patch": {
+                  "id": "vmwareengine.projects.locations.privateConnections.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateConnections/{privateConnectionsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of the private connection. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/privateConnections\/my-connection`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the `PrivateConnection` resource by the update. The fields specified in the `update_mask` are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "PrivateConnection"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Modifies a `PrivateConnection` resource. Only `description` and `routing_mode` fields can be updated. Only fields specified in `updateMask` are applied."
+                },
+                "delete": {
+                  "id": "vmwareengine.projects.locations.privateConnections.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateConnections/{privateConnectionsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the private connection to be deleted. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/privateConnections\/my-connection`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a `PrivateConnection` resource. When a private connection is deleted for a VMware Engine network, the connected network becomes inaccessible to that VMware Engine network."
                 }
               }
             }

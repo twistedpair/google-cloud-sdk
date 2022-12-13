@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""""Helpers for making batch requests."""
+"""Helpers for making batch requests."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -23,6 +23,8 @@ import json
 from apitools.base.py import batch
 from apitools.base.py import exceptions
 
+from googlecloudsdk.api_lib.compute import operation_quota_utils
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import properties
 
@@ -117,9 +119,12 @@ def MakeRequests(requests, http, batch_url=None):
       if isinstance(response.exception, exceptions.HttpError):
         try:
           data = json.loads(response.exception.content)
-          error_message = (
-              response.exception.status_code,
-              data.get('error', {}).get('message'))
+          if utils.JsonErrorHasDetails(data):
+            error_message = (response.exception.status_code,
+                             BuildMessageForErrorWithDetails(data))
+          else:
+            error_message = (response.exception.status_code,
+                             data.get('error', {}).get('message'))
         except ValueError:
           pass
         if not error_message:
@@ -131,3 +136,11 @@ def MakeRequests(requests, http, batch_url=None):
       errors.append(error_message)
 
   return objects, errors
+
+
+def BuildMessageForErrorWithDetails(json_data):
+  if (operation_quota_utils.IsJsonOperationQuotaError(
+      json_data.get('error', {}))):
+    return operation_quota_utils.CreateOperationQuotaExceededMsg(json_data)
+  else:
+    return json_data.get('error', {}).get('message')

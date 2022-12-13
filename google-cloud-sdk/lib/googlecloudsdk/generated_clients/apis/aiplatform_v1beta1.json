@@ -646,6 +646,113 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1SearchDataItemsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1SearchDataItemsResponse",
+      "description": "Response message for DatasetService.SearchDataItems.",
+      "type": "object",
+      "properties": {
+        "dataItemViews": {
+          "description": "The DataItemViews read.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1DataItemView"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve next page of results. Pass to SearchDataItemsRequest.page_token to obtain that page.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1DataItemView": {
+      "id": "GoogleCloudAiplatformV1beta1DataItemView",
+      "description": "A container for a single DataItem and Annotations on it.",
+      "type": "object",
+      "properties": {
+        "dataItem": {
+          "description": "The DataItem.",
+          "$ref": "GoogleCloudAiplatformV1beta1DataItem"
+        },
+        "annotations": {
+          "description": "The Annotations on the DataItem. If too many Annotations should be returned for the DataItem, this field will be truncated per annotations_limit in request. If it was, then the has_truncated_annotations will be set to true.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1Annotation"
+          }
+        },
+        "hasTruncatedAnnotations": {
+          "description": "True if and only if the Annotations field has been truncated. It happens if more Annotations for this DataItem met the request's annotation_filter than are allowed to be returned by annotations_limit. Note that if Annotations field is not being returned due to field mask, then this field will not be set to true no matter how many Annotations are there.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1Annotation": {
+      "id": "GoogleCloudAiplatformV1beta1Annotation",
+      "description": "Used to assign specific AnnotationSpec to a particular area of a DataItem or the whole part of the DataItem.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the Annotation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "payloadSchemaUri": {
+          "description": "Required. Google Cloud Storage URI points to a YAML file describing payload. The schema is defined as an [OpenAPI 3.0.2 Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject). The schema files that can be used here are found in gs:\/\/google-cloud-aiplatform\/schema\/dataset\/annotation\/, note that the chosen schema must be consistent with the parent Dataset's metadata.",
+          "type": "string"
+        },
+        "payload": {
+          "description": "Required. The schema of the payload can be found in payload_schema.",
+          "type": "any"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this Annotation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when this Annotation was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "etag": {
+          "description": "Optional. Used to perform consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
+          "type": "string"
+        },
+        "annotationSource": {
+          "description": "Output only. The source of the Annotation.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1beta1UserActionReference"
+        },
+        "labels": {
+          "description": "Optional. The labels with user-defined metadata to organize your Annotations. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. No more than 64 user labels can be associated with one Annotation(System labels are excluded). See https:\/\/goo.gl\/xmQnxf for more information and examples of labels. System reserved label keys are prefixed with \"aiplatform.googleapis.com\/\" and are immutable. Following system labels exist for each Annotation: * \"aiplatform.googleapis.com\/annotation_set_name\": optional, name of the UI's annotation set this Annotation belongs to. If not set, the Annotation is not visible in the UI. * \"aiplatform.googleapis.com\/payload_schema\": output only, its value is the payload_schema's title.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1UserActionReference": {
+      "id": "GoogleCloudAiplatformV1beta1UserActionReference",
+      "description": "References an API call. It contains more information about long running operation and Jobs that are triggered by the API call.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "description": "For API calls that return a long running operation. Resource name of the long running operation. Format: `projects\/{project}\/locations\/{location}\/operations\/{operation}`",
+          "type": "string"
+        },
+        "dataLabelingJob": {
+          "description": "For API calls that start a LabelingJob. Resource name of the LabelingJob. Format: `projects\/{project}\/locations\/{location}\/dataLabelingJobs\/{data_labeling_job}`",
+          "type": "string"
+        },
+        "method": {
+          "description": "The method name of the API RPC call. For example, \"\/google.cloud.aiplatform.{apiVersion}.DatasetService.CreateDataset\"",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1ListSavedQueriesResponse": {
       "id": "GoogleCloudAiplatformV1beta1ListSavedQueriesResponse",
       "description": "Response message for DatasetService.ListSavedQueries.",
@@ -766,73 +873,6 @@
         },
         "nextPageToken": {
           "description": "The standard List next-page token.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1Annotation": {
-      "id": "GoogleCloudAiplatformV1beta1Annotation",
-      "description": "Used to assign specific AnnotationSpec to a particular area of a DataItem or the whole part of the DataItem.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. Resource name of the Annotation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "payloadSchemaUri": {
-          "description": "Required. Google Cloud Storage URI points to a YAML file describing payload. The schema is defined as an [OpenAPI 3.0.2 Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject). The schema files that can be used here are found in gs:\/\/google-cloud-aiplatform\/schema\/dataset\/annotation\/, note that the chosen schema must be consistent with the parent Dataset's metadata.",
-          "type": "string"
-        },
-        "payload": {
-          "description": "Required. The schema of the payload can be found in payload_schema.",
-          "type": "any"
-        },
-        "createTime": {
-          "description": "Output only. Timestamp when this Annotation was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Timestamp when this Annotation was last updated.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "etag": {
-          "description": "Optional. Used to perform consistent read-modify-write updates. If not set, a blind \"overwrite\" update happens.",
-          "type": "string"
-        },
-        "annotationSource": {
-          "description": "Output only. The source of the Annotation.",
-          "readOnly": true,
-          "$ref": "GoogleCloudAiplatformV1beta1UserActionReference"
-        },
-        "labels": {
-          "description": "Optional. The labels with user-defined metadata to organize your Annotations. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. No more than 64 user labels can be associated with one Annotation(System labels are excluded). See https:\/\/goo.gl\/xmQnxf for more information and examples of labels. System reserved label keys are prefixed with \"aiplatform.googleapis.com\/\" and are immutable. Following system labels exist for each Annotation: * \"aiplatform.googleapis.com\/annotation_set_name\": optional, name of the UI's annotation set this Annotation belongs to. If not set, the Annotation is not visible in the UI. * \"aiplatform.googleapis.com\/payload_schema\": output only, its value is the payload_schema's title.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1UserActionReference": {
-      "id": "GoogleCloudAiplatformV1beta1UserActionReference",
-      "description": "References an API call. It contains more information about long running operation and Jobs that are triggered by the API call.",
-      "type": "object",
-      "properties": {
-        "operation": {
-          "description": "For API calls that return a long running operation. Resource name of the long running operation. Format: `projects\/{project}\/locations\/{location}\/operations\/{operation}`",
-          "type": "string"
-        },
-        "dataLabelingJob": {
-          "description": "For API calls that start a LabelingJob. Resource name of the LabelingJob. Format: `projects\/{project}\/locations\/{location}\/dataLabelingJobs\/{data_labeling_job}`",
-          "type": "string"
-        },
-        "method": {
-          "description": "The method name of the API RPC call. For example, \"\/google.cloud.aiplatform.{apiVersion}.DatasetService.CreateDataset\"",
           "type": "string"
         }
       }
@@ -28969,7 +29009,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Field mask is used to specify the fields to be overwritten in the Featurestore resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `labels` * `online_serving_config.fixed_node_count` * `online_serving_config.scaling` * `online_storage_ttl_days`",
+                      "description": "Field mask is used to specify the fields to be overwritten in the Featurestore resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `labels` * `online_serving_config.fixed_node_count` * `online_serving_config.scaling` * `online_storage_ttl_days` (available in Preview)",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -29391,7 +29431,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Field mask is used to specify the fields to be overwritten in the EntityType resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `description` * `labels` * `monitoring_config.snapshot_analysis.disabled` * `monitoring_config.snapshot_analysis.monitoring_interval_days` * `monitoring_config.snapshot_analysis.staleness_days` * `monitoring_config.import_features_analysis.state` * `monitoring_config.import_features_analysis.anomaly_detection_baseline` * `monitoring_config.numerical_threshold_config.value` * `monitoring_config.categorical_threshold_config.value` * `offline_storage_ttl_days`",
+                          "description": "Field mask is used to specify the fields to be overwritten in the EntityType resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. Updatable fields: * `description` * `labels` * `monitoring_config.snapshot_analysis.disabled` * `monitoring_config.snapshot_analysis.monitoring_interval_days` * `monitoring_config.snapshot_analysis.staleness_days` * `monitoring_config.import_features_analysis.state` * `monitoring_config.import_features_analysis.anomaly_detection_baseline` * `monitoring_config.numerical_threshold_config.value` * `monitoring_config.categorical_threshold_config.value` * `offline_storage_ttl_days` (available in Preview)",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -31038,6 +31078,100 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Exports data from a Dataset."
+                },
+                "searchDataItems": {
+                  "id": "aiplatform.projects.locations.datasets.searchDataItems",
+                  "path": "v1beta1/{+dataset}:searchDataItems",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:searchDataItems",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "dataset": {
+                      "description": "Required. The resource name of the Dataset from which to search DataItems. Format: `projects\/{project}\/locations\/{location}\/datasets\/{dataset}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "orderByDataItem": {
+                      "description": "A comma-separated list of data item fields to order by, sorted in ascending order. Use \"desc\" after a field name for descending.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderByAnnotation.savedQuery": {
+                      "description": "Required. Saved query of the Annotation. Only Annotations belong to this saved query will be considered for ordering.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderByAnnotation.orderBy": {
+                      "description": "A comma-separated list of annotation fields to order by, sorted in ascending order. Use \"desc\" after a field name for descending. Must also specify saved_query.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "savedQuery": {
+                      "description": "The resource name of a SavedQuery(annotation set in UI). Format: `projects\/{project}\/locations\/{location}\/datasets\/{dataset}\/savedQueries\/{saved_query}` All of the search will be done in the context of this SavedQuery.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "dataLabelingJob": {
+                      "description": "The resource name of a DataLabelingJob. Format: `projects\/{project}\/locations\/{location}\/dataLabelingJobs\/{data_labeling_job}` If this field is set, all of the search will be done in the context of this DataLabelingJob.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "dataItemFilter": {
+                      "description": "An expression for filtering the DataItem that will be returned. * `data_item_id` - for = or !=. * `labeled` - for = or !=. * `has_annotation(ANNOTATION_SPEC_ID)` - true only for DataItem that have at least one annotation with annotation_spec_id = `ANNOTATION_SPEC_ID` in the context of SavedQuery or DataLabelingJob. For example: * `data_item=1` * `has_annotation(5)`",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "annotationsFilter": {
+                      "description": "An expression for filtering the Annotations that will be returned per DataItem. * `annotation_spec_id` - for = or !=.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "annotationFilters": {
+                      "description": "An expression that specifies what Annotations will be returned per DataItem. Annotations satisfied either of the conditions will be returned. * `annotation_spec_id` - for = or !=. Must specify `saved_query_id=` - saved query id that annotations should belong to.",
+                      "location": "query",
+                      "repeated": true,
+                      "type": "string"
+                    },
+                    "fieldMask": {
+                      "description": "Mask specifying which fields of DataItemView to read.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "annotationsLimit": {
+                      "description": "If set, only up to this many of Annotations will be returned per DataItemView. The maximum value is 1000. If not set, the maximum value will be used.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. Server may return fewer results than requested. Default and maximum page size is 100.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "orderBy": {
+                      "description": "A comma-separated list of fields to order by, sorted in ascending order. Use \"desc\" after a field name for descending.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results for the server to return Typically obtained via SearchDataItemsResponse.next_page_token of the previous DatasetService.SearchDataItems call.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "dataset"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1SearchDataItemsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Searches DataItems in a Dataset."
                 }
               }
               ,

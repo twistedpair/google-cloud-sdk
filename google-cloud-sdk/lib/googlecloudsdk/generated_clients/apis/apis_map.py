@@ -244,6 +244,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'alloydb': {
+        'v1':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.alloydb.v1',
+                    client_classpath='alloydb_v1_client.AlloydbV1',
+                    base_url='',
+                    messages_modulepath='alloydb_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -261,7 +271,7 @@ MAP = {
                     client_classpath='alloydb_v1beta_client.AlloydbV1beta',
                     base_url='https://alloydb.googleapis.com/',
                     messages_modulepath='alloydb_v1beta_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
@@ -1610,6 +1620,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'edgenetwork': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.edgenetwork.v1',
+                    client_classpath='edgenetwork_v1_client.EdgenetworkV1',
+                    base_url='https://edgenetwork.googleapis.com/',
+                    messages_modulepath='edgenetwork_v1_messages'),
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1618,7 +1638,7 @@ MAP = {
                     base_url='https://edgenetwork.googleapis.com/',
                     messages_modulepath='edgenetwork_v1alpha1_messages'),
                 default_version=True,
-                enable_mtls=True,
+                enable_mtls=False,
                 mtls_endpoint_override=''),
     },
     'essentialcontacts': {
@@ -2657,6 +2677,16 @@ MAP = {
                     client_classpath='policytroubleshooter_v2alpha1_client.PolicytroubleshooterV2alpha1',
                     base_url='https://policytroubleshooter.googleapis.com/',
                     messages_modulepath='policytroubleshooter_v2alpha1_messages'),
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v3alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.policytroubleshooter.v3alpha',
+                    client_classpath='policytroubleshooter_v3alpha_client.PolicytroubleshooterV3alpha',
+                    base_url='',
+                    messages_modulepath='policytroubleshooter_v3alpha_messages'),
                 default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),

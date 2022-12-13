@@ -140,11 +140,11 @@ Path of the YAML/JSON file that contains the node configs.
 Examples:
 
   nodeConfigs:
-  - nodeIp: 10.200.0.10
+  - nodeIP: 10.200.0.10
     labels:
       node1: label1
       node2: label2
-  - nodeIp: 10.200.0.11
+  - nodeIP: 10.200.0.11
     labels:
       node3: label3
       node4: label4
@@ -153,7 +153,7 @@ List of supported fields in `nodeConfigs`
 
 KEY           | VALUE                     | NOTE
 --------------|---------------------------|---------------------------
-nodeIp        | string                    | required, mutable
+nodeIP        | string                    | required, mutable
 labels        | one or more key-val pairs | optional, mutable
 
 """

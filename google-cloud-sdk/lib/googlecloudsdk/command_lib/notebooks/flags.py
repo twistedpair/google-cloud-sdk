@@ -361,6 +361,12 @@ def AddCreateInstanceFlags(parser):
   ]
   boot_disk_choices = ['PD_STANDARD', 'PD_SSD', 'PD_BALANCED']
   encryption_choices = ['GMEK', 'CMEK']
+  reservation_choices = [
+      'TYPE_UNSPECIFIED',
+      'NO_RESERVATION',
+      'ANY_RESERVATION',
+      'SPECIFIC_RESERVATION',
+  ]
   AddInstanceResource(parser)
   environment_group = parser.add_group(mutex=True, required=True)
   GetEnvironmentResourceArg((
@@ -507,6 +513,40 @@ def AddCreateInstanceFlags(parser):
       help='Custom metadata to apply to this instance.',
       type=arg_parsers.ArgDict(),
       metavar='KEY=VALUE')
+  parser.add_argument(
+      '--shielded-secure-boot',
+      help=('Boot instance with secure boot enabled. '
+            'Disabled by default.'),
+      dest='shielded_vm_secure_boot',
+      action='store_true',
+      default=False,
+  )
+  parser.add_argument(
+      '--shielded-vtpm',
+      help=('Boot instance with TPM (Trusted Platform Module) enabled.'),
+      dest='shielded_vm_vtpm',
+      action='store_true',
+      default=True,
+  )
+  parser.add_argument(
+      '--shielded-integrity-monitoring',
+      help=('Enable monitoring of the boot integrity of the instance.'),
+      dest='shielded_vm_integrity_monitoring',
+      action='store_true',
+      default=True,
+  )
+  reservation_group = parser.add_group(
+      help='Specifies the reservation for the instance.')
+  reservation_group.add_argument(
+      '--reservation-affinity',
+      choices=reservation_choices,
+      default='TYPE_UNSPECIFIED',
+      help='The type of reservation for the instance.',
+  )
+  reservation_group.add_argument(
+      '--reservation',
+      help=('The name of the reservation, required when '
+            '`--reservation-affinity=SPECIFIC_RESERVATION`.'))
 
 
 def AddDescribeInstanceFlags(parser):

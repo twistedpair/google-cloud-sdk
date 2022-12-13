@@ -42,6 +42,10 @@ class ForwardingRuleNotFound(exceptions.Error):
   """Either the forwarding rule doesn't exist, or multiple forwarding rules present with the same name - across different regions."""
 
 
+class UnsupportedLoadBalancingScheme(exceptions.Error):
+  """Unsupported load balancing scheme."""
+
+
 def _TryParseRRTypeFromString(type_str):
   """Tries to parse the rrtype wire value from the given string.
 
@@ -73,6 +77,8 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
     ForwardingRuleNotFound: Either the forwarding rule doesn't exist, or
       multiple forwarding rules present with the same name - across different
       regions.
+    UnsupportedLoadBalancingScheme: The requested load balancer uses a load
+      balancing scheme that is not supported by Cloud DNS Policy Manager.
 
   Returns:
     LoadBalancerTarget, the load balancer target for the given forwarding rule.
@@ -121,6 +127,13 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
     # https://www.googleapis.com/compute/v1/projects/project/regions/region
     load_balancer_target.region = region_url_split[
         region_url_split.index('regions') + 1]
+  # L4 ILB forwarding rules will specify loadBalancingScheme=INTERNAL and a
+  # backend service. We check for backendService to filter out L7ILBs that
+  # specify loadBalancingScheme=INTERNAL and a target.
+  if config.loadBalancingScheme != compute_messages.ForwardingRule.LoadBalancingSchemeValueValuesEnum(
+      'INTERNAL') or not config.backendService:
+    raise UnsupportedLoadBalancingScheme(
+        'Only Regional L4 forwarding rules are supported at this time.')
   load_balancer_target.ipAddress = config.IPAddress
   if config.IPProtocol == compute_messages.ForwardingRule.IPProtocolValueValuesEnum(
       'TCP'):

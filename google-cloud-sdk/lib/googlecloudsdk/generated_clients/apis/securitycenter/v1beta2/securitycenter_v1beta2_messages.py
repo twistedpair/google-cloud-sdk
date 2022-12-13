@@ -947,8 +947,8 @@ class Finding(_messages.Message):
       start with a letter and contain alphanumeric characters or underscores
       only.
     state: The state of the finding.
-    vulnerability: Represents vulnerability specific fields like cve, cvss
-      scores etc. CVE stands for Common Vulnerabilities and Exposures
+    vulnerability: Represents vulnerability-specific fields like CVE and CVS
+      scores. CVE stands for Common Vulnerabilities and Exposures
       (https://cve.mitre.org/about/)
   """
 
@@ -1334,10 +1334,10 @@ class GoogleCloudSecuritycenterV1ExternalSystem(_messages.Message):
       finding's ticket/tracker was updated in the external system.
     externalUid: Identifier that's used to track the given finding in the
       external system.
-    name: External System Name e.g. jira, demisto, etc. e.g.:
-      `organizations/1234/sources/5678/findings/123456/externalSystems/jira`
-      `folders/1234/sources/5678/findings/123456/externalSystems/jira`
-      `projects/1234/sources/5678/findings/123456/externalSystems/jira`
+    name: Full resource name of the external system, for example:
+      "organizations/1234/sources/5678/findings/123456/externalSystems/jira",
+      "folders/1234/sources/5678/findings/123456/externalSystems/jira",
+      "projects/1234/sources/5678/findings/123456/externalSystems/jira"
     status: Most recent status of the corresponding finding's ticket/tracker
       in the external system.
   """
@@ -1899,25 +1899,25 @@ class KernelRootkit(_messages.Message):
 
   Fields:
     name: Rootkit name when available.
-    unexpectedCodeModification: Flag indicating unexpected modifications of
-      kernel code memory.
-    unexpectedFtraceHandler: Flag indicating presence of ftrace points with
+    unexpectedCodeModification: True when unexpected modifications of kernel
+      read-only data memory are present.
+    unexpectedFtraceHandler: True when `ftrace` points are present with
       callbacks pointing to regions that are not in the expected kernel or
       module code range.
-    unexpectedInterruptHandler: Flag indicating presence of interrupt handlers
-      that are are not in the expected kernel, module code regions.
-    unexpectedKernelCodePages: Flag indicating presence of kernel code pages
-      that are not in the expected kernel, module code regions.
-    unexpectedKprobeHandler: Flag indicating presence of kprobe points with
+    unexpectedInterruptHandler: True when interrupt handlers that are are not
+      in the expected kernel or module code regions are present.
+    unexpectedKernelCodePages: True when kernel code pages that are not in the
+      expected kernel or module code regions are present.
+    unexpectedKprobeHandler: True when `kprobe` points are present with
       callbacks pointing to regions that are not in the expected kernel or
       module code range.
-    unexpectedProcessesInRunqueue: Flag indicating unexpected process(es) in
-      the scheduler run-queue, those that are in the run-queue, but not in the
-      process task-list.
+    unexpectedProcessesInRunqueue: True when unexpected processes in the
+      scheduler run queue are present. Such processes are in the run queue,
+      but not in the process task list.
     unexpectedReadOnlyDataModification: Flag indicating unexpected
       modifications of kernel read-only data memory.
-    unexpectedSystemCallHandler: Flag indicating presence of system call
-      handlers that are are not in the expected kernel, module code regions.
+    unexpectedSystemCallHandler: True when system call handlers that are are
+      not in the expected kernel or module code regions are present.
   """
 
   name = _messages.StringField(1)

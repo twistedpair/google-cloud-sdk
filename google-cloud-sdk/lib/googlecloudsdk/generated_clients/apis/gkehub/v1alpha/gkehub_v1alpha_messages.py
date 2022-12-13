@@ -626,6 +626,7 @@ class CommonFeatureSpec(_messages.Message):
     multiclusteringress: Multicluster Ingress-specific spec.
     rbacrolebindingactuation: RBAC Role Binding Actuation feature spec
     workloadcertificate: Workload Certificate spec.
+    workloadmigration: The specification for WorkloadMigration feature.
   """
 
   anthosobservability = _messages.MessageField('AnthosObservabilityFeatureSpec', 1)
@@ -636,6 +637,7 @@ class CommonFeatureSpec(_messages.Message):
   multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 6)
   rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 7)
   workloadcertificate = _messages.MessageField('FeatureSpec', 8)
+  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 9)
 
 
 class CommonFeatureState(_messages.Message):
@@ -6160,6 +6162,13 @@ class ValidationResult(_messages.Message):
   result = _messages.StringField(1)
   success = _messages.BooleanField(2)
   validator = _messages.EnumField('ValidatorValueValuesEnum', 3)
+
+
+class WorkloadMigrationFeatureSpec(_messages.Message):
+  r"""**WorkloadMigration**: The Hub-wide input for the WorkloadMigration
+  feature. This is currently empty, but is used to restrict API visibility.
+  """
+
 
 
 class Workspace(_messages.Message):

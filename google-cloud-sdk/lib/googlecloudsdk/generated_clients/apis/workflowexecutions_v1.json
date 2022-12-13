@@ -198,7 +198,7 @@
           "description": "The call logging level associated to this execution.",
           "type": "string",
           "enumDescriptions": [
-            "No call logging specified.",
+            "No call logging level specified.",
             "Log all call steps within workflows, all call returns, and all exceptions raised.",
             "Log only exceptions that are raised from call steps within workflows."
           ],

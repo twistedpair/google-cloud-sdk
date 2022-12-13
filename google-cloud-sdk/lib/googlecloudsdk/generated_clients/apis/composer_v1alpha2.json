@@ -1436,6 +1436,11 @@
           "description": "Optional. Storage (GB) request and limit for Airflow web server.",
           "type": "number",
           "format": "float"
+        },
+        "count": {
+          "description": "Optional. The number of web server instances. If not provided or set to 0, a single web server instance will be created.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

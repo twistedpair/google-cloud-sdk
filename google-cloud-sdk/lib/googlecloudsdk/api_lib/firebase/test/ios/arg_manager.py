@@ -56,7 +56,7 @@ def TypedArgRules():
       },
       'robo': {
           'required': ['app'],
-          'optional': ['test_special_entitlements'],
+          'optional': ['test_special_entitlements', 'robo_script'],
           'defaults': {
               'test_special_entitlements': False
           },

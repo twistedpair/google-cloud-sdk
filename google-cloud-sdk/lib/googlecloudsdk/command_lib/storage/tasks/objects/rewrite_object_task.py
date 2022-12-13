@@ -59,9 +59,9 @@ class RewriteObjectTask(task.Task):
     if existing_object_resource.kms_key:  # Existing CMEK.
       encryption_changing = existing_object_resource.kms_key != getattr(
           encryption_util.get_encryption_key(), 'key', None)
-    elif existing_object_resource.decryption_key_hash:  # Existing CSEK.
+    elif existing_object_resource.decryption_key_hash_sha256:  # Existing CSEK.
       encryption_changing = (
-          existing_object_resource.decryption_key_hash != getattr(
+          existing_object_resource.decryption_key_hash_sha256 != getattr(
               encryption_util.get_encryption_key(), 'sha256', None))
     else:  # No existing encryption.
       # Clear flag can still reset an object to bucket's default encryption.
@@ -87,7 +87,7 @@ class RewriteObjectTask(task.Task):
     if storage_class_changing and not encryption_changing:
       # Preserve current encryption.
       new_encryption_key = encryption_util.get_encryption_key(
-          existing_object_resource.decryption_key_hash,
+          existing_object_resource.decryption_key_hash_sha256,
           self._object_resource.storage_url)
     else:
       new_encryption_key = encryption_util.get_encryption_key()
@@ -95,7 +95,8 @@ class RewriteObjectTask(task.Task):
     request_config_with_encryption = request_config_factory.get_request_config(
         self._object_resource.storage_url,
         user_request_args=self._user_request_args,
-        decryption_key_hash=existing_object_resource.decryption_key_hash,
+        decryption_key_hash_sha256=existing_object_resource
+        .decryption_key_hash_sha256,
         encryption_key=new_encryption_key)
 
     api_client.copy_object(

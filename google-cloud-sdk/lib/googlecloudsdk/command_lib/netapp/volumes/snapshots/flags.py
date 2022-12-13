@@ -26,12 +26,11 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 ## Helper functions to add args / flags for Snapshots gcloud commands ##
 
 
-def AddSnapshotVolumeArg(parser, required=True):
+def AddSnapshotVolumeArg(parser):
   concept_parsers.ConceptParser.ForResource(
       '--volume',
       flags.GetVolumeResourceSpec(positional=False),
       'The Volume to take a Snapshot of.',
-      required=required,
       flag_name_overrides={'location': ''}).AddToParser(parser)
 
 

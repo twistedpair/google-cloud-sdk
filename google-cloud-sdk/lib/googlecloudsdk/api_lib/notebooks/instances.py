@@ -25,6 +25,8 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
+_RESERVATION_AFFINITY_KEY = 'compute.googleapis.com/reservation-name'
+
 
 def CreateInstance(args, client, messages):
   """Creates the Instance message for the create request.
@@ -141,6 +143,57 @@ def CreateInstance(args, client, messages):
       ])
     return None
 
+  def GetShieldedInstanceConfigFromArgs():
+    if not (args.IsSpecified('shielded_vm_secure_boot') or
+            args.IsSpecified('shielded_vm_vtpm') or
+            args.IsSpecified('shielded_vm_integrity_monitoring')):
+      return None
+    shielded_instance_config_message = messages.ShieldedInstanceConfig
+    return shielded_instance_config_message(
+        enableIntegrityMonitoring=args.shielded_vm_integrity_monitoring,
+        enableSecureBoot=args.shielded_vm_secure_boot,
+        enableVtpm=args.shielded_vm_vtpm,
+    )
+
+  # TODO(b/194714138): Consider adding validation for specific reservation.
+  def GetReservationAffinityConfigFromArgs():
+    if not (args.IsSpecified('reservation_affinity') or
+            args.IsSpecified('reservation')):
+      return None
+
+    def GetReservationAffinityEnum():
+      type_enum = None
+      if args.IsSpecified('reservation_affinity'):
+        reservation_affinity_message = messages.ReservationAffinity
+        type_enum = arg_utils.ChoiceEnumMapper(
+            arg_name='reservation-affinity',
+            message_enum=(reservation_affinity_message
+                          .ConsumeReservationTypeValueValuesEnum),
+            include_filter=lambda x: 'UNSPECIFIED' not in x).GetEnumForChoice(
+                arg_utils.EnumNameToChoice(args.reservation_affinity))
+      return type_enum
+
+    reservation_affinity_enum = GetReservationAffinityEnum()
+    reservation_key = None
+    reservation_values = []
+
+    if (reservation_affinity_enum == messages.ReservationAffinity
+        .ConsumeReservationTypeValueValuesEnum.SPECIFIC_RESERVATION):
+      # Currently, the key is fixed and the value is the name of the
+      # reservation.
+      # The value being a repeated field is reserved for future use when user
+      # can specify more than one reservation names from which the VM can take
+      # capacity from.
+      reservation_key = _RESERVATION_AFFINITY_KEY
+      reservation_values = [args.reservation]
+
+    reservation_config_message = messages.ReservationAffinity
+    return reservation_config_message(
+        consumeReservationType=reservation_affinity_enum,
+        key=reservation_key,
+        values=reservation_values,
+    )
+
   instance = messages.Instance(
       name=args.instance,
       postStartupScript=args.post_startup_script,
@@ -162,6 +215,8 @@ def CreateInstance(args, client, messages):
       labels=GetLabelsFromArgs(),
       metadata=GetMetadataFromArgs(),
       installGpuDriver=args.install_gpu_driver,
+      shieldedInstanceConfig=GetShieldedInstanceConfigFromArgs(),
+      reservationAffinity=GetReservationAffinityConfigFromArgs(),
   )
   return instance
 

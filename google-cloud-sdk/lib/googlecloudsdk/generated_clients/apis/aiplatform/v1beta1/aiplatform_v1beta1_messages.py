@@ -926,6 +926,70 @@ class AiplatformProjectsLocationsDatasetsSavedQueriesOperationsWaitRequest(_mess
   timeout = _messages.StringField(2)
 
 
+class AiplatformProjectsLocationsDatasetsSearchDataItemsRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsSearchDataItemsRequest object.
+
+  Fields:
+    annotationFilters: An expression that specifies what Annotations will be
+      returned per DataItem. Annotations satisfied either of the conditions
+      will be returned. * `annotation_spec_id` - for = or !=. Must specify
+      `saved_query_id=` - saved query id that annotations should belong to.
+    annotationsFilter: An expression for filtering the Annotations that will
+      be returned per DataItem. * `annotation_spec_id` - for = or !=.
+    annotationsLimit: If set, only up to this many of Annotations will be
+      returned per DataItemView. The maximum value is 1000. If not set, the
+      maximum value will be used.
+    dataItemFilter: An expression for filtering the DataItem that will be
+      returned. * `data_item_id` - for = or !=. * `labeled` - for = or !=. *
+      `has_annotation(ANNOTATION_SPEC_ID)` - true only for DataItem that have
+      at least one annotation with annotation_spec_id = `ANNOTATION_SPEC_ID`
+      in the context of SavedQuery or DataLabelingJob. For example: *
+      `data_item=1` * `has_annotation(5)`
+    dataLabelingJob: The resource name of a DataLabelingJob. Format: `projects
+      /{project}/locations/{location}/dataLabelingJobs/{data_labeling_job}` If
+      this field is set, all of the search will be done in the context of this
+      DataLabelingJob.
+    dataset: Required. The resource name of the Dataset from which to search
+      DataItems. Format:
+      `projects/{project}/locations/{location}/datasets/{dataset}`
+    fieldMask: Mask specifying which fields of DataItemView to read.
+    orderBy: A comma-separated list of fields to order by, sorted in ascending
+      order. Use "desc" after a field name for descending.
+    orderByAnnotation_orderBy: A comma-separated list of annotation fields to
+      order by, sorted in ascending order. Use "desc" after a field name for
+      descending. Must also specify saved_query.
+    orderByAnnotation_savedQuery: Required. Saved query of the Annotation.
+      Only Annotations belong to this saved query will be considered for
+      ordering.
+    orderByDataItem: A comma-separated list of data item fields to order by,
+      sorted in ascending order. Use "desc" after a field name for descending.
+    pageSize: Requested page size. Server may return fewer results than
+      requested. Default and maximum page size is 100.
+    pageToken: A token identifying a page of results for the server to return
+      Typically obtained via SearchDataItemsResponse.next_page_token of the
+      previous DatasetService.SearchDataItems call.
+    savedQuery: The resource name of a SavedQuery(annotation set in UI).
+      Format: `projects/{project}/locations/{location}/datasets/{dataset}/save
+      dQueries/{saved_query}` All of the search will be done in the context of
+      this SavedQuery.
+  """
+
+  annotationFilters = _messages.StringField(1, repeated=True)
+  annotationsFilter = _messages.StringField(2)
+  annotationsLimit = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  dataItemFilter = _messages.StringField(4)
+  dataLabelingJob = _messages.StringField(5)
+  dataset = _messages.StringField(6, required=True)
+  fieldMask = _messages.StringField(7)
+  orderBy = _messages.StringField(8)
+  orderByAnnotation_orderBy = _messages.StringField(9)
+  orderByAnnotation_savedQuery = _messages.StringField(10)
+  orderByDataItem = _messages.StringField(11)
+  pageSize = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(13)
+  savedQuery = _messages.StringField(14)
+
+
 class AiplatformProjectsLocationsDeploymentResourcePoolsCreateRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsDeploymentResourcePoolsCreateRequest
   object.
@@ -1909,7 +1973,7 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesPatchRequest(_messages.
       `monitoring_config.import_features_analysis.anomaly_detection_baseline`
       * `monitoring_config.numerical_threshold_config.value` *
       `monitoring_config.categorical_threshold_config.value` *
-      `offline_storage_ttl_days`
+      `offline_storage_ttl_days` (available in Preview)
   """
 
   googleCloudAiplatformV1beta1EntityType = _messages.MessageField('GoogleCloudAiplatformV1beta1EntityType', 1)
@@ -2158,7 +2222,8 @@ class AiplatformProjectsLocationsFeaturestoresPatchRequest(_messages.Message):
       mask then only the non-empty fields present in the request will be
       overwritten. Set the update_mask to `*` to override all fields.
       Updatable fields: * `labels` * `online_serving_config.fixed_node_count`
-      * `online_serving_config.scaling` * `online_storage_ttl_days`
+      * `online_serving_config.scaling` * `online_storage_ttl_days` (available
+      in Preview)
   """
 
   googleCloudAiplatformV1beta1Featurestore = _messages.MessageField('GoogleCloudAiplatformV1beta1Featurestore', 1)
@@ -24878,6 +24943,28 @@ class GoogleCloudAiplatformV1beta1DataItem(_messages.Message):
   updateTime = _messages.StringField(6)
 
 
+class GoogleCloudAiplatformV1beta1DataItemView(_messages.Message):
+  r"""A container for a single DataItem and Annotations on it.
+
+  Fields:
+    annotations: The Annotations on the DataItem. If too many Annotations
+      should be returned for the DataItem, this field will be truncated per
+      annotations_limit in request. If it was, then the
+      has_truncated_annotations will be set to true.
+    dataItem: The DataItem.
+    hasTruncatedAnnotations: True if and only if the Annotations field has
+      been truncated. It happens if more Annotations for this DataItem met the
+      request's annotation_filter than are allowed to be returned by
+      annotations_limit. Note that if Annotations field is not being returned
+      due to field mask, then this field will not be set to true no matter how
+      many Annotations are there.
+  """
+
+  annotations = _messages.MessageField('GoogleCloudAiplatformV1beta1Annotation', 1, repeated=True)
+  dataItem = _messages.MessageField('GoogleCloudAiplatformV1beta1DataItem', 2)
+  hasTruncatedAnnotations = _messages.BooleanField(3)
+
+
 class GoogleCloudAiplatformV1beta1DataLabelingJob(_messages.Message):
   r"""DataLabelingJob is used to trigger a human labeling job on unlabeled
   data from the following Dataset:
@@ -35089,6 +35176,19 @@ class GoogleCloudAiplatformV1beta1SchemaVisualInspectionMaskSavedQueryMetadata(_
   object.
   """
 
+
+
+class GoogleCloudAiplatformV1beta1SearchDataItemsResponse(_messages.Message):
+  r"""Response message for DatasetService.SearchDataItems.
+
+  Fields:
+    dataItemViews: The DataItemViews read.
+    nextPageToken: A token to retrieve next page of results. Pass to
+      SearchDataItemsRequest.page_token to obtain that page.
+  """
+
+  dataItemViews = _messages.MessageField('GoogleCloudAiplatformV1beta1DataItemView', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1SearchFeaturesResponse(_messages.Message):

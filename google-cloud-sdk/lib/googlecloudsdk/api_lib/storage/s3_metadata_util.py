@@ -282,7 +282,7 @@ def get_object_resource_from_s3_response(object_dict,
       content_encoding=object_dict.get('ContentEncoding'),
       content_language=object_dict.get('ContentLanguage'),
       content_type=object_dict.get('ContentType'),
-      custom_metadata=object_dict.get('Metadata'),
+      custom_fields=object_dict.get('Metadata'),
       encryption_algorithm=encryption_algorithm,
       etag=etag,
       kms_key=object_dict.get('SSEKMSKeyId'),
@@ -380,10 +380,10 @@ def update_object_metadata_dict_from_request_config(object_metadata,
 
   existing_metadata = object_metadata.get('Metadata', {})
 
-  custom_metadata_dict = metadata_util.get_updated_custom_metadata(
+  custom_fields_dict = metadata_util.get_updated_custom_fields(
       existing_metadata, request_config, file_path=file_path)
-  if custom_metadata_dict is not None:
-    object_metadata['Metadata'] = custom_metadata_dict
+  if custom_fields_dict is not None:
+    object_metadata['Metadata'] = custom_fields_dict
 
   if resource_args:
     _process_value_or_clear_flag(object_metadata, 'CacheControl',

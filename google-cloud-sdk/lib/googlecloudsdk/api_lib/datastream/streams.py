@@ -142,18 +142,23 @@ class StreamsClient:
 
     postgresql_sorce_config_data_object = postgresql_source_config_head_data.get(
         'postgresql_source_config')
-    postgresql_rdbms_data = postgresql_sorce_config_data_object if postgresql_sorce_config_data_object else postgresql_source_config_head_data
-    include_objects_raw = postgresql_rdbms_data.get('include_objects')
+    postgresql_source_config_data = postgresql_sorce_config_data_object if postgresql_sorce_config_data_object else postgresql_source_config_head_data
+    include_objects_raw = postgresql_source_config_data.get('include_objects')
     include_objects_data = util.ParsePostgresqlSchemasListToPostgresqlRdbmsMessage(
         self._messages, include_objects_raw)
 
-    exclude_objects_raw = postgresql_rdbms_data.get('exclude_objects')
+    exclude_objects_raw = postgresql_source_config_data.get('exclude_objects')
     exclude_objects_data = util.ParsePostgresqlSchemasListToPostgresqlRdbmsMessage(
         self._messages, exclude_objects_raw)
 
+    replication_slot = postgresql_source_config_data.get('replication_slot')
+    publication = postgresql_source_config_data.get('publication')
+
     postgresql_source_config_msg = self._messages.PostgresqlSourceConfig(
         includeObjects=include_objects_data,
-        excludeObjects=exclude_objects_data)
+        excludeObjects=exclude_objects_data,
+        replicationSlot=replication_slot,
+        publication=publication)
     return postgresql_source_config_msg
 
   def _ParseGcsDestinationConfig(self, gcs_destination_config_file):

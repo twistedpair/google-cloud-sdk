@@ -1,0 +1,903 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "policytroubleshooter:v3alpha",
+  "name": "policytroubleshooter",
+  "canonicalName": "Policy Troubleshooter",
+  "version": "v3alpha",
+  "revision": "0",
+  "title": "Policy Troubleshooter API",
+  "description": "",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/iam/",
+  "protocol": "rest",
+  "rootUrl": "https://policytroubleshooter.googleapis.com/",
+  "mtlsRootUrl": "https://policytroubleshooter.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://policytroubleshooter.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
+  "schemas": {
+    "GoogleCloudPolicytroubleshooterV3alphaTroubleshootIamPolicyRequest": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaTroubleshootIamPolicyRequest",
+      "description": "Request for TroubleshootIamPolicy.",
+      "type": "object",
+      "properties": {
+        "accessTuple": {
+          "description": "The information to use for checking whether a member has a permission for a resource.",
+          "$ref": "GoogleCloudPolicytroubleshooterV3alphaIamAccessTuple"
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaIamAccessTuple": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaIamAccessTuple",
+      "description": "Information about the member, resource, and permission to check.",
+      "type": "object",
+      "properties": {
+        "principal": {
+          "description": "Required. The member, or principal, whose access you want to check, in the form of the email address that represents that member. For example, `alice@example.com` or `my-service-account@my-project.iam.gserviceaccount.com`. The member must be a Google Account or a service account. Other types of members are not supported.",
+          "type": "string"
+        },
+        "fullResourceName": {
+          "description": "Required. The full resource name that identifies the resource. For example, `\/\/compute.googleapis.com\/projects\/my-project\/zones\/us-central1-a\/instances\/my-instance`. For examples of full resource names for Google Cloud services, see https:\/\/cloud.google.com\/iam\/help\/troubleshooter\/full-resource-names.",
+          "type": "string"
+        },
+        "permission": {
+          "description": "Required. The IAM permission to check for the specified member and resource. This field can be either permission or permission FQDN. For a complete list of IAM permissions, see https:\/\/cloud.google.com\/iam\/help\/permissions\/reference. For a complete list of predefined IAM roles and the permissions in each role, see https:\/\/cloud.google.com\/iam\/help\/roles\/reference. For a complete list of IAM permission FQDNs used in IAM v2, see https:\/\/cloud.google.com\/iam\/docs\/deny-permissions-support",
+          "type": "string"
+        },
+        "permissionFqdn": {
+          "description": "Output only. The FQDN of the IAM permission to check for the specified member and resource. For a complete list of IAM permission FQDNs used in IAM v2, see https:\/\/cloud.google.com\/iam\/docs\/deny-permissions-support",
+          "readOnly": true,
+          "type": "string"
+        },
+        "conditionContext": {
+          "description": "Optional. The Cloud IAM condition context under which defines the kind of access being explained. TroubleshootIamPolicy would explain if and why the principal has the queried permission on the resource specified in full_resource_name under this context",
+          "$ref": "GoogleCloudPolicytroubleshooterV3alphaIamConditionContext"
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaIamConditionContext": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaIamConditionContext",
+      "description": "Represents the attributes that will be used to do IAM condition evaluation.",
+      "type": "object",
+      "properties": {
+        "resource": {
+          "description": "Represents a target resource that is involved with a network activity. If multiple resources are involved with an activity, this must be the primary one.",
+          "$ref": "GoogleCloudPolicytroubleshooterV3alphaIamConditionContextResource"
+        },
+        "destination": {
+          "description": "The destination of a network activity, such as accepting a TCP connection. In a multi hop network activity, the destination represents the receiver of the last hop.",
+          "$ref": "GoogleCloudPolicytroubleshooterV3alphaIamConditionContextPeer"
+        },
+        "request": {
+          "description": "Represents a network request, such as an HTTP request.",
+          "$ref": "GoogleCloudPolicytroubleshooterV3alphaIamConditionContextRequest"
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaIamConditionContextResource": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaIamConditionContextResource",
+      "description": "This message defines core attributes for a resource. A resource is an addressable (named) entity provided by the destination service. For example, a file stored on a network storage service.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "The name of the service that this resource belongs to, such as `pubsub.googleapis.com`. The service may be different from the DNS hostname that actually serves the request.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The stable identifier (name) of a resource on the `service`. A resource can be logically identified as \"\/\/{resource.service}\/{resource.name}\". The differences between a resource name and a URI are: * Resource name is a logical identifier, independent of network protocol and API version. For example, `\/\/pubsub.googleapis.com\/projects\/123\/topics\/news-feed`. * URI often includes protocol and version information, so it can be used directly by applications. For example, `https:\/\/pubsub.googleapis.com\/v1\/projects\/123\/topics\/news-feed`. See https:\/\/google.aip.dev\/122 for details.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of the resource. The syntax is platform-specific because different platforms define their resources differently. For Google APIs, the type format must be \"{service}\/{kind}\".",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaIamConditionContextPeer": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaIamConditionContextPeer",
+      "description": "This message defines attributes for a node that handles a network request. The node can be either a service or an application that sends, forwards, or receives the request. Service peers should fill in `principal` and `labels` as appropriate.",
+      "type": "object",
+      "properties": {
+        "ip": {
+          "description": "The IPv4 or IPv6 address of the peer.",
+          "type": "string"
+        },
+        "port": {
+          "description": "The network port of the peer.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaIamConditionContextRequest": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaIamConditionContextRequest",
+      "description": "This message defines attributes for an HTTP request. If the actual request is not an HTTP request, the runtime system should try to map the actual request to an equivalent HTTP request.",
+      "type": "object",
+      "properties": {
+        "receiveTime": {
+          "description": "Optional. The timestamp when the `destination` service receives the first byte of the request.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "satisfiedAccessLevels": {
+          "description": "Optional. The information for access levels that are satisfied for the given access tuple. This field is google internal and can only be used by pantheon",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unsatisfiedAccessLevels": {
+          "description": "Optional. The information for access levels that are unsatisfied for the given access tuple. This field is google internal and can only be used by pantheon",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaTroubleshootIamPolicyResponse": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaTroubleshootIamPolicyResponse",
+      "description": "Response for TroubleshootIamPolicy.",
+      "type": "object",
+      "properties": {
+        "overallAccessState": {
+          "description": "Indicates whether the member has the specified permission for the specified resource, based on evaluating all types of the applicable IAM policies.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The principal has the access.",
+            "The principal does not have the access.",
+            "The principal might have the access but it is unknown. The reason for unknown can be: 1. The sender lacks access to information needed to get a certain access state. 2. The sender did not provide required condition context which is required to get a certain access state."
+          ],
+          "enum": [
+            "OVERALL_ACCESS_STATE_UNSPECIFIED",
+            "CAN_ACCESS",
+            "CANNOT_ACCESS",
+            "UNKNOWN"
+          ]
+        },
+        "accessTuple": {
+          "description": "The access tuples with evaluation information of both IAM v1 and v2.",
+          "$ref": "GoogleCloudPolicytroubleshooterV3alphaIamAccessTuple"
+        },
+        "allowPolicyExplanation": {
+          "description": "The explanation of IAM Allow policies with annotations to indicated how each policy contributed to the final result.",
+          "$ref": "GoogleCloudPolicytroubleshooterV3alphaIamAllowPolicyExplanation"
+        },
+        "denyPolicyExplanation": {
+          "description": "The explanation of IAM Allow policies with annotations to indicated how each policy contributed to the final result.",
+          "$ref": "GoogleCloudPolicytroubleshooterV3alphaIamDenyPolicyExplanation"
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaIamAllowPolicyExplanation": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaIamAllowPolicyExplanation",
+      "description": "Details about how IAM allow policies contributed to the access check.",
+      "type": "object",
+      "properties": {
+        "allowAccessState": {
+          "description": "Indicates whether the member has the specified permission for the specified resource, based on evaluating all applicable IAM allow policies.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "Access is granted.",
+            "Access is not granted.",
+            "Access is allowed only if a condition expression evaluates to `true`.",
+            "The sender of the request does not have access to all of the policies that Policy Troubleshooter needs to evaluate."
+          ],
+          "enum": [
+            "ALLOW_ACCESS_STATE_UNSPECIFIED",
+            "ALLOW_ACCESS_STATE_GRANTED",
+            "ALLOW_ACCESS_STATE_NOT_GRANTED",
+            "ALLOW_ACCESS_STATE_UNKNOWN_CONDITIONAL",
+            "ALLOW_ACCESS_STATE_UNKNOWN_INFO"
+          ]
+        },
+        "explainedPolicies": {
+          "description": "List of IAM allow policies that were evaluated to check the member's permissions, with annotations to indicate how each policy contributed to the final result. The list of policies can include the policy for the resource itself. It can also include policies that are inherited from higher levels of the resource hierarchy, including the organization, the folder, and the project. To learn more about the resource hierarchy, see https:\/\/cloud.google.com\/iam\/help\/resource-hierarchy.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudPolicytroubleshooterV3alphaExplainedAllowPolicy"
+          }
+        },
+        "relevance": {
+          "description": "The relevance of the allow policy type to the overall access state.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The data point has a limited effect on the result. Changing the data point is unlikely to affect the overall determination.",
+            "The data point has a strong effect on the result. Changing the data point is likely to affect the overall determination."
+          ],
+          "enum": [
+            "HEURISTIC_RELEVANCE_UNSPECIFIED",
+            "HEURISTIC_RELEVANCE_NORMAL",
+            "HEURISTIC_RELEVANCE_HIGH"
+          ]
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaExplainedAllowPolicy": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaExplainedAllowPolicy",
+      "description": "Details about how a specific IAM Policy contributed to the access check.",
+      "type": "object",
+      "properties": {
+        "allowAccessState": {
+          "description": "Required. Indicates whether _this policy_ provides the specified permission to the specified member for the specified resource. This field does _not_ indicate whether the member actually has the permission for the resource. There might be another policy that overrides this policy. To determine whether the member actually has the permission, use the `access` field in the TroubleshootIamPolicyResponse.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "Access is granted.",
+            "Access is not granted.",
+            "Access is allowed only if a condition expression evaluates to `true`.",
+            "The sender of the request does not have access to all of the policies that Policy Troubleshooter needs to evaluate."
+          ],
+          "enum": [
+            "ALLOW_ACCESS_STATE_UNSPECIFIED",
+            "ALLOW_ACCESS_STATE_GRANTED",
+            "ALLOW_ACCESS_STATE_NOT_GRANTED",
+            "ALLOW_ACCESS_STATE_UNKNOWN_CONDITIONAL",
+            "ALLOW_ACCESS_STATE_UNKNOWN_INFO"
+          ]
+        },
+        "fullResourceName": {
+          "description": "The full resource name that identifies the resource. For example, `\/\/compute.googleapis.com\/projects\/my-project\/zones\/us-central1-a\/instances\/my-instance`. If the sender of the request does not have access to the policy, this field is omitted. For examples of full resource names for Google Cloud services, see https:\/\/cloud.google.com\/iam\/help\/troubleshooter\/full-resource-names.",
+          "type": "string"
+        },
+        "bindingExplanations": {
+          "description": "Details about how each binding in the policy affects the member's ability, or inability, to use the permission for the resource. If the sender of the request does not have access to the policy, this field is omitted.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudPolicytroubleshooterV3alphaAllowBindingExplanation"
+          }
+        },
+        "relevance": {
+          "description": "The relevance of this policy to the overall determination in the TroubleshootIamPolicyResponse. If the sender of the request does not have access to the policy, this field is omitted.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The data point has a limited effect on the result. Changing the data point is unlikely to affect the overall determination.",
+            "The data point has a strong effect on the result. Changing the data point is likely to affect the overall determination."
+          ],
+          "enum": [
+            "HEURISTIC_RELEVANCE_UNSPECIFIED",
+            "HEURISTIC_RELEVANCE_NORMAL",
+            "HEURISTIC_RELEVANCE_HIGH"
+          ]
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaAllowBindingExplanation": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaAllowBindingExplanation",
+      "description": "Details about how a binding in an allow policy affects a member's ability to use a permission.",
+      "type": "object",
+      "properties": {
+        "allowAccessState": {
+          "description": "Required. Indicates whether _this binding_ provides the specified permission to the specified member for the specified resource. This field does _not_ indicate whether the member actually has the permission for the resource. There might be another binding that overrides this binding. To determine whether the member actually has the permission, use the `access` field in the TroubleshootIamPolicyResponse.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "Access is granted.",
+            "Access is not granted.",
+            "Access is allowed only if a condition expression evaluates to `true`.",
+            "The sender of the request does not have access to all of the policies that Policy Troubleshooter needs to evaluate."
+          ],
+          "enum": [
+            "ALLOW_ACCESS_STATE_UNSPECIFIED",
+            "ALLOW_ACCESS_STATE_GRANTED",
+            "ALLOW_ACCESS_STATE_NOT_GRANTED",
+            "ALLOW_ACCESS_STATE_UNKNOWN_CONDITIONAL",
+            "ALLOW_ACCESS_STATE_UNKNOWN_INFO"
+          ]
+        },
+        "role": {
+          "description": "The role that this binding grants. For example, `roles\/compute.serviceAgent`. For a complete list of predefined IAM roles, as well as the permissions in each role, see https:\/\/cloud.google.com\/iam\/help\/roles\/reference.",
+          "type": "string"
+        },
+        "rolePermission": {
+          "description": "Indicates whether the role granted by this binding contains the specified permission.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The permission is included in the role.",
+            "The permission is not included in the role.",
+            "The sender of the request is not allowed to access the binding."
+          ],
+          "enum": [
+            "ROLE_PERMISSION_INCLUSION_STATE_UNSPECIFIED",
+            "ROLE_PERMISSION_INCLUDED",
+            "ROLE_PERMISSION_NOT_INCLUDED",
+            "ROLE_PERMISSION_UNKNOWN_INFO"
+          ]
+        },
+        "rolePermissionRelevance": {
+          "description": "The relevance of the permission's existence, or nonexistence, in the role to the overall determination for the entire policy.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The data point has a limited effect on the result. Changing the data point is unlikely to affect the overall determination.",
+            "The data point has a strong effect on the result. Changing the data point is likely to affect the overall determination."
+          ],
+          "enum": [
+            "HEURISTIC_RELEVANCE_UNSPECIFIED",
+            "HEURISTIC_RELEVANCE_NORMAL",
+            "HEURISTIC_RELEVANCE_HIGH"
+          ]
+        },
+        "combinedMembership": {
+          "description": "The combined result of all memberships. Indicates if there is any member in the binding includes the principal specified in the request, either directly or indirectly.",
+          "$ref": "GoogleCloudPolicytroubleshooterV3alphaAllowBindingExplanationAnnotatedAllowMembership"
+        },
+        "memberships": {
+          "description": "Indicates whether each member in the binding includes the member specified in the request, either directly or indirectly. Each key identifies a member in the binding, and each value indicates whether the member in the binding includes the member in the request. For example, suppose that a binding includes the following members: * `user:alice@example.com` * `group:product-eng@example.com` You want to troubleshoot access for `user:bob@example.com`. This user is a member of the group `group:product-eng@example.com`. For the first member in the binding, the key is `user:alice@example.com`, and the `membership` field in the value is set to `NOT_INCLUDED`. For the second member in the binding, the key is `group:product-eng@example.com`, and the `membership` field in the value is set to `INCLUDED`.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudPolicytroubleshooterV3alphaAllowBindingExplanationAnnotatedAllowMembership"
+          }
+        },
+        "relevance": {
+          "description": "The relevance of this binding to the overall determination for the entire policy.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The data point has a limited effect on the result. Changing the data point is unlikely to affect the overall determination.",
+            "The data point has a strong effect on the result. Changing the data point is likely to affect the overall determination."
+          ],
+          "enum": [
+            "HEURISTIC_RELEVANCE_UNSPECIFIED",
+            "HEURISTIC_RELEVANCE_NORMAL",
+            "HEURISTIC_RELEVANCE_HIGH"
+          ]
+        },
+        "condition": {
+          "description": "A condition expression that prevents access unless the expression evaluates to `true`. To learn about IAM Conditions, see https:\/\/cloud.google.com\/iam\/help\/conditions\/overview.",
+          "$ref": "GoogleTypeExpr"
+        },
+        "conditionExplanation": {
+          "description": "Condition evaluation state for this binding.",
+          "$ref": "GoogleCloudPolicytroubleshooterV3alphaIamConditionExplanation"
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaAllowBindingExplanationAnnotatedAllowMembership": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaAllowBindingExplanationAnnotatedAllowMembership",
+      "description": "Details about whether the binding includes the member.",
+      "type": "object",
+      "properties": {
+        "membership": {
+          "description": "Indicates whether the binding includes the member.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The principal matches the member. The member can be included directly or indirectly. For example: * A member is included directly if that member is listed in the binding. * A member is included indirectly if that member is in a Google group or G Suite domain that is listed in the binding.",
+            "The binding does not match the member.",
+            "The sender of the request is not allowed to access the binding.",
+            "The member is an unsupported type."
+          ],
+          "enum": [
+            "MEMBERSHIP_MATCHING_STATE_UNSPECIFIED",
+            "MEMBERSHIP_MATCHED",
+            "MEMBERSHIP_NOT_MATCHED",
+            "MEMBERSHIP_UNKNOWN_INFO",
+            "MEMBERSHIP_UNKNOWN_UNSUPPORTED"
+          ]
+        },
+        "relevance": {
+          "description": "The relevance of the member's status to the overall determination for the binding.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The data point has a limited effect on the result. Changing the data point is unlikely to affect the overall determination.",
+            "The data point has a strong effect on the result. Changing the data point is likely to affect the overall determination."
+          ],
+          "enum": [
+            "HEURISTIC_RELEVANCE_UNSPECIFIED",
+            "HEURISTIC_RELEVANCE_NORMAL",
+            "HEURISTIC_RELEVANCE_HIGH"
+          ]
+        }
+      }
+    },
+    "GoogleTypeExpr": {
+      "id": "GoogleTypeExpr",
+      "description": "Represents a textual expression in the Common Expression Language (CEL) syntax. CEL is a C-like expression language. The syntax and semantics of CEL are documented at https:\/\/github.com\/google\/cel-spec. Example (Comparison): title: \"Summary size limit\" description: \"Determines if a summary is less than 100 chars\" expression: \"document.summary.size() < 100\" Example (Equality): title: \"Requestor is owner\" description: \"Determines if requestor is the document owner\" expression: \"document.owner == request.auth.claims.email\" Example (Logic): title: \"Public documents\" description: \"Determine whether the document should be publicly visible\" expression: \"document.type != 'private' && document.type != 'internal'\" Example (Data Manipulation): title: \"Notification string\" description: \"Create a notification string with a timestamp.\" expression: \"'New message received at ' + string(document.create_time)\" The exact variables and functions that may be referenced within an expression are determined by the service that evaluates it. See the service documentation for additional information.",
+      "type": "object",
+      "properties": {
+        "expression": {
+          "description": "Textual representation of an expression in Common Expression Language syntax.",
+          "type": "string"
+        },
+        "title": {
+          "description": "Optional. Title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. Description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.",
+          "type": "string"
+        },
+        "location": {
+          "description": "Optional. String indicating the location of the expression for error reporting, e.g. a file name and a position in the file.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaIamConditionExplanation": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaIamConditionExplanation",
+      "description": "Condition Explanation",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "Value of the condition",
+          "type": "any"
+        },
+        "evaluationStates": {
+          "description": "List of evaluated states of non boolean expression in the condition",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudPolicytroubleshooterV3alphaIamConditionExplanationEvaluationState"
+          }
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaIamConditionExplanationEvaluationState": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaIamConditionExplanationEvaluationState",
+      "description": "Evaluated state of an expression",
+      "type": "object",
+      "properties": {
+        "start": {
+          "description": "Start position of an expression in the original condition, by character",
+          "type": "integer",
+          "format": "int32"
+        },
+        "end": {
+          "description": "End position of an expression in the original condition, by character, end included, for example: the end position of the first part of \"a==b || c==d\" would be 4",
+          "type": "integer",
+          "format": "int32"
+        },
+        "value": {
+          "description": "Value of this expression",
+          "type": "any"
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaIamDenyPolicyExplanation": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaIamDenyPolicyExplanation",
+      "description": "Details about how IAM deny policies contributed to the access check.",
+      "type": "object",
+      "properties": {
+        "denyAccessState": {
+          "description": "Indicates whether the member is denied for the specified permission for the specified resource, based on evaluating all applicable IAM deny policies.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "Access is denied.",
+            "Access is not denied.",
+            "Access is denied only if a condition expression evaluates to `true`.",
+            "The sender of the request does not have access to all of the deny policies that Policy Troubleshooter needs to evaluate."
+          ],
+          "enum": [
+            "DENY_ACCESS_STATE_UNSPECIFIED",
+            "DENY_ACCESS_STATE_DENIED",
+            "DENY_ACCESS_STATE_NOT_DENIED",
+            "DENY_ACCESS_STATE_UNKNOWN_CONDITIONAL",
+            "DENY_ACCESS_STATE_UNKNOWN_INFO"
+          ]
+        },
+        "explainedResources": {
+          "description": "List of resources with IAM deny policies that were evaluated to check the member's denied permissions, with annotations to indicate how each policy contributed to the final result. The list of resources can include the policy for the resource itself. It can also include policies that are inherited from higher levels of the resource hierarchy, including the organization, the folder, and the project. To learn more about the resource hierarchy, see https:\/\/cloud.google.com\/iam\/help\/resource-hierarchy.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudPolicytroubleshooterV3alphaExplainedDenyResource"
+          }
+        },
+        "relevance": {
+          "description": "The relevance of the deny policy type to the overall access state.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The data point has a limited effect on the result. Changing the data point is unlikely to affect the overall determination.",
+            "The data point has a strong effect on the result. Changing the data point is likely to affect the overall determination."
+          ],
+          "enum": [
+            "HEURISTIC_RELEVANCE_UNSPECIFIED",
+            "HEURISTIC_RELEVANCE_NORMAL",
+            "HEURISTIC_RELEVANCE_HIGH"
+          ]
+        },
+        "permissionDeniable": {
+          "description": "Indicates whether the permission to troubleshoot supports deny.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaExplainedDenyResource": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaExplainedDenyResource",
+      "description": "Details about how a specific resource contributed to the deny access check.",
+      "type": "object",
+      "properties": {
+        "denyAccessState": {
+          "description": "Required. Indicates whether any policies attached to _this resource_ deny the specific permission to the specified member for the specified resource. This field does _not_ indicate whether the member actually has the permission for the resource. There might be another policy that overrides this policy. To determine whether the member actually has the permission, use the `access` field in the TroubleshootIamPolicyResponse.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "Access is denied.",
+            "Access is not denied.",
+            "Access is denied only if a condition expression evaluates to `true`.",
+            "The sender of the request does not have access to all of the deny policies that Policy Troubleshooter needs to evaluate."
+          ],
+          "enum": [
+            "DENY_ACCESS_STATE_UNSPECIFIED",
+            "DENY_ACCESS_STATE_DENIED",
+            "DENY_ACCESS_STATE_NOT_DENIED",
+            "DENY_ACCESS_STATE_UNKNOWN_CONDITIONAL",
+            "DENY_ACCESS_STATE_UNKNOWN_INFO"
+          ]
+        },
+        "fullResourceName": {
+          "description": "The full resource name that identifies the resource. For example, `\/\/compute.googleapis.com\/projects\/my-project\/zones\/us-central1-a\/instances\/my-instance`. If the sender of the request does not have access to the policy, this field is omitted. For examples of full resource names for Google Cloud services, see https:\/\/cloud.google.com\/iam\/help\/troubleshooter\/full-resource-names.",
+          "type": "string"
+        },
+        "explainedPolicies": {
+          "description": "List of IAM deny policies that were evaluated to check the member's denied permissions, with annotations to indicate how each policy contributed to the final result.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudPolicytroubleshooterV3alphaExplainedDenyPolicy"
+          }
+        },
+        "relevance": {
+          "description": "The relevance of this policy to the overall determination in the TroubleshootIamPolicyResponse. If the sender of the request does not have access to the policy, this field is omitted.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The data point has a limited effect on the result. Changing the data point is unlikely to affect the overall determination.",
+            "The data point has a strong effect on the result. Changing the data point is likely to affect the overall determination."
+          ],
+          "enum": [
+            "HEURISTIC_RELEVANCE_UNSPECIFIED",
+            "HEURISTIC_RELEVANCE_NORMAL",
+            "HEURISTIC_RELEVANCE_HIGH"
+          ]
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaExplainedDenyPolicy": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaExplainedDenyPolicy",
+      "description": "Details about how a specific IAM deny policy Policy contributed to the access check.",
+      "type": "object",
+      "properties": {
+        "denyAccessState": {
+          "description": "Required. Indicates whether _this policy_ denies the specified permission to the specified member for the specified resource. This field does _not_ indicate whether the member actually has the permission for the resource. There might be another policy that overrides this policy. To determine whether the member actually has the permission, use the `access` field in the TroubleshootIamPolicyResponse.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "Access is denied.",
+            "Access is not denied.",
+            "Access is denied only if a condition expression evaluates to `true`.",
+            "The sender of the request does not have access to all of the deny policies that Policy Troubleshooter needs to evaluate."
+          ],
+          "enum": [
+            "DENY_ACCESS_STATE_UNSPECIFIED",
+            "DENY_ACCESS_STATE_DENIED",
+            "DENY_ACCESS_STATE_NOT_DENIED",
+            "DENY_ACCESS_STATE_UNKNOWN_CONDITIONAL",
+            "DENY_ACCESS_STATE_UNKNOWN_INFO"
+          ]
+        },
+        "policy": {
+          "description": "Name of the IAM deny policy attached to the resource. The resource name of [google.iam.v2.Policy], which must be unique. Format: `policies\/{attachment_point}\/denypolicies\/{policy_id}` The attachment point is identified by its URL-encoded full resource name, which means that the forward-slash character, `\/`, must be written as `%2F`. For example, `policies\/cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-project\/denypolicies\/my-deny-policy`. For organizations and folders, use the numeric ID in the full resource name. For projects, requests can use the alphanumeric or the numeric ID. Responses always contain the numeric ID.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Display name of the IAM deny policy.",
+          "type": "string"
+        },
+        "ruleExplanations": {
+          "description": "Details about how each rule in the policy affects the member's inability to use the permission for the resource. If the sender of the request does not have access to the policy, this field is omitted.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanation"
+          }
+        },
+        "relevance": {
+          "description": "The relevance of this policy to the overall determination in the TroubleshootIamPolicyResponse. If the sender of the request does not have access to the policy, this field is omitted.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The data point has a limited effect on the result. Changing the data point is unlikely to affect the overall determination.",
+            "The data point has a strong effect on the result. Changing the data point is likely to affect the overall determination."
+          ],
+          "enum": [
+            "HEURISTIC_RELEVANCE_UNSPECIFIED",
+            "HEURISTIC_RELEVANCE_NORMAL",
+            "HEURISTIC_RELEVANCE_HIGH"
+          ]
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanation": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanation",
+      "description": "Details about how a deny rule in a deny policy affects a member's ability to use a permission.",
+      "type": "object",
+      "properties": {
+        "denyAccessState": {
+          "description": "Required. Indicates whether _this rule_ denies the specified permission to the specified member for the specified resource. This field does _not_ indicate whether the member is actually denied on the permission for the resource. There might be another rule that overrides this rule. To determine whether the member actually has the permission, use the `access` field in the TroubleshootIamPolicyResponse.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "Access is denied.",
+            "Access is not denied.",
+            "Access is denied only if a condition expression evaluates to `true`.",
+            "The sender of the request does not have access to all of the deny policies that Policy Troubleshooter needs to evaluate."
+          ],
+          "enum": [
+            "DENY_ACCESS_STATE_UNSPECIFIED",
+            "DENY_ACCESS_STATE_DENIED",
+            "DENY_ACCESS_STATE_NOT_DENIED",
+            "DENY_ACCESS_STATE_UNKNOWN_CONDITIONAL",
+            "DENY_ACCESS_STATE_UNKNOWN_INFO"
+          ]
+        },
+        "combinedDeniedPermission": {
+          "description": "Indicates whether the permission matches any denied permission pattern.",
+          "$ref": "GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedPermissionMatching"
+        },
+        "deniedPermissions": {
+          "description": "Indicates whether the permission matches each denied permission pattern. Each key identifies a denied permission in the rule, and each value indicates whether the denied permission matches the permission in the request.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedPermissionMatching"
+          }
+        },
+        "combinedExceptionPermission": {
+          "description": "Indicates whether the permission matches any exception permission pattern.",
+          "$ref": "GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedPermissionMatching"
+        },
+        "exceptionPermissions": {
+          "description": "Indicates whether the permission matches each exception permission pattern. Each key identifies a exception permission in the rule, and each value indicates whether the exception permission matches the permission in the request.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedPermissionMatching"
+          }
+        },
+        "combinedDeniedPrincipal": {
+          "description": "Indicates whether the principal matches any denied principal pattern.",
+          "$ref": "GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedDenyPrincipalMatching"
+        },
+        "deniedPrincipals": {
+          "description": "Indicates whether the principal matches each denied principals. Each key identifies a denied principal in the rule, and each value indicates whether the denied principal matches the principal in the request.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedDenyPrincipalMatching"
+          }
+        },
+        "combinedExceptionPrincipal": {
+          "description": "Indicates whether the principal matches any exception principal pattern.",
+          "$ref": "GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedDenyPrincipalMatching"
+        },
+        "exceptionPrincipals": {
+          "description": "Indicates whether the principal matches each exception principal pattern. Each key identifies a exception principal in the rule, and each value indicates whether the exception principal matches the principal in the request.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedDenyPrincipalMatching"
+          }
+        },
+        "relevance": {
+          "description": "The relevance of this binding to the overall determination for the entire policy.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The data point has a limited effect on the result. Changing the data point is unlikely to affect the overall determination.",
+            "The data point has a strong effect on the result. Changing the data point is likely to affect the overall determination."
+          ],
+          "enum": [
+            "HEURISTIC_RELEVANCE_UNSPECIFIED",
+            "HEURISTIC_RELEVANCE_NORMAL",
+            "HEURISTIC_RELEVANCE_HIGH"
+          ]
+        },
+        "condition": {
+          "description": "A condition expression that prevents access unless the expression evaluates to `true`. To learn about IAM Conditions, see https:\/\/cloud.google.com\/iam\/help\/conditions\/overview.",
+          "$ref": "GoogleTypeExpr"
+        },
+        "conditionExplanation": {
+          "description": "Condition evaluation state for this binding.",
+          "$ref": "GoogleCloudPolicytroubleshooterV3alphaIamConditionExplanation"
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedPermissionMatching": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedPermissionMatching",
+      "description": "Details about whether the permission matches the permission pattern.",
+      "type": "object",
+      "properties": {
+        "permissionMatchingState": {
+          "description": "Indicates whether the permission matches the permission pattern.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The permission matches the permission pattern.",
+            "The permission does not match the permission pattern.."
+          ],
+          "enum": [
+            "PERMISSION_PATTERN_MATCHING_STATE_UNSPECIFIED",
+            "PERMISSION_PATTERN_MATCHED",
+            "PERMISSION_PATTERN_NOT_MATCHED"
+          ]
+        },
+        "relevance": {
+          "description": "The relevance of the permission status to the overall determination for the rule.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The data point has a limited effect on the result. Changing the data point is unlikely to affect the overall determination.",
+            "The data point has a strong effect on the result. Changing the data point is likely to affect the overall determination."
+          ],
+          "enum": [
+            "HEURISTIC_RELEVANCE_UNSPECIFIED",
+            "HEURISTIC_RELEVANCE_NORMAL",
+            "HEURISTIC_RELEVANCE_HIGH"
+          ]
+        }
+      }
+    },
+    "GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedDenyPrincipalMatching": {
+      "id": "GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedDenyPrincipalMatching",
+      "description": "Details about whether the principal matches the principal set.",
+      "type": "object",
+      "properties": {
+        "membership": {
+          "description": "Indicates whether the principal is matched.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The principal matches the member. The member can be included directly or indirectly. For example: * A member is included directly if that member is listed in the binding. * A member is included indirectly if that member is in a Google group or G Suite domain that is listed in the binding.",
+            "The binding does not match the member.",
+            "The sender of the request is not allowed to access the binding.",
+            "The member is an unsupported type."
+          ],
+          "enum": [
+            "MEMBERSHIP_MATCHING_STATE_UNSPECIFIED",
+            "MEMBERSHIP_MATCHED",
+            "MEMBERSHIP_NOT_MATCHED",
+            "MEMBERSHIP_UNKNOWN_INFO",
+            "MEMBERSHIP_UNKNOWN_UNSUPPORTED"
+          ]
+        },
+        "relevance": {
+          "description": "The relevance of the member's status to the overall determination for the binding.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The data point has a limited effect on the result. Changing the data point is unlikely to affect the overall determination.",
+            "The data point has a strong effect on the result. Changing the data point is likely to affect the overall determination."
+          ],
+          "enum": [
+            "HEURISTIC_RELEVANCE_UNSPECIFIED",
+            "HEURISTIC_RELEVANCE_NORMAL",
+            "HEURISTIC_RELEVANCE_HIGH"
+          ]
+        }
+      }
+    }
+  },
+  "resources": {
+    "iam": {
+      "methods": {
+        "troubleshoot": {
+          "id": "policytroubleshooter.iam.troubleshoot",
+          "path": "v3alpha/iam:troubleshoot",
+          "flatPath": "v3alpha/iam:troubleshoot",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "GoogleCloudPolicytroubleshooterV3alphaTroubleshootIamPolicyRequest"
+          },
+          "response": {
+            "$ref": "GoogleCloudPolicytroubleshooterV3alphaTroubleshootIamPolicyResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Checks whether a member has a specific permission for a specific resource, and explains why the member does or does not have that permission."
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

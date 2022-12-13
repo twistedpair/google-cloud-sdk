@@ -1953,15 +1953,18 @@ class WebServerResource(_messages.Message):
   r"""Configuration for resources used by Airflow web server.
 
   Fields:
+    count: Optional. The number of web server instances. If not provided or
+      set to 0, a single web server instance will be created.
     cpu: Optional. CPU request and limit for Airflow web server.
     memoryGb: Optional. Memory (GB) request and limit for Airflow web server.
     storageGb: Optional. Storage (GB) request and limit for Airflow web
       server.
   """
 
-  cpu = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  memoryGb = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  storageGb = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  cpu = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  memoryGb = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  storageGb = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class WorkerResource(_messages.Message):

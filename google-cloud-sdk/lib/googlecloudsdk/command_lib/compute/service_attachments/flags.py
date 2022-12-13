@@ -111,6 +111,22 @@ def AddConsumerRejectList(parser):
       """)
 
 
+def AddConsumerRejectListAlpha(parser):
+  parser.add_argument(
+      '--consumer-reject-list',
+      type=arg_parsers.ArgList(),
+      metavar='REJECT_LIST',
+      default=None,
+      help="""\
+      Specifies a comma separated list of projects or networks that are not
+      allowed to connect to this service attachment. The project can be
+      specified using its project ID or project number and the network can be
+      specified using its URL. A given service attachment can manage connections
+      at either the project or network level. Therefore, both the reject and
+      accept lists for a given service attachment must contain either only
+      projects or only networks.""")
+
+
 def AddConsumerAcceptList(parser):
   parser.add_argument(
       '--consumer-accept-list',
@@ -128,6 +144,30 @@ def AddConsumerAcceptList(parser):
       * `PROJECT_ID_OR_NUM` - Consumer project id or number.
       * `CONNECTION_LIMIT` - The max number of allowed connections.
       """)
+
+
+def AddConsumerAcceptListAlpha(parser):
+  parser.add_argument(
+      '--consumer-accept-list',
+      type=arg_parsers.ArgDict(),
+      action='append',
+      metavar='PROJECT_OR_NETWORK=LIMIT',
+      default=None,
+      help="""\
+    Specifies which consumer projects or networks are allowed to connect to the
+    service attachment. Each project or network has a connection limit. A given
+    service attachment can manage connections at either the project or network
+    level. Therefore, both the accept and reject lists for a given service
+    attachment must contain either only projects or only networks.
+
+    For example, `--consumer-accept-list myProjectId1=20` accepts a consumer
+    project myProjectId1 with connection limit 20;
+    `--consumer-accept-list projects/myProjectId1/global/networks/myNet1=20`
+    accepts a consumer network myNet1 with connection limit 20
+
+    * `PROJECT_OR_NETWORK` - Consumer project ID, project number or network URL.
+    * `CONNECTION_LIMIT` - The maximum number of allowed connections.
+    """)
 
 
 def ServiceAttachmentArgument(required=True, plural=False):

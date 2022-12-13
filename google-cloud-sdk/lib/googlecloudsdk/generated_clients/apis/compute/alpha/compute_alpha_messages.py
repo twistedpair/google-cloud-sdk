@@ -8,7 +8,6 @@ from __future__ import absolute_import
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
-from apitools.base.py import extra_types
 
 
 package = 'compute'
@@ -37424,13 +37423,14 @@ class ForwardingRule(_messages.Message):
       regional forwarding rules, this target must be in the same region as the
       forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
-      appropriate to the target object. For more information, see the "Target"
+      appropriate to the target object. - For load balancers, see the "Target"
       column in [Port specifications](https://cloud.google.com/load-
-      balancing/docs/forwarding-rule-concepts#ip_address_specifications). For
-      Private Service Connect forwarding rules that forward traffic to Google
-      APIs, provide the name of a supported Google API bundle: - vpc-sc - APIs
-      that support VPC Service Controls. - all-apis - All supported Google
-      APIs.
+      balancing/docs/forwarding-rule-concepts#ip_address_specifications). -
+      For Private Service Connect forwarding rules that forward traffic to
+      Google APIs, provide the name of a supported Google API bundle: - vpc-sc
+      - APIs that support VPC Service Controls. - all-apis - All supported
+      Google APIs. - For Private Service Connect forwarding rules that forward
+      traffic to managed services, the target must be a service attachment.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -58757,8 +58757,6 @@ class Operation(_messages.Message):
   Messages:
     ErrorValue: [Output Only] If errors are generated during processing of the
       operation, this field will be populated.
-    MetadataValue: [Output Only] Service-specific metadata attached to this
-      operation.
     WarningsValueListEntry: A WarningsValueListEntry object.
 
   Fields:
@@ -58782,8 +58780,6 @@ class Operation(_messages.Message):
       value is in RFC3339 text format.
     kind: [Output Only] Type of the resource. Always `compute#operation` for
       Operation resources.
-    metadata: [Output Only] Service-specific metadata attached to this
-      operation.
     name: [Output Only] Name of the operation.
     operationGroupId: [Output Only] An ID that represents a group of
       operations, such as when a group of operations results from a
@@ -58883,31 +58879,6 @@ class Operation(_messages.Message):
       message = _messages.StringField(4)
 
     errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MetadataValue(_messages.Message):
-    r"""[Output Only] Service-specific metadata attached to this operation.
-
-    Messages:
-      AdditionalProperty: An additional property for a MetadataValue object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a MetadataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   class WarningsValueListEntry(_messages.Message):
     r"""A WarningsValueListEntry object.
@@ -59049,22 +59020,21 @@ class Operation(_messages.Message):
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
   insertTime = _messages.StringField(9)
   kind = _messages.StringField(10, default='compute#operation')
-  metadata = _messages.MessageField('MetadataValue', 11)
-  name = _messages.StringField(12)
-  operationGroupId = _messages.StringField(13)
-  operationType = _messages.StringField(14)
-  progress = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  region = _messages.StringField(16)
-  selfLink = _messages.StringField(17)
-  selfLinkWithId = _messages.StringField(18)
-  startTime = _messages.StringField(19)
-  status = _messages.EnumField('StatusValueValuesEnum', 20)
-  statusMessage = _messages.StringField(21)
-  targetId = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(23)
-  user = _messages.StringField(24)
-  warnings = _messages.MessageField('WarningsValueListEntry', 25, repeated=True)
-  zone = _messages.StringField(26)
+  name = _messages.StringField(11)
+  operationGroupId = _messages.StringField(12)
+  operationType = _messages.StringField(13)
+  progress = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  region = _messages.StringField(15)
+  selfLink = _messages.StringField(16)
+  selfLinkWithId = _messages.StringField(17)
+  startTime = _messages.StringField(18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  statusMessage = _messages.StringField(20)
+  targetId = _messages.IntegerField(21, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(22)
+  user = _messages.StringField(23)
+  warnings = _messages.MessageField('WarningsValueListEntry', 24, repeated=True)
+  zone = _messages.StringField(25)
 
 
 class OperationAggregatedList(_messages.Message):

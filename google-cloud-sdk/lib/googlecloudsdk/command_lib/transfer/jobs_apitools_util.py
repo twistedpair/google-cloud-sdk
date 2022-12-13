@@ -307,18 +307,44 @@ def _create_or_modify_transfer_spec(job, args, messages):
   _create_or_modify_transfer_options(job.transferSpec, args, messages)
 
 
-def _create_or_modify_schedule(job, args, messages, is_update):
+def _create_or_modify_event_stream_configuration(job, args, messages):
+  """Creates or modifies event stream config. Returns if flag present."""
+  event_stream_name = getattr(args, 'event_stream_name', None)
+  event_stream_start = getattr(args, 'event_stream_starts', None)
+  event_stream_expire = getattr(args, 'event_stream_expires', None)
+  if not (event_stream_name or event_stream_start or event_stream_expire):
+    # Nothing needs modification.
+    return False
+
+  if not job.eventStream:
+    job.eventStream = messages.EventStream()
+  job.eventStream.name = event_stream_name
+  job.eventStream.eventStreamStartTime = event_stream_start
+  job.eventStream.eventStreamExpirationTime = event_stream_expire
+  return True
+
+
+def _create_or_modify_schedule(job, args, messages, is_update,
+                               has_event_stream_flag):
   """Creates or modifies transfer Schedule object based on args."""
   schedule_starts = getattr(args, 'schedule_starts', None)
   schedule_repeats_every = getattr(args, 'schedule_repeats_every', None)
   schedule_repeats_until = getattr(args, 'schedule_repeats_until', None)
-  if not is_update and args.do_not_run:
-    if (schedule_starts or schedule_repeats_every or schedule_repeats_until):
+  has_schedule_flag = (
+      schedule_starts or schedule_repeats_every or schedule_repeats_until)
+
+  if has_schedule_flag:
+    if not is_update and args.do_not_run:
       raise ValueError('Cannot set schedule and do-not-run flag.')
-    return
-  if is_update and not (schedule_starts or schedule_repeats_every or
-                        schedule_repeats_until):
-    # Nothing needs modification.
+    if has_event_stream_flag:
+      raise ValueError('Cannot set schedule and event stream.')
+
+  if (not is_update and
+      args.do_not_run) or has_event_stream_flag or (is_update and
+                                                    not has_schedule_flag):
+    # (1) Cannot have schedule for non-running job.
+    # (2) Cannot have schedule and event stream.
+    # (3) Nothing needs updating.
     return
   if not job.schedule:
     job.schedule = messages.Schedule()
@@ -518,7 +544,14 @@ def generate_transfer_job_message(args, messages, existing_job=None):
     job.status = messages.TransferJob.StatusValueValuesEnum.ENABLED
 
   _create_or_modify_transfer_spec(job, args, messages)
-  _create_or_modify_schedule(job, args, messages, is_update=bool(existing_job))
+  has_event_stream_flag = _create_or_modify_event_stream_configuration(
+      job, args, messages)
+  _create_or_modify_schedule(
+      job,
+      args,
+      messages,
+      is_update=bool(existing_job),
+      has_event_stream_flag=has_event_stream_flag)
   _create_or_modify_notification_config(
       job, args, messages, is_update=bool(existing_job))
   _create_or_modify_logging_config(job, args, messages)

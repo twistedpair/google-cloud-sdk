@@ -839,6 +839,10 @@
         "fleetobservability": {
           "description": "FleetObservability feature spec.",
           "$ref": "FleetObservabilityFeatureSpec"
+        },
+        "workloadmigration": {
+          "description": "The specification for WorkloadMigration feature.",
+          "$ref": "WorkloadMigrationFeatureSpec"
         }
       }
     },
@@ -1068,6 +1072,13 @@
     "FleetObservabilityFeatureSpec": {
       "id": "FleetObservabilityFeatureSpec",
       "description": "**Fleet Observability**: The Hub-wide input for the FleetObservability feature.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "WorkloadMigrationFeatureSpec": {
+      "id": "WorkloadMigrationFeatureSpec",
+      "description": "**WorkloadMigration**: The Hub-wide input for the WorkloadMigration feature. This is currently empty, but is used to restrict API visibility.",
       "type": "object",
       "properties": {
       }

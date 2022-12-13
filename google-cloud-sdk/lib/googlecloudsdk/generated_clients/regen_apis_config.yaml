@@ -103,6 +103,8 @@ apis:
       discovery_doc: alloydb_v1alpha.json
     v1beta:
       discovery_doc: alloydb_v1beta.json
+    v1:
+      discovery_doc: alloydb_v1.json
       default: true
   anthosevents:
     v1:
@@ -422,6 +424,8 @@ apis:
           path: projects/{project}/regions/{region}/machineTypes/{machineType}
         nextHopGateways:
           path: projects/{project}/global/gateways/{nextHopGateway}
+        regionSecurityPolicyRules:
+          path: projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
         securityPolicyRules:
           path: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
     beta:
@@ -638,8 +642,13 @@ apis:
       enable_mtls: false
       default: true
   edgenetwork:
+    v1:
+      discovery_doc: edgenetwork_v1.json
+      enable_mtls: false
     v1alpha1:
       discovery_doc: edgenetwork_v1alpha1.json
+      enable_mtls: false
+      default: true
   essentialcontacts:
     v1alpha1:
       discovery_doc: essentialcontacts_v1alpha1.json
@@ -1005,6 +1014,12 @@ apis:
         iam:
           path: iam
       discovery_doc: policytroubleshooter_v2alpha1.json
+    v3alpha:
+      enable_mtls: false
+      resources:
+        iam:
+          path: iam
+      discovery_doc: policytroubleshooter_v3alpha.json
   policyanalyzer:
     v1:
       discovery_doc: policyanalyzer_v1.json

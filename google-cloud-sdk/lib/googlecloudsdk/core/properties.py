@@ -1107,6 +1107,7 @@ class _SectionApiEndpointOverrides(_Section):
         'assuredworkloads', command='gcloud assured')
     self.baremetalsolution = self._Add(
         'baremetalsolution', command='gcloud bms')
+    self.batch = self._Add('batch', command='gcloud batch', hidden=True)
     self.bigtableadmin = self._Add('bigtableadmin', command='gcloud bigtable')
     self.binaryauthorization = self._Add(
         'binaryauthorization', command='gcloud container binauthz', hidden=True)
@@ -1746,6 +1747,11 @@ class _SectionCompute(_Section):
         default=False,
         help_text='Bool that indicates if we should use new websocket.',
         hidden=True)
+    self.force_batch_request = self._AddBool(
+        'force_batch_request',
+        default=False,
+        help_text='Bool that force all requests are sent as batch request',
+        hidden=True)
 
 
 class _SectionContainer(_Section):
@@ -2104,6 +2110,13 @@ class _SectionCore(_Section):
         default=False,
         help_text='If True, `gcloud` will not store logs to a file. This may '
         'be useful if disk space is limited.')
+
+    self.parse_error_details = self._Add(
+        'parse_error_details',
+        help_text='If True, `gcloud` will attempt to parse and interpret '
+        'error details in API originating errors. If False, `gcloud` will '
+        ' write flush error details as is to stderr/log.',
+        default=False)
 
     self.custom_ca_certs_file = self._Add(
         'custom_ca_certs_file',
@@ -3420,7 +3433,8 @@ class _Property(object):
   """An individual property that can be gotten from the properties file.
 
   Attributes:
-    section: str, The name of the section the property appears in in the file.
+    section: str, The name of the section the property appears in, within the
+      file.
     name: str, The name of the property.
     help_text: str, The man page help for what this property does.
     is_hidden: bool, True to hide this property from display for users that
@@ -3543,7 +3557,7 @@ class _Property(object):
   def GetOrFail(self):
     """Shortcut for Get(required=True).
 
-    Convinient as a callback function.
+    Convenient as a callback function.
 
     Returns:
       str, The value for this property.

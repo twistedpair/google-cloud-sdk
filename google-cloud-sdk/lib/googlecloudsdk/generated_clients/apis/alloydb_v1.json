@@ -1,0 +1,2299 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "alloydb:v1",
+  "name": "alloydb",
+  "canonicalName": "Cloud AlloyDB Admin",
+  "version": "v1",
+  "revision": "0",
+  "title": "AlloyDB API",
+  "description": "AlloyDB for PostgreSQL is an open source-compatible database service that\u2019s a powerful option for migrating, modernizing, or building commercial-grade applications. It offers full compatibility with standard PostgreSQL, and is more than 4x faster for transactional workloads and up to 100x faster for analytical queries than standard PostgreSQL in our performance tests. AlloyDB for PostgreSQL offers a 99.99 percent availability SLA inclusive of maintenance. AlloyDB is optimized for the most demanding use cases, allowing you to build new applications that require high transaction throughput, large database sizes, or multiple read resources; scale existing PostgreSQL workloads with no application changes; and modernize legacy proprietary databases. ",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/alloydb/",
+  "protocol": "rest",
+  "rootUrl": "https://alloydb.googleapis.com/",
+  "mtlsRootUrl": "https://alloydb.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://alloydb.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
+  "schemas": {
+    "ListOperationsResponse": {
+      "id": "ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CancelOperationRequest": {
+      "id": "CancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListClustersResponse": {
+      "id": "ListClustersResponse",
+      "description": "Message for response to listing Clusters",
+      "type": "object",
+      "properties": {
+        "clusters": {
+          "description": "The list of Cluster",
+          "type": "array",
+          "items": {
+            "$ref": "Cluster"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Cluster": {
+      "id": "Cluster",
+      "description": "A cluster is a collection of regional AlloyDB resources. It can include a primary instance and one or more read pool instances. All cluster resources share a storage layer, which scales as needed.",
+      "type": "object",
+      "properties": {
+        "backupSource": {
+          "description": "Output only. Cluster created from backup.",
+          "readOnly": true,
+          "$ref": "BackupSource"
+        },
+        "migrationSource": {
+          "description": "Output only. Cluster created via DMS migration.",
+          "readOnly": true,
+          "$ref": "MigrationSource"
+        },
+        "name": {
+          "description": "Output only. The name of the cluster resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id} where the cluster ID segment should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the cluster resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "User-settable and human-readable display name for the Cluster.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. The system-generated UID of the resource. The UID is assigned when the resource is created, and it is retained until it is deleted.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Create time stamp",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Update time stamp",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deleteTime": {
+          "description": "Output only. Delete time stamp",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels as key value pairs",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "state": {
+          "description": "Output only. The current serving state of the cluster.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The state of the cluster is unknown.",
+            "The cluster is active and running.",
+            "The cluster is stopped. All instances in the cluster are stopped. Customers can start a stopped cluster at any point and all their instances will come back to life with same names and IP resources. In this state, customer pays for storage. Associated backups could also be present in a stopped cluster.",
+            "The cluster is empty and has no associated resources. All instances, associated storage and backups have been deleted.",
+            "The cluster is being created.",
+            "The cluster is being deleted.",
+            "The creation of the cluster failed.",
+            "The cluster is bootstrapping with data from some other source. Direct mutations to the cluster (e.g. adding read pool) are not allowed.",
+            "The cluster is under maintenance. AlloyDB regularly performs maintenance and upgrades on customer clusters. Updates on the cluster are not allowed while the cluster is in this state.",
+            "The cluster is being promoted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "READY",
+            "STOPPED",
+            "EMPTY",
+            "CREATING",
+            "DELETING",
+            "FAILED",
+            "BOOTSTRAPPING",
+            "MAINTENANCE",
+            "PROMOTING"
+          ]
+        },
+        "clusterType": {
+          "description": "Output only. The type of the cluster. This is an output-only field and it's populated at the Cluster creation time or the Cluster promotion time. The cluster type is determined by which RPC was used to create the cluster (i.e. `CreateCluster` vs. `CreateSecondaryCluster`",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The type of the cluster is unknown.",
+            "Primary cluster that support read and write operations.",
+            "Secondary cluster that is replicating from another region. This only supports read."
+          ],
+          "enum": [
+            "CLUSTER_TYPE_UNSPECIFIED",
+            "PRIMARY",
+            "SECONDARY"
+          ]
+        },
+        "databaseVersion": {
+          "description": "Output only. The database engine major version. This is an output-only field and it's populated at the Cluster creation time. This field cannot be changed after cluster creation.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "This is an unknown database version.",
+            "DEPRECATED - The database version is Postgres 13.",
+            "The database version is Postgres 14."
+          ],
+          "enum": [
+            "DATABASE_VERSION_UNSPECIFIED",
+            "POSTGRES_13",
+            "POSTGRES_14"
+          ]
+        },
+        "network": {
+          "description": "Required. The resource link for the VPC network in which cluster resources are created and from which they are accessible via Private IP. The network must belong to the same project as the cluster. It is specified in the form: \"projects\/{project_number}\/global\/networks\/{network_id}\". This is required to create a cluster. It can be updated, but it cannot be removed.",
+          "type": "string"
+        },
+        "etag": {
+          "description": "For Resource freshness validation (https:\/\/google.aip.dev\/154)",
+          "type": "string"
+        },
+        "annotations": {
+          "description": "Annotations to allow client tools to store small amount of arbitrary data. This is distinct from labels. https:\/\/google.aip.dev\/128",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "reconciling": {
+          "description": "Output only. Reconciling (https:\/\/google.aip.dev\/128#reconciliation). Set to true if the current state of Cluster does not match the user's intended state, and the service is actively updating the resource to reconcile them. This can happen due to user-triggered updates or system actions like failover or maintenance.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "initialUser": {
+          "description": "Input only. Initial user to setup during cluster creation. Required. If used in `RestoreCluster` this is ignored.",
+          "$ref": "UserPassword"
+        },
+        "automatedBackupPolicy": {
+          "description": "The automated backup policy for this cluster. If no policy is provided then the default policy will be used. If backups are supported for the cluster, the default policy takes one backup a day, has a backup window of 1 hour, and retains backups for 14 days. For more information on the defaults, consult the documentation for the message type.",
+          "$ref": "AutomatedBackupPolicy"
+        },
+        "sslConfig": {
+          "description": "SSL configuration for this AlloyDB Cluster.",
+          "$ref": "SslConfig"
+        },
+        "encryptionConfig": {
+          "description": "Optional. The encryption config can be specified to encrypt the data disks and other persistent data resources of a cluster with a customer-managed encryption key (CMEK). When this field is not specified, the cluster will then use default encryption scheme to protect the user data.",
+          "$ref": "EncryptionConfig"
+        },
+        "encryptionInfo": {
+          "description": "Output only. The encryption information for the cluster.",
+          "readOnly": true,
+          "$ref": "EncryptionInfo"
+        },
+        "secondaryConfig": {
+          "description": "Cross Region replication config specific to SECONDARY cluster.",
+          "$ref": "SecondaryConfig"
+        },
+        "primaryConfig": {
+          "description": "Output only. Cross Region replication config specific to PRIMARY cluster.",
+          "readOnly": true,
+          "$ref": "PrimaryConfig"
+        }
+      }
+    },
+    "BackupSource": {
+      "id": "BackupSource",
+      "description": "Message describing a BackupSource.",
+      "type": "object",
+      "properties": {
+        "backupName": {
+          "description": "Required. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/backups\/{backup_id}",
+          "type": "string"
+        }
+      }
+    },
+    "MigrationSource": {
+      "id": "MigrationSource",
+      "description": "Subset of the source instance configuration that is available when reading the cluster resource.",
+      "type": "object",
+      "properties": {
+        "hostPort": {
+          "description": "Output only. The host and port of the on-premises instance in host:port format",
+          "readOnly": true,
+          "type": "string"
+        },
+        "referenceId": {
+          "description": "Output only. Place holder for the external source identifier(e.g DMS job name) that created the cluster.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "sourceType": {
+          "description": "Output only. Type of migration source.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Migration source is unknown.",
+            "DMS source means the cluster was created via DMS migration job."
+          ],
+          "enum": [
+            "MIGRATION_SOURCE_TYPE_UNSPECIFIED",
+            "DMS"
+          ]
+        }
+      }
+    },
+    "UserPassword": {
+      "id": "UserPassword",
+      "description": "The username\/password for a database user. Used for specifying initial users at cluster creation time.",
+      "type": "object",
+      "properties": {
+        "user": {
+          "description": "The database username.",
+          "type": "string"
+        },
+        "password": {
+          "description": "The initial password for the user.",
+          "type": "string"
+        }
+      }
+    },
+    "AutomatedBackupPolicy": {
+      "id": "AutomatedBackupPolicy",
+      "description": "Message describing the user-specified automated backup policy. All fields in the automated backup policy are optional. Defaults for each field are provided if they are not set.",
+      "type": "object",
+      "properties": {
+        "weeklySchedule": {
+          "description": "Weekly schedule for the Backup.",
+          "$ref": "WeeklySchedule"
+        },
+        "timeBasedRetention": {
+          "description": "Time-based Backup retention policy.",
+          "$ref": "TimeBasedRetention"
+        },
+        "quantityBasedRetention": {
+          "description": "Quantity-based Backup retention policy to retain recent backups.",
+          "$ref": "QuantityBasedRetention"
+        },
+        "enabled": {
+          "description": "Whether automated automated backups are enabled. If not set, defaults to true.",
+          "type": "boolean"
+        },
+        "backupWindow": {
+          "description": "The length of the time window during which a backup can be taken. If a backup does not succeed within this time window, it will be canceled and considered failed. The backup window must be at least 5 minutes long. There is no upper bound on the window. If not set, it defaults to 1 hour.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "encryptionConfig": {
+          "description": "Optional. The encryption config can be specified to encrypt the backups with a customer-managed encryption key (CMEK). When this field is not specified, the backup will then use default encryption scheme to protect the user data.",
+          "$ref": "EncryptionConfig"
+        },
+        "location": {
+          "description": "The location where the backup will be stored. Currently, the only supported option is to store the backup in the same region as the cluster. If empty, defaults to the region of the cluster.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Labels to apply to backups created using this configuration.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "WeeklySchedule": {
+      "id": "WeeklySchedule",
+      "description": "A weekly schedule starts a backup at prescribed start times within a day, for the specified days of the week. The weekly schedule message is flexible and can be used to create many types of schedules. For example, to have a daily backup that starts at 22:00, configure the `start_times` field to have one element \"22:00\" and the `days_of_week` field to have all seven days of the week.",
+      "type": "object",
+      "properties": {
+        "startTimes": {
+          "description": "The times during the day to start a backup. The start times are assumed to be in UTC and to be an exact hour (e.g., 04:00:00). If no start times are provided, a single fixed start time is chosen arbitrarily.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleTypeTimeOfDay"
+          }
+        },
+        "daysOfWeek": {
+          "description": "The days of the week to perform a backup. If this field is left empty, the default of every day of the week is used.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "The day of the week is unspecified.",
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ],
+            "enum": [
+              "DAY_OF_WEEK_UNSPECIFIED",
+              "MONDAY",
+              "TUESDAY",
+              "WEDNESDAY",
+              "THURSDAY",
+              "FRIDAY",
+              "SATURDAY",
+              "SUNDAY"
+            ]
+          }
+        }
+      }
+    },
+    "GoogleTypeTimeOfDay": {
+      "id": "GoogleTypeTimeOfDay",
+      "description": "Represents a time of day. The date and time zone are either not significant or are specified elsewhere. An API may choose to allow leap seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.",
+      "type": "object",
+      "properties": {
+        "hours": {
+          "description": "Hours of day in 24 hour format. Should be from 0 to 23. An API may choose to allow the value \"24:00:00\" for scenarios like business closing time.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "minutes": {
+          "description": "Minutes of hour of day. Must be from 0 to 59.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "seconds": {
+          "description": "Seconds of minutes of the time. Must normally be from 0 to 59. An API may allow the value 60 if it allows leap-seconds.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "nanos": {
+          "description": "Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "TimeBasedRetention": {
+      "id": "TimeBasedRetention",
+      "description": "A time based retention policy specifies that all backups within a certain time period should be retained.",
+      "type": "object",
+      "properties": {
+        "retentionPeriod": {
+          "description": "The retention period.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "QuantityBasedRetention": {
+      "id": "QuantityBasedRetention",
+      "description": "A quantity based policy specifies that a certain number of the most recent successful backups should be retained.",
+      "type": "object",
+      "properties": {
+        "count": {
+          "description": "The number of backups to retain.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "EncryptionConfig": {
+      "id": "EncryptionConfig",
+      "description": "EncryptionConfig describes the encryption config of a cluster or a backup that is encrypted with a CMEK (customer-managed encryption key).",
+      "type": "object",
+      "properties": {
+        "kmsKeyName": {
+          "description": "The fully-qualified resource name of the KMS key. Each Cloud KMS key is regionalized and has the following format: projects\/[PROJECT]\/locations\/[REGION]\/keyRings\/[RING]\/cryptoKeys\/[KEY_NAME]",
+          "type": "string"
+        }
+      }
+    },
+    "SslConfig": {
+      "id": "SslConfig",
+      "description": "SSL configuration for an AlloyDB Cluster.",
+      "type": "object",
+      "properties": {
+        "sslMode": {
+          "description": "Optional. SSL mode. Specifies client-server SSL\/TLS connection behavior.",
+          "type": "string",
+          "enumDescriptions": [
+            "SSL mode not specified. Defaults to SSL_MODE_ALLOW.",
+            "SSL connections are optional. CA verification not enforced.",
+            "SSL connections are required. CA verification not enforced. Clients may use locally self-signed certificates (default psql client behavior).",
+            "SSL connections are required. CA verification enforced. Clients must have certificates signed by a Cluster CA, e.g. via GenerateClientCertificate."
+          ],
+          "enum": [
+            "SSL_MODE_UNSPECIFIED",
+            "SSL_MODE_ALLOW",
+            "SSL_MODE_REQUIRE",
+            "SSL_MODE_VERIFY_CA"
+          ]
+        },
+        "caSource": {
+          "description": "Optional. Certificate Authority (CA) source. Only CA_SOURCE_MANAGED is supported currently, and is the default value.",
+          "type": "string",
+          "enumDescriptions": [
+            "Certificate Authority (CA) source not specified. Defaults to CA_SOURCE_MANAGED.",
+            "Certificate Authority (CA) managed by the AlloyDB Cluster."
+          ],
+          "enum": [
+            "CA_SOURCE_UNSPECIFIED",
+            "CA_SOURCE_MANAGED"
+          ]
+        }
+      }
+    },
+    "EncryptionInfo": {
+      "id": "EncryptionInfo",
+      "description": "EncryptionInfo describes the encryption information of a cluster or a backup.",
+      "type": "object",
+      "properties": {
+        "encryptionType": {
+          "description": "Output only. Type of encryption.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Encryption type not specified. Defaults to GOOGLE_DEFAULT_ENCRYPTION.",
+            "The data is encrypted at rest with a key that is fully managed by Google. No key version will be populated. This is the default state.",
+            "The data is encrypted at rest with a key that is managed by the customer. KMS key versions will be populated."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "GOOGLE_DEFAULT_ENCRYPTION",
+            "CUSTOMER_MANAGED_ENCRYPTION"
+          ]
+        },
+        "kmsKeyVersions": {
+          "description": "Output only. Cloud KMS key versions that are being used to protect the database or the backup.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SecondaryConfig": {
+      "id": "SecondaryConfig",
+      "description": "Configuration information for the secondary cluster. This should be set if and only if the cluster is of type SECONDARY.",
+      "type": "object",
+      "properties": {
+        "primaryClusterName": {
+          "description": "The name of the primary cluster name with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
+          "type": "string"
+        }
+      }
+    },
+    "PrimaryConfig": {
+      "id": "PrimaryConfig",
+      "description": "Configuration for the primary cluster. It has the list of clusters that are replicating from this cluster. This should be set if and only if the cluster is of type PRIMARY.",
+      "type": "object",
+      "properties": {
+        "secondaryClusterNames": {
+          "description": "Output only. Names of the clusters that are replicating from this cluster.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "RestoreClusterRequest": {
+      "id": "RestoreClusterRequest",
+      "description": "Message for restoring a Cluster from a backup or another cluster at a given point in time.",
+      "type": "object",
+      "properties": {
+        "backupSource": {
+          "description": "Backup source.",
+          "$ref": "BackupSource"
+        },
+        "clusterId": {
+          "description": "Required. ID of the requesting object.",
+          "type": "string"
+        },
+        "cluster": {
+          "description": "Required. The resource being created",
+          "$ref": "Cluster"
+        },
+        "requestId": {
+          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        },
+        "validateOnly": {
+          "description": "Optional. If set, performs request validation (e.g. permission checks and any other type of validation), but do not actually execute the import request.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ListInstancesResponse": {
+      "id": "ListInstancesResponse",
+      "description": "Message for response to listing Instances",
+      "type": "object",
+      "properties": {
+        "instances": {
+          "description": "The list of Instance",
+          "type": "array",
+          "items": {
+            "$ref": "Instance"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Instance": {
+      "id": "Instance",
+      "description": "An Instance is a computing unit that an end customer can connect to. It's the main unit of computing resources in AlloyDB. NEXT ID: 22",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The name of the instance resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/instances\/{instance_id} where the cluster and instance ID segments should satisfy the regex expression \"[a-z]([a-z0-9-]{0,61}[a-z0-9])?\", e.g. 1-63 characters of lowercase letters, numbers, and dashes, starting with a letter, and ending with a letter or number. For more details see https:\/\/google.aip.dev\/122. The prefix of the instance resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "User-settable and human-readable display name for the Instance.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. The system-generated UID of the resource. The UID is assigned when the resource is created, and it is retained until it is deleted.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Create time stamp",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Update time stamp",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deleteTime": {
+          "description": "Output only. Delete time stamp",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels as key value pairs",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "state": {
+          "description": "Output only. The current serving state of the instance.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The state of the instance is unknown.",
+            "The instance is active and running.",
+            "The instance is stopped. Instance name and IP resources are preserved.",
+            "The instance is being created.",
+            "The instance is being deleted.",
+            "The instance is down for maintenance.",
+            "The creation of the instance failed or a fatal error occurred during an operation on the instance. Note: Instances in this state would tried to be auto-repaired. And Customers should be able to restart, update or delete these instances.",
+            "Index 7 is used in the producer apis for ROLLED_BACK state. Keeping that index unused in case that state also needs to exposed via consumer apis in future. The instance has been configured to sync data from some other source.",
+            "The instance is being promoted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "READY",
+            "STOPPED",
+            "CREATING",
+            "DELETING",
+            "MAINTENANCE",
+            "FAILED",
+            "BOOTSTRAPPING",
+            "PROMOTING"
+          ]
+        },
+        "instanceType": {
+          "description": "Required. The type of the instance. Specified at creation time.",
+          "type": "string",
+          "enumDescriptions": [
+            "The type of the instance is unknown.",
+            "PRIMARY instances support read and write operations.",
+            "READ POOL instances support read operations only. Each read pool instance consists of one or more homogeneous nodes. * Read pool of size 1 can only have zonal availability. * Read pools with node count of 2 or more can have regional availability (nodes are present in 2 or more zones in a region).",
+            "SECONDARY instances support read operations only. SECONDARY instance is a cross-region read replica"
+          ],
+          "enum": [
+            "INSTANCE_TYPE_UNSPECIFIED",
+            "PRIMARY",
+            "READ_POOL",
+            "SECONDARY"
+          ]
+        },
+        "machineConfig": {
+          "description": "Configurations for the machines that host the underlying database engine.",
+          "$ref": "MachineConfig"
+        },
+        "availabilityType": {
+          "description": "Availability type of an Instance. Defaults to REGIONAL for both primary and read instances. Note that primary and read instances can have different availability types.",
+          "type": "string",
+          "enumDescriptions": [
+            "This is an unknown Availability type.",
+            "Zonal available instance.",
+            "Regional (or Highly) available instance."
+          ],
+          "enum": [
+            "AVAILABILITY_TYPE_UNSPECIFIED",
+            "ZONAL",
+            "REGIONAL"
+          ]
+        },
+        "gceZone": {
+          "description": "The Compute Engine zone that the instance should serve from, per https:\/\/cloud.google.com\/compute\/docs\/regions-zones This can ONLY be specified for ZONAL instances. If present for a REGIONAL instance, an error will be thrown. If this is absent for a ZONAL instance, instance is created in a random zone with available capacity.",
+          "type": "string"
+        },
+        "databaseFlags": {
+          "description": "Database flags. Set at instance level. * They are copied from primary instance on read instance creation. * Read instances can set new or override existing flags that are relevant for reads, e.g. for enabling columnar cache on a read instance. Flags set on read instance may or may not be present on primary. This is a list of \"key\": \"value\" pairs. \"key\": The name of the flag. These flags are passed at instance setup time, so include both server options and system variables for Postgres. Flags are specified with underscores, not hyphens. \"value\": The value of the flag. Booleans are set to **on** for true and **off** for false. This field must be omitted if the flag doesn't take a value.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "writableNode": {
+          "description": "Output only. This is set for the read-write VM of the PRIMARY instance only.",
+          "readOnly": true,
+          "$ref": "Node"
+        },
+        "nodes": {
+          "description": "Output only. List of available read-only VMs in this instance, including the standby for a PRIMARY instance.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "Node"
+          }
+        },
+        "readPoolConfig": {
+          "description": "Read pool specific config.",
+          "$ref": "ReadPoolConfig"
+        },
+        "ipAddress": {
+          "description": "Output only. The IP address for the Instance. This is the connection endpoint for an end-user application.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "reconciling": {
+          "description": "Output only. Reconciling (https:\/\/google.aip.dev\/128#reconciliation). Set to true if the current state of Instance does not match the user's intended state, and the service is actively updating the resource to reconcile them. This can happen due to user-triggered updates or system actions like failover or maintenance.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "etag": {
+          "description": "For Resource freshness validation (https:\/\/google.aip.dev\/154)",
+          "type": "string"
+        },
+        "annotations": {
+          "description": "Annotations to allow client tools to store small amount of arbitrary data. This is distinct from labels. https:\/\/google.aip.dev\/128",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "MachineConfig": {
+      "id": "MachineConfig",
+      "description": "MachineConfig describes the configuration of a machine.",
+      "type": "object",
+      "properties": {
+        "cpuCount": {
+          "description": "The number of CPU's in the VM instance.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "Node": {
+      "id": "Node",
+      "description": "Details of a single node in the instance. Nodes in an AlloyDB instance are ephemereal, they can change during update, failover, autohealing and resize operations.",
+      "type": "object",
+      "properties": {
+        "zoneId": {
+          "description": "The Compute Engine zone of the VM e.g. \"us-central1-b\".",
+          "type": "string"
+        },
+        "id": {
+          "description": "The identifier of the VM e.g. \"test-read-0601-407e52be-ms3l\".",
+          "type": "string"
+        },
+        "ip": {
+          "description": "The private IP address of the VM e.g. \"10.57.0.34\".",
+          "type": "string"
+        },
+        "state": {
+          "description": "Determined by state of the compute VM and postgres-service health. Compute VM state can have values listed in https:\/\/cloud.google.com\/compute\/docs\/instances\/instance-life-cycle and postgres-service health can have values: HEALTHY and UNHEALTHY.",
+          "type": "string"
+        }
+      }
+    },
+    "ReadPoolConfig": {
+      "id": "ReadPoolConfig",
+      "description": "Configuration for a read pool instance.",
+      "type": "object",
+      "properties": {
+        "nodeCount": {
+          "description": "Read capacity, i.e. number of nodes in a read pool instance.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "FailoverInstanceRequest": {
+      "id": "FailoverInstanceRequest",
+      "description": "Message for triggering failover on an Instance",
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        },
+        "validateOnly": {
+          "description": "Optional. If set, performs request validation (e.g. permission checks and any other type of validation), but do not actually execute the failover.",
+          "type": "boolean"
+        }
+      }
+    },
+    "RestartInstanceRequest": {
+      "id": "RestartInstanceRequest",
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        },
+        "validateOnly": {
+          "description": "Optional. If set, performs request validation (e.g. permission checks and any other type of validation), but do not actually execute the restart.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ListBackupsResponse": {
+      "id": "ListBackupsResponse",
+      "description": "Message for response to listing Backups",
+      "type": "object",
+      "properties": {
+        "backups": {
+          "description": "The list of Backup",
+          "type": "array",
+          "items": {
+            "$ref": "Backup"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Backup": {
+      "id": "Backup",
+      "description": "Message describing Backup object NEXT ID: 18",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/backups\/{backup_id} where the cluster and backup ID segments should satisfy the regex expression `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`, e.g. 1-63 characters of lowercase letters, numbers, and dashes, starting with a letter, and ending with a letter or number. For more details see https:\/\/google.aip.dev\/122. The prefix of the backup resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "User-settable and human-readable display name for the Backup.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. The system-generated UID of the resource. The UID is assigned when the resource is created, and it is retained until it is deleted.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Create time stamp",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Update time stamp",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deleteTime": {
+          "description": "Output only. Delete time stamp",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels as key value pairs",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "state": {
+          "description": "Output only. The current state of the backup.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The state of the backup is unknown.",
+            "The backup is ready.",
+            "The backup is creating.",
+            "The backup failed.",
+            "The backup is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "READY",
+            "CREATING",
+            "FAILED",
+            "DELETING"
+          ]
+        },
+        "type": {
+          "description": "The backup type, which suggests the trigger for the backup.",
+          "type": "string",
+          "enumDescriptions": [
+            "Backup Type is unknown.",
+            "ON_DEMAND backups that were triggered by the customer (e.g., not AUTOMATED).",
+            "AUTOMATED backups triggered by the automated backups scheduler pursuant to an automated backup policy."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "ON_DEMAND",
+            "AUTOMATED"
+          ]
+        },
+        "description": {
+          "description": "User-provided description of the backup.",
+          "type": "string"
+        },
+        "clusterName": {
+          "description": "Required. The full resource name of the backup source cluster (e.g., projects\/\/locations\/\/clusters\/).",
+          "type": "string"
+        },
+        "reconciling": {
+          "description": "Output only. Reconciling (https:\/\/google.aip.dev\/128#reconciliation), if true, indicates that the service is actively updating the resource. This can happen due to user-triggered updates or system actions like failover or maintenance.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "encryptionConfig": {
+          "description": "Optional. The encryption config can be specified to encrypt the backup with a customer-managed encryption key (CMEK). When this field is not specified, the backup will then use default encryption scheme to protect the user data.",
+          "$ref": "EncryptionConfig"
+        },
+        "encryptionInfo": {
+          "description": "Output only. The encryption information for the backup.",
+          "readOnly": true,
+          "$ref": "EncryptionInfo"
+        },
+        "etag": {
+          "description": "For Resource freshness validation (https:\/\/google.aip.dev\/154)",
+          "type": "string"
+        },
+        "annotations": {
+          "description": "Annotations to allow client tools to store small amount of arbitrary data. This is distinct from labels. https:\/\/google.aip.dev\/128",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "sizeBytes": {
+          "description": "Output only. The size of the backup in bytes.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ListSupportedDatabaseFlagsResponse": {
+      "id": "ListSupportedDatabaseFlagsResponse",
+      "description": "Message for response to listing SupportedDatabaseFlags.",
+      "type": "object",
+      "properties": {
+        "supportedDatabaseFlags": {
+          "description": "The list of SupportedDatabaseFlags.",
+          "type": "array",
+          "items": {
+            "$ref": "SupportedDatabaseFlag"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        }
+      }
+    },
+    "SupportedDatabaseFlag": {
+      "id": "SupportedDatabaseFlag",
+      "description": "SupportedDatabaseFlag gives general information about a database flag, like type and allowed values. This is a static value that is defined on the server side, and it cannot be modified by callers. To set the Database flags on a particular Instance, a caller should modify the Instance.database_flags field.",
+      "type": "object",
+      "properties": {
+        "stringRestrictions": {
+          "description": "Restriction on STRING type value.",
+          "$ref": "StringRestrictions"
+        },
+        "integerRestrictions": {
+          "description": "Restriction on INTEGER type value.",
+          "$ref": "IntegerRestrictions"
+        },
+        "name": {
+          "description": "The name of the flag resource, following GCP conventions, e.g.: * projects\/{project}\/locations\/{location}\/flags\/{flag} This field currently has no semantic meaning.",
+          "type": "string"
+        },
+        "flagName": {
+          "description": "The name of the database flag, e.g. \"max_allowed_packets\". The is a possibly key for the Instance.database_flags map field.",
+          "type": "string"
+        },
+        "valueType": {
+          "type": "string",
+          "enumDescriptions": [
+            "This is an unknown flag type.",
+            "String type flag.",
+            "Integer type flag.",
+            "Float type flag.",
+            "Denotes that the flag does not accept any values."
+          ],
+          "enum": [
+            "VALUE_TYPE_UNSPECIFIED",
+            "STRING",
+            "INTEGER",
+            "FLOAT",
+            "NONE"
+          ]
+        },
+        "acceptsMultipleValues": {
+          "description": "Whether the database flag accepts multiple values. If true, a comma-separated list of stringified values may be specified.",
+          "type": "boolean"
+        },
+        "supportedDbVersions": {
+          "description": "Major database engine versions for which this flag is supported.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "This is an unknown database version.",
+              "DEPRECATED - The database version is Postgres 13.",
+              "The database version is Postgres 14."
+            ],
+            "enum": [
+              "DATABASE_VERSION_UNSPECIFIED",
+              "POSTGRES_13",
+              "POSTGRES_14"
+            ]
+          }
+        },
+        "requiresDbRestart": {
+          "description": "Whether setting or updating this flag on an Instance requires a database restart. If a flag that requires database restart is set, the backend will automatically restart the database (making sure to satisfy any availability SLO's).",
+          "type": "boolean"
+        }
+      }
+    },
+    "StringRestrictions": {
+      "id": "StringRestrictions",
+      "description": "Restrictions on STRING type values",
+      "type": "object",
+      "properties": {
+        "allowedValues": {
+          "description": "The list of allowed values, if bounded. This field will be empty if there is a unbounded number of allowed values.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "IntegerRestrictions": {
+      "id": "IntegerRestrictions",
+      "description": "Restrictions on INTEGER type values.",
+      "type": "object",
+      "properties": {
+        "minValue": {
+          "description": "The minimum value that can be specified, if applicable.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxValue": {
+          "description": "The maximum value that can be specified, if applicable.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudLocationListLocationsResponse": {
+      "id": "GoogleCloudLocationListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudLocationLocation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudLocationLocation": {
+      "id": "GoogleCloudLocationLocation",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "resources": {
+        "locations": {
+          "methods": {
+            "list": {
+              "id": "alloydb.projects.locations.list",
+              "path": "v1/{+name}/locations",
+              "flatPath": "v1/projects/{projectsId}/locations",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudLocationListLocationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists information about the supported locations for this service."
+            },
+            "get": {
+              "id": "alloydb.projects.locations.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudLocationLocation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets information about a location."
+            }
+          }
+          ,
+          "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "alloydb.projects.locations.operations.list",
+                  "path": "v1/{+name}/operations",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "alloydb.projects.locations.operations.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
+                "delete": {
+                  "id": "alloydb.projects.locations.operations.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                },
+                "cancel": {
+                  "id": "alloydb.projects.locations.operations.cancel",
+                  "path": "v1/{+name}:cancel",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CancelOperationRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                }
+              }
+            },
+            "clusters": {
+              "methods": {
+                "list": {
+                  "id": "alloydb.projects.locations.clusters.list",
+                  "path": "v1/{+parent}/clusters",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The name of the parent resource. For the required format, see the comment on the Cluster.name field. Additionally, you can perform an aggregated list operation by specifying a value with the following format: * projects\/{project}\/locations\/-",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results the server should return.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Optional. Filtering results",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Optional. Hint for how to order the results",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListClustersResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Clusters in a given project and location."
+                },
+                "get": {
+                  "id": "alloydb.projects.locations.clusters.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the resource. For the required format, see the comment on the Cluster.name field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Cluster"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single Cluster."
+                },
+                "create": {
+                  "id": "alloydb.projects.locations.clusters.create",
+                  "path": "v1/{+parent}/clusters",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The name of the parent resource. For the required format, see the comment on the Cluster.name field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clusterId": {
+                      "description": "Required. ID of the requesting object.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. If set, performs request validation (e.g. permission checks and any other type of validation), but do not actually execute the create request.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Cluster"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new Cluster in a given project and location."
+                },
+                "patch": {
+                  "id": "alloydb.projects.locations.clusters.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The name of the cluster resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id} where the cluster ID segment should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the cluster resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the Cluster resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. If set, performs request validation (e.g. permission checks and any other type of validation), but do not actually execute the update request.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "allowMissing": {
+                      "description": "Optional. If set to true, update succeeds even if cluster is not found. In that case, a new cluster is created and `update_mask` is ignored.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Cluster"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single Cluster."
+                },
+                "delete": {
+                  "id": "alloydb.projects.locations.clusters.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the resource. For the required format, see the comment on the Cluster.name field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "etag": {
+                      "description": "Optional. The current etag of the Cluster. If an etag is provided and does not match the current etag of the Cluster, deletion will be blocked and an ABORTED error will be returned.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. If set, performs request validation (e.g. permission checks and any other type of validation), but do not actually execute the delete.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "force": {
+                      "description": "Optional. Whether to cascade delete child instances for given cluster.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single Cluster."
+                },
+                "restore": {
+                  "id": "alloydb.projects.locations.clusters.restore",
+                  "path": "v1/{+parent}/clusters:restore",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters:restore",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The name of the parent resource. For the required format, see the comment on the Cluster.name field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "RestoreClusterRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new Cluster in a given project and location, with a volume restored from the provided source, either a backup ID or a point-in-time and a source cluster."
+                }
+              }
+              ,
+              "resources": {
+                "instances": {
+                  "methods": {
+                    "list": {
+                      "id": "alloydb.projects.locations.clusters.instances.list",
+                      "path": "v1/{+parent}/instances",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The name of the parent resource. For the required format, see the comment on the Instance.name field. Additionally, you can perform an aggregated list operation by specifying a value with one of the following formats: * projects\/{project}\/locations\/-\/clusters\/- * projects\/{project}\/locations\/{region}\/clusters\/-",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A token identifying a page of results the server should return.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Optional. Filtering results",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Optional. Hint for how to order the results",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListInstancesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists Instances in a given project and location."
+                    },
+                    "get": {
+                      "id": "alloydb.projects.locations.clusters.instances.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances/{instancesId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the resource. For the required format, see the comment on the Instance.name field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/instances\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "view": {
+                          "description": "The view of the instance to return.",
+                          "location": "query",
+                          "type": "string",
+                          "enumDescriptions": [
+                            "INSTANCE_VIEW_UNSPECIFIED Not specified, equivalent to BASIC.",
+                            "BASIC server responses for a primary or read instance include all the relevant instance details, excluding the details of each node in the instance. The default value.",
+                            "FULL response is equivalent to BASIC for primary instance (for now). For read pool instance, this includes details of each node in the pool."
+                          ],
+                          "enum": [
+                            "INSTANCE_VIEW_UNSPECIFIED",
+                            "INSTANCE_VIEW_BASIC",
+                            "INSTANCE_VIEW_FULL"
+                          ]
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Instance"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single Instance."
+                    },
+                    "create": {
+                      "id": "alloydb.projects.locations.clusters.instances.create",
+                      "path": "v1/{+parent}/instances",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The name of the parent resource. For the required format, see the comment on the Instance.name field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "instanceId": {
+                          "description": "Required. ID of the requesting object.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. If set, performs request validation (e.g. permission checks and any other type of validation), but do not actually execute the create request.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Instance"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new Instance in a given project and location."
+                    },
+                    "patch": {
+                      "id": "alloydb.projects.locations.clusters.instances.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances/{instancesId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. The name of the instance resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/instances\/{instance_id} where the cluster and instance ID segments should satisfy the regex expression \"[a-z]([a-z0-9-]{0,61}[a-z0-9])?\", e.g. 1-63 characters of lowercase letters, numbers, and dashes, starting with a letter, and ending with a letter or number. For more details see https:\/\/google.aip.dev\/122. The prefix of the instance resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/instances\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Optional. Field mask is used to specify the fields to be overwritten in the Instance resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. If set, performs request validation (e.g. permission checks and any other type of validation), but do not actually execute the update request.",
+                          "location": "query",
+                          "type": "boolean"
+                        },
+                        "allowMissing": {
+                          "description": "Optional. If set to true, update succeeds even if instance is not found. In that case, a new instance is created and `update_mask` is ignored.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "Instance"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the parameters of a single Instance."
+                    },
+                    "delete": {
+                      "id": "alloydb.projects.locations.clusters.instances.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances/{instancesId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the resource. For the required format, see the comment on the Instance.name field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/instances\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "etag": {
+                          "description": "Optional. The current etag of the Instance. If an etag is provided and does not match the current etag of the Instance, deletion will be blocked and an ABORTED error will be returned.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. If set, performs request validation (e.g. permission checks and any other type of validation), but do not actually execute the delete.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a single Instance."
+                    },
+                    "failover": {
+                      "id": "alloydb.projects.locations.clusters.instances.failover",
+                      "path": "v1/{+name}:failover",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances/{instancesId}:failover",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the resource. For the required format, see the comment on the Instance.name field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/instances\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "FailoverInstanceRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Forces a Failover for a highly available instance. Failover promotes the HA standby instance as the new primary. Imperative only."
+                    },
+                    "restart": {
+                      "id": "alloydb.projects.locations.clusters.instances.restart",
+                      "path": "v1/{+name}:restart",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances/{instancesId}:restart",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the resource. For the required format, see the comment on the Instance.name field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/instances\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "RestartInstanceRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Restart an Instance in a cluster. Imperative only."
+                    }
+                  }
+                }
+              }
+            },
+            "backups": {
+              "methods": {
+                "list": {
+                  "id": "alloydb.projects.locations.backups.list",
+                  "path": "v1/{+parent}/backups",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/backups",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent value for ListBackupsRequest",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results the server should return.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Filtering results",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Hint for how to order the results",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListBackupsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Backups in a given project and location."
+                },
+                "get": {
+                  "id": "alloydb.projects.locations.backups.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Backup"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single Backup."
+                },
+                "create": {
+                  "id": "alloydb.projects.locations.backups.create",
+                  "path": "v1/{+parent}/backups",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/backups",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Value for parent.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "backupId": {
+                      "description": "Required. ID of the requesting object.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. If set, the backend validates the request, but doesn't actually execute it.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Backup"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new Backup in a given project and location."
+                },
+                "patch": {
+                  "id": "alloydb.projects.locations.backups.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/backups\/{backup_id} where the cluster and backup ID segments should satisfy the regex expression `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`, e.g. 1-63 characters of lowercase letters, numbers, and dashes, starting with a letter, and ending with a letter or number. For more details see https:\/\/google.aip.dev\/122. The prefix of the backup resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the Backup resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. If set, the backend validates the request, but doesn't actually execute it.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "allowMissing": {
+                      "description": "Optional. If set to true, update succeeds even if instance is not found. In that case, a new backup is created and `update_mask` is ignored.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Backup"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single Backup."
+                },
+                "delete": {
+                  "id": "alloydb.projects.locations.backups.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource. For the required format, see the comment on the Backup.name field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. If set, the backend validates the request, but doesn't actually execute it.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "etag": {
+                      "description": "Optional. The current etag of the Backup. If an etag is provided and does not match the current etag of the Backup, deletion will be blocked and an ABORTED error will be returned.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single Backup."
+                }
+              }
+            },
+            "supportedDatabaseFlags": {
+              "methods": {
+                "list": {
+                  "id": "alloydb.projects.locations.supportedDatabaseFlags.list",
+                  "path": "v1/{+parent}/supportedDatabaseFlags",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/supportedDatabaseFlags",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The name of the parent resource. The required format is: * projects\/{project}\/locations\/{location} Regardless of the parent specified here, as long it is contains a valid project and location, the service will return a static list of supported flags resources. Note that we do not not yet support region-specific flags (see b\/211502903).",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results the server should return.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListSupportedDatabaseFlagsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists SupportedDatabaseFlags for a given project and location."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

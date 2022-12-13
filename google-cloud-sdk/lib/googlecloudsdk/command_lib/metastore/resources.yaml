@@ -35,6 +35,17 @@ federation:
     attribute_name: federation
     help: The identifier of the Dataproc Metastore federation
 
+parent_service:
+  name: service
+  collection: metastore.projects.locations.services
+  attributes:
+  - *project
+  - *location
+  - &parent_service
+    parameter_name: servicesId
+    attribute_name: service
+    help: The identifier of the Dataproc Metastore service
+
 service:
   name: service
   collection: metastore.projects.locations.services

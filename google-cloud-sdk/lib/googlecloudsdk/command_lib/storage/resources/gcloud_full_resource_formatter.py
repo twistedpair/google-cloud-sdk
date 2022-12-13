@@ -108,7 +108,7 @@ _OBJECT_DISPLAY_TITLES_AND_DEFAULTS = (
             title='Custom-Time', default=None),
         noncurrent_time=base.FieldDisplayTitleAndDefault(
             title='Noncurrent Time', default=None),
-        custom_metadata=base.FieldDisplayTitleAndDefault(
+        custom_fields=base.FieldDisplayTitleAndDefault(
             title='Additional Properties', default=None),
         crc32c_hash=base.FieldDisplayTitleAndDefault(
             title='Hash (CRC32C)', default=None),
@@ -116,7 +116,7 @@ _OBJECT_DISPLAY_TITLES_AND_DEFAULTS = (
             title='Hash (MD5)', default=None),
         encryption_algorithm=base.FieldDisplayTitleAndDefault(
             title='Encryption Algorithm', default=None),
-        decryption_key_hash=base.FieldDisplayTitleAndDefault(
+        decryption_key_hash_sha256=base.FieldDisplayTitleAndDefault(
             title='Encryption Key SHA256', default=None),
         etag=base.FieldDisplayTitleAndDefault(title='ETag', default='None'),
         generation=base.FieldDisplayTitleAndDefault(

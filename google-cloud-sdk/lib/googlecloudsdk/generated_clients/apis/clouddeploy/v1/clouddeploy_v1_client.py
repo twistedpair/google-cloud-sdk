@@ -122,6 +122,33 @@ class ClouddeployV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Advance(self, request, global_params=None):
+      r"""Advances a Rollout in a given project and location.
+
+      Args:
+        request: (ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsAdvanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AdvanceRolloutResponse) The response message.
+      """
+      config = self.GetMethodConfig('Advance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Advance.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}:advance',
+        http_method='POST',
+        method_id='clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.advance',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:advance',
+        request_field='advanceRolloutRequest',
+        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsAdvanceRequest',
+        response_type_name='AdvanceRolloutResponse',
+        supports_download=False,
+    )
+
     def Approve(self, request, global_params=None):
       r"""Approves a Rollout.
 

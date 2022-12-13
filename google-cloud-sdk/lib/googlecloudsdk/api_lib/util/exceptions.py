@@ -45,6 +45,9 @@ _ESCAPED_ESCAPE = 'E'
 _ESCAPED_LEFT_CURLY = 'L'
 _ESCAPED_RIGHT_CURLY = 'R'
 
+# ErrorInfo identifier used for extracting domain based handlers.
+ERROR_INFO_SUFFIX = 'google.rpc.ErrorInfo'
+
 
 def _Escape(s):
   """Return s with format special characters escaped."""
@@ -245,6 +248,7 @@ class HttpErrorPayload(FormattableErrorPayload):
     api_version: The url version.
     content: The dumped JSON content.
     details: A list of {'@type': TYPE, 'detail': STRING} typed details.
+    domain_details: ErrorInfo metadata Indexed by domain.
     violations: map of subject to error message for that subject.
     field_violations: map of field name to error message for that field.
     error_info: content['error'].
@@ -256,6 +260,7 @@ class HttpErrorPayload(FormattableErrorPayload):
     status_code: The HTTP status code number.
     status_description: The status_code description.
     status_message: Context specific status message.
+    type_details: ErrorDetails Indexed by type.
     url: The HTTP url.
     .<a>.<b>...: The <a>.<b>... attribute in the JSON content (synthesized in
       get_field()).
@@ -333,10 +338,33 @@ class HttpErrorPayload(FormattableErrorPayload):
       self.details = self.error_info.get('details', [])
       self.violations = self._ExtractViolations(self.details)
       self.field_violations = self._ExtractFieldViolations(self.details)
+      self.type_details = self._IndexErrorDetailsByType(self.details)
+      self.domain_details = self._IndexErrorInfoByDomain(self.details)
     except (KeyError, TypeError, ValueError):
       self.status_message = content
     except AttributeError:
       pass
+
+  def _IndexErrorDetailsByType(self, details):
+    """Extracts and indexes error details list by the type attribute."""
+    type_map = collections.defaultdict(list)
+    for item in details:
+      error_type = item.get('@type', None)
+      if error_type:
+        error_type_suffix = error_type.split('.')[-1]
+        type_map[error_type_suffix].append(item)
+    return type_map
+
+  def _IndexErrorInfoByDomain(self, details):
+    """Extracts and indexes error info list by the domain attribute."""
+    domain_map = collections.defaultdict(list)
+    for item in details:
+      error_type = item.get('@type', None)
+      if error_type.endswith(ERROR_INFO_SUFFIX):
+        domain = item.get('domain', None)
+        if domain:
+          domain_map[domain].append(item)
+    return domain_map
 
   def _ExtractUrlResourceAndInstanceNames(self, http_error):
     """Extracts the url resource type and instance names from the HttpError."""
@@ -471,7 +499,12 @@ class HttpException(core_exceptions.Error):
   def __str__(self):
     error_format = self.error_format
     if error_format is None:
-      error_format = '{message}{details?\n{?}}'
+      error_format = '{message}'
+      if properties.VALUES.core.parse_error_details.GetBool():
+        error_format += ('\n{type_details.LocalizedMessage'
+                         ':value(message.list(separator="\n"))}')
+      else:
+        error_format += '{details?\n{?}}'
       if log.GetVerbosity() <= logging.DEBUG:
         error_format += '{.debugInfo?\n{?}}'
     return _Expand(self.payload.format(_Escape(error_format)))
